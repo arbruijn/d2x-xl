@@ -134,13 +134,13 @@ return NULL;
 
 int32_t ASE_ReleaseTextures (void)
 {
-	CModel*	modelP;
+	CModel*	pModel;
 	int32_t		bCustom, i;
 
 PrintLog (1, "releasing ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.models.nHiresModels, modelP = gameData.models.aseModels [bCustom].Buffer (); i; i--, modelP++)
-		modelP->ReleaseTextures ();
+	for (i = gameData.models.nHiresModels, pModel = gameData.models.aseModels [bCustom].Buffer (); i; i--, pModel++)
+		pModel->ReleaseTextures ();
 PrintLog (-1);
 return 0;
 }
@@ -149,13 +149,13 @@ return 0;
 
 int32_t ASE_ReloadTextures (void)
 {
-	CModel*	modelP;
+	CModel*	pModel;
 	int32_t		bCustom, i;
 
 PrintLog (1, "reloading ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.models.nHiresModels, modelP = gameData.models.aseModels [bCustom].Buffer (); i; i--, modelP++)
-		if (!modelP->ReloadTextures ()) {
+	for (i = gameData.models.nHiresModels, pModel = gameData.models.aseModels [bCustom].Buffer (); i; i--, pModel++)
+		if (!pModel->ReloadTextures ()) {
 			PrintLog (-1);
 			return 0;
 			}
@@ -611,22 +611,22 @@ return 0;
 
 int32_t CModel::ReadTexture (CFile& cf, int32_t nBitmap)
 {
-	CBitmap	*bmP = m_textures.m_bitmaps + nBitmap;
+	CBitmap	*pBm = m_textures.m_bitmaps + nBitmap;
 	char		fn [FILENAME_LEN], *ps;
 	int32_t		l;
 
-sprintf (bmP->Name (), "ASE model %d texture %d", m_nModel, nBitmap);
+sprintf (pBm->Name (), "ASE model %d texture %d", m_nModel, nBitmap);
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
-bmP->SetFlat (0);
+pBm->SetFlat (0);
 while ((pszToken = ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*BITMAP")) {
-		if (bmP->Buffer ())	//duplicate
+		if (pBm->Buffer ())	//duplicate
 			return CModel::Error ("duplicate bitmap");
 		CFile::SplitPath (StrTok ("\""), NULL, fn, NULL);
-		CTGA tga (bmP);
+		CTGA tga (pBm);
 		if (!tga.ReadModelTexture (::strlwr (fn), m_bCustom))
 			return CModel::Error ("texture not found");
 		l = (int32_t) strlen (fn) + 1;
@@ -637,7 +637,7 @@ while ((pszToken = ReadLine (cf))) {
 			m_textures.m_nTeam [nBitmap] = atoi (ps + 5) + 1;
 		else
 			m_textures.m_nTeam [nBitmap] = 0;
-		bmP->SetTeam (m_textures.m_nTeam [nBitmap]);
+		pBm->SetTeam (m_textures.m_nTeam [nBitmap]);
 		}
 	}
 return CModel::Error ("unexpected end of file");
@@ -647,16 +647,16 @@ return CModel::Error ("unexpected end of file");
 
 int32_t CModel::ReadOpacity (CFile& cf, int32_t nBitmap)
 {
-	CBitmap	*bmP = m_textures.m_bitmaps + nBitmap;
+	CBitmap	*pBm = m_textures.m_bitmaps + nBitmap;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
-bmP->SetFlat (0);
+pBm->SetFlat (0);
 while ((pszToken = ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*BITMAP")) {
-		if (!bmP->Buffer ())	//duplicate
+		if (!pBm->Buffer ())	//duplicate
 			return CModel::Error ("missing glow bitmap");
 		}
 	}
@@ -668,15 +668,15 @@ return CModel::Error ("unexpected end of file");
 int32_t CModel::ReadMaterial (CFile& cf)
 {
 	int32_t		i;
-	CBitmap	*bmP;
+	CBitmap	*pBm;
 
 i = IntTok (" \t");
 if ((i < 0) || (i >= m_textures.m_nBitmaps))
 	return CModel::Error ("invalid bitmap number");
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
-bmP = m_textures.m_bitmaps + i;
-bmP->SetFlat (1);
+pBm = m_textures.m_bitmaps + i;
+pBm->SetFlat (1);
 while ((pszToken = ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
@@ -685,7 +685,7 @@ while ((pszToken = ReadLine (cf))) {
 		avgRGB.Red () = (uint8_t) FRound (FloatTok (" \t") * 255);
 		avgRGB.Green () = (uint8_t) FRound (FloatTok (" \t") * 255);
 		avgRGB.Blue () = (uint8_t) FRound (FloatTok (" \t") * 255);
-		bmP->SetAvgColor (avgRGB);
+		pBm->SetAvgColor (avgRGB);
 		}
 	else if (!strcmp (pszToken, "*MAP_DIFFUSE")) {
 		if (!ReadTexture (cf, i))

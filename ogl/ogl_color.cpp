@@ -60,16 +60,16 @@ CFloatVector modelColor [2] = {{{{0.0f, 0.5f, 1.0f, 0.5f}}}, {{{0.0f, 1.0f, 0.5f
 
 //------------------------------------------------------------------------------
 
-void OglPalColor (CPalette *palette, int32_t c, CFloatVector* colorP)
+void OglPalColor (CPalette *palette, int32_t c, CFloatVector* pColor)
 {
 	CFloatVector	color;
 
 if (c < 0) {
-	if (colorP)
-		colorP->Red () =
-		colorP->Green () =
-		colorP->Blue () =
-		colorP->Alpha () = 1.0;
+	if (pColor)
+		pColor->Red () =
+		pColor->Green () =
+		pColor->Blue () =
+		pColor->Alpha () = 1.0;
 	else
 		glColor3f (1.0, 1.0, 1.0);
 	}
@@ -78,8 +78,8 @@ else {
 		palette = paletteManager.Game ();
 	palette->ToRgbaf (c, color);
 	color.Alpha () = gameStates.render.grAlpha;
-	if (colorP)
-		*colorP = color;
+	if (pColor)
+		*pColor = color;
 	else
 		glColor4fv (reinterpret_cast<GLfloat*> (&color));
 	}
@@ -104,59 +104,59 @@ return color;
 
 //------------------------------------------------------------------------------
 
-void OglCanvasColor (CCanvasColor* canvColorP, CFloatVector* colorP)
+void OglCanvasColor (CCanvasColor* pCanvColor, CFloatVector* pColor)
 {
 	CFloatVector	color;
 
-if (!canvColorP) {
-	if (colorP) {
-		colorP->Red () =
-		colorP->Green () =
-		colorP->Blue () = 1.0f;
-		colorP->Alpha () = gameStates.render.grAlpha;
+if (!pCanvColor) {
+	if (pColor) {
+		pColor->Red () =
+		pColor->Green () =
+		pColor->Blue () = 1.0f;
+		pColor->Alpha () = gameStates.render.grAlpha;
 		}
 	else 
 		glColor4f (1.0f, 1.0f, 1.0f, gameStates.render.grAlpha);
 	}
-else if (canvColorP->rgb) {
-	color.Set (canvColorP->Red (), canvColorP->Green (), canvColorP->Blue ());
+else if (pCanvColor->rgb) {
+	color.Set (pCanvColor->Red (), pCanvColor->Green (), pCanvColor->Blue ());
 	color /= 255.0f;
-	color.Alpha () = float (canvColorP->Alpha ()) / 255.0f * gameStates.render.grAlpha;
+	color.Alpha () = float (pCanvColor->Alpha ()) / 255.0f * gameStates.render.grAlpha;
 	if (color.Alpha () < 1.0f)
 		ogl.SetBlendMode (ogl.m_data.nSrcBlendMode, ogl.m_data.nDestBlendMode);
-	if (colorP)
-		*colorP = color;
+	if (pColor)
+		*pColor = color;
 	else
 		glColor4fv (reinterpret_cast<GLfloat*> (&color));
 	}
 else
-	OglPalColor (paletteManager.Game (), canvColorP->index, colorP);
+	OglPalColor (paletteManager.Game (), pCanvColor->index, pColor);
 }
 
 //------------------------------------------------------------------------------
 
-CFloatVector GetCanvasColor (CCanvasColor *colorP)
+CFloatVector GetCanvasColor (CCanvasColor *pColor)
 {
 
-if (!colorP) {
+if (!pColor) {
 	CFloatVector	color = {{{1, 1, 1, gameStates.render.grAlpha}}};
 	return color;
 	}
-else if (colorP->rgb) {
+else if (pColor->rgb) {
 	CFloatVector color = {{{
-		float (colorP->Red ()) / 255.0f,
-		float (colorP->Green ()) / 255.0f,
-		float (colorP->Blue ()) / 255.0f,
-		float (colorP->Alpha ()) / 255.0f * gameStates.render.grAlpha
+		float (pColor->Red ()) / 255.0f,
+		float (pColor->Green ()) / 255.0f,
+		float (pColor->Blue ()) / 255.0f,
+		float (pColor->Alpha ()) / 255.0f * gameStates.render.grAlpha
 		}}};
-	if (colorP->Alpha () < 1.0f) {
+	if (pColor->Alpha () < 1.0f) {
 		ogl.SetBlending (true);
 		ogl.SetBlendMode (ogl.m_data.nSrcBlendMode, ogl.m_data.nDestBlendMode);
 		}
 	return color;
 	}
 else
-	return GetPalColor (paletteManager.Game (), colorP->index);
+	return GetPalColor (paletteManager.Game (), pColor->index);
 }
 
 //------------------------------------------------------------------------------
@@ -204,17 +204,17 @@ if (! (bm->props.flags & BM_FLAG_NO_LIGHTING) && color) {
 
 //------------------------------------------------------------------------------
 
-static inline void ScaleColor (CFaceColor *colorP, float l)
+static inline void ScaleColor (CFaceColor *pColor, float l)
 {
 if (l >= 0) {
-		float m = colorP->Red ();
+		float m = pColor->Red ();
 
-	if (m < colorP->Green ())
-		m = colorP->Green ();
-	if (m < colorP->Blue ())
-		m = colorP->Blue ();
+	if (m < pColor->Green ())
+		m = pColor->Green ();
+	if (m < pColor->Blue ())
+		m = pColor->Blue ();
 	if (m > 0.0f)
-		*colorP *= l / m;
+		*pColor *= l / m;
 	}
 }
 
@@ -243,46 +243,46 @@ else {
 //------------------------------------------------------------------------------
 
 /*inline*/
-void SetTMapColor (tUVL *uvlList, int32_t i, CBitmap *bmP, int32_t bResetColor, CFloatVector* colorP)
+void SetTMapColor (tUVL *uvlList, int32_t i, CBitmap *pBm, int32_t bResetColor, CFloatVector* pColor)
 {
-	float l = (bmP->Flags () & BM_FLAG_NO_LIGHTING) ? 1.0f : X2F (uvlList->l);
+	float l = (pBm->Flags () & BM_FLAG_NO_LIGHTING) ? 1.0f : X2F (uvlList->l);
 	float s = 1.0f;
 
 l *= gameData.render.fBrightness;
 if (ogl.m_states.bScaleLight)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
-	if (!colorP)
+	if (!pColor)
 		OglColor4sf (l, l, l, s);
 	else {
-		colorP->Red () =
-		colorP->Green () =
-		colorP->Blue () = l;
-		colorP->Alpha () = s;
+		pColor->Red () =
+		pColor->Green () =
+		pColor->Blue () = l;
+		pColor->Alpha () = s;
 		}
 	}
-else if (colorP) {
+else if (pColor) {
 	if (tMapColor.index) {
 		ScaleColor (&tMapColor, l);
-		colorP->Assign (tMapColor);
-		*colorP *= gameData.render.fBrightness;
+		pColor->Assign (tMapColor);
+		*pColor *= gameData.render.fBrightness;
 		if (l >= 0)
 			tMapColor.Set (1.0f, 1.0f, 1.0f);
 		}
 	else if (i >= (int32_t) (sizeofa (vertColors)))
 		return;
 	else if (vertColors [i].index) {
-			CFaceColor* vertColorP = vertColors + i;
+			CFaceColor* pVertexColor = vertColors + i;
 
-		colorP->Assign (vertColors [i]);
-		*colorP *= gameData.render.fBrightness;
+		pColor->Assign (vertColors [i]);
+		*pColor *= gameData.render.fBrightness;
 		if (bResetColor)
-			vertColorP->Set (1.0f, 1.0f, 1.0f);
+			pVertexColor->Set (1.0f, 1.0f, 1.0f);
 		}
 	else {
-		colorP->Set (1.0f, 1.0f, 1.0f);
+		pColor->Set (1.0f, 1.0f, 1.0f);
 		}
-	colorP->Alpha () = s;
+	pColor->Alpha () = s;
 	}
 else {
 	if (tMapColor.index) {
@@ -294,12 +294,12 @@ else {
 	else if (i >= (int32_t) (sizeofa (vertColors)))
 		return;
 	else if (vertColors [i].index) {
-			CFaceColor* vertColorP = vertColors + i;
+			CFaceColor* pVertexColor = vertColors + i;
 
-		OglColor4sf (vertColorP->Red (), vertColorP->Green (), vertColorP->Blue (), s);
+		OglColor4sf (pVertexColor->Red (), pVertexColor->Green (), pVertexColor->Blue (), s);
 		if (bResetColor) {
-			vertColorP->Set (1.0f, 1.0f, 1.0f);
-			vertColorP->index = 0;
+			pVertexColor->Set (1.0f, 1.0f, 1.0f);
+			pVertexColor->index = 0;
 			}
 		}
 	else {
@@ -331,11 +331,11 @@ return i * i;
 
 #if CHECK_LIGHT_VERT
 
-static inline int32_t IsLightVert (int32_t nVertex, CDynLight *lightP)
+static inline int32_t IsLightVert (int32_t nVertex, CDynLight *pLight)
 {
-if ((nVertex >= 0) && lightP->info.faceP) {
-	uint16_t *pv = gameStates.render.bTriangleMesh ? lightP->info.faceP->triIndex : lightP->info.faceP->m_info.index;
-	for (int32_t i = lightP->info.faceP->m_info.nVerts; i; i--, pv++)
+if ((nVertex >= 0) && pLight->info.pFace) {
+	uint16_t *pv = gameStates.render.bTriangleMesh ? pLight->info.pFace->triIndex : pLight->info.pFace->m_info.index;
+	for (int32_t i = pLight->info.pFace->m_info.nVerts; i; i--, pv++)
 		if (*pv == (uint16_t) nVertex)
 			return 1;
 	}
@@ -352,9 +352,9 @@ float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 
 int32_t ComputeVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex, CFloatVector3 *colorSumP, CVertColorData *colorDataP, int32_t nThread)
 {
-	CDynLight*			lightP;
-	CDynLightIndex*	sliP = &lightManager.Index (0, nThread);
-	CActiveDynLight*	activeLightsP = lightManager.Active (nThread) + sliP->nFirst;
+	CDynLight*			pLight;
+	CDynLightIndex*	pLightIndex = &lightManager.Index (0, nThread);
+	CActiveDynLight*	pActiveLights = lightManager.Active (nThread) + pLightIndex->nFirst;
 	CVertColorData		colorData = *colorDataP;
 	int32_t				i, j, nType, nLights, 
 							bSelf, nSelf,
@@ -362,7 +362,7 @@ int32_t ComputeVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex, CF
 							bTransform = (gameStates.render.nState > 0) && !ogl.m_states.bUseTransform;
 	int32_t				bDiffuse, bSpecular = gameStates.render.bSpecularColor && (colorData.fMatShininess > 0.0f);
 	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
-	CFloatVector3		lightDir, lightRayDir, lightPos, vertPos, vReflect;
+	CFloatVector3		lightDir, lightRayDir, pLightos, vertPos, vReflect;
 	CFloatVector3		lightColor, colorSum [2], vertColor;
 	
 #if DBG
@@ -375,21 +375,21 @@ colorSum [0] = *colorSumP;
 colorSum [1].SetZero ();
 vertPos = *transformation.m_info.posf [1].XYZ () - *colorData.vertPosP;
 CFloatVector3::Normalize (vertPos);
-nLights = sliP->nActive;
+nLights = pLightIndex->nActive;
 if (nLights > lightManager.LightCount (0))
 	nLights = lightManager.LightCount (0);
-i = sliP->nLast - sliP->nFirst + 1;
+i = pLightIndex->nLast - pLightIndex->nFirst + 1;
 #if DBG
 if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
 	BRP;
 #endif
 nSelf = 0;
 bSelf = 0;
-for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
+for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 #if 1
-	if (!(lightP = activeLightsP->lightP))
+	if (!(pLight = pActiveLights->pLight))
 #else
-	if (!(lightP = GetActiveRenderLight (activeLightsP, nThread)))
+	if (!(pLight = GetActiveRenderLight (pActiveLights, nThread)))
 #endif
 		continue;
 	nLights--;
@@ -398,34 +398,34 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		BRP;
 #endif
 #if DBG
-	if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (lightP->info.nSide == nDbgSide)))
+	if ((nDbgSeg >= 0) && (pLight->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pLight->info.nSide == nDbgSide)))
 		BRP;
 #	if 0
 	else
 		continue;
 #	endif
 #endif
-	if (!lightP->render.bState)
+	if (!pLight->render.bState)
 		continue;
 #if 0
 	if (i == colorData.nMatLight)
 		continue;
 #endif
-	nType = lightP->render.nType;
+	nType = pLight->render.nType;
 	if (bSkipHeadlight && (nType == 3))
 		continue;
 #if ONLY_HEADLIGHT
 	if (nType != 3)
 		continue;
 #endif
-	if (lightP->info.bVariable && gameData.render.vertColor.bDarkness)
+	if (pLight->info.bVariable && gameData.render.vertColor.bDarkness)
 		continue;
-	memcpy (&lightColor.v.color, &lightP->info.color, sizeof (lightColor.v.color));
+	memcpy (&lightColor.v.color, &pLight->info.color, sizeof (lightColor.v.color));
 	if (lightColor.IsZero ())
 		continue;
 
-	if (!gameStates.render.bHaveLightmaps && (bSelf = lightP->info.bAmbient)) {
-		if ((lightP->Segment () >= 0) && !SEGMENT (lightP->Segment ())->HasVertex ((uint8_t) lightP->Side (), nVertex))
+	if (!gameStates.render.bHaveLightmaps && (bSelf = pLight->info.bAmbient)) {
+		if ((pLight->Segment () >= 0) && !SEGMENT (pLight->Segment ())->HasVertex ((uint8_t) pLight->Side (), nVertex))
 			continue;
 #if DBG
 		if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
@@ -435,21 +435,21 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 
 	if (bTransform) 
-		transformation.Transform (lightDir, *lightP->info.vDirf.XYZ (), 1);
+		transformation.Transform (lightDir, *pLight->info.vDirf.XYZ (), 1);
 	else
-		lightDir = *lightP->info.vDirf.XYZ ();
+		lightDir = *pLight->info.vDirf.XYZ ();
 
-	if (bSelf || (gameStates.render.bBuildLightmaps && (lightP->Segment () == nSegment) && (lightP->Side () == nSide))) {
-		lightPos = *colorData.vertPosP;
+	if (bSelf || (gameStates.render.bBuildLightmaps && (pLight->Segment () == nSegment) && (pLight->Side () == nSide))) {
+		pLightos = *colorData.vertPosP;
 		fLightDist = 0.0f;
 		lightRayDir.SetZero ();
 		}
 	else {
 		if (nType < 2)
-			DistToFace (*colorData.vertPosP, lightP->info.nSegment, uint8_t (lightP->info.nSide), &lightPos); // returns 0 if a plane normal through the vertex position goes through the face
+			DistToFace (*colorData.vertPosP, pLight->info.nSegment, uint8_t (pLight->info.nSide), &pLightos); // returns 0 if a plane normal through the vertex position goes through the face
 		else 
-			lightPos = *lightP->render.vPosf [bTransform].XYZ ();
-		lightRayDir = lightPos - *colorData.vertPosP;
+			pLightos = *pLight->render.vPosf [bTransform].XYZ ();
+		lightRayDir = pLightos - *colorData.vertPosP;
 		fLightDist = lightRayDir.Mag ();
 		}
 
@@ -458,11 +458,11 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		BRP;
 #endif
 #if 0 //DBG
-	CFloatVector3 hDir = *lightP->render.vPosf [bTransform].XYZ () - *colorData.vertPosP;
+	CFloatVector3 hDir = *pLight->render.vPosf [bTransform].XYZ () - *colorData.vertPosP;
 	CFloatVector3::Normalize (hDir);
 	float hDot = CFloatVector3::Dot (colorData.vertNorm, hDir);
 
-	if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (lightP->info.nSide == nDbgSide)))
+	if ((nDbgSeg >= 0) && (pLight->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pLight->info.nSide == nDbgSide)))
 		BRP;
 #endif
 
@@ -474,7 +474,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 	else {
 		lightRayDir /= fLightDist; // normalize
-		if ((bDiffuse = lightP->info.bDiffuse [nThread])) {
+		if ((bDiffuse = pLight->info.bDiffuse [nThread])) {
 			if (colorData.vertNorm.IsZero ())
 				NdotL = 1.0f;
 			else {
@@ -484,7 +484,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 					// for rectangular light sources, using the light source's closest point to the light receiving point
 					// can yield a incident angle too low if the point lies in an adjacent face. In that case use the angle
 					// from the light source's center if it is better
-					CFloatVector3 d = *lightP->render.vPosf [bTransform].XYZ () - *colorData.vertPosP;
+					CFloatVector3 d = *pLight->render.vPosf [bTransform].XYZ () - *colorData.vertPosP;
 					CFloatVector3::Normalize (d);
 					float dotCenter = CFloatVector3::Dot (colorData.vertNorm, d);
 					float dotNearest = CFloatVector3::Dot (colorData.vertNorm, lightRayDir);
@@ -503,14 +503,14 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			}
 		else {
 			NdotL = 1.0f;
-			fLightDist = X2F (lightP->render.xDistance [nThread]);
+			fLightDist = X2F (pLight->render.xDistance [nThread]);
 			fLightAngle = CFloatVector3::Dot (lightRayDir, lightDir);
 			fLightAngle = (fLightAngle < 0.0f) ? 1.0f : 1.0f - fLightAngle; 
 			}
 		}
 
 #if DBG
-	if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (lightP->info.nSide == nDbgSide)))
+	if ((nDbgSeg >= 0) && (pLight->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pLight->info.nSide == nDbgSide)))
 		BRP;
 #endif
 
@@ -518,7 +518,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if	(fLightDist <= 0.0f) {
 		NdotL = 1.0f;
 		fLightDist = 0.0f;
-		fAttenuation = 1.0f / lightP->info.fBrightness;
+		fAttenuation = 1.0f / pLight->info.fBrightness;
 		}
 	else {	//make it decay faster
 		float decay = Min (fLightAngle, NdotL);
@@ -527,7 +527,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			fLightDist /= decay * decay;
 			}
 		fAttenuation = 1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist;
-		fAttenuation /= lightP->info.fBrightness;
+		fAttenuation /= pLight->info.fBrightness;
 		}
 
 	vertColor = *gameData.render.vertColor.matAmbient.XYZ ();
@@ -536,17 +536,17 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		vertColor *= fLightAngle /** fLightAngle*/;  // may use quadratic dampening to emphasize attenuation due to point being behind light source
 		}
 	else {
-		if (lightP->info.bSpot) {
+		if (pLight->info.bSpot) {
 			if (NdotL <= 0.0f)
 				continue;
 			CFloatVector3::Normalize (lightDir);
 			lightRayDir.Neg ();
 			spotEffect = CFloatVector3::Dot (lightDir, lightRayDir);
 
-			if (spotEffect <= lightP->info.fSpotAngle)
+			if (spotEffect <= pLight->info.fSpotAngle)
 				continue;
-			if (lightP->info.fSpotExponent)
-				spotEffect = (float) pow (spotEffect, lightP->info.fSpotExponent);
+			if (pLight->info.fSpotExponent)
+				spotEffect = (float) pow (spotEffect, pLight->info.fSpotExponent);
 			fAttenuation /= spotEffect * ogl.m_states.fLightRange;
 			vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
 			}
@@ -568,7 +568,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			}
 #if 1
 		if (bSpecular && (NdotL > 0.0f) && (fLightDist > 0.0f)) {
-			if (!lightP->info.bSpot)	//need direction from light to vertex now
+			if (!pLight->info.bSpot)	//need direction from light to vertex now
 				lightRayDir.Neg ();
 			vReflect = CFloatVector3::Reflect (lightRayDir, colorData.vertNorm);
 			//CFloatVector3::Normalize (vReflect);
@@ -685,13 +685,13 @@ extern int32_t nDbgVertex;
 
 void GetVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex,
 						   CFloatVector3* vVertNormP, CFloatVector3* vVertPosP, 
-						   CFaceColor* vertColorP, CFaceColor* baseColorP,
+						   CFaceColor* pVertexColor, CFaceColor* baseColorP,
 						   float fScale, int32_t bSetColor, int32_t nThread)
 {
 PROF_START
 	CFloatVector3	colorSum = CFloatVector3::Create (0.0f, 0.0f, 0.0f);
 	CFloatVector3	vertPos;
-	CFaceColor*		colorP = NULL;
+	CFaceColor*		pColor = NULL;
 	int32_t				bVertexLights;
 	CVertColorData	colorData;
 
@@ -714,20 +714,20 @@ if (fScale > 1)
 	fScale = 1;
 #if 1//!DBG //cache light values per frame
 if (!(gameStates.render.nState || colorData.bExclusive || colorData.bMatEmissive) && (nVertex >= 0)) {
-	colorP = gameData.render.color.vertices + nVertex;
-	if (colorP->index == gameStates.render.nFrameFlipFlop + 1) {
-		if (vertColorP)
+	pColor = gameData.render.color.vertices + nVertex;
+	if (pColor->index == gameStates.render.nFrameFlipFlop + 1) {
+		if (pVertexColor)
 #pragma omp critical
 			{
-			vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
-			vertColorP->Assign (*colorP);
-			*vertColorP *= fScale;
-			vertColorP->Alpha () = 1;
+			pVertexColor->index = gameStates.render.nFrameFlipFlop + 1;
+			pVertexColor->Assign (*pColor);
+			*pVertexColor *= fScale;
+			pVertexColor->Alpha () = 1;
 			}
 		if (bSetColor > 0)
-			OglColor4sf (colorP->Red () * fScale, colorP->Green () * fScale, colorP->Blue () * fScale, 1.0);
+			OglColor4sf (pColor->Red () * fScale, pColor->Green () * fScale, pColor->Blue () * fScale, 1.0);
 		else if (bSetColor < 0) {
-			*colorP *= gameData.render.fBrightness;
+			*pColor *= gameData.render.fBrightness;
 			}
 #if DBG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex))
@@ -752,7 +752,7 @@ else {
 		CFloatVector3::Normalize (colorData.vertNorm);
 		}
 	}
-if ((bVertexLights = !(gameStates.render.nState || vertColorP))) {
+if ((bVertexLights = !(gameStates.render.nState || pVertexColor))) {
 	vertPos.Assign (gameData.segData.vertices [nVertex]);
 	vVertPosP = &vertPos;
 	lightManager.SetNearestToVertex (nSegment, nSide, nVertex, NULL, 1, 0, 1, nThread);
@@ -803,19 +803,19 @@ else {
 if (bSetColor)
 	OglColor4sf (colorSum.Red () * fScale, colorSum.Green () * fScale, colorSum.Blue () * fScale, 1.0);
 
-if (!colorData.bMatEmissive && colorP) 
+if (!colorData.bMatEmissive && pColor) 
 #pragma omp critical
 	{
-	colorP->Assign (colorSum);
-	colorP->index = gameStates.render.nFrameFlipFlop + 1;
+	pColor->Assign (colorSum);
+	pColor->index = gameStates.render.nFrameFlipFlop + 1;
 	}
-if (vertColorP) 
+if (pVertexColor) 
 #pragma omp critical
 	{
 	colorSum *= fScale;
-	vertColorP->Assign (colorSum);
-	vertColorP->Alpha () = 1;
-	vertColorP->index = gameStates.render.nFrameFlipFlop + 1;
+	pVertexColor->Assign (colorSum);
+	pVertexColor->Alpha () = 1;
+	pVertexColor->index = gameStates.render.nFrameFlipFlop + 1;
 	}
 
 #if DBG

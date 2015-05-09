@@ -225,7 +225,7 @@ return packet;
 void CNetworkPacketQueue::Free (CNetworkPacket* packet, bool bLock)
 {
 Lock (bLock, __FUNCTION__);
-packet->m_nextPacket = m_packets [2];
+packet->m_pNextacket = m_packets [2];
 m_packets [2] = packet;
 --m_nPackets;
 packet->Reset ();
@@ -333,13 +333,13 @@ if (Tail ()) { // list tail
 		return Tail ();
 		}
 #endif
-	Tail ()->m_nextPacket = packet;
+	Tail ()->m_pNextacket = packet;
 	}
 else 
 	SetHead (packet); // list head
 SetTail (packet);
 Tail ()->SetTime (SDL_GetTicks ());
-Tail ()->m_nextPacket = NULL;
+Tail ()->m_pNextacket = NULL;
 UpdateClientList ();
 ++m_nTotal;
 Unlock (bLock, __FUNCTION__);

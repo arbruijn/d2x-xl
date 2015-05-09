@@ -88,7 +88,7 @@ void BMReadAll (CFile& cf, bool bDefault = true);
 void BMReadWeaponInfoD1 (CFile& cf);
 void BMReadGameDataD1 (CFile&  cf);
 void RestoreDefaultModels (void);
-int32_t ComputeAvgPixel (CBitmap *bmP);
+int32_t ComputeAvgPixel (CBitmap *pBm);
 
 void LoadTextureBrightness (const char *pszLevel, int32_t *brightnessP);
 int32_t LoadExitModels (void);

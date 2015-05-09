@@ -58,7 +58,7 @@ void CObject::Wiggle (void)
 {
 	fix		xWiggle;
 	int32_t	nParent;
-	CObject	*parentP;
+	CObject	*pParent;
 
 if (gameStates.render.nShadowPass == 2)
 	return;
@@ -71,17 +71,17 @@ if ((Index () == LOCALPLAYER.nObject) && automap.Active ())
 if (Appearing (false))
 	return;
 nParent = gameData.objData.parentObjs [Index ()];
-parentP = (nParent < 0) ? NULL : OBJECT (nParent);
+pParent = (nParent < 0) ? NULL : OBJECT (nParent);
 FixFastSinCos (fix (gameData.time.xGame / gameStates.gameplay.slowmo [1].fSpeed), &xWiggle, NULL);
 xWiggle = 100 * xWiggle / (100 + extraGameInfo [0].nSpeedScale * 25);
 if (gameData.time.xFrame < I2X (1))// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
 	xWiggle = FixMul (xWiggle * 20, gameData.time.xFrame); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
 if (SPECTATOR (this))
 	OBJPOS (this)->vPos += (OBJPOS (this)->mOrient.m.dir.u * FixMul (xWiggle, gameData.pig.ship.player->wiggle)) * (I2X (1) / 20);
-else if ((info.nType == OBJ_PLAYER) || ((info.nId == N_LOCALPLAYER) && OBSERVING) || !parentP)
+else if ((info.nType == OBJ_PLAYER) || ((info.nId == N_LOCALPLAYER) && OBSERVING) || !pParent)
 	mType.physInfo.velocity += info.position.mOrient.m.dir.u * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
 else {
-	mType.physInfo.velocity += parentP->info.position.mOrient.m.dir.u * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
+	mType.physInfo.velocity += pParent->info.position.mOrient.m.dir.u * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
 	info.position.vPos += mType.physInfo.velocity * gameData.time.xFrame;
 	}
 }
@@ -139,9 +139,9 @@ if (info.nId != N_LOCALPLAYER)
 if ((info.nType != OBJ_PLAYER) && ((info.nType != OBJ_GHOST) || !OBSERVING))
 	return;
 
-CObject*	missileObjP = gameData.objData.GetGuidedMissile (N_LOCALPLAYER);
+CObject*	pMissileObj = gameData.objData.GetGuidedMissile (N_LOCALPLAYER);
 
-if (!missileObjP) 
+if (!pMissileObj) 
 	mType.physInfo.rotThrust = CFixVector::Create (controls [0].pitchTime, controls [0].headingTime, controls [0].bankTime);
 else {
 	CAngleVector	vRotAngs;
@@ -155,12 +155,12 @@ else {
 	vRotAngs.v.coord.b = controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude / 16;
 	vRotAngs.v.coord.h = controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
 	mRot = CFixMatrix::Create (vRotAngs);
-	mOrient = missileObjP->info.position.mOrient * mRot;
-	missileObjP->info.position.mOrient = mOrient;
-	speed = WI_speed (missileObjP->info.nId, gameStates.app.nDifficultyLevel);
-	missileObjP->mType.physInfo.velocity = missileObjP->info.position.mOrient.m.dir.f * speed;
+	mOrient = pMissileObj->info.position.mOrient * mRot;
+	pMissileObj->info.position.mOrient = mOrient;
+	speed = WI_speed (pMissileObj->info.nId, gameStates.app.nDifficultyLevel);
+	pMissileObj->mType.physInfo.velocity = pMissileObj->info.position.mOrient.m.dir.f * speed;
 	if(IsMultiGame)
-		MultiSendGuidedInfo (missileObjP, 0);
+		MultiSendGuidedInfo (pMissileObj, 0);
 	}
 
 fix forwardThrustTime = controls [0].forwardThrustTime;

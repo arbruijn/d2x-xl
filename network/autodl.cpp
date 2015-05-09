@@ -232,7 +232,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CDownloadManager::SendRequest (uint8_t pId, uint8_t pIdFn, tClient* clientP)
+int32_t CDownloadManager::SendRequest (uint8_t pId, uint8_t pIdFn, tClient* pClient)
 {
 m_data [0] = pId;
 m_data [1] = pIdFn;
@@ -243,7 +243,7 @@ if (pId == PID_UPLOAD) {
 		networkThread.Send (m_data, 2, networkData.serverAddress.Network (), networkData.serverAddress.Node ());
 	}
 else
-	networkThread.Send (m_data, 2, clientP->addr.Network (), clientP->addr.Node ());
+	networkThread.Send (m_data, 2, pClient->addr.Network (), pClient->addr.Node ());
 return 1;
 }
 
@@ -259,9 +259,9 @@ return SendRequest (PID_UPLOAD, PID_DL_START);
 //------------------------------------------------------------------------------
 // tell the client the game host is ready to send more data
 
-int32_t CDownloadManager::RequestDownload (tClient* clientP)
+int32_t CDownloadManager::RequestDownload (tClient* pClient)
 {
-return SendRequest (PID_DOWNLOAD, PID_DL_START, clientP);
+return SendRequest (PID_DOWNLOAD, PID_DL_START, pClient);
 }
 
 //------------------------------------------------------------------------------

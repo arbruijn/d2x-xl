@@ -46,12 +46,12 @@ void CLightClusterManager::Reset (void)
 if (!m_bUse)
 	return;
 
-	CObject*	objP;
+	CObject*	pObj;
 
-FORALL_LIGHT_OBJS (objP)
-	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
-		objP->UpdateLife (0);
-		memset (&objP->cType.lightInfo, 0, sizeof (objP->cType.lightInfo));
+FORALL_LIGHT_OBJS (pObj)
+	if ((pObj->info.nType == OBJ_LIGHT) && (pObj->info.nId == CLUSTER_LIGHT_ID)) {
+		pObj->UpdateLife (0);
+		memset (&pObj->cType.lightInfo, 0, sizeof (pObj->cType.lightInfo));
 		}
 }
 
@@ -62,39 +62,39 @@ void CLightClusterManager::Set (void)
 if (!m_bUse)
 	return;
 
-	CObject	*objP;
+	CObject	*pObj;
 	int32_t		h, i;
 
-FORALL_LIGHT_OBJS (objP) {
-	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
-		i = objP->Index ();
+FORALL_LIGHT_OBJS (pObj) {
+	if ((pObj->info.nType == OBJ_LIGHT) && (pObj->info.nId == CLUSTER_LIGHT_ID)) {
+		i = pObj->Index ();
 #if DBG
 		if (i == nDbgObj)
 			BRP;
 #endif
-		if (!(h = objP->cType.lightInfo.nObjects)) {
+		if (!(h = pObj->cType.lightInfo.nObjects)) {
 			lightManager.Delete (-1, -1, i);
-			objP->Die ();
+			pObj->Die ();
 			}
 		else {
 			if (h > 1) {
-				objP->info.position.vPos.v.coord.x /= h;
-				objP->info.position.vPos.v.coord.y /= h;
-				objP->info.position.vPos.v.coord.z /= h;
+				pObj->info.position.vPos.v.coord.x /= h;
+				pObj->info.position.vPos.v.coord.y /= h;
+				pObj->info.position.vPos.v.coord.z /= h;
 #if 1
-				objP->cType.lightInfo.color.Red () /= h;
-				objP->cType.lightInfo.color.Green () /= h;
-				objP->cType.lightInfo.color.Blue () /= h;
-				objP->cType.lightInfo.color.Alpha () /= h;
+				pObj->cType.lightInfo.color.Red () /= h;
+				pObj->cType.lightInfo.color.Green () /= h;
+				pObj->cType.lightInfo.color.Blue () /= h;
+				pObj->cType.lightInfo.color.Alpha () /= h;
 #endif
 				}
-			if (1 || (objP->cType.lightInfo.nSegment < 0)) {
-				int16_t nSegment = FindSegByPos (objP->info.position.vPos, abs (objP->cType.lightInfo.nSegment), 0, 0);
-				objP->cType.lightInfo.nSegment = (nSegment < 0) ? abs (objP->cType.lightInfo.nSegment) : nSegment;
+			if (1 || (pObj->cType.lightInfo.nSegment < 0)) {
+				int16_t nSegment = FindSegByPos (pObj->info.position.vPos, abs (pObj->cType.lightInfo.nSegment), 0, 0);
+				pObj->cType.lightInfo.nSegment = (nSegment < 0) ? abs (pObj->cType.lightInfo.nSegment) : nSegment;
 				}
-			if (objP->info.nSegment != objP->cType.lightInfo.nSegment)
-				OBJECT (i)->RelinkToSeg (objP->cType.lightInfo.nSegment);
-			lightManager.Add (NULL, &objP->cType.lightInfo.color, objP->cType.lightInfo.intensity, -1, -1, i, -1, NULL);
+			if (pObj->info.nSegment != pObj->cType.lightInfo.nSegment)
+				OBJECT (i)->RelinkToSeg (pObj->cType.lightInfo.nSegment);
+			lightManager.Add (NULL, &pObj->cType.lightInfo.color, pObj->cType.lightInfo.intensity, -1, -1, i, -1, NULL);
 			}
 		}
 	}
@@ -102,11 +102,11 @@ FORALL_LIGHT_OBJS (objP) {
 
 //--------------------------------------------------------------------------
 
-int16_t CLightClusterManager::Create (CObject *objP)
+int16_t CLightClusterManager::Create (CObject *pObj)
 {
 if (!m_bUse)
 	return -1;
-int16_t nObject = CreateLight (CLUSTER_LIGHT_ID, objP->info.nSegment, OBJPOS (objP)->vPos);
+int16_t nObject = CreateLight (CLUSTER_LIGHT_ID, pObj->info.nSegment, OBJPOS (pObj)->vPos);
 if (nObject >= 0)
 	OBJECT (nObject)->SetLife (IMMORTAL_TIME);
 return nObject;
@@ -136,35 +136,35 @@ if (0 > nLightObj)
 if (nDbgObj == nLightObj)
 	BRP;
 #endif
-CObject *lightObjP = OBJECT (nLightObj);
-if (!lightObjP || (lightObjP->info.nSignature != m_objects [nObject].nSignature)) {
+CObject *pLightObj = OBJECT (nLightObj);
+if (!pLightObj || (pLightObj->info.nSignature != m_objects [nObject].nSignature)) {
 	m_objects [nObject].nObject = -1;
 	return 0;
 	}
-CObject *objP = OBJECT (nObject);
-if (lightObjP->LifeLeft () < objP->LifeLeft ())
-	lightObjP->UpdateLife (objP->LifeLeft ());
-if (!lightObjP->cType.lightInfo.nObjects++) {
-	lightObjP->Position () = objP->Position ();
-	lightObjP->cType.lightInfo.nSegment = objP->Segment ();
+CObject *pObj = OBJECT (nObject);
+if (pLightObj->LifeLeft () < pObj->LifeLeft ())
+	pLightObj->UpdateLife (pObj->LifeLeft ());
+if (!pLightObj->cType.lightInfo.nObjects++) {
+	pLightObj->Position () = pObj->Position ();
+	pLightObj->cType.lightInfo.nSegment = pObj->Segment ();
 	}
 else {
-	lightObjP->Position () += objP->Position ();
-	if (lightObjP->cType.lightInfo.nSegment != objP->Segment ())
-		lightObjP->cType.lightInfo.nSegment = -lightObjP->Segment ();
+	pLightObj->Position () += pObj->Position ();
+	if (pLightObj->cType.lightInfo.nSegment != pObj->Segment ())
+		pLightObj->cType.lightInfo.nSegment = -pLightObj->Segment ();
 	}
-lightObjP->cType.lightInfo.intensity += xObjIntensity;
+pLightObj->cType.lightInfo.intensity += xObjIntensity;
 if (color) {
-	lightObjP->cType.lightInfo.color.Red () += color->Red ();
-	lightObjP->cType.lightInfo.color.Green () += color->Green ();
-	lightObjP->cType.lightInfo.color.Blue () += color->Blue ();
-	lightObjP->cType.lightInfo.color.Alpha () += color->Alpha ();
+	pLightObj->cType.lightInfo.color.Red () += color->Red ();
+	pLightObj->cType.lightInfo.color.Green () += color->Green ();
+	pLightObj->cType.lightInfo.color.Blue () += color->Blue ();
+	pLightObj->cType.lightInfo.color.Alpha () += color->Alpha ();
 	}
 else {
-	lightObjP->cType.lightInfo.color.Red () += 1;
-	lightObjP->cType.lightInfo.color.Green () += 1;
-	lightObjP->cType.lightInfo.color.Blue () += 1;
-	lightObjP->cType.lightInfo.color.Alpha () += 1;
+	pLightObj->cType.lightInfo.color.Red () += 1;
+	pLightObj->cType.lightInfo.color.Green () += 1;
+	pLightObj->cType.lightInfo.color.Blue () += 1;
+	pLightObj->cType.lightInfo.color.Alpha () += 1;
 	}
 return 1;
 }
@@ -173,12 +173,12 @@ return 1;
 
 void CLightClusterManager::Add (int16_t nObject, int16_t nLightObj)
 {
-CObject* lightP = OBJECT (nLightObj);
+CObject* pLight = OBJECT (nLightObj);
 
-m_objects [nObject].nObject = lightP ? nLightObj : -1;
-if (lightP) {
-	m_objects [nObject].nSignature = lightP->info.nSignature;
-	lightP->cType.lightInfo.nObjects++;
+m_objects [nObject].nObject = pLight ? nLightObj : -1;
+if (pLight) {
+	m_objects [nObject].nSignature = pLight->info.nSignature;
+	pLight->cType.lightInfo.nObjects++;
 	}
 }
 
@@ -188,44 +188,44 @@ if (lightP) {
 // If the function can combine two or more shots, it will create a dedicated light object for them. This light 
 // object receives the signature of the first shot assigned to it for future reference.
 
-void CLightClusterManager::AddForAI (CObject *objP, int16_t nObject, int16_t nShot)
+void CLightClusterManager::AddForAI (CObject *pObj, int16_t nObject, int16_t nShot)
 {
 if (!m_bUse)
 	return;
 
-int16_t nPrevShot = objP->Shots ().nObject;
+int16_t nPrevShot = pObj->Shots ().nObject;
 
 #if DBG
 if (nObject == nDbgObj)
 	nObject = nDbgObj;
 #endif
-CObject *prevShotP = OBJECTEX (nPrevShot, GAMEDATA_ERRLOG_BUFFER);
-if (prevShotP && (prevShotP->info.nSignature == objP->Shots ().nSignature)) { // the previous shot fired by that object is still alive
-	CObject *lightP, *shotP = OBJECT (nShot);
+CObject *pPrevShot = OBJECTEX (nPrevShot, GAMEDATA_ERRLOG_BUFFER);
+if (pPrevShot && (pPrevShot->info.nSignature == pObj->Shots ().nSignature)) { // the previous shot fired by that object is still alive
+	CObject *pLight, *pShot = OBJECT (nShot);
 	int16_t nLight = m_objects [nPrevShot].nObject; // get that shot's light object
 	if (nLight < 0)
-		lightP = prevShotP;
+		pLight = pPrevShot;
 	else {
-		lightP = OBJECT (nLight);
-		if (!lightP || (lightP->info.nSignature != m_objects [nPrevShot].nSignature)) {
-			lightP = prevShotP;
+		pLight = OBJECT (nLight);
+		if (!pLight || (pLight->info.nSignature != m_objects [nPrevShot].nSignature)) {
+			pLight = pPrevShot;
 			nLight = -1;
 			}
 		}
-	if (CFixVector::Dist (shotP->info.position.vPos, lightP->info.position.vPos) < I2X (15)) {
+	if (CFixVector::Dist (pShot->info.position.vPos, pLight->info.position.vPos) < I2X (15)) {
 		if (nLight >= 0) {
 			m_objects [nShot].nObject = nLight;
-			lightP->cType.lightInfo.nObjects++;
+			pLight->cType.lightInfo.nObjects++;
 			}
 		else {
-			nLight = Create (prevShotP);
+			nLight = Create (pPrevShot);
 			m_objects [nShot].nObject =
 			m_objects [nPrevShot].nObject = nLight;
 			if (nLight >= 0) {
-				lightP = OBJECT (nLight);
+				pLight = OBJECT (nLight);
 				m_objects [nShot].nSignature =
-				m_objects [nPrevShot].nSignature = lightP->info.nSignature;
-				lightP->cType.lightInfo.nObjects = 2;
+				m_objects [nPrevShot].nSignature = pLight->info.nSignature;
+				pLight->cType.lightInfo.nObjects = 2;
 				}
 			}
 		}

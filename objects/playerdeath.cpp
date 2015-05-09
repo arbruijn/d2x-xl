@@ -75,15 +75,15 @@ int16_t	nKilledObjNum = -1;
 //------------------------------------------------------------------------------
 
 //	Camera is less than size of player away from
-void SetCameraPos (CFixVector *vCameraPos, CObject *objP)
+void SetCameraPos (CFixVector *vCameraPos, CObject *pObj)
 {
-	CFixVector	vPlayerCameraOffs = *vCameraPos - objP->info.position.vPos;
+	CFixVector	vPlayerCameraOffs = *vCameraPos - pObj->info.position.vPos;
 	int32_t			count = 0;
 	fix			xCameraPlayerDist;
 	fix			xFarScale;
 
 xCameraPlayerDist = vPlayerCameraOffs.Mag ();
-if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
+if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*pObj->info.xSize) {
 	//	Camera is too close to player CObject, so move it away.
 	CHitResult		hitResult;
 	CFixVector	local_p1;
@@ -99,11 +99,11 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 		CFixVector::Normalize (vPlayerCameraOffs);
 		vPlayerCameraOffs *= xCameraToPlayerDistGoal;
 
-		closer_p1 = objP->info.position.vPos + vPlayerCameraOffs;	//	This is the actual point we want to put the camera at.
+		closer_p1 = pObj->info.position.vPos + vPlayerCameraOffs;	//	This is the actual point we want to put the camera at.
 		vPlayerCameraOffs *= xFarScale;				//	...but find a point 50% further away...
-		local_p1 = objP->info.position.vPos + vPlayerCameraOffs;		//	...so we won't have to do as many cuts.
+		local_p1 = pObj->info.position.vPos + vPlayerCameraOffs;		//	...so we won't have to do as many cuts.
 
-		CHitQuery hitQuery (0, &objP->info.position.vPos, &local_p1, objP->info.nSegment, objP->Index ());
+		CHitQuery hitQuery (0, &pObj->info.position.vPos, &local_p1, pObj->info.nSegment, pObj->Index ());
 
 		FindHitpoint (hitQuery, hitResult);
 		if (hitResult.nType == HIT_NONE)
@@ -131,12 +131,12 @@ if (gameData.objData.deadPlayerCamera) {
 CGenericCockpit::Rewind ();
 gameStates.app.bPlayerIsDead = 0;
 LOCALPLAYER.m_bExploded = 0;
-gameData.objData.viewerP = viewerSaveP;
-gameData.objData.consoleP->SetType (OBJ_PLAYER);
-gameData.objData.consoleP->info.nFlags = nPlayerFlagsSave;
+gameData.objData.pViewer = viewerSaveP;
+gameData.objData.pConsole->SetType (OBJ_PLAYER);
+gameData.objData.pConsole->info.nFlags = nPlayerFlagsSave;
 Assert ((nControlTypeSave == CT_FLYING) || (nControlTypeSave == CT_SLEW));
-gameData.objData.consoleP->info.controlType = nControlTypeSave;
-gameData.objData.consoleP->info.renderType = nRenderTypeSave;
+gameData.objData.pConsole->info.controlType = nControlTypeSave;
+gameData.objData.pConsole->info.renderType = nRenderTypeSave;
 LOCALPLAYER.flags &= ~PLAYER_FLAGS_INVULNERABLE;
 gameStates.app.bPlayerEggsDropped = 0;
 }
@@ -165,15 +165,15 @@ if (!LOCALPLAYER.m_bExploded) {
 		}
 	if (IsMultiGame)
 		gameStates.app.SRand ();
-	DropPlayerEggs (gameData.objData.consoleP);
+	DropPlayerEggs (gameData.objData.pConsole);
 	if (IsMultiGame)
 		MultiSendPlayerExplode (MULTI_PLAYER_EXPLODE);
-	gameData.objData.consoleP->ExplodeSplashDamagePlayer ();
+	gameData.objData.pConsole->ExplodeSplashDamagePlayer ();
 	//is this next line needed, given the splash damage call above?
-	gameData.objData.consoleP->Explode (0);
-	gameData.objData.consoleP->info.nFlags &= ~OF_SHOULD_BE_DEAD;	//don't really kill player
-	gameData.objData.consoleP->info.renderType = RT_NONE;				//..just make him disappear
-	gameData.objData.consoleP->SetType (OBJ_GHOST);						//..and kill intersections
+	gameData.objData.pConsole->Explode (0);
+	gameData.objData.pConsole->info.nFlags &= ~OF_SHOULD_BE_DEAD;	//don't really kill player
+	gameData.objData.pConsole->info.renderType = RT_NONE;				//..just make him disappear
+	gameData.objData.pConsole->SetType (OBJ_GHOST);						//..and kill intersections
 	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 	}
 }
@@ -190,19 +190,19 @@ if (gameStates.app.bPlayerIsDead) {
 
 	//	If unable to create camera at time of death, create now.
 	if (!gameData.objData.deadPlayerCamera) {
-		CObject *playerP = OBJECT (LOCALPLAYER.nObject);
-		int32_t nObject = CreateCamera (playerP);
+		CObject *pPlayer = OBJECT (LOCALPLAYER.nObject);
+		int32_t nObject = CreateCamera (pPlayer);
 		if (nObject != -1)
-			gameData.objData.viewerP = gameData.objData.deadPlayerCamera = OBJECT (nObject);
+			gameData.objData.pViewer = gameData.objData.deadPlayerCamera = OBJECT (nObject);
 		else
 			Int3 ();
 		}
 	h = DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead;
 	h = Max (0, h);
-	gameData.objData.consoleP->mType.physInfo.rotVel = CFixVector::Create (h / 4, h / 2, h / 3);
-	xCameraToPlayerDistGoal = Min (xTimeDead * 8, I2X (20)) + gameData.objData.consoleP->info.xSize;
-	SetCameraPos (&gameData.objData.deadPlayerCamera->info.position.vPos, gameData.objData.consoleP);
-	fVec = gameData.objData.consoleP->info.position.vPos - gameData.objData.deadPlayerCamera->info.position.vPos;
+	gameData.objData.pConsole->mType.physInfo.rotVel = CFixVector::Create (h / 4, h / 2, h / 3);
+	xCameraToPlayerDistGoal = Min (xTimeDead * 8, I2X (20)) + gameData.objData.pConsole->info.xSize;
+	SetCameraPos (&gameData.objData.deadPlayerCamera->info.position.vPos, gameData.objData.pConsole);
+	fVec = gameData.objData.pConsole->info.position.vPos - gameData.objData.deadPlayerCamera->info.position.vPos;
 	gameData.objData.deadPlayerCamera->info.position.mOrient = CFixMatrix::CreateF (fVec);
 
 	if (xTimeDead > DEATH_SEQUENCE_EXPLODE_TIME) {
@@ -228,7 +228,7 @@ if (gameStates.app.bPlayerIsDead) {
 		if (RandShort () < gameData.time.xFrame * 4) {
 			if (IsMultiGame)
 				MultiSendCreateExplosion (N_LOCALPLAYER);
-			CreateSmallFireballOnObject (gameData.objData.consoleP, I2X (1), 1);
+			CreateSmallFireballOnObject (gameData.objData.pConsole, I2X (1), 1);
 			}
 		}
 	if (gameStates.app.bDeathSequenceAborted) {
@@ -240,9 +240,9 @@ if (gameStates.app.bPlayerIsDead) {
 
 //	------------------------------------------------------------------------
 
-void StartPlayerDeathSequence (CObject* playerObjP)
+void StartPlayerDeathSequence (CObject* pPlayerObj)
 {
-gameData.objData.speedBoost [OBJ_IDX (gameData.objData.consoleP)].bBoosted = 0;
+gameData.objData.speedBoost [OBJ_IDX (gameData.objData.pConsole)].bBoosted = 0;
 if (gameStates.app.bPlayerIsDead)
 	return;
 if (gameData.objData.deadPlayerCamera) {
@@ -254,7 +254,7 @@ StopConquerWarning ();
 //Assert (gameData.objData.deadPlayerCamera == NULL);
 ResetRearView ();
 nKilledInFrame = gameData.app.nFrameCount;
-nKilledObjNum = OBJ_IDX (playerObjP);
+nKilledObjNum = OBJ_IDX (pPlayerObj);
 gameStates.app.bDeathSequenceAborted = 0;
 if (!IsMultiGame)
 	HUDClearMessages ();
@@ -270,21 +270,21 @@ else {
 	}
 paletteManager.SetRedEffect (40);
 gameStates.app.bPlayerIsDead = 1;
-if (playerObjP->PlayerNumber () == N_LOCALPLAYER)
+if (pPlayerObj->PlayerNumber () == N_LOCALPLAYER)
 	LOCALPLAYER.SetShield (-1);
 #ifdef FORCE_FEEDBACK
    if (TactileStick)
 	Buffeting (70);
 #endif
 //LOCALPLAYER.flags &= ~ (PLAYER_FLAGS_AFTERBURNER);
-playerObjP->mType.physInfo.rotThrust.SetZero ();
-playerObjP->mType.physInfo.thrust.SetZero ();
-playerObjP->ResetDamage ();
+pPlayerObj->mType.physInfo.rotThrust.SetZero ();
+pPlayerObj->mType.physInfo.thrust.SetZero ();
+pPlayerObj->ResetDamage ();
 gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
-int32_t nObject = CreateCamera (playerObjP);
-viewerSaveP = gameData.objData.viewerP;
+int32_t nObject = CreateCamera (pPlayerObj);
+viewerSaveP = gameData.objData.pViewer;
 if (nObject != -1)
-	gameData.objData.viewerP = gameData.objData.deadPlayerCamera = OBJECT (nObject);
+	gameData.objData.pViewer = gameData.objData.deadPlayerCamera = OBJECT (nObject);
 else {
 	Int3 ();
 	gameData.objData.deadPlayerCamera = NULL;
@@ -293,14 +293,14 @@ CGenericCockpit::Save (true);
 cockpit->Activate (CM_LETTERBOX);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLetterbox ();
-nPlayerFlagsSave = playerObjP->info.nFlags;
-nControlTypeSave = playerObjP->info.controlType;
-nRenderTypeSave = playerObjP->info.renderType;
-playerObjP->info.nFlags &= ~OF_SHOULD_BE_DEAD;
+nPlayerFlagsSave = pPlayerObj->info.nFlags;
+nControlTypeSave = pPlayerObj->info.controlType;
+nRenderTypeSave = pPlayerObj->info.renderType;
+pPlayerObj->info.nFlags &= ~OF_SHOULD_BE_DEAD;
 //	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-playerObjP->info.controlType = CT_NONE;
+pPlayerObj->info.controlType = CT_NONE;
 if (!gameStates.entropy.bExitSequence) {
-	playerObjP->SetShield (I2X (1000));
+	pPlayerObj->SetShield (I2X (1000));
 	}
 paletteManager.SetEffect (0, 0, 0);
 }

@@ -41,9 +41,9 @@ int32_t slew_stop(void);
 
 // -------------------------------------------------------------------
 //say start slewing with this CObject
-void slew_init(CObject *objP)
+void slew_init(CObject *pObj)
 {
-	slewObjP = objP;
+	slewObjP = pObj;
 
 	slewObjP->info.controlType = CT_SLEW;
 	slewObjP->info.movementType = MT_NONE;
@@ -75,7 +75,7 @@ slewObjP->info.position.mOrient.m.dir.f.v.coord.x =
 slewObjP->info.position.mOrient.m.dir.f.v.coord.y = 0;
 }
 
-int32_t do_slew_movement(CObject *objP, int32_t check_keys, int32_t check_joy )
+int32_t do_slew_movement(CObject *pObj, int32_t check_keys, int32_t check_joy )
 {
 	int32_t moved = 0;
 	CFixVector svel, movement;				//scaled velocity (per this frame)
@@ -89,11 +89,11 @@ int32_t do_slew_movement(CObject *objP, int32_t check_keys, int32_t check_joy )
 	if (check_keys) {
 		if (gameStates.app.nFunctionMode == FMODE_EDITOR) {
 			if (FindArg ("-jasen"))
-				objP->mType.physInfo.velocity.v.coord.x += VEL_SPEED * (KeyDownTime(KEY_PAD3) - KeyDownTime(KEY_PAD1));
+				pObj->mType.physInfo.velocity.v.coord.x += VEL_SPEED * (KeyDownTime(KEY_PAD3) - KeyDownTime(KEY_PAD1));
 			else
-				objP->mType.physInfo.velocity.v.coord.x += VEL_SPEED * (KeyDownTime(KEY_PAD9) - KeyDownTime(KEY_PAD7));
-			objP->mType.physInfo.velocity.v.coord.y += VEL_SPEED * (KeyDownTime(KEY_PADMINUS) - KeyDownTime(KEY_PADPLUS));
-			objP->mType.physInfo.velocity.v.coord.z += VEL_SPEED * (KeyDownTime(KEY_PAD8) - KeyDownTime(KEY_PAD2));
+				pObj->mType.physInfo.velocity.v.coord.x += VEL_SPEED * (KeyDownTime(KEY_PAD9) - KeyDownTime(KEY_PAD7));
+			pObj->mType.physInfo.velocity.v.coord.y += VEL_SPEED * (KeyDownTime(KEY_PADMINUS) - KeyDownTime(KEY_PADPLUS));
+			pObj->mType.physInfo.velocity.v.coord.z += VEL_SPEED * (KeyDownTime(KEY_PAD8) - KeyDownTime(KEY_PAD2));
 
 			rotang.v.coord.p = (KeyDownTime(KEY_LBRACKET) - KeyDownTime(KEY_RBRACKET))/ROT_SPEED ;
 			if (FindArg ("-jasen"))
@@ -103,9 +103,9 @@ int32_t do_slew_movement(CObject *objP, int32_t check_keys, int32_t check_joy )
 			rotang.v.coord.h  = (KeyDownTime(KEY_PAD6) - KeyDownTime(KEY_PAD4))/ROT_SPEED;
 		}
 		else {
-			objP->mType.physInfo.velocity.v.coord.x += VEL_SPEED * controls [0].sidewaysThrustTime;
-			objP->mType.physInfo.velocity.v.coord.y += VEL_SPEED * controls [0].verticalThrustTime;
-			objP->mType.physInfo.velocity.v.coord.z += VEL_SPEED * controls [0].forwardThrustTime;
+			pObj->mType.physInfo.velocity.v.coord.x += VEL_SPEED * controls [0].sidewaysThrustTime;
+			pObj->mType.physInfo.velocity.v.coord.y += VEL_SPEED * controls [0].verticalThrustTime;
+			pObj->mType.physInfo.velocity.v.coord.z += VEL_SPEED * controls [0].forwardThrustTime;
 
 			rotang.v.coord.p = controls [0].pitchTime/ROT_SPEED ;
 			rotang.v.coord.b  = controls [0].bankTime/ROT_SPEED;
@@ -133,7 +133,7 @@ int32_t do_slew_movement(CObject *objP, int32_t check_keys, int32_t check_joy )
 			}
 		else {
 			if (joyy_moved) 
-				objP->mType.physInfo.velocity.v.coord.z = -joy_y * 8192;
+				pObj->mType.physInfo.velocity.v.coord.z = -joy_y * 8192;
 			}
 		if (!rotang.v.coord.h)
 			rotang.v.coord.h = (fixang) FixMul(joy_x * 512,gameData.time.xFrame);
@@ -145,23 +145,23 @@ int32_t do_slew_movement(CObject *objP, int32_t check_keys, int32_t check_joy )
 	moved = rotang.v.coord.p | rotang.v.coord.b | rotang.v.coord.h;
 
 	rotmat = CFixMatrix::Create(rotang);
-	new_pm = objP->info.position.mOrient * rotmat;
-	objP->info.position.mOrient = new_pm;
+	new_pm = pObj->info.position.mOrient * rotmat;
+	pObj->info.position.mOrient = new_pm;
 	CFixMatrix::Transpose(new_pm);		//make those columns rows
 
-	moved |= objP->mType.physInfo.velocity.v.coord.x | objP->mType.physInfo.velocity.v.coord.y | objP->mType.physInfo.velocity.v.coord.z;
+	moved |= pObj->mType.physInfo.velocity.v.coord.x | pObj->mType.physInfo.velocity.v.coord.y | pObj->mType.physInfo.velocity.v.coord.z;
 
-	svel = objP->mType.physInfo.velocity;
+	svel = pObj->mType.physInfo.velocity;
 	svel *= gameData.time.xFrame;		//movement in this frame
 	movement = new_pm * svel;
 
-//	objP->info.vLastPos = objP->info.position.vPos;
-	objP->info.position.vPos += movement;
+//	pObj->info.vLastPos = pObj->info.position.vPos;
+	pObj->info.position.vPos += movement;
 
 	moved |= (movement.v.coord.x || movement.v.coord.y || movement.v.coord.z);
 
 	if (moved)
-		UpdateObjectSeg(objP);	//update CSegment id
+		UpdateObjectSeg(pObj);	//update CSegment id
 
 	return moved;
 }

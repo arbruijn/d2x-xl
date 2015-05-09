@@ -30,12 +30,12 @@ int32_t LightingMethod (void);
 
 #if 0
 fix ComputeHeadlight (CFixVector *point, fix xFaceLight);
-fix ComputeHeadlightLightOnObject (CObject *objP);
+fix ComputeHeadlightLightOnObject (CObject *pObj);
 void ToggleHeadlight (void);
-void SetupHeadlight (CDynLight *lightP, CDynLight *renderLightP);
+void SetupHeadlight (CDynLight *pLight, CDynLight *renderLightP);
 void TransformHeadlights (void);
-int32_t AddOglHeadlight (CObject *objP);
-void RemoveOglHeadlight (CObject *objP);
+int32_t AddOglHeadlight (CObject *pObj);
+void RemoveOglHeadlight (CObject *pObj);
 void UpdateOglHeadlight (void);
 #endif
 
@@ -43,6 +43,6 @@ void InitHeadlightShaders (int32_t nLights);
 void SetPlayerHeadlight (int32_t nPlayer, int32_t bOn);
 int32_t PlayerHasHeadlight (int32_t nPlayer);
 int32_t HeadlightIsOn (int32_t nPlayer);
-void DrainHeadlightPower (void);
+void DrainHeadpLightower (void);
 
 #endif //_HEADLIGHT_H 

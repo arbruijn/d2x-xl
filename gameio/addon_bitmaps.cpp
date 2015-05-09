@@ -47,21 +47,21 @@ CAnimation shockwave (const_cast<char*>("shockwave1.tga"), 96, 1);
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CAddonBitmap::Register (CAddonBitmap* bmP)
+void CAddonBitmap::Register (CAddonBitmap* pBm)
 {
 if (!m_list.Buffer ()) {
 	m_list.Create (10);
 	m_list.SetGrowth (10);
 	}
-m_list.Push (bmP);
+m_list.Push (pBm);
 }
 
 //------------------------------------------------------------------------------
 
-void CAddonBitmap::Unregister (CAddonBitmap* bmP)
+void CAddonBitmap::Unregister (CAddonBitmap* pBm)
 {
 if (m_list.Buffer ()) {
-	uint32_t i = m_list.Find (bmP);
+	uint32_t i = m_list.Find (pBm);
 	if (i < m_list.ToS ())
 		m_list.Delete (i);
 	}
@@ -85,7 +85,7 @@ else
 	m_szName [0] = '\0';
 m_bAvailable = 0;
 m_bCartoonize = bCartoonize;
-m_bmP = NULL;
+m_pBm = NULL;
 }
 //------------------------------------------------------------------------------
 
@@ -95,7 +95,7 @@ if (m_bAvailable < 0)
 	return 0;
 if (m_bAvailable > 0) {
 	//ogl.SelectTMU (GL_TEXTURE0);
-	//m_bmP->Bind (1);
+	//m_pBm->Bind (1);
 	return 1;
 	}
 if (pszName)
@@ -113,16 +113,16 @@ if (!m_bAvailable) {
 		sprintf (szFilename, "%sd2x-xl/%s", gameFolders.game.szTextures [0], pszName);
 	CreateAndRead (szFilename);
 	}
-if (!m_bmP)
+if (!m_pBm)
 	m_bAvailable = -1;
 else {
 	m_bAvailable = 1;
 	Register (this);
-	m_bmP->SetCartoonizable (m_bCartoonize);
-	m_bmP->SetFrameCount ();
-	m_bmP->SetTranspType (-1);
-	//m_bmP->Bind (1);
-	m_bmP->Texture ()->Wrap (GL_CLAMP);
+	m_pBm->SetCartoonizable (m_bCartoonize);
+	m_pBm->SetFrameCount ();
+	m_pBm->SetTranspType (-1);
+	//m_pBm->Bind (1);
+	m_pBm->Texture ()->Wrap (GL_CLAMP);
 	}
 return (m_bAvailable > 0);
 }
@@ -131,10 +131,10 @@ return (m_bAvailable > 0);
 
 void CAddonBitmap::Unload (void)
 {
-if (m_bmP) {
+if (m_pBm) {
 	Unregister (this);
-	delete (m_bmP);
-	m_bmP = NULL;
+	delete (m_pBm);
+	m_pBm = NULL;
 	m_bAvailable = 0;
 	}
 }
@@ -143,10 +143,10 @@ if (m_bmP) {
 
 int32_t CAddonBitmap::Bind (int32_t bMipMaps) 
 {
-if (!m_bmP)
+if (!m_pBm)
 	return -1;
 gameStates.render.EnableCartoonStyle ();
-int32_t h = m_bmP->Bind (bMipMaps);
+int32_t h = m_pBm->Bind (bMipMaps);
 gameStates.render.DisableCartoonStyle ();
 return h;
 }
@@ -228,17 +228,17 @@ if (!*bHaveP) {
 	sprintf (szFilename, "%sd2x-xl/%s", gameFolders.mods.szTextures [0], pszName);
 	if (!cf.Exist (szFilename, "", 0))
 		sprintf (szFilename, "%sd2x-xl/%s", gameFolders.game.szTextures [0], pszName);
-	CBitmap* bmP = tga.CreateAndRead (szFilename);
-	if (!bmP)
+	CBitmap* pBm = tga.CreateAndRead (szFilename);
+	if (!pBm)
 		*bHaveP = -1;
 	else {
 		*bHaveP = 1;
-		bmP->SetFrameCount ();
-		bmP->SetTranspType (-1);
+		pBm->SetFrameCount ();
+		pBm->SetTranspType (-1);
 		if (bBind)
-			bmP->Bind (1);
+			pBm->Bind (1);
 		}
-	*bmPP = bmP;
+	*bmPP = pBm;
 	}
 gameStates.render.DisableCartoonStyle ();
 return *bHaveP > 0;

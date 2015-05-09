@@ -410,15 +410,15 @@ gameOpts->menus.altBg.bHave = 0;
 
 bool b = bRegisterBitmaps;
 bRegisterBitmaps = false;
-CBitmap* bmP = CBitmap::Create (0, 0, 0, 1);
+CBitmap* pBm = CBitmap::Create (0, 0, 0, 1);
 bRegisterBitmaps = b;
-if (!bmP)
+if (!pBm)
 	return NULL;
 
 char	szFile [FILENAME_LEN], szFolder [FILENAME_LEN], szExt [FILENAME_LEN];
 char	*pszFile, *pszFolder;
 
-CTGA tga (bmP);
+CTGA tga (pBm);
 
 int32_t bModBg = 0;
 
@@ -450,13 +450,13 @@ if (bModBg == 0) {
 if (!tga.Read (pszFile, pszFolder, 
 				   (gameOpts->menus.altBg.alpha < 0) ? -1 : (int32_t) (gameOpts->menus.altBg.alpha * 255),
 					gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale)) {
-	delete bmP;
+	delete pBm;
 	gameOpts->menus.altBg.bHave = -1;
 	return NULL;
 	}
-bmP->SetName (m_filenames [0] = (bModBg < 0) ? filename : gameOpts->menus.altBg.szName [bModBg]);
+pBm->SetName (m_filenames [0] = (bModBg < 0) ? filename : gameOpts->menus.altBg.szName [bModBg]);
 gameOpts->menus.altBg.bHave = 1;
-return bmP;
+return pBm;
 }
 
 //------------------------------------------------------------------------------
@@ -496,30 +496,30 @@ if (PCXGetDimensions (filename, &width, &height) != PCX_ERROR_NONE) {
 
 bool b = bRegisterBitmaps;
 bRegisterBitmaps = false;
-CBitmap* bmP = CBitmap::Create (0, width, height, 1);
+CBitmap* pBm = CBitmap::Create (0, width, height, 1);
 bRegisterBitmaps = b;
 
-if (!bmP) {
+if (!pBm) {
 	Error ("Not enough memory for menu background\n");
 	return NULL;
 	}
-if (PCXReadBitmap (filename, bmP, bmP->Mode (), 0) != PCX_ERROR_NONE) {
+if (PCXReadBitmap (filename, pBm, pBm->Mode (), 0) != PCX_ERROR_NONE) {
 	Error ("Could not read menu background file <%s>\n", filename);
-	bmP->Destroy ();
+	pBm->Destroy ();
 	return NULL;
 	}
-bmP->SetName (filename);
-bmP->SetTranspType (3);
+pBm->SetName (filename);
+pBm->SetTranspType (3);
 
 int32_t bCartoonize;
 if (gameOptions [0].menus.altBg.bCartoonize)
 	bCartoonize = gameStates.render.SetCartoonStyle (-1);
 gameStates.render.bClampBlur = 1;
-bmP->Bind (0);
+pBm->Bind (0);
 gameStates.render.bClampBlur = 0;
 if (gameOptions [0].menus.altBg.bCartoonize)
 	gameStates.render.SetCartoonStyle (bCartoonize);
-return bmP;
+return pBm;
 }
 
 //------------------------------------------------------------------------------

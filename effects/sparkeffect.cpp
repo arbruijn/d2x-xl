@@ -35,11 +35,11 @@ CSparkManager sparkManager;
 
 void CEnergySpark::Setup (int16_t nSegment, uint8_t nType)
 {
-	CSegment*			segP = SEGMENT (nSegment);
+	CSegment*			pSeg = SEGMENT (nSegment);
 	CFixVector			vOffs;
 	CFloatVector		vRadf;
 
-vRadf.Assign (segP->m_extents [1] - segP->m_extents [0]);
+vRadf.Assign (pSeg->m_extents [1] - pSeg->m_extents [0]);
 vRadf *= 0.5f;
 if (m_tRender)
 	return;
@@ -55,8 +55,8 @@ else {
 	vOffs.v.coord.x = F2X (vRadf.v.coord.x - (2 * RandFloat ()) * vRadf.v.coord.x);
 	vOffs.v.coord.y = F2X (vRadf.v.coord.y - (2 * RandFloat ()) * vRadf.v.coord.y);
 	vOffs.v.coord.z = F2X (vRadf.v.coord.z - (2 * RandFloat ()) * vRadf.v.coord.z);
-	m_vPos = segP->Center () + vOffs;
-	if ((vOffs.Mag () > segP->MinRad ()) && segP->Masks (m_vPos, 0).m_center)
+	m_vPos = pSeg->Center () + vOffs;
+	if ((vOffs.Mag () > pSeg->MinRad ()) && pSeg->Masks (m_vPos, 0).m_center)
 		m_nProb = 1;
 	else {
 		m_xSize = I2X (1) + 4 * RandShort ();
@@ -215,12 +215,12 @@ m_sparks [nObjProducer].Destroy ();
 
 int32_t CSparkManager::BuildSegList (void)
 {
-	CSegment*	segP = SEGMENTS.Buffer ();
+	CSegment*	pSeg = SEGMENTS.Buffer ();
 	int16_t		nSegment;
 
 m_nSegments = 0;
-for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, segP++)
-	if ((segP->m_function == SEGMENT_FUNC_FUELCENTER) || (segP->m_function == SEGMENT_FUNC_REPAIRCENTER))
+for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, pSeg++)
+	if ((pSeg->m_function == SEGMENT_FUNC_FUELCENTER) || (pSeg->m_function == SEGMENT_FUNC_REPAIRCENTER))
 		m_segments [m_nSegments++] = nSegment;
 return m_nSegments;
 }

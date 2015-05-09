@@ -165,7 +165,7 @@ typedef struct tSpeedBoostData {
 class CPhysSimData {
 	public:
 		int16_t				nObject;
-		CObject*				objP;
+		CObject*				pObj;
 		int16_t				nStartSeg;
 		CFixVector			vStartPos;
 		int16_t				nOldSeg;
@@ -219,7 +219,7 @@ int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult, int32_t nThrea
 void FindHitPointUV (fix *u,fix *v,fix *l, CFixVector *pnt,CSegment *seg,int32_t nSide,int32_t facenum);
 
 //Returns true if the CObject is through any walls
-int32_t ObjectIntersectsWall (CObject *objP);
+int32_t ObjectIntersectsWall (CObject *pObj);
 
 int32_t CheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1, int16_t nSegment, int16_t nSide, int16_t iFace, int32_t nv, fix rad);
 
@@ -233,19 +233,19 @@ int32_t CheckLineToLinef (float& t1, float& t2, CFloatVector& p1, CFloatVector& 
 
 float DistToFace (CFloatVector3 vRef, int16_t nSegment, uint8_t nSide, CFloatVector3* vHit = NULL);
 
-fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector& normal, CFixVector *p0, CFixVector *p1, CFixVector *vRef, CObject *objP, fix rad, int16_t& nModel);
+fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector& normal, CFixVector *p0, CFixVector *p1, CFixVector *vRef, CObject *pObj, fix rad, int16_t& nModel);
 
 fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1, int16_t& nModel);
 
-CSegMasks CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, int16_t nSegment, int16_t nSide, CFixVector* p0, CFixVector* p1, CObject *objP);
+CSegMasks CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, int16_t nSegment, int16_t nSide, CFixVector* p0, CFixVector* p1, CObject *pObj);
 
-uint8_t PointIsOutsideFace (CFixVector* refP, CFixVector* vertices, int16_t nVerts);
+uint8_t PointIsOutsideFace (CFixVector* pRef, CFixVector* vertices, int16_t nVerts);
 
-uint8_t PointIsOutsideFace (CFixVector* refP, uint16_t* nVertIndex, int16_t nVerts);
+uint8_t PointIsOutsideFace (CFixVector* pRef, uint16_t* nVertIndex, int16_t nVerts);
 
-uint8_t PointIsOutsideFace (CFloatVector* refP, uint16_t* nVertIndex, int16_t nVerts);
+uint8_t PointIsOutsideFace (CFloatVector* pRef, uint16_t* nVertIndex, int16_t nVerts);
 
-uint32_t PointToFaceRelation (CFixVector* refP, CFixVector *vertList, int32_t nVerts, CFixVector* vNormal);
+uint32_t PointToFaceRelation (CFixVector* pRef, CFixVector *vertList, int32_t nVerts, CFixVector* vNormal);
 
 int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int32_t nDepth, int32_t nThread);
 
@@ -278,8 +278,8 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int32_t UseHitbox (CObject *objP);
-int32_t UseSphere (CObject *objP);
+int32_t UseHitbox (CObject *pObj);
+int32_t UseSphere (CObject *pObj);
 
 //	-----------------------------------------------------------------------------
 

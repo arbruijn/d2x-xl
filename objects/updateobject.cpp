@@ -65,7 +65,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-void StopObjectMovement (CObject *objP)
+void StopObjectMovement (CObject *pObj)
 {
 controls [0].headingTime = 0;
 controls [0].pitchTime = 0;
@@ -73,11 +73,11 @@ controls [0].bankTime = 0;
 controls [0].verticalThrustTime = 0;
 controls [0].sidewaysThrustTime = 0;
 controls [0].forwardThrustTime = 0;
-if (objP) {
-	objP->mType.physInfo.rotThrust.SetZero ();
-	objP->mType.physInfo.thrust.SetZero ();
-	objP->mType.physInfo.velocity.SetZero ();
-	objP->mType.physInfo.rotVel.SetZero ();
+if (pObj) {
+	pObj->mType.physInfo.rotThrust.SetZero ();
+	pObj->mType.physInfo.thrust.SetZero ();
+	pObj->mType.physInfo.velocity.SetZero ();
+	pObj->mType.physInfo.rotVel.SetZero ();
 	}
 }
 
@@ -85,11 +85,11 @@ if (objP) {
 
 void StopPlayerMovement (void)
 {
-if (OBJECTS.Buffer () && !(gameData.objData.speedBoost.Buffer () && gameData.objData.speedBoost [OBJ_IDX (gameData.objData.consoleP)].bBoosted)) {
+if (OBJECTS.Buffer () && !(gameData.objData.speedBoost.Buffer () && gameData.objData.speedBoost [OBJ_IDX (gameData.objData.pConsole)].bBoosted)) {
 	StopObjectMovement (OBJECT (LOCALPLAYER.nObject));
 	memset (&gameData.physics.playerThrust, 0, sizeof (gameData.physics.playerThrust));
 //	gameData.time.SetTime (I2X (1));
-	gameData.objData.speedBoost [OBJ_IDX (gameData.objData.consoleP)].bBoosted = 0;
+	gameData.objData.speedBoost [OBJ_IDX (gameData.objData.pConsole)].bBoosted = 0;
 	}
 }
 
@@ -183,8 +183,8 @@ int32_t CObject::CheckWallPhysics (void)
 
 if (info.nType != OBJ_PLAYER)
 	return 0;
-CSegment* segP = SEGMENT (info.nSegment);
-int32_t sideMask = segP->Masks (info.position.vPos, info.xSize).m_side;
+CSegment* pSeg = SEGMENT (info.nSegment);
+int32_t sideMask = pSeg->Masks (info.position.vPos, info.xSize).m_side;
 if (sideMask) {
 	int16_t		nSide;
 	int32_t		bit;
@@ -230,36 +230,36 @@ return nType;
 void CObject::HandleSegmentFunction (void)
 {
 if ((info.nType == OBJ_PLAYER) && (N_LOCALPLAYER == info.nId)) {
-	CSegment*		segP = SEGMENT (info.nSegment);
-	CPlayerData*	playerP = gameData.multiplayer.players + N_LOCALPLAYER;
+	CSegment*		pSeg = SEGMENT (info.nSegment);
+	CPlayerData*	pPlayer = gameData.multiplayer.players + N_LOCALPLAYER;
 
    if (gameData.app.GameMode (GM_CAPTURE))
-		 segP->CheckForGoal ();
+		 pSeg->CheckForGoal ();
    else if (IsHoardGame)
-		 segP->CheckForHoardGoal ();
+		 pSeg->CheckForHoardGoal ();
 	else if (controls [0].forwardThrustTime || controls [0].verticalThrustTime || controls [0].sidewaysThrustTime) {
 		gameStates.entropy.nTimeLastMoved = -1;
 		if (IsEntropyGame &&
-			 ((segP->m_owner < 0) || (segP->m_owner == GetTeam (N_LOCALPLAYER) + 1))) {
+			 ((pSeg->m_owner < 0) || (pSeg->m_owner == GetTeam (N_LOCALPLAYER) + 1))) {
 			StopConquerWarning ();
 			}
 		}
 	else if (gameStates.entropy.nTimeLastMoved < 0)
 		gameStates.entropy.nTimeLastMoved = 0;
 
-	playerP->UpdateShield (-segP->ShieldDamage (playerP->Shield () + 1));
-	playerP->UpdateEnergy (-segP->EnergyDamage (playerP->energy));
-	if (playerP->Shield () < 0)
+	pPlayer->UpdateShield (-pSeg->ShieldDamage (pPlayer->Shield () + 1));
+	pPlayer->UpdateEnergy (-pSeg->EnergyDamage (pPlayer->energy));
+	if (pPlayer->Shield () < 0)
 		StartPlayerDeathSequence (this);
 	else {
-		segP->ConquerCheck ();
-		//CObject* objP = OBJECT (playerP->nObject);
-		fix energy = segP->Refuel (fix (playerP->InitialEnergy ()) - playerP->Energy ());
+		pSeg->ConquerCheck ();
+		//CObject* pObj = OBJECT (pPlayer->nObject);
+		fix energy = pSeg->Refuel (fix (pPlayer->InitialEnergy ()) - pPlayer->Energy ());
 		if (energy > 0)
-			playerP->UpdateEnergy (energy);
-		fix shield = segP->Repair (fix (playerP->InitialShield ()) - playerP->Shield ());
+			pPlayer->UpdateEnergy (energy);
+		fix shield = pSeg->Repair (fix (pPlayer->InitialShield ()) - pPlayer->Shield ());
 		if (shield > 0) {
-			playerP->UpdateShield (shield);
+			pPlayer->UpdateShield (shield);
 			}
 		}
 	}
@@ -451,9 +451,9 @@ if (IsGuidedMissile (N_LOCALPLAYER)) {
 	if (nPrevSegment != info.nSegment) {
 		int16_t nConnSide = SEGMENT (info.nSegment)->ConnectedSide (SEGMENT (nPrevSegment));
 		if (nConnSide != -1) {
-			CTrigger* trigP = SEGMENT (nPrevSegment)->Trigger (nConnSide);
-			if (trigP && (trigP->m_info.nType == TT_EXIT))
-				gameData.objData.guidedMissile [N_LOCALPLAYER].objP->UpdateLife (0);
+			CTrigger* pTrigger = SEGMENT (nPrevSegment)->Trigger (nConnSide);
+			if (pTrigger && (pTrigger->m_info.nType == TT_EXIT))
+				gameData.objData.guidedMissile [N_LOCALPLAYER].pObj->UpdateLife (0);
 			}
 		}
 	}
@@ -464,7 +464,7 @@ if (IsGuidedMissile (N_LOCALPLAYER)) {
 void CObject::CheckAfterburnerBlobDrop (void)
 {
 if (gameStates.render.bDropAfterburnerBlob) {
-	Assert (this == gameData.objData.consoleP);
+	Assert (this == gameData.objData.pConsole);
 	DropAfterburnerBlobs (this, 2, I2X (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
 	if (IsMultiGame)
 		MultiSendDropBlobs (N_LOCALPLAYER);
@@ -621,15 +621,15 @@ return 1;
 int32_t UpdateAllObjects (void)
 {
 PROF_START
-	CObject*	objP;
+	CObject*	pObj;
 
 if (gameData.objData.nLastObject [0] > gameData.objData.nMaxUsedObjects)
 	FreeObjectSlots (gameData.objData.nMaxUsedObjects);		//	Free all possible CObject slots.
 CleanupObjects ();
 if (gameOpts->gameplay.nAutoLeveling)
-	gameData.objData.consoleP->mType.physInfo.flags |= PF_LEVELLING;
+	gameData.objData.pConsole->mType.physInfo.flags |= PF_LEVELLING;
 else
-	gameData.objData.consoleP->mType.physInfo.flags &= ~PF_LEVELLING;
+	gameData.objData.pConsole->mType.physInfo.flags &= ~PF_LEVELLING;
 gameData.physics.xTime = gameData.time.xFrame;
 gameData.laser.xUpdateTime %= HOMING_MSL_FRAMETIME;
 gameData.laser.xUpdateTime += gameData.time.xFrame;
@@ -640,18 +640,18 @@ UpdatePlayerOrient ();
 gameData.objData.update.Reset ();
 #endif
 ++gameData.objData.nFrameCount;
-FORALL_OBJS (objP) {
+FORALL_OBJS (pObj) {
 #if DBG
-	if (objP->info.nType == OBJ_REACTOR)
+	if (pObj->info.nType == OBJ_REACTOR)
 		BRP;
 #endif
-	if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ()) {
+	if ((pObj->info.nType != OBJ_NONE) && (pObj->info.nType != OBJ_GHOST) && !(pObj->info.nFlags & OF_SHOULD_BE_DEAD) && !pObj->Update ()) {
 		PROF_END(ptObjectStates)
 		return 0;
 		}
 #if DBG
-	if (objP->IsRobot ()) 
-		objP->CheckSpeed ();
+	if (pObj->IsRobot ()) 
+		pObj->CheckSpeed ();
 #endif
 	}
 
@@ -673,9 +673,9 @@ return 1;
 
 //----------------------------------------------------------------------------------------
 
-//	*viewerP is a viewerP, probably a missile.
+//	*pViewer is a pViewer, probably a missile.
 //	wake up all robots that were rendered last frame subject to some constraints.
-void WakeupRenderedObjects (CObject *viewerP, int32_t nWindow)
+void WakeupRenderedObjects (CObject *pViewer, int32_t nWindow)
 {
 //	Make sure that we are processing current data.
 if (gameData.app.nFrameCount != windowRenderedData [nWindow].nFrame) {
@@ -685,20 +685,20 @@ if (gameData.app.nFrameCount != windowRenderedData [nWindow].nFrame) {
 	return;
 	}
 
-gameData.ai.nLastMissileCamera = OBJ_IDX (viewerP);
+gameData.ai.nLastMissileCamera = OBJ_IDX (pViewer);
 int32_t frameFilter = gameData.app.nFrameCount & 3;
 for (int32_t i = windowRenderedData [nWindow].nObjects; i; ) {
 	int32_t nObject = windowRenderedData [nWindow].renderedObjects [--i];
 	if ((nObject & 3) == frameFilter) {
-		CObject* objP = OBJECT (nObject);
-		if (objP->info.nType == OBJ_ROBOT) {
-			if (CFixVector::Dist (viewerP->info.position.vPos, objP->info.position.vPos) < I2X (100)) {
-				tAILocalInfo* ailP = gameData.ai.localInfo + nObject;
-				if (ailP->targetAwarenessType == 0) {
-					objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
-					ailP->targetAwarenessType = WEAPON_ROBOT_COLLISION;
-					ailP->targetAwarenessTime = I2X (3);
-					ailP->nPrevVisibility = 2;
+		CObject* pObj = OBJECT (nObject);
+		if (pObj->info.nType == OBJ_ROBOT) {
+			if (CFixVector::Dist (pViewer->info.position.vPos, pObj->info.position.vPos) < I2X (100)) {
+				tAILocalInfo* pLocalInfo = gameData.ai.localInfo + nObject;
+				if (pLocalInfo->targetAwarenessType == 0) {
+					pObj->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
+					pLocalInfo->targetAwarenessType = WEAPON_ROBOT_COLLISION;
+					pLocalInfo->targetAwarenessTime = I2X (3);
+					pLocalInfo->nPrevVisibility = 2;
 					}
 				}
 			}
@@ -710,32 +710,32 @@ for (int32_t i = windowRenderedData [nWindow].nObjects; i; ) {
 
 void CleanupObjects (void)
 {
-	CObject*		objP, *prevObjP;
+	CObject*		pObj, *pPrevObj;
 	int32_t		nLocalDeadPlayerObj = -1;
 
-for (CObjectIterator iter (objP); objP; objP = prevObjP ? iter.Step () : iter.Start ()) {
-	prevObjP = objP;
-	if (objP->info.nType == OBJ_NONE)
+for (CObjectIterator iter (pObj); pObj; pObj = pPrevObj ? iter.Step () : iter.Start ()) {
+	pPrevObj = pObj;
+	if (pObj->info.nType == OBJ_NONE)
 		continue;
-	if (!(objP->info.nFlags & OF_SHOULD_BE_DEAD))
+	if (!(pObj->info.nFlags & OF_SHOULD_BE_DEAD))
 		continue;
-	if (objP->info.nType == OBJ_PLAYER) {
-		if (objP->info.nId == N_LOCALPLAYER) {
+	if (pObj->info.nType == OBJ_PLAYER) {
+		if (pObj->info.nId == N_LOCALPLAYER) {
 			if (nLocalDeadPlayerObj == -1) {
-				StartPlayerDeathSequence (objP);
-				nLocalDeadPlayerObj = objP->Index ();
+				StartPlayerDeathSequence (pObj);
+				nLocalDeadPlayerObj = pObj->Index ();
 				}
 			}
 		}
 	else {
-		CObject* prevObjP = iter.Back ();
-		if ((objP->info.nType == OBJ_ROBOT) ||
-			 (objP->info.nType == OBJ_DEBRIS) ||	// exploded robot
-			 (objP->info.nType == OBJ_REACTOR) ||
-			 (objP->info.nType == OBJ_POWERUP) ||
-			 (objP->info.nType == OBJ_HOSTAGE))
-			ExecObjTriggers (objP->Index (), 0);
-		ReleaseObject (objP->Index ());
+		CObject* pPrevObj = iter.Back ();
+		if ((pObj->info.nType == OBJ_ROBOT) ||
+			 (pObj->info.nType == OBJ_DEBRIS) ||	// exploded robot
+			 (pObj->info.nType == OBJ_REACTOR) ||
+			 (pObj->info.nType == OBJ_POWERUP) ||
+			 (pObj->info.nType == OBJ_HOSTAGE))
+			ExecObjTriggers (pObj->Index (), 0);
+		ReleaseObject (pObj->Index ());
 		}
 	}
 }

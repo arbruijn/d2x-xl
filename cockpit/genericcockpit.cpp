@@ -146,12 +146,12 @@ if (!m_save.Buffer ())
 
 //	---------------------------------------------------------------------------------------------------------
 //draws a 3d view into one of the cockpit windows.  win is 0 for left,
-//1 for right.  viewerP is CObject.  NULL CObject means give up window
+//1 for right.  pViewer is CObject.  NULL CObject means give up window
 //nUser is one of the WBU_ constants.  If bRearView is set, show a
 //rear view.  If label is non-NULL, print the label at the top of the
 //window.
 
-void CGenericCockpit::RenderWindow (int32_t nWindow, CObject *viewerP, int32_t bRearView, int32_t nUser, const char *pszLabel)
+void CGenericCockpit::RenderWindow (int32_t nWindow, CObject *pViewer, int32_t bRearView, int32_t nUser, const char *pszLabel)
 {
 if (Hide ())
 	return;
@@ -164,7 +164,7 @@ if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFac
 
 	static CCanvas overlapCanv;
 
-	CObject*	viewerSave = gameData.objData.viewerP;
+	CObject*	viewerSave = gameData.objData.pViewer;
 	int32_t	bRearViewSave = gameStates.render.bRearView;
 	int32_t	nWindowSave = gameStates.render.nWindow [0];
 	fix		xStereoSeparation = ogl.StereoSeparation ();
@@ -172,7 +172,7 @@ if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFac
 
 	static int32_t bOverlapDirty [2] = {0, 0};
 
-if (!viewerP) {								//this nUser is done
+if (!pViewer) {								//this nUser is done
 	Assert (nUser == WBU_WEAPON || nUser == WBU_STATIC);
 	if ((nUser == WBU_STATIC) && (m_info.weaponBoxUser [nWindow] != WBU_STATIC))
 		staticTime [nWindow] = 0;
@@ -183,9 +183,9 @@ if (!viewerP) {								//this nUser is done
 		bOverlapDirty [nWindow] = 0;
 	return;
 	}
-UpdateRenderedData (nWindow + 1, viewerP, bRearView, nUser);
+UpdateRenderedData (nWindow + 1, pViewer, bRearView, nUser);
 m_info.weaponBoxUser [nWindow] = nUser;						//say who's using window
-gameData.objData.viewerP = viewerP;
+gameData.objData.pViewer = pViewer;
 gameStates.render.bRearView = -bRearView;
 transformation.Push ();
 SetupWindow (nWindow);
@@ -212,8 +212,8 @@ if (ogl.StereoDevice () < 0)
 gameData.render.window.Activate ("GenericCockpit::RenderWindow", gameData.render.window.Parent ());
 
 //	HACK!If guided missile, wake up robots as necessary.
-if (viewerP->info.nType == OBJ_WEAPON) 
-	WakeupRenderedObjects (viewerP, nWindow + 1);
+if (pViewer->info.nType == OBJ_WEAPON) 
+	WakeupRenderedObjects (pViewer, nWindow + 1);
 
 ogl.SetDepthTest (false);
 if (pszLabel) {
@@ -256,7 +256,7 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 //force redraw when done
 m_history [0].weapon [nWindow] = m_history [0].ammo [nWindow] = -1;
 
-gameData.objData.viewerP = viewerSave;
+gameData.objData.pViewer = viewerSave;
 ogl.SetDepthTest (true);
 gameData.render.window.Deactivate ();
 gameStates.render.bRearView = bRearViewSave;
@@ -276,7 +276,7 @@ if (ogl.IsOculusRift ())
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
    if (nDemoDoLeft) {
       if (nDemoDoLeft == 3)
-			cockpit->RenderWindow (0, gameData.objData.consoleP, 1, WBU_REAR, "REAR");
+			cockpit->RenderWindow (0, gameData.objData.pConsole, 1, WBU_REAR, "REAR");
       else
 			cockpit->RenderWindow (0, &demoLeftExtra, bDemoRearCheck [nDemoDoLeft], nDemoWBUType [nDemoDoLeft], szDemoExtraMessage [nDemoDoLeft]);
 		}
@@ -284,7 +284,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 		cockpit->RenderWindow (0, NULL, 0, WBU_WEAPON, NULL);
 	if (nDemoDoRight) {
       if (nDemoDoRight == 3)
-			cockpit->RenderWindow (1, gameData.objData.consoleP, 1, WBU_REAR, "REAR");
+			cockpit->RenderWindow (1, gameData.objData.pConsole, 1, WBU_REAR, "REAR");
       else
 			cockpit->RenderWindow (1, &demoRightExtra, bDemoRearCheck [nDemoDoRight], nDemoWBUType [nDemoDoRight], szDemoExtraMessage [nDemoDoRight]);
 		}
@@ -306,11 +306,11 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 		case CV_REAR:
 			if (gameStates.render.bRearView) {		//if big window is rear view, show front here
 				gameStates.render.nRenderingType = 3+ (w<<4);
-				cockpit->RenderWindow (w, gameData.objData.consoleP, 0, WBU_REAR, "FRONT");
+				cockpit->RenderWindow (w, gameData.objData.pConsole, 0, WBU_REAR, "FRONT");
 				}
 			else {					//show Normal rear view
 				gameStates.render.nRenderingType = 3+ (w<<4);
-				cockpit->RenderWindow (w, gameData.objData.consoleP, 1, WBU_REAR, "REAR");
+				cockpit->RenderWindow (w, gameData.objData.pConsole, 1, WBU_REAR, "REAR");
 				}
 			break;
 
@@ -355,7 +355,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 		case CV_RADAR_TOPDOWN:
 		case CV_RADAR_HEADSUP:
 			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0))
-				cockpit->RenderWindow (w, gameData.objData.consoleP, 0,
+				cockpit->RenderWindow (w, gameData.objData.pConsole, 0,
 					(gameStates.render.cockpit.n3DView [w] == CV_RADAR_TOPDOWN) ? WBU_RADAR_TOPDOWN : WBU_RADAR_HEADSUP, "MINI MAP");
 			else
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
@@ -445,9 +445,9 @@ m_info.nLineSpacing = int32_t (GAME_FONT->Height () + FRound (GAME_FONT->Height 
 fontManager.PopScale ();
 m_info.heightPad = (ScaleY (m_info.fontHeight) - m_info.fontHeight) / 2;
 #endif
-m_info.nDamage [0] = gameData.objData.consoleP->AimDamage ();
-m_info.nDamage [1] = gameData.objData.consoleP->DriveDamage ();
-m_info.nDamage [2] = gameData.objData.consoleP->GunDamage ();
+m_info.nDamage [0] = gameData.objData.pConsole->AimDamage ();
+m_info.nDamage [1] = gameData.objData.pConsole->DriveDamage ();
+m_info.nDamage [2] = gameData.objData.pConsole->GunDamage ();
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
 m_info.nEnergy = LOCALPLAYER.EnergyLevel ();

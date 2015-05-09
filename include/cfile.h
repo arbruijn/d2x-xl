@@ -50,7 +50,7 @@ typedef struct CFILE {
 	size_t	rawPosition;
 	char		buffer [16384];
 	int32_t		bufLen;
-	int32_t		bufPos;
+	int32_t		pBufferos;
 } CFILE;
 
 class CFile {
@@ -76,7 +76,7 @@ class CFile {
 		int32_t EoF (void);
 		int32_t Error (void);
 		size_t Write (const void *buf, int32_t elsize, int32_t nelem, int32_t bCompressed = 0);
-		inline int32_t GetC (void) { return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.bufPos++]; }
+		inline int32_t GetC (void) { return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.pBufferos++]; }
 
 		size_t ReadCompressed (const void* buf, uint32_t bufLen);
 		size_t WriteCompressed (const void* buf, uint32_t bufLen);

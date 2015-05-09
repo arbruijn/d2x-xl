@@ -105,14 +105,14 @@ class CNetworkPacketData {
 
 class CNetworkPacket : public CNetworkPacketData {
 	public:	
-		CNetworkPacket*		m_nextPacket;
+		CNetworkPacket*		m_pNextacket;
 		uint32_t					m_timestamp;
 		int32_t					m_bUrgent;
 		int32_t					m_bImportant;
 		CNetworkPacketOwner	m_owner;
 
 	public:
-		CNetworkPacket () : m_nextPacket (NULL), m_timestamp (0), m_bUrgent (0), m_bImportant (0) {}
+		CNetworkPacket () : m_pNextacket (NULL), m_timestamp (0), m_bUrgent (0), m_bImportant (0) {}
 		void Transmit (void);
 		inline void Reset (void) {
 			SetId (0);
@@ -122,8 +122,8 @@ class CNetworkPacket : public CNetworkPacketData {
 			}
 
 		inline int32_t SetTime (int32_t timestamp) { return m_timestamp = timestamp; }
-		inline CNetworkPacket* Next (void) { return m_nextPacket; }
-		inline void Link (CNetworkPacket* packet) { m_nextPacket = packet; }
+		inline CNetworkPacket* Next (void) { return m_pNextacket; }
+		inline void Link (CNetworkPacket* packet) { m_pNextacket = packet; }
 		inline CNetworkPacketOwner& Owner (void) { return m_owner; }
 		inline uint32_t Timestamp (void) { return m_timestamp; }
 		inline uint8_t Type (void) { return (m_size > 0) ? m_data.buffer [0]  & ~0x80 : 0xff; }

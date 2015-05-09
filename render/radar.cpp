@@ -96,11 +96,11 @@ for (i = 0; i < RADAR_SLICES; i++) {
 void CRadar::ComputeCenter (void)
 {
 	CFloatVector vf, vu, vr;
-	CFixMatrix	mView = gameData.objData.viewerP->info.position.mOrient;
+	CFixMatrix	mView = gameData.objData.pViewer->info.position.mOrient;
 
 if (transformation.m_info.bUsePlayerHeadAngles) {
 	CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
-	mView = gameData.objData.viewerP->info.position.mOrient * mHead;
+	mView = gameData.objData.pViewer->info.position.mOrient * mHead;
 	}
 
 vf.Assign (mView.m.dir.f);
@@ -110,7 +110,7 @@ vu *= m_offset.v.coord.y;
 vr.Assign (mView.m.dir.r);
 vr *= m_offset.v.coord.x;
 m_vCenter.Assign (vf + vu + vr);
-m_vCenter += gameData.objData.viewerP->Position ();
+m_vCenter += gameData.objData.pViewer->Position ();
 m_vCenterf.Assign (m_vCenter);
 }
 
@@ -138,7 +138,7 @@ void CRadar::RenderBackground (void)
 // glPushMatrix ();
 RenderSetup ();
 ogl.SetTransform (1);
-CFixMatrix mOrient = gameData.objData.viewerP->Orientation ();
+CFixMatrix mOrient = gameData.objData.pViewer->Orientation ();
 transformation.Begin (m_vCenter, mOrient);
 glScalef (m_radius * 1.2f, m_radius * 1.2f, m_radius * 1.2f);
 glColor4f (0.0f, 0.0f, 0.0f, 0.5f);
@@ -200,7 +200,7 @@ transformation.End ();
 
 // render the radar plane
 // glPushMatrix ();
-mOrient = gameData.objData.viewerP->Orientation ();
+mOrient = gameData.objData.pViewer->Orientation ();
 transformation.Begin (m_vCenter, mOrient);
 
 // render the transparent green dish
@@ -284,14 +284,14 @@ glLineWidth (2);
 
 // -----------------------------------------------------------------------------------
 
-void CRadar::RenderBlip (CObject *objP, float r, float g, float b, float a, int32_t bAbove)
+void CRadar::RenderBlip (CObject *pObj, float r, float g, float b, float a, int32_t bAbove)
 {
 	CFloatVector	v [2];
 	float				m, h, s;
 
-v [0].Assign (objP->info.position.vPos);
+v [0].Assign (pObj->info.position.vPos);
 transformation.Transform (v [0], v [0], 0);
-if ((v [0].v.coord.y < X2F (gameData.objData.viewerP->Position ().v.coord.y)) != bAbove)
+if ((v [0].v.coord.y < X2F (gameData.objData.pViewer->Position ().v.coord.y)) != bAbove)
 	return;
 if ((m = v [0].Mag ()) > RADAR_RANGE)
 	return;
@@ -325,29 +325,29 @@ ogl.FlushBuffers (GL_LINES, 2);
 
 void CRadar::RenderObjects (int32_t bAbove)
 {
-	CObject*			objP;
-	CFloatVector3*	colorP = radarColor + gameOpts->render.automap.nColor;
+	CObject*			pObj;
+	CFloatVector3*	pColor = radarColor + gameOpts->render.automap.nColor;
 
 // glPushMatrix ();
 glLineWidth (GLfloat (2 + gameOpts->render.cockpit.nRadarSize));
-FORALL_OBJS (objP) {
-	if ((objP->info.nType == OBJ_PLAYER) && (objP != gameData.objData.consoleP)) {
-		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)) {
-			colorP = shipColors + (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId);
-			RenderBlip (objP, colorP->Red (), colorP->Green (), colorP->Blue (), 0.9f / 4, bAbove);
+FORALL_OBJS (pObj) {
+	if ((pObj->info.nType == OBJ_PLAYER) && (pObj != gameData.objData.pConsole)) {
+		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (pObj->info.nId)) {
+			pColor = shipColors + (IsTeamGame ? GetTeam (pObj->info.nId) : pObj->info.nId);
+			RenderBlip (pObj, pColor->Red (), pColor->Green (), pColor->Blue (), 0.9f / 4, bAbove);
 			}
 		}
-	else if (objP->info.nType == OBJ_ROBOT) {
+	else if (pObj->info.nType == OBJ_ROBOT) {
 		if (AM_SHOW_ROBOTS) {
-			if (objP->IsGuideBot ())
-				RenderBlip (objP, guidebotColor.Red (), guidebotColor.Green (), guidebotColor.Blue (), 0.9f * 0.25f, bAbove);
+			if (pObj->IsGuideBot ())
+				RenderBlip (pObj, guidebotColor.Red (), guidebotColor.Green (), guidebotColor.Blue (), 0.9f * 0.25f, bAbove);
 			else
-				RenderBlip (objP, robotColor.Red (), robotColor.Green (), robotColor.Blue (), 0.9f * 0.25f, bAbove);
+				RenderBlip (pObj, robotColor.Red (), robotColor.Green (), robotColor.Blue (), 0.9f * 0.25f, bAbove);
 			}
 		}
-	else if (objP->info.nType == OBJ_POWERUP) {
+	else if (pObj->info.nType == OBJ_POWERUP) {
 		if (AM_SHOW_POWERUPS (2))
-			RenderBlip (objP, powerupColor.Red (), powerupColor.Green (), powerupColor.Blue (), 0.9f * 0.25f, bAbove);
+			RenderBlip (pObj, powerupColor.Red (), powerupColor.Green (), powerupColor.Blue (), 0.9f * 0.25f, bAbove);
 		}
 	}
 //transformation.End ();

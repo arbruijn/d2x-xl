@@ -1325,9 +1325,9 @@ if (IsMultiGame) {
 	nIdLives = DrawHUDText (&nIdLives, 10, 3, "%s: %d", TXT_DEATHS, LOCALPLAYER.netKilledTotal);
 	}
 else if (LOCALPLAYER.lives > 1)  {
-	CBitmap* bmP = BitBlt (GAUGE_LIVES, 10, 3, false, false);
+	CBitmap* pBm = BitBlt (GAUGE_LIVES, 10, 3, false, false);
 	SetFontColor (MEDGREEN_RGBA);
-	nIdLives = DrawHUDText (&nIdLives, 10 + bmP->Width () + 4, 4, "x %d", LOCALPLAYER.lives - 1);
+	nIdLives = DrawHUDText (&nIdLives, 10 + pBm->Width () + 4, 4, "x %d", LOCALPLAYER.lives - 1);
 	}
 }
 
@@ -1517,7 +1517,7 @@ CHUD::SetupWindow (nWindow);
 #if 0
 if (SW_y [nWindow] + SW_h [nWindow] > gameData.render.frame.Bottom ())
 	SW_y [nWindow] -= (gameData.render.screen.Height () - gameData.render.frame.Height ());
-gameData.render.frame.SetupPane (canvP, SW_x [nWindow], SW_y [nWindow], SW_w [nWindow], SW_h [nWindow]);
+gameData.render.frame.SetupPane (pCanvas, SW_x [nWindow], SW_y [nWindow], SW_w [nWindow], SW_h [nWindow]);
 #endif
 }
 

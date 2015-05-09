@@ -77,10 +77,10 @@ static const uint16_t crc16Codes [256] = {
 
 //------------------------------------------------------------------------------
 
-uint16_t Crc16 (uint16_t crc, const uint8_t * bufP, long bufSize)
+uint16_t Crc16 (uint16_t crc, const uint8_t * pBuffer, long bufSize)
 {
-for (; bufSize; bufSize--, bufP++)
-   crc = (crc >> 8) ^ crc16Codes [*bufP ^ (crc & 0xff)];
+for (; bufSize; bufSize--, pBuffer++)
+   crc = (crc >> 8) ^ crc16Codes [*pBuffer ^ (crc & 0xff)];
 return crc;
 }
 
@@ -123,10 +123,10 @@ static const uint32_t crc32Codes [256] = {
 
 //------------------------------------------------------------------------------
 // compute 32 bit CCITT crc from a table 
-uint32_t Crc32 (uint32_t crc, const uint8_t * bufP, long bufSize)
+uint32_t Crc32 (uint32_t crc, const uint8_t * pBuffer, long bufSize)
 {
-for (; bufSize; bufSize--, bufP++)
-   crc = (crc >> 8) ^ crc32Codes [*bufP ^ (crc & 0xff)];
+for (; bufSize; bufSize--, pBuffer++)
+   crc = (crc >> 8) ^ crc32Codes [*pBuffer ^ (crc & 0xff)];
 return crc;
 }
 

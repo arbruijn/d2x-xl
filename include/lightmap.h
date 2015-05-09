@@ -29,12 +29,12 @@ typedef struct tLightmapInfo {
 } tLightmapInfo;
 
 typedef struct tLightmap {
-	CFloatVector3	*bmP;
+	CFloatVector3	*pBm;
 } tLightmap;
 
 typedef struct tLightmapBuffer {
 	GLuint		handle;
-	CRGBColor	bmP [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
+	CRGBColor	pBm [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
 } tLightmapBuffer;
 
 typedef struct tLightmapList {
@@ -59,7 +59,7 @@ class CLightmapFaceData {
 		CRGBColor				m_texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
 		CFixVector				m_pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
 
-	void Setup (CSegFace* faceP);
+	void Setup (CSegFace* pFace);
 	};
 
 class CLightmapData : public CLightmapFaceData {
@@ -68,7 +68,7 @@ class CLightmapData : public CLightmapFaceData {
 		CArray<tSegFacePtr>	faceList;
 		int32_t					nBlackLightmaps;
 		int32_t					nWhiteLightmaps;
-		CSegFace*				faceP;
+		CSegFace*				pFace;
 	};
 
 class CLightmapManager {
@@ -88,28 +88,28 @@ class CLightmapManager {
 		int32_t BindAll (void);
 		void Release (void);
 		int32_t Create (int32_t nLevel);
-		void Build (CSegFace* faceP, int32_t nThread);
+		void Build (CSegFace* pFace, int32_t nThread);
 		int32_t BuildAll (int32_t nFace);
 		inline tLightmapBuffer* Buffer (uint32_t i = 0) { return &m_list.buffers [i]; }
 		inline int32_t HaveLightmaps (void) { return !gameStates.app.bNostalgia && (m_list.buffers.Buffer () != NULL); }
-		inline CSegFace* CurrentFace (void) { return m_data.faceP; }
+		inline CSegFace* CurrentFace (void) { return m_data.pFace; }
 
 	private:
 		int32_t Init (int32_t bVariable);
-		bool FaceIsInvisible (CSegFace* faceP);
+		bool FaceIsInvisible (CSegFace* pFace);
 		inline void ComputePixelOffset (CFixVector& vPos, CFixVector& v1, CFixVector& v2, int32_t nOffset);
 		double SideRad (int32_t nSegment, int32_t nSide);
 		int32_t CountLights (int32_t bVariable);
-		void Copy (CRGBColor *texColorP, uint16_t nLightmap);
-		void CreateSpecial (CRGBColor *texColorP, uint16_t nLightmap, uint8_t nColor);
+		void Copy (CRGBColor *pTexColor, uint16_t nLightmap);
+		void CreateSpecial (CRGBColor *pTexColor, uint16_t nLightmap, uint8_t nColor);
 		void Realloc (int32_t nBuffers);
 		int32_t Save (int32_t nLevel);
 		int32_t Load (int32_t nLevel);
 		void ToGrayScale (void);
 		void Posterize (void);
 		char* Filename (char *pszFilename, int32_t nLevel);
-		void Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest, int32_t direction);
-		void Blur (CSegFace* faceP, CLightmapFaceData& source);
+		void Blur (CSegFace* pFace, CLightmapFaceData& source, CLightmapFaceData& dest, int32_t direction);
+		void Blur (CSegFace* pFace, CLightmapFaceData& source);
 
 		static int32_t CompareFaces (const tSegFacePtr* pf, const tSegFacePtr* pm);
 	};
@@ -133,7 +133,7 @@ extern GLhandleARB		lmShaderProgs [3];
 
 //------------------------------------------------------------------------------
 
-int32_t SetupLightmap (CSegFace* faceP);
+int32_t SetupLightmap (CSegFace* pFace);
 
 //------------------------------------------------------------------------------
 

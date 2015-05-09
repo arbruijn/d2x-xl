@@ -55,8 +55,8 @@ if (fScaleMod > 0.0f)
 //HUDMessage (0, "shaker rock scale %d: %1.2f", i, fScale);
 int32_t rx = (fix) FRound (SRandShort () * fScale);
 int32_t rz = (fix) FRound (SRandShort () * fScale);
-gameData.objData.consoleP->mType.physInfo.rotVel.v.coord.x += rx;
-gameData.objData.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
+gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.x += rx;
+gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.z += rz;
 //	Shake the buddy!
 if (gameData.escort.nObjNum != -1) {
 	OBJECT (gameData.escort.nObjNum)->mType.physInfo.rotVel.v.coord.x += rx * 4;
@@ -105,8 +105,8 @@ for (int32_t i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			//HUDMessage (0, "shaker rock scale %d: %1.2f", i, fScale);
 			rx = (fix) FRound (SRandShort () * fScale);
 			rz = (fix) FRound (SRandShort () * fScale);
-			gameData.objData.consoleP->mType.physInfo.rotVel.v.coord.x += rx;
-			gameData.objData.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
+			gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.x += rx;
+			gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.z += rz;
 			//	Shake the buddy!
 			if (gameData.escort.nObjNum != -1) {
 				OBJECT (gameData.escort.nObjNum)->mType.physInfo.rotVel.v.coord.x += rx * 4;
@@ -186,8 +186,8 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 		h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
 		rx = FixMul (SRandShort (), h);
 		rz = FixMul (SRandShort (), h);
-		gameData.objData.consoleP->mType.physInfo.rotVel.v.coord.x += rx;
-		gameData.objData.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
+		gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.x += rx;
+		gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.z += rz;
 		//	Shake the buddy!
 		if (gameData.escort.nObjNum != -1) {
 			OBJECT (gameData.escort.nObjNum)->mType.physInfo.rotVel.v.coord.x += rx * 4;
@@ -216,7 +216,7 @@ float fScale;
 if (gameStates.app.bNostalgia || COMPETITION || (vPos == NULL))
 	fScale = 1.0f;
 else {
-	float fDist = X2F (CFixVector::Dist (*vPos, gameData.objData.consoleP->Position ()));
+	float fDist = X2F (CFixVector::Dist (*vPos, gameData.objData.pConsole->Position ()));
 	fScale = (fDist <= 200.0f) ? 1.0f : 200.0f / fDist;
 	}
 

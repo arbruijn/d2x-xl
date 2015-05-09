@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_VECS 10000
 
 typedef struct tMorphInfo {
-	CObject			*objP;                                // CObject which is morphing
+	CObject			*pObj;                                // CObject which is morphing
 	CFixVector		vecs [MAX_VECS];
 	CFixVector		deltas [MAX_VECS];
 	fix				times [MAX_VECS];

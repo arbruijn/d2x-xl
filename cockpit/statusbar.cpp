@@ -41,17 +41,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 CBitmap* CStatusBar::StretchBlt (int32_t nGauge, int32_t x, int32_t y, double xScale, double yScale, int32_t scale, int32_t orient)
 {
-	CBitmap* bmP = NULL;
+	CBitmap* pBm = NULL;
 
 if (nGauge >= 0) {
 	PageInGauge (nGauge);
-	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
-	if (bmP)
-		bmP->RenderScaled (ScaleX (x), ScaleY (y), 
-								 ScaleX ((int32_t) DRound (bmP->Width () * xScale)), ScaleY ((int32_t) DRound (bmP->Height () * yScale)), 
+	CBitmap* pBm = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
+	if (pBm)
+		pBm->RenderScaled (ScaleX (x), ScaleY (y), 
+								 ScaleX ((int32_t) DRound (pBm->Width () * xScale)), ScaleY ((int32_t) DRound (pBm->Height () * yScale)), 
 								 scale, orient, NULL);
 	}
-return bmP;
+return pBm;
 }
 
 //	-----------------------------------------------------------------------------
@@ -221,8 +221,8 @@ if (IsMultiGame) {
 else if (LOCALPLAYER.lives > 1) {
 	int32_t y = ScaleY (SB_LIVES_Y + HeightPad ());
 	SetFontColor (MEDGREEN_RGBA);
-	CBitmap* bmP = BitBlt (GAUGE_LIVES, SB_LIVES_X, SB_LIVES_Y);
-	nIdLives [1] = DrawHUDText (&nIdLives [1], ScaleX (SB_LIVES_X + bmP->Width () + m_info.fontWidth), y, " x %d", LOCALPLAYER.lives - 1);
+	CBitmap* pBm = BitBlt (GAUGE_LIVES, SB_LIVES_X, SB_LIVES_Y);
+	nIdLives [1] = DrawHUDText (&nIdLives [1], ScaleX (SB_LIVES_X + pBm->Width () + m_info.fontWidth), y, " x %d", LOCALPLAYER.lives - 1);
 	}
 }
 

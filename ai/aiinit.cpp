@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // ---------------------------------------------------------
 //	On entry, gameData.botData.nTypes had darn sure better be set.
-//	Mallocs gameData.botData.nTypes tRobotInfo structs into global gameData.botData.infoP.
+//	Mallocs gameData.botData.nTypes tRobotInfo structs into global gameData.botData.pInfo.
 void InitAISystem (void)
 {
 }
@@ -71,72 +71,72 @@ return AIM_IDLING;
 //	initial_mode == -1 means leave mode unchanged.
 void InitAIObject (int16_t nObject, int16_t behavior, int16_t nHideSegment)
 {
-	CObject			*objP = OBJECT (nObject);
-	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-	tAILocalInfo	*ailP = gameData.ai.localInfo + nObject;
-	tRobotInfo		*botInfoP = ROBOTINFO (objP);
+	CObject			*pObj = OBJECT (nObject);
+	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
+	tAILocalInfo	*pLocalInfo = gameData.ai.localInfo + nObject;
+	tRobotInfo		*pRobotInfo = ROBOTINFO (pObj);
 
 #if DBG
-if (!objP->IsRobot ())
+if (!pObj->IsRobot ())
 	BRP;
 #endif
-if (!botInfoP)
+if (!pRobotInfo)
 	return;
 if (behavior == AIB_STATIC) {
-	objP->info.controlType = CT_NONE;
-	objP->info.movementType = MT_NONE;
+	pObj->info.controlType = CT_NONE;
+	pObj->info.movementType = MT_NONE;
 	}
 if (behavior == 0) {
 	behavior = AIB_NORMAL;
-	aiP->behavior = (uint8_t) behavior;
+	pStaticInfo->behavior = (uint8_t) behavior;
 	}
 //	mode is now set from the Robot dialog, so this should get overwritten.
-ailP->mode = AIM_IDLING;
-ailP->nPrevVisibility = 0;
+pLocalInfo->mode = AIM_IDLING;
+pLocalInfo->nPrevVisibility = 0;
 if (behavior != -1) {
-	aiP->behavior = (uint8_t) behavior;
-	ailP->mode = AIBehaviorToMode (aiP->behavior);
+	pStaticInfo->behavior = (uint8_t) behavior;
+	pLocalInfo->mode = AIBehaviorToMode (pStaticInfo->behavior);
 	}
-else if (!((aiP->behavior >= MIN_BEHAVIOR) && (aiP->behavior <= MAX_BEHAVIOR))) {
+else if (!((pStaticInfo->behavior >= MIN_BEHAVIOR) && (pStaticInfo->behavior <= MAX_BEHAVIOR))) {
 #if TRACE
 	console.printf (CON_DBG, " [obj %i -> Normal] ", nObject);
 #endif
-	aiP->behavior = AIB_NORMAL;
+	pStaticInfo->behavior = AIB_NORMAL;
 	}
-if (botInfoP->companion) {
-	ailP->mode = AIM_GOTO_PLAYER;
+if (pRobotInfo->companion) {
+	pLocalInfo->mode = AIM_GOTO_PLAYER;
 	gameData.escort.nKillObject = -1;
 	}
-if (botInfoP->thief) {
-	aiP->behavior = AIB_SNIPE;
-	ailP->mode = AIM_THIEF_WAIT;
+if (pRobotInfo->thief) {
+	pStaticInfo->behavior = AIB_SNIPE;
+	pLocalInfo->mode = AIM_THIEF_WAIT;
 	}
-if (botInfoP->attackType) {
-	aiP->behavior = AIB_NORMAL;
-	ailP->mode = AIBehaviorToMode (aiP->behavior);
+if (pRobotInfo->attackType) {
+	pStaticInfo->behavior = AIB_NORMAL;
+	pLocalInfo->mode = AIBehaviorToMode (pStaticInfo->behavior);
 	}
-objP->mType.physInfo.velocity.SetZero ();
-// -- ailP->waitTime = I2X (5);
-ailP->targetAwarenessTime = 0;
-ailP->targetAwarenessType = 0;
-aiP->GOAL_STATE = AIS_SEARCH;
-aiP->CURRENT_STATE = AIS_REST;
-ailP->timeTargetSeen = gameData.time.xGame;
-ailP->nextMiscSoundTime = gameData.time.xGame;
-ailP->timeTargetSoundAttacked = gameData.time.xGame;
+pObj->mType.physInfo.velocity.SetZero ();
+// -- pLocalInfo->waitTime = I2X (5);
+pLocalInfo->targetAwarenessTime = 0;
+pLocalInfo->targetAwarenessType = 0;
+pStaticInfo->GOAL_STATE = AIS_SEARCH;
+pStaticInfo->CURRENT_STATE = AIS_REST;
+pLocalInfo->timeTargetSeen = gameData.time.xGame;
+pLocalInfo->nextMiscSoundTime = gameData.time.xGame;
+pLocalInfo->timeTargetSoundAttacked = gameData.time.xGame;
 if ((behavior == AIB_SNIPE) || (behavior == AIB_STATION) || (behavior == AIB_RUN_FROM) || (behavior == AIB_FOLLOW)) {
-	aiP->nHideSegment = nHideSegment;
-	ailP->nGoalSegment = nHideSegment;
-	aiP->nHideIndex = -1;			// This means the path has not yet been created.
-	aiP->nPathLength = 0;
-	aiP->nCurPathIndex = 0;
+	pStaticInfo->nHideSegment = nHideSegment;
+	pLocalInfo->nGoalSegment = nHideSegment;
+	pStaticInfo->nHideIndex = -1;			// This means the path has not yet been created.
+	pStaticInfo->nPathLength = 0;
+	pStaticInfo->nCurPathIndex = 0;
 	}
-aiP->SKIP_AI_COUNT = 0;
-aiP->CLOAKED = (botInfoP->cloakType == RI_CLOAKED_ALWAYS);
-objP->mType.physInfo.flags |= (PF_BOUNCES | PF_TURNROLL);
-aiP->REMOTE_OWNER = -1;
-aiP->bDyingSoundPlaying = 0;
-aiP->xDyingStartTime = 0;
+pStaticInfo->SKIP_AI_COUNT = 0;
+pStaticInfo->CLOAKED = (pRobotInfo->cloakType == RI_CLOAKED_ALWAYS);
+pObj->mType.physInfo.flags |= (PF_BOUNCES | PF_TURNROLL);
+pStaticInfo->REMOTE_OWNER = -1;
+pStaticInfo->bDyingSoundPlaying = 0;
+pStaticInfo->xDyingStartTime = 0;
 }
 
 
@@ -145,17 +145,17 @@ aiP->xDyingStartTime = 0;
 void InitAIObjects (void)
 {
 	int16_t		nBosses = 0;
-	CObject		*objP;
+	CObject		*pObj;
 
-gameData.ai.target.objP = NULL;
+gameData.ai.target.pObj = NULL;
 gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
-FORALL_OBJS (objP) {
-	if (objP->IsRobot ()) {
-		if (objP->info.controlType == CT_AI)
-			InitAIObject (objP->Index (), objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);
-		if (objP->IsBoss ()) {
+FORALL_OBJS (pObj) {
+	if (pObj->IsRobot ()) {
+		if (pObj->info.controlType == CT_AI)
+			InitAIObject (pObj->Index (), pObj->cType.aiInfo.behavior, pObj->cType.aiInfo.nHideSegment);
+		if (pObj->IsBoss ()) {
 			if (nBosses < (int32_t) gameData.bosses.ToS () || gameData.bosses.Grow ())
-				gameData.bosses [nBosses++].Setup (objP->Index ());
+				gameData.bosses [nBosses++].Setup (pObj->Index ());
 			}
 		}
 	}
@@ -188,12 +188,12 @@ gameStates.app.bLunacy = 1;
 nDiffSave = gameStates.app.nDifficultyLevel;
 gameStates.app.nDifficultyLevel = DIFFICULTY_LEVEL_COUNT-1;
 for (i = 0; i < MAX_ROBOT_TYPES; i++) {
-	Firing_wait_copy [i] = gameData.botData.infoP [i].primaryFiringWait [DIFFICULTY_LEVEL_COUNT-1];
-	Firing_wait2_copy [i] = gameData.botData.infoP [i].secondaryFiringWait [DIFFICULTY_LEVEL_COUNT-1];
-	RapidfireCount_copy [i] = gameData.botData.infoP [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1];
-	gameData.botData.infoP [i].primaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = gameData.botData.infoP [i].primaryFiringWait [1];
-	gameData.botData.infoP [i].secondaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = gameData.botData.infoP [i].secondaryFiringWait [1];
-	gameData.botData.infoP [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1] = gameData.botData.infoP [i].nRapidFireCount [1];
+	Firing_wait_copy [i] = gameData.botData.pInfo [i].primaryFiringWait [DIFFICULTY_LEVEL_COUNT-1];
+	Firing_wait2_copy [i] = gameData.botData.pInfo [i].secondaryFiringWait [DIFFICULTY_LEVEL_COUNT-1];
+	RapidfireCount_copy [i] = gameData.botData.pInfo [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1];
+	gameData.botData.pInfo [i].primaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = gameData.botData.pInfo [i].primaryFiringWait [1];
+	gameData.botData.pInfo [i].secondaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = gameData.botData.pInfo [i].secondaryFiringWait [1];
+	gameData.botData.pInfo [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1] = gameData.botData.pInfo [i].nRapidFireCount [1];
 	}
 }
 
@@ -207,9 +207,9 @@ if (!gameStates.app.bLunacy)	//already off
 	return;
 gameStates.app.bLunacy = 0;
 for (i = 0; i < MAX_ROBOT_TYPES; i++) {
-	gameData.botData.infoP [i].primaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = Firing_wait_copy [i];
-	gameData.botData.infoP [i].secondaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = Firing_wait2_copy [i];
-	gameData.botData.infoP [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1] = RapidfireCount_copy [i];
+	gameData.botData.pInfo [i].primaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = Firing_wait_copy [i];
+	gameData.botData.pInfo [i].secondaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = Firing_wait2_copy [i];
+	gameData.botData.pInfo [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1] = RapidfireCount_copy [i];
 	}
 gameStates.app.nDifficultyLevel = nDiffSave;
 }
@@ -220,9 +220,9 @@ void InitAIForShip (void)
 {
 for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
-	if (gameData.objData.consoleP) {
-		gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objData.consoleP);
-		gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objData.consoleP)->vPos;
+	if (gameData.objData.pConsole) {
+		gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objData.pConsole);
+		gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objData.pConsole)->vPos;
 		}
 	else {
 		gameData.ai.cloakInfo [i].nLastSeg = -1;

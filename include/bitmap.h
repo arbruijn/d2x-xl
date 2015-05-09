@@ -32,10 +32,10 @@
 
 #define BM_FRAMECOUNT(_bmP)	((_bmP)->m_info.frames.nCount)
 #define BM_FRAMES(_bmP)			((_bmP)->m_info.frames)
-#define BM_CURFRAME(_bmP)		((_bmP)->m_info.frames.currentP)
-#define BM_OVERRIDE(_bmP)		((_bmP)->m_info.overrideP)
+#define BM_CURFRAME(_bmP)		((_bmP)->m_info.frames.pCurrent)
+#define BM_OVERRIDE(_bmP)		((_bmP)->m_info.pOverride)
 #define BM_MASK(_bmP)			((_bmP)->m_info.override.maskP)
-#define BM_PARENT(_bmP)			((_bmP)->m_info.override.parentP)
+#define BM_PARENT(_bmP)			((_bmP)->m_info.override.pParent)
 
 #define MAX_BMP_SIZE(width, height) (4 + ((width) + 2) * (height))
 
@@ -57,7 +57,7 @@ class CCanvas;
 //-----------------------------------------------------------------------------
 
 typedef struct tBmProps {
-	int16_t   x, y;		// Offset from parentP's origin
+	int16_t   x, y;		// Offset from pParent's origin
 	int16_t   w, h;		// width, height
 	int16_t   rowSize;	// uint8_t offset to next row
 	uint16_t  flags;
@@ -66,8 +66,8 @@ typedef struct tBmProps {
 
 class CBitmapFrameInfo {
 	public:
-		CBitmap*		bmP;
-		CBitmap*		currentP;
+		CBitmap*		pBm;
+		CBitmap*		pCurrent;
 		int32_t		nCurrent;
 		uint32_t		nCount;
 	};
@@ -114,15 +114,15 @@ class CBitmapInfo {
 		int32_t				nTranspType;
 		int32_t				transparentFrames [4];
 		int32_t				supertranspFrames [4];
-		CBitmap*				parentP;
-		CBitmap*				overrideP;
+		CBitmap*				pParent;
+		CBitmap*				pOverride;
 		CBitmap*				maskP;
 		CBitmapFrameInfo	frames;
 		CPalette*			palette;
 		CTexture				texture;
-		CTexture*			texP;
-		tTexCoord2f*		texCoordP;
-		CFloatVector*		colorP;
+		CTexture*			pTexture;
+		tTexCoord2f*		pTexCoord;
+		CFloatVector*		pColor;
 		int32_t				nColors;
 	};
 
@@ -155,58 +155,58 @@ class CBitmap : public CArray< uint8_t > {
 		void Reset (void);
 		void Init (void);
 		void Init (int32_t mode, int32_t x, int32_t y, int32_t w, int32_t h, int32_t bpp = 1, uint8_t *buffer = NULL, bool bReset = false);
-		bool InitChild (CBitmap *parentP, int32_t x, int32_t y, int32_t w, int32_t h);
+		bool InitChild (CBitmap *pParent, int32_t x, int32_t y, int32_t w, int32_t h);
 		CBitmap* CreateChild (int32_t x, int32_t y, int32_t w, int32_t h);
-		CBitmap* ReleaseTexture (CBitmap *bmP);
+		CBitmap* ReleaseTexture (CBitmap *pBm);
 		void ReleaseTexture (void);
 
 		inline CBitmap *NextFrame (void) {
 			if (++m_info.frames.nCurrent >= int32_t (m_info.frames.nCount))
 				m_info.frames.nCurrent = 0;
-			m_info.frames.currentP = m_info.frames.bmP + m_info.frames.nCurrent;
-			return m_info.frames.currentP;
+			m_info.frames.pCurrent = m_info.frames.pBm + m_info.frames.nCurrent;
+			return m_info.frames.pCurrent;
 			}
 
 		inline CBitmap *CurFrame (int32_t iFrame) {
 			if (m_info.nType != BM_TYPE_ALT)
 				return this;
 			if (iFrame < 0)
-				return m_info.frames.currentP ? m_info.frames.currentP : this;
+				return m_info.frames.pCurrent ? m_info.frames.pCurrent : this;
 			m_info.frames.nCurrent = m_info.frames.nCount ? int32_t (iFrame % m_info.frames.nCount) : 0;
-			return m_info.frames.bmP ? m_info.frames.currentP = m_info.frames.bmP + m_info.frames.nCurrent : this;
+			return m_info.frames.pBm ? m_info.frames.pCurrent = m_info.frames.pBm + m_info.frames.nCurrent : this;
 			}
 
 		inline CBitmap* HasParent (void)
-		 { return (m_info.nType == BM_TYPE_STD) ? m_info.parentP :  NULL; }
+		 { return (m_info.nType == BM_TYPE_STD) ? m_info.pParent :  NULL; }
 		inline CBitmap* HasOverride (void)
-		 { return (m_info.nType == BM_TYPE_STD) ? m_info.overrideP : m_info.frames.currentP; }
+		 { return (m_info.nType == BM_TYPE_STD) ? m_info.pOverride : m_info.frames.pCurrent; }
 
 		inline CBitmap *Override (int32_t iFrame) {
-			CBitmap *bmP = this;
+			CBitmap *pBm = this;
 			if (m_info.nType == BM_TYPE_STD) {
-				if (!m_info.overrideP)
+				if (!m_info.pOverride)
 					return this;
-				bmP = m_info.overrideP;
+				pBm = m_info.pOverride;
 				}
-			return bmP->CurFrame (iFrame);
+			return pBm->CurFrame (iFrame);
 			}
 
-		inline void SetColor (CFloatVector* colorP = NULL, int32_t nColors = 1) { m_info.colorP = colorP, m_info.nColors = nColors; }
+		inline void SetColor (CFloatVector* pColor = NULL, int32_t nColors = 1) { m_info.pColor = pColor, m_info.nColors = nColors; }
 		inline CFloatVector* GetColor (int32_t* nColors = NULL) { 
 			if (nColors)
 				*nColors = m_info.nColors; 
-			return m_info.colorP; 
+			return m_info.pColor; 
 			}
-		inline void SetTexCoord (tTexCoord2f* texCoordP = NULL) { m_info.texCoordP = texCoordP; }
-		inline tTexCoord2f* GetTexCoord (void) { return m_info.texCoordP; }
-		void SetPalette (CPalette *palette, int32_t transparentColor = -1, int32_t supertranspColor = -1, uint8_t* bufP = NULL, int32_t bufLen = 0);
+		inline void SetTexCoord (tTexCoord2f* pTexCoord = NULL) { m_info.pTexCoord = pTexCoord; }
+		inline tTexCoord2f* GetTexCoord (void) { return m_info.pTexCoord; }
+		void SetPalette (CPalette *palette, int32_t transparentColor = -1, int32_t supertranspColor = -1, uint8_t* pBuffer = NULL, int32_t bufLen = 0);
 		void SetTransparent (int32_t bTransparent);
 		void SetSuperTransparent (int32_t bTransparent);
 		void CheckTransparency (void);
 		int32_t HasTransparency (void);
-		int32_t AvgColor (CFloatVector3 *colorP = NULL, bool bForce = true);
+		int32_t AvgColor (CFloatVector3 *pColor = NULL, bool bForce = true);
 		inline CRGBColor *GetAvgColor (void) { return &m_info.avgColor; }
-		CFloatVector *GetAvgColor (CFloatVector *colorP);
+		CFloatVector *GetAvgColor (CFloatVector *pColor);
 		int32_t AvgColorIndex (void);
 
 		void SwapTransparencyColor (void);
@@ -216,14 +216,14 @@ class CBitmap : public CArray< uint8_t > {
 		int32_t RLECompress (void);
 		void ExpandTo (CBitmap *destP);
 
-		inline uint8_t FrameCount (void) { return ((m_info.nType != BM_TYPE_ALT) && Parent ()) ? m_info.parentP->FrameCount () : m_info.frames.nCount; }
+		inline uint8_t FrameCount (void) { return ((m_info.nType != BM_TYPE_ALT) && Parent ()) ? m_info.pParent->FrameCount () : m_info.frames.nCount; }
 		inline uint8_t FrameIndex (void) { return m_info.frames.nCurrent; }
-		inline CBitmap *Frames (void) { return (m_info.nType == BM_TYPE_ALT) ? m_info.frames.bmP : NULL; }
+		inline CBitmap *Frames (void) { return (m_info.nType == BM_TYPE_ALT) ? m_info.frames.pBm : NULL; }
 
-		inline CBitmap *CurFrame (void) { return m_info.frames.currentP; }
-		inline CBitmap *Override (void) { return m_info.overrideP; }
+		inline CBitmap *CurFrame (void) { return m_info.frames.pCurrent; }
+		inline CBitmap *Override (void) { return m_info.pOverride; }
 		inline CBitmap *Mask (void) { return m_info.maskP; }
-		inline CBitmap *Parent (void) { return m_info.parentP; }
+		inline CBitmap *Parent (void) { return m_info.pParent; }
 
 		inline tBmProps* Props (void) { return &m_info.props; }
 		inline uint16_t Id (void) { return m_info.nId; }
@@ -231,18 +231,18 @@ class CBitmap : public CArray< uint8_t > {
 		inline void SetCartoonizable (uint8_t bCartoonizable) { m_info.bCartoonizable = bCartoonizable; }
 		inline void SetFrameCount (uint8_t nFrameCount) { m_info.frames.nCount = nFrameCount; }
 		inline void SetFrameCount (void) {  m_info.frames.nCount = m_info.props.h / m_info.props.w; }
-		void SetParent (CBitmap *parentP) { m_info.parentP = parentP; }
+		void SetParent (CBitmap *pParent) { m_info.pParent = pParent; }
 		void SetMask (CBitmap *maskP) { m_info.maskP = maskP; }
-		CBitmap* SetOverride (CBitmap *overrideP);
+		CBitmap* SetOverride (CBitmap *pOverride);
 		CBitmap* SetCurFrame (CBitmap *frameP) {
-			m_info.frames.nCurrent = int32_t ((m_info.frames.currentP = frameP) - m_info.frames.bmP);
-			return m_info.frames.currentP;
+			m_info.frames.nCurrent = int32_t ((m_info.frames.pCurrent = frameP) - m_info.frames.pBm);
+			return m_info.frames.pCurrent;
 			}
 		CBitmap* SetCurFrame (int32_t nFrame) {
-			if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames.bmP)
+			if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames.pBm)
 				return this;
-			m_info.frames.currentP = m_info.frames.bmP + (m_info.frames.nCurrent = nFrame);
-			return m_info.frames.currentP;
+			m_info.frames.pCurrent = m_info.frames.pBm + (m_info.frames.nCurrent = nFrame);
+			return m_info.frames.pCurrent;
 			}
 
 		inline int16_t Width (void) { return m_info.props.w; }
@@ -263,7 +263,7 @@ class CBitmap : public CArray< uint8_t > {
 		inline uint8_t Static (void) { return m_info.bStatic; }
 		inline uint8_t Team (void) { return m_info.nTeam; }
 		inline uint8_t BlendMode (void) { return m_info.nBlendMode; }
-		inline CTexture* Texture (void) { return m_info.texP; }
+		inline CTexture* Texture (void) { return m_info.pTexture; }
 		inline int32_t *TransparentFrames (int32_t i = 0) { return m_info.transparentFrames + i; }
 		inline int32_t *SuperTranspFrames (int32_t i = 0) { return m_info.supertranspFrames + i; }
 		inline char* Name (void) { return m_info.szName; }
@@ -291,11 +291,11 @@ class CBitmap : public CArray< uint8_t > {
 		inline void SetAvgColor (CRGBColor& color) { m_info.avgColor = color; }
 		inline void SetTranspType (int32_t nTranspType) { m_info.nTranspType = ((m_info.nBPP > 1) ? -1 : nTranspType); }
 		inline void SetupTexture (void) {
-			m_info.texP = &m_info.texture;
+			m_info.pTexture = &m_info.texture;
 			m_info.texture.SetBitmap (this);
 			}
-		inline void SetTexture (CTexture *texP) { m_info.texP = texP; }
-		inline void ResetTexture (void) { m_info.texP = &m_info.texture; }
+		inline void SetTexture (CTexture *pTexture) { m_info.pTexture = pTexture; }
+		inline void ResetTexture (void) { m_info.pTexture = &m_info.texture; }
 		void NeedSetup (void);
 		inline CPalette* Palette (void) { return m_info.palette ? m_info.palette : paletteManager.Default (); }
 
@@ -320,8 +320,8 @@ class CBitmap : public CArray< uint8_t > {
 		int32_t PrepareTexture (int32_t bMipMap, int32_t bMask, tPixelBuffer *renderBuffer = NULL);
 #endif
 		int32_t Bind (int32_t bMipMaps);
-		inline bool IsBound (void) { return m_info.texP && m_info.texP->IsBound (); }
-		inline bool Prepared (void) { return m_info.texP && m_info.texP->Handle (); }
+		inline bool IsBound (void) { return m_info.pTexture && m_info.pTexture->IsBound (); }
+		inline bool Prepared (void) { return m_info.pTexture && m_info.pTexture->Handle (); }
 
 #if TEXTURE_COMPRESSION
 		inline CArray<uint8_t>& CompressedBuffer (void) { return m_info.compressed.buffer; }
@@ -345,7 +345,7 @@ class CBitmap : public CArray< uint8_t > {
 						int32_t xDest, int32_t yDest, int32_t wDest, int32_t hDest,
 						int32_t xSrc, int32_t ySrc, int32_t wSrc, int32_t hSrc,
 						int32_t bTransp = 0, int32_t bMipMaps = 0, int32_t bSmoothe = 0,
-						float fAlpha = 1.0f, CFloatVector* colorP = NULL);
+						float fAlpha = 1.0f, CFloatVector* pColor = NULL);
 		inline void Render (CRectangle* destP, int32_t bTransp = 0, int32_t bMipMaps = 0, int32_t bSmoothe = 0, float fAlpha = 1.0f)
 			{ Render (destP, 0, 0, destP->Width (), destP->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, bSmoothe, fAlpha); }
 		void RenderStretched (CRectangle* dest = NULL, int32_t x = 0, int32_t y = 0);
@@ -362,9 +362,9 @@ class CBitmap : public CArray< uint8_t > {
 		void SetTexCoord (GLfloat u, GLfloat v, int32_t orient);
 		void SetTexCoord (GLfloat u, GLfloat v, int32_t orient, tTexCoord2f& texCoord);
 		CTexture* OglBeginRender (bool bBlend, int32_t bMipMaps, int32_t nTranspType);
-		void OglRender (CFloatVector* colorP, int32_t nColors, int32_t orient);
+		void OglRender (CFloatVector* pColor, int32_t nColors, int32_t orient);
 		void OglEndRender (void);
-		int32_t RenderScaled (int32_t x, int32_t y, int32_t w = 0, int32_t h = 0, int32_t scale = I2X (1), int32_t orient = 0, CCanvasColor *colorP = NULL, int32_t bSmoothe = 1);
+		int32_t RenderScaled (int32_t x, int32_t y, int32_t w = 0, int32_t h = 0, int32_t scale = I2X (1), int32_t orient = 0, CCanvasColor *pColor = NULL, int32_t bSmoothe = 1);
 
 		inline bool Clip (int32_t x, int32_t y) { return (x < 0) || (y < 0) || (x >= Width ()) || (y >= Width ()); }
 		void DrawPixel (int32_t x, int32_t y, uint8_t color);
@@ -372,7 +372,7 @@ class CBitmap : public CArray< uint8_t > {
 
 		inline CBitmap& Clone (CBitmap& clone) {
 			memcpy (&clone, this, sizeof (CBitmap));
-			clone.m_info.texP = &clone.m_info.texture;
+			clone.m_info.pTexture = &clone.m_info.texture;
 			clone.Texture ()->SetBitmap (&clone);
 			return clone;
 			}
@@ -399,9 +399,9 @@ inline int32_t operator- (CBitmap* o, CArray<CBitmap>& a) { return a.Index (o); 
 
 //-----------------------------------------------------------------------------
 
-CFloatVector3 *BitmapColor (CBitmap *bmP, uint8_t *bufP);
+CFloatVector3 *BitmapColor (CBitmap *pBm, uint8_t *pBuffer);
 void LoadGameBackground (void);
-void GrBitmapM (int32_t x, int32_t y, CBitmap *bmP, int32_t bTransp);
+void GrBitmapM (int32_t x, int32_t y, CBitmap *pBm, int32_t bTransp);
 void GrBmUBitBltM (int32_t w, int32_t h, int32_t dx, int32_t dy, int32_t sx, int32_t sy, CBitmap * src, CBitmap * dest, int32_t bTransp);
 
 //-----------------------------------------------------------------------------

@@ -42,7 +42,7 @@ typedef struct tFaceListEntry {
 
 // Given a list of point numbers, rotate any that haven't been rotated
 // this frame
-tRenderCodes TransformVertexList (int32_t nVerts, uint16_t* vertexIndexP);
+tRenderCodes TransformVertexList (int32_t nVerts, uint16_t* pVertexIndex);
 void RotateSideNorms (void);
 // Given a list of point numbers, project any that haven't been projected
 
@@ -54,19 +54,19 @@ void TransformSideCenters (void);
 int32_t IsTransparentTexture (int16_t nTexture);
 void AlphaBlend (CFloatVector& dest, CFloatVector& other, float fAlpha);
 int32_t SetVertexColor (int32_t nVertex, CFaceColor *pc, int32_t bBlend = 0);
-int32_t SetVertexColors (tFaceProps *propsP);
+int32_t SetVertexColors (tFaceProps *pProps);
 fix SetVertexLight (int32_t nSegment, int32_t nSide, int32_t nVertex, CFaceColor *pc, fix light);
-int32_t SetFaceLight (tFaceProps *propsP);
-void AdjustVertexColor (CBitmap *bmP, CFaceColor *pc, fix xLight);
+int32_t SetFaceLight (tFaceProps *pProps);
+void AdjustVertexColor (CBitmap *pBm, CFaceColor *pc, fix xLight);
 char IsColoredSeg (int16_t nSegment);
 char IsColoredSegFace (int16_t nSegment, int16_t nSide);
 CFloatVector *ColoredSegmentColor (int32_t nSegment, int32_t nSide, char nColor);
 int32_t IsMonitorFace (int16_t nSegment, int16_t nSide, int32_t bForce);
 float WallAlpha (int16_t nSegment, int16_t nSide, int16_t nWall, uint8_t widFlags, int32_t bIsMonitor, uint8_t bAdditive,
-					  CFloatVector *colorP, int32_t& nColor, uint8_t& bTextured, uint8_t& bCloaked, uint8_t& bTransparent);
-int32_t SetupMonitorFace (int16_t nSegment, int16_t nSide, int16_t nCamera, CSegFace *faceP);
+					  CFloatVector *pColor, int32_t& nColor, uint8_t& bTextured, uint8_t& bCloaked, uint8_t& bTransparent);
+int32_t SetupMonitorFace (int16_t nSegment, int16_t nSide, int16_t nCamera, CSegFace *pFace);
 CBitmap *LoadFaceBitmap (int16_t nTexture, int16_t nFrameIdx, int32_t bLoadTextures = 1);
-int32_t BitmapFrame (CBitmap* bmP, int16_t nTexture, int16_t nSegment, int32_t nFrame = -1);
+int32_t BitmapFrame (CBitmap* pBm, int16_t nTexture, int16_t nSegment, int32_t nFrame = -1);
 void DrawOutline (int32_t nVertices, CRenderPoint **pointList);
 int32_t ToggleOutlineMode (void);
 int32_t ToggleShowOnlyCurSide (void);
@@ -108,9 +108,9 @@ extern int32_t bOutLineMode, bShowOnlyCurSide;
 
 //------------------------------------------------------------------------------
 
-static inline int32_t IsTransparentFace (tFaceProps *propsP)
+static inline int32_t IsTransparentFace (tFaceProps *pProps)
 {
-return IsTransparentTexture (SEGMENT (propsP->segNum)->m_sides [propsP->sideNum].m_nBaseTex);
+return IsTransparentTexture (SEGMENT (pProps->segNum)->m_sides [pProps->sideNum].m_nBaseTex);
 }
 
 //------------------------------------------------------------------------------

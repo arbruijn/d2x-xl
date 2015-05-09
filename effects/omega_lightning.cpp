@@ -75,34 +75,34 @@ else {
 
 // ---------------------------------------------------------------------------------
 
-CFixVector *COmegaLightning::GetGunPoint (CObject* objP, CFixVector *vMuzzle)
+CFixVector *COmegaLightning::GetGunPoint (CObject* pObj, CFixVector *vMuzzle)
 {
 	CFixVector			*vGunPoints;
 	int32_t					bSpectate;
-	tObjTransformation	*posP;
+	tObjTransformation	*pPos;
 
-if (!objP)
+if (!pObj)
 	return NULL;
-bSpectate = SPECTATOR (objP);
-posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
-if ((bSpectate || (objP->info.nId != N_LOCALPLAYER)) &&
-	 (vGunPoints = GetGunPoints (objP, 6))) {
-	TransformGunPoint (objP, vGunPoints, 6, 0, 0, vMuzzle, NULL);
+bSpectate = SPECTATOR (pObj);
+pPos = bSpectate ? &gameStates.app.playerPos : &pObj->info.position;
+if ((bSpectate || (pObj->info.nId != N_LOCALPLAYER)) &&
+	 (vGunPoints = GetGunPoints (pObj, 6))) {
+	TransformGunPoint (pObj, vGunPoints, 6, 0, 0, vMuzzle, NULL);
 	}
 else {
-	*vMuzzle = posP->vPos - posP->mOrient.m.dir.u;
-	*vMuzzle += posP->mOrient.m.dir.f * (objP->info.xSize / 4);
+	*vMuzzle = pPos->vPos - pPos->mOrient.m.dir.u;
+	*vMuzzle += pPos->mOrient.m.dir.f * (pObj->info.xSize / 4);
 	}
 return vMuzzle;
 }
 
 // ---------------------------------------------------------------------------------
 
-int32_t COmegaLightning::Update (CObject* parentObjP, CObject* targetObjP, CFixVector* vTargetPos)
+int32_t COmegaLightning::Update (CObject* pParentObj, CObject* targetObjP, CFixVector* vTargetPos)
 {
 	CFixVector					vMuzzle;
 	tOmegaLightningHandles	*handleP;
-	CWeaponState*				wsP;
+	CWeaponState*				pWeaponStates;
 	int32_t						h, i, nHandle, nLightning;
 	int16_t						nSegment;
 
@@ -112,13 +112,13 @@ if (m_nHandles < 1)
 	return 0;
 if ((gameData.omega.xCharge [IsMultiGame] >= MAX_OMEGA_CHARGE) && (0 <= (nHandle = Find (LOCALPLAYER.nObject))))
 	Destroy (nHandle);
-int16_t nObject = parentObjP ? OBJ_IDX (parentObjP) : -1;
+int16_t nObject = pParentObj ? OBJ_IDX (pParentObj) : -1;
 if (nObject < 0) {
 	i = 0;
 	h = m_nHandles;
 	}
 else {
-	i = Find (OBJ_IDX (parentObjP));
+	i = Find (OBJ_IDX (pParentObj));
 	if (i < 0)
 		return 0;
 	h = 1;
@@ -128,17 +128,17 @@ else {
 for (handleP = m_handles + i; h; h--) {
 	for (int32_t j = 0; j < 2; j++) {
 		if ((nLightning = handleP->nLightning [j]) >= 0) {
-			parentObjP = OBJECT (handleP->nParentObj);
-			if (parentObjP->info.nType == OBJ_PLAYER) {
-				wsP = gameData.multiplayer.weaponStates + parentObjP->info.nId;
-				if ((wsP->nPrimary != OMEGA_INDEX) || !wsP->firing [0].nStart) {
+			pParentObj = OBJECT (handleP->nParentObj);
+			if (pParentObj->info.nType == OBJ_PLAYER) {
+				pWeaponStates = gameData.multiplayer.weaponStates + pParentObj->info.nId;
+				if ((pWeaponStates->nPrimary != OMEGA_INDEX) || !pWeaponStates->firing [0].nStart) {
 					Delete (int16_t (handleP - m_handles));
 					continue;
 					}
 				}
 			targetObjP = (handleP->nTargetObj >= 0) ? OBJECT (handleP->nTargetObj) : NULL;
-			GetGunPoint (parentObjP, &vMuzzle);
-			nSegment = SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : parentObjP->info.nSegment;
+			GetGunPoint (pParentObj, &vMuzzle);
+			nSegment = SPECTATOR (pParentObj) ? gameStates.app.nPlayerSegment : pParentObj->info.nSegment;
 			lightningManager.Move (nLightning, vMuzzle, nSegment);
 			if (targetObjP)
 				lightningManager.Move (nLightning, vMuzzle, targetObjP->info.position.vPos, nSegment);
@@ -221,17 +221,17 @@ static tLightningInfo omegaLightningInfo [2] = {
 	}
 };
 
-int32_t COmegaLightning::Create (CFixVector *vTargetPos, CObject* parentObjP, CObject* targetObjP)
+int32_t COmegaLightning::Create (CFixVector *vTargetPos, CObject* pParentObj, CObject* targetObjP)
 {
 	tOmegaLightningHandles*	handleP;
 	int32_t							nObject;
 
 if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bOmega && !gameStates.render.bOmegaModded))
 	return 0;
-if ((parentObjP->info.nType == OBJ_ROBOT) && (!gameOpts->render.lightning.bRobotOmega || gameStates.app.bHaveMod))
+if ((pParentObj->info.nType == OBJ_ROBOT) && (!gameOpts->render.lightning.bRobotOmega || gameStates.app.bHaveMod))
 	return 0;
-nObject = OBJ_IDX (parentObjP);
-if (Update (parentObjP, targetObjP, vTargetPos)) {
+nObject = OBJ_IDX (pParentObj);
+if (Update (pParentObj, targetObjP, vTargetPos)) {
 	if (!(handleP = m_handles + Find (nObject)))
 		return 0;
 	}
@@ -242,7 +242,7 @@ else {
 	CFixVector	vMuzzle, *vTarget;
 
 	Destroy (nObject);
-	GetGunPoint (parentObjP, &vMuzzle);
+	GetGunPoint (pParentObj, &vMuzzle);
 	handleP = m_handles + m_nHandles;
 	handleP->nParentObj = nObject;
 	handleP->nTargetObj = targetObjP ? OBJ_IDX (targetObjP) : -1;

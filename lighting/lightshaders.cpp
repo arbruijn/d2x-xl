@@ -1069,7 +1069,7 @@ for (int32_t nType = 0; nType < 4; nType++)
 int32_t CheckUsedLights2 (void);
 #endif
 
-int32_t SetupHardwareLighting (CSegFace *faceP, int32_t nType)
+int32_t SetupHardwareLighting (CSegFace *pFace, int32_t nType)
 {
 PROF_START
 	int32_t				nLightRange, nLights;
@@ -1081,27 +1081,27 @@ PROF_START
 	CFloatVector		specular = {{{0.5f,0.5f,0.5f,0.5f}}};
 	//CFloatVector		vPos = CFloatVector::Create(0,0,0,1);
 	GLenum				hLight;
-	CActiveDynLight*	activeLightsP;
+	CActiveDynLight*	pActiveLights;
 	CDynLight*			psl;
 	CDynLightIndex&	sli = lightManager.Index (0,0);
 
 #if DBG
-if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+if (pFace && (pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 	BRP;
-if (faceP - FACES.faces == nDbgFace)
+if (pFace - FACES.faces == nDbgFace)
 	BRP;
 #endif
 if (!ogl.m_states.iLight) {
 #if DBG
-	if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	if (pFace && (pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 		BRP;
-	if (faceP - FACES.faces == nDbgFace)
+	if (pFace - FACES.faces == nDbgFace)
 		BRP;
 #endif
 #if ONLY_LIGHTMAPS == 2
 	ogl.m_states.nLights = 0;
 #else
-	ogl.m_states.nLights = lightManager.SetNearestToFace (faceP, nType != 0);
+	ogl.m_states.nLights = lightManager.SetNearestToFace (pFace, nType != 0);
 #endif
 	if (ogl.m_states.nLights > gameStates.render.nMaxLightsPerFace)
 		ogl.m_states.nLights = gameStates.render.nMaxLightsPerFace;
@@ -1110,16 +1110,16 @@ if (!ogl.m_states.iLight) {
 	if (gameData.render.nMaxLights < ogl.m_states.nLights)
 		gameData.render.nMaxLights = ogl.m_states.nLights;
 #if DBG
-	if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	if (pFace && (pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 		HUDMessage (0, "%d lights", ogl.m_states.nLights);
 #endif
 	}
-activeLightsP = lightManager.Active (0) + ogl.m_states.nFirstLight;
+pActiveLights = lightManager.Active (0) + ogl.m_states.nFirstLight;
 nLightRange = sli.nLast - ogl.m_states.nFirstLight + 1;
 for (nLights = 0;
 	  (ogl.m_states.iLight < ogl.m_states.nLights) & (nLightRange > 0) && (nLights < gameStates.render.nMaxLightsPerPass);
-	  activeLightsP++, nLightRange--) {
-	if (!(psl = lightManager.GetActive (activeLightsP, 0)))
+	  pActiveLights++, nLightRange--) {
+	if (!(psl = lightManager.GetActive (pActiveLights, 0)))
 		continue;
 #if 0 //DBG
 	if (psl->info.nType == 2)
@@ -1130,13 +1130,13 @@ for (nLights = 0;
 		continue;
 #endif
 #if 0//DBG
-	if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	if (pFace && (pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 		BRP;
-	if (faceP - FACES == nDbgFace)
+	if (pFace - FACES == nDbgFace)
 		BRP;
-	if ((psl->nTarget < 0) && (-psl->nTarget - 1 != faceP->m_info.nSegment))
+	if ((psl->nTarget < 0) && (-psl->nTarget - 1 != pFace->m_info.nSegment))
 		BRP;
-	else if ((psl->nTarget > 0) && (psl->nTarget != faceP - FACES + 1))
+	else if ((psl->nTarget > 0) && (psl->nTarget != pFace - FACES + 1))
 		BRP;
 	if (!psl->nTarget)
 		psl = psl;
@@ -1173,7 +1173,7 @@ for (nLights = 0;
 if (nLightRange <= 0) {
 	ogl.m_states.iLight = ogl.m_states.nLights;
 	}
-ogl.m_states.nFirstLight = int32_t (activeLightsP - lightManager.Active (0));
+ogl.m_states.nFirstLight = int32_t (pActiveLights - lightManager.Active (0));
 #if DBG
 if ((ogl.m_states.iLight < ogl.m_states.nLights) && !nLightRange)
 	BRP;
@@ -1185,18 +1185,18 @@ return nLights;
 
 //------------------------------------------------------------------------------
 
-int32_t SetupPerPixelLightingShader (CSegFace *faceP, int32_t nType, bool bHeadlight)
+int32_t SetupPerPixelLightingShader (CSegFace *pFace, int32_t nType, bool bHeadlight)
 {
 PROF_START
 	//static CBitmap	*nullBmP = NULL;
 	static int32_t nLastType = -1;
 
 #if DBG
-if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+if (pFace && (pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 	BRP;
 #endif
 
-	int32_t	nLights = SetupHardwareLighting (faceP, nType);//, bStart = (ogl.m_states.iLight == 0);
+	int32_t	nLights = SetupHardwareLighting (pFace, nType);//, bStart = (ogl.m_states.iLight == 0);
 	
 if (0 > nLights)
 	return 0;
@@ -1204,10 +1204,10 @@ if (0 > nLights)
 nType = 0;
 #endif
 #if DBG
-if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+if (pFace && (pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 	BRP;
 #endif
-if (!SetupLightmap (faceP))
+if (!SetupLightmap (pFace))
 	return 0;
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][3/*nType*/]));
 if (!shaderProg) {
@@ -1230,7 +1230,7 @@ if (shaderManager.Rebuild (shaderProg) || (nType != nLastType))
 		}
 	}
 if (!nType)
-	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
+	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&pFace->m_info.color));
 glUniform1i (glGetUniformLocation (shaderProg, "nType"), GLint (nType));
 glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
 glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"), (nLights ? GLfloat (nLights) / GLfloat (ogl.m_states.nLights) : 1.0f) * gameData.render.fBrightness);

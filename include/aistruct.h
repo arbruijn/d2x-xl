@@ -118,16 +118,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // This is the stuff that is permanent for an AI CObject and is
 // therefore saved to disk.
 typedef struct tAIStaticInfo {
-	uint8_t   behavior;               //
+	uint8_t  behavior;               //
 	int8_t   flags[MAX_AI_FLAGS];    // various flags, meaning defined by constants
-	int16_t   nHideSegment;           // Segment to go to for hiding.
-	int16_t   nHideIndex;             // Index in Path_seg_points
-	int16_t   nPathLength;            // Length of hide path.
-	int8_t   nCurPathIndex;         // Current index in path.
-	int8_t   bDyingSoundPlaying;    // !0 if this robot is playing its dying sound.
-	int16_t   nDangerLaser;
-	int32_t     nDangerLaserSig;
-	fix     xDyingStartTime;       // Time at which this robot started dying.
+	int16_t  nHideSegment;           // Segment to go to for hiding.
+	int16_t  nHideIndex;             // Index in Path_seg_points
+	int16_t  nPathLength;            // Length of hide path.
+	int8_t	nCurPathIndex;         // Current index in path.
+	int8_t	bDyingSoundPlaying;    // !0 if this robot is playing its dying sound.
+	int16_t	nDangerLaser;
+	int32_t	nDangerLaserSig;
+	fix		xDyingStartTime;       // Time at which this robot started dying.
 } __pack__ tAIStaticInfo;
 
 class CAIStaticInfo {
@@ -163,7 +163,7 @@ typedef struct tAILocalInfo {
 	// -- MK, 10/21/95, unused -- fix     last_seeTime, last_attackTime; // For sound effects, time at which player last seen, attacked
 
 	fix     nextActionTime;						// time in seconds until something happens, mode dependent
-	fix     nextPrimaryFire;               // time in seconds until can fire again
+	fix     pNextrimaryFire;               // time in seconds until can fire again
 	fix     nextSecondaryFire;             // time in seconds until can fire again from second weapon
 	fix     targetAwarenessTime;				// time in seconds robot will be aware of player, 0 means not aware of player
 	fix     timeTargetSeen;						// absolute time in seconds at which player was last seen, might cause to go into follow_path mode

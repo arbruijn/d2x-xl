@@ -232,7 +232,7 @@ void CLightning::Init (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 							  int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude,
 							  char nAngle, int32_t nOffset, int16_t nNodes, int16_t nChildren, int16_t nFrames,
 							  int16_t nSmoothe, char bClamp, char bGlow, char bLight,
-							  char nStyle, float nWidth, CFloatVector *colorP, CLightning *parentP, int16_t nNode)
+							  char nStyle, float nWidth, CFloatVector *pColor, CLightning *pParent, int16_t nNode)
 {
 	int32_t	bRandom = (vEnd == NULL) || (nAngle > 0);
 
@@ -245,7 +245,7 @@ else {
 	m_nObject = nObject;
 	}
 m_bRandom = bRandom ? nNodes / 5 : 0;
-m_parent = parentP;
+m_parent = pParent;
 m_nNode = nNode;
 m_nNodes = nNodes + m_bRandom;
 m_nChildren = (extraGameInfo [0].bUseLightning > 1) ? (nChildren < 0) ? (nNodes - m_bRandom) / 10 : nChildren : 0;
@@ -280,7 +280,7 @@ m_nSmoothe = nSmoothe;
 m_bClamp = bClamp;
 m_bGlow = bGlow;
 m_iStep = 0;
-m_color = *colorP;
+m_color = *pColor;
 m_vBase = *vPos;
 m_bLight = bLight;
 m_nStyle = nStyle;
@@ -347,12 +347,12 @@ return true;
 
 void CLightning::DestroyNodes (void)
 {
-	CLightningNode	*nodeP = m_nodes.Buffer ();
+	CLightningNode	*pNode = m_nodes.Buffer ();
 
-if (nodeP) {
+if (pNode) {
 	int32_t i;
-	for (i = abs (m_nNodes); i > 0; i--, nodeP++)
-		nodeP->Destroy ();
+	for (i = abs (m_nNodes); i > 0; i--, pNode++)
+		pNode->Destroy ();
 	m_nodes.Destroy ();
 	m_plasmaVerts.Destroy ();
 	m_plasmaTexCoord.Destroy ();
@@ -400,15 +400,15 @@ if (m_nNodes > 0)
 
 void CLightning::Bump (void)
 {
-	CLightningNode	*nodeP;
+	CLightningNode	*pNode;
 	int32_t			h, i, nDist, nAmplitude, nMaxDist = 0;
 	CFixVector	vBase [2];
 
 nAmplitude = m_nAmplitude;
 vBase [0] = m_vPos;
 vBase [1] = m_nodes [m_nNodes - 1].m_vPos;
-for (i = m_nNodes - 1 - (m_bRandom == 0), nodeP = m_nodes + 1; i > 0; i--, nodeP++) {
-	nDist = CFixVector::Dist (nodeP->m_vNewPos, nodeP->m_vPos);
+for (i = m_nNodes - 1 - (m_bRandom == 0), pNode = m_nodes + 1; i > 0; i--, pNode++) {
+	nDist = CFixVector::Dist (pNode->m_vNewPos, pNode->m_vPos);
 	if (nMaxDist < nDist) {
 		nMaxDist = nDist;
 		h = i;
@@ -417,8 +417,8 @@ for (i = m_nNodes - 1 - (m_bRandom == 0), nodeP = m_nodes + 1; i > 0; i--, nodeP
 if ((h = nAmplitude - nMaxDist)) {
 	if (m_nNodes > 0) {
 		nMaxDist += (Rand (4) + 1) * h / 4;
-		for (i = m_nNodes - 1 - (m_bRandom == 0), nodeP = m_nodes + 1; i > 0; i--, nodeP++)
-			nodeP->m_vOffs *= FixDiv (nAmplitude, nMaxDist);
+		for (i = m_nNodes - 1 - (m_bRandom == 0), pNode = m_nodes + 1; i > 0; i--, pNode++)
+			pNode->m_vOffs *= FixDiv (nAmplitude, nMaxDist);
 		}
 	}
 }
@@ -480,7 +480,7 @@ static int32_t octaves = 6;
 
 void CLightning::CreatePath (int32_t nDepth, int32_t nThread)
 {
-	CLightningNode*	plh, * nodeP [2];
+	CLightningNode*	plh, * pNode [2];
 	int32_t				h, i, j, nFrames, nStyle, nSmoothe, bClamp, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
 	CFixVector			vPos [2], vBase [2], vPrevOffs [2];
 
@@ -530,16 +530,16 @@ else {
 		Rotate (nFrames);
 		}
 	else if (nStyle == 1) {
-		for (i = m_nNodes - 1, j = 0, nodeP [0] = m_nodes + 1, nodeP [1] = &m_nodes [i - 1]; i > 0; i--, j = !j) {
-			plh = nodeP [j];
+		for (i = m_nNodes - 1, j = 0, pNode [0] = m_nodes + 1, pNode [1] = &m_nodes [i - 1]; i > 0; i--, j = !j) {
+			plh = pNode [j];
 			vPrevOffs [j] = plh->CreateJaggy (vPos + j, vPos + !j, vBase, bPrevOffs [j] ? vPrevOffs + j : NULL, nFrames, nAmplitude, 0, i, nSmoothe, bClamp);
 			bPrevOffs [j] = 1;
-			if (nodeP [1] <= nodeP [0])
+			if (pNode [1] <= pNode [0])
 				break;
 			if (j)
-				nodeP [1]--;
+				pNode [1]--;
 			else
-				nodeP [0]++;
+				pNode [0]++;
 			}
 		Scale (nFrames, nAmplitude);
 		}
@@ -548,15 +548,15 @@ else {
 		if (bInPlane)
 			nStyle = 0;
 		nAmplitude *= 3;
-		for (h = m_nNodes - 1, i = j = 0, nodeP [0] = m_nodes + 1, nodeP [1] = &m_nodes [h - 1]; i < h; i++, j = !j) {
-			plh = nodeP [j];
+		for (h = m_nNodes - 1, i = j = 0, pNode [0] = m_nodes + 1, pNode [1] = &m_nodes [h - 1]; i < h; i++, j = !j) {
+			plh = pNode [j];
 			plh->CreateErratic (vPos + j, vBase, nFrames, nAmplitude, bInPlane, j, 0, i, h, nSmoothe, bClamp);
-			if (nodeP [1] <= nodeP [0])
+			if (pNode [1] <= pNode [0])
 				break;
 			if (j)
-				nodeP [1]--;
+				pNode [1]--;
 			else
-				nodeP [0]++;
+				pNode [0]++;
 			}
 		}
 	}
@@ -573,7 +573,7 @@ if (nStyle < 2) {
 
 void CLightning::Animate (int32_t nDepth, int32_t nThread)
 {
-	CLightningNode*	nodeP;
+	CLightningNode*	pNode;
 	int32_t				j;
 	bool					bInit;
 
@@ -585,8 +585,8 @@ if (m_nNodes > 0) {
 		CreatePath (nDepth + 1, nThread);
 		m_iStep = m_nFrames;
 		}
-	for (j = m_nNodes - 1 - (m_bRandom == 0), nodeP = m_nodes + 1; j > 0; j--, nodeP++)
-		nodeP->Animate (bInit, m_nSegment, nDepth, nThread);
+	for (j = m_nNodes - 1 - (m_bRandom == 0), pNode = m_nodes + 1; j > 0; j--, pNode++)
+		pNode->Animate (bInit, m_nSegment, nDepth, nThread);
 	RenderSetup (nDepth, nThread);
 	(m_iStep)--;
 	}
@@ -649,10 +649,10 @@ if ((vNewPos == m_vPos) && (vNewEnd == m_vEnd))
 
 	fix					xNewLength = CFixVector::Dist (vNewEnd, vNewPos);
 	float					fScale = X2F (xNewLength) / X2F (m_nLength);
-	CLightningNode*	nodeP = m_nodes.Buffer ();
+	CLightningNode*	pNode = m_nodes.Buffer ();
 
-for (int32_t i = m_nNodes; i; i--, nodeP++) 
-	nodeP->Move (m_vPos, m_vEnd, vNewPos, vNewEnd, fScale, nSegment);
+for (int32_t i = m_nNodes; i; i--, pNode++) 
+	pNode->Move (m_vPos, m_vEnd, vNewPos, vNewEnd, fScale, nSegment);
 m_nodes [0].m_vPos =
 m_vPos = m_vBase = vNewPos;
 m_nodes [m_nNodes - 1].m_vPos =
@@ -703,13 +703,13 @@ return (gameOpts->render.lightning.bGlow || glowRenderer.Available (GLOW_LIGHTNI
 
 //------------------------------------------------------------------------------
 
-float CLightning::ComputeAvgDist (CFloatVector3* vertexP, int32_t nVerts)
+float CLightning::ComputeAvgDist (CFloatVector3* pVertex, int32_t nVerts)
 {
 	CFloatVector3 v;
 	float zMin = 1e30f, zMax = -1e30f;
 
 while (nVerts-- > 0) {
-	transformation.Transform (v, *vertexP++);
+	transformation.Transform (v, *pVertex++);
 	if (zMin > v.v.coord.z)
 		zMin = v.v.coord.z;
 	if (zMax < v.v.coord.z)
@@ -749,14 +749,14 @@ return m_fDistScale = 0.0f; //sqrt (((float) ZRANGE - zPivot - m_fAvgDist)) / ((
 void CLightning::ComputeGlow (int32_t nDepth, int32_t nThread)
 {
 
-	CLightningNode*	nodeP = m_nodes.Buffer ();
+	CLightningNode*	pNode = m_nodes.Buffer ();
 
-if (!nodeP)
+if (!pNode)
 	return;
 
 	CFloatVector*		srcP, * dstP, vEye, vn, vd, 
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
-	tTexCoord2f*		texCoordP;
+	tTexCoord2f*		pTexCoord;
 	int32_t				h, i, j;
 	bool					bGlow = !nDepth && (m_bGlow > 0) && gameOpts->render.lightning.bGlow; // && glowRenderer.Available (GLOW_LIGHTNING);
 #if 0
@@ -771,14 +771,14 @@ if (nThread < 0)
 else
 	vEye.Assign (gameData.render.mine.viewer.vPos);
 dstP = m_plasmaVerts.Buffer ();
-texCoordP = m_plasmaTexCoord.Buffer ();
-for (h = m_nNodes - 1 - m_bRandom, i = 0; i <= h; i++, nodeP++) {
+pTexCoord = m_plasmaTexCoord.Buffer ();
+for (h = m_nNodes - 1 - m_bRandom, i = 0; i <= h; i++, pNode++) {
 #if DBG
 	if (i >= h - 1)
 		BRP;
 #endif
 	vPos [0] = vPos [1];
-	vPos [1].Assign (nodeP->m_vPos);
+	vPos [1].Assign (pNode->m_vPos);
 	//if (nThread < 0)
 	//	transformation.Transform (vPos [1], vPos [1]);
 	if (i) {
@@ -798,11 +798,11 @@ for (h = m_nNodes - 1 - m_bRandom, i = 0; i <= h; i++, nodeP++) {
 		*dstP++ = vPos [0] - vn;
 		*dstP++ = vPos [1] - vn;
 		*dstP++ = vPos [1] + vn;
-		memcpy (texCoordP, plasmaTexCoord [0], 4 * sizeof (tTexCoord2f));
-		texCoordP += 4;
+		memcpy (pTexCoord, plasmaTexCoord [0], 4 * sizeof (tTexCoord2f));
+		pTexCoord += 4;
 		}
 	}
-memcpy (texCoordP - 4, plasmaTexCoord [2], 4 * sizeof (tTexCoord2f));
+memcpy (pTexCoord - 4, plasmaTexCoord [2], 4 * sizeof (tTexCoord2f));
 memcpy (&m_plasmaTexCoord [0], plasmaTexCoord [1], 4 * sizeof (tTexCoord2f));
 
 dstP = m_plasmaVerts.Buffer ();
@@ -815,8 +815,8 @@ if (bGlow) {
 	int32_t h = 4 * (m_nNodes - 1 - m_bRandom);
 	//for (j = 0; j < 2; j++) 
 		{
-		memcpy (texCoordP, texCoordP - h, h * sizeof (tTexCoord2f));
-		texCoordP += h;
+		memcpy (pTexCoord, pTexCoord - h, h * sizeof (tTexCoord2f));
+		pTexCoord += h;
 		srcP = dstP;
 		dstP += h;
 		for (i = 0; i < h; i += 2) {
@@ -857,25 +857,25 @@ if (extraGameInfo [0].bUseLightning > 1)
 
 //------------------------------------------------------------------------------
 
-void CLightning::RenderGlow (CFloatVector *colorP, int32_t nDepth, int32_t nThread)
+void CLightning::RenderGlow (CFloatVector *pColor, int32_t nDepth, int32_t nThread)
 {
 if (!m_plasmaVerts.Buffer ())
 	return;
 #if RENDER_LIGHTNING_OUTLINE
-	tTexCoord2f*	texCoordP;
-	CFloatVector*	vertexP;
+	tTexCoord2f*	pTexCoord;
+	CFloatVector*	pVertex;
 #endif
 
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
 ogl.SetBlendMode (OGL_BLEND_ADD);
 if (nDepth || (m_bGlow < 1)) {
-	glColor3fv (reinterpret_cast<GLfloat*> (colorP));
+	glColor3fv (reinterpret_cast<GLfloat*> (pColor));
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1 - m_bRandom));
 	}
 else {
 	int32_t h = 4 * (m_nNodes - 1 - m_bRandom);
-	glColor3f (colorP->Red () / 2.0f, colorP->Green () / 2.0f, colorP->Blue () / 2.0f);
+	glColor3f (pColor->Red () / 2.0f, pColor->Green () / 2.0f, pColor->Blue () / 2.0f);
 	for (int32_t i = 1; i >= 0; i--) {
 		OglDrawArrays (GL_QUADS, i * h, h);
 #if RENDER_LIGHTNING_OUTLINE
@@ -883,16 +883,16 @@ else {
 			continue;
 		ogl.SetTexturing (false);
 		glColor3f (1,1,1);
-		texCoordP = m_plasmaTexCoord.Buffer ();
-		vertexP = m_plasmaVerts.Buffer ();
+		pTexCoord = m_plasmaTexCoord.Buffer ();
+		pVertex = m_plasmaVerts.Buffer ();
 		for (int32_t i = 0; i < m_nNodes - 1; i++) {
 #if 1
 			OglDrawArrays (GL_LINE_LOOP, i * 4, 4);
 #else
 			glBegin (GL_LINE_LOOP);
 			for (int32_t j = 0; j < 4; j++) {
-				glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP++));
-				glVertex3fv (reinterpret_cast<GLfloat*> (vertexP++));
+				glTexCoord2fv (reinterpret_cast<GLfloat*> (pTexCoord++));
+				glVertex3fv (reinterpret_cast<GLfloat*> (pVertex++));
 				}
 			glEnd ();
 #endif
@@ -907,29 +907,29 @@ ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 
 void CLightning::ComputeCore (void)
 {
-	CFloatVector3*	vertP, * vPosf;
+	CFloatVector3*	pVertex, * vPosf;
 	int32_t				i;
 
-vPosf = vertP = &m_coreVerts [0];
+vPosf = pVertex = &m_coreVerts [0];
 
 for (i = 0; i < m_nNodes; i++, vPosf++)
 	vPosf->Assign (m_nodes [i].m_vPos);
 
-*vPosf = vertP [0] - vertP [1];
+*vPosf = pVertex [0] - pVertex [1];
 *vPosf /= 100.0f * vPosf->Mag ();
-*vPosf += vertP [0];
-*++vPosf = vertP [0];
+*vPosf += pVertex [0];
+*++vPosf = pVertex [0];
 i = m_nNodes - 1;
-*++vPosf = vertP [i];
-*++vPosf = vertP [i] - vertP [i - 1];
+*++vPosf = pVertex [i];
+*++vPosf = pVertex [i] - pVertex [i - 1];
 *vPosf /= 100.0f * vPosf->Mag ();
-*vPosf += vertP [i];
+*vPosf += pVertex [i];
 ComputeAvgDist (m_coreVerts.Buffer (), m_nNodes);
 }
 
 //------------------------------------------------------------------------------
 
-void CLightning::RenderCore (CFloatVector *colorP, int32_t nDepth, int32_t nThread)
+void CLightning::RenderCore (CFloatVector *pColor, int32_t nDepth, int32_t nThread)
 {
 #if 0 //DBG
 RenderTestImage ();
@@ -941,7 +941,7 @@ ogl.SetBlendMode (OGL_BLEND_ADD);
 ogl.SetLineSmooth (true);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
-	glColor4fv ((GLfloat*) colorP);
+	glColor4fv ((GLfloat*) pColor);
 	GLfloat w = nDepth ? m_width / 2.0f : m_width; // DEFAULT_CORE_WIDTH : DEFAULT_CORE_WIDTH * 1.5f;
 	//ComputeDistScale (100.0f);
 	if (glowRenderer.Available (GLOW_LIGHTNING) && (m_fDistScale != 0.0f)) 

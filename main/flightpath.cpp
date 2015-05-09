@@ -11,7 +11,7 @@
 
 //------------------------------------------------------------------------------
 
-void CFlightPath::Reset (int32_t nSize, int32_t nFPS)
+void CFpLightath::Reset (int32_t nSize, int32_t nFPS)
 {
 m_nSize = (nSize < 0) ? MAX_PATH_POINTS : nSize;
 m_tRefresh = (time_t) (1000 / ((nFPS < 0) ? 40 : nFPS));
@@ -23,9 +23,9 @@ m_tUpdate = -1;
 
 //------------------------------------------------------------------------------
 
-void CFlightPath::Update (CObject *objP)
+void CFpLightath::Update (CObject *pObj)
 {
-if (!objP)
+if (!pObj)
 	return;
 
 	time_t	t = SDL_GetTicks () - m_tUpdate;
@@ -35,11 +35,11 @@ if (m_nSize && ((m_tUpdate < 0) || (t >= m_tRefresh))) {
 //	h = m_nEnd;
 	m_nEnd = (m_nEnd + 1) % m_nSize;
 	tPathPoint& p = m_path [m_nEnd];
-	p.vOrgPos = objP->info.position.vPos;
-	p.vPos = objP->info.position.vPos;
-	p.mOrient = objP->info.position.mOrient;
-	p.vPos += objP->info.position.mOrient.m.dir.f * 0;
-	p.vPos += objP->info.position.mOrient.m.dir.u * 0;
+	p.vOrgPos = pObj->info.position.vPos;
+	p.vPos = pObj->info.position.vPos;
+	p.mOrient = pObj->info.position.mOrient;
+	p.vPos += pObj->info.position.mOrient.m.dir.f * 0;
+	p.vPos += pObj->info.position.mOrient.m.dir.u * 0;
 	p.bFlipped = false;
 //	if (!memcmp (m_path + h, m_path + m_nEnd, sizeof (tMovementPath)))
 //		m_nEnd = h;
@@ -51,7 +51,7 @@ if (m_nSize && ((m_tUpdate < 0) || (t >= m_tRefresh))) {
 
 //------------------------------------------------------------------------------
 
-tPathPoint* CFlightPath::GetPoint (void)
+tPathPoint* CFpLightath::GetPoint (void)
 {
 	CFixVector*	p = &m_path [m_nEnd].vPos;
 	int32_t		i;
@@ -74,14 +74,14 @@ return m_posP = m_path + i;
 
 //------------------------------------------------------------------------------
 
-void CFlightPath::GetViewPoint (CFixVector* vPos)
+void CFpLightath::GetViewPoint (CFixVector* vPos)
 {
 	tPathPoint* p = GetPoint ();
 
 if (!vPos)
 	vPos = &gameData.render.mine.viewer.vPos;
 if (!p)
-	*vPos += gameData.objData.viewerP->info.position.mOrient.m.dir.f * PP_DELTAZ;
+	*vPos += gameData.objData.pViewer->info.position.mOrient.m.dir.f * PP_DELTAZ;
 else {
 	*vPos = p->vPos;
 	int32_t nStage = LOCALOBJECT->AppearanceStage ();
@@ -106,7 +106,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-CFlightPath::CFlightPath ()
+CFpLightath::CFpLightath ()
 {
 if (m_path.Create (MAX_PATH_POINTS))
 	m_path.Clear (0);

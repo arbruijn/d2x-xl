@@ -171,7 +171,7 @@ if (info.visibleVertices) {
 	info.visibleVertices = NULL;
 	}
 for (int32_t i = 0; i < MAX_THREADS; i++)
-	render.activeLightsP [i] = NULL;
+	render.pActiveLights [i] = NULL;
 }
 
 // ----------------------------------------------------------------------------
@@ -223,7 +223,7 @@ bLightning = 0;
 bExclusive = 0;
 bState = 0;
 CLEAR (bUsed);
-CLEAR (activeLightsP);
+CLEAR (pActiveLights);
 }
 
 // ----------------------------------------------------------------------------
@@ -375,7 +375,7 @@ void CShadowData::Init (void)
 {
 nLight = 0;
 nLights = 0;
-lightP = NULL;
+pLight = NULL;
 nShadowMaps = 0;
 memset (&lightSource, 0, sizeof (lightSource));
 memset (&vLightPos, 0, sizeof (vLightPos));
@@ -544,7 +544,7 @@ xFlashEffect = 0;
 xTimeFlashLastPlayed = 0;
 zMin = zMax = 0;
 vertexList = NULL;
-vertP = NULL;
+pVertex = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -553,7 +553,7 @@ void CRenderData::Init (void)
 {
 xFlashEffect = 0;
 xTimeFlashLastPlayed = 0;
-vertP = NULL;
+pVertex = NULL;
 zMin = 0;
 zMax = 0;
 dAspect = 0;
@@ -600,23 +600,23 @@ bool CRiftData::Create (void)
 gameData.render.rift.m_bAvailable = 0;
 if (gameOpts->render.bUseRift) {
 	OVR::System::Init (OVR::Log::ConfigureDefaultLog (OVR::LogMask_All));
-	m_managerP = *OVR::DeviceManager::Create();
-	if (m_managerP) {
-		//m_managerP->SetMessageHandler(this);
+	m_pManager = *OVR::DeviceManager::Create();
+	if (m_pManager) {
+		//m_pManager->SetMessageHandler(this);
 
 		// Release Sensor/HMD in case this is a retry.
-		m_sensorP.Clear ();
-		m_hmdP.Clear ();
+		m_pSensorP.Clear ();
+		m_pHMD.Clear ();
 		// RenderParams.MonitorName.Clear();
-		m_hmdP = *m_managerP->EnumerateDevices<OVR::HMDDevice> ().CreateDevice ();
-		if (m_hmdP) {
-			m_sensorP = *m_hmdP->GetSensor ();
+		m_pHMD = *m_pManager->EnumerateDevices<OVR::HMDDevice> ().CreateDevice ();
+		if (m_pHMD) {
+			m_pSensorP = *m_pHMD->GetSensor ();
 
 			// This will initialize m_hmdInfo with information about configured IPD,
 			// screen size and other variables needed for correct projection.
 			// We pass HMD DisplayDeviceName into the renderer to select the
 			// correct monitor in full-screen mode.
-			if (m_hmdP->GetDeviceInfo (&m_hmdInfo))	{            
+			if (m_pHMD->GetDeviceInfo (&m_hmdInfo))	{            
 				// RenderParams.MonitorName = m_hmdInfo.DisplayDeviceName;
 				// RenderParams.DisplayId = m_hmdInfo.DisplayId;
 				m_stereoConfig.SetHMDInfo (m_hmdInfo);
@@ -634,7 +634,7 @@ if (gameOpts->render.bUseRift) {
 			// If we didn't detect an HMD, try to create the sensor directly.
 			// This is useful for debugging sensor interaction; it is not needed in
 			// a shipping app.
-			m_sensorP = *m_managerP->EnumerateDevices<OVR::SensorDevice> ().CreateDevice ();
+			m_pSensorP = *m_pManager->EnumerateDevices<OVR::SensorDevice> ().CreateDevice ();
 			}
 		}
 	m_nResolution = HResolution () > 1280;
@@ -642,22 +642,22 @@ if (gameOpts->render.bUseRift) {
 
 	const char* detectionMessage = NULL;
 
-	if (!m_managerP)
+	if (!m_pManager)
 		detectionMessage = "Cannot initialize Oculus Rift system.";
-	if (!m_hmdP && !m_sensorP)
+	if (!m_pHMD && !m_pSensorP)
 		detectionMessage = "Oculus Rift not detected.";
-	else if (!m_hmdP)
+	else if (!m_pHMD)
 		detectionMessage = "Oculus Sensor detected; HMD Display not detected.\n";
 	else if (m_hmdInfo.DisplayDeviceName [0] == '\0')
 		detectionMessage = "Oculus Sensor detected; HMD display EDID not detected.\n";
-	else if (!m_sensorP) {
+	else if (!m_pSensorP) {
 		m_bAvailable = 1;
 		detectionMessage = "Oculus HMD Display detected; Sensor not detected.\n";
 		}
 	else {
-		m_sensorFusion = new OVR::SensorFusion;
-		m_sensorFusion->AttachToSensor (m_sensorP);
-		m_sensorFusion->SetYawCorrectionEnabled (true);
+		m_pSensorFusion = new OVR::SensorFusion;
+		m_pSensorFusion->AttachToSensor (m_pSensorP);
+		m_pSensorFusion->SetYawCorrectionEnabled (true);
 #if 0
 		m_magCalTO.Setup (60000); // 1 minute
 		m_magCalTO.Start (-1, true);
@@ -679,7 +679,7 @@ int32_t CRiftData::GetViewMatrix (CFixMatrix& mOrient)
 #if OCULUS_RIFT
 if (Available () < 2)
 	return 0;
-OVR::Quatf q = m_sensorFusion->GetOrientation ();
+OVR::Quatf q = m_pSensorFusion->GetOrientation ();
 OVR::Matrix4f m (q);
 for (int32_t i = 0; i < 3; i++)
 	for (int32_t j = 0; j < 3; j++)
@@ -713,7 +713,7 @@ int32_t CRiftData::GetHeadAngles (CAngleVector* angles)
 #if OCULUS_RIFT
 if (Available () < 2)
 	return 0;
-OVR::Quatf q = m_sensorFusion->GetOrientation ();
+OVR::Quatf q = m_pSensorFusion->GetOrientation ();
 float yaw, pitch, roll;
 q.GetEulerAngles<OVR::Axis_Y, OVR::Axis_X, OVR::Axis_Z>(&yaw, &pitch, &roll);
 if (!angles) 
@@ -740,7 +740,7 @@ if (Available () > 1) {
 			m_magCalTO.Start (-1, true);
 			}
 		else {
-			m_magCal.UpdateAutoCalibration (*m_sensorFusion);
+			m_magCal.UpdateAutoCalibration (*m_pSensorFusion);
 			if (m_magCal.IsCalibrated ()) {
 				m_bCalibrating = false;
 				m_magCalTO.Start (-1);
@@ -748,7 +748,7 @@ if (Available () > 1) {
 			}
 		}
 	else if (m_magCalTO.Expired (false))
-		m_magCal.BeginAutoCalibration (*m_sensorFusion);
+		m_magCal.BeginAutoCalibration (*m_pSensorFusion);
 	}
 #endif
 }
@@ -758,9 +758,9 @@ if (Available () > 1) {
 void CRiftData::Destroy (void)
 {
 #if OCULUS_RIFT
-if (m_sensorFusion) {
-	delete m_sensorFusion;
-	m_sensorFusion = NULL;
+if (m_pSensorFusion) {
+	delete m_pSensorFusion;
+	m_pSensorFusion = NULL;
 	}
 #endif
 }
@@ -798,10 +798,10 @@ iOvlTexCoord = 0;
 nFaces = 0;
 nTriangles = 0;
 slidingFaces = NULL;
-indexP = NULL;
+pIndex = NULL;
 vboDataHandle = 0;
 vboIndexHandle = 0;
-vertexP = NULL;
+pVertex = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -811,8 +811,8 @@ void CFaceData::Init (void)
 slidingFaces = NULL;
 vboDataHandle = 0;
 vboIndexHandle = 0;
-vertexP = NULL;
-indexP = NULL;
+pVertex = NULL;
+pIndex = NULL;
 nTriangles = 0;
 nVertices = 0;
 iVertices = 0;
@@ -1123,20 +1123,20 @@ return z * m_vDim.v.coord.y * m_vDim.v.coord.x + y * m_vDim.v.coord.x + x;
 
 bool CSegmentGrid::Create (int32_t nGridSize, int32_t bSkyBox)
 {
-	CSegment*		segP;
-	tSegGridIndex*	indexP;
+	CSegment*		pSeg;
+	tSegGridIndex*	pIndex;
 	CFixVector		v0, v1;
 	int32_t				size, i, j, x, y, z;
 
 Destroy ();
 m_vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
-segP = SEGMENTS.Buffer ();
-for (i = gameData.segData.nSegments, j = 0; i; i--, segP++) {
-	if ((segP->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
+pSeg = SEGMENTS.Buffer ();
+for (i = gameData.segData.nSegments, j = 0; i; i--, pSeg++) {
+	if ((pSeg->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
 		j++;
-		v0 = segP->m_extents [0];
-		v1 = segP->m_extents [1];
+		v0 = pSeg->m_extents [0];
+		v1 = pSeg->m_extents [1];
 		if (m_vMin.v.coord.x > v0.v.coord.x)
 			m_vMin.v.coord.x = v0.v.coord.x;
 		if (m_vMin.v.coord.y > v0.v.coord.y)
@@ -1165,24 +1165,24 @@ if (!m_index.Create (size))
 	return false;
 m_index.Clear ();
 
-segP = SEGMENTS.Buffer ();
-for (i = gameData.segData.nSegments; i; i--, segP++) {
-	if ((segP->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
+pSeg = SEGMENTS.Buffer ();
+for (i = gameData.segData.nSegments; i; i--, pSeg++) {
+	if ((pSeg->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
 #if DBG
-		if (segP - SEGMENTS.Buffer () == nDbgSeg)
+		if (pSeg - SEGMENTS.Buffer () == nDbgSeg)
 			BRP;
 #endif
-		v0 = segP->m_extents [0] - m_vMin;
-		v1 = segP->m_extents [1] - m_vMin;
+		v0 = pSeg->m_extents [0] - m_vMin;
+		v1 = pSeg->m_extents [1] - m_vMin;
 		v0 /= I2X (m_nGridSize);
 		v1 /= I2X (m_nGridSize);
 		ToInt (Floor (v0));
 		ToInt (Floor (v1));
 		for (z = v0.v.coord.z; z <= v1.v.coord.z; z++) {
 			for (y = v0.v.coord.y; y <= v1.v.coord.y; y++) {
-				indexP = &m_index [GridIndex (v0.v.coord.x, y, z)];
-				for (x = v0.v.coord.x; x <= v1.v.coord.x; x++, indexP++) {
-					indexP->nSegments++;
+				pIndex = &m_index [GridIndex (v0.v.coord.x, y, z)];
+				for (x = v0.v.coord.x; x <= v1.v.coord.x; x++, pIndex++) {
+					pIndex->nSegments++;
 					}
 				}
 			}
@@ -1207,24 +1207,24 @@ if (!m_segments.Create (j)) {
 	return false;
 	}
 
-segP = SEGMENTS.Buffer ();
-for (i = 0; i < gameData.segData.nSegments; i++, segP++) {
-	if ((segP->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
+pSeg = SEGMENTS.Buffer ();
+for (i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
+	if ((pSeg->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
 #if DBG
-		if (segP - SEGMENTS.Buffer () == nDbgSeg)
+		if (pSeg - SEGMENTS.Buffer () == nDbgSeg)
 			BRP;
 #endif
-		v0 = segP->m_extents [0] - m_vMin;
-		v1 = segP->m_extents [1] - m_vMin;
+		v0 = pSeg->m_extents [0] - m_vMin;
+		v1 = pSeg->m_extents [1] - m_vMin;
 		v0 /= I2X (m_nGridSize);
 		v1 /= I2X (m_nGridSize);
 		ToInt (Floor (v0));
 		ToInt (Floor (v1));
 		for (z = v0.v.coord.z; z <= v1.v.coord.z; z++) {
 			for (y = v0.v.coord.y; y <= v1.v.coord.y; y++) {
-				indexP = &m_index [GridIndex (v0.v.coord.x, y, z)];
-				for (x = v0.v.coord.x; x <= v1.v.coord.x; x++, indexP++)
-					m_segments [indexP->nIndex + indexP->nSegments++] = i;
+				pIndex = &m_index [GridIndex (v0.v.coord.x, y, z)];
+				for (x = v0.v.coord.x; x <= v1.v.coord.x; x++, pIndex++)
+					m_segments [pIndex->nIndex + pIndex->nSegments++] = i;
 				}
 			}
 		}
@@ -1354,7 +1354,7 @@ CSoundData::CSoundData ()
 {
 for (int32_t i = 0; i < 2; i++)
 	sounds [i].Create (MAX_SOUND_FILES); //[MAX_SOUND_FILES];
-sounds [0].ShareBuffer (soundP);
+sounds [0].ShareBuffer (pSound);
 nType = 0;
 }
 
@@ -1595,11 +1595,11 @@ gameData.objData.idToOOF [MEGAMSL_ID] = OOF_MEGA;
 
 CObjectData::CObjectData ()
 {
-consoleP = NULL;
-viewerP = NULL;
+pConsole = NULL;
+pViewer = NULL;
 deadPlayerCamera = NULL;
 endLevelCamera = NULL;
-missileViewerP = NULL;
+pMissileViewer = NULL;
 nChildFreeList = 0;
 nDeadControlCenter = -1;
 nDebris = 0;
@@ -1631,9 +1631,9 @@ CLEAR (nLastObject);
 CLEAR (guidedMissile);
 CLEAR (trackGoals);
 bWantEffect.Clear ();
-consoleP = NULL;
-viewerP = NULL;
-missileViewerP = NULL;
+pConsole = NULL;
+pViewer = NULL;
+pMissileViewer = NULL;
 deadPlayerCamera = NULL;
 endLevelCamera = NULL;
 nFirstDropped = 0;
@@ -1765,31 +1765,31 @@ return j;
 
 // ----------------------------------------------------------------------------
 
-void CObjectData::SetGuidedMissile (uint8_t nPlayer, CObject* objP) 
+void CObjectData::SetGuidedMissile (uint8_t nPlayer, CObject* pObj) 
 {
-guidedMissile [nPlayer].objP = objP;
-guidedMissile [nPlayer].nSignature = objP ? objP->Signature () : -1;
+guidedMissile [nPlayer].pObj = pObj;
+guidedMissile [nPlayer].nSignature = pObj ? pObj->Signature () : -1;
 }
 
 // ----------------------------------------------------------------------------
 
-bool CObjectData::IsGuidedMissile (CObject* objP) 
+bool CObjectData::IsGuidedMissile (CObject* pObj) 
 {
-return objP && objP->IsGuidedMissile ();
+return pObj && pObj->IsGuidedMissile ();
 }
 
 // ----------------------------------------------------------------------------
 
 bool CObjectData::HasGuidedMissile (uint8_t nPlayer) 
 {
-return IsGuidedMissile (guidedMissile [nPlayer].objP);
+return IsGuidedMissile (guidedMissile [nPlayer].pObj);
 }
 
 // ----------------------------------------------------------------------------
 
 CObject* CObjectData::GetGuidedMissile (uint8_t nPlayer) 
 {
-return IsGuidedMissile (guidedMissile [nPlayer].objP) ? guidedMissile [nPlayer].objP : NULL;
+return IsGuidedMissile (guidedMissile [nPlayer].pObj) ? guidedMissile [nPlayer].pObj : NULL;
 }
 
 // ----------------------------------------------------------------------------
@@ -2093,7 +2093,7 @@ bOutline = 0;
 nGridW = nGridH = 0;
 orgI = orgJ = 0;
 nMineTilesDrawn = 0;
-bmP = NULL;
+pBm = NULL;
 CLEAR (uvlList);
 uvlList [0][1].u =
 uvlList [0][2].v =
@@ -2217,11 +2217,11 @@ gameData.pig.tex.altBitmaps [gameStates.app.bD1Data].ShareBuffer (gameData.pig.t
 gameData.pig.tex.bmIndex [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.bmIndexP);
 gameData.pig.tex.bitmapFiles [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.bitmapFileP);
 gameData.pig.tex.tMapInfo [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.tMapInfoP);
-gameData.pig.sound.sounds [gameStates.app.bD1Data].ShareBuffer (gameData.pig.sound.soundP);
-gameData.effects.effects [gameStates.app.bD1Data].ShareBuffer (gameData.effects.effectP);
+gameData.pig.sound.sounds [gameStates.app.bD1Data].ShareBuffer (gameData.pig.sound.pSound);
+gameData.effects.effects [gameStates.app.bD1Data].ShareBuffer (gameData.effects.pEffect);
 gameData.effects.animations [gameStates.app.bD1Data].ShareBuffer (gameData.effects.vClipP);
-gameData.wallData.anims [gameStates.app.bD1Data].ShareBuffer (gameData.wallData.animP);
-gameData.botData.info [gameStates.app.bD1Data].ShareBuffer (gameData.botData.infoP);
+gameData.wallData.anims [gameStates.app.bD1Data].ShareBuffer (gameData.wallData.pAnim);
+gameData.botData.info [gameStates.app.bD1Data].ShareBuffer (gameData.botData.pInfo);
 }
 
 // ----------------------------------------------------------------------------
@@ -2700,13 +2700,13 @@ if (nId >= botData.nTypes [bD1])
 return a + nId; 
 }
 
-tRobotInfo* CGameData::RobotInfo (CObject* objP, int32_t nChecks, const char* pszFile, int32_t nLine) 
+tRobotInfo* CGameData::RobotInfo (CObject* pObj, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
-if (!objP || !Object (objP->Index (), GAMEDATA_ERRLOG_ALL, pszFile, nLine))
+if (!pObj || !Object (pObj->Index (), GAMEDATA_ERRLOG_ALL, pszFile, nLine))
 	 return (tRobotInfo*) GameDataError ("robot info", "object buffer", nChecks, pszFile, nLine);
-if ((nChecks & GAMEDATA_ERRLOG_TYPE) && !objP->IsRobot () && !objP->IsReactor ())
+if ((nChecks & GAMEDATA_ERRLOG_TYPE) && !pObj->IsRobot () && !pObj->IsReactor ())
 	return (tRobotInfo*) GameDataError ("robot info", "object type", nChecks, pszFile, nLine);
-return RobotInfo (objP->Id (), nChecks, pszFile, nLine);
+return RobotInfo (pObj->Id (), nChecks, pszFile, nLine);
 }
 
 #endif

@@ -214,7 +214,7 @@ class CSyncPack {
 		virtual uint8_t GetRenderType (void) { return Data ().nRenderType; }
 		virtual uint8_t GetLevel (void) { return Data ().nLevel; }
 
-		virtual void SetObjInfo (CObject* objP) = 0;
+		virtual void SetObjInfo (CObject* pObj) = 0;
 
 		virtual bool Overflow (uint16_t msgLen) { return MsgDataSize () + msgLen > MaxDataSize (); }
 		virtual uint32_t SetReserve (uint32_t nReserve) { 
@@ -252,7 +252,7 @@ class CSyncPackLong : public CSyncPack {
 		virtual tFrameInfoHeader& Header (void) { return m_info.header; }
 		virtual tFrameInfoData& Data (void) { return m_info.data; }
 		virtual void SetInfo (void* info) { memcpy (&m_info, info, HeaderSize () + reinterpret_cast<tFrameInfoLong*>(info)->data.dataSize); }
-		virtual void SetObjInfo (CObject* objP) { CreateLongPos (&m_info.objData, objP); }
+		virtual void SetObjInfo (CObject* pObj) { CreateLongPos (&m_info.objData, pObj); }
 		virtual void Squish (void);
 
 		inline CSyncPackLong& operator= (tFrameInfoLong& info) { 
@@ -275,7 +275,7 @@ class CSyncPackShort : public CSyncPack {
 		virtual tFrameInfoHeader& Header (void) { return m_info.header; }
 		virtual tFrameInfoData& Data (void) { return m_info.data; }
 		virtual void SetInfo (void* info) { memcpy (&m_info, info, HeaderSize () + reinterpret_cast<tFrameInfoShort*>(info)->data.dataSize); }
-		virtual void SetObjInfo (CObject* objP) { CreateShortPos (&m_info.objData, objP); }
+		virtual void SetObjInfo (CObject* pObj) { CreateShortPos (&m_info.objData, pObj); }
 		virtual void Squish (void);
 
 		inline CSyncPackShort& operator= (tFrameInfoShort& info) { 
@@ -405,7 +405,7 @@ class CNetworkData {
 		int16_t					nJoining;
 		int32_t					xmlGameInfoRequestTime;
 		tRefuseData				refuse;
-		tPlayerSyncData		thisPlayer;
+		tPlayerSyncData		pThislayer;
 		tNetworkSyncInfo		syncInfo [MAX_JOIN_REQUESTS];
 
 		CNetworkAddress		localAddress;
@@ -446,7 +446,7 @@ extern int32_t nLastNetGameUpdate [MAX_ACTIVE_NETGAMES];
 extern CNetGameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
 extern tExtraGameInfo activeExtraGameInfo [MAX_ACTIVE_NETGAMES];
 extern CAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
-extern CAllNetPlayersInfo* playerInfoP;
+extern CAllNetPlayersInfo* pPlayerInfo;
 #endif
 
 //------------------------------------------------------------------------------
@@ -512,7 +512,7 @@ void NetworkSendPlayerFlags (void);
 void NetworkSendFlyThruTriggers (int32_t nPlayer); 
 void NetworkSendSmashedLights (int32_t nPlayer); 
 void NetworkSendMarkers (void);
-void NetworkSendRejoinSync (int32_t nPlayer, tNetworkSyncInfo *syncInfoP);
+void NetworkSendRejoinSync (int32_t nPlayer, tNetworkSyncInfo *pSyncInfo);
 void ResendSyncDueToPacketLoss (void);
 void NetworkSendFlyThruTriggers (int32_t nPlayer); 
 void NetworkSendAllInfoRequest (char nType, int32_t nSecurity);
@@ -538,9 +538,9 @@ void NetworkDoSyncFrame (void);
 void NetworkStopResync (tPlayerSyncData *their);
 void NetworkUpdateNetGame (void);
 void NetworkDoBigWait (int32_t choice);
-void NetworkSyncExtras (tNetworkSyncInfo *syncInfoP);
+void NetworkSyncExtras (tNetworkSyncInfo *pSyncInfo);
 tNetworkSyncInfo* FindJoiningPlayer (int16_t nPlayer);
-int32_t NetworkObjnumIsPast(int32_t nObject, tNetworkSyncInfo *syncInfoP);
+int32_t NetworkObjnumIsPast(int32_t nObject, tNetworkSyncInfo *pSyncInfo);
 
 int32_t XMLGameInfoHandler (uint8_t *data = NULL, int32_t nLength = 0);
 

@@ -10,11 +10,11 @@
 
 int32_t CSkyBox::CountSegments (void)
 {
-	CSegment*	segP;
+	CSegment*	pSeg;
 	int32_t			i, nSegments;
 
-for (i = gameData.segData.nSegments, nSegments = 0, segP = SEGMENTS.Buffer (); i; i--, segP++)
-	if (segP->m_function == SEGMENT_FUNC_SKYBOX)
+for (i = gameData.segData.nSegments, nSegments = 0, pSeg = SEGMENTS.Buffer (); i; i--, pSeg++)
+	if (pSeg->m_function == SEGMENT_FUNC_SKYBOX)
 		nSegments++;
 return nSegments;
 }

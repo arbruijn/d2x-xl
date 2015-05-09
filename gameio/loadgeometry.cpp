@@ -393,30 +393,30 @@ typedef struct tRgbColord {
 	double blue;
 } __pack__ tRgbColord;
 
-void ReadColor (CFile& cf, CFaceColor *colorP, int32_t bFloatData, int32_t bRegisterColor)
+void ReadColor (CFile& cf, CFaceColor *pColor, int32_t bFloatData, int32_t bRegisterColor)
 {
-colorP->index = cf.ReadByte ();
+pColor->index = cf.ReadByte ();
 if (bFloatData) {
 	tRgbColord	c;
 	cf.Read (&c, sizeof (c), 1);
-	colorP->Red () = (float) c.red;
-	colorP->Green () = (float) c.green;
-	colorP->Blue () = (float) c.blue;
+	pColor->Red () = (float) c.red;
+	pColor->Green () = (float) c.green;
+	pColor->Blue () = (float) c.blue;
 	}
 else {
 	int32_t c = cf.ReadInt ();
-	colorP->Red () = (float) c / (float) 0x7fffffff;
+	pColor->Red () = (float) c / (float) 0x7fffffff;
 	c = cf.ReadInt ();
-	colorP->Green () = (float) c / (float) 0x7fffffff;
+	pColor->Green () = (float) c / (float) 0x7fffffff;
 	c = cf.ReadInt ();
-	colorP->Blue () = (float) c / (float) 0x7fffffff;
+	pColor->Blue () = (float) c / (float) 0x7fffffff;
 	}
 if (bRegisterColor &&
-	 (((colorP->Red () > 0) && (colorP->Red () < 1)) ||
-	 ((colorP->Green () > 0) && (colorP->Green () < 1)) ||
-	 ((colorP->Blue () > 0) && (colorP->Blue () < 1))))
+	 (((pColor->Red () > 0) && (pColor->Red () < 1)) ||
+	 ((pColor->Green () > 0) && (pColor->Green () < 1)) ||
+	 ((pColor->Blue () > 0) && (pColor->Blue () < 1))))
 	gameStates.render.bColored = 1;
-colorP->Alpha () = 1;
+pColor->Alpha () = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -424,15 +424,15 @@ colorP->Alpha () = 1;
 #if DBG
 CSegFace *FindDupFace (int16_t nSegment, int16_t nSide)
 {
-	tSegFaces	*segFaceP = SEGFACES + nSegment;
+	tSegFaces	*pSegFace = SEGFACES + nSegment;
 	CSegFace		*faceP0, *faceP1;
 	int32_t			i, j;
 
-for (i = segFaceP->nFaces, faceP0 = segFaceP->faceP; i; faceP0++, i--)
+for (i = pSegFace->nFaces, faceP0 = pSegFace->pFace; i; faceP0++, i--)
 	if (faceP0->m_info.nSide == nSide)
 		break;
-for (i = 0, segFaceP = SEGFACES.Buffer (); i < gameData.segData.nSegments; i++, segFaceP++) {
-	for (j = segFaceP->nFaces, faceP1 = segFaceP->faceP; j; faceP1++, j--) {
+for (i = 0, pSegFace = SEGFACES.Buffer (); i < gameData.segData.nSegments; i++, pSegFace++) {
+	for (j = pSegFace->nFaces, faceP1 = pSegFace->pFace; j; faceP1++, j--) {
 		if (faceP1 == faceP0)
 			continue;
 		if ((faceP1->m_info.nIndex == faceP0->m_info.nIndex) || !memcmp (faceP1->m_info.index, faceP0->m_info.index, sizeof (faceP0->m_info.index)))
@@ -564,15 +564,15 @@ if (gameStates.app.bD2XLevel) {
 
 void LoadSideLightsCompiled (int32_t i, CFile& cf)
 {
-	CFaceColor	*colorP;
+	CFaceColor	*pColor;
 	int32_t			j;
 
 gameData.render.shadows.nLights = 0;
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, gameData.segData.nSegments * 6);
-	colorP = gameData.render.color.lights + i;
-	for (; i < j; i++, colorP++) {
-		ReadColor (cf, colorP, gameData.segData.nLevelVersion <= 13, 1);
+	pColor = gameData.render.color.lights + i;
+	for (; i < j; i++, pColor++) {
+		ReadColor (cf, pColor, gameData.segData.nLevelVersion <= 13, 1);
 		}
 	}
 }
@@ -582,16 +582,16 @@ if (gameStates.app.bD2XLevel) {
 void ComputeSegSideRads (int32_t nSegment)
 {
 	int32_t		i, j, nSide;
-	CSegment*	segP;
+	CSegment*	pSeg;
 #if CALC_SEGRADS
 	fix			xSideDists [6], xMinDist;
 #endif
 
 INIT_PROGRESS_LOOP (nSegment, j, gameData.segData.nSegments);
 
-for (i = nSegment * 6, segP = SEGMENT (nSegment); nSegment < j; nSegment++, segP++) {
+for (i = nSegment * 6, pSeg = SEGMENT (nSegment); nSegment < j; nSegment++, pSeg++) {
 #if CALC_SEGRADS
-	segP->GetSideDists (segP->m_vCenter, xSideDists, 0);
+	pSeg->GetSideDists (pSeg->m_vCenter, xSideDists, 0);
 	xMinDist = 0x7fffffff;
 #endif
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, i++) {
@@ -605,7 +605,7 @@ for (i = nSegment * 6, segP = SEGMENT (nSegment); nSegment < j; nSegment++, segP
 	if (nSegment == nDbgSeg)
 		BRP;
 #	endif
-	segP->ComputeRads (xMinDist);
+	pSeg->ComputeRads (xMinDist);
 #endif
 	}
 }

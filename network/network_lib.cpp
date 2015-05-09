@@ -144,10 +144,10 @@ return 0;
 
 #define LOCAL_NODE \
 	((gameStates.multi.bHaveLocalAddress && (gameStates.multi.nGameType == UDP_GAME)) ? \
-	 networkData.localAddress.Server () : networkData.thisPlayer.player.network.Node ())
+	 networkData.localAddress.Server () : networkData.pThislayer.player.network.Node ())
 
 
-int32_t CmpLocalPlayer (CNetworkInfo *networkP, char *pszNetCallSign, char *pszLocalCallSign)
+int32_t CmpLocalPlayer (CNetworkInfo *pNetwork, char *pszNetCallSign, char *pszLocalCallSign)
 {
 if (stricmp (pszNetCallSign, pszLocalCallSign))
 	return 1;
@@ -161,10 +161,10 @@ if (gameStates.multi.nGameType == UDP_GAME)
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if ((gameStates.multi.nGameType < UDP_GAME) && (LOCAL_NODE [0] == 127))
 		return 0;
-	return memcmp (networkP->Node (), LOCAL_NODE, ((gameStates.multi.nGameType > IPX_GAME) && extraGameInfo [1].bCheckUDPPort) ? 6 : 4) ? 1 : 0;
+	return memcmp (pNetwork->Node (), LOCAL_NODE, ((gameStates.multi.nGameType > IPX_GAME) && extraGameInfo [1].bCheckUDPPort) ? 6 : 4) ? 1 : 0;
 	}
 #ifdef MACINTOSH
-if (networkP->appletalk.node != networkData.thisPlayer.player.network.AppleTalk ().node)
+if (pNetwork->appletalk.node != networkData.pThislayer.player.network.AppleTalk ().node)
 	return 1;
 #endif
 return 0;
@@ -174,16 +174,16 @@ return 0;
 
 char *NetworkGetPlayerName (int32_t nObject)
 {
-CObject *objP = OBJECT (nObject);
-if (!objP)
+CObject *pObj = OBJECT (nObject);
+if (!pObj)
 	return NULL;
-if (objP->info.nType != OBJ_PLAYER)
+if (pObj->info.nType != OBJ_PLAYER)
 	return NULL;
-if (objP->info.nId >= MAX_PLAYERS)
+if (pObj->info.nId >= MAX_PLAYERS)
 	return NULL;
-if (objP->info.nId >= N_PLAYERS)
+if (pObj->info.nId >= N_PLAYERS)
 	return NULL;
-return PLAYER (objP->info.nId).callsign;
+return PLAYER (pObj->info.nId).callsign;
 }
 
 //------------------------------------------------------------------------------
@@ -234,20 +234,20 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int32_t NetworkObjnumIsPast (int32_t nObject, tNetworkSyncInfo *syncInfoP)
+int32_t NetworkObjnumIsPast (int32_t nObject, tNetworkSyncInfo *pSyncInfo)
 {
 	// determine whether or not a given CObject number has already been sent
 	// to a re-joining player.
-	int32_t nPlayer = syncInfoP->player [1].player.connected;
+	int32_t nPlayer = pSyncInfo->player [1].player.connected;
 	int32_t nObjMode = !((gameData.multigame.nObjOwner [nObject] == -1) || (gameData.multigame.nObjOwner [nObject] == nPlayer));
 
-if (!syncInfoP->nState)
+if (!pSyncInfo->nState)
 	return 0; // We're not sending OBJECTS to a new CPlayerData
-if (nObjMode > syncInfoP->objs.nMode)
+if (nObjMode > pSyncInfo->objs.nMode)
 	return 0;
-else if (nObjMode < syncInfoP->objs.nMode)
+else if (nObjMode < pSyncInfo->objs.nMode)
 	return 1;
-else if (nObject < syncInfoP->objs.nCurrent)
+else if (nObject < pSyncInfo->objs.nCurrent)
 	return 1;
 else
 	return 0;
@@ -345,11 +345,11 @@ return -1;
 
 void NetworkCountPowerupsInMine (void)
 {
-  CObject*	objP;
+  CObject*	pObj;
 
 gameData.multiplayer.powerupsInMine.Clear (0);
-FORALL_POWERUP_OBJS (objP)
-	AddPowerupInMine (objP->info.nId);
+FORALL_POWERUP_OBJS (pObj)
+	AddPowerupInMine (pObj->info.nId);
 }
 
 //------------------------------------------------------------------------------

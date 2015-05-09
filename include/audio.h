@@ -56,10 +56,10 @@ typedef SAMPLE
 class CSoundSample {
 	public:
 		char			szName [9];
-		uint8_t			bHires;
-		uint8_t			bCustom;
-		int32_t			nLength [2];
-		int32_t			nOffset [2];
+		uint8_t		bHires;
+		uint8_t		bCustom;
+		int32_t		nLength [2];
+		int32_t		nOffset [2];
 		CByteArray	data [2];
 #if USE_OPENAL
 		ALuint		buffer;
@@ -163,7 +163,7 @@ class CAudioChannel {
 				uint8_t			bBuiltIn;
 				uint8_t			bAmbient;
 #if USE_SDL_MIXER
-				Mix_Chunk*		mixChunkP;
+				Mix_Chunk*		pMixChunk;
 				int32_t			nChannel;
 #endif
 #if USE_OPENAL
@@ -186,7 +186,7 @@ class CAudioChannel {
 					  const char *pszWAV, CFixVector* vPos);
 		void Stop (void);
 		void Mix (uint8_t* stream, int32_t len);
-		inline int32_t Playing (void) { return m_info.bPlaying && m_info.mixChunkP; }
+		inline int32_t Playing (void) { return m_info.bPlaying && m_info.pMixChunk; }
 		void SetPlaying (int32_t bPlaying);
 		inline int32_t GetIndex (void) { return m_info.nIndex; }
 		inline void SetIndex (int32_t nIndex) { m_info.nIndex = nIndex; }
@@ -200,8 +200,8 @@ class CAudioChannel {
 		inline int32_t Resampled (void) { return m_info.bResampled; }
 
 	private:
-		int32_t Resample (CSoundSample *soundP, int32_t bD1Sound, int32_t bMP3);
-		int32_t Speedup (CSoundSample *soundP, int32_t speed);
+		int32_t Resample (CSoundSample *pSound, int32_t bD1Sound, int32_t bMP3);
+		int32_t Speedup (CSoundSample *pSound, int32_t speed);
 		int32_t ReadWAV (void);
 	};
 
@@ -393,7 +393,7 @@ class CAudio {
 		inline float SlowDown (void) { return m_info.fSlowDown; }
 		inline void ActivateObject (void) { m_info.nActiveObjects++; }
 		inline void DeactivateObject (void) { m_info.nActiveObjects--; }
-		int32_t RegisterChannel (CAudioChannel* channelP);
+		int32_t RegisterChannel (CAudioChannel* pChannel);
 		void UnregisterChannel (int32_t nIndex);
 
 		void RecordSoundObjects (void);

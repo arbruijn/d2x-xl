@@ -15,7 +15,7 @@
 typedef struct tShaderData {
 	GLhandleARB		shaders [2];
 	GLhandleARB		program;
-	int32_t*				refP;
+	int32_t*				pRef;
 } tShaderData;
 
 #if defined(__macosx__) && defined(__LP64__)

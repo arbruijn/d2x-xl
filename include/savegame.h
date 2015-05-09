@@ -62,14 +62,14 @@ class CSaveGameManager {
 		void SaveImage (void);
 		void SaveGameData (void);
 		void SaveSpawnPoint (int32_t i);
-		void SaveReactorTrigger (CTriggerTargets *triggerP);
+		void SaveReactorTrigger (CTriggerTargets *pTrigger);
 		void SaveReactorState (tReactorStates *stateP);
-		void SaveProducer (tProducerInfo *producerP);
-		void SaveObjectProducer (tObjectProducerInfo *objProducerP);
+		void SaveProducer (tProducerInfo *pProducer);
+		void SaveObjectProducer (tObjectProducerInfo *pObjProducer);
 #if 0
-		void SaveObjTriggerRef (tObjTriggerRef *refP);
+		void SaveObjTriggerRef (tObjTriggerRef *pRef);
 #endif
-		void SavePlayer (CPlayerData *playerP);
+		void SavePlayer (CPlayerData *pPlayer);
 		void SaveNetPlayers (void);
 		void SaveNetGame (void);
 
@@ -83,23 +83,23 @@ class CSaveGameManager {
 		void AwardReturningPlayer (CPlayerData *retPlayerP, fix xOldGameTime);;
 		void LoadNetGame (void);
 		void LoadNetPlayers (void);
-		void LoadPlayer (CPlayerData *playerP);
-		void LoadObjTriggerRef (tObjTriggerRef *refP);
-		void LoadObjectProducer (tObjectProducerInfo *objProducerP);
-		void LoadProducer (tProducerInfo *producerP);
-		void LoadReactorTrigger (CTriggerTargets *triggerP);
+		void LoadPlayer (CPlayerData *pPlayer);
+		void LoadObjTriggerRef (tObjTriggerRef *pRef);
+		void LoadObjectProducer (tObjectProducerInfo *pObjProducer);
+		void LoadProducer (tProducerInfo *pProducer);
+		void LoadReactorTrigger (CTriggerTargets *pTrigger);
 		void LoadReactorState (tReactorStates *stateP);
 		int32_t LoadSpawnPoint (int32_t i);
 		int32_t LoadUniFormat (int32_t bMulti, fix xOldGameTime, int32_t *nLevel);
 		int32_t LoadBinFormat (int32_t bMulti, fix xOldGameTime, int32_t *nLevel);
 
-		void SaveAILocalInfo (tAILocalInfo *ailP);
+		void SaveAILocalInfo (tAILocalInfo *pLocalInfo);
 		void SaveAIPointSeg (tPointSeg *psegP);
 		void SaveAICloakInfo (tAICloakInfo *ciP);
 		int32_t SaveAI (void);
 
 		int32_t LoadAIBinFormat (void);
-		void LoadAILocalInfo (tAILocalInfo *ailP);
+		void LoadAILocalInfo (tAILocalInfo *pLocalInfo);
 		void LoadAIPointSeg (tPointSeg *psegP);
 		void LoadAICloakInfo (tAICloakInfo *ciP);
 		int32_t LoadAIUniFormat (void);

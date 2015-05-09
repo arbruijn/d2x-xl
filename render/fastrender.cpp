@@ -43,16 +43,16 @@ PROF_END(ptFaceList)
 // The lists themselves are kept in gameData.render.faceList
 // gameData.render.faceIndex holds the root index of each texture's face list
 
-int32_t AddFaceListItem (CSegFace *faceP, int32_t nThread)
+int32_t AddFaceListItem (CSegFace *pFace, int32_t nThread)
 {
-if (!(faceP->m_info.widFlags & WID_VISIBLE_FLAG))
+if (!(pFace->m_info.widFlags & WID_VISIBLE_FLAG))
 	return 0;
 #if 1
-if (faceP->m_info.nFrame == gameData.app.nMineRenderCount)
+if (pFace->m_info.nFrame == gameData.app.nMineRenderCount)
 	return 0;
 #endif
 #if DBG
-if (faceP - FACES.faces >= FACES.nFaces)
+if (pFace - FACES.faces >= FACES.nFaces)
 	return 0;
 #endif
 
@@ -63,7 +63,7 @@ SDL_mutexP (tiRender.semaphore);
 #endif
 {
 PROF_START
-int32_t nKey = faceP->m_info.nKey;
+int32_t nKey = pFace->m_info.nKey;
 int32_t i = gameData.render.nUsedFaces++;
 int32_t j = gameData.render.faceIndex.tails [nKey];
 if (j < 0) {
@@ -82,11 +82,11 @@ SDL_mutexV (tiRender.semaphore);
 #endif
 
 gameData.render.faceList [i].nNextItem = -1;
-gameData.render.faceList [i].faceP = faceP;
+gameData.render.faceList [i].pFace = pFace;
 gameData.render.faceIndex.tails [nKey] = i;
-faceP->m_info.nTransparent = -1;
-faceP->m_info.nColored = -1;
-faceP->m_info.nFrame = gameData.app.nFrameCount;
+pFace->m_info.nTransparent = -1;
+pFace->m_info.nColored = -1;
+pFace->m_info.nFrame = gameData.app.nFrameCount;
 PROF_END(ptFaceList)
 }
 return 1;
@@ -94,108 +94,108 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void LoadFaceBitmaps (CSegment *segP, CSegFace *faceP)
+void LoadFaceBitmaps (CSegment *pSeg, CSegFace *pFace)
 {
-	CSide	*sideP = segP->m_sides + faceP->m_info.nSide;
-	int16_t	nFrame = sideP->m_nFrame;
+	CSide	*pSide = pSeg->m_sides + pFace->m_info.nSide;
+	int16_t	nFrame = pSide->m_nFrame;
 
-if (faceP->m_info.nCamera >= 0) {
-	if (SetupMonitorFace (faceP->m_info.nSegment, faceP->m_info.nSide, faceP->m_info.nCamera, faceP)) 
+if (pFace->m_info.nCamera >= 0) {
+	if (SetupMonitorFace (pFace->m_info.nSegment, pFace->m_info.nSide, pFace->m_info.nCamera, pFace)) 
 		return;
-	faceP->m_info.nCamera = -1;
+	pFace->m_info.nCamera = -1;
 	}
 #if DBG
-if (FACE_IDX (faceP) == nDbgFace)
+if (FACE_IDX (pFace) == nDbgFace)
 	BRP;
-if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+if ((pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 	BRP;
 #endif
-if ((faceP->m_info.nBaseTex < 0) || !faceP->m_info.bTextured)
+if ((pFace->m_info.nBaseTex < 0) || !pFace->m_info.bTextured)
 	return;
-if (faceP->m_info.bOverlay)
-	faceP->m_info.nBaseTex = sideP->m_nOvlTex;
+if (pFace->m_info.bOverlay)
+	pFace->m_info.nBaseTex = pSide->m_nOvlTex;
 else {
-	faceP->m_info.nBaseTex = sideP->m_nBaseTex;
-	if (!faceP->m_info.bSplit)
-		faceP->m_info.nOvlTex = sideP->m_nOvlTex;
+	pFace->m_info.nBaseTex = pSide->m_nBaseTex;
+	if (!pFace->m_info.bSplit)
+		pFace->m_info.nOvlTex = pSide->m_nOvlTex;
 	}
 if (gameOpts->ogl.bGlTexMerge) {
-	faceP->bmBot = LoadFaceBitmap (faceP->m_info.nBaseTex, nFrame);
-	if (faceP->m_info.nOvlTex)
-		faceP->bmTop = LoadFaceBitmap ((int16_t) (faceP->m_info.nOvlTex), nFrame);
+	pFace->bmBot = LoadFaceBitmap (pFace->m_info.nBaseTex, nFrame);
+	if (pFace->m_info.nOvlTex)
+		pFace->bmTop = LoadFaceBitmap ((int16_t) (pFace->m_info.nOvlTex), nFrame);
 	else
-		faceP->bmTop = NULL;
+		pFace->bmTop = NULL;
 	}
 else {
-	if (faceP->m_info.nOvlTex != 0) {
-		faceP->bmBot = TexMergeGetCachedBitmap (faceP->m_info.nBaseTex, faceP->m_info.nOvlTex, faceP->m_info.nOvlOrient);
-		if (faceP->bmBot)
-			faceP->bmBot->SetupTexture (1, 1);
+	if (pFace->m_info.nOvlTex != 0) {
+		pFace->bmBot = TexMergeGetCachedBitmap (pFace->m_info.nBaseTex, pFace->m_info.nOvlTex, pFace->m_info.nOvlOrient);
+		if (pFace->bmBot)
+			pFace->bmBot->SetupTexture (1, 1);
 #if DBG
 		else
-			faceP->bmBot = TexMergeGetCachedBitmap (faceP->m_info.nBaseTex, faceP->m_info.nOvlTex, faceP->m_info.nOvlOrient);
+			pFace->bmBot = TexMergeGetCachedBitmap (pFace->m_info.nBaseTex, pFace->m_info.nOvlTex, pFace->m_info.nOvlOrient);
 #endif
-		faceP->bmTop = NULL;
+		pFace->bmTop = NULL;
 		}
 	else {
-		faceP->bmBot = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [faceP->m_info.nBaseTex].index;
-		LoadTexture (gameData.pig.tex.bmIndexP [faceP->m_info.nBaseTex].index, 0, gameStates.app.bD1Mission);
+		pFace->bmBot = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [pFace->m_info.nBaseTex].index;
+		LoadTexture (gameData.pig.tex.bmIndexP [pFace->m_info.nBaseTex].index, 0, gameStates.app.bD1Mission);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-bool RenderGeometryFace (CSegment *segP, CSegFace *faceP)
+bool RenderGeometryFace (CSegment *pSeg, CSegFace *pFace)
 {
-faceRenderFunc (faceP, faceP->bmBot, faceP->bmTop, faceP->m_info.bTextured, (gameStates.render.bPerPixelLighting != 0) && !gameStates.render.bFullBright);
+faceRenderFunc (pFace, pFace->bmBot, pFace->bmTop, pFace->m_info.bTextured, (gameStates.render.bPerPixelLighting != 0) && !gameStates.render.bFullBright);
 return true;
 }
 
 //------------------------------------------------------------------------------
 
-bool RenderCoronaFace (CSegment *segP, CSegFace *faceP)
+bool RenderCoronaFace (CSegment *pSeg, CSegFace *pFace)
 {
-if (!faceP->m_info.nCorona)
+if (!pFace->m_info.nCorona)
 	return false;
-glareRenderer.Render (faceP->m_info.nSegment, faceP->m_info.nSide, 1.0f, faceP->m_info.fRads [0]);
+glareRenderer.Render (pFace->m_info.nSegment, pFace->m_info.nSide, 1.0f, pFace->m_info.fRads [0]);
 return true;
 }
 
 //------------------------------------------------------------------------------
 
-bool RenderSkyBoxFace (CSegment *segP, CSegFace *faceP)
+bool RenderSkyBoxFace (CSegment *pSeg, CSegFace *pFace)
 {
-LoadFaceBitmaps (segP, faceP);
-RenderFace (faceP, faceP->bmBot, faceP->bmTop, 1, 0);
+LoadFaceBitmaps (pSeg, pFace);
+RenderFace (pFace, pFace->bmBot, pFace->bmTop, 1, 0);
 return true;
 }
 
 //------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
-typedef bool (__fastcall * pRenderHandler) (CSegment *segP, CSegFace *faceP);
+typedef bool (__fastcall * pRenderHandler) (CSegment *pSeg, CSegFace *pFace);
 #else
-typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP);
+typedef bool (* pRenderHandler) (CSegment *pSeg, CSegFace *pFace);
 #endif
 
 static pRenderHandler renderHandlers [] = {RenderGeometryFace, RenderGeometryFace, RenderCoronaFace, RenderSkyBoxFace, RenderGeometryFace, RenderGeometryFace};
 
 
-static inline bool RenderMineFace (CSegment *segP, CSegFace *faceP, int32_t nType)
+static inline bool RenderMineFace (CSegment *pSeg, CSegFace *pFace, int32_t nType)
 {
 #if DBG
-if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+if ((pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 	BRP;
 #endif
-return renderHandlers [nType] (segP, faceP);
+return renderHandlers [nType] (pSeg, pFace);
 }
 
 //------------------------------------------------------------------------------
 
 typedef struct tFaceRef {
 	int16_t		nSegment;
-	CSegFace	*faceP;
+	CSegFace	*pFace;
 	} tFaceRef;
 
 static tFaceRef faceRef [2][MAX_SEGMENTS_D2X * 6];
@@ -232,12 +232,12 @@ void QSortFaces (int32_t left, int32_t right)
 	int32_t		l = left,
 				r = right;
 	tFaceRef	*pf = faceRef [0];
-	CSegFace	m = *pf [(l + r) / 2].faceP;
+	CSegFace	m = *pf [(l + r) / 2].pFace;
 
 do {
-	while (QCmpFaces (pf [l].faceP, &m) < 0)
+	while (QCmpFaces (pf [l].pFace, &m) < 0)
 		l++;
-	while (QCmpFaces (pf [r].faceP, &m) > 0)
+	while (QCmpFaces (pf [r].pFace, &m) > 0)
 		r--;
 	if (l <= r) {
 		if (l < r) {
@@ -266,8 +266,8 @@ if (left < r)
 
 int32_t SortFaces (void)
 {
-	tSegFaces	*segFaceP;
-	CSegFace		*faceP;
+	tSegFaces	*pSegFace;
+	CSegFace		*pFace;
 	tFaceRef		*ph, *pi, *pj;
 	int32_t			h, i, j;
 	int16_t			nSegment;
@@ -275,17 +275,17 @@ int32_t SortFaces (void)
 for (h = i = 0, ph = faceRef [0]; i < gameData.render.mine.visibility [0].nSegments; i++) {
 	if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
 		continue;
-	segFaceP = SEGFACES + nSegment;
-	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++, h++, ph++) {
+	pSegFace = SEGFACES + nSegment;
+	for (j = pSegFace->nFaces, pFace = pSegFace->pFace; j; j--, pFace++, h++, ph++) {
 		ph->BRP;
-		ph->faceP = faceP;
+		ph->pFace = pFace;
 		}
 	}
 tiRender.nFaces = h;
 if (h > 1) {
 	if (RunRenderThreads (rtSortFaces)) {
 		for (i = h / 2, j = h - i, ph = faceRef [1], pi = faceRef [0], pj = pi + h / 2; h; h--) {
-			if (i && (!j || (QCmpFaces (pi->faceP, pj->faceP) <= 0))) {
+			if (i && (!j || (QCmpFaces (pi->pFace, pj->pFace) <= 0))) {
 				*ph++ = *pi++;
 				i--;
 				}
@@ -465,9 +465,9 @@ ogl.ClearError (0);
 
 void RenderSkyBoxFaces (void)
 {
-	tSegFaces*	segFaceP;
-	CSegFace*	faceP;
-	int16_t*		segP;
+	tSegFaces*	pSegFace;
+	CSegFace*	pFace;
+	int16_t*		pSeg;
 	int32_t		i, j, nSegment, bFullBright = gameStates.render.bFullBright;
 
 if (gameStates.render.bHaveSkyBox) {
@@ -475,13 +475,13 @@ if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.nType = RENDER_TYPE_SKYBOX;
 	gameStates.render.bFullBright = 1;
 	BeginRenderFaces (RENDER_TYPE_SKYBOX);
-	for (i = gameData.segData.skybox.ToS (), segP = gameData.segData.skybox.Buffer (); i; i--, segP++) {
-		nSegment = *segP;
-		segFaceP = SEGFACES + nSegment;
-		for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
-			if (!(faceP->m_info.bVisible = FaceIsVisible (nSegment, faceP->m_info.nSide)))
+	for (i = gameData.segData.skybox.ToS (), pSeg = gameData.segData.skybox.Buffer (); i; i--, pSeg++) {
+		nSegment = *pSeg;
+		pSegFace = SEGFACES + nSegment;
+		for (j = pSegFace->nFaces, pFace = pSegFace->pFace; j; j--, pFace++) {
+			if (!(pFace->m_info.bVisible = FaceIsVisible (nSegment, pFace->m_info.nSide)))
 				continue;
-			RenderMineFace (SEGMENT (nSegment), faceP, RENDER_TYPE_SKYBOX);
+			RenderMineFace (SEGMENT (nSegment), pFace, RENDER_TYPE_SKYBOX);
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;
@@ -502,7 +502,7 @@ if (bAutomap) {
 		if (!gameOpts->render.automap.bSkybox && (SEGMENT (nSegment)->m_function == SEGMENT_FUNC_SKYBOX))
 			return 0;
 		}
-	else if (gameData.objData.viewerP == gameData.objData.consoleP) {
+	else if (gameData.objData.pViewer == gameData.objData.pConsole) {
 #if DBG
 		if (gameStates.render.nWindow [0])
 			BRP;
@@ -518,14 +518,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static inline int32_t FaceIsTransparent (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
+static inline int32_t FaceIsTransparent (CSegFace *pFace, CBitmap *bmBot, CBitmap *bmTop)
 {
 if (!bmBot)
-	return faceP->m_info.nTransparent = faceP->m_info.bTransparent || (faceP->m_info.color.Alpha () < 1.0f);
-if (faceP->m_info.bTransparent || faceP->m_info.bAdditive)
+	return pFace->m_info.nTransparent = pFace->m_info.bTransparent || (pFace->m_info.color.Alpha () < 1.0f);
+if (pFace->m_info.bTransparent || pFace->m_info.bAdditive)
 	return 1;
 if (bmBot->Flags () & BM_FLAG_SEE_THRU)
-	return faceP->m_info.nTransparent = 0;
+	return pFace->m_info.nTransparent = 0;
 if (bmTop && (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
 if (!(bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)))
@@ -541,9 +541,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static inline int32_t FaceIsColored (CSegFace *faceP)
+static inline int32_t FaceIsColored (CSegFace *pFace)
 {
-return !automap.Active () || automap.m_visited [faceP->m_info.nSegment] || !gameOpts->render.automap.bGrayOut;
+return !automap.Active () || automap.m_visited [pFace->m_info.nSegment] || !gameOpts->render.automap.bGrayOut;
 }
 
 //------------------------------------------------------------------------------
@@ -551,7 +551,7 @@ return !automap.Active () || automap.m_visited [faceP->m_info.nSegment] || !game
 int16_t RenderFaceList (CFaceListIndex& flx, int32_t nType, int32_t bHeadlight)
 {
 	tFaceListItem*	fliP = &gameData.render.faceList [0];
-	CSegFace*		faceP;
+	CSegFace*		pFace;
 	int32_t			i, j, nFaces = 0, nSegment = -1;
 	int32_t			bAutomap = (nType == RENDER_TYPE_GEOMETRY);
 
@@ -561,20 +561,20 @@ if (automap.Active ())
 #endif
 for (i = 0; i < flx.nUsedKeys; i++) {
 	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP [j].nNextItem) {
-		faceP = fliP [j].faceP;
-		if (!faceP->m_info.bVisible)
+		pFace = fliP [j].pFace;
+		if (!pFace->m_info.bVisible)
 			continue;
-		LoadFaceBitmaps (SEGMENT (faceP->m_info.nSegment), faceP);
+		LoadFaceBitmaps (SEGMENT (pFace->m_info.nSegment), pFace);
 #if DBG
-		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+		if ((pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 			BRP;
 #endif
-		faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmBot, faceP->bmTop);
-		faceP->m_info.nColored = FaceIsColored (faceP);
-		if (nSegment != faceP->m_info.nSegment) {
-			nSegment = faceP->m_info.nSegment;
+		pFace->m_info.nTransparent = FaceIsTransparent (pFace, pFace->bmBot, pFace->bmTop);
+		pFace->m_info.nColored = FaceIsColored (pFace);
+		if (nSegment != pFace->m_info.nSegment) {
+			nSegment = pFace->m_info.nSegment;
 #if DBG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 				BRP;
 #endif
 			if (!bHeadlight)
@@ -582,7 +582,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			if (gameStates.render.bPerPixelLighting == 2)
 				lightManager.Index (0,0).nActive = -1;
 			}
-		if (RenderMineFace (SEGMENT (nSegment), faceP, nType))
+		if (RenderMineFace (SEGMENT (nSegment), pFace, nType))
 			nFaces++;
 		}
 	}
@@ -593,17 +593,17 @@ return nFaces;
 
 void RenderCoronaFaceList (CFaceListIndex& flx, int32_t nPass)
 {
-	tFaceListItem*	fliP;
-	CSegFace*		faceP;
+	tFaceListItem*	pIndex;
+	CSegFace*		pFace;
 	int32_t			i, j, nSegment;
 
 for (i = 0; i < flx.nUsedKeys; i++) {
-	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
-		fliP = &gameData.render.faceList [j];
-		faceP = fliP->faceP;
-		if (!faceP->m_info.nCorona)
+	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = pIndex->nNextItem) {
+		pIndex = &gameData.render.faceList [j];
+		pFace = pIndex->pFace;
+		if (!pFace->m_info.nCorona)
 			continue;
-		nSegment = faceP->m_info.nSegment;
+		nSegment = pFace->m_info.nSegment;
 		if (automap.Active ()) {
 			if (!(automap.m_bFull || automap.m_visible [nSegment]))
 				return;
@@ -612,40 +612,40 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			}
 		if (nPass == 1) {
 #if DBG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 				BRP;
 #	if 0
 			else if (nDbgSeg >= 0)
 				continue;
 #	endif
 #endif
-			glareRenderer.Visibility (faceP->m_info.nCorona);
+			glareRenderer.Visibility (pFace->m_info.nCorona);
 			}
 		else if (nPass == 2) {
 #if DBG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 				BRP;
 #	if 0
 			else if (nDbgSeg >= 0)
 				continue;
 #	endif
 #endif
-			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->m_info.nCorona - 1]);
+			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [pFace->m_info.nCorona - 1]);
 			if (!glGetError ())
-				glareRenderer.Render (nSegment, faceP->m_info.nSide, 1, faceP->m_info.fRads [0]);
+				glareRenderer.Render (nSegment, pFace->m_info.nSide, 1, pFace->m_info.fRads [0]);
 			glEndQuery (GL_SAMPLES_PASSED_ARB);
 			}
 		else {
 #if DBG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 				BRP;
 #	if 0
 			else if (nDbgSeg >= 0)
 				continue;
 #	endif
 #endif
-			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->m_info.nCorona - 1]);
-			glareRenderer.Render (nSegment, faceP->m_info.nSide, 1, faceP->m_info.fRads [0]);
+			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [pFace->m_info.nCorona - 1]);
+			glareRenderer.Render (nSegment, pFace->m_info.nSide, 1, pFace->m_info.fRads [0]);
 			glEndQuery (GL_SAMPLES_PASSED_ARB);
 			}	
 		}
@@ -685,8 +685,8 @@ gameStates.render.bQueryCoronas = 0;
 
 int32_t SetupCoronaFaces (void)
 {
-	tSegFaces	*segFaceP;
-	CSegFace		*faceP;
+	tSegFaces	*pSegFace;
+	CSegFace		*pFace;
 	int32_t		i, j, nSegment;
 
 if (!(gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse))
@@ -698,17 +698,17 @@ for (i = 0; i < gameData.render.mine.visibility [0].nSegments; i++) {
 	if ((SEGMENT (nSegment)->m_function == SEGMENT_FUNC_SKYBOX) ||
 		 (SEGMENT (nSegment)->HasOutdoorsProp ()))
 		continue;
-	segFaceP = SEGFACES + nSegment;
+	pSegFace = SEGFACES + nSegment;
 #if DBG
 	if (nSegment == nDbgSeg)
 		BRP;
 #endif
-	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++)
-		if (faceP->m_info.bVisible && (faceP->m_info.widFlags & WID_VISIBLE_FLAG) && faceP->m_info.bIsLight && (faceP->m_info.nCamera < 0) &&
-			 glareRenderer.FaceHasCorona (nSegment, faceP->m_info.nSide, NULL, NULL))
-			faceP->m_info.nCorona = ++gameData.render.lights.nCoronas;
+	for (j = pSegFace->nFaces, pFace = pSegFace->pFace; j; j--, pFace++)
+		if (pFace->m_info.bVisible && (pFace->m_info.widFlags & WID_VISIBLE_FLAG) && pFace->m_info.bIsLight && (pFace->m_info.nCamera < 0) &&
+			 glareRenderer.FaceHasCorona (nSegment, pFace->m_info.nSide, NULL, NULL))
+			pFace->m_info.nCorona = ++gameData.render.lights.nCoronas;
 		else
-			faceP->m_info.nCorona = 0;
+			pFace->m_info.nCorona = 0;
 	}
 return gameData.render.lights.nCoronas;
 }
@@ -720,8 +720,8 @@ static int16_t RenderSegmentFaces (int32_t nType, int16_t nSegment, int32_t bAut
 if (nSegment < 0)
 	return 0;
 
-	tSegFaces	*segFaceP = SEGFACES + nSegment;
-	CSegFace		*faceP;
+	tSegFaces	*pSegFace = SEGFACES + nSegment;
+	CSegFace		*pFace;
 	int16_t			nFaces = 0;
 	int32_t			i;
 
@@ -737,17 +737,17 @@ if (nSegment == nDbgSeg)
 #endif
 if (gameStates.render.bPerPixelLighting == 2)
 	lightManager.Index (0,0).nActive = -1;
-for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++) {
+for (i = pSegFace->nFaces, pFace = pSegFace->pFace; i; i--, pFace++) {
 #if DBG
-	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 		BRP;
 #endif
-	if (!faceP->m_info.bVisible)
+	if (!pFace->m_info.bVisible)
 		continue;
-	LoadFaceBitmaps (SEGMENT (faceP->m_info.nSegment), faceP);
-	faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmBot, faceP->bmTop);
-	faceP->m_info.nColored = FaceIsColored (faceP);
-	if (RenderMineFace (SEGMENT (nSegment), faceP, nType))
+	LoadFaceBitmaps (SEGMENT (pFace->m_info.nSegment), pFace);
+	pFace->m_info.nTransparent = FaceIsTransparent (pFace, pFace->bmBot, pFace->bmTop);
+	pFace->m_info.nColored = FaceIsColored (pFace);
+	if (RenderMineFace (SEGMENT (nSegment), pFace, nType))
 		nFaces++;
 	}
 return nFaces;
@@ -762,9 +762,9 @@ int16_t RenderSegments (int32_t nType, int32_t bHeadlight)
 if (nType == RENDER_TYPE_CORONAS) {
 	// render mine segment by segment
 	if (gameData.render.mine.visibility [0].nSegments == gameData.segData.nSegments) {
-		CSegFace *faceP = FACES.faces.Buffer ();
-		for (i = FACES.nFaces; i; i--, faceP++)
-			if (RenderMineFace (SEGMENT (faceP->m_info.nSegment), faceP, nType))
+		CSegFace *pFace = FACES.faces.Buffer ();
+		for (i = FACES.nFaces; i; i--, pFace++)
+			if (RenderMineFace (SEGMENT (pFace->m_info.nSegment), pFace, nType))
 				nFaces++;
 		}
 	else {

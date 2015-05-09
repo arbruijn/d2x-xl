@@ -401,9 +401,9 @@ for (i = 1; i < 6; i++) {
 }
 
 //------------------------------------------------------------------------------
-// Check whether the frustum intersects with a face defined by side *sideP.
+// Check whether the frustum intersects with a face defined by side *pSide.
 
-bool CFrustum::Contains (CSide* sideP)
+bool CFrustum::Contains (CSide* pSide)
 {
 	static int32_t lineVerts [12][2] = {
 		{0,1}, {1,2}, {2,3}, {3,0}, 
@@ -416,9 +416,9 @@ bool CFrustum::Contains (CSide* sideP)
 	CFixVector intersection;
 
 for (j = 0; j < 4; j++) {
-	points [j] = &RENDERPOINTS [sideP->m_corners [j]];
+	points [j] = &RENDERPOINTS [pSide->m_corners [j]];
 	if (!(points [j]->Projected ()))
-		points [j]->Transform (sideP->m_corners [j]);
+		points [j]->Transform (pSide->m_corners [j]);
 	}
 
 // check whether all vertices of the face are at the back side of at least one frustum plane,
@@ -447,10 +447,10 @@ for (j = 0; j < 4; j++)
 	if (!nOutside [j])
 		return true; // some vertex inside frustum
 
-if (sideP->m_nFaces == 2) {
-	points [1] = &RENDERPOINTS [sideP->m_vertices [3]];
+if (pSide->m_nFaces == 2) {
+	points [1] = &RENDERPOINTS [pSide->m_vertices [3]];
 	if (!points [1]->Projected ())
-		points [1]->Transform (sideP->m_vertices [3]);
+		points [1]->Transform (pSide->m_vertices [3]);
 	}
 
 // check whether the frustum intersects with the face
@@ -458,14 +458,14 @@ if (sideP->m_nFaces == 2) {
 // if an edge intersects, check whether the intersection is inside the face
 // since the near plane is at 0.0, only 8 edges of 5 planes need to be checked
 gameStates.render.bRendering = 1; // make sure CSide::PointToFaceRelation uses the transformed vertices
-for (j = 0; j < sideP->m_nFaces; j++) 
-	transformation.Rotate (sideP->m_rotNorms [j], sideP->m_normals [j], 0);
+for (j = 0; j < pSide->m_nFaces; j++) 
+	transformation.Rotate (pSide->m_rotNorms [j], pSide->m_normals [j], 0);
 for (i = 11; i >= 4; i--) {
-	for (j = 0; j < sideP->m_nFaces; j++) {
-		if (!FindPlaneLineIntersection (intersection, &points [j]->ViewPos (), &sideP->m_rotNorms [j],
+	for (j = 0; j < pSide->m_nFaces; j++) {
+		if (!FindPlaneLineIntersection (intersection, &points [j]->ViewPos (), &pSide->m_rotNorms [j],
 												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0, false))
 			continue;
-		if (!sideP->PointToFaceRelation (intersection, j, sideP->m_rotNorms [j])) {
+		if (!pSide->PointToFaceRelation (intersection, j, pSide->m_rotNorms [j])) {
 			gameStates.render.bRendering = 0;
 			return true;
 			}

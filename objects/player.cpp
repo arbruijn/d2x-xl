@@ -40,10 +40,10 @@ for (int32_t i = 0; i < N_PLAYER_GUNS; i++)
 
 //-------------------------------------------------------------------------
 
-int32_t EquippedPlayerGun (CObject *objP)
+int32_t EquippedPlayerGun (CObject *pObj)
 {
-if (objP->info.nType == OBJ_PLAYER) {
-		int32_t		nPlayer = objP->info.nId;
+if (pObj->info.nType == OBJ_PLAYER) {
+		int32_t		nPlayer = pObj->info.nId;
 		int32_t		nWeapon = gameData.multiplayer.weaponStates [nPlayer].nPrimary;
 
 	return (nWeapon || (gameData.multiplayer.weaponStates [nPlayer].nLaserLevel <= MAX_LASER_LEVEL)) ? nWeapon : SUPER_LASER_INDEX;
@@ -55,10 +55,10 @@ return 0;
 
 static int32_t nBombIds [] = {SMART_INDEX, MEGA_INDEX, EARTHSHAKER_INDEX};
 
-int32_t EquippedPlayerBomb (CObject *objP)
+int32_t EquippedPlayerBomb (CObject *pObj)
 {
-if (objP->info.nType == OBJ_PLAYER) {
-		int32_t		nPlayer = objP->info.nId;
+if (pObj->info.nType == OBJ_PLAYER) {
+		int32_t		nPlayer = pObj->info.nId;
 		int32_t		i, nWeapon = gameData.multiplayer.weaponStates [nPlayer].nSecondary;
 
 	for (i = 0; i < (int32_t) sizeofa (nBombIds); i++)
@@ -72,10 +72,10 @@ return 0;
 
 static int32_t nMissileIds [] = {CONCUSSION_INDEX, HOMING_INDEX, FLASHMSL_INDEX, GUIDED_INDEX, MERCURY_INDEX};
 
-int32_t EquippedPlayerMissile (CObject *objP, int32_t *nMissiles)
+int32_t EquippedPlayerMissile (CObject *pObj, int32_t *nMissiles)
 {
-if (objP->info.nType == OBJ_PLAYER) {
-		int32_t		nPlayer = objP->info.nId;
+if (pObj->info.nType == OBJ_PLAYER) {
+		int32_t		nPlayer = pObj->info.nId;
 		int32_t		i, nWeapon = gameData.multiplayer.weaponStates [nPlayer].nSecondary;
 
 	for (i = 0; i < (int32_t) sizeofa (nMissileIds); i++)
@@ -101,19 +101,19 @@ return 1000 * WI_fire_wait (nWeapon) / I2X (1);
 
 void UpdateFiringSounds (void)
 {
-	CWeaponState	*wsP = gameData.multiplayer.weaponStates;
-	tFiringData		*fP;
-	int32_t				bGatling, bGatlingSound, i;
+	CWeaponState	*pWeaponStates = gameData.multiplayer.weaponStates;
+	tFiringData		*pFiringData;
+	int32_t			bGatling, bGatlingSound, i;
 
 bGatlingSound = (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling;
-for (i = 0; i < N_PLAYERS; i++, wsP++) {
+for (i = 0; i < N_PLAYERS; i++, pWeaponStates++) {
 	if (!IsMultiGame || PLAYER (i).IsConnected ()) {
-		bGatling = (wsP->nPrimary == VULCAN_INDEX) || (wsP->nPrimary == GAUSS_INDEX);
-		fP = wsP->firing;
-		if (bGatling && bGatlingSound && (fP->bSound == 1)) {
+		bGatling = (pWeaponStates->nPrimary == VULCAN_INDEX) || (pWeaponStates->nPrimary == GAUSS_INDEX);
+		pFiringData = pWeaponStates->firing;
+		if (bGatling && bGatlingSound && (pFiringData->bSound == 1)) {
 			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, (int16_t) PLAYER (i).nObject, 0, 
 											 I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_GATLING_SPIN), 0);
-			fP->bSound = 0;
+			pFiringData->bSound = 0;
 			}
 		}
 	}
@@ -167,8 +167,8 @@ else if (gameData.weapons.firing [1].nDuration) {
 
 void UpdatePlayerWeaponInfo (void)
 {
-	CWeaponState*	wsP = gameData.multiplayer.weaponStates + N_LOCALPLAYER;
-	tFiringData*	fP;
+	CWeaponState*	pWeaponStates = gameData.multiplayer.weaponStates + N_LOCALPLAYER;
+	tFiringData*	pFiringData;
 
 if (gameStates.app.bPlayerIsDead)
 	gameData.weapons.firing [0].nStart = 
@@ -179,48 +179,48 @@ if (gameStates.app.bPlayerIsDead)
 	gameData.weapons.firing [1].nStop = 0;
 else
 	UpdateFiringState ();
-if (wsP->nPrimary != gameData.weapons.nPrimary) {
-	wsP->nPrimary = gameData.weapons.nPrimary;
+if (pWeaponStates->nPrimary != gameData.weapons.nPrimary) {
+	pWeaponStates->nPrimary = gameData.weapons.nPrimary;
 	}
-if (wsP->nSecondary != gameData.weapons.nSecondary) {
-	wsP->nSecondary = gameData.weapons.nSecondary;
+if (pWeaponStates->nSecondary != gameData.weapons.nSecondary) {
+	pWeaponStates->nSecondary = gameData.weapons.nSecondary;
 	}
-if (wsP->bQuadLasers != ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) != 0)) {
-	wsP->bQuadLasers = ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) != 0);
+if (pWeaponStates->bQuadLasers != ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) != 0)) {
+	pWeaponStates->bQuadLasers = ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) != 0);
 	}
-fP = wsP->firing;
-for (int32_t i = 0; i < 2; i++, fP++) {
-	if (fP->nStart != gameData.weapons.firing [i].nStart) {
-		fP->nStart = gameData.weapons.firing [i].nStart;
+pFiringData = pWeaponStates->firing;
+for (int32_t i = 0; i < 2; i++, pFiringData++) {
+	if (pFiringData->nStart != gameData.weapons.firing [i].nStart) {
+		pFiringData->nStart = gameData.weapons.firing [i].nStart;
 		}
-	if (fP->nDuration != gameData.weapons.firing [i].nDuration) {
-		fP->nDuration = gameData.weapons.firing [i].nDuration;
+	if (pFiringData->nDuration != gameData.weapons.firing [i].nDuration) {
+		pFiringData->nDuration = gameData.weapons.firing [i].nDuration;
 		}
-	if (fP->nStop != gameData.weapons.firing [i].nStop) {
-		fP->nStop = gameData.weapons.firing [i].nStop;
+	if (pFiringData->nStop != gameData.weapons.firing [i].nStop) {
+		pFiringData->nStop = gameData.weapons.firing [i].nStop;
 		}
 	if (gameData.weapons.firing [i].bSound == 1) {
-		fP->bSound = 1;
+		pFiringData->bSound = 1;
 		gameData.weapons.firing [i].bSound = 0;
 		}
-	if (fP->bSpeedUp != EGI_FLAG (bGatlingSpeedUp, 1, 0, 0)) {
-		fP->bSpeedUp = EGI_FLAG (bGatlingSpeedUp, 1, 0, 0);
+	if (pFiringData->bSpeedUp != EGI_FLAG (bGatlingSpeedUp, 1, 0, 0)) {
+		pFiringData->bSpeedUp = EGI_FLAG (bGatlingSpeedUp, 1, 0, 0);
 		}
 	}
-if (wsP->nMissiles != LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]) {
-	wsP->nMissiles = (char) LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
+if (pWeaponStates->nMissiles != LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]) {
+	pWeaponStates->nMissiles = (char) LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
 	}
-if (wsP->nLaserLevel != LOCALPLAYER.LaserLevel ()) {
-	wsP->nLaserLevel = LOCALPLAYER.LaserLevel ();
+if (pWeaponStates->nLaserLevel != LOCALPLAYER.LaserLevel ()) {
+	pWeaponStates->nLaserLevel = LOCALPLAYER.LaserLevel ();
 	}
-if (wsP->bTripleFusion != gameData.weapons.bTripleFusion) {
-	wsP->bTripleFusion = gameData.weapons.bTripleFusion;
+if (pWeaponStates->bTripleFusion != gameData.weapons.bTripleFusion) {
+	pWeaponStates->bTripleFusion = gameData.weapons.bTripleFusion;
 	}
-if (wsP->nMslLaunchPos != (gameData.laser.nMissileGun & 3)) {
-	wsP->nMslLaunchPos = gameData.laser.nMissileGun & 3;
+if (pWeaponStates->nMslLaunchPos != (gameData.laser.nMissileGun & 3)) {
+	pWeaponStates->nMslLaunchPos = gameData.laser.nMissileGun & 3;
 	}
-if (wsP->xMslFireTime != gameData.missiles.xNextFireTime) {
-	wsP->xMslFireTime = gameData.missiles.xNextFireTime;
+if (pWeaponStates->xMslFireTime != gameData.missiles.xNextFireTime) {
+	pWeaponStates->xMslFireTime = gameData.missiles.xNextFireTime;
 	}
 UpdateFiringSounds ();
 }
@@ -255,12 +255,12 @@ for (int32_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {
 int32_t CountPlayerObjects (int32_t nPlayer, int32_t nType, int32_t nId)
 {
 	int32_t	h = 0;
-	CObject*	objP;
+	CObject*	pObj;
 
-FORALL_OBJS (objP) 
-	if ((objP->info.nType == nType) && (objP->info.nId == nId) &&
-		 (objP->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
-		 (OBJECT (objP->cType.laserInfo.parent.nObject)->info.nId == nPlayer))
+FORALL_OBJS (pObj) 
+	if ((pObj->info.nType == nType) && (pObj->info.nId == nId) &&
+		 (pObj->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
+		 (OBJECT (pObj->cType.laserInfo.parent.nObject)->info.nId == nPlayer))
 	h++;
 return h;
 }
@@ -281,44 +281,44 @@ return false;
 
 CFixVector *VmRandomVector (CFixVector *vRand); // from lightning.cpp
 
-void MovePlayerToSpawnPos (int32_t nSpawnPos, CObject *objP)
+void MovePlayerToSpawnPos (int32_t nSpawnPos, CObject *pObj)
 {
-	CObject	*markerP = markerManager.SpawnObject (-1);
+	CObject	*pMarker = markerManager.SpawnObject (-1);
 
-if (markerP) {
-	objP->info.position = markerP->info.position;
- 	objP->RelinkToSeg (markerP->info.nSegment);
+if (pMarker) {
+	pObj->info.position = pMarker->info.position;
+ 	pObj->RelinkToSeg (pMarker->info.nSegment);
 	}
 else {
 	int16_t nSegment = gameData.multiplayer.playerInit [nSpawnPos].nSegment;
 	if ((nSegment < 0) || (nSegment >= gameData.segData.nSegments))
 		GameStartInitNetworkPlayers ();
-	objP->info.position = gameData.multiplayer.playerInit [nSpawnPos].position;
+	pObj->info.position = gameData.multiplayer.playerInit [nSpawnPos].position;
 
 	nSegment = gameData.multiplayer.playerInit [nSpawnPos].nSegment;
 
 	// If the chosen spawn segment is occupied by another player,
 	// try to place this player in an unoccupied adjacent segment
 	if (PlayerInSegment (nSegment)) {
-		CSegment* segP = SEGMENT (nSegment);
+		CSegment* pSeg = SEGMENT (nSegment);
 		for (int16_t nSide = 0; nSide < 6; nSide++) {
-			nSegment = segP->ChildId (nSide);
+			nSegment = pSeg->ChildId (nSide);
 			if (!PlayerInSegment (nSegment)) {
-				objP->info.position.vPos = SEGMENT (nSegment)->Center ();
-			 	objP->RelinkToSeg (nSegment);
+				pObj->info.position.vPos = SEGMENT (nSegment)->Center ();
+			 	pObj->RelinkToSeg (nSegment);
 				nSegment = -1;
 				break;
 				}
 			}
 		}
 	if (nSegment >= 0) {
-	 	objP->RelinkToSeg (nSegment);
+	 	pObj->RelinkToSeg (nSegment);
 		// If the chosen spawn segment and all adjacent sements are occupied by another player,
 		// chose a random spawn position in the segment 
 		if (PlayerInSegment (nSegment)) {
 			CFixVector v;
 			fix r = SEGMENT (nSegment)->MinRad () / 2;
-			objP->info.position.vPos = SEGMENT (nSegment)->Center () + *VmRandomVector (&v) * (r + fix (r * RandFloat (2.0f)));
+			pObj->info.position.vPos = SEGMENT (nSegment)->Center () + *VmRandomVector (&v) * (r + fix (r * RandFloat (2.0f)));
 			}
 		}
 	}
@@ -328,18 +328,18 @@ else {
 
 CFixVector* PlayerSpawnPos (int32_t nPlayer)
 {
-	CObject	*markerP = markerManager.SpawnObject (nPlayer);
+	CObject	*pMarker = markerManager.SpawnObject (nPlayer);
 
-return markerP ? &markerP->info.position.vPos : &gameData.multiplayer.playerInit [nPlayer].position.vPos;
+return pMarker ? &pMarker->info.position.vPos : &gameData.multiplayer.playerInit [nPlayer].position.vPos;
 }
 
 //------------------------------------------------------------------------------
 
 CFixMatrix *PlayerSpawnOrient (int32_t nPlayer)
 {
-	CObject	*markerP = markerManager.SpawnObject (nPlayer);
+	CObject	*pMarker = markerManager.SpawnObject (nPlayer);
 
-return markerP ? &markerP->info.position.mOrient : &gameData.multiplayer.playerInit [nPlayer].position.mOrient;
+return pMarker ? &pMarker->info.position.mOrient : &gameData.multiplayer.playerInit [nPlayer].position.mOrient;
 }
 
 //-------------------------------------------------------------------------

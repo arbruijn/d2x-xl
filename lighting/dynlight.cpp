@@ -63,46 +63,46 @@ return m_data.Create ();
 
 void CLightManager::SetColor (int16_t nLight, float red, float green, float blue, float fBrightness)
 {
-	CDynLight*	lightP = m_data.lights + nLight;
+	CDynLight*	pLight = m_data.lights + nLight;
 	int32_t			i;
 
-if ((lightP->info.nType == 2) ? (gameOpts->render.color.nLevel >= 1) : (gameOpts->render.color.nLevel == 2)) {
-	lightP->info.color.Red () = red;
-	lightP->info.color.Green () = green;
-	lightP->info.color.Blue () = blue;
+if ((pLight->info.nType == 2) ? (gameOpts->render.color.nLevel >= 1) : (gameOpts->render.color.nLevel == 2)) {
+	pLight->info.color.Red () = red;
+	pLight->info.color.Green () = green;
+	pLight->info.color.Blue () = blue;
 	}
 else if (gameStates.app.bNostalgia) {
-	lightP->info.color.Red () =
-	lightP->info.color.Green () =
-	lightP->info.color.Blue () = 1.0f;
+	pLight->info.color.Red () =
+	pLight->info.color.Green () =
+	pLight->info.color.Blue () = 1.0f;
 	}
 else {
-	lightP->info.color.Red () =
-	lightP->info.color.Green () =
-	lightP->info.color.Blue () = red * 0.30f + green * 0.584f + blue * 0.116f; //(red + green + blue) / 3.0f;
+	pLight->info.color.Red () =
+	pLight->info.color.Green () =
+	pLight->info.color.Blue () = red * 0.30f + green * 0.584f + blue * 0.116f; //(red + green + blue) / 3.0f;
 	}
-lightP->info.color.Alpha () = 1.0;
-lightP->info.fBrightness = fBrightness;
-lightP->info.fRange = 1.0f; //(float) sqrt (fBrightness / 2.0f);
-lightP->fSpecular.Red () = red;
-lightP->fSpecular.Green () = green;
-lightP->fSpecular.Blue () = blue;
+pLight->info.color.Alpha () = 1.0;
+pLight->info.fBrightness = fBrightness;
+pLight->info.fRange = 1.0f; //(float) sqrt (fBrightness / 2.0f);
+pLight->fSpecular.Red () = red;
+pLight->fSpecular.Green () = green;
+pLight->fSpecular.Blue () = blue;
 for (i = 0; i < 3; i++) {
 #if USE_OGL_LIGHTS
-	lightP->info.fAmbient.dir [i] = lightP->info.fDiffuse [i] * 0.01f;
-	lightP->info.fDiffuse.dir [i] =
+	pLight->info.fAmbient.dir [i] = pLight->info.fDiffuse [i] * 0.01f;
+	pLight->info.fDiffuse.dir [i] =
 #endif
-	lightP->fEmissive.v.vec [i] = lightP->fSpecular.v.vec [i] * fBrightness;
+	pLight->fEmissive.v.vec [i] = pLight->fSpecular.v.vec [i] * fBrightness;
 	}
 // light alphas
 #if USE_OGL_LIGHTS
-lightP->info.fAmbient.dir [3] = 1.0f;
-lightP->info.fDiffuse.dir [3] = 1.0f;
-lightP->fSpecular.dir [3] = 1.0f;
-glLightfv (lightP->info.handle, GL_AMBIENT, lightP->info.fAmbient);
-glLightfv (lightP->info.handle, GL_DIFFUSE, lightP->info.fDiffuse);
-glLightfv (lightP->info.handle, GL_SPECULAR, lightP->fSpecular);
-glLightf (lightP->info.handle, GL_SPOT_EXPONENT, 0.0f);
+pLight->info.fAmbient.dir [3] = 1.0f;
+pLight->info.fDiffuse.dir [3] = 1.0f;
+pLight->fSpecular.dir [3] = 1.0f;
+glLightfv (pLight->info.handle, GL_AMBIENT, pLight->info.fAmbient);
+glLightfv (pLight->info.handle, GL_DIFFUSE, pLight->info.fDiffuse);
+glLightfv (pLight->info.handle, GL_SPECULAR, pLight->fSpecular);
+glLightf (pLight->info.handle, GL_SPOT_EXPONENT, 0.0f);
 #endif
 }
 
@@ -123,13 +123,13 @@ int16_t CLightManager::Find (int16_t nSegment, int16_t nSide, int16_t nObject)
 {
 //if (gameStates.render.nLightingMethod && !gameStates.app.bNostalgia) 
 	{
-	CDynLight*	lightP = &m_data.lights [0];
+	CDynLight*	pLight = &m_data.lights [0];
 
 	if (nObject >= 0)
 		return m_data.owners.Buffer () ? m_data.owners [nObject] : -1;
 	if (nSegment >= 0)
-		for (int16_t i = 0; i < m_data.nLights [0]; i++, lightP++)
-			if ((lightP->info.nSegment == nSegment) && (lightP->info.nSide == nSide))
+		for (int16_t i = 0; i < m_data.nLights [0]; i++, pLight++)
+			if ((pLight->info.nSegment == nSegment) && (pLight->info.nSide == nSide))
 				return i;
 	}
 return -1;
@@ -146,7 +146,7 @@ return (i < 0) ? false : m_data.lights [i].info.bAmbient != 0;
 
 //------------------------------------------------------------------------------
 
-int16_t CLightManager::Update (CFloatVector *colorP, float fBrightness, int16_t nSegment, int16_t nSide, int16_t nObject)
+int16_t CLightManager::Update (CFloatVector *pColor, float fBrightness, int16_t nSegment, int16_t nSide, int16_t nObject)
 {
 	int16_t	nLight = Find (nSegment, nSide, nObject);
 
@@ -158,14 +158,14 @@ if ((nDbgObj >= 0) && (nObject == nDbgObj))
 #endif
 
 if (nLight >= 0) {
-	CDynLight* lightP = m_data.lights + nLight;
-	if (!colorP)
-		colorP = &lightP->info.color;
+	CDynLight* pLight = m_data.lights + nLight;
+	if (!pColor)
+		pColor = &pLight->info.color;
 	if (nObject >= 0)
-		lightP->info.vPos = OBJECT (nObject)->info.position.vPos;
-	if ((lightP->info.fBrightness != fBrightness) ||
-		 (lightP->info.color.Red () != colorP->Red ()) || (lightP->info.color.Green () != colorP->Green ()) || (lightP->info.color.Blue () != colorP->Blue ())) {
-		SetColor (nLight, colorP->Red (), colorP->Green (), colorP->Blue (), fBrightness);
+		pLight->info.vPos = OBJECT (nObject)->info.position.vPos;
+	if ((pLight->info.fBrightness != fBrightness) ||
+		 (pLight->info.color.Red () != pColor->Red ()) || (pLight->info.color.Green () != pColor->Green ()) || (pLight->info.color.Blue () != pColor->Blue ())) {
+		SetColor (nLight, pColor->Red (), pColor->Green (), pColor->Blue (), fBrightness);
 		}
 	}
 return nLight;
@@ -209,19 +209,19 @@ int32_t CLightManager::Toggle (int16_t nSegment, int16_t nSide, int16_t nObject,
 	int16_t nLight = Find (nSegment, nSide, nObject);
 
 if (nLight >= 0) {
-	CDynLight* lightP = m_data.lights + nLight;
-	lightP->info.bOn = bState;
-	lightP->info.bState = 1;
+	CDynLight* pLight = m_data.lights + nLight;
+	pLight->info.bOn = bState;
+	pLight->info.bState = 1;
 	}
 return nLight;
 }
 
 //------------------------------------------------------------------------------
 
-void CLightManager::Register (CFaceColor *colorP, int16_t nSegment, int16_t nSide)
+void CLightManager::Register (CFaceColor *pColor, int16_t nSegment, int16_t nSide)
 {
 #if 0
-if (!colorP || colorP->index) {
+if (!pColor || pColor->index) {
 	tLightInfo	*pli = gameData.render.shadows.lightInfo + gameData.render.shadows.nLights++;
 #if DBG
 	CAngleVector	vec;
@@ -246,19 +246,19 @@ int32_t CLightManager::IsTriggered (int16_t nSegment, int16_t nSide, bool bOppSi
 if ((nSegment < 0) || (nSide < 0))
 	return 0;
 
-	CTrigger*	trigP;
+	CTrigger*	pTrigger;
 	int32_t			i = 0;
 	bool			bForceField = (gameData.pig.tex.tMapInfoP [SEGMENT (nSegment)->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0;
 
 while ((i = FindTriggerTarget (nSegment, nSide, i))) {
 	if (i < 0)
-		trigP = OBJTRIGGER (-i - 1);
+		pTrigger = OBJTRIGGER (-i - 1);
 	else
-		trigP = GEOTRIGGER (i - 1);
-	if (trigP && ((trigP->m_info.nType == TT_OPEN_WALL) || (trigP->m_info.nType == TT_CLOSE_WALL)))
+		pTrigger = GEOTRIGGER (i - 1);
+	if (pTrigger && ((pTrigger->m_info.nType == TT_OPEN_WALL) || (pTrigger->m_info.nType == TT_CLOSE_WALL)))
 		return 1;
 	if (!bForceField) {
-		if (trigP && ((trigP->m_info.nType == TT_LIGHT_OFF) || (trigP->m_info.nType == TT_LIGHT_ON)))
+		if (pTrigger && ((pTrigger->m_info.nType == TT_LIGHT_OFF) || (pTrigger->m_info.nType == TT_LIGHT_ON)))
 			return 1;
 		}
 	}
@@ -272,11 +272,11 @@ return (nConnSeg >= 0) && IsTriggered (nConnSeg, SEGMENT (nSegment)->ConnectedSi
 
 int32_t CLightManager::IsFlickering (int16_t nSegment, int16_t nSide)
 {
-	CVariableLight* flP;
+	CVariableLight* pLight;
 
-if ((flP = gameData.render.lights.flicker.Buffer ()))
-	for (int32_t l = gameData.render.lights.flicker.Length (); l; l--, flP++)
-		if ((flP->m_nSegment == nSegment) && (flP->m_nSide == nSide))
+if ((pLight = gameData.render.lights.flicker.Buffer ()))
+	for (int32_t l = gameData.render.lights.flicker.Length (); l; l--, pLight++)
+		if ((pLight->m_nSegment == nSegment) && (pLight->m_nSide == nSide))
 			return 1;
 return 0;
 }
@@ -290,9 +290,9 @@ if (!nTexture)
 if (IsMultiGame && netGameInfo.m_info.bIndestructibleLights)
 	return 0;
 int16_t nClip = gameData.pig.tex.tMapInfoP [nTexture].nEffectClip;
-tEffectInfo	*effectInfoP = (nClip < 0) ? NULL : gameData.effects.effectP + nClip;
-int16_t	nDestBM = effectInfoP ? effectInfoP->destroyed.nTexture : -1;
-uint8_t	bOneShot = effectInfoP ? (effectInfoP->flags & EF_ONE_SHOT) != 0 : 0;
+tEffectInfo	*pEffectInfo = (nClip < 0) ? NULL : gameData.effects.pEffect + nClip;
+int16_t	nDestBM = pEffectInfo ? pEffectInfo->destroyed.nTexture : -1;
+uint8_t	bOneShot = pEffectInfo ? (pEffectInfo->flags & EF_ONE_SHOT) != 0 : 0;
 if (nClip == -1)
 	return gameData.pig.tex.tMapInfoP [nTexture].destroyed != -1;
 return (nDestBM != -1) && !bOneShot;
@@ -322,7 +322,7 @@ return j ? i / j : 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CLightManager::Add (CSegFace* faceP, CFloatVector *colorP, fix xBrightness, int16_t nSegment,
+int32_t CLightManager::Add (CSegFace* pFace, CFloatVector *pColor, fix xBrightness, int16_t nSegment,
 									 int16_t nSide, int16_t nObject, int16_t nTexture, CFixVector *vPos, uint8_t bAmbient)
 {
 	int16_t			h, i;
@@ -343,13 +343,13 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	BRP;
 if ((nDbgObj >= 0) && (nObject == nDbgObj))
 	BRP;
-if (colorP && ((colorP->Red () > 1) || (colorP->Green () > 1) || (colorP->Blue () > 1)))
+if (pColor && ((pColor->Red () > 1) || (pColor->Green () > 1) || (pColor->Blue () > 1)))
 	BRP;
 #endif
 
 if (gameStates.render.nLightingMethod && (nSegment >= 0) && (nSide >= 0)) {
 #if 1
-	fBrightness /= Intensity (colorP->Red (), colorP->Green (), colorP->Blue ());
+	fBrightness /= Intensity (pColor->Red (), pColor->Green (), pColor->Blue ());
 #else
 	if (fBrightness < 1)
 		fBrightness = (float) sqrt (fBrightness);
@@ -357,16 +357,16 @@ if (gameStates.render.nLightingMethod && (nSegment >= 0) && (nSide >= 0)) {
 		fBrightness *= fBrightness;
 #endif
 	}
-if (colorP)
-	colorP->Alpha () = 1.0f;
-if (0 <= (h = Update (colorP, fBrightness, nSegment, nSide, nObject)))
+if (pColor)
+	pColor->Alpha () = 1.0f;
+if (0 <= (h = Update (pColor, fBrightness, nSegment, nSide, nObject)))
 	return h;
-if (!colorP)
+if (!pColor)
 	return -1;
-if ((colorP->Red () == 0.0f) && (colorP->Green () == 0.0f) && (colorP->Blue () == 0.0f)) {
+if ((pColor->Red () == 0.0f) && (pColor->Green () == 0.0f) && (pColor->Blue () == 0.0f)) {
 	if (gameStates.app.bD2XLevel && gameStates.render.bColored)
 		return -1;
-	colorP->Red () = colorP->Green () = colorP->Blue () = 1.0f;
+	pColor->Red () = pColor->Green () = pColor->Blue () = 1.0f;
 	}
 if (m_data.nLights [0] >= MAX_OGL_LIGHTS) {
 	gameStates.render.bHaveDynLights = 0;
@@ -375,7 +375,7 @@ if (m_data.nLights [0] >= MAX_OGL_LIGHTS) {
 i = m_data.nLights [0]; //LastEnabledDynLight () + 1;
 CDynLight& light = m_data.lights [i];
 light.info.nIndex = i;
-light.info.faceP = faceP;
+light.info.pFace = pFace;
 light.info.nSegment = nSegment;
 light.info.nSide = nSide;
 light.info.nObject = nObject;
@@ -390,12 +390,12 @@ light.info.bSelf = 0;
 //2: object/lightning
 //3: headlight
 if (nObject >= 0) {
-	CObject *objP = OBJECT (nObject);
-	//HUDMessage (0, "Adding object light %d, type %d", m_data.nLights [0], objP->info.nType);
+	CObject *pObj = OBJECT (nObject);
+	//HUDMessage (0, "Adding object light %d, type %d", m_data.nLights [0], pObj->info.nType);
 	light.info.nType = 2;
 	light.info.bVariable = 1;
-	if (objP->info.nType == OBJ_POWERUP) {
-		int32_t id = objP->info.nId;
+	if (pObj->info.nType == OBJ_POWERUP) {
+		int32_t id = pObj->info.nId;
 		if ((id == POW_EXTRA_LIFE) || (id == POW_ENERGY) || (id == POW_SHIELD_BOOST) ||
 			 (id == POW_HOARD_ORB) || (id == POW_MONSTERBALL) || (id == POW_INVUL))
 			light.info.bPowerup = 1;
@@ -406,14 +406,14 @@ if (nObject >= 0) {
 			return -1;
 #endif
 		}
-	light.info.vPos = objP->info.position.vPos;
+	light.info.vPos = pObj->info.position.vPos;
 	light.info.fRad = 0; //X2F (OBJECT (nObject)->size) / 2;
 	if (fBrightness > 1) {
-		if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
+		if ((pObj->info.nType == OBJ_FIREBALL) || (pObj->info.nType == OBJ_EXPLOSION)) {
 			light.info.fBoost = 1;
 			light.info.fRad = fBrightness;
 			}
-		else if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FLARE_ID)) {
+		else if ((pObj->info.nType == OBJ_WEAPON) && (pObj->info.nId == FLARE_ID)) {
 			light.info.fBoost = 1;
 			light.info.fRad = 2 * fBrightness;
 			}
@@ -423,7 +423,7 @@ if (nObject >= 0) {
 else if (nSegment >= 0) {
 #if 0
 	CFixVector	vOffs;
-	CSide			*sideP = SEGMENT (nSegment)->m_sides + nSide;
+	CSide			*pSide = SEGMENT (nSegment)->m_sides + nSide;
 #endif
 	if (nSide < 0) {
 		light.info.nType = 2;
@@ -441,13 +441,13 @@ else if (nSegment >= 0) {
 #endif
 		light.info.nType = 0;
 		light.info.bSelf = SEGMENT (nSegment)->HasOutdoorsProp ();
-		light.info.fRad = faceP ? faceP->m_info.fRads [1] / 2.0f : 0;
+		light.info.fRad = pFace ? pFace->m_info.fRads [1] / 2.0f : 0;
 		//RegisterLight (NULL, nSegment, nSide);
 		light.info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsTriggered (nSegment, nSide) || SEGMENT (nSegment)->Side (nSide)->IsVolatile ();
 		m_data.nVariable += light.info.bVariable;
-		CSide* sideP = SEGMENT (nSegment)->m_sides + nSide;
-		light.info.vPos = sideP->Center ();
-		CFixVector vOffs = sideP->m_normals [2];
+		CSide* pSide = SEGMENT (nSegment)->m_sides + nSide;
+		light.info.vPos = pSide->Center ();
+		CFixVector vOffs = pSide->m_normals [2];
 		light.info.vDirf.Assign (vOffs);
 		CFloatVector::Normalize (light.info.vDirf);
 #if 0
@@ -464,22 +464,22 @@ else {
 	}
 light.info.bOn = 1;
 light.bTransform = 1;
-SetColor (m_data.nLights [0], colorP->Red (), colorP->Green (), colorP->Blue (), fBrightness);
+SetColor (m_data.nLights [0], pColor->Red (), pColor->Green (), pColor->Blue (), fBrightness);
 return m_data.nLights [0]++;
 }
 
 //------------------------------------------------------------------------------
 
-bool CLightManager::DeleteFromList (CDynLight* lightP, int16_t nLight)
+bool CLightManager::DeleteFromList (CDynLight* pLight, int16_t nLight)
 {
 if (!m_data.lights.Buffer () || (nLight >= m_data.nLights [0]))
 	return false;
-lightP->Destroy ();
-*lightP = m_data.lights [--m_data.nLights [0]];
-if (lightP->info.nObject >= 0)
-	m_data.owners [lightP->info.nObject] = nLight;
-if (lightP->info.nPlayer < MAX_PLAYERS)
-	m_headlights.lightIds [lightP->info.nPlayer] = nLight;
+pLight->Destroy ();
+*pLight = m_data.lights [--m_data.nLights [0]];
+if (pLight->info.nObject >= 0)
+	m_data.owners [pLight->info.nObject] = nLight;
+if (pLight->info.nPlayer < MAX_PLAYERS)
+	m_headlights.lightIds [pLight->info.nPlayer] = nLight;
 return true;
 }
 
@@ -488,17 +488,17 @@ return true;
 void CLightManager::Delete (int16_t nLight)
 {
 if ((nLight >= 0) && (nLight < m_data.nLights [0])) {
-	CDynLight* lightP = m_data.lights + nLight;
+	CDynLight* pLight = m_data.lights + nLight;
 #if DBG
-	if ((nDbgSeg >= 0) && (nDbgSeg == lightP->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == lightP->info.nSide)))
+	if ((nDbgSeg >= 0) && (nDbgSeg == pLight->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == pLight->info.nSide)))
 		BRP;
 #endif
-	if (!lightP->info.nType) {
+	if (!pLight->info.nType) {
 		// do not remove static lights, or the nearest lights to segment info will get messed up!
-		lightP->info.bState = lightP->info.bOn = 0;
+		pLight->info.bState = pLight->info.bOn = 0;
 		return;
 		}
-	DeleteFromList (lightP, nLight);
+	DeleteFromList (pLight, nLight);
 	}
 }
 
@@ -520,13 +520,13 @@ return 1;
 
 void CLightManager::DeleteLightning (void)
 {
-	CDynLight* lightP = &m_data.lights [0];
+	CDynLight* pLight = &m_data.lights [0];
 
-if (lightP != NULL) {
+if (pLight != NULL) {
 	for (int16_t i = 0; i < m_data.nLights [0]; ) {
-		if (!((lightP->info.nSegment >= 0) && (lightP->info.nSide < 0) && DeleteFromList (lightP, i))) {
+		if (!((pLight->info.nSegment >= 0) && (pLight->info.nSide < 0) && DeleteFromList (pLight, i))) {
 			i++;
-			lightP++;
+			pLight++;
 			}
 		}
 	}
@@ -548,10 +548,10 @@ void CLightManager::SetMaterial (int16_t nSegment, int16_t nSide, int16_t nObjec
 	int32_t nLight = Find (nSegment, nSide, nObject);
 
 if (nLight >= 0) {
-	CDynLight* lightP = m_data.lights + nLight;
-	if (lightP->info.bState) {
-		m_data.material.emissive = *reinterpret_cast<CFloatVector*> (&lightP->fEmissive);
-		m_data.material.specular = *reinterpret_cast<CFloatVector*> (&lightP->fEmissive);
+	CDynLight* pLight = m_data.lights + nLight;
+	if (pLight->info.bState) {
+		m_data.material.emissive = *reinterpret_cast<CFloatVector*> (&pLight->fEmissive);
+		m_data.material.specular = *reinterpret_cast<CFloatVector*> (&pLight->fEmissive);
 		m_data.material.shininess = 8;
 		m_data.material.bValid = 1;
 		m_data.material.nLight = nLight;
@@ -652,22 +652,22 @@ else {
 			inline bool operator> (CLightPoint& other) { return d > other.d; }
 			};
 	
-		CSide* sideP = SEGMENT (nLightSeg)->Side (info.nSide);
+		CSide* pSide = SEGMENT (nLightSeg)->Side (info.nSide);
 
-		if (sideP->Shape () > SIDE_SHAPE_TRIANGLE)
+		if (pSide->Shape () > SIDE_SHAPE_TRIANGLE)
 			return 0;
 
 		CStaticArray<CFloatVector, 9>	vLight;
 		int32_t	nVertices = 0, i, j = nLevels [nLevel];
 
-	vLight [nVertices++].Assign (sideP->Center ());
+	vLight [nVertices++].Assign (pSide->Center ());
 	if (nLevel) {
-		for (i = 0; i < sideP->m_nCorners; i++)
-			vLight [nVertices++] = FVERTICES [sideP->m_corners [i]];
+		for (i = 0; i < pSide->m_nCorners; i++)
+			vLight [nVertices++] = FVERTICES [pSide->m_corners [i]];
 		if (nLevel > 1) {
-			for (i = 0; i < sideP->m_nCorners; i++) {
-				vLight [nVertices] = FVERTICES [sideP->m_corners [i]];
-				vLight [nVertices] += FVERTICES [sideP->m_corners [(i + 1) % sideP->m_nCorners]];
+			for (i = 0; i < pSide->m_nCorners; i++) {
+				vLight [nVertices] = FVERTICES [pSide->m_corners [i]];
+				vLight [nVertices] += FVERTICES [pSide->m_corners [(i + 1) % pSide->m_nCorners]];
 				vLight [nVertices++] /= 2;
 				}
 			}
@@ -720,9 +720,9 @@ int32_t CDynLight::LightSeg (void)
 {
 if (info.nSegment >= 0)
 	return info.nSegment;
-CObject* objP = Object ();
-if (objP)
-	return objP->Segment ();
+CObject* pObj = Object ();
+if (pObj)
+	return pObj->Segment ();
 return -1;
 }
 
@@ -853,9 +853,9 @@ if (!(info.visibleVertices || (info.visibleVertices = new CByteArray ())))
 	return -1;
 if (!info.visibleVertices->Create (gameData.segData.nVertices))
 	return -1;
-CSide* sideP = SEGMENT (nLightSeg)->Side (info.nSide);
+CSide* pSide = SEGMENT (nLightSeg)->Side (info.nSide);
 for (int32_t i = 0; i < gameData.segData.nVertices; i++)
-	(*info.visibleVertices) [i] = sideP->SeesPoint (VERTICES [i], -1, 2, nThread);
+	(*info.visibleVertices) [i] = pSide->SeesPoint (VERTICES [i], -1, 2, nThread);
 return 1;
 }
 
@@ -876,8 +876,8 @@ for (int32_t i = 0; i < m_data.nLights [0]; i++)
 void CLightManager::AddGeometryLights (void)
 {
 	int32_t			nFace, nSegment, nSide, nTexture, nLight;
-	CSegFace*	faceP;
-	CFaceColor*	colorP;
+	CSegFace*	pFace;
+	CFaceColor*	pColor;
 
 #if 0
 for (nTexture = 0; nTexture < 910; nTexture++)
@@ -893,34 +893,34 @@ m_headlights.Init ();
 if (gameStates.render.nLightingMethod)
 	gameData.render.color.vertices.Clear ();
 m_data.Init ();
-for (nFace = FACES.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--, faceP++) {
-	nSegment = faceP->m_info.nSegment;
+for (nFace = FACES.nFaces, pFace = FACES.faces.Buffer (); nFace; nFace--, pFace++) {
+	nSegment = pFace->m_info.nSegment;
 	if (SEGMENT (nSegment)->m_function == SEGMENT_FUNC_SKYBOX)
 		continue;
 #if DBG
 	if (nSegment == nDbgSeg)
 		BRP;
 #endif
-	nSide = faceP->m_info.nSide;
+	nSide = pFace->m_info.nSide;
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		BRP;
 #endif
-	nTexture = faceP->m_info.nBaseTex;
+	nTexture = pFace->m_info.nBaseTex;
 	if ((nTexture < 0) || (nTexture >= MAX_WALL_TEXTURES))
 		continue;
-	colorP = gameData.render.color.textures + nTexture;
+	pColor = gameData.render.color.textures + nTexture;
 	if ((nLight = IsLight (nTexture)))
-		Add (faceP, colorP, nLight, (int16_t) nSegment, (int16_t) nSide, -1, nTexture, NULL, 1);
-	faceP->m_info.nOvlTex = SEGMENT (faceP->m_info.nSegment)->Side (faceP->m_info.nSide)->m_nOvlTex;
-	nTexture = faceP->m_info.nOvlTex;
+		Add (pFace, pColor, nLight, (int16_t) nSegment, (int16_t) nSide, -1, nTexture, NULL, 1);
+	pFace->m_info.nOvlTex = SEGMENT (pFace->m_info.nSegment)->Side (pFace->m_info.nSide)->m_nOvlTex;
+	nTexture = pFace->m_info.nOvlTex;
 #if 0//DBG
 	if (gameStates.app.bD1Mission && (nTexture == 289)) //empty, light
 		continue;
 #endif
 	if ((nTexture > 0) && (nTexture < MAX_WALL_TEXTURES) && (nLight = IsLight (nTexture)) /*gameData.pig.tex.info.fBrightness [nTexture]*/) {
-		colorP = gameData.render.color.textures + nTexture;
-		Add (faceP, colorP, nLight, (int16_t) nSegment, (int16_t) nSide, -1, nTexture, NULL);
+		pColor = gameData.render.color.textures + nTexture;
+		Add (pFace, pColor, nLight, (int16_t) nSegment, (int16_t) nSide, -1, nTexture, NULL);
 		}
 	//if (m_data.nLights [0])
 	//	return;
@@ -987,7 +987,7 @@ if (gameStates.render.bPerPixelLighting/* && lightmapManager.HaveLightmaps ()*/)
 	return;
 if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
 		CFaceColor*	pf = gameData.render.color.ambient.Buffer ();
-		CSegment*	segP;
+		CSegment*	pSeg;
 
 	memset (pf, 0, gameData.segData.nVertices * sizeof (*pf));
 #if USE_OPENMP // > 1
@@ -1005,9 +1005,9 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 #endif
 		lightManager.GatherStaticVertexLights (0, gameData.segData.nVertices, 0);
 	pf = gameData.render.color.ambient.Buffer ();
-	for (i = 0, segP = SEGMENTS.Buffer (); i < gameData.segData.nSegments; i++, segP++) {
-		if (segP->m_function == SEGMENT_FUNC_SKYBOX) {
-			uint16_t* sv = segP->m_vertices;
+	for (i = 0, pSeg = SEGMENTS.Buffer (); i < gameData.segData.nSegments; i++, pSeg++) {
+		if (pSeg->m_function == SEGMENT_FUNC_SKYBOX) {
+			uint16_t* sv = pSeg->m_vertices;
 			for (j = 8; j; j--, sv++)
 				if (*sv != 0xFFFF)
 					pf [*sv].Set (1.0f, 1.0f, 1.0f, 1.0f);

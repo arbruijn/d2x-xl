@@ -55,15 +55,15 @@ int32_t	bOutLineMode = 0,
 int32_t FaceIsVisible (int16_t nSegment, int16_t nSide)
 {
 #if SW_CULLING
-CSegment *segP = SEGMENT (nSegment);
-CSide *sideP = segP->m_sides + nSide;
+CSegment *pSeg = SEGMENT (nSegment);
+CSide *pSide = pSeg->m_sides + nSide;
 CFixVector v;
-if (sideP->m_nType == SIDE_IS_QUAD) {
-	v = gameData.render.mine.viewer.vPos - segP->SideCenter (nSide); //gameData.segData.vertices + segP->m_vertices [sideVertIndex [nSide][0]]);
-	return CFixVector::Dot (sideP->m_normals [0], v) >= 0;
+if (pSide->m_nType == SIDE_IS_QUAD) {
+	v = gameData.render.mine.viewer.vPos - pSeg->SideCenter (nSide); //gameData.segData.vertices + pSeg->m_vertices [sideVertIndex [nSide][0]]);
+	return CFixVector::Dot (pSide->m_normals [0], v) >= 0;
 	}
-v = gameData.render.mine.viewer.vPos - VERTICES [sideP->m_vertices [(sideP->m_nType == SIDE_IS_TRI_13) ? 3 : 0]];
-return (CFixVector::Dot (sideP->m_normals [0], v) >= 0) || (CFixVector::Dot (sideP->m_normals [1], v) >= 0);
+v = gameData.render.mine.viewer.vPos - VERTICES [pSide->m_vertices [(pSide->m_nType == SIDE_IS_TRI_13) ? 3 : 0]];
+return (CFixVector::Dot (pSide->m_normals [0], v) >= 0) || (CFixVector::Dot (pSide->m_normals [1], v) >= 0);
 #else
 return 1;
 #endif
@@ -153,19 +153,19 @@ if (nSegment < 0)
 	return 0;
 //if (!gameStates.render.nLightingMethod)
 //	return 0;
-CSegment* segP = SEGMENT (nSegment);
-if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0))
-	return (segP->m_owner == 1) ? 2 : 1;
+CSegment* pSeg = SEGMENT (nSegment);
+if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (pSeg->m_owner > 0))
+	return (pSeg->m_owner == 1) ? 2 : 1;
 if (!missionConfig.m_bColoredSegments)
 	return 0;
-if (segP->HasWaterProp ())
+if (pSeg->HasWaterProp ())
 	return 3;
-if (segP->HasLavaProp ())
+if (pSeg->HasLavaProp ())
 	return 4;
 #if 0
-if (segP->m_function == SEGMENT_FUNC_TEAM_BLUE) 
+if (pSeg->m_function == SEGMENT_FUNC_TEAM_BLUE) 
 	return 1;
-if (segP->m_function == SEGMENT_FUNC_TEAM_RED)
+if (pSeg->m_function == SEGMENT_FUNC_TEAM_RED)
 	return 2;
 #endif
 return 0;
@@ -179,37 +179,37 @@ char IsColoredSegFace (int16_t nSegment, int16_t nSide)
 if (!gameStates.render.nLightingMethod)
 	return 0;
 #endif
-	CSegment*	segP = SEGMENT (nSegment);
-	CSegment*	connSegP = (segP->m_children [nSide] < 0) ? NULL : SEGMENT (segP->m_children [nSide]);
+	CSegment*	pSeg = SEGMENT (nSegment);
+	CSegment*	pConnSeg = (pSeg->m_children [nSide] < 0) ? NULL : SEGMENT (pSeg->m_children [nSide]);
 
-if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0)) {
-	if (!connSegP || (connSegP->m_owner != segP->m_owner))
-		return (segP->m_owner == 1) ? 2 : 1;
+if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (pSeg->m_owner > 0)) {
+	if (!pConnSeg || (pConnSeg->m_owner != pSeg->m_owner))
+		return (pSeg->m_owner == 1) ? 2 : 1;
 	}
 
 if (!missionConfig.m_bColoredSegments)
 	return 0;
 
-if (!connSegP) {
-	if (segP->HasWaterProp ())
+if (!pConnSeg) {
+	if (pSeg->HasWaterProp ())
 		return 3;
-	if (segP->HasLavaProp ())
+	if (pSeg->HasLavaProp ())
 		return 4;
 	return 0;
 	}
-if (segP->HasWaterProp () != connSegP->HasWaterProp ())
+if (pSeg->HasWaterProp () != pConnSeg->HasWaterProp ())
 	return 3;
-if (segP->HasLavaProp () != connSegP->HasLavaProp ())
+if (pSeg->HasLavaProp () != pConnSeg->HasLavaProp ())
 	return 4;
 #if 1
 return 0;
 #else
-if (segP->m_function == connSegP->m_function)
+if (pSeg->m_function == pConnSeg->m_function)
 	return 0;
-return (segP->m_function == SEGMENT_FUNC_TEAM_BLUE) || 
-		 (segP->m_function == SEGMENT_FUNC_TEAM_RED) || 
-		 (connSegP->m_function == SEGMENT_FUNC_TEAM_BLUE) || 
-		 (connSegP->m_function == SEGMENT_FUNC_TEAM_RED);
+return (pSeg->m_function == SEGMENT_FUNC_TEAM_BLUE) || 
+		 (pSeg->m_function == SEGMENT_FUNC_TEAM_RED) || 
+		 (pConnSeg->m_function == SEGMENT_FUNC_TEAM_BLUE) || 
+		 (pConnSeg->m_function == SEGMENT_FUNC_TEAM_RED);
 #endif
 }
 
@@ -226,8 +226,8 @@ CFloatVector *ColoredSegmentColor (int32_t nSegment, int32_t nSide, char nColor)
 //if (!gameStates.render.nLightingMethod)
 //	return NULL;
 
-	CSegment*	segP = SEGMENT (nSegment);
-	CSegment*	connSegP = (segP->m_children [nSide] < 0) ? NULL : SEGMENT (segP->m_children [nSide]);
+	CSegment*	pSeg = SEGMENT (nSegment);
+	CSegment*	pConnSeg = (pSeg->m_children [nSide] < 0) ? NULL : SEGMENT (pSeg->m_children [nSide]);
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -237,31 +237,31 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 if (nColor > 0)
 	nColor--;
 else {
-	if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0)) {
-		if (connSegP && (connSegP->m_owner == segP->m_owner))
+	if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (pSeg->m_owner > 0)) {
+		if (pConnSeg && (pConnSeg->m_owner == pSeg->m_owner))
 			return NULL;
-		nColor = (segP->m_owner == 1);
+		nColor = (pSeg->m_owner == 1);
 		}
-	if (missionConfig.m_bColoredSegments && segP->HasWaterProp ())
+	if (missionConfig.m_bColoredSegments && pSeg->HasWaterProp ())
 		nColor = 2;
-	else if (missionConfig.m_bColoredSegments && segP->HasLavaProp ())
+	else if (missionConfig.m_bColoredSegments && pSeg->HasLavaProp ())
 		nColor = 3;
 	else
 		return NULL;
-	if (connSegP >= 0) {
-		if (segP->HasWaterProp () == connSegP->HasWaterProp ())
+	if (pConnSeg >= 0) {
+		if (pSeg->HasWaterProp () == pConnSeg->HasWaterProp ())
 			return NULL;
-		if (segP->HasLavaProp () == connSegP->HasLavaProp ())
+		if (pSeg->HasLavaProp () == pConnSeg->HasLavaProp ())
 			return NULL;
 #if 1
-		if (segP->m_function == connSegP->m_function)
+		if (pSeg->m_function == pConnSeg->m_function)
 			return NULL;
-		if ((segP->m_function != SEGMENT_FUNC_TEAM_BLUE) &&
-			 (segP->m_function != SEGMENT_FUNC_TEAM_RED) &&
-			 (connSegP->m_function != SEGMENT_FUNC_TEAM_BLUE) &&
-			 (connSegP->m_function != SEGMENT_FUNC_TEAM_RED))
+		if ((pSeg->m_function != SEGMENT_FUNC_TEAM_BLUE) &&
+			 (pSeg->m_function != SEGMENT_FUNC_TEAM_RED) &&
+			 (pConnSeg->m_function != SEGMENT_FUNC_TEAM_BLUE) &&
+			 (pConnSeg->m_function != SEGMENT_FUNC_TEAM_RED))
 			return NULL;
-		if (IS_WALL (segP->WallNum (nSide)))
+		if (IS_WALL (pSeg->WallNum (nSide)))
 #endif
 			return NULL;
 		}
@@ -272,16 +272,16 @@ return segmentColors + nColor;
 //------------------------------------------------------------------------------
 // If any color component > 1, scale all components down so that the greatest == 1.
 
-static inline void ScaleColor (CFaceColor *colorP, float l)
+static inline void ScaleColor (CFaceColor *pColor, float l)
 {
-	float m = colorP->Red ();
+	float m = pColor->Red ();
 
-if (m < colorP->Green ())
-	m = colorP->Green ();
-if (m < colorP->Blue ())
-	m = colorP->Blue ();
+if (m < pColor->Green ())
+	m = pColor->Green ();
+if (m < pColor->Blue ())
+	m = pColor->Blue ();
 if (m > l)
-	*colorP *= l / m;
+	*pColor *= l / m;
 }
 
 //------------------------------------------------------------------------------
@@ -299,7 +299,7 @@ dest.v.color.b = dest.v.color.b * da + src.v.color.b * fAlpha;
 
 //------------------------------------------------------------------------------
 
-int32_t SetVertexColor (int32_t nVertex, CFaceColor *colorP, int32_t bBlend)
+int32_t SetVertexColor (int32_t nVertex, CFaceColor *pColor, int32_t bBlend)
 {
 #if DBG
 if (nVertex == nDbgVertex)
@@ -307,34 +307,34 @@ if (nVertex == nDbgVertex)
 #endif
 if (gameStates.render.bAmbientColor) { 
 	if (bBlend == 1)
-		*colorP *= gameData.render.color.ambient [nVertex];
+		*pColor *= gameData.render.color.ambient [nVertex];
 	else if (bBlend == 2) {
-		CFaceColor* vertColorP = &gameData.render.color.ambient [nVertex];
-		float a = colorP->v.color.a, da = 1.0f - a;
-		colorP->v.color.r = colorP->v.color.r * a + vertColorP->v.color.r * da;
-		colorP->v.color.g = colorP->v.color.g * a + vertColorP->v.color.g * da;
-		colorP->v.color.b = colorP->v.color.b * a + vertColorP->v.color.b * da;
+		CFaceColor* pVertexColor = &gameData.render.color.ambient [nVertex];
+		float a = pColor->v.color.a, da = 1.0f - a;
+		pColor->v.color.r = pColor->v.color.r * a + pVertexColor->v.color.r * da;
+		pColor->v.color.g = pColor->v.color.g * a + pVertexColor->v.color.g * da;
+		pColor->v.color.b = pColor->v.color.b * a + pVertexColor->v.color.b * da;
 		}
 	else
-		*colorP += gameData.render.color.ambient [nVertex];
+		*pColor += gameData.render.color.ambient [nVertex];
 	}
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t SetVertexColors (tFaceProps *propsP)
+int32_t SetVertexColors (tFaceProps *pProps)
 {
 if (SHOW_DYN_LIGHT) {
 	// set material properties specific for certain textures here
-	lightManager.SetMaterial (propsP->segNum, propsP->sideNum, -1);
+	lightManager.SetMaterial (pProps->segNum, pProps->sideNum, -1);
 	return 0;
 	}
 memset (vertColors, 0, sizeof (vertColors));
 if (gameStates.render.bAmbientColor) {
-	int32_t i, j = propsP->nVertices;
+	int32_t i, j = pProps->nVertices;
 	for (i = 0; i < j; i++)
-		SetVertexColor (propsP->vp [i], vertColors + i);
+		SetVertexColor (pProps->vp [i], vertColors + i);
 	}
 else
 	memset (vertColors, 0, sizeof (vertColors));
@@ -343,7 +343,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-fix SetVertexLight (int32_t nSegment, int32_t nSide, int32_t nVertex, CFaceColor *colorP, fix light)
+fix SetVertexLight (int32_t nSegment, int32_t nSide, int32_t nVertex, CFaceColor *pColor, fix light)
 {
 	fix				dynLight;
 	float				fl, dl, hl;
@@ -387,51 +387,51 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 				if (gameStates.render.bAmbientColor) {
 					if ((fl != 0) && gameData.render.color.vertBright [nVertex]) {
 						hl = fl / gameData.render.color.vertBright [nVertex];
-						*colorP *= hl;
-						*colorP += dynColor * dl;
-						ScaleColor (colorP, fl + dl);
+						*pColor *= hl;
+						*pColor += dynColor * dl;
+						ScaleColor (pColor, fl + dl);
 						}
 					else {
-						colorP->Assign (dynColor);
-						*colorP *= dl;
-						ScaleColor (colorP, dl);
+						pColor->Assign (dynColor);
+						*pColor *= dl;
+						ScaleColor (pColor, dl);
 						}
 					}
 				else {
-					colorP->Set (fl, fl, fl);
-					*colorP += dynColor * dl;
-					ScaleColor (colorP, fl + dl);
+					pColor->Set (fl, fl, fl);
+					*pColor += dynColor * dl;
+					ScaleColor (pColor, fl + dl);
 					}
 				}
 			else {
-				colorP->Red () =
-				colorP->Green () =
-				colorP->Blue () = fl + dl;
+				pColor->Red () =
+				pColor->Green () =
+				pColor->Blue () = fl + dl;
 				}
 			if (gameOpts->render.color.bCap) {
-				if (colorP->Red () > 1.0)
-					colorP->Red () = 1.0;
-				if (colorP->Green () > 1.0)
-					colorP->Green () = 1.0;
-				if (colorP->Blue () > 1.0)
-					colorP->Blue () = 1.0;
+				if (pColor->Red () > 1.0)
+					pColor->Red () = 1.0;
+				if (pColor->Green () > 1.0)
+					pColor->Green () = 1.0;
+				if (pColor->Blue () > 1.0)
+					pColor->Blue () = 1.0;
 				}
 			}
 		else {
 			float dl = X2F (light);
 			dl = (float) pow (dl, 1.0f / 3.0f);
-			colorP->Assign (dynColor);
-			*colorP *= dl;
+			pColor->Assign (dynColor);
+			*pColor *= dl;
 			}
 		}
 	else {
-		ScaleColor (colorP, fl + dl);
+		ScaleColor (pColor, fl + dl);
 		}
 	}
 else {
-	ScaleColor (colorP, fl + dl);
+	ScaleColor (pColor, fl + dl);
 	}
-*colorP *= gameData.render.fBrightness;
+*pColor *= gameData.render.fBrightness;
 light = fix (light * gameData.render.fBrightness);
 //saturate at max value
 if (light > MAX_LIGHT)
@@ -441,12 +441,12 @@ return light;
 
 //------------------------------------------------------------------------------
 
-int32_t SetFaceLight (tFaceProps *propsP)
+int32_t SetFaceLight (tFaceProps *pProps)
 {
 if (SHOW_DYN_LIGHT)
 	return 0;
-for (int32_t i = 0; i < propsP->nVertices; i++) {
-	propsP->uvls [i].l = SetVertexLight (propsP->segNum, propsP->sideNum, propsP->vp [i], vertColors + i, propsP->uvls [i].l);
+for (int32_t i = 0; i < pProps->nVertices; i++) {
+	pProps->uvls [i].l = SetVertexLight (pProps->segNum, pProps->sideNum, pProps->vp [i], vertColors + i, pProps->uvls [i].l);
 	vertColors [i].index = -1;
 	}
 return 1;
@@ -467,11 +467,11 @@ return !gameStates.app.bD1Mission &&
 //------------------------------------------------------------------------------
 
 float WallAlpha (int16_t nSegment, int16_t nSide, int16_t nWall, uint8_t widFlags, int32_t bIsMonitor, uint8_t bAdditive,
-					  CFloatVector *colorP, int32_t& nColor, uint8_t& bTextured, uint8_t& bCloaked, uint8_t& bTransparent)
+					  CFloatVector *pColor, int32_t& nColor, uint8_t& bTextured, uint8_t& bCloaked, uint8_t& bTransparent)
 {
 	static CFloatVector cloakColor = {{{0.0f, 0.0f, 0.0f, 0}}};
 
-	CWall	*wallP;
+	CWall	*pWall;
 	float fAlpha, fMaxColor;
 	int16_t	c;
 
@@ -481,29 +481,29 @@ if (!IS_WALL (nWall))
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	BRP;
 #endif
-if (!(wallP = WALL (nWall)))
+if (!(pWall = WALL (nWall)))
 	return 1;
 if (SHOW_DYN_LIGHT) {
-	bTransparent = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING);
+	bTransparent = (pWall->state == WALL_DOOR_CLOAKING) || (pWall->state == WALL_DOOR_DECLOAKING);
 	bCloaked = !bTransparent && ((widFlags & WID_CLOAKED_FLAG) != 0);
 	}
 else {
 	bTransparent = 0;
-	bCloaked = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
+	bCloaked = (pWall->state == WALL_DOOR_CLOAKING) || (pWall->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
 	}
 if (bCloaked || bTransparent || (widFlags & WID_TRANSPCOLOR_FLAG)) {
 	if (bIsMonitor)
 		return 1;
-	c = wallP->cloakValue;
+	c = pWall->cloakValue;
 	if (bCloaked || bTransparent) {
-		*colorP = cloakColor;
+		*pColor = cloakColor;
 		nColor = 1;
 		bTextured = !bCloaked;
 		fAlpha = (c >= FADE_LEVELS) ? 0.0f : 1.0f - float (c) / float (FADE_LEVELS);
 		if (bTransparent)
-			colorP->Red () =
-			colorP->Green () =
-			colorP->Blue () = fAlpha;
+			pColor->Red () =
+			pColor->Green () =
+			pColor->Blue () = fAlpha;
 		return fAlpha;
 		}
 
@@ -517,30 +517,30 @@ if (bCloaked || bTransparent || (widFlags & WID_TRANSPCOLOR_FLAG)) {
 		fAlpha = 1.0f - extraGameInfo [0].grWallTransparency / (float) FADE_LEVELS;
 	if (fAlpha < 1.0f) {
 		//fAlpha = (float) sqrt (fAlpha);
-		paletteManager.Game ()->ToRgbaf ((uint8_t) c, *colorP);
+		paletteManager.Game ()->ToRgbaf ((uint8_t) c, *pColor);
 		if (bAdditive) {
-			colorP->Red () /= fAlpha;
-			colorP->Green () /= fAlpha;
-			colorP->Blue () /= fAlpha;
+			pColor->Red () /= fAlpha;
+			pColor->Green () /= fAlpha;
+			pColor->Blue () /= fAlpha;
 			}
-		fMaxColor = colorP->Max ();
+		fMaxColor = pColor->Max ();
 		if (fMaxColor > 1.0f) {
-			colorP->Red () /= fMaxColor;
-			colorP->Green () /= fMaxColor;
-			colorP->Blue () /= fMaxColor;
+			pColor->Red () /= fMaxColor;
+			pColor->Green () /= fMaxColor;
+			pColor->Blue () /= fMaxColor;
 			}
 		bTextured = 0;
 		nColor = 1;
 		}
-	return colorP->Alpha () = fAlpha;
+	return pColor->Alpha () = fAlpha;
 	}
 if (gameStates.app.bD2XLevel) {
-	c = wallP->cloakValue;
-	return colorP->Alpha () = (c && (c < FADE_LEVELS)) ? (float) (FADE_LEVELS - c) / (float) FADE_LEVELS : 1.0f;
+	c = pWall->cloakValue;
+	return pColor->Alpha () = (c && (c < FADE_LEVELS)) ? (float) (FADE_LEVELS - c) / (float) FADE_LEVELS : 1.0f;
 	}
 if (gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (SEGMENT (nSegment)->m_sides [nSide].m_nBaseTex))
-	return colorP->Alpha () = 0.8f;
-return colorP->Alpha () = 1.0f;
+	return pColor->Alpha () = 0.8f;
+return pColor->Alpha () = 1.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -552,70 +552,70 @@ return (bForce || gameStates.render.bDoCameras) ? cameraManager.GetFaceCamera (n
 
 //------------------------------------------------------------------------------
 
-int32_t SetupMonitorFace (int16_t nSegment, int16_t nSide, int16_t nCamera, CSegFace *faceP)
+int32_t SetupMonitorFace (int16_t nSegment, int16_t nSide, int16_t nCamera, CSegFace *pFace)
 {
-	CCamera		*cameraP = cameraManager [nCamera];
+	CCamera		*pCamera = cameraManager [nCamera];
 
-if (!cameraP) {
-	faceP->m_info.nCamera = -1;
+if (!pCamera) {
+	pFace->m_info.nCamera = -1;
 	return 0;
 	}
 
-	int32_t			bHaveMonitorBg, bIsTeleCam = cameraP->GetTeleport ();
+	int32_t			bHaveMonitorBg, bIsTeleCam = pCamera->GetTeleport ();
 #if !DBG
 	int32_t			i;
 #endif
 #if RENDER2TEXTURE
-	int32_t			bCamBufAvail = cameraP->HaveBuffer (1) == 1;
+	int32_t			bCamBufAvail = pCamera->HaveBuffer (1) == 1;
 #else
 	int32_t			bCamBufAvail = 0;
 #endif
 
 if (!gameStates.render.bDoCameras)
 	return 0;
-bHaveMonitorBg = cameraP->Valid () && /*!cameraP->bShadowMap &&*/
-					  (cameraP->Texture () || bCamBufAvail) &&
+bHaveMonitorBg = pCamera->Valid () && /*!pCamera->bShadowMap &&*/
+					  (pCamera->Texture () || bCamBufAvail) &&
 					  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
 if (bHaveMonitorBg) {
-	cameraP->Align (faceP, NULL, FACES.texCoord + faceP->m_info.nIndex, FACES.vertices + faceP->m_info.nIndex);
+	pCamera->Align (pFace, NULL, FACES.texCoord + pFace->m_info.nIndex, FACES.vertices + pFace->m_info.nIndex);
 	if (bIsTeleCam) {
 #if DBG
-		faceP->bmBot = cameraP;
+		pFace->bmBot = pCamera;
 		gameStates.render.grAlpha = 1.0f;
 #else
-		faceP->bmTop = cameraP;
+		pFace->bmTop = pCamera;
 		for (i = 0; i < 4; i++)
-			gameData.render.color.vertices [faceP->m_info.index [i]].Alpha () = 0.7f;
+			gameData.render.color.vertices [pFace->m_info.index [i]].Alpha () = 0.7f;
 #endif
 		}
-	else if (/*gameOpts->render.cameras.bFitToWall ||*/ (faceP->m_info.nOvlTex == 0) || !faceP->bmBot)
-		faceP->bmBot = cameraP;
+	else if (/*gameOpts->render.cameras.bFitToWall ||*/ (pFace->m_info.nOvlTex == 0) || !pFace->bmBot)
+		pFace->bmBot = pCamera;
 	else
-		faceP->bmTop = cameraP;
-	faceP->texCoordP = cameraP->TexCoord ();
+		pFace->bmTop = pCamera;
+	pFace->pTexCoord = pCamera->TexCoord ();
 	}
-faceP->m_info.bTeleport = bIsTeleCam;
-cameraP->SetVisible (1);
+pFace->m_info.bTeleport = bIsTeleCam;
+pCamera->SetVisible (1);
 return bHaveMonitorBg || gameOpts->render.cameras.bFitToWall;
 }
 
 //------------------------------------------------------------------------------
 
-void AdjustVertexColor (CBitmap *bmP, CFaceColor *colorP, fix xLight)
+void AdjustVertexColor (CBitmap *pBm, CFaceColor *pColor, fix xLight)
 {
-	float l = (bmP && (bmP->Flags () & BM_FLAG_NO_LIGHTING)) ? 1.0f : X2F (xLight);
+	float l = (pBm && (pBm->Flags () & BM_FLAG_NO_LIGHTING)) ? 1.0f : X2F (xLight);
 	float s = 1.0f;
 
 if (ogl.m_states.bScaleLight)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
-if (!colorP->index || !gameStates.render.bAmbientColor || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) {
-	colorP->Red () =
-	colorP->Green () =
-	colorP->Blue () = l * s;
+if (!pColor->index || !gameStates.render.bAmbientColor || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) {
+	pColor->Red () =
+	pColor->Green () =
+	pColor->Blue () = l * s;
 	}
 else if (s != 1.0f)
-	*colorP *= s;
-colorP->Alpha () = 1.0f;
+	*pColor *= s;
+pColor->Alpha () = 1.0f;
 }
 
 // -----------------------------------------------------------------------------------
@@ -639,12 +639,12 @@ return &p;
 //cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined
 //by the vertices passed relative to the viewer
 
-tRenderCodes TransformVertexList (int32_t nVertices, uint16_t* vertexIndexP)
+tRenderCodes TransformVertexList (int32_t nVertices, uint16_t* pVertexIndex)
 {
 	tRenderCodes cc = {0, 0xff};
 
 for (int32_t i = 0; i < nVertices; i++) {
-	CRenderPoint* p = TransformVertex (vertexIndexP [i]);
+	CRenderPoint* p = TransformVertex (pVertexIndex [i]);
 	uint8_t c = p->Codes ();
 	cc.ccAnd &= c;
 	cc.ccOr |= c;
@@ -657,12 +657,12 @@ return cc;
 void RotateSideNorms (void)
 {
 	int32_t			i, j;
-	CSide			*sideP;
+	CSide			*pSide;
 
 for (i = 0; i < gameData.segData.nSegments; i++)
-	for (j = 6, sideP = SEGMENT (i)->m_sides; j; j--, sideP++) {
-		transformation.Rotate (sideP->m_rotNorms [0], sideP->m_normals [0], 0);
-		transformation.Rotate (sideP->m_rotNorms [1], sideP->m_normals [1], 0);
+	for (j = 6, pSide = SEGMENT (i)->m_sides; j; j--, pSide++) {
+		transformation.Rotate (pSide->m_rotNorms [0], pSide->m_normals [0], 0);
+		transformation.Rotate (pSide->m_rotNorms [1], pSide->m_normals [1], 0);
 		}
 }
 
@@ -749,10 +749,10 @@ for (int32_t i = 0, j = 1; nRadius; nRadius--) {
 		if ((bVisible [nSegment] == nVisible) &&
 			 (!nMaxDist || (CFixVector::Dist (SEGMENT (nStartSeg)->Center (), SEGMENT (nSegment)->Center ()) <= nMaxDist)))
 			return 1;
-		CSegment* segP = SEGMENT (nSegment);
+		CSegment* pSeg = SEGMENT (nSegment);
 		for (int32_t nChild = 0; nChild < SEGMENT_SIDE_COUNT; nChild++) {
-			int32_t nChildSeg = segP->m_children [nChild];
-			if ((nChildSeg >= 0) && (visitedP [nChildSeg] != nVisited) && (segP->IsPassable (nChild, NULL) & WID_TRANSPARENT_FLAG)) {
+			int32_t nChildSeg = pSeg->m_children [nChild];
+			if ((nChildSeg >= 0) && (visitedP [nChildSeg] != nVisited) && (pSeg->IsPassable (nChild, NULL) & WID_TRANSPARENT_FLAG)) {
 				segListP [j++] = nChildSeg;
 				visitedP [nChildSeg] = nVisited;
 				}
@@ -898,8 +898,8 @@ if (gameStates.render.bFreeCam == bOn)
 if ((gameStates.render.bFreeCam = bOn)) {
 	SetChaseCam (0);
 	SetRearView (0);
-	gameStates.app.playerPos = gameData.objData.viewerP->info.position;
-	gameStates.app.nPlayerSegment = gameData.objData.viewerP->info.nSegment;
+	gameStates.app.playerPos = gameData.objData.pViewer->info.position;
+	gameStates.app.nPlayerSegment = gameData.objData.pViewer->info.nSegment;
 	CGenericCockpit::Save ();
 	if (gameStates.render.cockpit.nType < CM_FULL_SCREEN)
 		cockpit->Activate (CM_FULL_SCREEN);
@@ -907,8 +907,8 @@ if ((gameStates.render.bFreeCam = bOn)) {
 		gameStates.zoom.nFactor = float (gameStates.zoom.nMinFactor);
 	}
 else {
-	gameData.objData.viewerP->info.position = gameStates.app.playerPos;
-	gameData.objData.viewerP->RelinkToSeg (gameStates.app.nPlayerSegment);
+	gameData.objData.pViewer->info.position = gameStates.app.playerPos;
+	gameData.objData.pViewer->RelinkToSeg (gameStates.app.nPlayerSegment);
 	CGenericCockpit::Restore ();
 	}
 return 1;

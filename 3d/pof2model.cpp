@@ -110,40 +110,40 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-CFace* CModel::AddPOFFace (CSubModel* subModelP, CFace* faceP, CFixVector* normalP, uint8_t* p, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP, bool bTextured)
+CFace* CModel::AddPOFFace (CSubModel* pSubModel, CFace* pFace, CFixVector* pNormal, uint8_t* p, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP, bool bTextured)
 {
 	uint16_t				nVerts = WORDVAL (p+2);
-	CVertex*				vertexP;
-	uint16_t*			vertexIndexP;
+	CVertex*				pVertex;
+	uint16_t*			pVertexIndex;
 	tUVL*					uvl;
 	CFloatVector		baseColor;
 	CFloatVector3		n, * vertexNormalP;
 	uint16_t				i, j;
 	uint16_t				c;
 
-if (!subModelP->m_faces)
-	subModelP->m_faces = faceP;
-Assert (faceP - m_faces < m_nFaces);
+if (!pSubModel->m_faces)
+	pSubModel->m_faces = pFace;
+Assert (pFace - m_faces < m_nFaces);
 if (bTextured) {
-	faceP->m_nBitmap = WORDVAL (p+28);
-	CBitmap* bmoP, *bmP = modelBitmaps [faceP->m_nBitmap];
+	pFace->m_nBitmap = WORDVAL (p+28);
+	CBitmap* pBmo, *pBm = modelBitmaps [pFace->m_nBitmap];
 	if (objColorP) {
-		if ((bmoP = bmP->HasOverride ()))
-			bmoP->GetAvgColor (objColorP);
-		else if (bmP->Buffer ()) {	//don't set color if bitmap not loaded
-			if (bmP->Palette ())
-				bmP->Palette ()->ToRgbaf (bmP->AvgColorIndex (), *objColorP);
+		if ((pBmo = pBm->HasOverride ()))
+			pBmo->GetAvgColor (objColorP);
+		else if (pBm->Buffer ()) {	//don't set color if bitmap not loaded
+			if (pBm->Palette ())
+				pBm->Palette ()->ToRgbaf (pBm->AvgColorIndex (), *objColorP);
 			else
-				paletteManager.Game ()->ToRgbaf (bmP->AvgColorIndex (), *objColorP);
+				paletteManager.Game ()->ToRgbaf (pBm->AvgColorIndex (), *objColorP);
 			}
 		}
 	baseColor.Red () = baseColor.Green () = baseColor.Blue () = baseColor.Alpha () = 1;
-	i = (int32_t) (bmP - gameData.pig.tex.bitmaps [0]);
-	faceP->m_bThruster = (i == 24) || ((i >= 1741) && (i <= 1745));
+	i = (int32_t) (pBm - gameData.pig.tex.bitmaps [0]);
+	pFace->m_bThruster = (i == 24) || ((i >= 1741) && (i <= 1745));
 	}
 else {
 	bTextured = 0;
-	faceP->m_nBitmap = -1;
+	pFace->m_nBitmap = -1;
 	c = WORDVAL (p + 28);
 	baseColor.Red () = (float) PAL2RGBA (((c >> 10) & 31) << 1) / 255.0f;
 	baseColor.Green () = (float) PAL2RGBA (((c >> 5) & 31) << 1) / 255.0f;
@@ -152,38 +152,38 @@ else {
 	if (objColorP)
 		*objColorP = baseColor;
 	}
-faceP->m_nSubModel = subModelP - m_subModels;
-Assert (faceP->m_nSubModel < m_nSubModels);
-faceP->m_vNormal = *normalP;
-faceP->m_nIndex = m_iFaceVert;
-vertexP = m_faceVerts + m_iFaceVert;
+pFace->m_nSubModel = pSubModel - m_subModels;
+Assert (pFace->m_nSubModel < m_nSubModels);
+pFace->m_vNormal = *pNormal;
+pFace->m_nIndex = m_iFaceVert;
+pVertex = m_faceVerts + m_iFaceVert;
 vertexNormalP = m_vertNorms + m_iFaceVert;
-if (subModelP->m_nVertexIndex [0] == (uint16_t) -1)
-	subModelP->m_nVertexIndex [0] = m_iFaceVert;
-faceP->m_nVerts = nVerts;
-if ((faceP->m_bGlow = (nGlow >= 0)))
+if (pSubModel->m_nVertexIndex [0] == (uint16_t) -1)
+	pSubModel->m_nVertexIndex [0] = m_iFaceVert;
+pFace->m_nVerts = nVerts;
+if ((pFace->m_bGlow = (nGlow >= 0)))
 	nGlow = -1;
 uvl = reinterpret_cast<tUVL*> (p + 30 + (nVerts | 1) * 2);
-n.Assign (*normalP);
+n.Assign (*pNormal);
 Assert (m_iFaceVert + nVerts <= int32_t (m_faceVerts.Length ()));
 Assert (m_iFaceVert + nVerts <= int32_t (m_vertNorms.Length ()));
-for (i = nVerts, vertexIndexP = WORDPTR (p+30); i; i--, vertexIndexP++, uvl++, vertexP++, vertexNormalP++) {
-	j = *vertexIndexP;
-	Assert (vertexP - m_faceVerts < m_nFaceVerts);
-	vertexP->m_vertex = m_vertices [j];
-	vertexP->m_texCoord.v.u = X2F (uvl->u);
-	vertexP->m_texCoord.v.v = X2F (uvl->v);
-	vertexP->m_renderColor =
-	vertexP->m_baseColor = baseColor;
-	vertexP->m_bTextured = bTextured;
-	vertexP->m_nIndex = j;
-	vertexP->m_normal = *vertexNormalP = n;
-	subModelP->SetMinMax (&vertexP->m_vertex);
+for (i = nVerts, pVertexIndex = WORDPTR (p+30); i; i--, pVertexIndex++, uvl++, pVertex++, vertexNormalP++) {
+	j = *pVertexIndex;
+	Assert (pVertex - m_faceVerts < m_nFaceVerts);
+	pVertex->m_vertex = m_vertices [j];
+	pVertex->m_texCoord.v.u = X2F (uvl->u);
+	pVertex->m_texCoord.v.v = X2F (uvl->v);
+	pVertex->m_renderColor =
+	pVertex->m_baseColor = baseColor;
+	pVertex->m_bTextured = bTextured;
+	pVertex->m_nIndex = j;
+	pVertex->m_normal = *vertexNormalP = n;
+	pSubModel->SetMinMax (&pVertex->m_vertex);
 	}
 m_iFaceVert += nVerts;
 m_iFace++;
-subModelP->m_nFaces++;
-return ++faceP;
+pSubModel->m_nFaces++;
+return ++pFace;
 }
 
 //------------------------------------------------------------------------------
@@ -192,26 +192,26 @@ int32_t CModel::GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, i
 											 int32_t bSubObject, CArray<CBitmap*>& modelBitmaps, CFloatVector *objColorP)
 {
 	uint8_t*		p = reinterpret_cast<uint8_t*> (modelDataP);
-	CSubModel*	subModelP = m_subModels + nThis;
-	CFace*		faceP = m_faces + m_iFace;
+	CSubModel*	pSubModel = m_subModels + nThis;
+	CFace*		pFace = m_faces + m_iFace;
 	int32_t		nChild;
 	int16_t		nTag;
 
 G3CheckAndSwap (modelDataP);
 nGlow = -1;
 if (bSubObject) {
-	subModelP->InitMinMax ();
-	subModelP->m_nVertexIndex [0] = (uint16_t) -1;
-	subModelP->m_nParent = nParent;
-	subModelP->m_nBomb = -1;
-	subModelP->m_nMissile = -1;
-	subModelP->m_nGun = -1;
-	subModelP->m_nGunPoint = -1;
-	subModelP->m_bBullets = 0;
-	subModelP->m_bThruster = 0;
-	subModelP->m_bGlow = 0;
-	subModelP->m_bRender = 1;
-	subModelP->m_nVertices = 0;
+	pSubModel->InitMinMax ();
+	pSubModel->m_nVertexIndex [0] = (uint16_t) -1;
+	pSubModel->m_nParent = nParent;
+	pSubModel->m_nBomb = -1;
+	pSubModel->m_nMissile = -1;
+	pSubModel->m_nGun = -1;
+	pSubModel->m_nGunPoint = -1;
+	pSubModel->m_bBullets = 0;
+	pSubModel->m_bThruster = 0;
+	pSubModel->m_bGlow = 0;
+	pSubModel->m_bRender = 1;
+	pSubModel->m_nVertices = 0;
 	}
 for (;;) {
 	nTag = WORDVAL (p);
@@ -223,16 +223,16 @@ for (;;) {
 			int32_t i, n = WORDVAL (p+2);
 			int32_t h = 0;
 			Assert (n <= int32_t (m_vertices.Length ()));
-			CFloatVector3 *vertexIndexP = m_vertices.Buffer ();
+			CFloatVector3 *pVertexIndex = m_vertices.Buffer ();
 			CFixVector *pv = VECPTR (p+4);
 			for (i = n; i; i--) {
-				vertexIndexP->Assign (*pv);
-				vertexIndexP++; 
+				pVertexIndex->Assign (*pv);
+				pVertexIndex++; 
 				pv++;
 				m_vertexOwner [h].m_nOwner = (uint16_t) nThis;
 				m_vertexOwner [h].m_nVertex = (uint16_t) h++;
 				}
-			subModelP->m_nVertices += n;
+			pSubModel->m_nVertices += n;
 			p += n * sizeof (CFixVector) + 4;
 			break;
 			}
@@ -240,30 +240,30 @@ for (;;) {
 		case OP_DEFP_START: {
 			int32_t i, n = WORDVAL (p+2);
 			int32_t h = WORDVAL (p+4);
-			CFloatVector3 *vertexIndexP = m_vertices + h;
+			CFloatVector3 *pVertexIndex = m_vertices + h;
 			CFixVector *pv = VECPTR (p+8);
 			for (i = n; i; i--) {
-				vertexIndexP->Assign (*pv);
-				vertexIndexP++; 
+				pVertexIndex->Assign (*pv);
+				pVertexIndex++; 
 				pv++;
 				m_vertexOwner [h].m_nOwner = (uint16_t) nThis;
 				m_vertexOwner [h].m_nVertex = (uint16_t) h++;
 				}
-			subModelP->m_nVertices += n;
+			pSubModel->m_nVertices += n;
 			p += n * sizeof (CFixVector) + 8;
 			break;
 			}
 
 		case OP_FLATPOLY: {
 			int32_t nVerts = WORDVAL (p+2);
-			faceP = AddPOFFace (subModelP, faceP, VECPTR (p+16), p, modelBitmaps, objColorP, false);
+			pFace = AddPOFFace (pSubModel, pFace, VECPTR (p+16), p, modelBitmaps, objColorP, false);
 			p += 30 + (nVerts | 1) * 2;
 			break;
 			}
 
 		case OP_TMAPPOLY: {
 			int32_t nVerts = WORDVAL (p + 2);
-			faceP = AddPOFFace (subModelP, faceP, VECPTR (p+16), p, modelBitmaps, objColorP);
+			pFace = AddPOFFace (pSubModel, pFace, VECPTR (p+16), p, modelBitmaps, objColorP);
 			p += 30 + (nVerts | 1) * 2 + nVerts * 12;
 			break;
 			}
@@ -271,10 +271,10 @@ for (;;) {
 		case OP_SORTNORM:
 			if (!GetPOFModelItems (p + WORDVAL (p+28), pAnimAngles, nThis, nParent, 0, modelBitmaps, objColorP))
 				return 0;
-			faceP = m_faces + m_iFace;
+			pFace = m_faces + m_iFace;
 			if (!GetPOFModelItems (p + WORDVAL (p+30), pAnimAngles, nThis, nParent, 0, modelBitmaps, objColorP))
 				return 0;
-			faceP = m_faces + m_iFace;
+			pFace = m_faces + m_iFace;
 			p += 32;
 			break;
 
@@ -289,7 +289,7 @@ for (;;) {
 			m_subModels [nChild].InitMinMax ();
 			if (!GetPOFModelItems (p + WORDVAL (p+16), pAnimAngles, nChild, nThis, 1, modelBitmaps, objColorP))
 				return 0;
-			faceP = m_faces + m_iFace;
+			pFace = m_faces + m_iFace;
 			p += 20;
 			break;
 
@@ -312,12 +312,12 @@ void CModel::AssignPOFFaces (void)
 {
 	int32_t	i;
 	uint8_t	nSubModel = 255;
-	CFace*	faceP;
+	CFace*	pFace;
 
-for (faceP = m_faces.Buffer (), i = m_nFaces; i; i--, faceP++)
-	if (faceP->m_nSubModel != nSubModel) {
-		nSubModel = faceP->m_nSubModel;
-		m_subModels [nSubModel].m_faces = faceP;
+for (pFace = m_faces.Buffer (), i = m_nFaces; i; i--, pFace++)
+	if (pFace->m_nSubModel != nSubModel) {
+		nSubModel = pFace->m_nSubModel;
+		m_subModels [nSubModel].m_faces = pFace;
 		if (nSubModel == m_nSubModels - 1)
 			break;
 		}
@@ -325,7 +325,7 @@ for (faceP = m_faces.Buffer (), i = m_nFaces; i; i--, faceP++)
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::BuildFromPOF (CObject* objP, int32_t nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP)
+int32_t CModel::BuildFromPOF (CObject* pObj, int32_t nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP)
 {
 if (!pp || !pp->Buffer ())
 	return 0;
@@ -358,7 +358,7 @@ m_faces.SortAscending ();
 AssignPOFFaces ();
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 m_nType = pp->Type ();
-gameData.models.polyModels [0][nModel].SetRad (Size (objP, 0), 1);
+gameData.models.polyModels [0][nModel].SetRad (Size (pObj, 0), 1);
 Setup (0, 1);
 m_iSubModel = 0;
 if (gameStates.app.nLogLevel > 1)

@@ -518,7 +518,7 @@ return IFF_NO_ERROR;
 
 #define INDEX_TO_15BPP(i) ((int16_t)((((palptr[(i)].r/2)&31)<<10)+(((palptr[(i)].g/2)&31)<<5)+((palptr[(i)].b/2)&31)))
 
-int32_t CIFF::ConvertRgb15 (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
+int32_t CIFF::ConvertRgb15 (CBitmap *pBm, tIFFBitmapHeader *bmHeader)
 {
 	uint16_t *new_data;
 	int32_t x, y;
@@ -526,16 +526,16 @@ int32_t CIFF::ConvertRgb15 (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
 	tPalEntry *palptr;
 
 palptr = bmHeader->palette;
-new_data = new uint16_t [bmP->FrameSize () * 2];
+new_data = new uint16_t [pBm->FrameSize () * 2];
 if (new_data == NULL)
 	return IFF_NO_MEM;
-for (y=0; y < bmP->Height (); y++) {
+for (y=0; y < pBm->Height (); y++) {
 	for (x=0; x<bmHeader->w; x++)
 		new_data[newptr++] = INDEX_TO_15BPP(bmHeader->raw_data[y*bmHeader->w+x]);
 	}
-bmP->DestroyBuffer ();				//get rid of old-style data
-bmP->SetBuffer (reinterpret_cast<uint8_t*> (new_data));			//..ccAnd point to new data
-bmP->SetRowSize (bmP->RowSize () * 2);				//two bytes per row
+pBm->DestroyBuffer ();				//get rid of old-style data
+pBm->SetBuffer (reinterpret_cast<uint8_t*> (new_data));			//..ccAnd point to new data
+pBm->SetRowSize (pBm->RowSize () * 2);				//two bytes per row
 return IFF_NO_ERROR;
 }
 
@@ -574,27 +574,27 @@ SetLen (0);
 
 //------------------------------------------------------------------------------
 //copy an iff header structure to a CBitmap structure
-void CIFF::CopyIffToBitmap (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
+void CIFF::CopyIffToBitmap (CBitmap *pBm, tIFFBitmapHeader *bmHeader)
 {
-bmP->DestroyBuffer ();
-bmP->SetFlags (0);
-bmP->Init (bmHeader->nType, 0, 0, bmHeader->w, bmHeader->h, 1, bmHeader->raw_data);
+pBm->DestroyBuffer ();
+pBm->SetFlags (0);
+pBm->Init (bmHeader->nType, 0, 0, bmHeader->w, bmHeader->h, 1, bmHeader->raw_data);
 bmHeader->raw_data = NULL;
 }
 
 //------------------------------------------------------------------------------
-//if bmP->Buffer () is set, use it (making sure w & h are correct), else
+//if pBm->Buffer () is set, use it (making sure w & h are correct), else
 //allocate the memory
-int32_t CIFF::ParseBitmap (CBitmap *bmP, int32_t bitmapType, CBitmap *prevBmP)
+int32_t CIFF::ParseBitmap (CBitmap *pBm, int32_t bitmapType, CBitmap *prevBmP)
 {
 	tIFFBitmapHeader	bmHeader;
 	int32_t					ret, sig, formLen;
 	int32_t					formType;
 
 memset (&bmHeader, 0, sizeof (bmHeader));
-if ((bmHeader.raw_data = bmP->Buffer ())) {
-	bmHeader.w = bmP->Width ();
-	bmHeader.h = bmP->Height ();
+if ((bmHeader.raw_data = pBm->Buffer ())) {
+	bmHeader.w = pBm->Width ();
+	bmHeader.h = pBm->Height ();
 	}
 sig = GetSig ();
 if (sig != form_sig)
@@ -619,20 +619,20 @@ if (bmHeader.nType == TYPE_ILBM) {
 		return ret;
 	}
 //Copy data from tIFFBitmapHeader structure into CBitmap structure
-CopyIffToBitmap (bmP, &bmHeader);
+CopyIffToBitmap (pBm, &bmHeader);
 if ((bmHeader.masking != mskHasTransparentColor) || (bmHeader.transparentColor < 0))
-	bmP->SetPalette (paletteManager.Add (reinterpret_cast<uint8_t*> (&bmHeader.palette)));
+	pBm->SetPalette (paletteManager.Add (reinterpret_cast<uint8_t*> (&bmHeader.palette)));
 else
-	bmP->SetPalette (paletteManager.Add (reinterpret_cast<uint8_t*> (&bmHeader.palette), bmHeader.transparentColor, -1), bmHeader.transparentColor, -1);
+	pBm->SetPalette (paletteManager.Add (reinterpret_cast<uint8_t*> (&bmHeader.palette), bmHeader.transparentColor, -1), bmHeader.transparentColor, -1);
 //Now do post-process if required
 if (bitmapType == BM_RGB15)
-	ret = ConvertRgb15 (bmP, &bmHeader);
+	ret = ConvertRgb15 (pBm, &bmHeader);
 return ret;
 }
 
 //------------------------------------------------------------------------------
 //returns error codes - see IFF.H.  see GR[HA] for bitmapType
-int32_t CIFF::ReadBitmap (const char *cfname, CBitmap *bmP, int32_t bitmapType)
+int32_t CIFF::ReadBitmap (const char *cfname, CBitmap *pBm, int32_t bitmapType)
 {
 #if 1
 	char* p, fn [FILENAME_LEN];
@@ -646,7 +646,7 @@ if (ReadHiresBitmap (&gameData.endLevel.terrain.bmInstance, fn, 0x7FFFFFFF, 1) >
 #endif
 int32_t ret = Open (cfname);		//read in entire file
 if (ret == IFF_NO_ERROR) {
-	ret = ParseBitmap (bmP, bitmapType, NULL);
+	ret = ParseBitmap (pBm, bitmapType, NULL);
 	}
 Close ();
 return ret;
@@ -655,13 +655,13 @@ return ret;
 //------------------------------------------------------------------------------
 //like iff_read_bitmap(), but reads into a bitmap that already exists, 
 //without allocating memory for the bitmap.
-int32_t CIFF::ReplaceBitmap (const char *cfname, CBitmap *bmP)
+int32_t CIFF::ReplaceBitmap (const char *cfname, CBitmap *pBm)
 {
 	int32_t ret;			//return code
 
 ret = Open (cfname);		//read in entire file
 if (ret == IFF_NO_ERROR)
-	ret = ParseBitmap (bmP, bmP->Mode (), NULL);
+	ret = ParseBitmap (pBm, pBm->Mode (), NULL);
 Close();
 return ret;
 }
@@ -839,27 +839,27 @@ return ret;
 //------------------------------------------------------------------------------
 //writes an IFF file from a CBitmap structure. writes palette if not null
 //returns error codes - see IFF.H.
-int32_t CIFF::WriteBitmap (const char *cfname, CBitmap *bmP, uint8_t *palette)
+int32_t CIFF::WriteBitmap (const char *cfname, CBitmap *pBm, uint8_t *palette)
 {
 	FILE					*fp;
 	tIFFBitmapHeader	bmHeader;
 	int32_t					ret;
 	int32_t					bCompression;
 
-if (bmP->Mode () == BM_RGB15) return IFF_BAD_BM_TYPE;
+if (pBm->Mode () == BM_RGB15) return IFF_BAD_BM_TYPE;
 #if COMPRESS
-	bCompression = (bmP->Width ()>=MIN_COMPRESS_WIDTH);
+	bCompression = (pBm->Width ()>=MIN_COMPRESS_WIDTH);
 #else
 	bCompression = 0;
 #endif
 //fill in values in bmHeader
 bmHeader.x = bmHeader.y = 0;
-bmHeader.w = bmP->Width ();
-bmHeader.h = bmP->Height ();
+bmHeader.w = pBm->Width ();
+bmHeader.h = pBm->Height ();
 bmHeader.nType = TYPE_PBM;
 bmHeader.transparentColor = m_transparentColor;
-bmHeader.pagewidth = bmP->Width ();	//I don't think it matters what I write
-bmHeader.pageheight = bmP->Height ();
+bmHeader.pagewidth = pBm->Width ();	//I don't think it matters what I write
+bmHeader.pageheight = pBm->Height ();
 bmHeader.nplanes = 8;
 bmHeader.masking = mskNone;
 if (m_hasTransparency) {
@@ -867,8 +867,8 @@ if (m_hasTransparency) {
 	}
 bmHeader.compression = (bCompression?cmpByteRun1:cmpNone);
 bmHeader.xaspect = bmHeader.yaspect = 1;	//I don't think it matters what I write
-bmHeader.raw_data = bmP->Buffer ();
-bmHeader.row_size = bmP->RowSize ();
+bmHeader.raw_data = pBm->Buffer ();
+bmHeader.row_size = pBm->RowSize ();
 if (palette) 
 	memcpy(&bmHeader.palette, palette, 256*3);
 //open file and write

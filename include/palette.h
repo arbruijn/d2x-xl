@@ -62,10 +62,10 @@ class CPalette {
 		bool Read (CFile& cf);
 		bool Write (CFile& cf);
 		int32_t ClosestColor (int32_t r, int32_t g, int32_t b);
-		inline int32_t ClosestColor (CRGBColor* colorP)
-		 { return ClosestColor ((int32_t) colorP->r, (int32_t) colorP->g, (int32_t) colorP->b); }
-		inline int32_t ClosestColor (CFloatVector3* colorP)
-		 { return ClosestColor ((int32_t) (colorP->Red () * 63.0f), (int32_t) (colorP->Green () * 63.0f), (int32_t) (colorP->Blue () * 63.0f)); }
+		inline int32_t ClosestColor (CRGBColor* pColor)
+		 { return ClosestColor ((int32_t) pColor->r, (int32_t) pColor->g, (int32_t) pColor->b); }
+		inline int32_t ClosestColor (CFloatVector3* pColor)
+		 { return ClosestColor ((int32_t) (pColor->Red () * 63.0f), (int32_t) (pColor->Green () * 63.0f), (int32_t) (pColor->Blue () * 63.0f)); }
 		void SwapTransparency (void);
 		void AddComputedColor (int32_t r, int32_t g, int32_t b, int32_t nIndex);
 		void InitComputedColors (void);

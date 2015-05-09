@@ -171,7 +171,7 @@ int32_t edgeToSides [8][8][2] = {
 
 #if SORT_RENDER_SEGS
 
-int32_t FindOtherSideOnEdge (CSegment *segP, int16_t *verts, int32_t oppSide)
+int32_t FindOtherSideOnEdge (CSegment *pSeg, int16_t *verts, int32_t oppSide)
 {
 	int32_t	i;
 	int32_t	i0 = -1, i1 = -1;
@@ -214,7 +214,7 @@ typedef struct tSideNormData {
 	int16_t			t;
 } tSideNormData;
 
-int32_t FindAdjacentSideNorms (CSegment *segP, int16_t s0, int16_t s1, tSideNormData *s)
+int32_t FindAdjacentSideNorms (CSegment *pSeg, int16_t s0, int16_t s1, tSideNormData *s)
 {
 	CSegment	*seg0, *seg1;
 	CSide		*side0, *side1;
@@ -223,14 +223,14 @@ int32_t FindAdjacentSideNorms (CSegment *segP, int16_t s0, int16_t s1, tSideNorm
 	int32_t		otherSide0, otherSide1;
 
 Assert(s0 != -1 && s1 != -1);
-seg0 = SEGMENT (segP->m_children [s0]);
-seg1 = SEGMENT (segP->m_children [s1]);
-edgeVerts [0] = segP->m_vertices [edgeBetweenTwoSides [s0][s1][0]];
-edgeVerts [1] = segP->m_vertices [edgeBetweenTwoSides [s0][s1][1]];
+seg0 = SEGMENT (pSeg->m_children [s0]);
+seg1 = SEGMENT (pSeg->m_children [s1]);
+edgeVerts [0] = pSeg->m_vertices [edgeBetweenTwoSides [s0][s1][0]];
+edgeVerts [1] = pSeg->m_vertices [edgeBetweenTwoSides [s0][s1][1]];
 Assert(edgeVerts [0] != -1 && edgeVerts [1] != -1);
-oppSide0 = segP->ConnectedSide (seg0);
+oppSide0 = pSeg->ConnectedSide (seg0);
 Assert (oppSide0 != -1);
-oppSide1 = segP->ConnectedSide (seg1);
+oppSide1 = pSeg->ConnectedSide (seg1);
 Assert (oppSide1 != -1);
 otherSide0 = FindOtherSideOnEdge (seg0, edgeVerts, oppSide0);
 otherSide1 = FindOtherSideOnEdge (seg1, edgeVerts, oppSide1);
@@ -246,7 +246,7 @@ return 1;
 //------------------------------------------------------------------------------
 //see if the order matters for these two children.
 //returns 0 if order doesn't matter, 1 if c0 before c1, -1 if c1 before c0
-static int32_t CompareChildren (CSegment *segP, int16_t c0, int16_t c1)
+static int32_t CompareChildren (CSegment *pSeg, int16_t c0, int16_t c1)
 {
 	tSideNormData	s [2];
 	CFixVector		temp;
@@ -255,7 +255,7 @@ static int32_t CompareChildren (CSegment *segP, int16_t c0, int16_t c1)
 if (oppSideTable [c0] == c1)
 	return 0;
 //find normals of adjoining sides
-FindAdjacentSideNorms (segP, c0, c1, s);
+FindAdjacentSideNorms (pSeg, c0, c1, s);
 temp = gameData.render.mine.viewer.vPos - *s [0].facePortal;
 d0 = CFixVector::Dot (s [0].n [0], temp);
 if (s [0].t != 1)	// triangularized face -> 2 different normals
@@ -275,7 +275,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t QuickSortSegChildren (CSegment *segP, int16_t left, int16_t right, int16_t *childList)
+int32_t QuickSortSegChildren (CSegment *pSeg, int16_t left, int16_t right, int16_t *childList)
 {
 	int16_t	h,
 			l = left,
@@ -285,9 +285,9 @@ int32_t QuickSortSegChildren (CSegment *segP, int16_t left, int16_t right, int16
 			bSwap = 0;
 
 do {
-	while ((l < mat) && CompareChildren (segP, childList [l], median) >= 0)
+	while ((l < mat) && CompareChildren (pSeg, childList [l], median) >= 0)
 		l++;
-	while ((r > mat) && CompareChildren (segP, childList [r], median) <= 0)
+	while ((r > mat) && CompareChildren (pSeg, childList [r], median) <= 0)
 		r--;
 	if (l <= r) {
 		if (l < r) {
@@ -301,9 +301,9 @@ do {
 		}
 	} while (l <= r);
 if (l < right)
-	bSwap |= QuickSortSegChildren (segP, l, right, childList);
+	bSwap |= QuickSortSegChildren (pSeg, l, right, childList);
 if (left < r)
-	bSwap |= QuickSortSegChildren (segP, left, r, childList);
+	bSwap |= QuickSortSegChildren (pSeg, left, r, childList);
 return bSwap;
 }
 
@@ -311,21 +311,21 @@ return bSwap;
 
 //int16_t the children of CSegment to render in the correct order
 //returns non-zero if swaps were made
-static inline int32_t SortSegChildren (CSegment *segP, int32_t nChildren, int16_t *childList)
+static inline int32_t SortSegChildren (CSegment *pSeg, int32_t nChildren, int16_t *childList)
 {
 #if 1
 
 if (nChildren < 2)
 	return 0;
 if (nChildren == 2) {
-	if (CompareChildren (segP, childList [0], childList [1]) >= 0)
+	if (CompareChildren (pSeg, childList [0], childList [1]) >= 0)
 		return 0;
 	int16_t h = childList [0];
 	childList [0] = childList [1];
 	childList [1] = h;
 	return 1;
 	}
-return QuickSortSegChildren (segP, (int16_t) 0, (int16_t) (nChildren - 1), childList);
+return QuickSortSegChildren (pSeg, (int16_t) 0, (int16_t) (nChildren - 1), childList);
 
 #else
 	int32_t i, j;
@@ -345,7 +345,7 @@ do {
 	for (i=0;i<nChildren-1;i++)
 		for (j=i+1;childList [i]!=-1 && j<nChildren;j++)
 			if (childList [j]!=-1) {
-				r = CompareChildren(segP, childList [i], childList [j]);
+				r = CompareChildren(pSeg, childList [i], childList [j]);
 
 				if (r == 1) {
 					int32_t temp = childList [i];
@@ -368,7 +368,7 @@ void UpdateRenderedData (int32_t nWindow, CObject *viewer, int32_t rearViewFlag,
 {
 Assert(nWindow < MAX_RENDERED_WINDOWS);
 windowRenderedData [nWindow].nFrame = gameData.app.nFrameCount;
-windowRenderedData [nWindow].viewerP = viewer;
+windowRenderedData [nWindow].pViewer = viewer;
 windowRenderedData [nWindow].bRearView = rearViewFlag;
 windowRenderedData [nWindow].nUser = user;
 }
@@ -401,16 +401,16 @@ int16_t CObject::Visible (void)
 memset (bVisited, 0, sizeof (bVisited [0]) * gameData.segData.nSegments);
 segList [tail++] = Segment ();
 while (head != tail) {
-	CSegment* segP = SEGMENT (segList [head++]);
+	CSegment* pSeg = SEGMENT (segList [head++]);
 	for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-		int16_t nSegment = segP->m_children [i];
+		int16_t nSegment = pSeg->m_children [i];
 		if (nSegment < 0)
 			continue;
 		if (bVisited [nSegment])
 			continue;
-		CSegment* childSegP = SEGMENT (nSegment);
+		CSegment* pChildSeg = SEGMENT (nSegment);
 		// quick check whether object could reach into this child segment
-		if (CFixVector::Dist (Position (), childSegP->Center ()) >= info.xSize + childSegP->MaxRad ())
+		if (CFixVector::Dist (Position (), pChildSeg->Center ()) >= info.xSize + pChildSeg->MaxRad ())
 			continue;
 		// check whether the object actually penetrates the side between the current segment and the child segment
 		CSegMasks mask = SEGMENT (info.nSegment)->Masks (Position (), info.xSize);
@@ -430,19 +430,19 @@ return -1;
 void GatherLeftoutVisibleObjects (void)
 {
 #if 1
-	CObject* objP;
+	CObject* pObj;
 
-FORALL_OBJS (objP) {
-	if (objP->Type () >= MAX_OBJECT_TYPES) 
+FORALL_OBJS (pObj) {
+	if (pObj->Type () >= MAX_OBJECT_TYPES) 
 		continue;
-	if (objP->Segment () < 0)
+	if (pObj->Segment () < 0)
 		continue;
-	if (objP->Frame () == gameData.app.nFrameCount)
+	if (pObj->Frame () == gameData.app.nFrameCount)
 		continue;
-	int16_t nSegment = objP->Visible ();
+	int16_t nSegment = pObj->Visible ();
 	if (nSegment < 0)
 		continue;
-	AddObjectToSegList (objP->Index (), nSegment);
+	AddObjectToSegList (pObj->Index (), nSegment);
 	}
 #endif
 }
@@ -452,7 +452,7 @@ FORALL_OBJS (objP) {
 void BuildRenderObjLists (int32_t nSegCount, int32_t nThread)
 {
 PROF_START
-	CObject*		objP;
+	CObject*		pObj;
 	CSegMasks	mask;
 	int16_t			nSegment, nNewSeg, nChild, nSide, sideFlag;
 	int32_t			nListPos;
@@ -469,25 +469,25 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 	if (nSegment == nDbgSeg)
 		BRP;
 #endif
-	for (nObject = SEGMENT (nSegment)->m_objects; nObject != -1; nObject = objP->info.nNextInSeg) {
+	for (nObject = SEGMENT (nSegment)->m_objects; nObject != -1; nObject = pObj->info.nNextInSeg) {
 #if DBG
 		if (nObject == nDbgObj)
 			BRP;
 #endif
-		objP = OBJECT (nObject);
-		//Assert (objP->info.nSegment == nSegment);
-		if (objP->info.nFlags & OF_ATTACHED)
+		pObj = OBJECT (nObject);
+		//Assert (pObj->info.nSegment == nSegment);
+		if (pObj->info.nFlags & OF_ATTACHED)
 			continue;		//ignore this CObject
 		nNewSeg = nSegment;
-		if ((objP->info.nType != OBJ_REACTOR) && ((objP->info.nType != OBJ_ROBOT) || (objP->info.nId == 65))) { //don't migrate controlcen
-			CSegment* newSegP = SEGMENT (nNewSeg);
-			mask = newSegP->Masks (OBJPOS (objP)->vPos, objP->info.xSize);
+		if ((pObj->info.nType != OBJ_REACTOR) && ((pObj->info.nType != OBJ_ROBOT) || (pObj->info.nId == 65))) { //don't migrate controlcen
+			CSegment* pNewSeg = SEGMENT (nNewSeg);
+			mask = pNewSeg->Masks (OBJPOS (pObj)->vPos, pObj->info.xSize);
 			if (mask.m_side) {
 				for (nSide = 0, sideFlag = 1; nSide < SEGMENT_SIDE_COUNT; nSide++, sideFlag <<= 1) {
 					if (!(mask.m_side & sideFlag))
 						continue;
-					if (newSegP->IsPassable (nSide, NULL) & WID_PASSABLE_FLAG) {	//can explosion migrate through
-						nChild = newSegP->m_children [nSide];
+					if (pNewSeg->IsPassable (nSide, NULL) & WID_PASSABLE_FLAG) {	//can explosion migrate through
+						nChild = pNewSeg->m_children [nSide];
 						if (gameData.render.mine.Visible (nChild, nThread)) {
 							nNewSeg = nChild;	// only migrate to segment in render list
 #if DBG
@@ -512,7 +512,7 @@ PROF_END(ptBuildObjList)
 void CalcRenderDepth (void)
 {
 CFixVector vCenter;
-transformation.Transform (vCenter, SEGMENT (gameData.objData.viewerP->info.nSegment)->Center (), 0);
+transformation.Transform (vCenter, SEGMENT (gameData.objData.pViewer->info.nSegment)->Center (), 0);
 CFixVector v;
 transformation.Transform (v, gameData.segData.vMin, 0);
 fix d1 = CFixVector::Dist (v, vCenter);
@@ -521,7 +521,7 @@ fix d2 = CFixVector::Dist (v, vCenter);
 
 if (d1 < d2)
 	d1 = d2;
-fix r = gameData.segData.segRads [1][gameData.objData.viewerP->info.nSegment];
+fix r = gameData.segData.segRads [1][gameData.objData.pViewer->info.nSegment];
 gameData.render.zMin = 0;
 gameData.render.zMax = vCenter.v.coord.z + d1 + r;
 }
@@ -581,25 +581,25 @@ void CVisibilityData::InitZRef (int32_t i, int32_t j, int32_t nThread)
 	tSegZRef*		ps = &zRef [0][i];
 	CFloatVector	vViewer, vCenter;
 	int32_t				r, z, zMin = 0x7fffffff, zMax = -0x7fffffff;
-	CSegment*		segP;
+	CSegment*		pSeg;
 
 vViewer.Assign (gameData.render.mine.viewer.vPos);
 for (; i < j; i++, ps++) {
-	segP = SEGMENT (segments [i]);
+	pSeg = SEGMENT (segments [i]);
 #if TRANSP_DEPTH_HASH
-	vCenter.Assign (segP->Center ());
+	vCenter.Assign (pSeg->Center ());
 	float d = CFloatVector::Dist (vCenter, vViewer);
 	z = F2X (d);
-	r = segP->MaxRad ();
+	r = pSeg->MaxRad ();
 	if (zMax < z + r)
 		zMax = z + r;
 	if (zMin > z - r)
 		zMin = z - r;
 	ps->z = z;
 #else
-	CFixVector dir = segP->Center ();
+	CFixVector dir = pSeg->Center ();
 	transformation.Transform (dir, dir, 0);
-	dir.dir.coord.z += segP->MaxRad ();
+	dir.dir.coord.z += pSeg->MaxRad ();
 	if (zMin > dir.dir.coord.z)
 		zMin = dir.dir.coord.z;
 	if (zMax < dir.dir.coord.z)
@@ -702,7 +702,7 @@ void CVisibilityData::BuildSegList (CTransformation& transformation, int16_t nSt
 	int32_t			nSegment;
 	int16_t			childList [SEGMENT_SIDE_COUNT];		//list of ordered sides to process
 	int32_t			nChildren, bCullIfBehind;					//how many sides in childList
-	CFixVector		viewDir, viewPos;
+	CFixVector		viewDir, pViewos;
 #if DBG
 	CShortArray&	renderSegList = segments;
 	CShortArray&	renderPos = position;
@@ -718,7 +718,7 @@ void CVisibilityData::BuildSegList (CTransformation& transformation, int16_t nSt
 #endif
 
 viewDir = transformation.m_info.view [0].m.dir.f;
-viewPos = transformation.m_info.pos;
+pViewos = transformation.m_info.pos;
 gameData.render.zMin = 0x7fffffff;
 gameData.render.zMax = -0x7fffffff;
 bCullIfBehind = !SHOW_SHADOWS || (gameStates.render.nShadowPass == 1);
@@ -780,24 +780,24 @@ for (l = 0; l < nRenderDepth; l++) {
 #if DBG
 		nIterations++;
 #endif
-		CSegment* segP = SEGMENT (nSegment);
+		CSegment* pSeg = SEGMENT (nSegment);
 		int32_t bRotated = 0;
 		//look at all sides of this segment.
 		//tricky code to look at sides in correct order follows
 		int32_t nSides = SEGMENT_SIDE_COUNT;
 		for (nChild = nChildren = 0; nChild < nSides; nChild++) {		//build list of sides
-			nChildSeg = segP->m_children [nChild];
+			nChildSeg = pSeg->m_children [nChild];
 			if (nChildSeg < 0)
 				continue;
-			if (!(segP->IsPassable (nChild, NULL, bIgnoreDoors) & WID_TRANSPARENT_FLAG))
+			if (!(pSeg->IsPassable (nChild, NULL, bIgnoreDoors) & WID_TRANSPARENT_FLAG))
 				continue;
 #if DBG
 			if (nChildSeg == nDbgSeg)
 				nChildSeg = nChildSeg;
 #endif
 			if (!bRotated) {
-				uint16_t* sv = segP->m_vertices;
-				int32_t j = segP->m_nVertices;
+				uint16_t* sv = pSeg->m_vertices;
+				int32_t j = pSeg->m_nVertices;
 				for (int32_t i = 0; i < j; i++) {
 #if DBG
 					if (sv [i] == nDbgVertex)
@@ -810,8 +810,8 @@ for (l = 0; l < nRenderDepth; l++) {
 				}
 
 			if (bCullIfBehind) {
-				uint16_t* s2v = segP->Side (nChild)->m_corners;
-				int32_t i, j = segP->Side (nChild)->m_nCorners;
+				uint16_t* s2v = pSeg->Side (nChild)->m_corners;
+				int32_t i, j = pSeg->Side (nChild)->m_nCorners;
 				for (i = 0; i < j; i++) {
 					if (s2v [i] == 0xFFFF)
 						continue;
@@ -826,7 +826,7 @@ for (l = 0; l < nRenderDepth; l++) {
 		// looking from segment nSegment through side nSide at segment nChildSeg
 		for (nChild = 0; nChild < nChildren; nChild++) {
 			nSide = childList [nChild];
-			nChildSeg = segP->m_children [nSide];
+			nChildSeg = pSeg->m_children [nSide];
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				BRP;
@@ -835,10 +835,10 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 			tPortal facePortal = {32767, -32767, 32767, -32767};
 			int32_t bProjected = 1;	//0 when at least one point wasn't projected
-			CSide* sideP = segP->Side (nSide);
-			uint16_t* s2v = sideP->m_corners;
+			CSide* pSide = pSeg->Side (nSide);
+			uint16_t* s2v = pSide->m_corners;
 			uint8_t offScreenFlags = 0xff;
-			int32_t nCorners = sideP->m_nCorners;
+			int32_t nCorners = pSide->m_nCorners;
 			for (int32_t nCorner = 0; nCorner < nCorners; nCorner++) {
 				uint16_t nVertex = s2v [nCorner];
 				CRenderPoint& point = renderPoints [nVertex];
@@ -891,12 +891,12 @@ for (l = 0; l < nRenderDepth; l++) {
 				}
 #if 1
 			else if (gameStates.render.nShadowMap < 0) {
-				if (!transformation.Frustum ().Contains (sideP)) {
+				if (!transformation.Frustum ().Contains (pSide)) {
 #	if DBG
 					if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-						transformation.Frustum ().Contains (sideP);
+						transformation.Frustum ().Contains (pSide);
 					else {
-						transformation.Frustum ().Contains (sideP);
+						transformation.Frustum ().Contains (pSide);
 #	endif
 						continue;
 #	if DBG
@@ -977,8 +977,8 @@ for (i = 0; i < nSegments; i++) {
 if (gameStates.render.nShadowMap) {
 	for (i = 0; i < nSegments; i++) {
 		if (renderSegList [i] >= 0) {
-			CSegment* segP = SEGMENT (renderSegList [i]);
-			if (CFixVector::Dist (viewPos, segP->Center ()) > I2X (400) + segP->MaxRad ()) {
+			CSegment* pSeg = SEGMENT (renderSegList [i]);
+			if (CFixVector::Dist (pViewos, pSeg->Center ()) > I2X (400) + pSeg->MaxRad ()) {
 				renderSegList [i] = -renderSegList [i] - 1;
 				bVisible [renderSegList [i]] = nVisible - 1;
 				}

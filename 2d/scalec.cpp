@@ -398,7 +398,7 @@ void scale_bitmap_c_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int32_t x0, int3
 
 //	-----------------------------------------------------------------------------
 // Scales bitmap, bp, into vertbuf[0] to vertbuf[1]
-void ScaleBitmap(CBitmap *bmP, grsPoint *vertbuf, int32_t orientation )
+void ScaleBitmap(CBitmap *pBm, grsPoint *vertbuf, int32_t orientation )
 {
 	CBitmap* dbp = CCanvas::Current ();
 	fix x0, y0, x1, y1;
@@ -417,7 +417,7 @@ void ScaleBitmap(CBitmap *bmP, grsPoint *vertbuf, int32_t orientation )
 	xmax = I2X(dbp->Width ())-F2X(.5); ymax = I2X(dbp->Height ())-F2X(.5);
 
 	u0 = I2X(0); v0 = I2X(0);
-	u1 = I2X(bmP->Width ()-1); v1 = I2X(bmP->Height ()-1);
+	u1 = I2X(pBm->Width ()-1); v1 = I2X(pBm->Height ()-1);
 
 	// Check for obviously offscreen bitmaps...
 	if ( (y1<=y0) || (x1<=x0) ) return;
@@ -468,21 +468,21 @@ void ScaleBitmap(CBitmap *bmP, grsPoint *vertbuf, int32_t orientation )
 //	Assert( X2I(v0)<=X2I(v1) );
 //	Assert( X2I(u0)>=0 );
 //	Assert( X2I(v0)>=0 );
-//	Assert( u1<I2X(bmP->Width ()) );
-//	Assert( v1<I2X(bmP->Height ()) );
+//	Assert( u1<I2X(pBm->Width ()) );
+//	Assert( v1<I2X(pBm->Height ()) );
 
 	dtemp = X2I(clipped_u1)-X2I(clipped_u0);
 
-	if ( bmP->Flags () & BM_FLAG_RLE ) {
+	if ( pBm->Flags () & BM_FLAG_RLE ) {
 		if ( (dtemp < (X2I(clipped_x1)-X2I(clipped_x0))) && (dtemp>0) )
-			scale_up_bitmap_rle(bmP, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
+			scale_up_bitmap_rle(pBm, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
 		else
-			scale_bitmap_c_rle(bmP, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
+			scale_bitmap_c_rle(pBm, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
 	} else {
 		if ( (dtemp < (X2I(clipped_x1)-X2I(clipped_x0))) && (dtemp>0) )
-			scale_up_bitmap(bmP, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
+			scale_up_bitmap(pBm, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
 		else
-			scale_bitmap_c(bmP, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
+			scale_bitmap_c(pBm, dbp, dx0, dy0, dx1, dy1, clipped_u0, clipped_v0, clipped_u1, clipped_v1, orientation  );
 	}
 }
 

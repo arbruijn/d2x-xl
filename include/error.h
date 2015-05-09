@@ -53,7 +53,7 @@ extern int32_t nDbgVertex, nDbgBaseTex, nDbgOvlTex, nDbgTexture, nDbgLight;
 #define TrapSegSide (int16_t nSegment, int16_t nSide)
 #define TrapVert (int32_t nVertex)
 #define TrapTex (int32_t nBaseTex, int32_t nOvlTex)
-#define TrapBmp (CBitmap *bmP, char *pszName)
+#define TrapBmp (CBitmap *pBm, char *pszName)
 
 #if DBG		//macros for debugging
 

@@ -39,14 +39,14 @@ extern CFaceColor tMapColor;
 //------------------------------------------------------------------------------
 
 //walks through all submodels of a polymodel and determines the coordinate extremes
-int32_t GetPolyModelMinMax (void *modelP, tHitbox *phb, int32_t nSubModels)
+int32_t GetPolyModelMinMax (void *pModel, tHitbox *phb, int32_t nSubModels)
 {
-	uint8_t			*p = reinterpret_cast<uint8_t*> (modelP);
+	uint8_t			*p = reinterpret_cast<uint8_t*> (pModel);
 	int32_t			i, n, nVerts;
 	CFixVector	*v, hv;
 	tHitbox		hb = *phb;
 
-G3CheckAndSwap (modelP);
+G3CheckAndSwap (pModel);
 for (;;)
 	switch (WORDVAL (p)) {
 		case OP_EOF:
@@ -201,9 +201,9 @@ for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
 
 #if G3_HITBOX_TRANSFORM
 
-void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb)
+void TransformHitboxes (CObject *pObj, CFixVector *vPos, tBox *phb)
 {
-	tHitbox		*pmhb = gameData.models.hitboxes [objP->ModelId ()].hitboxes;
+	tHitbox		*pmhb = gameData.models.hitboxes [pObj->ModelId ()].hitboxes;
 	tQuad			*pf;
 	CFixVector	rotVerts [8];
 	int32_t			i, j, iModel, nModels;
@@ -214,9 +214,9 @@ if (CollisionModel () == 1) {
 	}
 else {
 	iModel = 1;
-	nModels = gameData.models.hitboxes [objP->ModelId ()].nSubModels;
+	nModels = gameData.models.hitboxes [pObj->ModelId ()].nSubModels;
 	}
-transformation.Begin (vPos ? vPos : &objP->info.position.vPos, &objP->info.position.mOrient);
+transformation.Begin (vPos ? vPos : &pObj->info.position.vPos, &pObj->info.position.mOrient);
 for (; iModel <= nModels; iModel++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++)
 		transformation.Transform (rotVerts + i, pmhb->box.vertices + i, 0);
@@ -231,9 +231,9 @@ transformation.End ();
 
 #else //G3_HITBOX_TRANSFORM
 
-tHitbox* TransformHitboxes (CObject *objP, CFixVector *vPos)
+tHitbox* TransformHitboxes (CObject *pObj, CFixVector *vPos)
 {
-	int32_t			nId = objP->ModelId ();
+	int32_t			nId = pObj->ModelId ();
 	tHitbox*		hb = &gameData.models.hitboxes [nId].hitboxes [0];
 
 #if !DBG
@@ -243,7 +243,7 @@ gameData.models.hitboxes [nId].nFrame = gameData.objData.nFrameCount;
 #endif
 	tQuad*		pf;
 	CFixVector	rotVerts [8];
-	CFixMatrix*	viewP = objP->View (0);
+	CFixMatrix*	pView = pObj->View (0);
 	int32_t			i, j, iBox, nBoxes;
 
 if (CollisionModel () == 1) {
@@ -252,13 +252,13 @@ if (CollisionModel () == 1) {
 	}
 else {
 	iBox = 1;
-	nBoxes = gameData.models.hitboxes [objP->ModelId ()].nHitboxes;
+	nBoxes = gameData.models.hitboxes [pObj->ModelId ()].nHitboxes;
 	}
 if (!vPos)
-	vPos = &objP->info.position.vPos;
+	vPos = &pObj->info.position.vPos;
 for (; iBox <= nBoxes; iBox++) {
 	for (i = 0; i < 8; i++) {
-		rotVerts [i] = *viewP * hb [iBox].box.vertices [i];
+		rotVerts [i] = *pView * hb [iBox].box.vertices [i];
 		rotVerts [i] += *vPos;
 		}
 	for (i = 0, pf = hb [iBox].box.faces; i < 6; i++, pf++) {

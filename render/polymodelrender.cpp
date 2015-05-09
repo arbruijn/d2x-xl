@@ -44,31 +44,31 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-int32_t ObjectHasShadow (CObject *objP)
+int32_t ObjectHasShadow (CObject *pObj)
 {
-if (objP->info.nType == OBJ_ROBOT) {
+if (pObj->info.nType == OBJ_ROBOT) {
 	if (!gameOpts->render.shadows.bRobots)
 		return 0;
-	if (objP->cType.aiInfo.CLOAKED)
+	if (pObj->cType.aiInfo.CLOAKED)
 		return 0;
 	}
-else if (objP->info.nType == OBJ_WEAPON) {
+else if (pObj->info.nType == OBJ_WEAPON) {
 	if (!gameOpts->render.shadows.bMissiles)
 		return 0;
-	if (!objP->IsMissile () && (objP->info.nId != SMALLMINE_ID))
+	if (!pObj->IsMissile () && (pObj->info.nId != SMALLMINE_ID))
 		return 0;
 	}
-else if (objP->info.nType == OBJ_POWERUP) {
+else if (pObj->info.nType == OBJ_POWERUP) {
 	if (!gameOpts->render.shadows.bPowerups)
 		return 0;
 	}
-else if (objP->info.nType == OBJ_PLAYER) {
+else if (pObj->info.nType == OBJ_PLAYER) {
 	if (!gameOpts->render.shadows.bPlayers)
 		return 0;
-	if (PLAYER (objP->info.nId).flags & PLAYER_FLAGS_CLOAKED)
+	if (PLAYER (pObj->info.nId).flags & PLAYER_FLAGS_CLOAKED)
 		return 0;
 	}
-else if (objP->info.nType == OBJ_REACTOR) {
+else if (pObj->info.nType == OBJ_REACTOR) {
 	if (!gameOpts->render.shadows.bReactors)
 		return 0;
 	}
@@ -79,9 +79,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-CPolyModel* GetPolyModel (CObject *objP, CFixVector *pos, int32_t nModel, int32_t flags, int32_t* bCustomModel)
+CPolyModel* GetPolyModel (CObject *pObj, CFixVector *pos, int32_t nModel, int32_t flags, int32_t* bCustomModel)
 {
-	CPolyModel	*modelP = NULL;
+	CPolyModel	*pModel = NULL;
 	int32_t		bHaveAltModel, bIsDefModel;
 
 #if DBG
@@ -104,47 +104,47 @@ else {
 if (nModel == nDbgModel)
 	BRP;
 #endif
-if ((nModel >= gameData.models.nPolyModels) && !(modelP = gameData.models.modelToPOL [nModel]))
+if ((nModel >= gameData.models.nPolyModels) && !(pModel = gameData.models.modelToPOL [nModel]))
 	return NULL;
 // only render shadows for custom models and for standard models with a shadow proof alternative model
-if (!objP)
-	modelP = ((gameStates.app.bAltModels && bIsDefModel && bHaveAltModel) ? gameData.models.polyModels [2] : gameData.models.polyModels [0]) + nModel;
-else if (!modelP) {
+if (!pObj)
+	pModel = ((gameStates.app.bAltModels && bIsDefModel && bHaveAltModel) ? gameData.models.polyModels [2] : gameData.models.polyModels [0]) + nModel;
+else if (!pModel) {
 	if (!(bIsDefModel && bHaveAltModel)) {
-		if (gameStates.app.bFixModels && (objP->info.nType == OBJ_ROBOT) && (gameStates.render.nShadowPass == 2))
+		if (gameStates.app.bFixModels && (pObj->info.nType == OBJ_ROBOT) && (gameStates.render.nShadowPass == 2))
 			return NULL;
-		modelP = gameData.models.polyModels [0] + nModel;
+		pModel = gameData.models.polyModels [0] + nModel;
 		if (bCustomModel)
 			*bCustomModel = 1;
 		}
 	else if (gameStates.render.nShadowPass != 2) {
-		if ((gameStates.app.bAltModels || (objP->info.nType == OBJ_PLAYER)) && bHaveAltModel)
-			modelP = gameData.models.polyModels [2] + nModel;
+		if ((gameStates.app.bAltModels || (pObj->info.nType == OBJ_PLAYER)) && bHaveAltModel)
+			pModel = gameData.models.polyModels [2] + nModel;
 		else
-			modelP = gameData.models.polyModels [0] + nModel;
+			pModel = gameData.models.polyModels [0] + nModel;
 		}
 	else if (bHaveAltModel)
-		modelP = gameData.models.polyModels [2] + nModel;
+		pModel = gameData.models.polyModels [2] + nModel;
 	else
 		return NULL;
-	if ((gameStates.render.nShadowPass == 2) && (objP->info.nType == OBJ_REACTOR) && !(nModel & 1))	// use the working reactor model for rendering destroyed reactors' shadows
-		modelP--;
+	if ((gameStates.render.nShadowPass == 2) && (pObj->info.nType == OBJ_REACTOR) && !(nModel & 1))	// use the working reactor model for rendering destroyed reactors' shadows
+		pModel--;
 	}
 //check if should use simple model (depending on detail level chosen)
-if (!(SHOW_DYN_LIGHT || SHOW_SHADOWS) && modelP->SimplerModel () && !flags && pos) {
+if (!(SHOW_DYN_LIGHT || SHOW_SHADOWS) && pModel->SimplerModel () && !flags && pos) {
 	int32_t	cnt = 1;
 	fix depth = G3CalcPointDepth (*pos);		//gets 3d depth
-	while (modelP->SimplerModel () && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * modelP->Rad ()))
-		modelP = gameData.models.polyModels [0] + modelP->SimplerModel () - 1;
+	while (pModel->SimplerModel () && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * pModel->Rad ()))
+		pModel = gameData.models.polyModels [0] + pModel->SimplerModel () - 1;
 	}
-return modelP;
+return pModel;
 }
 
 //------------------------------------------------------------------------------
 
 //draw a polygon model
 int32_t DrawPolyModel (
-	CObject*			objP,
+	CObject*			pObj,
 	CFixVector*		pos,
 	CFixMatrix*		orient,
 	CAngleVector*	animAngles,
@@ -153,9 +153,9 @@ int32_t DrawPolyModel (
 	fix				light,
 	fix*				glowValues,
 	tBitmapIndex	altTextures [],
-	CFloatVector*	colorP)
+	CFloatVector*	pColor)
 {
-	CPolyModel*	modelP;
+	CPolyModel*	pModel;
 	int32_t			bHires = 0, bCustomModel = 0;
 
 #if 0 //DBG
@@ -169,9 +169,9 @@ if (!gameStates.render.bBuildModels) {
 if (nModel < 0)
 	return 1;
 #if !MAX_SHADOWMAPS
-if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
+if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (pObj))
 	return 1;
-if (!(modelP = GetPolyModel (objP, pos, nModel, flags, &bCustomModel))) {
+if (!(pModel = GetPolyModel (pObj, pos, nModel, flags, &bCustomModel))) {
 	if (!(bCustomModel || flags) && (gameStates.render.nShadowPass != 2) && HaveHiresModel (nModel))
 		bHires = 1;
 	else
@@ -180,12 +180,12 @@ if (!(modelP = GetPolyModel (objP, pos, nModel, flags, &bCustomModel))) {
 if (gameStates.render.nShadowPass == 2) {
 	if (!bHires) {
 		G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
-		G3DrawPolyModelShadow (objP, modelP->Data (), animAngles, nModel);
+		G3DrawPolyModelShadow (pObj, pModel->Data (), animAngles, nModel);
 		}
 	return 1;
 	}
 #else
-if (!(modelP = GetPolyModel (objP, pos, nModel, flags, &bCustomModel))) {
+if (!(pModel = GetPolyModel (pObj, pos, nModel, flags, &bCustomModel))) {
 	if (!flags && HaveHiresModel (nModel))
 		bHires = 1;
 	else
@@ -199,23 +199,23 @@ if (nModel == nDbgModel)
 #endif
 
 if (!bHires)
-	modelP->LoadTextures (altTextures);
+	pModel->LoadTextures (altTextures);
 G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
-gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();
+gameData.render.pVertex = gameData.models.fPolyModelVerts.Buffer ();
 ogl.SetTransform (1);
 if (!flags) {	//draw entire object
-	if (!gameStates.app.bNostalgia && G3RenderModel (objP, bCustomModel ? -nModel : nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
+	if (!gameStates.app.bNostalgia && G3RenderModel (pObj, bCustomModel ? -nModel : nModel, -1, pModel, gameData.models.textures, animAngles, NULL, light, glowValues, pColor)) {
 		ogl.SetTransform (0);
-		gameData.render.vertP = NULL;
+		gameData.render.pVertex = NULL;
 		return 1;
 		}
 	if (bHires) {
 		ogl.SetTransform (0);
-		gameData.render.vertP = NULL;
+		gameData.render.pVertex = NULL;
 		return 0;
 		}
-	if (objP && (objP->info.nType == OBJ_POWERUP)) {
-		if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
+	if (pObj && (pObj->info.nType == OBJ_POWERUP)) {
+		if ((pObj->info.nId == POW_SMARTMINE) || (pObj->info.nId == POW_PROXMINE))
 			gameData.models.vScale.Set (I2X (2), I2X (2), I2X (2));
 		else
 			gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
@@ -224,7 +224,7 @@ if (!flags) {	//draw entire object
 							!(SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting || gameOpts->ogl.bLightObjects)));
 	transformation.Begin (*pos, *orient);
 	gameStates.render.EnableCartoonStyle ();
-	G3DrawPolyModel (objP, modelP->Data (), gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
+	G3DrawPolyModel (pObj, pModel->Data (), gameData.models.textures, animAngles, NULL, light, glowValues, pColor, NULL, nModel);
 	gameStates.render.DisableCartoonStyle ();
 	transformation.End ();
 	}
@@ -232,23 +232,23 @@ else {
 	CFixVector vOffset;
 
 	for (int32_t i = 0; flags > 0; flags >>= 1, i++) {
-		if ((flags & 1) && (i < modelP->ModelCount ())) {
+		if ((flags & 1) && (i < pModel->ModelCount ())) {
 			//if submodel, rotate around its center point, not pivot point
-			vOffset = CFixVector::Avg (modelP->SubModels ().mins [i], modelP->SubModels ().maxs [i]);
+			vOffset = CFixVector::Avg (pModel->SubModels ().mins [i], pModel->SubModels ().maxs [i]);
 			vOffset.Neg ();
-			if (!G3RenderModel (objP, nModel, i, modelP, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP)) {
+			if (!G3RenderModel (pObj, nModel, i, pModel, gameData.models.textures, animAngles, &vOffset, light, glowValues, pColor)) {
 				if (bHires) {
 					ogl.SetTransform (0);
-					gameData.render.vertP = NULL;
+					gameData.render.pVertex = NULL;
 					return 0;
 					}
 #if DBG
-				G3RenderModel (objP, nModel, i, modelP, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP);
+				G3RenderModel (pObj, nModel, i, pModel, gameData.models.textures, animAngles, &vOffset, light, glowValues, pColor);
 #endif
 				transformation.Begin (vOffset);
 				gameStates.render.EnableCartoonStyle ();
-				G3DrawPolyModel (objP, modelP->Data () + modelP->SubModels ().ptrs [i], gameData.models.textures,
-									  animAngles, NULL, light, glowValues, colorP, NULL, nModel);
+				G3DrawPolyModel (pObj, pModel->Data () + pModel->SubModels ().ptrs [i], gameData.models.textures,
+									  animAngles, NULL, light, glowValues, pColor, NULL, nModel);
 				gameStates.render.DisableCartoonStyle ();
 				transformation.End ();
 				}
@@ -256,7 +256,7 @@ else {
 		}
 	}
 ogl.SetTransform (0);
-gameData.render.vertP = NULL;
+gameData.render.pVertex = NULL;
 return 1;
 }
 

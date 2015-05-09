@@ -181,10 +181,10 @@ class CTrigger : public CTriggerTargets {
 		void DoLink (void);
 		void DoChangeTexture (void);
 		int32_t DoExecObjTrigger (int16_t nObject, int32_t bDamage);
-		void DoSpawnBots (CObject* objP);
+		void DoSpawnBots (CObject* pObj);
 		bool DoExit (int32_t nPlayer);
 		bool DoSecretExit (int32_t nPlayer);
-		void DoTeleportBot (CObject* objP);
+		void DoTeleportBot (CObject* pObj);
 		void DoCloseDoor (void);
 		int32_t DoLightOn (void);
 		int32_t DoLightOff (void);
@@ -275,7 +275,7 @@ void SetSpeedBoostVelocity (int16_t nObject, fix speed,
 									 CFixVector *pSrcPt, CFixVector *pDestPt,
 									 int32_t bSetOrient);
 
-void TriggerSetOrient (tObjTransformation *posP, int16_t nSegment, int16_t nSide, int32_t bSetPos, int32_t nStep);
+void TriggerSetOrient (tObjTransformation *pPos, int16_t nSegment, int16_t nSide, int32_t bSetPos, int32_t nStep);
 void TriggerSetObjOrient (int16_t nObject, int16_t nSegment, int16_t nSide, int32_t bSetPos, int32_t nStep);
 void TriggerSetObjPos (int16_t nObject, int16_t nSegment);
 void UpdatePlayerOrient (void);

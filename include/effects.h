@@ -55,7 +55,7 @@ typedef struct tEffectInfo {
 typedef tEffectInfo D1_eclip;
 
 // Set up special effects.
-fix EffectFrameTime (tEffectInfo* effectInfoP);
+fix EffectFrameTime (tEffectInfo* pEffectInfo);
 
 // Set up special effects.
 void InitSpecialEffects (void);
@@ -81,7 +81,7 @@ void RestartEffect (int32_t nEffect);
 void ReadEffectClip (tEffectInfo& effectInfo, CFile& cf);
 int32_t ReadEffectInfo (CArray<tEffectInfo>& effectInfo, int32_t n, CFile& cf);
 
-CBitmap *SetupHiresAnim (int16_t *frameP, int32_t nFrames, int32_t nBaseTex, int32_t bIndirect, int32_t bObj, int32_t *pnFrames, CBitmap* bmP = NULL);
+CBitmap *SetupHiresAnim (int16_t *frameP, int32_t nFrames, int32_t nBaseTex, int32_t bIndirect, int32_t bObj, int32_t *pnFrames, CBitmap* pBm = NULL);
 void ResetPogEffects (void);
 void CacheObjectEffects (void);
 

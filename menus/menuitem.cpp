@@ -177,7 +177,7 @@ int32_t nTabs [] = {15, 87, 124, 162, 228, 253};
 
 void CMenuItem::DrawHotKeyString (int32_t bIsCurrent, int32_t bTiny, int32_t bCreateTextBms, int32_t nDepth)
 {
-	CBitmap	*bmP = m_bmText [bIsCurrent];
+	CBitmap	*pBm = m_bmText [bIsCurrent];
 
 if (!*m_text)
 	return;
@@ -186,11 +186,11 @@ if (m_color)
 else
 	SetColor (bIsCurrent, bTiny);
 if (bCreateTextBms && FAST_MENUS && 
-	 (bmP || (bmP = CreateStringBitmap (m_text, MENU_KEY (m_nKey, - 1), gameData.menu.keyColor, nTabs, m_bCentered, m_w, bTiny * 2, 0)))) {
+	 (pBm || (pBm = CreateStringBitmap (m_text, MENU_KEY (m_nKey, - 1), gameData.menu.keyColor, nTabs, m_bCentered, m_w, bTiny * 2, 0)))) {
 	float	fScale = fontManager.Scale ();
-	bmP->Render (NULL, gameData.X (m_x), m_y, int32_t (bmP->Width () * fScale), int32_t (bmP->Height () * fScale), 
-					 0, 0, bmP->Width (), bmP->Height (), 1, gameStates.app.bDemoData ? -1 : 0);
-	m_bmText [bIsCurrent] = bmP;
+	pBm->Render (NULL, gameData.X (m_x), m_y, int32_t (pBm->Width () * fScale), int32_t (pBm->Height () * fScale), 
+					 0, 0, pBm->Width (), pBm->Height (), 1, gameStates.app.bDemoData ? -1 : 0);
+	m_bmText [bIsCurrent] = pBm;
 	}
 else {
 
@@ -481,7 +481,7 @@ if (m_szHelp && *m_szHelp) {
 
 #include "timer.h"
 
-//for text itemP, constantly redraw cursor (to achieve flash)
+//for text pItem, constantly redraw cursor (to achieve flash)
 void CMenuItem::UpdateCursor (void)
 {
 	int32_t w, h, aw;

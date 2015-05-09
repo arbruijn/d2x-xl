@@ -376,7 +376,7 @@ return -1;
 
 int32_t SetDisplayMode (int32_t nMode, int32_t bOverride)
 {
-	CDisplayModeInfo *dmiP;
+	CDisplayModeInfo *dpInfo;
 
 if (!bOverride)
 	gameStates.gfx.bOverride = 0;
@@ -389,9 +389,9 @@ if (!gameStates.menus.bHiresAvailable && (nMode != 1))
 if (!GrVideoModeOK (displayModeInfo [nMode].dim))		//can't do nMode
 	nMode = 0;
 gameStates.video.nDisplayMode = nMode;
-dmiP = displayModeInfo + nMode;
+dpInfo = displayModeInfo + nMode;
 if (gameStates.video.nDisplayMode != -1) {
-	GameInitRenderBuffers (dmiP->dim, dmiP->w, dmiP->h, dmiP->renderMethod, dmiP->flags);
+	GameInitRenderBuffers (dpInfo->dim, dpInfo->w, dpInfo->h, dpInfo->renderMethod, dpInfo->flags);
 	gameStates.video.nDefaultDisplayMode = gameStates.video.nDisplayMode;
 	}
 gameStates.video.nScreenMode = -1;		//force screen reset

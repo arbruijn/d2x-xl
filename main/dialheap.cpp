@@ -49,11 +49,11 @@ for (uint32_t i = 0, j = m_dirtyIndex.ToS (); i < j; i++)
 for (uint32_t i = 0, j = m_dirtyCost.ToS (); i < j; i++)
 	m_cost [m_dirtyCost [i]] = 0xFFFFFFFF;
 #	else
-int16_t* indexP = m_index.Buffer ();
+int16_t* pIndex = m_index.Buffer ();
 uint16_t* dirtyIndexP = m_dirtyIndex.Buffer ();
 uint32_t i;
 for (i = m_dirtyIndex.ToS (); i; i--, dirtyIndexP++)
-	indexP [*dirtyIndexP] = -1;
+	pIndex [*dirtyIndexP] = -1;
 
 uint32_t* costP = m_cost.Buffer ();
 uint32_t* dirtyCostP = m_dirtyCost.Buffer ();
@@ -133,11 +133,11 @@ if (!m_index.Buffer ()) { // -> Bug!
 	return -1;
 	}
 
-	int16_t* bufP = m_index.Buffer (nStart);
+	int16_t* pBuffer = m_index.Buffer (nStart);
 
-for (; nLength; nLength--, bufP++)
-	if (*bufP >= 0)
-		return int32_t (bufP - m_index.Buffer ());
+for (; nLength; nLength--, pBuffer++)
+	if (*pBuffer >= 0)
+		return int32_t (pBuffer - m_index.Buffer ());
 return -1;
 }
 

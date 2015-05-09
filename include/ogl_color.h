@@ -31,12 +31,12 @@ extern float fLightRanges [5];
 
 //------------------------------------------------------------------------------
 
-void OglPalColor (uint8_t *palette, int32_t c, CFloatVector* colorP = NULL);
+void OglPalColor (uint8_t *palette, int32_t c, CFloatVector* pColor = NULL);
 CFloatVector GetPalColor (CPalette *palette, int32_t c);
-void OglCanvasColor (CCanvasColor* canvColorP, CFloatVector* colorP = NULL);
-CFloatVector GetCanvasColor (CCanvasColor* colorP);
+void OglCanvasColor (CCanvasColor* pCanvColor, CFloatVector* pColor = NULL);
+CFloatVector GetCanvasColor (CCanvasColor* pColor);
 void OglColor4sf (float r, float g, float b, float s);
-void SetTMapColor (tUVL *uvlList, int32_t i, CBitmap *bmP, int32_t bResetColor, CFloatVector *colorP = NULL);
+void SetTMapColor (tUVL *uvlList, int32_t i, CBitmap *pBm, int32_t bResetColor, CFloatVector *pColor = NULL);
 int32_t ComputeVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex, CFloatVector3 *pColorSum, CVertColorData *vcdP, int32_t nThread);
 void GetVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex, 
 						  CFloatVector3 *pvVertNorm, CFloatVector3 *pVertPos, 

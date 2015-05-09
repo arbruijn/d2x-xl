@@ -211,7 +211,7 @@ class CWall {
 		void Init (void);
 		void Read (CFile& cf);
 		void LoadTextures (void);
-		int32_t IsPassable (CObject* objP, bool bIgnoreDoors = false);
+		int32_t IsPassable (CObject* pObj, bool bIgnoreDoors = false);
 		bool IsOpenableDoor (void);
 		int32_t IsTriggerTarget (int32_t i = 0);
 		bool IsVolatile (void);
@@ -225,7 +225,7 @@ class CWall {
 		void CloseActiveDoor (void);
 		int32_t AnimateOpeningDoor (fix xElapsedTime);
 		int32_t AnimateClosingDoor (fix xElapsedTime);
-		int32_t ProcessHit (int32_t nPlayer, CObject* objP);
+		int32_t ProcessHit (int32_t nPlayer, CObject* pObj);
 		CWall* OppositeWall (void);
 		CTrigger* Trigger (void);
 		void LoadState (CFile& cf);
@@ -299,11 +299,11 @@ extern tStuckObject StuckObjects [MAX_STUCK_OBJECTS];
 
 //  An CObject got stuck in a door (like a flare).
 //  Add global entry.
-void AddStuckObject (CObject *objP, int16_t nSegment, int16_t nSide);
+void AddStuckObject (CObject *pObj, int16_t nSegment, int16_t nSide);
 void RemoveObsoleteStuckObjects(void);
 
 //set the tmap_num or tmap_num2 field for a CWall/door
-void WallSetTMapNum(CSegment *segP,int16_t nSide,CSegment *csegp, int16_t cside,int32_t anim_num,int32_t nFrame);
+void WallSetTMapNum(CSegment *pSeg,int16_t nSide,CSegment *csegp, int16_t cside,int32_t anim_num,int32_t nFrame);
 
 void InitDoorAnims (void);
 

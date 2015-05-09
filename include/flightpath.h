@@ -25,7 +25,7 @@ typedef struct tPathPoint {
 	bool					bFlipped;
 } tPathPoint;
 
-class CFlightPath {
+class CFpLightath {
 	public:
 		CArray<tPathPoint>	m_path; // [MAX_PATH_POINTS];
 		tPathPoint*				m_posP;
@@ -36,15 +36,15 @@ class CFlightPath {
 		time_t					m_tUpdate;
 
 	public:
-		CFlightPath ();
-		void Update (CObject *objP);
+		CFpLightath ();
+		void Update (CObject *pObj);
 		tPathPoint *GetPoint (void);
 		void GetViewPoint (CFixVector* vPos = NULL);
 		void Reset (int32_t nSize, int32_t nFPS);
 		inline tPathPoint* Tail (void) { return m_posP; }
-		inline void SetPos (tPathPoint *posP) { m_posP = posP; }
+		inline void SetPos (tPathPoint *pPos) { m_posP = pPos; }
 };
 
-#define FLIGHTPATH		PLAYER (LOCALPLAYER.ObservedPlayer ()).FlightPath ()
+#define FLIGHTPATH		PLAYER (LOCALPLAYER.ObservedPlayer ()).FpLightath ()
 
 #endif /* _FLIGHTPATH_H */

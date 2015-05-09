@@ -30,34 +30,34 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	-----------------------------------------------------------------------------------------------------------
 //given an CObject and a gun number, return position in 3-space of gun
 //fills in gun_point
-int32_t CalcGunPoint (CFixVector *vGunPoint, CObject *objP, int32_t nGun)
+int32_t CalcGunPoint (CFixVector *vGunPoint, CObject *pObj, int32_t nGun)
 {
-	CPolyModel*	pm = gameData.models.polyModels [0] + objP->ModelId ();
+	CPolyModel*	pm = gameData.models.polyModels [0] + pObj->ModelId ();
 	CFixVector*	vGunPoints, vGunPos, vRot;
 	CFixMatrix	m;
 	int32_t		nSubModel;				//submodel number
 
-//Assert(objP->info.nId < gameData.botData.nTypes [gameStates.app.bD1Data]);
+//Assert(pObj->info.nId < gameData.botData.nTypes [gameStates.app.bD1Data]);
 
-tRobotInfo*	botInfoP = ROBOTINFO (objP);
-if (!botInfoP)
+tRobotInfo*	pRobotInfo = ROBOTINFO (pObj);
+if (!pRobotInfo)
 	return 0;
-if (!(vGunPoints = GetGunPoints (objP, nGun)))
+if (!(vGunPoints = GetGunPoints (pObj, nGun)))
 	return 0;
 vGunPos = vGunPoints [nGun];
-nSubModel = botInfoP->gunSubModels [nGun];
+nSubModel = pRobotInfo->gunSubModels [nGun];
 //instance up the tree for this gun
 while (nSubModel != 0) {
-	m = CFixMatrix::Create (objP->rType.polyObjInfo.animAngles [nSubModel]);
+	m = CFixMatrix::Create (pObj->rType.polyObjInfo.animAngles [nSubModel]);
 	CFixMatrix::Transpose (m);
 	vRot = m * vGunPos;
 	vGunPos = vRot + pm->SubModels ().offsets [nSubModel];
 	nSubModel = pm->SubModels ().parents [nSubModel];
 	}
 //now instance for the entire CObject
-//VmVecInc (&vGunPos, gameData.models.offsets + botInfoP->nModel);
-*vGunPoint = *objP->View (0) * vGunPos;
-*vGunPoint += objP->info.position.vPos;
+//VmVecInc (&vGunPos, gameData.models.offsets + pRobotInfo->nModel);
+*vGunPoint = *pObj->View (0) * vGunPos;
+*vGunPoint += pObj->info.position.vPos;
 return 1;
 }
 
@@ -66,36 +66,36 @@ return 1;
 //takes the robot nType (CObject id), gun number, and desired state
 int32_t RobotGetAnimState (tJointPos **jointPosP, int32_t robotType, int32_t nGun, int32_t state)
 {
-tRobotInfo*	botInfoP = ROBOTINFO (robotType);
-if (!botInfoP)
+tRobotInfo*	pRobotInfo = ROBOTINFO (robotType);
+if (!pRobotInfo)
 	return 0;
 
-int32_t nJoints = botInfoP->animStates [nGun][state].n_joints;
+int32_t nJoints = pRobotInfo->animStates [nGun][state].n_joints;
 
 if (nJoints <= 0)
 	memset (jointPosP, 0, sizeof (*jointPosP));
 else
-	*jointPosP = &gameData.botData.joints [botInfoP->animStates [nGun][state].offset];
+	*jointPosP = &gameData.botData.joints [pRobotInfo->animStates [nGun][state].offset];
 return nJoints;
 }
 
 
 //	-----------------------------------------------------------------------------------------------------------
 //for test, set a robot to a specific state
-void SetRobotState (CObject *objP, int32_t state)
+void SetRobotState (CObject *pObj, int32_t state)
 {
 	int32_t		g, j, jo;
 	jointlist*	jl;
 
-tRobotInfo*	botInfoP = ROBOTINFO (objP);
-if (!botInfoP)
+tRobotInfo*	pRobotInfo = ROBOTINFO (pObj);
+if (!pRobotInfo)
 	return;
-for (g = 0; g < botInfoP->nGuns + 1; g++) {
-	jl = &botInfoP->animStates [g][state];
+for (g = 0; g < pRobotInfo->nGuns + 1; g++) {
+	jl = &pRobotInfo->animStates [g][state];
 	jo = jl->offset;
 	for (j = 0; j < jl->n_joints; j++, jo++) {
 		int32_t jn = gameData.botData.joints [jo].jointnum;
-		objP->rType.polyObjInfo.animAngles [jn] = gameData.botData.joints [jo].angles;
+		pObj->rType.polyObjInfo.animAngles [jn] = gameData.botData.joints [jo].angles;
 		}
 	}
 }
@@ -103,32 +103,32 @@ for (g = 0; g < botInfoP->nGuns + 1; g++) {
 //	-----------------------------------------------------------------------------------------------------------
 //set the animation angles for this robot.  Gun fields of robot info must
 //be filled in.
-void SetRobotAngles (tRobotInfo *botInfoP, CPolyModel* modelP, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS])
+void SetRobotAngles (tRobotInfo *pRobotInfo, CPolyModel* pModel, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS])
 {
 	int32_t m,g,state;
 	int32_t nGunCounts [MAX_SUBMODELS];			//which gun each submodel is part of
 
-for (m = 0; m < modelP->ModelCount (); m++)
-	nGunCounts [m] = botInfoP->nGuns;		//assume part of body...
+for (m = 0; m < pModel->ModelCount (); m++)
+	nGunCounts [m] = pRobotInfo->nGuns;		//assume part of body...
 nGunCounts [0] = -1;		//body never animates, at least for now
 
-for (g = 0; g < botInfoP->nGuns; g++) {
-	m = botInfoP->gunSubModels [g];
+for (g = 0; g < pRobotInfo->nGuns; g++) {
+	m = pRobotInfo->gunSubModels [g];
 	while (m != 0) {
 		nGunCounts [m] = g;				//...unless we find it in a gun
-		m = modelP->SubModels ().parents [m];
+		m = pModel->SubModels ().parents [m];
 		}
 	}
 
-for (g = 0; g < botInfoP->nGuns + 1; g++) {
+for (g = 0; g < pRobotInfo->nGuns + 1; g++) {
 	for (state = 0; state < N_ANIM_STATES; state++) {
-		botInfoP->animStates [g][state].n_joints = 0;
-		botInfoP->animStates [g][state].offset = gameData.botData.nJoints;
-		for (m = 0; m < modelP->ModelCount (); m++) {
+		pRobotInfo->animStates [g][state].n_joints = 0;
+		pRobotInfo->animStates [g][state].offset = gameData.botData.nJoints;
+		for (m = 0; m < pModel->ModelCount (); m++) {
 			if (nGunCounts [m] == g) {
 				gameData.botData.joints [gameData.botData.nJoints].jointnum = m;
 				gameData.botData.joints [gameData.botData.nJoints].angles = angs [state][m];
-				botInfoP->animStates [g][state].n_joints++;
+				pRobotInfo->animStates [g][state].n_joints++;
 				gameData.botData.nJoints++;
 				Assert(gameData.botData.nJoints < MAX_ROBOT_JOINTS);
 				}
@@ -142,7 +142,7 @@ for (g = 0; g < botInfoP->nGuns + 1; g++) {
 void InitCamBots (int32_t bReset)
 {
 	tRobotInfo&	camBotInfo = gameData.botData.info [0][gameData.botData.nCamBotId];
-	CObject*		objP;
+	CObject*		pObj;
 
 if ((gameData.botData.nCamBotId < 0) || gameStates.app.bD1Mission)
 	return;
@@ -166,21 +166,21 @@ memset (camBotInfo.turnTime, 0, sizeof (camBotInfo.turnTime));
 memset (camBotInfo.xMaxSpeed, 0, sizeof (camBotInfo.xMaxSpeed));
 memset (camBotInfo.circleDistance, 0, sizeof (camBotInfo.circleDistance));
 memset (camBotInfo.nRapidFireCount, 0, sizeof (camBotInfo.nRapidFireCount));
-FORALL_STATIC_OBJS (objP) 
-	if (objP->info.nType == OBJ_CAMBOT) {
-		objP->info.nId	= gameData.botData.nCamBotId;
-		objP->AdjustSize ();
-		objP->SetLife (IMMORTAL_TIME);
-		objP->info.controlType = CT_CAMERA;
-		objP->info.movementType = MT_NONE;
-		objP->rType.polyObjInfo.nModel = gameData.botData.nCamBotModel;
-		gameData.ai.localInfo [objP->Index ()].mode = AIM_IDLING;
+FORALL_STATIC_OBJS (pObj) 
+	if (pObj->info.nType == OBJ_CAMBOT) {
+		pObj->info.nId	= gameData.botData.nCamBotId;
+		pObj->AdjustSize ();
+		pObj->SetLife (IMMORTAL_TIME);
+		pObj->info.controlType = CT_CAMERA;
+		pObj->info.movementType = MT_NONE;
+		pObj->rType.polyObjInfo.nModel = gameData.botData.nCamBotModel;
+		gameData.ai.localInfo [pObj->Index ()].mode = AIM_IDLING;
 		}
-	else if (objP->info.nType == OBJ_EFFECT) {
-		objP->SetSize (0);
-		objP->SetLife (IMMORTAL_TIME);
-		objP->info.controlType = CT_NONE;
-		objP->info.movementType = MT_NONE;
+	else if (pObj->info.nType == OBJ_EFFECT) {
+		pObj->SetSize (0);
+		pObj->SetLife (IMMORTAL_TIME);
+		pObj->info.controlType = CT_NONE;
+		pObj->info.movementType = MT_NONE;
 		}
 }
 

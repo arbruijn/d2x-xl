@@ -134,37 +134,37 @@ for (int32_t i = nStart; i < nEnd; i++)
 int32_t CParticleBuffer::bCompatible [2 * PARTICLE_TYPES] = {0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 
 																				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-bool CParticleBuffer::Compatible (CParticle* particleP)
+bool CParticleBuffer::Compatible (CParticle* pParticle)
 {
 #if DBG
 if (m_nType == FIRE_PARTICLES)
 	m_nType = m_nType;
 #endif
-int32_t nParticleType = particleP->RenderType ();
-if ((nParticleType == m_nType) && (particleP->m_bEmissive == m_bEmissive))
+int32_t nParticleType = pParticle->RenderType ();
+if ((nParticleType == m_nType) && (pParticle->m_bEmissive == m_bEmissive))
 	return 1;
 return USE_PARTICLE_SHADER && bCompatible [m_nType] && bCompatible [nParticleType];
 }
 
 //------------------------------------------------------------------------------
 
-bool CParticleBuffer::Add (CParticle* particleP, float brightness, CFloatVector& pos, float rad)
+bool CParticleBuffer::Add (CParticle* pParticle, float brightness, CFloatVector& pos, float rad)
 {
 	bool bFlushed = false;
 
-if ((m_iBuffer == PART_BUF_SIZE) || !Compatible (particleP)) 
+if ((m_iBuffer == PART_BUF_SIZE) || !Compatible (pParticle)) 
 	bFlushed = Flush (brightness, true);
 if (!m_iBuffer) {
-	m_nType = particleP->RenderType ();
-	m_bEmissive = particleP->m_bEmissive;
+	m_nType = pParticle->RenderType ();
+	m_bEmissive = pParticle->m_bEmissive;
 	}
 
 	tRenderParticle* pb = m_particles + m_iBuffer++;
 
-pb->particle = particleP;
+pb->particle = pParticle;
 pb->fBrightness = brightness;
-pb->nFrame = particleP->m_iFrame;
-pb->nRotFrame = particleP->m_nRotFrame;
+pb->nFrame = pParticle->m_iFrame;
+pb->nRotFrame = pParticle->m_nRotFrame;
 CEffectArea::Add (pos, rad);
 float d = CFloatVector::Dist (pos, transformation.m_info.posf [0]);
 if (m_dMax < d)
@@ -281,11 +281,11 @@ if (ogl.m_features.bShaders) {
 				}
 			else {
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE2);
-				ParticleImageInfo (BUBBLE_PARTICLES).bmP->Bind (0);
+				ParticleImageInfo (BUBBLE_PARTICLES).pBm->Bind (0);
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
-				ParticleImageInfo (SPARK_PARTICLES).bmP->Bind (0);
+				ParticleImageInfo (SPARK_PARTICLES).pBm->Bind (0);
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
-				ParticleImageInfo (SMOKE_PARTICLES).bmP->Bind (0);
+				ParticleImageInfo (SMOKE_PARTICLES).pBm->Bind (0);
 				}	
 			}
 		}
@@ -300,15 +300,15 @@ if (ogl.m_features.bShaders) {
 	}
 
 if (!bHaveTexture) {
-	CBitmap* bmP = ParticleImageInfo (m_nType % PARTICLE_TYPES).bmP;
-	if (!bmP) {
+	CBitmap* pBm = ParticleImageInfo (m_nType % PARTICLE_TYPES).pBm;
+	if (!pBm) {
 		PROF_END(ptParticles)
 		Reset ();
 		return false;
 		}
-	if (bmP->CurFrame ())
-		bmP = bmP->CurFrame ();
-	if (bmP->Bind (1) && !particleImageManager.Load (m_nType % PARTICLE_TYPES, 1)) {
+	if (pBm->CurFrame ())
+		pBm = pBm->CurFrame ();
+	if (pBm->Bind (1) && !particleImageManager.Load (m_nType % PARTICLE_TYPES, 1)) {
 		PROF_END(ptParticles)
 		Reset ();
 		return false;

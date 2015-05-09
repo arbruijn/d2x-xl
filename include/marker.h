@@ -58,7 +58,7 @@ class CMarkerManager {
 		~CMarkerManager () {}
 		void Init (void) { m_data.Init (); }
 		void Drop (char nPlayerMarker, int32_t bSpawn);
-		void DropForGuidebot (CObject *objP);
+		void DropForGuidebot (CObject *pObj);
 		void DropSpawnPoint (void);
 		void Render (void);
 		void Rotate (void);
@@ -70,8 +70,8 @@ class CMarkerManager {
 		void InputMessage (int32_t key);
 		int32_t SpawnIndex (int32_t nPlayer);
 		CObject *SpawnObject (int32_t nPlayer);
-		int32_t IsSpawnObject (CObject *objP);
-		int32_t MoveSpawnPoint (tObjTransformation *posP, int16_t nSegment);
+		int32_t IsSpawnObject (CObject *pObj);
+		int32_t MoveSpawnPoint (tObjTransformation *pPos, int16_t nSegment);
 		inline int32_t MaxDrop (void) {
 			return IsMultiGame ? IsCoopGame ? MAX_DROP_COOP : MAX_DROP_MULTI : MAX_DROP_SINGLE;
 			}

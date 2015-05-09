@@ -18,14 +18,14 @@ void KillPlayerSmoke (int32_t i);
 void ResetPlayerSmoke (void);
 void InitObjectSmoke (void);
 void ResetObjectSmoke (void);
-void KillPlayerBullets (CObject *objP);
-void KillGatlingSmoke (CObject *objP);
+void KillPlayerBullets (CObject *pObj);
+void KillGatlingSmoke (CObject *pObj);
 //static inline int32_t RandN (int32_t n);
 void CreateDamageExplosion (int32_t h, int32_t i);
-void DoPlayerSmoke (CObject *objP, int32_t i);
-void DoRobotSmoke (CObject *objP);
-void DoMissileSmoke (CObject *objP);
-int32_t DoObjectSmoke (CObject *objP);
+void DoPlayerSmoke (CObject *pObj, int32_t i);
+void DoRobotSmoke (CObject *pObj);
+void DoMissileSmoke (CObject *pObj);
+int32_t DoObjectSmoke (CObject *pObj);
 void PlayerSmokeFrame (void);
 void RobotSmokeFrame (void);
 void DoParticleFrame (void);
@@ -33,10 +33,10 @@ void InitObjectSmoke (void);
 void ResetPlayerSmoke (void);
 void ResetRobotSmoke (void);
 
-int32_t CreateShrapnels (CObject *parentObjP);
-void DestroyShrapnels (CObject *objP);
-int32_t UpdateShrapnels (CObject *objP);
-void DrawShrapnels (CObject *objP);
+int32_t CreateShrapnels (CObject *pParentObj);
+void DestroyShrapnels (CObject *pObj);
+int32_t UpdateShrapnels (CObject *pObj);
+void DrawShrapnels (CObject *pObj);
 
 //------------------------------------------------------------------------------
 

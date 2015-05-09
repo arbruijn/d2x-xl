@@ -40,15 +40,15 @@ void G3SetModelPoints (CRenderPoint *pointlist);
 
 //calls the CObject interpreter to render an CObject.  The CObject renderer
 //is really a seperate pipeline. returns true if drew
-int32_t G3DrawPolyModel (CObject *objP, void *modelDataP, CArray<CBitmap*>& modelBitmaps, CAngleVector *animAngles, CFixVector *vOffset,
-							fix light, fix *glowValues, CFloatVector *obj_colors, POF::CModel *modelP, int32_t nModel);
+int32_t G3DrawPolyModel (CObject *pObj, void *modelDataP, CArray<CBitmap*>& modelBitmaps, CAngleVector *animAngles, CFixVector *vOffset,
+							fix light, fix *glowValues, CFloatVector *obj_colors, POF::CModel *pModel, int32_t nModel);
 
-int32_t G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *pAnimAngles, int32_t nModel);
+int32_t G3DrawPolyModelShadow (CObject *pObj, void *modelDataP, CAngleVector *pAnimAngles, int32_t nModel);
 
-int32_t G3FreePolyModelItems (POF::CModel *modelP);
+int32_t G3FreePolyModelItems (POF::CModel *pModel);
 
 //init code for bitmap models
-void G3InitPolyModel (CPolyModel* modelP, int32_t nModel);
+void G3InitPolyModel (CPolyModel* pModel, int32_t nModel);
 
 //un-initialize, i.e., convert color entries back to RGB15
 void g3_uninit_polygon_model(void *model_ptr);
@@ -61,7 +61,7 @@ int32_t G3DrawMorphingModel(void *model_ptr, CArray<CBitmap*>& modelBitmaps,CAng
 //be called whenever the palette changes
 void g3_remap_interp_colors(void);
 
-int32_t G3CheckAndSwap (void *modelP);
+int32_t G3CheckAndSwap (void *pModel);
 
 void G3FreeAllPolyModelItems (void);
 
@@ -96,10 +96,10 @@ int32_t get_chunks(uint8_t *data, uint8_t *new_data, chunk *list, int32_t *no);
 
 void G3SwapPolyModelData (uint8_t *data);
 
-int32_t G3RenderModel (CObject *objP, int16_t nModel, int16_t nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
+int32_t G3RenderModel (CObject *pObj, int16_t nModel, int16_t nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
 						 CAngleVector *pAnimAngles, CFixVector *pOffs, fix xModelLight, fix *xGlowValues, CFloatVector *pObjColor);
 
-void G3DynLightModel (CObject *objP, RenderModel::CModel* modelP, int16_t iVerts, int16_t nVerts, int16_t iFaceVerts, int16_t nFaceVerts);
+void G3DynLightModel (CObject *pObj, RenderModel::CModel* pModel, int16_t iVerts, int16_t nVerts, int16_t iFaceVerts, int16_t nFaceVerts);
 
 int32_t G3ModelMinMax (int32_t nModel, tHitbox *phb);
 

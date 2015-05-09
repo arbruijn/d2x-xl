@@ -170,7 +170,7 @@ int32_t NetworkSelectPlayers (int32_t bAutoRun)
 	int32_t		nSavePlayers;              //how may people would like to join
 
 PrintLog (1, "Selecting netgame players\n");
-NetworkAddPlayer (&networkData.thisPlayer);
+NetworkAddPlayer (&networkData.pThislayer);
 if (bAutoRun) {
 	PrintLog (-1);
 	return 1;

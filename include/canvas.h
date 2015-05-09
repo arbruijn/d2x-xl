@@ -119,11 +119,11 @@ class CCanvas : public CViewport, public CBitmap {
 		void Init (void);
 		void Init (int32_t nType, int32_t w, int32_t h, uint8_t *data);
 		//void Setup (int32_t w, int32_t h);
-		void Setup (CCanvas* parentP);
+		void Setup (CCanvas* pParent);
 		void Setup (int32_t w, int32_t h);
-		void Setup (CCanvas* parentP, int32_t x, int32_t y, int32_t w, int32_t h, bool bUnscale = false);
+		void Setup (CCanvas* pParent, int32_t x, int32_t y, int32_t w, int32_t h, bool bUnscale = false);
 		CCanvas* CreatePane (int32_t x, int32_t y, int32_t w, int32_t h);
-		//void SetupPane (CCanvas* childP, int32_t x, int32_t y, int32_t w, int32_t h);
+		//void SetupPane (CCanvas* pChild, int32_t x, int32_t y, int32_t w, int32_t h);
 		void Destroy (void);
 		void DestroyPane (void);
 		void Clear (void);
@@ -143,19 +143,19 @@ class CCanvas : public CViewport, public CBitmap {
 
 		static CCanvas* Current (void) { return m_save.ToS () ? m_save.Top ()->m_canvas : NULL; }
 
-		static void Push (CCanvas* canvP) { 
+		static void Push (CCanvas* pCanvas) { 
 			if (!m_save.Buffer ())
 				m_save.Create (10);
 			if (m_save.Grow ()) {
-				m_save.Top ()->m_canvas = canvP;
+				m_save.Top ()->m_canvas = pCanvas;
 #if DBG
-				if (canvP->Id ())
-					strncpy (m_save.Top ()->m_szId, canvP->Id (), sizeof (m_save.Top ()->m_szId));
+				if (pCanvas->Id ())
+					strncpy (m_save.Top ()->m_szId, pCanvas->Id (), sizeof (m_save.Top ()->m_szId));
 				else
 					*m_save.Top ()->m_szId = '\0';
 #endif
 				}
-			fontManager.Push (canvP->Id ());
+			fontManager.Push (pCanvas->Id ());
 			}
 		static void Pop (void) { 
 			m_save.Pop (); 

@@ -31,11 +31,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 class CTextureCache {
 	public:
-		CBitmap*		bitmap;
-		CBitmap* 	bmBot;
-		CBitmap* 	bmTop;
-		int32_t 			nOrient;
-		int32_t			nLastFrameUsed;
+		CBitmap	*bitmap;
+		CBitmap	*bmBot;
+		CBitmap	*bmTop;
+		int32_t 	nOrient;
+		int32_t	nLastFrameUsed;
 };
 
 CStaticArray < CTextureCache, MAX_NUM_CACHE_BITMAPS > texCache;
@@ -53,15 +53,15 @@ void _CDECL_ TexMergeClose (void);
 int32_t TexMergeInit (int32_t nCacheSize)
 {
 	int32_t i;
-	CTextureCache *cacheP = &texCache [0];
+	CTextureCache *pCache = &texCache [0];
 
 nCacheEntries = ((nCacheSize > 0) && (nCacheSize <= MAX_NUM_CACHE_BITMAPS)) ? nCacheSize  : MAX_NUM_CACHE_BITMAPS;
-for (i = 0; i < nCacheEntries; i++, cacheP++) {
-	cacheP->nLastFrameUsed = -1;
-	cacheP->bmTop =
-	cacheP->bmBot =
-	cacheP->bitmap = NULL;
-	cacheP->nOrient = -1;
+for (i = 0; i < nCacheEntries; i++, pCache++) {
+	pCache->nLastFrameUsed = -1;
+	pCache->bmTop =
+	pCache->bmBot =
+	pCache->bitmap = NULL;
+	pCache->nOrient = -1;
 	}
 atexit (TexMergeClose);
 return 1;
@@ -100,30 +100,30 @@ PrintLog (-1);
 //--unused-- int32_t info_printed = 0;
 CBitmap * TexMergeGetCachedBitmap (int32_t tMapBot, int32_t tMapTop, int32_t nOrient)
 {
-	CBitmap*			bmTop, * bmBot, * bmP;
+	CBitmap*			bmTop, * bmBot, * pBm;
 	int32_t				i, nLowestFrame, nLRU;
 	char				szName [20];
-	CTextureCache*	cacheP;
+	CTextureCache*	pCache;
 
 nLRU = 0;
 nLowestFrame = texCache [0].nLastFrameUsed;
 bmTop = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapTop].index].Override (-1);
 bmBot = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapBot].index].Override (-1);
 
-for (i = 0, cacheP = &texCache [0]; i < nCacheEntries; i++, cacheP++) {
+for (i = 0, pCache = &texCache [0]; i < nCacheEntries; i++, pCache++) {
 #if 1//!DBG
-	if ((cacheP->nLastFrameUsed > -1) && 
-		 (cacheP->bmTop == bmTop) && 
-		 (cacheP->bmBot == bmBot) && 
-		 (cacheP->nOrient == nOrient) &&
-		  cacheP->bitmap) {
+	if ((pCache->nLastFrameUsed > -1) && 
+		 (pCache->bmTop == bmTop) && 
+		 (pCache->bmBot == bmBot) && 
+		 (pCache->nOrient == nOrient) &&
+		  pCache->bitmap) {
 		nCacheHits++;
-		cacheP->nLastFrameUsed = gameData.app.nFrameCount;
-		return cacheP->bitmap;
+		pCache->nLastFrameUsed = gameData.app.nFrameCount;
+		return pCache->bitmap;
 	}
 #endif
-	if (cacheP->nLastFrameUsed < nLowestFrame) {
-		nLowestFrame = cacheP->nLastFrameUsed;
+	if (pCache->nLastFrameUsed < nLowestFrame) {
+		nLowestFrame = pCache->nLastFrameUsed;
 		nLRU = i;
 		}
 	}
@@ -146,53 +146,53 @@ if (!bmTop->Palette ())
 	bmTop->SetPalette (paletteManager.Game ());
 if (!bmBot->Palette ())
 	bmBot->SetPalette (paletteManager.Game ());
-cacheP = texCache + nLRU;
-bmP = cacheP->bitmap;
-if (bmP)
-	bmP->ReleaseTexture ();
+pCache = texCache + nLRU;
+pBm = pCache->bitmap;
+if (pBm)
+	pBm->ReleaseTexture ();
 
 // if necessary, allocate cache bitmap
 // in any case make sure the cache bitmap has the proper size
-if (!bmP ||
-	(bmP->Width () != bmBot->Width ()) || 
-	(bmP->Height () != bmBot->Height ())) {
-	if (bmP)
-		delete bmP;
-	bmP = CBitmap::Create (0, bmBot->Width (), bmBot->Height (), 4);
-	if (!bmP)
+if (!pBm ||
+	(pBm->Width () != bmBot->Width ()) || 
+	(pBm->Height () != bmBot->Height ())) {
+	if (pBm)
+		delete pBm;
+	pBm = CBitmap::Create (0, bmBot->Width (), bmBot->Height (), 4);
+	if (!pBm)
 		return NULL;
 	}
 else
-	bmP->SetFlags ((char) BM_FLAG_TGA);
-if (!bmP->Buffer ())
+	pBm->SetFlags ((char) BM_FLAG_TGA);
+if (!pBm->Buffer ())
 	return NULL;
-bmP->SetPalette (paletteManager.Game ());
+pBm->SetPalette (paletteManager.Game ());
 if (!gameOpts->ogl.bGlTexMerge) {
 	if (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) {
-		MergeTextures (nOrient, bmBot, bmTop, bmP, 1);
-		bmP->AddFlags (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
-		bmP->SetAvgColorIndex (bmTop->AvgColorIndex ());
+		MergeTextures (nOrient, bmBot, bmTop, pBm, 1);
+		pBm->AddFlags (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
+		pBm->SetAvgColorIndex (bmTop->AvgColorIndex ());
 		}
 	else {
-		MergeTextures (nOrient, bmBot, bmTop, bmP, 0);
+		MergeTextures (nOrient, bmBot, bmTop, pBm, 0);
 		if (bmBot->Flags () & bmTop->Flags () & BM_FLAG_TRANSPARENT)
-			bmP->AddFlags (BM_FLAG_TRANSPARENT);
-		bmP->AddFlags (bmBot->Flags () & (~BM_FLAG_RLE));
-		bmP->SetAvgColorIndex (bmBot->AvgColorIndex ());
+			pBm->AddFlags (BM_FLAG_TRANSPARENT);
+		pBm->AddFlags (bmBot->Flags () & (~BM_FLAG_RLE));
+		pBm->SetAvgColorIndex (bmBot->AvgColorIndex ());
 		}
 	}
-cacheP->bitmap = bmP;
-cacheP->bmTop = bmTop;
-cacheP->bmBot = bmBot;
-cacheP->nLastFrameUsed = gameData.app.nFrameCount;
-cacheP->nOrient = nOrient;
-bmP->SetStatic (1);
-bmP->SetTranspType ((bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
-bmP->NeedSetup ();
-bmP->SetStatic (1);
+pCache->bitmap = pBm;
+pCache->bmTop = bmTop;
+pCache->bmBot = bmBot;
+pCache->nLastFrameUsed = gameData.app.nFrameCount;
+pCache->nOrient = nOrient;
+pBm->SetStatic (1);
+pBm->SetTranspType ((pBm->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
+pBm->NeedSetup ();
+pBm->SetStatic (1);
 sprintf (szName, "Merged %3d,%3d", tMapBot, tMapTop);
-bmP->SetName (szName);
-return bmP;
+pBm->SetName (szName);
+return pBm;
 }
 
 //-------------------------------------------------------------------------
@@ -240,7 +240,7 @@ typedef struct frac {
 	int32_t	c, d;
 } frac;
 
-inline tRGBA *C (uint8_t *palP, uint8_t *b, int32_t i, int32_t bpp, int32_t *pbST)
+inline tRGBA *C (uint8_t *pPalette, uint8_t *b, int32_t i, int32_t bpp, int32_t *pbST)
 {
 	static	tRGBA	c;
 	int32_t bST;
@@ -264,9 +264,9 @@ bST = (i == SUPER_TRANSP_COLOR);
 c.a = (bST || (i == TRANSPARENCY_COLOR)) ? 0 : 255;
 if (c.a) {
 	i *= 3;
-	c.r = palP [i] * 4; 
-	c.g = palP [i+1] * 4; 
-	c.b = palP [i+2] * 4; 
+	c.r = pPalette [i] * 4; 
+	c.g = pPalette [i+1] * 4; 
+	c.b = pPalette [i+2] * 4; 
 	}
 else if (bST) {
 	c.r = 120;
@@ -301,7 +301,7 @@ return TexScale (y * w + x, s);
 
 void MergeTextures (int32_t nType, CBitmap* bmBot, CBitmap* bmTop, CBitmap *bmDest, int32_t bSuperTransp)
 {
-	tRGBA*	colorP;
+	tRGBA*	pColor;
 	int32_t		i, x, y, bw, tw, th, dw, dh;
 	int32_t		bTopBPP, bBtmBPP, bST = 0;
 	frac		topScale, btmScale;
@@ -354,7 +354,7 @@ else {
 #else
 if (w > bmTop->Width ())
 	w = h = bmBot->Width ();
-scale.colorP = scale.d = 1;
+scale.pColor = scale.d = 1;
 #endif
 bTopBPP = bmTop->BPP ();
 bBtmBPP = bmBot->BPP ();
@@ -366,40 +366,40 @@ switch (nType) {
 		// Normal
 		for (i = y = 0; y < dh; y++)
 			for (x = 0; x < dw; x++, i++) {
-				colorP = C (topPalette, topDataP, tw * TOPSCALE (y) + TOPSCALE (x), bTopBPP, &bST);
-				if (!(bST || colorP->a))
-					colorP = C (btmPalette, btmDataP, BTMIDX, bBtmBPP, &bST);
-				destDataP [i] = *colorP;
+				pColor = C (topPalette, topDataP, tw * TOPSCALE (y) + TOPSCALE (x), bTopBPP, &bST);
+				if (!(bST || pColor->a))
+					pColor = C (btmPalette, btmDataP, BTMIDX, bBtmBPP, &bST);
+				destDataP [i] = *pColor;
 			}
 		break;
 	case 1:
 		// 
 		for (i = y = 0; y < dh; y++)
 			for (x = 0; x < dw; x++, i++) {
-				colorP = C (topPalette, topDataP, tw * TOPSCALE (x) + th - 1 - TOPSCALE (y), bTopBPP, &bST);
-				if (!(bST || colorP->a))
-					colorP = C (btmPalette, btmDataP, BTMIDX, bBtmBPP, &bST);
-				destDataP [i] = *colorP;
+				pColor = C (topPalette, topDataP, tw * TOPSCALE (x) + th - 1 - TOPSCALE (y), bTopBPP, &bST);
+				if (!(bST || pColor->a))
+					pColor = C (btmPalette, btmDataP, BTMIDX, bBtmBPP, &bST);
+				destDataP [i] = *pColor;
 			}
 		break;
 	case 2:
 		// Normal
 		for (i = y = 0; y < dh; y++)
 			for (x = 0; x < dw; x++, i++) {
-				colorP = C (topPalette, topDataP, tw * (th - 1 - TOPSCALE (y)) + tw - 1 - TOPSCALE (x), bTopBPP, &bST);
-				if (!(bST || colorP->a))
-					colorP = C (btmPalette, btmDataP, BTMIDX, bBtmBPP, &bST);
-				destDataP [i] = *colorP;
+				pColor = C (topPalette, topDataP, tw * (th - 1 - TOPSCALE (y)) + tw - 1 - TOPSCALE (x), bTopBPP, &bST);
+				if (!(bST || pColor->a))
+					pColor = C (btmPalette, btmDataP, BTMIDX, bBtmBPP, &bST);
+				destDataP [i] = *pColor;
 			}
 		break;
 	case 3:
 		// Normal
 		for (i = y = 0; y < dh; y++)
 			for (x = 0; x < dw; x++, i++) {
-				colorP = C (topPalette, topDataP, tw * (th - 1 - TOPSCALE (x)) + TOPSCALE (y), bTopBPP, &bST);
-				if (!(bST || colorP->a))
-					colorP = C (btmPalette, btmDataP, BTMIDX, bBtmBPP, &bST);
-				destDataP [i] = *colorP;
+				pColor = C (topPalette, topDataP, tw * (th - 1 - TOPSCALE (x)) + TOPSCALE (y), bTopBPP, &bST);
+				if (!(bST || pColor->a))
+					pColor = C (btmPalette, btmDataP, BTMIDX, bBtmBPP, &bST);
+				destDataP [i] = *pColor;
 			}
 		break;
 	}

@@ -47,15 +47,15 @@ int32_t gr_bitmap_rle_compress( CBitmap * bmp );
 void gr_rle_expand_scanline_masked( uint8_t *dest, uint8_t *src, int32_t x1, int32_t x2  );
 void gr_rle_expand_scanline( uint8_t *dest, uint8_t *src, int32_t x1, int32_t x2  );
 
-CBitmap * rle_expand_texture( CBitmap * bmP );
+CBitmap * rle_expand_texture( CBitmap * pBm );
 
 void RLECacheFlush();
 
-void rle_swap_0_255(CBitmap *bmP);
+void rle_swap_0_255(CBitmap *pBm);
 
-int32_t rle_remap (CBitmap *bmP, uint8_t *colorMap, int32_t maxLen);
+int32_t rle_remap (CBitmap *pBm, uint8_t *colorMap, int32_t maxLen);
 
-int32_t rle_expand (CBitmap *bmP, uint8_t *colorMap, int32_t bSwapTranspColor);
+int32_t rle_expand (CBitmap *pBm, uint8_t *colorMap, int32_t bSwapTranspColor);
 
 void _CDECL_ RLECacheClose (void);
 

@@ -223,7 +223,7 @@ gameData.models.modelToPOL.Clear ();
 int16_t LoadLoresModel (int16_t i)
 {
 	CFile			cf;
-	CPolyModel*	modelP;
+	CPolyModel*	pModel;
 	int16_t			nModel, j = sizeofa (replacementModels);
 	char			szModel [FILENAME_LEN];
 
@@ -237,17 +237,17 @@ nModel = replacementModels [i].nModel;
 if (nModel == nDbgModel)
 	BRP;
 #endif
-modelP = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.polyModels [2] : gameData.models.polyModels [0]) + nModel;
-modelP->Destroy ();
-if (!modelP->Read (1, 0, cf)) {
+pModel = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.polyModels [2] : gameData.models.polyModels [0]) + nModel;
+pModel->Destroy ();
+if (!pModel->Read (1, 0, cf)) {
 	cf.Close ();
 	return ++i;
 	}
-modelP->ReadData (gameData.models.polyModels [1] + nModel, cf);
+pModel->ReadData (gameData.models.polyModels [1] + nModel, cf);
 cf.Close ();
-modelP->SetRad (modelP->Size (), 1);
+pModel->SetRad (pModel->Size (), 1);
 do {
-	gameData.models.modelToPOL [nModel] = modelP;
+	gameData.models.modelToPOL [nModel] = pModel;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nLoresModels++;
 return i;

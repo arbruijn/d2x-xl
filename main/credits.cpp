@@ -280,14 +280,14 @@ for (int32_t i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 
 			fontManager.Current ()->StringSize (s, w, h, aw);
 			if ((y >= 0) && (y + h <= 480)) {
-				CBitmap* bmP = CreateStringBitmap (s, 0, 0, NULL, 1, w, 0, 1);
-				if (bmP) {
+				CBitmap* pBm = CreateStringBitmap (s, 0, 0, NULL, 1, w, 0, 1);
+				if (pBm) {
 					float dy = float ((y < FADE_DIST) ? y : (480 - y - h < FADE_DIST) ? 480 - y - h : FADE_DIST);
 					colors [0].Alpha () = colors [1].Alpha () = dy / float (FADE_DIST);
 					dy = float ((y + h < FADE_DIST) ? y + h : (480 - y - 2 * h < FADE_DIST) ? 480 - y - 2 * h : FADE_DIST);
 					colors [2].Alpha () = colors [3].Alpha () = dy / float (FADE_DIST);
-					bmP->Render (NULL, (CCanvas::Current ()->Width () - w) / 2, y, w, h, 0, 0, w, h, 1, 0, 0, 1, colors);
-					delete bmP;
+					pBm->Render (NULL, (CCanvas::Current ()->Width () - w) / 2, y, w, h, 0, 0, w, h, 1, 0, 0, 1, colors);
+					delete pBm;
 					}
 				}
 			}

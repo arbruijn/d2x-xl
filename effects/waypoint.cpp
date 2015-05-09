@@ -32,11 +32,11 @@ m_wayPoints.Destroy ();
 
 int32_t CWayPointManager::Count (void)
 {
-	CObject* objP;
+	CObject* pObj;
 
 m_nWayPoints = 0;
-FORALL_EFFECT_OBJS (objP) {
-	if (objP->Id () == WAYPOINT_ID)
+FORALL_EFFECT_OBJS (pObj) {
+	if (pObj->Id () == WAYPOINT_ID)
 		++m_nWayPoints;
 	}
 return m_nWayPoints;
@@ -56,18 +56,18 @@ return NULL;
 // ---------------------------------------------------------------------------------
 // Return a pointer to the target object (end point) of a lightning effect if the effect has one
 
-CObject* CWayPointManager::Target (CObject* objP)
+CObject* CWayPointManager::Target (CObject* pObj)
 {
-	int32_t nTarget = objP->rType.lightningInfo.nTarget;
+	int32_t nTarget = pObj->rType.lightningInfo.nTarget;
 
 if (nTarget < 0)
 	return NULL;
 
-	CObject* targetP;
+	CObject* pTarget;
 
-FORALL_EFFECT_OBJS (targetP) {
-	if ((targetP->Id () == LIGHTNING_ID) && (targetP->rType.lightningInfo.nId == nTarget))
-		return targetP;
+FORALL_EFFECT_OBJS (pTarget) {
+	if ((pTarget->Id () == LIGHTNING_ID) && (pTarget->rType.lightningInfo.nId == nTarget))
+		return pTarget;
 	}
 
 return NULL;
@@ -78,12 +78,12 @@ return NULL;
 
 void CWayPointManager::Gather (void)
 {
-	CObject* objP;
+	CObject* pObj;
 	int32_t i = 0;
 
-FORALL_EFFECT_OBJS (objP) {
-	if (objP->Id () == WAYPOINT_ID) 
-		m_wayPoints [i++] = objP;
+FORALL_EFFECT_OBJS (pObj) {
+	if (pObj->Id () == WAYPOINT_ID) 
+		m_wayPoints [i++] = pObj;
 	}
 }
 
@@ -93,14 +93,14 @@ FORALL_EFFECT_OBJS (objP) {
 
 void CWayPointManager::Remap (int32_t& nId)
 {
-CObject* objP = Find (nId);
+CObject* pObj = Find (nId);
 #if DBG
-if (objP)
-	nId = objP->cType.wayPointInfo.nId [0];
+if (pObj)
+	nId = pObj->cType.wayPointInfo.nId [0];
 else
 	nId = -1;
 #else
-nId = objP ? objP->cType.wayPointInfo.nId [0] : -1;
+nId = pObj ? pObj->cType.wayPointInfo.nId [0] : -1;
 #endif
 }
 
@@ -110,7 +110,7 @@ nId = objP ? objP->cType.wayPointInfo.nId [0] : -1;
 
 void CWayPointManager::Renumber (void)
 {
-	CObject* objP;
+	CObject* pObj;
 
 for (int32_t i = 0; i < m_nWayPoints; i++)
 	m_wayPoints [i]->cType.wayPointInfo.nId [0] = i;
@@ -118,12 +118,12 @@ for (int32_t i = 0; i < m_nWayPoints; i++)
 for (int32_t i = 0; i < m_nWayPoints; i++)
 	Remap (m_wayPoints [i]->NextWayPoint ());
 
-FORALL_EFFECT_OBJS (objP) {
-	if ((objP->Id () == LIGHTNING_ID) && (*objP->WayPoint () >= 0)) {
-		CObject* targetP = Target (objP);
-		if (targetP && !Target (targetP))
-			targetP->rType.lightningInfo.nTarget = objP->rType.lightningInfo.nId;
-		Remap (*objP->WayPoint ());
+FORALL_EFFECT_OBJS (pObj) {
+	if ((pObj->Id () == LIGHTNING_ID) && (*pObj->WayPoint () >= 0)) {
+		CObject* pTarget = Target (pObj);
+		if (pTarget && !Target (pTarget))
+			pTarget->rType.lightningInfo.nTarget = pObj->rType.lightningInfo.nId;
+		Remap (*pObj->WayPoint ());
 		}
 	}
 }
@@ -143,13 +143,13 @@ for (int32_t i = 0; i < m_nWayPoints; i++)
 
 void CWayPointManager::Attach (void)
 {
-	CObject* objP;
+	CObject* pObj;
 
-FORALL_EFFECT_OBJS (objP) {
-	if (objP->Id () == LIGHTNING_ID) {
-		uint32_t i = (uint32_t) *objP->WayPoint ();
+FORALL_EFFECT_OBJS (pObj) {
+	if (pObj->Id () == LIGHTNING_ID) {
+		uint32_t i = (uint32_t) *pObj->WayPoint ();
 		if (m_wayPoints.IsIndex (i))
-			objP->Position () = m_wayPoints [i]->Position ();
+			pObj->Position () = m_wayPoints [i]->Position ();
 		}
 	}
 }
@@ -157,41 +157,41 @@ FORALL_EFFECT_OBJS (objP) {
 // ---------------------------------------------------------------------------------
 // Return reference to an object's current way point
 
-CObject* CWayPointManager::Current (CObject* objP)
+CObject* CWayPointManager::Current (CObject* pObj)
 {
-return WayPoint ((uint32_t) *objP->WayPoint ());
+return WayPoint ((uint32_t) *pObj->WayPoint ());
 }
 
 // ---------------------------------------------------------------------------------
 // Return reference to an object's next way point
 
-CObject* CWayPointManager::Successor (CObject* objP)
+CObject* CWayPointManager::Successor (CObject* pObj)
 {
-return WayPoint ((uint32_t) Current (objP)->cType.wayPointInfo.nSuccessor [(int32_t) objP->rType.lightningInfo.bDirection]);
+return WayPoint ((uint32_t) Current (pObj)->cType.wayPointInfo.nSuccessor [(int32_t) pObj->rType.lightningInfo.bDirection]);
 }
 
 // ---------------------------------------------------------------------------------
 // Attach an object to its next way point and repeat until the way point speed is > 0
 // or the initial way point has been reached (i.e. a circle has occurred)
 
-bool CWayPointManager::Hop (CObject* objP)
+bool CWayPointManager::Hop (CObject* pObj)
 {
-	CObject* succ, * curr = Current (objP);
+	CObject* succ, * curr = Current (pObj);
 
 for (;;) {
-	succ = Successor (objP);
-	objP->rType.lightningInfo.nWayPoint = succ->cType.wayPointInfo.nId [0];
-	objP->Position () = succ->Position ();
+	succ = Successor (pObj);
+	pObj->rType.lightningInfo.nWayPoint = succ->cType.wayPointInfo.nId [0];
+	pObj->Position () = succ->Position ();
 	if (succ->NextWayPoint () == succ->PrevWayPoint ())
-		objP->rType.lightningInfo.bDirection = !objP->rType.lightningInfo.bDirection;
+		pObj->rType.lightningInfo.bDirection = !pObj->rType.lightningInfo.bDirection;
 	if (succ == curr)
 		return false; // avoid endless cycles
 	if (succ->cType.wayPointInfo.nSpeed > 0)
 		break;
-	if (Target (objP))
-		objP->StartSync ();
+	if (Target (pObj))
+		pObj->StartSync ();
 	}
-return !objP->Synchronize ();
+return !pObj->Synchronize ();
 }
 
 // ---------------------------------------------------------------------------------
@@ -204,18 +204,18 @@ return !objP->Synchronize ();
 // by allowing them to move again. If not, halt the effect until the other effect 
 // has made such a hop, too.
 
-bool CWayPointManager::Synchronize (CObject* objP)
+bool CWayPointManager::Synchronize (CObject* pObj)
 {
-if (!objP->Synchronize ()) 
+if (!pObj->Synchronize ()) 
 	return false;
 
-	CObject* targetP = Target (objP);
+	CObject* pTarget = Target (pObj);
 
-if (!targetP->Synchronize ()) 
+if (!pTarget->Synchronize ()) 
 	return true;
 
-objP->StopSync ();
-targetP->StopSync ();
+pObj->StopSync ();
+pTarget->StopSync ();
 return false;
 }
 
@@ -227,16 +227,16 @@ return false;
 // for a distance depending on the new way point's speed and remainder of movement
 // frame time.
 
-void CWayPointManager::Move (CObject* objP)
+void CWayPointManager::Move (CObject* pObj)
 {
-if (Synchronize (objP))
+if (Synchronize (pObj))
 	return;
 
 	float fScale = 1.0f;
 
 for (;;) {
-	CObject* curr = Current (objP);
-	int32_t nSucc = curr->cType.wayPointInfo.nSuccessor [(int32_t) objP->rType.lightningInfo.bDirection];
+	CObject* curr = Current (pObj);
+	int32_t nSucc = curr->cType.wayPointInfo.nSuccessor [(int32_t) pObj->rType.lightningInfo.bDirection];
 	if (!m_wayPoints.IsIndex (uint32_t (nSucc)))
 		break;
 	CObject* succ = m_wayPoints [nSucc];
@@ -247,13 +247,13 @@ for (;;) {
 	CFloatVector::Normalize (vMove);
 	float fMove = (float) curr->cType.wayPointInfo.nSpeed / 40.0f * fScale / gameStates.gameplay.slowmo [0].fSpeed;
 	vMove *= fMove;
-	vLeft.Assign (succ->Position () - objP->Position ());
+	vLeft.Assign (succ->Position () - pObj->Position ());
 	float fLeft = vLeft.Mag ();
 	if (fLeft > fMove) {
-		objP->Position () += vMove;
+		pObj->Position () += vMove;
 		return;
 		}
-	if (!Hop (objP))
+	if (!Hop (pObj))
 		return;
 	fScale = 1.0f - fLeft / fMove;
 	if (fScale < 1e-6)
@@ -266,21 +266,21 @@ for (;;) {
 void CWayPointManager::Update (void)
 {
 if (gameStates.app.tick40fps.bTick) {
-	CObject* objP;
+	CObject* pObj;
 
-	FORALL_EFFECT_OBJS (objP) {
-		if (objP->Id () != LIGHTNING_ID) 
+	FORALL_EFFECT_OBJS (pObj) {
+		if (pObj->Id () != LIGHTNING_ID) 
 			continue;
-		if (!objP->WayPoint () || (*objP->WayPoint () < 0))
+		if (!pObj->WayPoint () || (*pObj->WayPoint () < 0))
 			continue;
 #if DBG
-		if (!objP->rType.lightningInfo.bEnabled)
+		if (!pObj->rType.lightningInfo.bEnabled)
 			continue;
 #endif
 		if (m_wayPoints.Buffer ())
-			Move (objP);
+			Move (pObj);
 		else
-			*objP->WayPoint () = -1;
+			*pObj->WayPoint () = -1;
 		}
 	}
 }

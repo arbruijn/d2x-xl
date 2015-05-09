@@ -60,21 +60,21 @@ public:
 		int32_t GetWord ();
 		int32_t GetLong ();
 
-		int32_t ReadBitmap (const char *cfname, CBitmap *bmP, int32_t bitmapType);
-		int32_t ReplaceBitmap (const char *cfname, CBitmap *bmP);
+		int32_t ReadBitmap (const char *cfname, CBitmap *pBm, int32_t bitmapType);
+		int32_t ReplaceBitmap (const char *cfname, CBitmap *pBm);
 		int32_t ReadAnimBrush (const char *cfname, CBitmap **bm_list, int32_t max_bitmaps, int32_t *n_bitmaps);
 
-		int32_t ParseBitmap (CBitmap *bmP, int32_t bitmapType, CBitmap *prevBmP);
+		int32_t ParseBitmap (CBitmap *pBm, int32_t bitmapType, CBitmap *prevBmP);
 		int32_t Parse (int32_t formType, tIFFBitmapHeader *bmheader, int32_t form_len, CBitmap *prevBmP);
 		int32_t ParseHeader (int32_t len, tIFFBitmapHeader *bmheader);
 		int32_t ParseBody (int32_t len, tIFFBitmapHeader *bmheader);
 		int32_t ParseDelta (int32_t len, tIFFBitmapHeader *bmheader);
 		void SkipChunk (int32_t len);
 		int32_t ConvertToPBM (tIFFBitmapHeader *bmheader);
-		int32_t ConvertRgb15 (CBitmap *bmP, tIFFBitmapHeader *bmheader);
-		void CopyIffToBitmap (CBitmap *bmP, tIFFBitmapHeader *bmheader);
+		int32_t ConvertRgb15 (CBitmap *pBm, tIFFBitmapHeader *bmheader);
+		void CopyIffToBitmap (CBitmap *pBm, tIFFBitmapHeader *bmheader);
 
-		int32_t WriteBitmap (const char *cfname, CBitmap *bmP, uint8_t *palette);
+		int32_t WriteBitmap (const char *cfname, CBitmap *pBm, uint8_t *palette);
 		int32_t WriteHeader (FILE *fp, tIFFBitmapHeader *bitmap_header);
 		int32_t WritePalette (FILE *fp, tIFFBitmapHeader *bitmap_header);
 		int32_t WriteBody (FILE *fp, tIFFBitmapHeader *bitmap_header, int32_t bCompression);

@@ -170,7 +170,7 @@ class CFontManager {
 			if (m_scaleStack.ToS ()) 
 				m_scale = m_scaleStack.Pop (); 
 			}
-		void SetCurrent (CFont* fontP);
+		void SetCurrent (CFont* pFont);
 		void SetColor (int32_t fgColor, int32_t bgColor);
 		void SetColorRGB (CRGBAColor *fgColor, CRGBAColor *bgColor);
 		void SetColorRGBi (uint32_t fgColor, int32_t bSetFG, uint32_t bgColor, int32_t bSetBG);
@@ -222,7 +222,7 @@ int32_t CenteredStringPos (char* s);
 
 typedef struct grsString {
 	char				*pszText;
-	CBitmap			*bmP;
+	CBitmap			*pBm;
 	int32_t				*pId;
 	int16_t				nWidth;
 	int16_t				nLength;

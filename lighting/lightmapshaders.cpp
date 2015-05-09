@@ -155,7 +155,7 @@ void ResetLightmapShaders (void)
 
 //------------------------------------------------------------------------------
 
-int32_t SetupLightmapShader (CSegFace *faceP, int32_t nType, bool bHeadlight)
+int32_t SetupLightmapShader (CSegFace *pFace, int32_t nType, bool bHeadlight)
 {
 PROF_START
 	//static CBitmap	*nullBmP = NULL;
@@ -163,10 +163,10 @@ PROF_START
 if (!CreateLightmapShader (nType))
 	return 0;
 #if DBG
-if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+if (pFace && (pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 	BRP;
 #endif
-if (!SetupLightmap (faceP))
+if (!SetupLightmap (pFace))
 	return 0;
 #if CONST_LIGHT_COUNT
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (lightmapShaderProgs [nType]));
@@ -195,7 +195,7 @@ if (shaderManager.Rebuild (shaderProg))
 		}
 	}
 //if (!nType)
-//	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
+//	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&pFace->m_info.color));
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 #if CONST_LIGHT_COUNT

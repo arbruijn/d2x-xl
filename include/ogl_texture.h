@@ -29,7 +29,7 @@ typedef struct tTexture {
 	uint8_t				bMipMaps;
 	char				bSmoothe;
 	uint8_t				bRenderBuffer;
-	CBitmap*			bmP;
+	CBitmap*			pBm;
 #if RENDER2TEXTURE == 1
 	CPBO				pbo;
 #elif RENDER2TEXTURE == 2
@@ -49,7 +49,7 @@ class CTexture {
 		~CTexture () { Destroy (); }
 		GLuint Create (int32_t w, int32_t h);
 		void Init (void);
-		void Setup (int32_t w, int32_t h, int32_t lw, int32_t bpp  = 0, int32_t bMask = 0, int32_t bMipMap = 0, int32_t bSmoothe = 0, CBitmap *bmP = NULL);
+		void Setup (int32_t w, int32_t h, int32_t lw, int32_t bpp  = 0, int32_t bMask = 0, int32_t bMipMap = 0, int32_t bSmoothe = 0, CBitmap *pBm = NULL);
 		int32_t Prepare (bool bCompressed = false);
 #if TEXTURE_COMPRESSION
 		int32_t Load (uint8_t *buffer, int32_t nBufSize = 0, int32_t nFormat = 0, bool bCompressed = false);
@@ -77,8 +77,8 @@ class CTexture {
 		inline int32_t TH (void) { return m_info.th; }
 		inline uint32_t Registered (void) { return m_nRegistered; }
 		inline uint8_t IsRenderBuffer (void) { return m_info.bRenderBuffer; }
-		inline CBitmap* Bitmap (void) { return m_info.bmP; }
-		inline void SetBitmap (CBitmap* bmP) { m_info.bmP = bmP; }
+		inline CBitmap* Bitmap (void) { return m_info.pBm; }
+		inline void SetBitmap (CBitmap* pBm) { m_info.pBm = pBm; }
 
 		inline void SetHandle (GLuint handle) { m_info.handle = handle; }
 		inline void SetFormat (GLenum format) { m_info.format = format; }
@@ -91,7 +91,7 @@ class CTexture {
 		inline void SetRenderBuffer (CFBO *fbo);
 #endif
 		uint8_t *Copy (int32_t dxo, int32_t dyo, uint8_t *data);
-		uint8_t *Convert (int32_t dxo, int32_t dyo,  CBitmap *bmP, int32_t nTransp, int32_t bSuperTransp, int32_t& bpp);
+		uint8_t *Convert (int32_t dxo, int32_t dyo,  CBitmap *pBm, int32_t nTransp, int32_t bSuperTransp, int32_t& bpp);
 #if TEXTURE_COMPRESSION
 		int32_t Compress ();
 #endif
@@ -121,12 +121,12 @@ class CTextureManager {
 		void Init (void);
 		void Smash (void);
 		void Destroy (void);
-		uint32_t Find (CTexture* texP);
-		uint32_t Register (CTexture* texP);
-		bool Release (CTexture* texP);
+		uint32_t Find (CTexture* pTexture);
+		uint32_t Register (CTexture* pTexture);
+		bool Release (CTexture* pTexture);
 		inline CTextureList Textures (void) { return m_textures; }
 		bool Check (void);
-		uint32_t Check (CTexture* texP);
+		uint32_t Check (CTexture* pTexture);
 	};
 
 extern CTextureManager textureManager;

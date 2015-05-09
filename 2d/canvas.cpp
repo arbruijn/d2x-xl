@@ -26,11 +26,11 @@ float CScreen::m_fScale = 1.0f;
 
 CCanvas *CCanvas::Create (int32_t w, int32_t h)
 {
-	CCanvas *canvP;
+	CCanvas *pCanvas;
 
-if ((canvP = new CCanvas)) 
-	canvP->Setup (w, h);
-return canvP;
+if ((pCanvas = new CCanvas)) 
+	pCanvas->Setup (w, h);
+return pCanvas;
 }
 
 //	-----------------------------------------------------------------------------
@@ -57,13 +57,13 @@ Setup (NULL, 0, 0, w, h);
 
 CCanvas *CCanvas::CreatePane (int32_t x, int32_t y, int32_t w, int32_t h)
 {
-	CCanvas *paneP;
+	CCanvas *pPane;
 
-if (!(paneP = new CCanvas))	
+if (!(pPane = new CCanvas))	
 	return NULL;
-//SetupPane (paneP, x, y, w, h);
-paneP->Setup (this, x, y, w, h);
-return paneP;
+//SetupPane (pPane, x, y, w, h);
+pPane->Setup (this, x, y, w, h);
+return pPane;
 }
 
 //	-----------------------------------------------------------------------------
@@ -76,24 +76,24 @@ Init ();
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::Setup (CCanvas* parentP)
+void CCanvas::Setup (CCanvas* pParent)
 {
-SetColor (parentP->m_info.color);
-SetDrawMode (parentP->m_info.nDrawMode);
-SetFont (parentP->m_info.font ? parentP->m_info.font : GAME_FONT);
-SetFontColor (parentP->m_info.fontColors [0], 0);
-SetFontColor (parentP->m_info.fontColors [1], 1);
-*((CViewport*) this) = *((CViewport*) parentP);
+SetColor (pParent->m_info.color);
+SetDrawMode (pParent->m_info.nDrawMode);
+SetFont (pParent->m_info.font ? pParent->m_info.font : GAME_FONT);
+SetFontColor (pParent->m_info.fontColors [0], 0);
+SetFontColor (pParent->m_info.fontColors [1], 1);
+*((CViewport*) this) = *((CViewport*) pParent);
 SetWidth ();
 SetHeight ();
 }
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::Setup (CCanvas* parentP, int32_t x, int32_t y, int32_t w, int32_t h, bool bUnscale)
+void CCanvas::Setup (CCanvas* pParent, int32_t x, int32_t y, int32_t w, int32_t h, bool bUnscale)
 {
-if (parentP)
-	Setup (parentP);
+if (pParent)
+	Setup (pParent);
 *((CViewport*) this) = bUnscale ? CViewport (Unscaled (x), Unscaled (y), Unscaled (w), Unscaled (h)) : CViewport (x, y, w, h);
 SetWidth ();
 SetHeight ();
@@ -236,12 +236,12 @@ SetViewport (parent);
 
 void CCanvas::Deactivate (void) 
 { 
-CCanvas* canvP;
+CCanvas* pCanvas;
 do {
-	if (!(canvP = Current ()))
+	if (!(pCanvas = Current ()))
 		break;
 	Pop ();
-} while (canvP != this);
+} while (pCanvas != this);
 if (Current ())
 	Current ()->Reactivate ();
 else

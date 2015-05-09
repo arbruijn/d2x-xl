@@ -64,9 +64,9 @@ for (int16_t i = 0; i < networkData.nJoining; )
 
 static int32_t objFilter [] = {1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1};
 
-static inline int32_t NetworkFilterObject (CObject *objP)
+static inline int32_t NetworkFilterObject (CObject *pObj)
 {
-	int16_t t = objP->info.nType;
+	int16_t t = pObj->info.nType;
 #if DBG
 if (t == nDbgObjType)
 	BRP;
@@ -75,22 +75,22 @@ if (t >= MAX_OBJECT_TYPES)
 	return 1;
 if (objFilter [t])
 	return 1;
-if ((t == OBJ_WEAPON) && (objP->info.nId != SMALLMINE_ID))
+if ((t == OBJ_WEAPON) && (pObj->info.nId != SMALLMINE_ID))
 	return 1;
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-static inline int32_t NetworkObjFrameFilter (tNetworkSyncInfo *syncInfoP)
+static inline int32_t NetworkObjFrameFilter (tNetworkSyncInfo *pSyncInfo)
 {
-if (!syncInfoP->objs.nFrame++)
+if (!pSyncInfo->objs.nFrame++)
 	return 1;
-if (!syncInfoP->objs.nFramesToSkip)
+if (!pSyncInfo->objs.nFramesToSkip)
 	return 1;
-if (syncInfoP->objs.nFrame <= syncInfoP->objs.nFramesToSkip)
+if (pSyncInfo->objs.nFrame <= pSyncInfo->objs.nFramesToSkip)
 	return 0;
-syncInfoP->objs.nFramesToSkip = 0;
+pSyncInfo->objs.nFramesToSkip = 0;
 return 1;
 }
 
@@ -109,13 +109,13 @@ return nMode
 
 uint8_t objBuf [MAX_PACKET_SIZE];
 
-void NetworkSyncObjects (tNetworkSyncInfo *syncInfoP)
+void NetworkSyncObjects (tNetworkSyncInfo *pSyncInfo)
 {
 	int32_t		bufI, nLocalObj, nPacketsLeft;
 	int32_t		nObjFrames = 0;
-	int32_t		nPlayer = syncInfoP->player [1].player.connected;
+	int32_t		nPlayer = pSyncInfo->player [1].player.connected;
 	
-syncInfoP->bDeferredSync = networkThread.SendInBackground ();
+pSyncInfo->bDeferredSync = networkThread.SendInBackground ();
 
 // Send clear OBJECTS array CTrigger and send player num
 objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
@@ -125,22 +125,22 @@ for (nPacketsLeft = OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
 	objBuf [0] = PID_OBJECT_DATA;
 	bufI = (gameStates.multi.nGameType == UDP_GAME) ? 4 : 3;
 
-	if (syncInfoP->objs.nCurrent == -1) {	// first packet tells the receiver to reset it's object data
-		syncInfoP->objs.nSent = 0;
-		syncInfoP->objs.nMode = 0;
-		syncInfoP->objs.nFrame = 0;
-		if (!syncInfoP->objs.nFramesToSkip) {
-			//NetworkSendRejoinSync (nPlayer, syncInfoP);
+	if (pSyncInfo->objs.nCurrent == -1) {	// first packet tells the receiver to reset it's object data
+		pSyncInfo->objs.nSent = 0;
+		pSyncInfo->objs.nMode = 0;
+		pSyncInfo->objs.nFrame = 0;
+		if (!pSyncInfo->objs.nFramesToSkip) {
+			//NetworkSendRejoinSync (nPlayer, pSyncInfo);
 			NW_SET_SHORT (objBuf, bufI, -1);		// object number -1          
 			NW_SET_BYTE (objBuf, bufI, nPlayer);                            
 			NW_SET_SHORT (objBuf, bufI, -1);		// Placeholder for nRemoteObj, not used here
 			}
-		syncInfoP->objs.nCurrent = 0;
+		pSyncInfo->objs.nCurrent = 0;
 		nObjFrames = 1;		// first frame contains "reset object data" info
 		}
 
-	for (nLocalObj = syncInfoP->objs.nCurrent; nLocalObj <= gameData.objData.nLastObject [0]; nLocalObj++) {
-		if (SendObject (syncInfoP->objs.nMode, nLocalObj, nPlayer)) {
+	for (nLocalObj = pSyncInfo->objs.nCurrent; nLocalObj <= gameData.objData.nLastObject [0]; nLocalObj++) {
+		if (SendObject (pSyncInfo->objs.nMode, nLocalObj, nPlayer)) {
 			if ((MAX_PAYLOAD_SIZE - bufI - 1) < int32_t (sizeof (tBaseObject)) + 5)
 				break; // Not enough room for another CObject
 			int8_t	nObjOwner;
@@ -154,59 +154,59 @@ for (nPacketsLeft = OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
 				SwapObject (reinterpret_cast<CObject*> (objBuf + bufI - sizeof (tBaseObject)));
 #endif
 			nObjFrames++;
-			syncInfoP->objs.nSent++;
+			pSyncInfo->objs.nSent++;
 			}
 		}
 
 	if (nObjFrames) {	// Send any objects we've buffered
-		syncInfoP->objs.nCurrent = nLocalObj;	
-		//if (NetworkObjFrameFilter (syncInfoP)) { // this statement skips any objects successfully sync'd in case the client has reported missing frames
-		if (++syncInfoP->objs.nFrame > syncInfoP->objs.nFramesToSkip) {
+		pSyncInfo->objs.nCurrent = nLocalObj;	
+		//if (NetworkObjFrameFilter (pSyncInfo)) { // this statement skips any objects successfully sync'd in case the client has reported missing frames
+		if (++pSyncInfo->objs.nFrame > pSyncInfo->objs.nFramesToSkip) {
 			objBuf [1] = nObjFrames;  
 			if (gameStates.multi.nGameType == UDP_GAME)
-				*reinterpret_cast<int16_t*> (objBuf + 2) = INTEL_SHORT (syncInfoP->objs.nFrame);
+				*reinterpret_cast<int16_t*> (objBuf + 2) = INTEL_SHORT (pSyncInfo->objs.nFrame);
 			else
-				objBuf [2] = (uint8_t) syncInfoP->objs.nFrame;
+				objBuf [2] = (uint8_t) pSyncInfo->objs.nFrame;
 			Assert (bufI <= MAX_PAYLOAD_SIZE);
 			if (gameStates.multi.nGameType >= IPX_GAME) {
-				if (!syncInfoP->bDeferredSync)
-					IPXSendInternetPacketData (objBuf, bufI, syncInfoP->player [1].player.network.Network (), syncInfoP->player [1].player.network.Node ());
-				else if (!networkThread.Send (objBuf, bufI, syncInfoP->player [1].player.network.Network (), syncInfoP->player [1].player.network.Node ())) {
-					syncInfoP->bDeferredSync = false;
+				if (!pSyncInfo->bDeferredSync)
+					IPXSendInternetPacketData (objBuf, bufI, pSyncInfo->player [1].player.network.Network (), pSyncInfo->player [1].player.network.Node ());
+				else if (!networkThread.Send (objBuf, bufI, pSyncInfo->player [1].player.network.Network (), pSyncInfo->player [1].player.network.Node ())) {
+					pSyncInfo->bDeferredSync = false;
 					nPacketsLeft = OBJ_PACKETS_PER_FRAME;
-					syncInfoP->objs.nCurrent = -1;
+					pSyncInfo->objs.nCurrent = -1;
 					break;
 					}
 				}	
 			}
 		}
 
-	if (syncInfoP->objs.nCurrent < 0)
+	if (pSyncInfo->objs.nCurrent < 0)
 		continue;
 
 	if (nLocalObj > gameData.objData.nLastObject [0]) {
-		if (syncInfoP->objs.nMode) { // need to send the finishing object data
-			syncInfoP->objs.nCurrent = nLocalObj;
+		if (pSyncInfo->objs.nMode) { // need to send the finishing object data
+			pSyncInfo->objs.nCurrent = nLocalObj;
 			// Send count so other side can make sure he got them all
 			objBuf [0] = PID_OBJECT_DATA;
 			objBuf [1] = 1;
-			syncInfoP->objs.nFrame++;
+			pSyncInfo->objs.nFrame++;
 			if (gameStates.multi.nGameType == UDP_GAME) {
 				bufI = 2;
-				NW_SET_SHORT (objBuf, bufI, syncInfoP->objs.nFrame); 
+				NW_SET_SHORT (objBuf, bufI, pSyncInfo->objs.nFrame); 
 				}
 			else {
-				objBuf [2] = (uint8_t) syncInfoP->objs.nFrame;
+				objBuf [2] = (uint8_t) pSyncInfo->objs.nFrame;
 				bufI = 3;
 				}
 			NW_SET_SHORT (objBuf, bufI, -2);
 			NW_SET_BYTE (objBuf, bufI, -1);                                 
-			NW_SET_SHORT (objBuf, bufI, syncInfoP->objs.nSent);
-			syncInfoP->nState = 2;
+			NW_SET_SHORT (objBuf, bufI, pSyncInfo->objs.nSent);
+			pSyncInfo->nState = 2;
 			}
 		else {
-			syncInfoP->objs.nCurrent = 0;
-			syncInfoP->objs.nMode = 1; // go to next mode
+			pSyncInfo->objs.nCurrent = 0;
+			pSyncInfo->objs.nMode = 1; // go to next mode
 			}
 		break;
 		}
@@ -215,104 +215,104 @@ for (nPacketsLeft = OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
 
 //------------------------------------------------------------------------------
 
-void NetworkSyncPlayer (tNetworkSyncInfo *syncInfoP)
+void NetworkSyncPlayer (tNetworkSyncInfo *pSyncInfo)
 {
-	int32_t nPlayer = syncInfoP->player [1].player.connected;
+	int32_t nPlayer = pSyncInfo->player [1].player.connected;
 
-//OLD IPXSendPacketData (objBuf, 8, &syncInfoP->player [1].player.node);
+//OLD IPXSendPacketData (objBuf, 8, &pSyncInfo->player [1].player.node);
 if (gameStates.multi.nGameType >= IPX_GAME)
-	networkThread.Send (objBuf, (gameStates.multi.nGameType == UDP_GAME) ? 9 : 8, syncInfoP->player [1].player.network.Network (), syncInfoP->player [1].player.network.Node ());
+	networkThread.Send (objBuf, (gameStates.multi.nGameType == UDP_GAME) ? 9 : 8, pSyncInfo->player [1].player.network.Network (), pSyncInfo->player [1].player.network.Node ());
 // Send sync packet which tells the player who he is and to start!
-NetworkSendRejoinSync (nPlayer, syncInfoP);
+NetworkSendRejoinSync (nPlayer, pSyncInfo);
 
 // Turn off send CObject mode
-syncInfoP->objs.nCurrent = -1;
-syncInfoP->nState = 3;
-syncInfoP->objs.nSent = 0;
-syncInfoP->nExtras = 1; // start to send extras
-syncInfoP->nExtrasPlayer = nPlayer;
+pSyncInfo->objs.nCurrent = -1;
+pSyncInfo->nState = 3;
+pSyncInfo->objs.nSent = 0;
+pSyncInfo->nExtras = 1; // start to send extras
+pSyncInfo->nExtrasPlayer = nPlayer;
 }
 
 //------------------------------------------------------------------------------
 
-void NetworkSyncExtras (tNetworkSyncInfo *syncInfoP)
+void NetworkSyncExtras (tNetworkSyncInfo *pSyncInfo)
 {
-Assert (syncInfoP->nExtrasPlayer > -1);
+Assert (pSyncInfo->nExtrasPlayer > -1);
 if (!IAmGameHost ()) {
 #if 1			
   console.printf (CON_DBG, "Hey! I'm not the master and I was gonna send info!\n");
 #endif
 	}
-if (syncInfoP->nExtras == 1)
-	NetworkSendFlyThruTriggers (syncInfoP->nExtrasPlayer);
-else if (syncInfoP->nExtras == 2)
-	NetworkSendDoorUpdates (syncInfoP->nExtrasPlayer);
-else if (syncInfoP->nExtras == 3)
+if (pSyncInfo->nExtras == 1)
+	NetworkSendFlyThruTriggers (pSyncInfo->nExtrasPlayer);
+else if (pSyncInfo->nExtras == 2)
+	NetworkSendDoorUpdates (pSyncInfo->nExtrasPlayer);
+else if (pSyncInfo->nExtras == 3)
 	NetworkSendMarkers ();
-else if (syncInfoP->nExtras == 4) {
+else if (pSyncInfo->nExtras == 4) {
 	if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 		MultiSendStolenItems ();
 	}
-else if (syncInfoP->nExtras == 5) {
+else if (pSyncInfo->nExtras == 5) {
 	if (netGameInfo.GetPlayTimeAllowed () || netGameInfo.GetScoreGoal ())
 		MultiSendScoreGoalCounts ();
 	}
-else if (syncInfoP->nExtras == 6)
-	NetworkSendSmashedLights (syncInfoP->nExtrasPlayer);
-else if (syncInfoP->nExtras == 7)
+else if (pSyncInfo->nExtras == 6)
+	NetworkSendSmashedLights (pSyncInfo->nExtrasPlayer);
+else if (pSyncInfo->nExtras == 7)
 	NetworkSendPlayerFlags ();    
-else if (syncInfoP->nExtras == 8)
+else if (pSyncInfo->nExtras == 8)
 	MultiSendWeapons (1);  
-else if (syncInfoP->nExtras == 9)
+else if (pSyncInfo->nExtras == 9)
 	MultiSendWeaponStates ();  
-else if (syncInfoP->nExtras == 10)
+else if (pSyncInfo->nExtras == 10)
 	MultiSendMonsterball (1, 1);  
 else {
-	syncInfoP->nExtras = 0;
-	syncInfoP->nState = 0;
-	syncInfoP->nExtrasPlayer = -1;
-	memset (&syncInfoP->player [1], 0, sizeof (syncInfoP->player [1]));
+	pSyncInfo->nExtras = 0;
+	pSyncInfo->nState = 0;
+	pSyncInfo->nExtrasPlayer = -1;
+	memset (&pSyncInfo->player [1], 0, sizeof (pSyncInfo->player [1]));
 	return;
 	}
-syncInfoP->nExtras++;
+pSyncInfo->nExtras++;
 }
 
 //------------------------------------------------------------------------------
 
-void NetworkSyncConnection (tNetworkSyncInfo *syncInfoP)
+void NetworkSyncConnection (tNetworkSyncInfo *pSyncInfo)
 {
 #if 1
 	time_t	t = (time_t) SDL_GetTicks ();
 
-if (t < syncInfoP->timeout)
+if (t < pSyncInfo->timeout)
 	return;
-syncInfoP->timeout = t + 100 / Clamp (MinPPS (), (int16_t) MIN_PPS, (int16_t) DEFAULT_PPS);
+pSyncInfo->timeout = t + 100 / Clamp (MinPPS (), (int16_t) MIN_PPS, (int16_t) DEFAULT_PPS);
 #endif
-if (syncInfoP->bExtraGameInfo) {
-	NetworkSendExtraGameInfo (&syncInfoP->player [0]);
-	syncInfoP->bExtraGameInfo = false;
+if (pSyncInfo->bExtraGameInfo) {
+	NetworkSendExtraGameInfo (&pSyncInfo->player [0]);
+	pSyncInfo->bExtraGameInfo = false;
 	}
-if (syncInfoP->bAllowedPowerups) {
+if (pSyncInfo->bAllowedPowerups) {
 	MultiSendPowerupUpdate ();
-	syncInfoP->bAllowedPowerups = false;
+	pSyncInfo->bAllowedPowerups = false;
 	}
-else if (syncInfoP->nState == 1) {
-	NetworkSyncObjects (syncInfoP);
-	syncInfoP->bExtraGameInfo = false;
-	syncInfoP->bAllowedPowerups = false;
+else if (pSyncInfo->nState == 1) {
+	NetworkSyncObjects (pSyncInfo);
+	pSyncInfo->bExtraGameInfo = false;
+	pSyncInfo->bAllowedPowerups = false;
 	}
-else if (syncInfoP->nState == 2) {
+else if (pSyncInfo->nState == 2) {
 	if (!networkThread.SyncInProgress ()) {
-		NetworkSyncPlayer (syncInfoP);
-		syncInfoP->bExtraGameInfo = true;
-		syncInfoP->bAllowedPowerups = true;
+		NetworkSyncPlayer (pSyncInfo);
+		pSyncInfo->bExtraGameInfo = true;
+		pSyncInfo->bAllowedPowerups = true;
 		}
 	}
-else if (syncInfoP->nState == 3) {
-	if (syncInfoP->nExtras) {
-		NetworkSyncExtras (syncInfoP);
-		if ((syncInfoP->bExtraGameInfo = (syncInfoP->nExtras == 0))) {
-			DeleteSyncData (int16_t (syncInfoP - networkData.syncInfo));
+else if (pSyncInfo->nState == 3) {
+	if (pSyncInfo->nExtras) {
+		NetworkSyncExtras (pSyncInfo);
+		if ((pSyncInfo->bExtraGameInfo = (pSyncInfo->nExtras == 0))) {
+			DeleteSyncData (int16_t (pSyncInfo - networkData.syncInfo));
 			}
 		}
 	}
@@ -621,7 +621,7 @@ while (SDL_GetTicks () < xTimeout) {
 			networkData.nSecurityNum = playerData.m_info.nSecurity;
 			}
 		netPlayers [1] = playerData;
-		playerInfoP = &netPlayers [1];
+		pPlayerInfo = &netPlayers [1];
 		networkData.bWaitingForPlayerInfo = 0;
 		return 1;
 		}
@@ -653,11 +653,11 @@ while (0 < (size = networkThread.GetPacketData (packet))) {
 #endif
 			if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_GAMEINFO) {
 #if SECURITY_CHECK
-				if ((playerInfoP->m_info.nSecurity == tempNetInfo.m_info.nSecurity) && (playerInfoP->m_info.nSecurity == networkData.nSecurityCheck)) 
+				if ((pPlayerInfo->m_info.nSecurity == tempNetInfo.m_info.nSecurity) && (pPlayerInfo->m_info.nSecurity == networkData.nSecurityCheck)) 
 #endif
 					{
 					activeNetGames [choice] = tempNetInfo;
-					activeNetPlayers [choice] = *playerInfoP;
+					activeNetPlayers [choice] = *pPlayerInfo;
 					networkData.nSecurityCheck = -1;
 					}
 				}
@@ -668,10 +668,10 @@ while (0 < (size = networkThread.GetPacketData (packet))) {
 					networkData.bHaveSync = 1;
 					//NetworkProcessSyncPacket (&tempNetInfo, 0);
 #if 1			
-					console.printf (CON_DBG, "HUH? Game=%d Player=%d\n", networkData.nSecurityNum, playerInfoP->m_info.nSecurity);
+					console.printf (CON_DBG, "HUH? Game=%d Player=%d\n", networkData.nSecurityNum, pPlayerInfo->m_info.nSecurity);
 #endif
 					activeNetGames [choice] = tempNetInfo;
-					activeNetPlayers [choice] = *playerInfoP;
+					activeNetPlayers [choice] = *pPlayerInfo;
 					networkData.nSecurityCheck = -1;
 					}
 				networkData.nSecurityFlag = 0;
@@ -701,7 +701,7 @@ while (0 < (size = networkThread.GetPacketData (packet))) {
 				break;     // If this isn't the guy we're looking for, move on
 #endif
 			netPlayers [1] = playerData;
-			playerInfoP = &netPlayers [1];
+			pPlayerInfo = &netPlayers [1];
 			networkData.bWaitingForPlayerInfo = 0;
 			networkData.nSecurityNum = netPlayers [1].m_info.nSecurity;
 			networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_GAMEINFO;

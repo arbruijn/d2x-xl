@@ -68,39 +68,39 @@ extern float quadVerts [3][4][2];
 
 int32_t RenderMissileView (void)
 {
-	CObject	*objP = NULL;
+	CObject	*pObj = NULL;
 
-if (GuidedMslView (&objP)) {
+if (GuidedMslView (&pObj)) {
 	if (gameOpts->render.cockpit.bGuidedInMainView) {
 		gameStates.render.nRenderingType = 6 + (1 << 4);
-		cockpit->RenderWindow (1, gameData.objData.viewerP, 0, WBUMSL, "SHIP");
+		cockpit->RenderWindow (1, gameData.objData.pViewer, 0, WBUMSL, "SHIP");
 		}
 	else {
 		gameStates.render.nRenderingType = 1+ (1 << 4);
-		cockpit->RenderWindow (1, objP, 0, WBU_GUIDED, "GUIDED");
+		cockpit->RenderWindow (1, pObj, 0, WBU_GUIDED, "GUIDED");
 	   }
 	return 1;
 	}
 else {
-	if (objP) {		//used to be active
+	if (pObj) {		//used to be active
 		if (!gameOpts->render.cockpit.bGuidedInMainView)
 			cockpit->RenderWindow (1, NULL, 0, WBU_STATIC, NULL);
 		gameData.objData.SetGuidedMissile (N_LOCALPLAYER, NULL);
 		}
-	if (gameData.objData.missileViewerP && !gameStates.render.bChaseCam) {		//do missile view
+	if (gameData.objData.pMissileViewer && !gameStates.render.bChaseCam) {		//do missile view
 		static int32_t mslViewerSig = -1;
 		if (mslViewerSig == -1)
-			mslViewerSig = gameData.objData.missileViewerP->info.nSignature;
+			mslViewerSig = gameData.objData.pMissileViewer->info.nSignature;
 		if (gameOpts->render.cockpit.bMissileView &&
-			 (gameData.objData.missileViewerP->info.nType != OBJ_NONE) &&
-			 (gameData.objData.missileViewerP->info.nSignature == mslViewerSig)) {
+			 (gameData.objData.pMissileViewer->info.nType != OBJ_NONE) &&
+			 (gameData.objData.pMissileViewer->info.nSignature == mslViewerSig)) {
 			//HUDMessage (0, "missile view");
   			gameStates.render.nRenderingType = 2 + (1 << 4);
-			cockpit->RenderWindow (1, gameData.objData.missileViewerP, 0, WBUMSL, "MISSILE");
+			cockpit->RenderWindow (1, gameData.objData.pMissileViewer, 0, WBUMSL, "MISSILE");
 			return 1;
 			}
 		else {
-			gameData.objData.missileViewerP = NULL;
+			gameData.objData.pMissileViewer = NULL;
 			mslViewerSig = -1;
 			gameStates.render.nRenderingType = 255;
 			cockpit->RenderWindow (1, NULL, 0, WBU_STATIC, NULL);
@@ -209,9 +209,9 @@ if (ogl.IsSideBySideDevice ()) {
 	transformation.ComputeFrustum ();
 
 	CFloatMatrix	view;
-	view.Assign (*gameData.objData.viewerP->View ());
+	view.Assign (*gameData.objData.pViewer->View ());
 	CFloatVector3	vPos;
-	vPos.Assign (gameData.objData.viewerP->Position ());
+	vPos.Assign (gameData.objData.pViewer->Position ());
 
 	CFloatVector3 quadVerts [4];
 
@@ -278,26 +278,26 @@ else {
 
 #if MAX_SHADOWMAPS
 
-static int32_t RenderShadowMap (CDynLight* lightP, int32_t nLight, fix xStereoSeparation)
+static int32_t RenderShadowMap (CDynLight* pLight, int32_t nLight, fix xStereoSeparation)
 {
-if (!lightP)
+if (!pLight)
 	return 0;
 
-	CCamera* cameraP = cameraManager.ShadowMap (nLight);
+	CCamera* pCamera = cameraManager.ShadowMap (nLight);
 
-if (!(cameraP || (cameraP = cameraManager.AddShadowMap (nLight, lightP)))) 
+if (!(pCamera || (pCamera = cameraManager.AddShadowMap (nLight, pLight)))) 
 	return 0;
 
-if (cameraP->HaveBuffer (0))
-	cameraP->Setup (cameraP->Id (), lightP->info.nSegment, lightP->info.nSide, -1, -1, (lightP->info.nObject < 0) ? NULL : OBJECT (lightP->info.nObject), 0);
-else if (!cameraP->Create (cameraManager.Count () - 1, lightP->info.nSegment, lightP->info.nSide, -1, -1, (lightP->info.nObject < 0) ? NULL : OBJECT (lightP->info.nObject), 1, 0)) {
+if (pCamera->HaveBuffer (0))
+	pCamera->Setup (pCamera->Id (), pLight->info.nSegment, pLight->info.nSide, -1, -1, (pLight->info.nObject < 0) ? NULL : OBJECT (pLight->info.nObject), 0);
+else if (!pCamera->Create (cameraManager.Count () - 1, pLight->info.nSegment, pLight->info.nSide, -1, -1, (pLight->info.nObject < 0) ? NULL : OBJECT (pLight->info.nObject), 1, 0)) {
 	cameraManager.DestroyShadowMap (nLight);
 	return 0;
 	}
 CCamera* current = cameraManager [cameraManager.Current ()];
-cameraP = cameraManager.ShadowMap (nLight);
-cameraManager.SetCurrent (cameraP);
-cameraP->Render ();
+pCamera = cameraManager.ShadowMap (nLight);
+cameraManager.SetCurrent (pCamera);
+pCamera->Render ();
 cameraManager.SetCurrent (current);
 return 1;
 }
@@ -308,14 +308,14 @@ static void RenderShadowMaps (fix xStereoSeparation)
 {
 if (EGI_FLAG (bShadows, 0, 1, 0)) {
 	lightManager.ResetActive (1, 0);
-	int16_t nSegment = OBJSEG (gameData.objData.viewerP);
+	int16_t nSegment = OBJSEG (gameData.objData.pViewer);
 	lightManager.ResetNearestStatic (nSegment, 1);
 	lightManager.SetNearestStatic (nSegment, 1, 1);
-	CDynLightIndex* sliP = &lightManager.Index (0,1);
-	CActiveDynLight* activeLightsP = lightManager.Active (1) + sliP->nFirst;
-	int32_t nLights = 0, h = (sliP->nActive < abs (MAX_SHADOWMAPS)) ? sliP->nActive : abs (MAX_SHADOWMAPS);
+	CDynLightIndex* pLightIndex = &lightManager.Index (0,1);
+	CActiveDynLight* pActiveLights = lightManager.Active (1) + pLightIndex->nFirst;
+	int32_t nLights = 0, h = (pLightIndex->nActive < abs (MAX_SHADOWMAPS)) ? pLightIndex->nActive : abs (MAX_SHADOWMAPS);
 	for (gameStates.render.nShadowMap = 1; gameStates.render.nShadowMap <= h; gameStates.render.nShadowMap++) 
-		nLights += RenderShadowMap (lightManager.GetActive (activeLightsP, 1), nLights, xStereoSeparation);
+		nLights += RenderShadowMap (lightManager.GetActive (pActiveLights, 1), nLights, xStereoSeparation);
 	lightManager.SetLightCount (nLights, 2);
 	gameStates.render.nShadowMap = 0;
 	}
@@ -345,10 +345,10 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
    if (!gameStates.render.nRenderingType)
    	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
    if (gameStates.render.nRenderingType != 255)
-   	NDRecordViewerObject (gameData.objData.viewerP);
+   	NDRecordViewerObject (gameData.objData.pViewer);
 	}
 
-StartLightingFrame (gameData.objData.viewerP);		//this is for ugly light-smoothing hack
+StartLightingFrame (gameData.objData.pViewer);		//this is for ugly light-smoothing hack
 //ogl.m_states.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 
 if (!nWindow) 
@@ -516,7 +516,7 @@ if (xStereoSeparation <= 0) {
 if (gameOpts->render.cockpit.bGuidedInMainView && gameData.objData.GetGuidedMissile (N_LOCALPLAYER)) {
 	int32_t w, h, aw;
 	const char *msg = "Guided Missile View";
-	CObject *viewerSave = gameData.objData.viewerP;
+	CObject *viewerSave = gameData.objData.pViewer;
 
    if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
 		gameStates.render.cockpit.bBigWindowSwitch = 1;
@@ -524,14 +524,14 @@ if (gameOpts->render.cockpit.bGuidedInMainView && gameData.objData.GetGuidedMiss
 		cockpit->Activate (CM_STATUS_BAR);
 		return;
 		}
-  	gameData.objData.viewerP = gameData.objData.GetGuidedMissile (N_LOCALPLAYER);
-	UpdateRenderedData (0, gameData.objData.viewerP, 0, 0);
+  	gameData.objData.pViewer = gameData.objData.GetGuidedMissile (N_LOCALPLAYER);
+	UpdateRenderedData (0, gameData.objData.pViewer, 0, 0);
 	if ((xStereoSeparation <= 0) && cameraManager.Render ())
 		CCanvas::Current ()->SetViewport ();
 	RenderFrame (xStereoSeparation, 0);
 	if (xStereoSeparation <= 0)
-  		WakeupRenderedObjects (gameData.objData.viewerP, 0);
-	gameData.objData.viewerP = viewerSave;
+  		WakeupRenderedObjects (gameData.objData.pViewer, 0);
+	gameData.objData.pViewer = viewerSave;
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 	fontManager.Current ()->StringSize (msg, w, h, aw);
@@ -546,7 +546,7 @@ else {
 		gameStates.render.cockpit.bBigWindowSwitch = 0;
 		return;
 		}
-	UpdateRenderedData (0, gameData.objData.viewerP, gameStates.render.bRearView, 0);
+	UpdateRenderedData (0, gameData.objData.pViewer, gameStates.render.bRearView, 0);
 	if ((xStereoSeparation <= 0) && cameraManager.Render ())
 		CCanvas::Current ()->SetViewport ();
 	RenderFrame (xStereoSeparation, 0);
@@ -643,36 +643,36 @@ for (y = tileTop;y <= tileBot; y++) {
 
 void UpdateSlidingFaces (void)
 {
-	CSegFace*		faceP;
+	CSegFace*		pFace;
 	int16_t				nOffset;
-	tTexCoord2f*	texCoordP, *ovlTexCoordP;
+	tTexCoord2f*	pTexCoord, *ovlTexCoordP;
 	tUVL*				uvlP;
 
-for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
+for (pFace = FACES.slidingFaces; pFace; pFace = pFace->nextSlidingFace) {
 #if DBG
-	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	if ((pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 		BRP;
 #endif
-	texCoordP = FACES.texCoord + faceP->m_info.nIndex;
-	ovlTexCoordP = FACES.ovlTexCoord + faceP->m_info.nIndex;
-	uvlP = SEGMENT (faceP->m_info.nSegment)->m_sides [faceP->m_info.nSide].m_uvls;
-	nOffset = faceP->m_info.nType == SIDE_IS_TRI_13;
+	pTexCoord = FACES.texCoord + pFace->m_info.nIndex;
+	ovlTexCoordP = FACES.ovlTexCoord + pFace->m_info.nIndex;
+	uvlP = SEGMENT (pFace->m_info.nSegment)->m_sides [pFace->m_info.nSide].m_uvls;
+	nOffset = pFace->m_info.nType == SIDE_IS_TRI_13;
 	if (gameStates.render.bTriangleMesh) {
 		static int16_t nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
-		int32_t j = faceP->m_info.nTriangles * 3;
+		int32_t j = pFace->m_info.nTriangles * 3;
 		for (int32_t i = 0; i < j; i++) {
 			int16_t k = nTriVerts [nOffset][i];
-			texCoordP [i].v.u = X2F (uvlP [k].u);
-			texCoordP [i].v.v = X2F (uvlP [k].v);
-			RotateTexCoord2f (ovlTexCoordP [i], texCoordP [i], faceP->m_info.nOvlOrient);
+			pTexCoord [i].v.u = X2F (uvlP [k].u);
+			pTexCoord [i].v.v = X2F (uvlP [k].v);
+			RotateTexCoord2f (ovlTexCoordP [i], pTexCoord [i], pFace->m_info.nOvlOrient);
 			}
 		}
 	else {
-		int32_t j = 2 * faceP->m_info.nTriangles;
+		int32_t j = 2 * pFace->m_info.nTriangles;
 		for (int32_t i = 0; i < j; i++) {
-			texCoordP [i].v.u = X2F (uvlP [(i + nOffset) % 4].u);
-			texCoordP [i].v.v = X2F (uvlP [(i + nOffset) % 4].v);
-			RotateTexCoord2f (ovlTexCoordP [i], texCoordP [i], faceP->m_info.nOvlOrient);
+			pTexCoord [i].v.u = X2F (uvlP [(i + nOffset) % 4].u);
+			pTexCoord [i].v.v = X2F (uvlP [(i + nOffset) % 4].v);
+			RotateTexCoord2f (ovlTexCoordP [i], pTexCoord [i], pFace->m_info.nOvlOrient);
 			}
 		}
 	}

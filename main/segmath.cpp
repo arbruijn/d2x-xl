@@ -44,29 +44,29 @@ else
 
 // -------------------------------------------------------------------------------
 
-void CreateLongPos (tLongPos* posP, CObject* objP)
+void CreateLongPos (tLongPos* pPos, CObject* pObj)
 {
-if (!objP) 
-	memset (posP, 0, sizeof (*posP));
+if (!pObj) 
+	memset (pPos, 0, sizeof (*pPos));
 else {
-	posP->nSegment = objP->Segment ();
-	posP->pos = objP->Position ();
-	posP->orient = objP->Orientation ();
-	posP->vel = objP->Velocity ();
-	posP->rotVel = objP->RotVelocity ();
+	pPos->nSegment = pObj->Segment ();
+	pPos->pos = pObj->Position ();
+	pPos->orient = pObj->Orientation ();
+	pPos->vel = pObj->Velocity ();
+	pPos->rotVel = pObj->RotVelocity ();
 	}
 }
 
 // -------------------------------------------------------------------------------
 
-void ExtractLongPos (CObject* objP, tLongPos* posP)
+void ExtractLongPos (CObject* pObj, tLongPos* pPos)
 {
-if (objP) {
-	objP->SetSegment (posP->nSegment);
-	objP->Position () = posP->pos;
-	objP->Orientation () = posP->orient;
-	objP->Velocity () = posP->vel;
-	objP->RotVelocity () = posP->rotVel;
+if (pObj) {
+	pObj->SetSegment (pPos->nSegment);
+	pObj->Position () = pPos->pos;
+	pObj->Orientation () = pPos->orient;
+	pObj->Velocity () = pPos->vel;
+	pObj->RotVelocity () = pPos->rotVel;
 	}
 }
 
@@ -75,71 +75,71 @@ if (objP) {
 //	Extract the matrix into byte values.
 //	Create a position relative to vertex 0 with 1/256 Normal "fix" precision.
 //	Stuff CSegment in a int16_t.
-void CreateShortPos (tShortPos *posP, CObject *objP, int32_t bSwapBytes)
+void CreateShortPos (tShortPos *pPos, CObject *pObj, int32_t bSwapBytes)
 {
-if (!objP) 
-	memset (posP, 0, sizeof (*posP));
+if (!pObj) 
+	memset (pPos, 0, sizeof (*pPos));
 else {
 	// int32_t	nSegment;
-	CFixMatrix	orient = objP->info.position.mOrient;
-	int8_t		*segP = posP->orient;
+	CFixMatrix	orient = pObj->info.position.mOrient;
+	int8_t		*pSeg = pPos->orient;
 	CFixVector	*pv;
 
-	*segP++ = ConvertToByte (orient.m.dir.r.v.coord.x);
-	*segP++ = ConvertToByte (orient.m.dir.u.v.coord.x);
-	*segP++ = ConvertToByte (orient.m.dir.f.v.coord.x);
-	*segP++ = ConvertToByte (orient.m.dir.r.v.coord.y);
-	*segP++ = ConvertToByte (orient.m.dir.u.v.coord.y);
-	*segP++ = ConvertToByte (orient.m.dir.f.v.coord.y);
-	*segP++ = ConvertToByte (orient.m.dir.r.v.coord.z);
-	*segP++ = ConvertToByte (orient.m.dir.u.v.coord.z);
-	*segP++ = ConvertToByte (orient.m.dir.f.v.coord.z);
+	*pSeg++ = ConvertToByte (orient.m.dir.r.v.coord.x);
+	*pSeg++ = ConvertToByte (orient.m.dir.u.v.coord.x);
+	*pSeg++ = ConvertToByte (orient.m.dir.f.v.coord.x);
+	*pSeg++ = ConvertToByte (orient.m.dir.r.v.coord.y);
+	*pSeg++ = ConvertToByte (orient.m.dir.u.v.coord.y);
+	*pSeg++ = ConvertToByte (orient.m.dir.f.v.coord.y);
+	*pSeg++ = ConvertToByte (orient.m.dir.r.v.coord.z);
+	*pSeg++ = ConvertToByte (orient.m.dir.u.v.coord.z);
+	*pSeg++ = ConvertToByte (orient.m.dir.f.v.coord.z);
 
-	pv = gameData.segData.vertices + SEGMENT (objP->info.nSegment)->m_vertices [0];
-	posP->pos [0] = (int16_t) ((objP->info.position.vPos.v.coord.x - pv->v.coord.x) >> RELPOS_PRECISION);
-	posP->pos [1] = (int16_t) ((objP->info.position.vPos.v.coord.y - pv->v.coord.y) >> RELPOS_PRECISION);
-	posP->pos [2] = (int16_t) ((objP->info.position.vPos.v.coord.z - pv->v.coord.z) >> RELPOS_PRECISION);
+	pv = gameData.segData.vertices + SEGMENT (pObj->info.nSegment)->m_vertices [0];
+	pPos->pos [0] = (int16_t) ((pObj->info.position.vPos.v.coord.x - pv->v.coord.x) >> RELPOS_PRECISION);
+	pPos->pos [1] = (int16_t) ((pObj->info.position.vPos.v.coord.y - pv->v.coord.y) >> RELPOS_PRECISION);
+	pPos->pos [2] = (int16_t) ((pObj->info.position.vPos.v.coord.z - pv->v.coord.z) >> RELPOS_PRECISION);
 
-	posP->nSegment = objP->info.nSegment;
+	pPos->nSegment = pObj->info.nSegment;
 
-	posP->vel [0] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.x) >> VEL_PRECISION);
-	posP->vel [1] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.y) >> VEL_PRECISION);
-	posP->vel [2] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.z) >> VEL_PRECISION);
+	pPos->vel [0] = (int16_t) ((pObj->mType.physInfo.velocity.v.coord.x) >> VEL_PRECISION);
+	pPos->vel [1] = (int16_t) ((pObj->mType.physInfo.velocity.v.coord.y) >> VEL_PRECISION);
+	pPos->vel [2] = (int16_t) ((pObj->mType.physInfo.velocity.v.coord.z) >> VEL_PRECISION);
 
 	// swap the int16_t values for the big-endian machines.
 
 	if (bSwapBytes) {
-		posP->pos [0] = INTEL_SHORT (posP->pos [0]);
-		posP->pos [1] = INTEL_SHORT (posP->pos [1]);
-		posP->pos [2] = INTEL_SHORT (posP->pos [2]);
-		posP->nSegment = INTEL_SHORT (posP->nSegment);
-		posP->vel [0] = INTEL_SHORT (posP->vel [0]);
-		posP->vel [1] = INTEL_SHORT (posP->vel [1]);
-		posP->vel [2] = INTEL_SHORT (posP->vel [2]);
+		pPos->pos [0] = INTEL_SHORT (pPos->pos [0]);
+		pPos->pos [1] = INTEL_SHORT (pPos->pos [1]);
+		pPos->pos [2] = INTEL_SHORT (pPos->pos [2]);
+		pPos->nSegment = INTEL_SHORT (pPos->nSegment);
+		pPos->vel [0] = INTEL_SHORT (pPos->vel [0]);
+		pPos->vel [1] = INTEL_SHORT (pPos->vel [1]);
+		pPos->vel [2] = INTEL_SHORT (pPos->vel [2]);
 		}
 	}
 }
 
 // -------------------------------------------------------------------------------
 
-void ExtractShortPos (CObject *objP, tShortPos *spp, int32_t bSwapBytes)
+void ExtractShortPos (CObject *pObj, tShortPos *spp, int32_t bSwapBytes)
 {
-if (objP) {
+if (pObj) {
 	int32_t		nSegment;
-	int8_t		*segP;
+	int8_t		*pSeg;
 	CFixVector *pv;
 
-	segP = spp->orient;
+	pSeg = spp->orient;
 
-	objP->info.position.mOrient.m.dir.r.v.coord.x = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.dir.u.v.coord.x = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.dir.f.v.coord.x = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.dir.r.v.coord.y = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.dir.u.v.coord.y = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.dir.f.v.coord.y = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.dir.r.v.coord.z = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.dir.u.v.coord.z = *segP++ << MATRIX_PRECISION;
-	objP->info.position.mOrient.m.dir.f.v.coord.z = *segP++ << MATRIX_PRECISION;
+	pObj->info.position.mOrient.m.dir.r.v.coord.x = *pSeg++ << MATRIX_PRECISION;
+	pObj->info.position.mOrient.m.dir.u.v.coord.x = *pSeg++ << MATRIX_PRECISION;
+	pObj->info.position.mOrient.m.dir.f.v.coord.x = *pSeg++ << MATRIX_PRECISION;
+	pObj->info.position.mOrient.m.dir.r.v.coord.y = *pSeg++ << MATRIX_PRECISION;
+	pObj->info.position.mOrient.m.dir.u.v.coord.y = *pSeg++ << MATRIX_PRECISION;
+	pObj->info.position.mOrient.m.dir.f.v.coord.y = *pSeg++ << MATRIX_PRECISION;
+	pObj->info.position.mOrient.m.dir.r.v.coord.z = *pSeg++ << MATRIX_PRECISION;
+	pObj->info.position.mOrient.m.dir.u.v.coord.z = *pSeg++ << MATRIX_PRECISION;
+	pObj->info.position.mOrient.m.dir.f.v.coord.z = *pSeg++ << MATRIX_PRECISION;
 
 	if (bSwapBytes) {
 		spp->pos [0] = INTEL_SHORT (spp->pos [0]);
@@ -156,40 +156,40 @@ if (objP) {
 	Assert ((nSegment >= 0) && (nSegment <= gameData.segData.nLastSegment));
 
 	pv = gameData.segData.vertices + SEGMENT (nSegment)->m_vertices [0];
-	objP->info.position.vPos.v.coord.x = (spp->pos [0] << RELPOS_PRECISION) + pv->v.coord.x;
-	objP->info.position.vPos.v.coord.y = (spp->pos [1] << RELPOS_PRECISION) + pv->v.coord.y;
-	objP->info.position.vPos.v.coord.z = (spp->pos [2] << RELPOS_PRECISION) + pv->v.coord.z;
+	pObj->info.position.vPos.v.coord.x = (spp->pos [0] << RELPOS_PRECISION) + pv->v.coord.x;
+	pObj->info.position.vPos.v.coord.y = (spp->pos [1] << RELPOS_PRECISION) + pv->v.coord.y;
+	pObj->info.position.vPos.v.coord.z = (spp->pos [2] << RELPOS_PRECISION) + pv->v.coord.z;
 
-	objP->mType.physInfo.velocity.v.coord.x = (spp->vel [0] << VEL_PRECISION);
-	objP->mType.physInfo.velocity.v.coord.y = (spp->vel [1] << VEL_PRECISION);
-	objP->mType.physInfo.velocity.v.coord.z = (spp->vel [2] << VEL_PRECISION);
+	pObj->mType.physInfo.velocity.v.coord.x = (spp->vel [0] << VEL_PRECISION);
+	pObj->mType.physInfo.velocity.v.coord.y = (spp->vel [1] << VEL_PRECISION);
+	pObj->mType.physInfo.velocity.v.coord.z = (spp->vel [2] << VEL_PRECISION);
 
-	objP->RelinkToSeg (nSegment);
+	pObj->RelinkToSeg (nSegment);
 	}
 }
 
 // -----------------------------------------------------------------------------
 //	Extract a vector from a CSegment.  The vector goes from the start face to the end face.
 //	The point on each face is the average of the four points forming the face.
-void ExtractVectorFromSegment (CSegment *segP, CFixVector *vp, int32_t start, int32_t end)
+void ExtractVectorFromSegment (CSegment *pSeg, CFixVector *vp, int32_t start, int32_t end)
 {
 	CFixVector	vs, ve;
 
 vs.SetZero ();
 ve.SetZero ();
 int32_t nVertices = 0;
-CSide* sideP = segP->Side (start);
-for (int32_t i = 0, j = sideP->CornerCount (); i < j; i++) {
-	uint16_t n = sideP->m_corners [i];
+CSide* pSide = pSeg->Side (start);
+for (int32_t i = 0, j = pSide->CornerCount (); i < j; i++) {
+	uint16_t n = pSide->m_corners [i];
 	if (n != 0xFFFF) {
 		vs += gameData.segData.vertices [n];
 		nVertices++;
 		}
 	}
-sideP = segP->Side (end);
-for (int32_t i = 0, j = sideP->CornerCount (); i < j; i++) {
-	uint16_t n = sideP->m_corners [i];
-	n = segP->m_vertices [sideVertIndex [end][i]];
+pSide = pSeg->Side (end);
+for (int32_t i = 0, j = pSide->CornerCount (); i < j; i++) {
+	uint16_t n = pSide->m_corners [i];
+	n = pSeg->m_vertices [sideVertIndex [end][i]];
 	if (n != 0xFFFF) {
 		ve += gameData.segData.vertices [n];
 		nVertices++;
@@ -201,12 +201,12 @@ for (int32_t i = 0, j = sideP->CornerCount (); i < j; i++) {
 
 // -------------------------------------------------------------------------------
 //create a matrix that describes the orientation of the given CSegment
-void ExtractOrientFromSegment (CFixMatrix *m, CSegment *segP)
+void ExtractOrientFromSegment (CFixMatrix *m, CSegment *pSeg)
 {
 	CFixVector fVec, uVec;
 
-	ExtractVectorFromSegment (segP, &fVec, WFRONT, WBACK);
-	ExtractVectorFromSegment (segP, &uVec, WBOTTOM, WTOP);
+	ExtractVectorFromSegment (pSeg, &fVec, WFRONT, WBACK);
+	ExtractVectorFromSegment (pSeg, &uVec, WBOTTOM, WTOP);
 
 	//vector to matrix does normalizations and orthogonalizations
 	*m = CFixMatrix::CreateFU(fVec, uVec);

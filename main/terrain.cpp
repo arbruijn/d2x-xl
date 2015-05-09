@@ -67,9 +67,9 @@ gameData.render.terrain.uvlList [0][2].v = (j) * (I2X (1) / 4);
 gameData.render.terrain.uvlList [0][1].v = (j + 1) * (I2X (1) / 4);
 gameData.render.terrain.uvlList [0][2].u = (i + 1) * (I2X (1) / 4);
 #if DBG
-G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [0], gameData.render.terrain.bmP, NULL, 1, 0, -1);
+G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [0], gameData.render.terrain.pBm, NULL, 1, 0, -1);
 #else
-G3CheckAndDrawTMap (3, pointList, gameData.render.terrain.uvlList [0], gameData.render.terrain.bmP, NULL, NULL);
+G3CheckAndDrawTMap (3, pointList, gameData.render.terrain.uvlList [0], gameData.render.terrain.pBm, NULL, NULL);
 #endif
 if (gameData.render.terrain.bOutline) {
 	int32_t lSave = gameStates.render.nLighting;
@@ -94,9 +94,9 @@ gameData.render.terrain.uvlList [1][1].v = (j + 1) * (I2X (1) / 4);
 gameData.render.terrain.uvlList [1][2].v = (j) * (I2X (1) / 4);
 
 #if DBG
-G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [1], gameData.render.terrain.bmP, NULL, 1, 0, -1);
+G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [1], gameData.render.terrain.pBm, NULL, 1, 0, -1);
 #else
-G3CheckAndDrawTMap (3, pointList, gameData.render.terrain.uvlList [1], gameData.render.terrain.bmP, NULL, NULL);
+G3CheckAndDrawTMap (3, pointList, gameData.render.terrain.uvlList [1], gameData.render.terrain.pBm, NULL, NULL);
 #endif
 if (gameData.render.terrain.bOutline) {
 	int32_t lSave = gameStates.render.nLighting;
@@ -174,7 +174,7 @@ tv = mSurfaceOrient.m.dir.f * TERRAIN_GRID_SCALE;
 transformation.RotateScaled (delta_j, tv);
 gameData.render.terrain.vStartPoint = *vOrgPoint - mSurfaceOrient.m.dir.r * ((gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE);
 gameData.render.terrain.vStartPoint -= mSurfaceOrient.m.dir.f * ((gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
-tv = gameData.objData.viewerP->info.position.vPos - gameData.render.terrain.vStartPoint;
+tv = gameData.objData.pViewer->info.position.vPos - gameData.render.terrain.vStartPoint;
 iViewer = CFixVector::Dot (tv, mSurfaceOrient.m.dir.r) / TERRAIN_GRID_SCALE;
 if (iViewer > iHigh)
 	iViewer = iHigh;
@@ -314,13 +314,13 @@ for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 		HEIGHT (i, j) -= hMin;
 		}
 	}
-gameData.render.terrain.bmP = gameData.endLevel.terrain.bmP;
+gameData.render.terrain.pBm = gameData.endLevel.terrain.pBm;
 #if 0 //the following code turns the (palettized) terrain texture into a white TGA texture for testing
-gameData.render.terrain.bmP->props.rowSize *= 4;
-gameData.render.terrain.bmP->props.flags |= BM_FLAG_TGA;
-gameData.render.terrain.bmP->DestroyBuffer ();
-gameData.render.terrain.bmP->CreateBuffer (gameData.render.terrain.bmP->Height () * gameData.render.terrain.bmP->props.rowSize);
-gameData.render.terrain.bmP->Clear (0xFF);
+gameData.render.terrain.pBm->props.rowSize *= 4;
+gameData.render.terrain.pBm->props.flags |= BM_FLAG_TGA;
+gameData.render.terrain.pBm->DestroyBuffer ();
+gameData.render.terrain.pBm->CreateBuffer (gameData.render.terrain.pBm->Height () * gameData.render.terrain.pBm->props.rowSize);
+gameData.render.terrain.pBm->Clear (0xFF);
 #endif
 PrintLog (1, "building terrain light map\n");
 BuildTerrainLightmap ();

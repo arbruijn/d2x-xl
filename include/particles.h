@@ -185,7 +185,7 @@ class CParticle : public tParticle {
 	public:
 		int32_t Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 					   int16_t nSegment, int32_t nLife, int32_t nSpeed, char nParticleSystemType, char nClass,
-				      float fScale, CFloatVector *colorP, int32_t nCurTime, int32_t bBlowUp, char nFadeType,
+				      float fScale, CFloatVector *pColor, int32_t nCurTime, int32_t bBlowUp, char nFadeType,
 					   float fBrightness, CFixVector *vEmittingFace);
 		int32_t Render (float brightness);
 		void Setup (bool alphaControl, float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int32_t nThread);
@@ -217,13 +217,13 @@ class CParticle : public tParticle {
 		fix Drag (void);
 		int32_t Bounce (int32_t nThread);
 #ifdef _WIN32
-		inline void InitColor (CFloatVector* colorP, float fBrightness, char nParticleSystemType);
+		inline void InitColor (CFloatVector* pColor, float fBrightness, char nParticleSystemType);
 		inline int32_t InitDrift (CFixVector* vDir, int32_t nSpeed);
 		inline bool InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient, bool bPointSource);
 		inline void InitSize (float nScale, CFixMatrix *mOrient);
 		inline void InitAnimation (void);
 #else
-		void InitColor (CFloatVector* colorP, float fBrightness, char nParticleSystemType);
+		void InitColor (CFloatVector* pColor, float fBrightness, char nParticleSystemType);
 		int32_t InitDrift (CFixVector* vDir, int32_t nSpeed);
 		bool InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient, bool bPointSource);
 		void InitSize (float nScale, CFixMatrix *mOrient);
@@ -277,7 +277,7 @@ class CParticleEmitter : public tParticleEmitter {
 		int32_t Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 						int16_t nSegment, int32_t nObject, int32_t nMaxParts, float fScale,
 						/*int32_t nDensity, int32_t nPartsPerPos,*/ int32_t nLife, int32_t nSpeed, char nType,
-						CFloatVector *colorP, int32_t nCurTime, int32_t bBlowUpParts, CFixVector *vEmittingFace);
+						CFloatVector *pColor, int32_t nCurTime, int32_t bBlowUpParts, CFixVector *vEmittingFace);
 		int32_t Destroy (void);
 		int32_t Update (int32_t nCurTime, int32_t nThread);
 		int32_t Render (int32_t nThread);
@@ -389,10 +389,10 @@ class CParticleBuffer : public CEffectArea {
 		void Setup (void);
 		void Setup (int32_t nThread);
 		bool Flush (float brightness, bool bForce = false);
-		bool Add (CParticle* particleP, float brightness, CFloatVector& pos, float rad);
+		bool Add (CParticle* pParticle, float brightness, CFloatVector& pos, float rad);
 		void Reset (void);
 		bool AlphaControl (void);
-		bool Compatible (CParticle* particleP);
+		bool Compatible (CParticle* pParticle);
 
 		CParticleBuffer () : CEffectArea (), m_iBuffer (0), m_nType (-1), m_bEmissive (false), m_dMax (0.0f) {}
 
@@ -432,7 +432,7 @@ class CParticleManager {
 		int32_t Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 						int16_t nSegment, int32_t nMaxEmitters, int32_t nMaxParts,
 						float fScale, /*int32_t nDensity, int32_t nPartsPerPos,*/ int32_t nLife, int32_t nSpeed, char nType,
-						int32_t nObject, CFloatVector *colorP, int32_t bBlowUpParts, char nSide);
+						int32_t nObject, CFloatVector *pColor, int32_t bBlowUpParts, char nSide);
 		int32_t Destroy (int32_t iParticleSystem);
 		void Cleanup (void);
 		int32_t Shutdown (void);
@@ -445,7 +445,7 @@ class CParticleManager {
 		int32_t CloseBuffer (void);
 		void SetupParticles (int32_t nThread);
 
-		void AdjustBrightness (CBitmap *bmP);
+		void AdjustBrightness (CBitmap *pBm);
 
 		inline time_t* ObjExplTime (int32_t i = 0) { return m_objExplTime + i; }
 		inline int32_t Animate (void) { return m_bAnimate; }
@@ -560,7 +560,7 @@ class CParticleManager {
 			return false;
 			}
 
-		bool Add (CParticle* particleP, float brightness);
+		bool Add (CParticle* pParticle, float brightness);
 
 		bool Flush (float brightness, bool bForce = false);
 
@@ -578,7 +578,7 @@ class CParticleManager {
 	private:
 		void RebuildSystemList (void);
 
-		int16_t Add (CParticle* particleP, float brightness, int32_t nBuffer, bool& bFlushed);
+		int16_t Add (CParticle* pParticle, float brightness, int32_t nBuffer, bool& bFlushed);
 };
 
 extern CParticleManager particleManager;
@@ -586,7 +586,7 @@ extern CParticleManager particleManager;
 //------------------------------------------------------------------------------
 
 typedef struct tParticleImageInfo {
-	CBitmap*		bmP;
+	CBitmap*		pBm;
 	const char*	szName;
 	int32_t			nFrames;
 	int32_t			iFrame;
@@ -609,7 +609,7 @@ class CParticleImageManager {
 		bool SetupMultipleTextures (CBitmap* bmP1, CBitmap* bmP2, CBitmap* bmP3);
 		bool LoadMultipleTextures (int32_t nTMU);
 		void Animate (int32_t nType);
-		void AdjustBrightness (CBitmap *bmP);
+		void AdjustBrightness (CBitmap *pBm);
 		int32_t GetType (int32_t nType);
 };
 

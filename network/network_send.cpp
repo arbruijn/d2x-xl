@@ -41,21 +41,21 @@ void NetworkSendDoorUpdates (int32_t nPlayer)
 {
 	// Send door status when new player joins
 
-	CWall* wallP = WALLS.Buffer ();
+	CWall* pWall = WALLS.Buffer ();
    
 //   Assert (nPlayer>-1 && nPlayer<N_PLAYERS);
-for (int32_t i = 0; i < gameData.wallData.nWalls; i++, wallP++) {
-   if ((wallP->nType == WALL_DOOR) && 
-		 ((wallP->state == WALL_DOOR_OPENING) || 
-		  (wallP->state == WALL_DOOR_WAITING) || 
-		  (wallP->state == WALL_DOOR_OPEN)))
-		MultiSendDoorOpenSpecific (nPlayer, wallP->nSegment, wallP->nSide, wallP->flags);
-	else if ((wallP->nType == WALL_BLASTABLE) && (wallP->flags & WALL_BLASTED))
-		MultiSendDoorOpenSpecific (nPlayer, wallP->nSegment, wallP->nSide, wallP->flags);
-	else if ((wallP->nType == WALL_BLASTABLE) && (wallP->hps != WALL_HPS))
+for (int32_t i = 0; i < gameData.wallData.nWalls; i++, pWall++) {
+   if ((pWall->nType == WALL_DOOR) && 
+		 ((pWall->state == WALL_DOOR_OPENING) || 
+		  (pWall->state == WALL_DOOR_WAITING) || 
+		  (pWall->state == WALL_DOOR_OPEN)))
+		MultiSendDoorOpenSpecific (nPlayer, pWall->nSegment, pWall->nSide, pWall->flags);
+	else if ((pWall->nType == WALL_BLASTABLE) && (pWall->flags & WALL_BLASTED))
+		MultiSendDoorOpenSpecific (nPlayer, pWall->nSegment, pWall->nSide, pWall->flags);
+	else if ((pWall->nType == WALL_BLASTABLE) && (pWall->hps != WALL_HPS))
 		MultiSendHostageDoorStatus (i);
 	else
-		MultiSendWallStatusSpecific (nPlayer, i, wallP->nType, wallP->flags, wallP->state);
+		MultiSendWallStatusSpecific (nPlayer, i, pWall->nType, pWall->flags, pWall->state);
 	}
 }
 
@@ -76,7 +76,7 @@ for (i = j = 0; i < N_PLAYERS; i++, j++) {
 
 //------------------------------------------------------------------------------
 
-void NetworkSendRejoinSync (int32_t nPlayer, tNetworkSyncInfo *syncInfoP)
+void NetworkSendRejoinSync (int32_t nPlayer, tNetworkSyncInfo *pSyncInfo)
 {
 	int32_t i, j;
 
@@ -87,20 +87,20 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 	// have to stop and try again after the level.
 
 	if (gameStates.multi.nGameType >= IPX_GAME)
-		NetworkDumpPlayer (syncInfoP->player [1].player.network.Network (), syncInfoP->player [1].player.network.Node (), DUMP_ENDLEVEL);
-	syncInfoP->nState = 0; 
-	syncInfoP->nExtras = 0;
+		NetworkDumpPlayer (pSyncInfo->player [1].player.network.Network (), pSyncInfo->player [1].player.network.Node (), DUMP_ENDLEVEL);
+	pSyncInfo->nState = 0; 
+	pSyncInfo->nExtras = 0;
 	return;
 	}
 if (networkData.bPlayerAdded) {
-	syncInfoP->player [1].nType = PID_ADDPLAYER;
-	syncInfoP->player [1].player.connected = nPlayer;
-	NetworkNewPlayer (&syncInfoP->player [1]);
+	pSyncInfo->player [1].nType = PID_ADDPLAYER;
+	pSyncInfo->player [1].player.connected = nPlayer;
+	NetworkNewPlayer (&pSyncInfo->player [1]);
 
 	for (i = 0; i < N_PLAYERS; i++) {
 		if ((i != nPlayer) && (i != N_LOCALPLAYER) && PLAYER (i).IsConnected () && (gameStates.multi.nGameType >= IPX_GAME)) {
 			SendSequencePacket (
-				syncInfoP->player [1], 
+				pSyncInfo->player [1], 
 				NETPLAYER (i).network.Network (), 
 				NETPLAYER (i).network.Node (), 
 				PLAYER (i).netAddress);
@@ -121,8 +121,8 @@ for (j = 0; j < MAX_PLAYERS; j++) {
 netGameInfo.SetLevelTime (LOCALPLAYER.timeLevel);
 netGameInfo.SetMonitorVector (NetworkCreateMonitorVector ());
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	SendInternetFullNetGamePacket (syncInfoP->player [1].player.network.Network (), syncInfoP->player [1].player.network.Node ());
-	SendNetPlayersPacket (syncInfoP->player [1].player.network.Network (), syncInfoP->player [1].player.network.Node ());
+	SendInternetFullNetGamePacket (pSyncInfo->player [1].player.network.Network (), pSyncInfo->player [1].player.network.Node ());
+	SendNetPlayersPacket (pSyncInfo->player [1].player.network.Network (), pSyncInfo->player [1].player.network.Node ());
 	MultiSendMonsterball (1, 1);
 	}
 }
@@ -517,17 +517,17 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	if (NETPLAYER (i).IsConnected ())
 	   break;
 Assert (i < MAX_NUM_NET_PLAYERS);
-networkData.thisPlayer.nType = PID_REQUEST;
-networkData.thisPlayer.player.connected = missionManager.nCurrentLevel;
+networkData.pThislayer.nType = PID_REQUEST;
+networkData.pThislayer.player.connected = missionManager.nCurrentLevel;
 if (networkData.nJoinState != 2) {
 	networkData.syncInfo [0].objs.nFrame = 0;
 	networkData.syncInfo [0].objs.nFramesToSkip = 0;
 	}
-networkData.thisPlayer.nObjFramesToSkip = networkData.syncInfo [0].objs.nFramesToSkip;
+networkData.pThislayer.nObjFramesToSkip = networkData.syncInfo [0].objs.nFramesToSkip;
 networkData.bTraceFrames = 1;
 ResetWalls (); // may have been changed by players transmitting game state changes like doors opening or exploding etc.
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	SendInternetPlayerSyncData (networkData.thisPlayer, NETPLAYER (i).network.Network (), NETPLAYER (i).network.Node ());
+	SendInternetPlayerSyncData (networkData.pThislayer, NETPLAYER (i).network.Network (), NETPLAYER (i).network.Node ());
 	}
 return i;
 }

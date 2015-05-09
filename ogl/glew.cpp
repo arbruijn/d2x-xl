@@ -1047,7 +1047,7 @@ PFNGLGETCONVOLUTIONPARAMETERIVEXTPROC __glewGetConvolutionParameterivEXT = NULL;
 PFNGLGETSEPARABLEFILTEREXTPROC __glewGetSeparableFilterEXT = NULL;
 PFNGLSEPARABLEFILTER2DEXTPROC __glewSeparableFilter2DEXT = NULL;
 
-PFNGLBINORMALPOINTEREXTPROC __glewBinormalPointerEXT = NULL;
+PFNGLBINORMALPOINTEREXTPROC __glewBipNormalointerEXT = NULL;
 PFNGLTANGENTPOINTEREXTPROC __glewTangentPointerEXT = NULL;
 
 PFNGLCOPYTEXIMAGE1DEXTPROC __glewCopyTexImage1DEXT = NULL;
@@ -4229,7 +4229,7 @@ static GLboolean _glewInit_GL_EXT_coordinate_frame (GLEW_CONTEXT_ARG_DEF_INIT)
 {
   GLboolean r = GL_FALSE;
 
-  r = ((glBinormalPointerEXT = (PFNGLBINORMALPOINTEREXTPROC)glewGetProcAddress((const GLubyte*)"glBinormalPointerEXT")) == NULL) || r;
+  r = ((glBipNormalointerEXT = (PFNGLBINORMALPOINTEREXTPROC)glewGetProcAddress((const GLubyte*)"glBipNormalointerEXT")) == NULL) || r;
   r = ((glTangentPointerEXT = (PFNGLTANGENTPOINTEREXTPROC)glewGetProcAddress((const GLubyte*)"glTangentPointerEXT")) == NULL) || r;
 
   return r;

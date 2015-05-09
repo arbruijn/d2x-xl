@@ -7,7 +7,7 @@ void RemoveMonsterball (void);
 int32_t CheckMonsterballScore (void);
 void SetMonsterballForces (void);
 CObject* FindMonsterball (void);
-void SetMonsterballDefaults (tMonsterballInfo *monsterballP = NULL);
+void SetMonsterballDefaults (tMonsterballInfo *pMonsterBall = NULL);
 
 extern int16_t nMonsterballForces [];
 extern int16_t nMonsterballPyroForce;

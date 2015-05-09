@@ -138,28 +138,28 @@ if (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameCo
 	return;
 #endif
 
-CObject*	objP = OBJECT (nObject);
+CObject*	pObj = OBJECT (nObject);
 
 #if DBG
-if (nWindow && (objP->info.nType == OBJ_WEAPON))
+if (nWindow && (pObj->info.nType == OBJ_WEAPON))
 	BRP;
 #endif
 
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
-	if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && objP->info.nType == OBJ_PLAYER) {
+	if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && pObj->info.nType == OBJ_PLAYER) {
   		return;
 		}
 	}
 
-if (RenderObject (objP, nWindow, 0)) {
+if (RenderObject (pObj, nWindow, 0)) {
 #if 0 //DBG
 	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameCount;
 #endif
 	if (!gameStates.render.cameras.bActive) {
 		tWindowRenderedData*	wrd = windowRenderedData + nWindow;
-		int32_t nType = objP->info.nType;
+		int32_t nType = pObj->info.nType;
 		if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
-			 ((nType == OBJ_WEAPON) && (objP->IsPlayerMine () || (objP->IsMissile () && EGI_FLAG (bKillMissiles, 0, 0, 0))))) {
+			 ((nType == OBJ_WEAPON) && (pObj->IsPlayerMine () || (pObj->IsMissile () && EGI_FLAG (bKillMissiles, 0, 0, 0))))) {
 			if (wrd->nObjects >= MAX_RENDERED_OBJECTS) {
 				Int3();
 				wrd->nObjects /= 2;
@@ -169,15 +169,15 @@ if (RenderObject (objP, nWindow, 0)) {
 		}
 	}
 
-for (int32_t i = objP->info.nAttachedObj; i != -1; i = objP->cType.explInfo.attached.nNext) {
-	objP = OBJECT (i);
-	if (objP->info.nType != OBJ_FIREBALL) 
+for (int32_t i = pObj->info.nAttachedObj; i != -1; i = pObj->cType.explInfo.attached.nNext) {
+	pObj = OBJECT (i);
+	if (pObj->info.nType != OBJ_FIREBALL) 
 		break;
-	if (objP->info.controlType != CT_EXPLOSION)
+	if (pObj->info.controlType != CT_EXPLOSION)
 		break;
-	if (!(objP->info.nFlags & OF_ATTACHED))
+	if (!(pObj->info.nFlags & OF_ATTACHED))
 		break;
-	RenderObject (objP, nWindow, 1);
+	RenderObject (pObj, nWindow, 1);
 	}
 }
 
@@ -747,12 +747,12 @@ int32_t CEdgeFaceInfo::Visible (void)
 {
 if (m_nWall < 0)
 	return 1;
-CWall *wallP = WALL (m_nWall);
-if (!wallP)
+CWall *pWall = WALL (m_nWall);
+if (!pWall)
 	return 1;
-if (wallP->IsInvisible ())
+if (pWall->IsInvisible ())
 	return 0;
-if (wallP->IsPassable (NULL, false) & WID_NO_WALL)
+if (pWall->IsPassable (NULL, false) & WID_NO_WALL)
 	return 0;
 return 1;
 }
@@ -763,20 +763,20 @@ void CEdgeFaceInfo::Setup (int16_t nSegment, int16_t nSide)
 {
 m_nItem = nSegment;
 m_nFace = nSide;
-CSide* sideP = gameData.Segment (nSegment)->Side (nSide);
-m_vNormal [0] = sideP->Normalf (2);
-m_vCenter [0].Assign (sideP->Center ());
-m_nWall = sideP->WallNum ();
+CSide* pSide = gameData.Segment (nSegment)->Side (nSide);
+m_vNormal [0] = pSide->Normalf (2);
+m_vCenter [0].Assign (pSide->Center ());
+m_nWall = pSide->WallNum ();
 if (!IS_WALL (m_nWall))
 	m_nWall = -1;
-m_nTexture = int32_t (sideP->m_nOvlTex & TEXTURE_ID_MASK);
+m_nTexture = int32_t (pSide->m_nOvlTex & TEXTURE_ID_MASK);
 if (m_nTexture) {
-	CBitmap *bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [m_nTexture].index].Override (-1);
-	if (!bmP || (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)))
+	CBitmap *pBm = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [m_nTexture].index].Override (-1);
+	if (!pBm || (pBm->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)))
 		m_nTexture = 0;
 	}
 if (!m_nTexture)
-	m_nTexture = int32_t (sideP->m_nBaseTex & TEXTURE_ID_MASK);
+	m_nTexture = int32_t (pSide->m_nBaseTex & TEXTURE_ID_MASK);
 }
 
 //------------------------------------------------------------------------------
@@ -791,7 +791,7 @@ int32_t CMeshEdge::Visibility (void)
 {
 	CFloatVector		vViewDir, vViewer;
 	
-vViewer.Assign (gameData.objData.viewerP->Position ());
+vViewer.Assign (gameData.objData.pViewer->Position ());
 
 int32_t nVisible = 0;
 for (int32_t j = 0; j < m_nFaces; j++) {
@@ -1126,7 +1126,7 @@ if (!gameData.segData.edgeVertexData [0].m_vertices.Buffer () || !gameData.segDa
 
 gameStates.render.nType = RENDER_TYPE_GEOMETRY;
 
-	CMeshEdge		*edgeP = gameData.segData.edges.Buffer ();
+	CMeshEdge		*pEdge = gameData.segData.edges.Buffer ();
 	CFloatVector	vViewer;
 
 gameData.segData.edgeVertexData [0].Reset ();
@@ -1138,10 +1138,10 @@ vViewer.Assign (transformation.m_info.pos);
 if (bPolygonalOutline) // only needed when transforming edge vertices by software
 	ogl.SetupTransform (1);
 #endif
-for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
+for (int32_t i = gameData.segData.nEdges; i; i--, pEdge++) {
 	int32_t nVisible = 0;
 	for (int32_t j = 0; j < 2; j++) {
-		int16_t nSegment = edgeP->m_faces [j].m_nItem;
+		int16_t nSegment = pEdge->m_faces [j].m_nItem;
 #if DBG
 		if (nSegment == nDbgSeg)
 			BRP;
@@ -1156,12 +1156,12 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 
 #if POLYGONAL_OUTLINE
 	if (bPolygonalOutline) { // only needed when transforming edge vertices by software
-		edgeP->Transform ();
-		edgeP->Prepare (CFloatVector::ZERO, nVertices);
+		pEdge->Transform ();
+		pEdge->Prepare (CFloatVector::ZERO, nVertices);
 		}
 	else
 #endif
-		edgeP->Prepare (vViewer, 2, 0.0f);
+		pEdge->Prepare (vViewer, 2, 0.0f);
 	}
 
 #if POLYGONAL_OUTLINE

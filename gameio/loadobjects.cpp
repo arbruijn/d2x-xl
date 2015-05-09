@@ -100,15 +100,15 @@ if (Type () == OBJ_ROBOT) {
 	if (Id () >= gameData.botData.nTypes [gameStates.app.bD1Data])
 		SetId (Id () % gameData.botData.nTypes [0]);
 	// Make sure model number & size are correct...
-	tRobotInfo *botInfoP = ROBOTINFO (Id ());
-	if (botInfoP) {
+	tRobotInfo *pRobotInfo = ROBOTINFO (Id ());
+	if (pRobotInfo) {
 		if (info.renderType == RT_POLYOBJ) {
-			rType.polyObjInfo.nModel = botInfoP->nModel;
+			rType.polyObjInfo.nModel = pRobotInfo->nModel;
 			AdjustSize ();
 			}
 		if (info.movementType == MT_PHYSICS) {
-			mType.physInfo.mass = botInfoP->mass;
-			mType.physInfo.drag = botInfoP->drag;
+			mType.physInfo.mass = pRobotInfo->mass;
+			mType.physInfo.drag = pRobotInfo->drag;
 			}
 		}
 	if (Id () == 65)						//special "reactor" robots
@@ -174,7 +174,7 @@ else if (Type () == OBJ_REACTOR) {
 		}
 	}
 else if (Type () == OBJ_PLAYER) {
-	if (this == gameData.objData.consoleP)	
+	if (this == gameData.objData.pConsole)	
 		InitPlayerObject ();
 	else
 		if (info.renderType == RT_POLYOBJ)	//recover from Matt's pof file matchup bug
@@ -333,7 +333,7 @@ static int32_t ReadObjectInfo (CFile& cf)
 	int32_t	i;
 
 if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
-	CObject	*objP = OBJECTS.Buffer ();
+	CObject	*pObj = OBJECTS.Buffer ();
 	if (cf.Seek (gameFileInfo.objects.offset, SEEK_SET)) {
 		Error ("Error seeking to object data\n(file damaged or invalid)");
 		return -1;
@@ -347,23 +347,23 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 			BRP;
 #endif
 		ClaimObjectSlot (i);
-		objP->Read (cf);
+		pObj->Read (cf);
 #if OBJ_LIST_TYPE == 1
-		objP->ResetLinks ();
+		pObj->ResetLinks ();
 #endif
-		if (!IsMultiGame && objP->Multiplayer ())
+		if (!IsMultiGame && pObj->Multiplayer ())
 			gameFileInfo.objects.count--;
 		else {
-			objP->info.nSignature = gameData.objData.nNextSignature++;
+			pObj->info.nSignature = gameData.objData.nNextSignature++;
 #if DBG
 			if (i == nDbgObj) {
 				extern int32_t dbgObjInstances;
 				dbgObjInstances++;
 				}
 #endif
-			objP->Verify ();
-			gameData.objData.init [i] = *objP;
-			i++, objP++;
+			pObj->Verify ();
+			gameData.objData.init [i] = *pObj;
+			i++, pObj++;
 			}
 		}
 	}
@@ -443,15 +443,15 @@ if (gameFileInfo.doors.offset > -1) {
 		else {
 			v19_door d;
 			int16_t nConnSeg, nConnSide;
-			CSegment* segP;
+			CSegment* pSeg;
 
 			ReadActiveDoorV19 (d, cf);
 			gameData.wallData.activeDoors [i].nPartCount = d.nPartCount;
 			for (int32_t j = 0; j < d.nPartCount; j++) {
-				segP = SEGMENT (d.seg [j]);
-				nConnSeg = segP->m_children [d.nSide [j]];
-				nConnSide = segP->ConnectedSide (SEGMENT (nConnSeg));
-				gameData.wallData.activeDoors [i].nFrontWall [j] = segP->WallNum (d.nSide [j]);
+				pSeg = SEGMENT (d.seg [j]);
+				nConnSeg = pSeg->m_children [d.nSide [j]];
+				nConnSide = pSeg->ConnectedSide (SEGMENT (nConnSeg));
+				gameData.wallData.activeDoors [i].nFrontWall [j] = pSeg->WallNum (d.nSide [j]);
 				gameData.wallData.activeDoors [i].nBackWall [j] = SEGMENT (nConnSeg)->WallNum (nConnSide);
 				}
 			}
@@ -465,25 +465,25 @@ return 0;
 static void CheckTriggerInfo (void)
 {
 	int32_t		h, i, j;
-	CTrigger	*trigP;
+	CTrigger	*pTrigger;
 
-for (i = 0, trigP = GEOTRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
-	if (trigP->m_nLinks < 0)
-		trigP->m_nLinks = 0;
-	else if (trigP->m_nLinks > MAX_TRIGGER_TARGETS)
-		trigP->m_nLinks = MAX_TRIGGER_TARGETS;
-	for (h = trigP->m_nLinks, j = 0; j < h; ) {
-		if ((trigP->m_segments [j] >= 0) && 
-			 (trigP->m_sides [j] >= 0) 
-			 ? (trigP->m_segments [j] < gameData.segData.nSegments) && (trigP->m_sides [j] < 6) 
-			 : (trigP->m_segments [j] < gameData.objData.nObjects) && (trigP->m_sides [j] == -1))
+for (i = 0, pTrigger = GEOTRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, pTrigger++) {
+	if (pTrigger->m_nLinks < 0)
+		pTrigger->m_nLinks = 0;
+	else if (pTrigger->m_nLinks > MAX_TRIGGER_TARGETS)
+		pTrigger->m_nLinks = MAX_TRIGGER_TARGETS;
+	for (h = pTrigger->m_nLinks, j = 0; j < h; ) {
+		if ((pTrigger->m_segments [j] >= 0) && 
+			 (pTrigger->m_sides [j] >= 0) 
+			 ? (pTrigger->m_segments [j] < gameData.segData.nSegments) && (pTrigger->m_sides [j] < 6) 
+			 : (pTrigger->m_segments [j] < gameData.objData.nObjects) && (pTrigger->m_sides [j] == -1))
 			j++;
 		else if (--h) {
-			trigP->m_segments [j] = trigP->m_segments [h];
-			trigP->m_sides [j] = trigP->m_sides [h];
+			pTrigger->m_segments [j] = pTrigger->m_segments [h];
+			pTrigger->m_sides [j] = pTrigger->m_sides [h];
 			}
 		}
-	trigP->m_nLinks = h;
+	pTrigger->m_nLinks = h;
 	}
 }
 
@@ -502,14 +502,14 @@ void BuildObjTriggerRef (void)
 if (gameData.trigData.m_nTriggers [1]) {
 	CQuickSort<CTrigger>	qs;
 	qs.SortAscending (OBJTRIGGERS.Buffer (), 0, gameData.trigData.m_nTriggers [1] - 1, &CmpObjTriggers);
-	CTrigger* trigP = OBJTRIGGERS.Buffer ();
+	CTrigger* pTrigger = OBJTRIGGERS.Buffer ();
 	int32_t i;
 	int16_t nObject = -1;
-	for (i = 0; i < gameData.trigData.m_nTriggers [1]; i++, trigP++) {
-		if (nObject != trigP->m_info.nObject) {
+	for (i = 0; i < gameData.trigData.m_nTriggers [1]; i++, pTrigger++) {
+		if (nObject != pTrigger->m_info.nObject) {
 			if (nObject >= 0)
 				gameData.trigData.objTriggerRefs [nObject].nCount = i - gameData.trigData.objTriggerRefs [nObject].nFirst;
-			nObject = trigP->m_info.nObject;
+			nObject = pTrigger->m_info.nObject;
 			if (nObject >= 0)
 				gameData.trigData.objTriggerRefs [nObject].nFirst = i;
 			}
@@ -524,7 +524,7 @@ if (gameData.trigData.m_nTriggers [1]) {
 static int32_t ReadTriggerInfo (CFile& cf)
 {
 	int32_t		i;
-	CTrigger	*trigP;
+	CTrigger	*pTrigger;
 
 gameData.trigData.m_nTriggers [1] = 0;
 gameData.trigData.objTriggerRefs.Clear (0xff);
@@ -541,10 +541,10 @@ if (gameFileInfo.triggers.offset > -1) {
 			Error ("Error seeking to trigger data\n(file damaged or invalid)");
 			return -1;
 			}
-		for (i = 0, trigP = GEOTRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
-			trigP->m_info.flagsD1 = 0;
+		for (i = 0, pTrigger = GEOTRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, pTrigger++) {
+			pTrigger->m_info.flagsD1 = 0;
 			if (gameTopFileInfo.fileinfoVersion >= 31) 
-				trigP->Read (cf, 0);
+				pTrigger->Read (cf, 0);
 			else {
 				tTriggerV30 trig;
 				int32_t t, nType = 0, flags = 0;
@@ -553,7 +553,7 @@ if (gameFileInfo.triggers.offset > -1) {
 				else {
 					tTriggerV29 trig29;
 					V29TriggerRead (trig29, cf);
-					trigP->m_info.flagsD1 = trig29.flags;
+					pTrigger->m_info.flagsD1 = trig29.flags;
 					trig.flags = 0;
 					trig.nLinks	= (char) trig29.nLinks;
 					trig.value = trig29.value;
@@ -578,15 +578,15 @@ if (gameFileInfo.triggers.offset > -1) {
 				if (trig.flags & TRIGGER_ONE_SHOT)
 					flags = TF_ONE_SHOT;
 
-				trigP->m_info.nType = nType;
-				trigP->m_info.flags = flags;
-				trigP->m_nLinks = trig.nLinks;
-				trigP->m_nLinks = trig.nLinks;
-				trigP->m_info.value = trig.value;
-				trigP->m_info.time [0] = trig.time;
+				pTrigger->m_info.nType = nType;
+				pTrigger->m_info.flags = flags;
+				pTrigger->m_nLinks = trig.nLinks;
+				pTrigger->m_nLinks = trig.nLinks;
+				pTrigger->m_info.value = trig.value;
+				pTrigger->m_info.time [0] = trig.time;
 				for (t = 0; t < trig.nLinks; t++) {
-					trigP->m_segments [t] = trig.segments [t];
-					trigP->m_sides [t] = trig.sides [t];
+					pTrigger->m_segments [t] = trig.segments [t];
+					pTrigger->m_sides [t] = trig.sides [t];
 					}
 				}
 			}
@@ -654,29 +654,29 @@ static int32_t AssignProducer (tObjectProducerInfo& producerInfo, int32_t nObjPr
 {
 #if 1
 
-	CSegment* segP = SEGMENT (0);
+	CSegment* pSeg = SEGMENT (0);
 
-for (int32_t i = 0, j = gameData.segData.nSegments; i < j; i++, segP++) {
-	if ((segP->Function () == nFunction) && (segP->m_nObjProducer == nObjProducer)) {
+for (int32_t i = 0, j = gameData.segData.nSegments; i < j; i++, pSeg++) {
+	if ((pSeg->Function () == nFunction) && (pSeg->m_nObjProducer == nObjProducer)) {
 		tObjectProducerInfo& objProducer = (nFunction == SEGMENT_FUNC_ROBOTMAKER) 
 													  ? gameData.producers.robotMakers [nObjProducer] 
 													  : gameData.producers.equipmentMakers [nObjProducer];
 		objProducer.nSegment = i;
-		objProducer.nProducer = segP->m_value;
+		objProducer.nProducer = pSeg->m_value;
 		memcpy (objProducer.objFlags, producerInfo.objFlags, sizeof (objProducer.objFlags));
-		tProducerInfo& producer = gameData.producers.producers [segP->m_value];
-		producer.bFlag &= (segP->Function () == SEGMENT_FUNC_ROBOTMAKER) ? ~1 : (segP->Function () == SEGMENT_FUNC_EQUIPMAKER) ? ~2 : ~0;
-		return segP->m_nObjProducer;
+		tProducerInfo& producer = gameData.producers.producers [pSeg->m_value];
+		producer.bFlag &= (pSeg->Function () == SEGMENT_FUNC_ROBOTMAKER) ? ~1 : (pSeg->Function () == SEGMENT_FUNC_EQUIPMAKER) ? ~2 : ~0;
+		return pSeg->m_nObjProducer;
 		}
 	}
 return -1;
 
 #elif 0
 
-CSegment* segP = SEGMENT (producerInfo.nSegment);
-if (segP->m_function != nFunction)
+CSegment* pSeg = SEGMENT (producerInfo.nSegment);
+if (pSeg->m_function != nFunction)
 	return -1;
-producerInfo.nProducer = segP->m_nObjProducer;
+producerInfo.nProducer = pSeg->m_nObjProducer;
 tObjectProducerInfo& objProducer = (nFunction == SEGMENT_FUNC_ROBOTMAKER) 
 											  ? gameData.producers.robotMakers [producerInfo.nProducer] 
 											  : gameData.producers.equipmentMakers [producerInfo.nProducer];
@@ -689,7 +689,7 @@ if (!(producer.bFlag & bFlag)) // this segment already has an object producer as
 memcpy (objProducer.objFlags, producerInfo.objFlags, sizeof (objProducer.objFlags));
 objProducer.bAssigned = true;
 producer.bFlag = 0;
-return segP->m_nObjProducer = producerInfo.nProducer;
+return pSeg->m_nObjProducer = producerInfo.nProducer;
 
 #else
 
@@ -707,17 +707,17 @@ int32_t nProducer = objProducer.nProducer;
 tProducerInfo& producer = gameData.producers.producers [nProducer];
 if (producer.nSegment < 0)
 	return -1;
-CSegment* segP = SEGMENT (producer.nSegment);
-if (segP->m_value != nProducer)
+CSegment* pSeg = SEGMENT (producer.nSegment);
+if (pSeg->m_value != nProducer)
 	return -1;
-if (segP->m_function != nFunction) // this object producer has an invalid segment
+if (pSeg->m_function != nFunction) // this object producer has an invalid segment
 	return -1;
 if (!(producer.bFlag & bFlag)) // this segment already has an object producer assigned
 	return -1;
 memcpy (objProducer.objFlags, producerInfo.objFlags, sizeof (objProducer.objFlags));
 objProducer.bAssigned = true;
 producer.bFlag = 0;
-return segP->m_nObjProducer = producerInfo.nProducer;
+return pSeg->m_nObjProducer = producerInfo.nProducer;
 
 #endif
 }
@@ -783,13 +783,13 @@ return 0;
 
 void CleanupProducerInfo (void)
 {
-CSegment* segP = SEGMENTS.Buffer ();
-for (int32_t i = gameData.segData.nSegments; i; i--, segP++) {
-	if (segP->m_function == SEGMENT_FUNC_ROBOTMAKER) {
-		tProducerInfo& producer = gameData.producers.producers [segP->m_value];
+CSegment* pSeg = SEGMENTS.Buffer ();
+for (int32_t i = gameData.segData.nSegments; i; i--, pSeg++) {
+	if (pSeg->m_function == SEGMENT_FUNC_ROBOTMAKER) {
+		tProducerInfo& producer = gameData.producers.producers [pSeg->m_value];
 		if (producer.bFlag) {
 			producer.bFlag = 0;
-			segP->m_function = SEGMENT_FUNC_NONE;
+			pSeg->m_function = SEGMENT_FUNC_NONE;
 			}
 		}
 	}
@@ -884,16 +884,16 @@ return nLights;
 static void CheckAndLinkObjects (void)
 {
 	int32_t		i, nObjSeg;
-	CObject	*objP = OBJECTS.Buffer ();
+	CObject	*pObj = OBJECTS.Buffer ();
 
-for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
-	objP->info.nNextInSeg = objP->info.nPrevInSeg = -1;
-	if (objP->Type () != OBJ_NONE) {
-		nObjSeg = objP->info.nSegment;
+for (i = 0; i < gameFileInfo.objects.count; i++, pObj++) {
+	pObj->info.nNextInSeg = pObj->info.nPrevInSeg = -1;
+	if (pObj->Type () != OBJ_NONE) {
+		nObjSeg = pObj->info.nSegment;
 		if ((nObjSeg < 0) || (nObjSeg > gameData.segData.nLastSegment))	
-			objP->SetType (OBJ_NONE);
+			pObj->SetType (OBJ_NONE);
 		else {
-			objP->info.nSegment = -1;	
+			pObj->info.nSegment = -1;	
 			OBJECT (i)->LinkToSeg (nObjSeg);
 			}
 		}
@@ -904,19 +904,19 @@ for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 // Make sure non-transparent doors are set correctly.
 static void CheckAndFixDoors (void)
 {
-	CSegment* segP = SEGMENTS.Buffer ();
+	CSegment* pSeg = SEGMENTS.Buffer ();
 
-for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
-	CSide* sideP = segP->m_sides;
-	for (int32_t j = 0; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
-		CWall* wallP = sideP->Wall ();
-		if (!wallP || (wallP->nType != WALL_DOOR))
+for (int32_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
+	CSide* pSide = pSeg->m_sides;
+	for (int32_t j = 0; j < SEGMENT_SIDE_COUNT; j++, pSide++) {
+		CWall* pWall = pSide->Wall ();
+		if (!pWall || (pWall->nType != WALL_DOOR))
 			continue;
-		else if ((wallP->nClip < 0) || (wallP->nClip >= int32_t (gameData.wallData.animP.Length ()))) 
-			wallP->nClip = -1;
-		else if (gameData.wallData.animP [wallP->nClip].flags & WCF_TMAP1) {
-			sideP->m_nBaseTex = gameData.wallData.animP [wallP->nClip].frames [0];
-			sideP->m_nOvlTex = 0;
+		else if ((pWall->nClip < 0) || (pWall->nClip >= int32_t (gameData.wallData.pAnim.Length ()))) 
+			pWall->nClip = -1;
+		else if (gameData.wallData.pAnim [pWall->nClip].flags & WCF_TMAP1) {
+			pSide->m_nBaseTex = gameData.wallData.pAnim [pWall->nClip].frames [0];
+			pSide->m_nOvlTex = 0;
 			}
 		}
 	}
@@ -928,7 +928,7 @@ static void CheckAndFixWalls (void)
 {
 	int32_t		i;
 	int16_t		nSegment, nSide;
-	CWall*	wallP;
+	CWall*	pWall;
 
 for (i = 0; i < gameData.wallData.nWalls; i++)
 	if ((WALL (i)->nTrigger >= gameData.trigData.m_nTriggers [0]) && (WALL (i)->nTrigger != NO_TRIGGER)) {
@@ -939,12 +939,12 @@ for (i = 0; i < gameData.wallData.nWalls; i++)
 		}
 
 if (gameTopFileInfo.fileinfoVersion < 17) {
-	CSegment* segP = SEGMENTS.Buffer ();
-	for (nSegment = 0; nSegment <= gameData.segData.nLastSegment; nSegment++, segP++) {
+	CSegment* pSeg = SEGMENTS.Buffer ();
+	for (nSegment = 0; nSegment <= gameData.segData.nLastSegment; nSegment++, pSeg++) {
 		for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
-			if ((wallP = segP->Wall (nSide))) {
-				wallP->nSegment = nSegment;
-				wallP->nSide = nSide;
+			if ((pWall = pSeg->Wall (nSide))) {
+				pWall->nSegment = nSegment;
+				pWall->nSide = nSide;
 				}
 			}
 		}
@@ -953,9 +953,9 @@ if (gameTopFileInfo.fileinfoVersion < 17) {
 // mark all triggers on "open" segment sides (i.e. which are connected to an adjacent segment) as "fly through" 
 // to simplify internal trigger management
 for (i = 0; i < gameData.wallData.nWalls; i++) {
-	CTrigger* trigP = GEOTRIGGER (WALL (i)->nTrigger);
-	if (trigP)
-		trigP->m_info.nWall = i;
+	CTrigger* pTrigger = GEOTRIGGER (WALL (i)->nTrigger);
+	if (pTrigger)
+		pTrigger->m_info.nWall = i;
 	}
 }
 
@@ -980,39 +980,39 @@ for (i = 0; i < gameData.wallData.nWalls; i++)
 //	MK, 10/17/95: Make walls point back at the triggers that control them.
 //	Go through all triggers, stuffing controllingTrigger field in WALLS.
 
-CTrigger* trigP = GEOTRIGGERS.Buffer ();
-for (i = 0; i < gameData.trigData.m_nTriggers [0]; i++, trigP++) {
-	for (h = trigP->m_nLinks, j = 0; j < h; ) {
-		if (trigP->m_sides [j] >= 0) {
-			nSegment = trigP->m_segments [j];
+CTrigger* pTrigger = GEOTRIGGERS.Buffer ();
+for (i = 0; i < gameData.trigData.m_nTriggers [0]; i++, pTrigger++) {
+	for (h = pTrigger->m_nLinks, j = 0; j < h; ) {
+		if (pTrigger->m_sides [j] >= 0) {
+			nSegment = pTrigger->m_segments [j];
 			if (nSegment >= gameData.segData.nSegments) {
 				if (j < --h) {
-					trigP->m_segments [j] = trigP->m_segments [h];
-					trigP->m_sides [j] = trigP->m_sides [h];
+					pTrigger->m_segments [j] = pTrigger->m_segments [h];
+					pTrigger->m_sides [j] = pTrigger->m_sides [h];
 					}
 				}
 			else {
-				nSide = trigP->m_sides [j];
+				nSide = pTrigger->m_sides [j];
 				nWall = SEGMENT (nSegment)->WallNum (nSide);
 				//check to see that if a CTrigger requires a CWall that it has one,
 				//and if it requires a botGen that it has one
-				if (trigP->m_info.nType == TT_OBJECT_PRODUCER) {
+				if (pTrigger->m_info.nType == TT_OBJECT_PRODUCER) {
 					if ((SEGMENT (nSegment)->m_function != SEGMENT_FUNC_ROBOTMAKER) && (SEGMENT (nSegment)->m_function != SEGMENT_FUNC_EQUIPMAKER)) {
 						if (j < --h) {
-							trigP->m_segments [j] = trigP->m_segments [h];
-							trigP->m_sides [j] = trigP->m_sides [h];
+							pTrigger->m_segments [j] = pTrigger->m_segments [h];
+							pTrigger->m_sides [j] = pTrigger->m_sides [h];
 							}
 						continue;
 						}
 					}
-				else if ((trigP->m_info.nType != TT_LIGHT_OFF) && (trigP->m_info.nType != TT_LIGHT_ON)) { //light triggers don't require walls
+				else if ((pTrigger->m_info.nType != TT_LIGHT_OFF) && (pTrigger->m_info.nType != TT_LIGHT_ON)) { //light triggers don't require walls
 					if (IS_WALL (nWall))
 						WALL (nWall)->controllingTrigger = i;
 					else {
 #if 0
 						if (j < --h) {
-							trigP->m_segments [j] = trigP->m_segments [h];
-							trigP->m_sides [j] = trigP->m_sides [h];
+							pTrigger->m_segments [j] = pTrigger->m_segments [h];
+							pTrigger->m_sides [j] = pTrigger->m_sides [h];
 							}
 						continue;
 #endif
@@ -1022,7 +1022,7 @@ for (i = 0; i < gameData.trigData.m_nTriggers [0]; i++, trigP++) {
 			}
 		j++;
 		}
-	trigP->m_nLinks = h;
+	pTrigger->m_nLinks = h;
 	}
 }
 
@@ -1129,11 +1129,11 @@ CArray<int16_t> segCount;
 segCount.Create (gameData.segData.nVertices);
 segCount.Clear ();
 
-CSegment* segP = SEGMENTS.Buffer ();
-for (int32_t i = gameData.segData.nSegments; i; i--, segP++) {
+CSegment* pSeg = SEGMENTS.Buffer ();
+for (int32_t i = gameData.segData.nSegments; i; i--, pSeg++) {
 	for (int32_t j = 0; j < 8; j++)
-		if (segP->m_vertices [j] != 0xFFFF)
-			segCount [segP->m_vertices [j]]++;
+		if (pSeg->m_vertices [j] != 0xFFFF)
+			segCount [pSeg->m_vertices [j]]++;
 	}
 
 CArray<CVertSegRef> vertSegIndex;
@@ -1147,12 +1147,12 @@ for (int32_t h = 0, i = 0; i < gameData.segData.nSegments; i++) {
 	h += segCount [i];
 	}
 
-segP = SEGMENTS.Buffer ();
-for (int32_t i = gameData.segData.nSegments; i; i--, segP++) {
+pSeg = SEGMENTS.Buffer ();
+for (int32_t i = gameData.segData.nSegments; i; i--, pSeg++) {
 	for (int32_t j = 0; j < 8; j++) {
-		if (segP->m_vertices [j] != 0xFFFF) {
-			CVertSegRef* refP = &vertSegIndex [segP->m_vertices [j]];
-			vertSegs [refP->nIndex + refP->nSegments++] = i;
+		if (pSeg->m_vertices [j] != 0xFFFF) {
+			CVertSegRef* pRef = &vertSegIndex [pSeg->m_vertices [j]];
+			vertSegs [pRef->nIndex + pRef->nSegments++] = i;
 			}
 		}
 	}

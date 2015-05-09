@@ -70,18 +70,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void _CDECL_ FreeObjExtensionBitmaps (void)
 {
 	int32_t		i;
-	CBitmap*	bmP;
+	CBitmap*	pBm;
 
 PrintLog (1, "unloading extra bitmaps\n");
 if (!gameData.pig.tex.nExtraBitmaps)
 	gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];
-for (i = gameData.pig.tex.nBitmaps [0], bmP = gameData.pig.tex.bitmaps [0] + i; 
-	  i < gameData.pig.tex.nExtraBitmaps; i++, bmP++) {
+for (i = gameData.pig.tex.nBitmaps [0], pBm = gameData.pig.tex.bitmaps [0] + i; 
+	  i < gameData.pig.tex.nExtraBitmaps; i++, pBm++) {
 	gameData.pig.tex.nObjBitmaps--;
-	bmP->ReleaseTexture ();
-	if (bmP->Buffer ()) {
-		bmP->DestroyBuffer ();
-		UseBitmapCache (bmP, (int32_t) -bmP->Height () * (int32_t) bmP->RowSize ());
+	pBm->ReleaseTexture ();
+	if (pBm->Buffer ()) {
+		pBm->DestroyBuffer ();
+		UseBitmapCache (pBm, (int32_t) -pBm->Height () * (int32_t) pBm->RowSize ());
 		}
 	}
 gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];
@@ -217,7 +217,7 @@ return 1;
 int32_t LoadRobotReplacements (const char* szLevel, const char* szFolder, int32_t bAddBots, int32_t bAltModels, bool bCustom, bool bUseHog)
 {
 	CFile			cf;
-	CPolyModel*	modelP;
+	CPolyModel*	pModel;
 	int32_t		t, i, j;
 	int32_t		nBotTypeSave = gameData.botData.nTypes [gameStates.app.bD1Mission], 
 					nBotJointSave = gameData.botData.nJoints, 
@@ -333,14 +333,14 @@ for (j = 0; j < t; j++) {
 	if (i == nDbgModel)
 		BRP;
 #endif
-	modelP = &gameData.models.polyModels [bAltModels ? 2 : 0][i];
-	modelP->Destroy ();
-	if (!modelP->Read (0, 1, cf))
+	pModel = &gameData.models.polyModels [bAltModels ? 2 : 0][i];
+	pModel->Destroy ();
+	if (!pModel->Read (0, 1, cf))
 		return -1;
-	modelP->ReadData (NULL, cf);
-	modelP->SetType (bAltModels ? 1 : -1);
-	modelP->SetRad (modelP->Size (), 1);
-	modelP->SetCustom (bCustom);
+	pModel->ReadData (NULL, cf);
+	pModel->SetType (bAltModels ? 1 : -1);
+	pModel->SetRad (pModel->Size (), 1);
+	pModel->SetCustom (bCustom);
 	if (bAltModels) {
 #	if DBG
 		if (i == nDbgModel)
@@ -397,12 +397,12 @@ return 1;
 static tBitmapIndex LoadExitModelIFF (const char * filename)
 {
 	tBitmapIndex	bmi;
-	CBitmap*			bmP = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
+	CBitmap*			pBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
 	int32_t				iffError;		//reference parm to avoid warning message
 	CIFF				iff;
 
 bmi.index = 0;
-iffError = iff.ReadBitmap (filename, bmP, BM_LINEAR);
+iffError = iff.ReadBitmap (filename, pBm, BM_LINEAR);
 if (iffError != IFF_NO_ERROR)	 {
 #if TRACE
 	console.printf (CON_DBG, 
@@ -412,12 +412,12 @@ if (iffError != IFF_NO_ERROR)	 {
 	return bmi;
 	}
 if (iff.HasTransparency ())
-	bmP->SetPalette (NULL, iff.TransparentColor (), 254);
+	pBm->SetPalette (NULL, iff.TransparentColor (), 254);
 else
-	bmP->SetPalette (NULL, -1, 254);
-bmP->AvgColorIndex ();
+	pBm->SetPalette (NULL, -1, 254);
+pBm->AvgColorIndex ();
 bmi.index = gameData.pig.tex.nExtraBitmaps;
-gameData.pig.tex.bitmapP [gameData.pig.tex.nExtraBitmaps++] = *bmP;
+gameData.pig.tex.bitmapP [gameData.pig.tex.nExtraBitmaps++] = *pBm;
 return bmi;
 }
 
@@ -558,24 +558,24 @@ int32_t LoadExitModels (void)
 
 void RestoreDefaultModels (void)
 {
-	CPolyModel*	modelP = &gameData.models.polyModels [0][0];
+	CPolyModel*	pModel = &gameData.models.polyModels [0][0];
 	int32_t			i;
 
 gameData.botData.info [0] = gameData.botData.defaultInfo;
 gameData.botData.joints = gameData.botData.defaultJoints;
 gameData.pig.tex.objBmIndex = gameData.pig.tex.defaultObjBmIndex;
-for (i = 0; i < gameData.models.nDefPolyModels; i++, modelP++) {
+for (i = 0; i < gameData.models.nDefPolyModels; i++, pModel++) {
 #if DBG
 	if (i == nDbgModel)
 		BRP;
 #endif
-	if (modelP->Custom ()) {
-		modelP->Destroy ();
-		*modelP = gameData.models.polyModels [1][i];
+	if (pModel->Custom ()) {
+		pModel->Destroy ();
+		*pModel = gameData.models.polyModels [1][i];
 		}
 	}
-for (; i < gameData.models.nPolyModels; i++, modelP++)
-	modelP->Destroy ();
+for (; i < gameData.models.nPolyModels; i++, pModel++)
+	pModel->Destroy ();
 gameData.botData.nTypes [0] = gameData.botData.nDefaultTypes;
 gameData.botData.nJoints = gameData.botData.nDefaultJoints;
 }

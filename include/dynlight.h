@@ -44,7 +44,7 @@ class CLightRenderData {
 		uint8_t					bLightning;
 		uint8_t					bExclusive;
 		uint8_t					bUsed [MAX_THREADS];
-		CActiveDynLight*	activeLightsP [MAX_THREADS];
+		CActiveDynLight*	pActiveLights [MAX_THREADS];
 
 	public:
 		CLightRenderData ();
@@ -54,7 +54,7 @@ class CLightRenderData {
 
 class CDynLightInfo {
 	public:
-		CSegFace*		faceP;
+		CSegFace*		pFace;
 		CFixVector		vPos;
 		CFloatVector	vDirf;
 		CFloatVector	color;
@@ -128,7 +128,7 @@ class CDynLight {
 class CActiveDynLight {
 	public:
 		int16_t			nType;
-		CDynLight*	lightP;
+		CDynLight*	pLight;
 };
 
 class CDynLightIndex {
@@ -156,13 +156,13 @@ class CHeadlightManager {
 		CHeadlightManager () { Init (); }
 		void Init (void);
 		void Transform (void);
-		fix ComputeLightOnObject (CObject *objP);
+		fix ComputeLightOnObject (CObject *pObj);
 		void Toggle (void);
 		void Prepare (void);
-		int32_t Add (CObject* objP);
-		void Remove (CObject* objP);
+		int32_t Add (CObject* pObj);
+		void Remove (CObject* pObj);
 		void Update (void);
-		int32_t SetupShader (int32_t nType, int32_t bLightmaps, CFloatVector *colorP);
+		int32_t SetupShader (int32_t nType, int32_t bLightmaps, CFloatVector *pColor);
 };
 
 //------------------------------------------------------------------------------
@@ -225,12 +225,12 @@ class CLightManager {
 		void SetPos (int16_t nObject);
 		int16_t Find (int16_t nSegment, int16_t nSide, int16_t nObject);
 		bool Ambient (int16_t nSegment, int16_t nSide);
-		int16_t Update (CFloatVector *colorP, float fBrightness, int16_t nSegment, int16_t nSide, int16_t nObject);
+		int16_t Update (CFloatVector *pColor, float fBrightness, int16_t nSegment, int16_t nSide, int16_t nObject);
 		int32_t LastEnabled (void);
 		void Swap (CDynLight* pl1, CDynLight* pl2);
 		int32_t Toggle (int16_t nSegment, int16_t nSide, int16_t nObject, int32_t bState);
-		void Register (CFaceColor *colorP, int16_t nSegment, int16_t nSide);
-		int32_t Add (CSegFace* faceP, CFloatVector *colorP, fix xBrightness, int16_t nSegment,
+		void Register (CFaceColor *pColor, int16_t nSegment, int16_t nSide);
+		int32_t Add (CSegFace* pFace, CFloatVector *pColor, fix xBrightness, int16_t nSegment,
 				   int16_t nSide, int16_t nObject, int16_t nTexture, CFixVector *vPos, uint8_t bAmbient = 0);
 		void Delete (int16_t nLight);
 		void DeleteLightning (void);
@@ -241,7 +241,7 @@ class CLightManager {
 		void Transform (int32_t bStatic, int32_t bVariable);
 		uint8_t VariableVertexLights (int32_t nVertex);
 		void SetNearestToVertex (int32_t nSegment, int32_t nSide, int32_t nVertex, CFixVector *vNormalP, uint8_t nType, int32_t bStatic, int32_t bVariable, int32_t nThread);
-		int32_t SetNearestToFace (CSegFace* faceP, int32_t bTextured);
+		int32_t SetNearestToFace (CSegFace* pFace, int32_t bTextured);
 		int16_t SetNearestToSegment (int32_t nSegment, int32_t nFace, int32_t bVariable, int32_t nType, int32_t nThread);
 		void SetNearestStatic (int32_t nSegment, int32_t bStatic, int32_t nThread);
 		int16_t SetNearestToPixel (int16_t nSegment, int16_t nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int32_t nThread);
@@ -252,9 +252,9 @@ class CLightManager {
 		CFaceColor* AvgSgmColor (int32_t nSegment, CFixVector *vPosP, int32_t nThread);
 		void GatherStaticLights (int32_t nLevel);
 		void GatherStaticVertexLights (int32_t nVertex, int32_t nMax, int32_t nThread);
-		int32_t SetActive (CActiveDynLight* activeLightsP, CDynLight* lightP, int16_t nType, int32_t nThread, bool bForce = false);
-		CDynLight* GetActive (CActiveDynLight* activeLightsP, int32_t nThread);
-		void ResetUsed (CDynLight* lightP, int32_t nThread);
+		int32_t SetActive (CActiveDynLight* pActiveLights, CDynLight* pLight, int16_t nType, int32_t nThread, bool bForce = false);
+		CDynLight* GetActive (CActiveDynLight* pActiveLights, int32_t nThread);
+		void ResetUsed (CDynLight* pLight, int32_t nThread);
 		void ResetActive (int32_t nThread, int32_t nActive);
 		void ResetAllUsed (int32_t bVariable, int32_t nThread);
 		int32_t SetMethod (void);
@@ -282,7 +282,7 @@ class CLightManager {
 		static int32_t IsTriggered (int16_t nSegment, int16_t nSide, bool bOppSide = false);
 		static int32_t IsFlickering (int16_t nSegment, int16_t nSide);
 		int32_t IsDestructible (int16_t nTexture);
-		bool DeleteFromList (CDynLight* lightP, int16_t nLight);
+		bool DeleteFromList (CDynLight* pLight, int16_t nLight);
 		void Sort (void);
 	};
 
@@ -297,7 +297,7 @@ extern CLightManager lightManager;
 #if 0
 
 void RegisterLight (CFaceColor *pc, int16_t nSegment, int16_t nSide);
-int32_t lightManager.Add (CSegFace *faceP, CFloatVector *pc, fix xBrightness, 
+int32_t lightManager.Add (CSegFace *pFace, CFloatVector *pc, fix xBrightness, 
 					  int16_t nSegment, int16_t nSide, int16_t nOwner, int16_t nTexture, CFixVector *vPos);
 int32_t RemoveDynLight (int16_t nSegment, int16_t nSide, int16_t nObject);
 void AddDynGeometryLights (void);
@@ -311,7 +311,7 @@ int16_t FindDynLight (int16_t nSegment, int16_t nSide, int16_t nObject);
 int32_t ToggleDynLight (int16_t nSegment, int16_t nSide, int16_t nObject, int32_t bState);
 void SetDynLightMaterial (int16_t nSegment, int16_t nSide, int16_t nObject);
 void SetNearestVertexLights (int32_t nFace, int32_t nVertex, CFixVector *vNormalP, uint8_t nType, int32_t bStatic, int32_t bVariable, int32_t nThread);
-int32_t SetNearestFaceLights (CSegFace *faceP, int32_t bTextured);
+int32_t SetNearestFaceLights (CSegFace *pFace, int32_t bTextured);
 int16_t SetNearestPixelLights (int16_t nSegment, int16_t nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int32_t nThread);
 void SetNearestStaticLights (int32_t nSegment, int32_t bStatic, uint8_t nType, int32_t nThread);
 void ResetNearestStaticLights (int32_t nSegment, int32_t nThread);
@@ -319,11 +319,11 @@ void lightManager.ResetNearestToVertex (int32_t nVertex, int32_t nThread);
 int16_t SetNearestSegmentLights (int32_t nSegment, int32_t nFace, int32_t bVariable, int32_t nType, int32_t nThread);
 void ComputeStaticVertexLights (int32_t nVertex, int32_t nMax, int32_t nThread);
 void ComputeStaticDynLighting (int32_t nLevel);
-CDynLight *GetActiveRenderLight (CActiveDynLight *activeLightsP, int32_t nThread);
+CDynLight *GetActiveRenderLight (CActiveDynLight *pActiveLights, int32_t nThread);
 CFaceColor *AvgSgmColor (int32_t nSegment, CFixVector *vPos);
 void ResetSegmentLights (void);
 int32_t IsLight (int32_t tMapNum);
-void ResetUsedLight (CDynLight *lightP, int32_t nThread);
+void ResetUsedLight (CDynLight *pLight, int32_t nThread);
 void ResetUsedLights (int32_t bVariable, int32_t nThread);
 void ResetActiveLights (int32_t nThread, int32_t nActive);
 

@@ -38,18 +38,18 @@ void RenderObjectHalo (CFixVector *vPos, fix xSize, float red, float green, floa
 if ((gameOpts->render.coronas.bShots && (bCorona ? corona.Load () : halo.Load ()))) {
 	CFloatVector	c = {{{red, green, blue, alpha}}};
 	ogl.SetDepthWrite (false);
-	CBitmap* bmP = bCorona ? corona.Bitmap () : halo.Bitmap ();
-	bmP->SetColor (&c);
-	ogl.RenderSprite (bmP, *vPos, xSize, xSize, alpha * 4.0f / 3.0f, LIGHTTRAIL_BLENDMODE, 1);
+	CBitmap* pBm = bCorona ? corona.Bitmap () : halo.Bitmap ();
+	pBm->SetColor (&c);
+	ogl.RenderSprite (pBm, *vPos, xSize, xSize, alpha * 4.0f / 3.0f, LIGHTTRAIL_BLENDMODE, 1);
 	ogl.SetDepthWrite (true);
 	}
 }
 
 // -----------------------------------------------------------------------------
 
-void RenderPowerupCorona (CObject *objP, float red, float green, float blue, float alpha)
+void RenderPowerupCorona (CObject *pObj, float red, float green, float blue, float alpha)
 {
-if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gameOpts->render.coronas.bWeapons) && glare.Load ()) {
+if ((IsEnergyPowerup (pObj->info.nId) ? gameOpts->render.coronas.bPowerups : gameOpts->render.coronas.bWeapons) && glare.Load ()) {
 	static CFloatVector keyColors [3] = {
 	 {{{0.2f, 0.2f, 0.9f, 0.2f}}},
 	 {{{0.9f, 0.2f, 0.2f, 0.2f}}},
@@ -59,8 +59,8 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 	CFloatVector color;
 	fix			xSize;
 
-	if ((objP->info.nId >= POW_KEY_BLUE) && (objP->info.nId <= POW_KEY_GOLD)) {
-		int32_t i = objP->info.nId - POW_KEY_BLUE;
+	if ((pObj->info.nId >= POW_KEY_BLUE) && (pObj->info.nId <= POW_KEY_GOLD)) {
+		int32_t i = pObj->info.nId - POW_KEY_BLUE;
 
 		color = keyColors [(((i < 0) || (i > 2)) ? 3 : i)];
 		xSize = I2X (12);
@@ -69,37 +69,37 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 		float b = float (sqrt ((red + green + blue) / 3.0f));
 		color.Set (red, green, blue);
 		color /= b;
-		xSize = 2 * objP->info.xSize; //I2X (8);
+		xSize = 2 * pObj->info.xSize; //I2X (8);
 		}
 	float fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2.0f;
 	color *= fScale;
 	color.Alpha () = alpha;
 	glare.Bitmap ()->SetColor (&color);
-	ogl.RenderSprite (glare.Bitmap (), objP->info.position.vPos, xSize, xSize, alpha, -LIGHTTRAIL_BLENDMODE, 5);
+	ogl.RenderSprite (glare.Bitmap (), pObj->info.position.vPos, xSize, xSize, alpha, -LIGHTTRAIL_BLENDMODE, 5);
 	glare.Bitmap ()->SetColor (NULL);
 	}
 }
 
 // -----------------------------------------------------------------------------
 
-void RenderLaserCorona (CObject *objP, CFloatVector *colorP, float alpha, float fScale)
+void RenderLaserCorona (CObject *pObj, CFloatVector *pColor, float alpha, float fScale)
 {
 if (!SHOW_OBJ_FX)
 	return;
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 if (gameOpts->render.coronas.bShots && glare.Load ()) {
-	tHitbox*			phb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
+	tHitbox*			phb = &gameData.models.hitboxes [pObj->ModelId ()].hitboxes [0];
 	float				fLength = X2F (phb->vMax.v.coord.z - phb->vMin.v.coord.z) / 2;
 	CFloatVector	color;
 
 	float fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2;
-	color = *colorP;
-	colorP = &color;
+	color = *pColor;
+	pColor = &color;
 	color *= fScale;
 	color.Alpha () = alpha;
-	glare.Bitmap ()->SetColor (colorP);
-	ogl.RenderSprite (glare.Bitmap (), objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (F2X (fLength - 0.5f)), I2X (1), I2X (1), alpha, LIGHTTRAIL_BLENDMODE, 1);
+	glare.Bitmap ()->SetColor (pColor);
+	ogl.RenderSprite (glare.Bitmap (), pObj->info.position.vPos + pObj->info.position.mOrient.m.dir.f * (F2X (fLength - 0.5f)), I2X (1), I2X (1), alpha, LIGHTTRAIL_BLENDMODE, 1);
 	glare.Bitmap ()->SetColor (NULL);
 	}
 }
@@ -132,23 +132,23 @@ else
 
 // -----------------------------------------------------------------------------
 
-int32_t RenderWeaponCorona (CObject *objP, CFloatVector *colorP, float alpha, fix xOffset,
+int32_t RenderWeaponCorona (CObject *pObj, CFloatVector *pColor, float alpha, fix xOffset,
 									 float fScale, int32_t bSimple, int32_t bViewerOffset, int32_t bDepthSort)
 {
 if (!SHOW_OBJ_FX)
 	return 0;
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return 0;
-if ((objP->info.nType == OBJ_WEAPON) && (objP->info.renderType == RT_POLYOBJ))
-	RenderLaserCorona (objP, colorP, alpha, fScale);
+if ((pObj->info.nType == OBJ_WEAPON) && (pObj->info.renderType == RT_POLYOBJ))
+	RenderLaserCorona (pObj, pColor, alpha, fScale);
 else if (gameOpts->render.coronas.bShots && corona.Load ()) {
 	fix			xSize;
 	CFloatVector	color;
 
 	//static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
-	CFixVector	vPos = objP->info.position.vPos;
-	xSize = (fix) (WeaponBlobSize (objP->info.nId) * F2X (fScale));
+	CFixVector	vPos = pObj->info.position.vPos;
+	xSize = (fix) (WeaponBlobSize (pObj->info.nId) * F2X (fScale));
 	if (xOffset) {
 		if (bViewerOffset) {
 			CFixVector o = gameData.render.mine.viewer.vPos - vPos;
@@ -156,15 +156,15 @@ else if (gameOpts->render.coronas.bShots && corona.Load ()) {
 			vPos += o * xOffset;
 			}
 		else
-			vPos += objP->info.position.mOrient.m.dir.f * xOffset;
+			vPos += pObj->info.position.mOrient.m.dir.f * xOffset;
 		}
 	if (xSize < I2X (1))
 		xSize = I2X (1);
 	color.Alpha () = alpha;
 	alpha = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2;
-	color.Red () = colorP->Red () * alpha;
-	color.Green () = colorP->Green () * alpha;
-	color.Blue () = colorP->Blue () * alpha;
+	color.Red () = pColor->Red () * alpha;
+	color.Green () = pColor->Green () * alpha;
+	color.Blue () = pColor->Blue () * alpha;
 	return transparencyRenderer.AddSprite (corona.Bitmap (), vPos, &color, FixMulDiv (xSize, corona.Bitmap ()->Width (), corona.Bitmap ()->Height ()), 
 														xSize, 0, LIGHTTRAIL_BLENDMODE, 3);
 	}
@@ -178,36 +178,36 @@ static CFloatVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{
 											 {{{0,0,0}},{{0,10,-5}},{{0,10,-50}},{{0,0,-50}}}};
 #endif
 
-void RenderLightTrail (CObject *objP)
+void RenderLightTrail (CObject *pObj)
 {
-	CFloatVector	color, *colorP;
+	CFloatVector	color, *pColor;
 	int32_t				/*nTrailItem = -1, nCoronaItem = -1,*/ bGatling = 0;
 
 if (!SHOW_OBJ_FX)
 	return;
-if (!objP->IsProjectile ())
+if (!pObj->IsProjectile ())
 	return;
-if (objP->Velocity ().IsZero ())
+if (pObj->Velocity ().IsZero ())
 	return;
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 
-bGatling = objP->IsGatlingRound ();
-if (objP->info.renderType == RT_POLYOBJ)
-	colorP = gameData.weapons.color + objP->info.nId;
+bGatling = pObj->IsGatlingRound ();
+if (pObj->info.renderType == RT_POLYOBJ)
+	pColor = gameData.weapons.color + pObj->info.nId;
 else {
-	CRGBColor* clipColorP = AnimationColor (objP);
-	color.Set (clipColorP->r, clipColorP->g, clipColorP->b);
+	CRGBColor* pClipColor = AnimationColor (pObj);
+	color.Set (pClipColor->r, pClipColor->g, pClipColor->b);
 	color /= 255.0f;
-	colorP = &color;
+	pColor = &color;
 	}
 
-if (objP->HasLightTrail () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0)) {
+if (pObj->HasLightTrail () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0)) {
 	if (gameOpts->render.particles.bPlasmaTrails)
-		;//DoObjectSmoke (objP);
-	else if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->info.nType == OBJ_WEAPON) &&
-				objP->HasLightTrail () &&
-				!objP->Velocity ().IsZero () &&
+		;//DoObjectSmoke (pObj);
+	else if (EGI_FLAG (bLightTrails, 1, 1, 0) && (pObj->info.nType == OBJ_WEAPON) &&
+				pObj->HasLightTrail () &&
+				!pObj->Velocity ().IsZero () &&
 				glare.Load ()) {
 			CFloatVector	vNorm, vCenter, vOffs, vTrailVerts [8];
 			float				h, l, r, dx, dy;
@@ -219,29 +219,29 @@ if (objP->HasLightTrail () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
 				{{0.0f,0.0f}},{{1.0f,0.0f}},{{1.0f,0.5f}},{{0.0f,0.5f}},
 				{{0.0f,0.5f}},{{1.0f,0.5f}},{{1.0f,1.0f}},{{0.0f,1.0f}}
 				};
-		vCenter.Assign (objP->info.position.vPos);
-		vOffs.Assign (objP->info.position.mOrient.m.dir.f);
-		if (objP->info.renderType == RT_POLYOBJ) {
-			tHitbox*	phb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
+		vCenter.Assign (pObj->info.position.vPos);
+		vOffs.Assign (pObj->info.position.mOrient.m.dir.f);
+		if (pObj->info.renderType == RT_POLYOBJ) {
+			tHitbox*	phb = &gameData.models.hitboxes [pObj->ModelId ()].hitboxes [0];
 			l = X2F (phb->vMax.v.coord.z - phb->vMin.v.coord.z);
 			dx = X2F (phb->vMax.v.coord.x - phb->vMin.v.coord.x);
 			dy = X2F (phb->vMax.v.coord.y - phb->vMin.v.coord.y);
-			r = float (sqrt (dx * dx + dy * dy)) * ((objP->info.nId == FUSION_ID) ? 1.5f : 3.0f);
+			r = float (sqrt (dx * dx + dy * dy)) * ((pObj->info.nId == FUSION_ID) ? 1.5f : 3.0f);
 			vCenter += vOffs * (l / 2.0f);
 			}
 		else {
-			r = WeaponBlobSize (objP->info.nId);
+			r = WeaponBlobSize (pObj->info.nId);
 			l = r * 1.5f;
 			r *= 2;
 			}
-		memcpy (&trailColor, colorP, 3 * sizeof (float));
+		memcpy (&trailColor, pColor, 3 * sizeof (float));
 		float fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2;
 		trailColor *= fScale;
 		vTrailVerts [0] = vCenter + vOffs * l;
-		if (objP->mType.physInfo.flags & PF_STICK)
+		if (pObj->mType.physInfo.flags & PF_STICK)
 			h = 2 * l;
 		else {
-			h = X2F (CFixVector::Dist (objP->info.position.vPos, objP->Origin ()));
+			h = X2F (CFixVector::Dist (pObj->info.position.vPos, pObj->Origin ()));
 			if (h > 50.0f)
 				h = 50.0f;
 			else if (h < 1.0f)
@@ -268,28 +268,28 @@ if (objP->HasLightTrail () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
 		}
 	}
 
-if ((objP->info.renderType != RT_POLYOBJ) || (objP->info.nId == FUSION_ID))
-	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2.0f + X2F (Rand (I2X (1) / 8)), 1, 0, 1);
+if ((pObj->info.renderType != RT_POLYOBJ) || (pObj->info.nId == FUSION_ID))
+	RenderWeaponCorona (pObj, pColor, 0.5f, 0, 2.0f + X2F (Rand (I2X (1) / 8)), 1, 0, 1);
 else
-	RenderWeaponCorona (objP, colorP, 0.75f, 0, bGatling ? 1.0f : 2.0f, 0, 0, 0);
+	RenderWeaponCorona (pObj, pColor, 0.75f, 0, bGatling ? 1.0f : 2.0f, 0, 0, 0);
 }
 
 // -----------------------------------------------------------------------------
 
-void DrawDebrisCorona (CObject *objP)
+void DrawDebrisCorona (CObject *pObj)
 {
 	static	CFloatVector	debrisGlow = {{{0.66f, 0, 0, 1}}};
 	static	CFloatVector	markerGlow = {{{0, 0.66f, 0, 1}}};
 	static	time_t t0 = 0;
 
-if (objP->info.nType == OBJ_MARKER)
-	RenderWeaponCorona (objP, &markerGlow, 0.75f, 0, 4, 1, 1, 0);
+if (pObj->info.nType == OBJ_MARKER)
+	RenderWeaponCorona (pObj, &markerGlow, 0.75f, 0, 4, 1, 1, 0);
 #if DBG
-else if (objP->info.nType == OBJ_DEBRIS) {
+else if (pObj->info.nType == OBJ_DEBRIS) {
 #else
-else if ((objP->info.nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
+else if ((pObj->info.nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 #endif
-	float	h = (float) nDebrisLife [gameOpts->render.nDebrisLife] - X2F (objP->info.xLifeLeft);
+	float	h = (float) nDebrisLife [gameOpts->render.nDebrisLife] - X2F (pObj->info.xLifeLeft);
 	if (h < 0)
 		h = 0;
 	if (h < 10) {
@@ -299,7 +299,7 @@ else if ((objP->info.nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 			debrisGlow.Red () = 0.5f + X2F (Rand (I2X (1) / 4));
 			debrisGlow.Green () = X2F (Rand (I2X (1) / 4));
 			}
-		RenderWeaponCorona (objP, &debrisGlow, h, 5 * objP->info.xSize, 1.5f, 1, LIGHTTRAIL_BLENDMODE, 0);
+		RenderWeaponCorona (pObj, &debrisGlow, h, 5 * pObj->info.xSize, 1.5f, 1, LIGHTTRAIL_BLENDMODE, 0);
 		}
 	}
 }

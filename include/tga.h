@@ -37,8 +37,8 @@ class CTGAHeader {
 				Reset ();
 			}
 		
-		int32_t Read (CFile& cf, CBitmap* bmP);
-		int32_t Write (CFile& cf, CBitmap *bmP);
+		int32_t Read (CFile& cf, CBitmap* pBm);
+		int32_t Write (CFile& cf, CBitmap *pBm);
 
 		inline tTGAHeader& Data (void) { return m_data; }
 		inline uint16_t Width (void) { return m_data.width; }
@@ -69,20 +69,20 @@ class CTGA {
 	protected:
 		CFile			m_cf;
 		CTGAHeader	m_header;
-		CBitmap*		m_bmP;
+		CBitmap*		m_pBm;
 
 	public:
-		CTGA (CBitmap* bmP = NULL)
-			: m_bmP (bmP)
+		CTGA (CBitmap* pBm = NULL)
+			: m_pBm (pBm)
 			{
 			}
 
-		~CTGA () { m_bmP = NULL; }
+		~CTGA () { m_pBm = NULL; }
 
-		void Setup (CBitmap* bmP = NULL, const tTGAHeader* headerP = NULL) 
+		void Setup (CBitmap* pBm = NULL, const tTGAHeader* headerP = NULL) 
 			{ 
-			if (bmP)
-				m_bmP = bmP;
+			if (pBm)
+				m_pBm = pBm;
 			m_header.Setup (headerP);
 			}
 

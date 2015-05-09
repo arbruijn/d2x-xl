@@ -92,7 +92,7 @@ class CPolyModel : public CByteArray {
 		void Init (void);
 		int32_t Read (int32_t bHMEL, int32_t bCustom, CFile& cf);
 		void ReadData (CPolyModel* defModelP, CFile& cf);
-		void Load (const char *filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo *botInfoP);
+		void Load (const char *filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo *pRobotInfo);
 		int32_t LoadTextures (tBitmapIndex*	altTextures);
 		void FindMinMax (void);
 		fix Size (void);
@@ -135,14 +135,14 @@ class CPolyModel : public CByteArray {
 		int32_t	m_filePos;
 
 		void POF_Seek (int32_t len, int32_t nType);
-		size_t POF_Read (void *dst, size_t elsize, size_t nelem, uint8_t *bufP);
-		int32_t POF_ReadInt (uint8_t *bufP);
-		int16_t POF_ReadShort (uint8_t *bufP);
-		void POF_ReadString (char *buf, int32_t max_char, uint8_t *bufP);
-		void POF_ReadVecs (CFixVector *vecs, int32_t n, uint8_t *bufP);
-		void POF_ReadAngs (CAngleVector *angs, int32_t n, uint8_t *bufP);
+		size_t POF_Read (void *dst, size_t elsize, size_t nelem, uint8_t *pBuffer);
+		int32_t POF_ReadInt (uint8_t *pBuffer);
+		int16_t POF_ReadShort (uint8_t *pBuffer);
+		void POF_ReadString (char *buf, int32_t max_char, uint8_t *pBuffer);
+		void POF_ReadVecs (CFixVector *vecs, int32_t n, uint8_t *pBuffer);
+		void POF_ReadAngs (CAngleVector *angs, int32_t n, uint8_t *pBuffer);
 
-		void Parse (const char *filename, tRobotInfo *botInfoP);
+		void Parse (const char *filename, tRobotInfo *pRobotInfo);
 		void Check (uint8_t* dataP);
 		void Setup (void);
 	};
@@ -157,10 +157,10 @@ extern int32_t nSimpleModelThresholdScale;
 // array of names of currently-loaded models
 extern char pofNames [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
-int32_t LoadPolyModel (const char* filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo* botInfoP);
+int32_t LoadPolyModel (const char* filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo* pRobotInfo);
 
 // draw a polygon model
-int32_t DrawPolyModel (CObject* objP, CFixVector* pos, CFixMatrix* orient, CAngleVector* animAngles, int32_t nModel, int32_t flags, fix light, 
+int32_t DrawPolyModel (CObject* pObj, CFixVector* pos, CFixMatrix* orient, CAngleVector* animAngles, int32_t nModel, int32_t flags, fix light, 
 							  fix* glowValues, tBitmapIndex nAltTextures[], CFloatVector* obj_color);
 
 // draws the given model in the current canvas.  The distance is set to
@@ -174,7 +174,7 @@ void DrawModelPicture (int32_t mn,CAngleVector* orient_angles);
 
 int32_t ReadPolyModels (CArray<CPolyModel>& models, int32_t nModels, CFile& cf, int32_t nOffset = 0);
 
-CPolyModel* GetPolyModel (CObject* objP, CFixVector* pos, int32_t nModel, int32_t flags, int32_t* bCustomModel = NULL);
+CPolyModel* GetPolyModel (CObject* pObj, CFixVector* pos, int32_t nModel, int32_t flags, int32_t* bCustomModel = NULL);
 
 //	-----------------------------------------------------------------------------
 

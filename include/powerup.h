@@ -111,10 +111,10 @@ extern tPowerupTypeInfo powerupInfo[MAX_POWERUP_TYPES];
 
 void InitPowerupTables (void);
 
-void DrawPowerup(CObject *objP);
+void DrawPowerup(CObject *pObj);
 
 //returns true if powerup consumed
-int32_t DoPowerup(CObject *objP, int32_t nPlayer);
+int32_t DoPowerup(CObject *pObj, int32_t nPlayer);
 
 //process (animate) a powerup for one frame
 void UpdateFlagClips (void);
@@ -144,8 +144,8 @@ int16_t PowerupsOnShips (int32_t nPowerup);
 void SpawnLeftoverPowerups (int16_t nObject);
 void CheckInventory (void);
 
-int32_t PickupEnergyBoost (CObject *objP, int32_t nPlayer);
-int32_t PickupEquipment (CObject *objP, int32_t nEquipment, const char *pszHave, const char *pszGot, int32_t nPlayer);
+int32_t PickupEnergyBoost (CObject *pObj, int32_t nPlayer);
+int32_t PickupEquipment (CObject *pObj, int32_t nEquipment, const char *pszHave, const char *pszGot, int32_t nPlayer);
 
 extern const char *pszPowerup [MAX_POWERUP_TYPES];
 extern uint8_t powerupType [MAX_POWERUP_TYPES];

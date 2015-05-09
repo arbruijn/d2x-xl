@@ -85,10 +85,10 @@ for (i = nPoolStrings, ps = stringPool; i; i--, ps++) {
 		}
 	if (ps->pId)
 		*ps->pId = 0;
-	if (ps->bmP) {
-		ps->bmP->ReleaseTexture ();
-		delete ps->bmP;
-		ps->bmP = NULL;
+	if (ps->pBm) {
+		ps->pBm->ReleaseTexture ();
+		delete ps->pBm;
+		ps->pBm = NULL;
 		}
 	}
 PrintLog (-1);
@@ -111,9 +111,9 @@ if (fontManager.Scale () != 1.0f)
 
 if (*idP) {
 	ps = stringPool + *idP - 1;
-	ps->bmP->ReleaseTexture ();
-	delete ps->bmP;
-	ps->bmP = NULL;
+	ps->pBm->ReleaseTexture ();
+	delete ps->pBm;
+	ps->pBm = NULL;
 	}
 else {
 	if (nPoolStrings >= GRS_MAX_STRINGS)
@@ -121,7 +121,7 @@ else {
 	ps = stringPool + nPoolStrings;
 	}
 fontManager.Current ()->StringSize (s, w, h, aw);
-if (!(ps->bmP = CreateStringBitmap (s, 0, 0, 0, 0, w, 0, 1))) {
+if (!(ps->pBm = CreateStringBitmap (s, 0, 0, 0, 0, w, 0, 1))) {
 	*idP = 0;
 	return NULL;
 	}
@@ -133,8 +133,8 @@ if (ps->pszText && (ps->nLength < l)) {
 if (!ps->pszText) {
 	ps->nLength = 3 * l / 2;
 	if (!(ps->pszText = new char [ps->nLength])) {
-		delete ps->bmP;
-		ps->bmP = NULL;
+		delete ps->pBm;
+		ps->pBm = NULL;
 		*idP = 0;
 		return NULL;
 		}
@@ -159,7 +159,7 @@ if (*idP > nPoolStrings)
 	*idP = 0;
 else if (*idP) {
 	ps = stringPool + *idP - 1;
-	if (ps->bmP && ps->pszText && !strcmp (ps->pszText, s))
+	if (ps->pBm && ps->pszText && !strcmp (ps->pszText, s))
 		return ps;
 	}
 return CreatePoolString (s, idP);
@@ -181,7 +181,7 @@ int32_t grMsgColorLevel = 1;
 int32_t GrInternalString0 (int32_t x, int32_t y, const char *s)
 {
 	uint8_t*		fp;
-	const char*	textP, *nextRowP, *text_ptr1;
+	const char*	pText, *nextRowP, *text_ptr1;
 	int32_t			r, mask, i, bits, width, spacing, letter, underline;
 	int32_t			skip_lines = 0;
 	uint32_t			videoOffset, videoOffset1;
@@ -215,35 +215,35 @@ while (nextRowP != NULL) {
 		videoOffset1 = y * rowSize + xx;
 		}
 	for (r = 0; r < font.height; r++) {
-		textP = text_ptr1;
+		pText = text_ptr1;
 		videoOffset = videoOffset1;
-		while ((c = *textP)) {
+		while ((c = *pText)) {
 			if (c == '\n') {
-				nextRowP = textP + 1;
+				nextRowP = pText + 1;
 				break;
 				}
 			if (c == CC_COLOR) {
-				CCanvas::Current ()->FontColor (0).index = *(++textP);
+				CCanvas::Current ()->FontColor (0).index = *(++pText);
 				CCanvas::Current ()->FontColor (0).rgb = 0;
-				textP++;
+				pText++;
 				continue;
 				}
 			if (c == CC_LSPACING) {
-				skip_lines = *(++textP) - '0';
-				textP++;
+				skip_lines = *(++pText) - '0';
+				pText++;
 				continue;
 				}
 			underline = 0;
 			if (c == CC_UNDERLINE) {
 				if ((r == font.baseLine + 2) || (r == font.baseLine + 3))
 					underline = 1;
-				textP++;
+				pText++;
 				}
-			fontManager.Current ()->GetCharWidth (textP[0], textP[1], width, spacing);
+			fontManager.Current ()->GetCharWidth (pText[0], pText[1], width, spacing);
 			letter = c - font.minChar;
 			if (!fontManager.Current ()->InFont (letter)) {	//not in font, draw as space
 				videoOffset += spacing;
-				textP++;
+				pText++;
 				continue;
 				}
 			if (font.flags & FT_PROPORTIONAL)
@@ -269,7 +269,7 @@ while (nextRowP != NULL) {
 						}
 					}
 			videoOffset += spacing-width;		//for kerning
-			textP++;
+			pText++;
 			}
 		videoOffset1 += rowSize; y++;
 		}
@@ -284,25 +284,25 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static inline const char* ScanEmbeddedColors (char c, const char* textP, int32_t origColor, int32_t nOffset, int32_t nScale)
+static inline const char* ScanEmbeddedColors (char c, const char* pText, int32_t origColor, int32_t nOffset, int32_t nScale)
 {
 if ((c >= 1) && (c <= 3)) {
-	if (textP [1]) {
+	if (pText [1]) {
 		if (grMsgColorLevel >= c) {
 			CCanvas::Current ()->FontColor (0).rgb = 1;
-			CCanvas::Current ()->FontColor (0).Set ((textP [1] - nOffset) * nScale, (textP [2] - nOffset) * nScale, (textP [3] - nOffset) * nScale, 255);
+			CCanvas::Current ()->FontColor (0).Set ((pText [1] - nOffset) * nScale, (pText [2] - nOffset) * nScale, (pText [3] - nOffset) * nScale, 255);
 			}
-		return textP + 4;
+		return pText + 4;
 		}
 	}
 else if ((c >= 4) && (c <= 6)) {
-	if (grMsgColorLevel >= *textP - 3) {
+	if (grMsgColorLevel >= *pText - 3) {
 		CCanvas::Current ()->FontColor (0).index = origColor;
 		CCanvas::Current ()->FontColor (0).rgb = 0;
 		}
-	return textP + 1;
+	return pText + 1;
 	}
-return textP + 1;
+return pText + 1;
 }
 
 //------------------------------------------------------------------------------
@@ -312,7 +312,7 @@ return textP + 1;
 int32_t GrInternalString0m (int32_t x, int32_t y, const char *s)
 {
 	uint8_t*			fp;
-	const char*		textP, * nextRowP, * text_ptr1;
+	const char*		pText, * nextRowP, * text_ptr1;
 	int32_t				r, mask, i, bits, width, spacing, letter, underline;
 	int32_t				skip_lines = 0;
 	char				c;
@@ -346,39 +346,39 @@ while (nextRowP != NULL) {
 		}
 
 	for (r = 0; r < font.height; r++) {
-		textP = text_ptr1;
+		pText = text_ptr1;
 		videoOffset = videoOffset1;
-		while ((c = *textP)) {
+		while ((c = *pText)) {
 			if (c == '\n') {
-				nextRowP = textP + 1;
+				nextRowP = pText + 1;
 				break;
 				}
 			if (c == CC_COLOR) {
-				CCanvas::Current ()->FontColor (0).index = * (++textP);
-				textP++;
+				CCanvas::Current ()->FontColor (0).index = * (++pText);
+				pText++;
 				continue;
 				}
 			if (c == CC_LSPACING) {
-				skip_lines = * (++textP) - '0';
-				textP++;
+				skip_lines = * (++pText) - '0';
+				pText++;
 				continue;
 				}
 			underline = 0;
 			if (c == CC_UNDERLINE) {
 				if ((r==font.baseLine+2) || (r==font.baseLine+3))
 					underline = 1;
-				c = * (++textP);
+				c = * (++pText);
 				}
-			fontManager.Current ()->GetCharWidth (c, textP[1], width, spacing);
+			fontManager.Current ()->GetCharWidth (c, pText[1], width, spacing);
 			letter = c - font.minChar;
 			if (c <= 0x06) {	//not in font, draw as space
-				textP = ScanEmbeddedColors (c, textP, origColor, 0, 1);
+				pText = ScanEmbeddedColors (c, pText, origColor, 0, 1);
 				continue;
 				}
 
 			if (!fontManager.Current ()->InFont (letter)) {
 				videoOffset += spacing;
-				textP++;
+				pText++;
 				}
 
 			if (font.flags & FT_PROPORTIONAL)
@@ -404,7 +404,7 @@ while (nextRowP != NULL) {
 					mask >>= 1;
 					}
 				}
-			textP++;
+			pText++;
 			videoOffset += spacing-width;
 			}
 		videoOffset1 += rowSize;
@@ -453,42 +453,42 @@ return pszDest;
 
 int32_t CFont::DrawString (int32_t left, int32_t top, const char *s)
 {
-	const char*		textP, * nextRowP, * text_ptr1;
+	const char*		pText, * nextRowP, * text_ptr1;
 	int32_t			width, spacing, letter;
 	int32_t			x, y;
 	int32_t			origColor = CCanvas::Current ()->FontColor (0).index; //to allow easy reseting to default string color with colored strings -MPM
 	float				fScale = fontManager.Scale ();
 	uint8_t			c;
 	CBitmap*			bmf;
-	CCanvasColor*	colorP = (m_info.flags & FT_COLOR) ? NULL : &CCanvas::Current ()->FontColor (0);
+	CCanvasColor*	pColor = (m_info.flags & FT_COLOR) ? NULL : &CCanvas::Current ()->FontColor (0);
 	
 nextRowP = s;
 y = top;
 while (nextRowP != NULL) {
 	text_ptr1 = nextRowP;
 	nextRowP = NULL;
-	textP = text_ptr1;
-	x = (left == 0x8000) ? fontManager.Current ()->GetCenteredX (textP) : left;
-	while ((c = *textP)) {
+	pText = text_ptr1;
+	x = (left == 0x8000) ? fontManager.Current ()->GetCenteredX (pText) : left;
+	while ((c = *pText)) {
 		if (c == '\n') {
-			nextRowP = textP + 1;
+			nextRowP = pText + 1;
 			y += fontManager.Scaled (m_info.height + 2);
 			break;
 			}
 		letter = c - m_info.minChar;
-		fontManager.Current ()->GetCharWidth (c, textP [1], width, spacing);
+		fontManager.Current ()->GetCharWidth (c, pText [1], width, spacing);
 		if (c <= 0x06) {	//not in font, draw as space
-			textP = ScanEmbeddedColors (c, textP, origColor, 128, 2);
-			colorP = &CCanvas::Current ()->FontColor (0);
+			pText = ScanEmbeddedColors (c, pText, origColor, 128, 2);
+			pColor = &CCanvas::Current ()->FontColor (0);
 			continue;
 			}
 		if (fontManager.Current ()->InFont (letter)) {
 			bmf = m_info.bitmaps + letter;
 			bmf->AddFlags (BM_FLAG_TRANSPARENT);
-			bmf->RenderScaled (x, y, int32_t (bmf->Width () * fScale), int32_t (bmf->Height () * fScale), I2X (1), 0, colorP, !gameStates.app.bDemoData);
+			bmf->RenderScaled (x, y, int32_t (bmf->Width () * fScale), int32_t (bmf->Height () * fScale), I2X (1), 0, pColor, !gameStates.app.bDemoData);
 			}
 		x += spacing;
-		textP++;
+		pText++;
 		}
 	}
 return 0;
@@ -496,19 +496,19 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static bool FillStringBitmap (CBitmap* bmP, const char *s, int32_t nKey, uint32_t nKeyColor, int32_t *nTabs, int32_t bCentered, int32_t nMaxWidth, int32_t bForce, int32_t& w, int32_t& h)
+static bool FillStringBitmap (CBitmap* pBm, const char *s, int32_t nKey, uint32_t nKeyColor, int32_t *nTabs, int32_t bCentered, int32_t nMaxWidth, int32_t bForce, int32_t& w, int32_t& h)
 {
 
 	int32_t		origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
 	int32_t		x, y, cw, spacing, nTab, nChars, bHotKey;
-	CBitmap*		bmfP;
+	CBitmap*		pBmf;
 	CRGBAColor	hc, kc;
-	CPalette*	palP = NULL;
-	CRGBColor*	colorP;
+	CPalette*	pPalette = NULL;
+	CRGBColor*	pColor;
 	uint8_t		c;
-	const char*	textP, *text_ptr1, *nextRowP;
+	const char*	pText, *text_ptr1, *nextRowP;
 	int32_t		letter;
-	CFont*		fontP = fontManager.Current ();
+	CFont*		pFont = fontManager.Current ();
 
 nextRowP = s;
 y = 0;
@@ -517,32 +517,32 @@ nChars = 0;
 while (nextRowP) {
 	text_ptr1 = nextRowP;
 	nextRowP = NULL;
-	textP = text_ptr1;
+	pText = text_ptr1;
 #if 0
 #	if DBG
 	if (bCentered)
-		x = (w - fontManager.Current ()->GetLineWidth (textP)) / 2;
+		x = (w - fontManager.Current ()->GetLineWidth (pText)) / 2;
 	else
 		x = 0;
 #	else
-	x = bCentered ? (w - fontManager.Current ()->GetLineWidth (textP)) / 2 : 0;
+	x = bCentered ? (w - fontManager.Current ()->GetLineWidth (pText)) / 2 : 0;
 #	endif
 #else
 x = 0;
 #endif
-	while ((c = *textP)) {
+	while ((c = *pText)) {
 		if (c == '\n') {
-			nextRowP = textP + 1;
-			y += fontP->Height () + 2;
+			nextRowP = pText + 1;
+			y += pFont->Height () + 2;
 			nTab = 0;
 			break;
 			}
 		if (c == '\t') {
-			textP++;
+			pText++;
 			if (nTabs && (nTab < 6)) {
 				int32_t	sw, sh, aw;
 
-				fontManager.Current ()->StringSize (textP, sw, sh, aw);
+				fontManager.Current ()->StringSize (pText, sw, sh, aw);
 				int32_t tx = LHX (nTabs [nTab++]);
 				if (!gameStates.multi.bSurfingNet)
 					x = nMaxWidth - sw;
@@ -551,41 +551,41 @@ x = 0;
 				}
 			continue;
 			}
-		letter = c - fontP->MinChar ();
-		fontP->GetCharWidth (c, textP [1], cw, spacing);
+		letter = c - pFont->MinChar ();
+		pFont->GetCharWidth (c, pText [1], cw, spacing);
 		if (c <= 0x06) {	//not in font, draw as space
-			textP = ScanEmbeddedColors (c, textP, origColor, 128, 2);
+			pText = ScanEmbeddedColors (c, pText, origColor, 128, 2);
 			continue;
 			}
 		if (!fontManager.Current ()->InFont (letter)) {
 			x += spacing;
-			textP++;
+			pText++;
 			continue;
 			}
 		if ((bHotKey = ((nKey < 0) && isalnum (c)) || (nKey && ((int32_t) c == nKey))))
 			nKey = 0;
-		bmfP = (bHotKey && (fontManager.Current () != SMALL_FONT)) ? SELECTED_FONT->Bitmaps () + letter : fontP->Bitmaps () + letter;
-		palP = bmfP->Parent () ? bmfP->Parent ()->Palette () : bmfP->Palette ();
+		pBmf = (bHotKey && (fontManager.Current () != SMALL_FONT)) ? SELECTED_FONT->Bitmaps () + letter : pFont->Bitmaps () + letter;
+		pPalette = pBmf->Parent () ? pBmf->Parent ()->Palette () : pBmf->Palette ();
 		int32_t transparencyColor = paletteManager.Texture ()->TransparentColor ();
 		nChars++;
 		kc.Red () = RGBA_RED (nKeyColor);
 		kc.Green () = RGBA_GREEN (nKeyColor);
 		kc.Blue () = RGBA_BLUE (nKeyColor);
 		kc.Alpha () = 255;
-		if (fontP->Flags () & FT_COLOR) {
-			for (int32_t hy = 0; hy < bmfP->Height (); hy++) {
-				CRGBAColor* pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
-				uint8_t* pf = bmfP->Buffer () + hy * bmfP->RowSize ();
-				for (int32_t hx = bmfP->Width (); hx; hx--, pc++, pf++) {
+		if (pFont->Flags () & FT_COLOR) {
+			for (int32_t hy = 0; hy < pBmf->Height (); hy++) {
+				CRGBAColor* pc = reinterpret_cast<CRGBAColor*> (pBm->Buffer ()) + (y + hy) * w + x;
+				uint8_t* pf = pBmf->Buffer () + hy * pBmf->RowSize ();
+				for (int32_t hx = pBmf->Width (); hx; hx--, pc++, pf++) {
 #if 1 || DBG
-					if ((pc - reinterpret_cast<CRGBAColor*> (bmP->Buffer ())) >= bmP->Width () * bmP->Height ())
+					if ((pc - reinterpret_cast<CRGBAColor*> (pBm->Buffer ())) >= pBm->Width () * pBm->Height ())
 						continue;
 #endif
 					if ((c = *pf) != transparencyColor) {
-						colorP = palP->Color () + c;
-						pc->Red () = colorP->Red () * 4;
-						pc->Green () = colorP->Green () * 4;
-						pc->Blue () = colorP->Blue () * 4;
+						pColor = pPalette->Color () + c;
+						pc->Red () = pColor->Red () * 4;
+						pc->Green () = pColor->Green () * 4;
+						pc->Blue () = pColor->Blue () * 4;
 						pc->Alpha () = 255;
 						}
 					}
@@ -598,19 +598,19 @@ x = 0;
 				if (CCanvas::Current ()->FontColor (0).rgb)
 					hc = CCanvas::Current ()->FontColor (0);
 				else {
-					colorP = palP->Color () + CCanvas::Current ()->FontColor (0).index;
-					hc.Red () = colorP->Red () * 4;
-					hc.Green () = colorP->Green () * 4;
-					hc.Blue () = colorP->Blue () * 4;
+					pColor = pPalette->Color () + CCanvas::Current ()->FontColor (0).index;
+					hc.Red () = pColor->Red () * 4;
+					hc.Green () = pColor->Green () * 4;
+					hc.Blue () = pColor->Blue () * 4;
 					}
 				hc.Alpha () = 255;
 				}
-			for (int32_t hy = 0; hy < bmfP->Height (); hy++) {
-				CRGBAColor* pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
-				uint8_t* pf = bmfP->Buffer () + hy * bmfP->RowSize ();
-				for (int32_t hx = bmfP->Width (); hx; hx--, pc++, pf++) {
+			for (int32_t hy = 0; hy < pBmf->Height (); hy++) {
+				CRGBAColor* pc = reinterpret_cast<CRGBAColor*> (pBm->Buffer ()) + (y + hy) * w + x;
+				uint8_t* pf = pBmf->Buffer () + hy * pBmf->RowSize ();
+				for (int32_t hx = pBmf->Width (); hx; hx--, pc++, pf++) {
 #if 1 || DBG
-					if ((pc - reinterpret_cast<CRGBAColor*> (bmP->Buffer ())) >= bmP->Width () * bmP->Height ())
+					if ((pc - reinterpret_cast<CRGBAColor*> (pBm->Buffer ())) >= pBm->Width () * pBm->Height ())
 						continue;
 #endif
 					if (*pf != transparencyColor)
@@ -619,10 +619,10 @@ x = 0;
 				}
 			}
 		x += spacing;
-		textP++;
+		pText++;
 		}
 	}
-bmP->SetPalette (palP);
+pBm->SetPalette (pPalette);
 return true;
 }
 
@@ -632,9 +632,9 @@ extern bool bRegisterBitmaps;
 
 CBitmap *CreateStringBitmap (const char *s, int32_t nKey, uint32_t nKeyColor, int32_t *nTabs, int32_t bCentered, int32_t nMaxWidth, int32_t nRowPad, int32_t bForce)
 {
-	CFont*		fontP = fontManager.Current ();
+	CFont*		pFont = fontManager.Current ();
 	float			fScale = fontManager.Scale ();
-	CBitmap*		bmP;
+	CBitmap*		pBm;
 	int32_t		w, h, aw;
 
 #if 0
@@ -642,7 +642,7 @@ if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
 	return NULL;
 #endif
 fontManager.SetScale (1.0f / (gameStates.app.bDemoData + 1));
-int32_t nLineCount = fontP->StringSizeTabbed (s, w, h, aw, nTabs, nMaxWidth);
+int32_t nLineCount = pFont->StringSizeTabbed (s, w, h, aw, nTabs, nMaxWidth);
 if (!(w && h)) {
 	fontManager.SetScale (fScale);
 	return NULL;
@@ -656,28 +656,28 @@ for (;;) {
 		}
 	bool b = bRegisterBitmaps;
 	bRegisterBitmaps = false;
-	bmP = CBitmap::Create (0, w, h, 4);
-	bmP->SetCartoonizable (0);
+	pBm = CBitmap::Create (0, w, h, 4);
+	pBm->SetCartoonizable (0);
 	bRegisterBitmaps = b;
-	if (!bmP) {
+	if (!pBm) {
 		fontManager.SetScale (fScale);
 		return NULL;
 		}
-	if (!bmP->Buffer ()) {
+	if (!pBm->Buffer ()) {
 		fontManager.SetScale (fScale);
-		delete bmP;
+		delete pBm;
 		return NULL;
 		}
-	bmP->SetName ("String Bitmap");
-	bmP->Clear ();
-	bmP->AddFlags (BM_FLAG_TRANSPARENT);
-	if (FillStringBitmap (bmP, s, nKey, nKeyColor, nTabs, bCentered, nMaxWidth, bForce, w, h))
+	pBm->SetName ("String Bitmap");
+	pBm->Clear ();
+	pBm->AddFlags (BM_FLAG_TRANSPARENT);
+	if (FillStringBitmap (pBm, s, nKey, nKeyColor, nTabs, bCentered, nMaxWidth, bForce, w, h))
 		break;
-	bmP->Destroy ();
+	pBm->Destroy ();
 	}
-bmP->SetTranspType (-1);
+pBm->SetTranspType (-1);
 fontManager.SetScale (fScale);
-return bmP;
+return pBm;
 }
 
 //------------------------------------------------------------------------------
@@ -688,12 +688,12 @@ int32_t GrString (int32_t x, int32_t y, const char *s, int32_t *idP)
 	grsString	*ps;
 
 if (/*(CCanvas::Current ()->Mode () == BM_OGL) &&*/ (ps = GetPoolString (s, idP))) {
-	CBitmap* bmP = ps->bmP;
+	CBitmap* pBm = ps->pBm;
 	float		fScale = fontManager.Scale ();
-	int32_t	w = int32_t (bmP->Width () * fScale);
+	int32_t	w = int32_t (pBm->Width () * fScale);
 	int32_t	xs = gameData.X (x);
 
-	ps->bmP->RenderScaled (xs, y, gameData.X (x + w) - xs, int32_t (bmP->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0), !gameStates.app.bDemoData);
+	ps->pBm->RenderScaled (xs, y, gameData.X (x + w) - xs, int32_t (pBm->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0), !gameStates.app.bDemoData);
 	return (int32_t) (ps - stringPool) + 1;
 	}
 #endif
@@ -792,7 +792,7 @@ return GrString (x, y, buffer, idP);
 int32_t GrInternalStringClipped (int32_t x, int32_t y, const char *s)
 {
 	uint8_t * fp;
-	const char * textP, * nextRowP, * text_ptr1;
+	const char * pText, * nextRowP, * text_ptr1;
 	int32_t r, mask, i, bits, width, spacing, letter, underline;
 	int32_t x1 = x, last_x;
 	tFont font;
@@ -810,39 +810,39 @@ while (nextRowP != NULL) {
 	last_x = x;
 
 	for (r = 0; r < font.height; r++) {
-		textP = text_ptr1;
+		pText = text_ptr1;
 		x = last_x;
 
-		while (*textP) {
-			if (*textP == '\n') {
-				nextRowP = &textP[1];
+		while (*pText) {
+			if (*pText == '\n') {
+				nextRowP = &pText[1];
 				break;
 				}
 
-			if (*textP == CC_COLOR) {
-				CCanvas::Current ()->FontColor (0).index = * (textP+1);
-				textP += 2;
+			if (*pText == CC_COLOR) {
+				CCanvas::Current ()->FontColor (0).index = * (pText+1);
+				pText += 2;
 				continue;
 				}
 
-			if (*textP == CC_LSPACING) {
+			if (*pText == CC_LSPACING) {
 				Int3 ();	//	Warning: skip lines not supported for clipped strings.
-				textP += 2;
+				pText += 2;
 				continue;
 				}
 
 			underline = 0;
-			if (*textP == CC_UNDERLINE) {
+			if (*pText == CC_UNDERLINE) {
 				if ((r==font.baseLine+2) || (r==font.baseLine+3))
 					underline = 1;
-				textP++;
+				pText++;
 				}
 
-			fontManager.Current ()->GetCharWidth (textP [0], textP [1], width, spacing);
-			letter = *textP - font.minChar;
+			fontManager.Current ()->GetCharWidth (pText [0], pText [1], width, spacing);
+			letter = *pText - font.minChar;
 			if (!fontManager.Current ()->InFont (letter)) {	//not in font, draw as space
 				x += spacing;
-				textP++;
+				pText++;
 				continue;
 				}
 
@@ -874,7 +874,7 @@ while (nextRowP != NULL) {
 					}
 				}
 			x += spacing-width;		//for kerning
-			textP++;
+			pText++;
 			}
 		y++;
 		}
@@ -892,7 +892,7 @@ return 0;
 int32_t GrInternalStringClippedM (int32_t x, int32_t y, const char *s)
 {
 	uint8_t * fp;
-	const char * textP, * nextRowP, * text_ptr1;
+	const char * pText, * nextRowP, * text_ptr1;
 	int32_t r, mask, i, bits, width, spacing, letter, underline;
 	int32_t x1 = x, last_x;
 	tFont font;
@@ -910,36 +910,36 @@ while (nextRowP != NULL) {
 	last_x = x;
 	for (r = 0; r < font.height; r++) {
 		x = last_x;
-		textP = text_ptr1;
-		while (*textP) {
-			if (*textP == '\n') {
-				nextRowP = &textP[1];
+		pText = text_ptr1;
+		while (*pText) {
+			if (*pText == '\n') {
+				nextRowP = &pText[1];
 				break;
 				}
 	
-			if (*textP == CC_COLOR) {
-				CCanvas::Current ()->FontColor (0).index = * (textP+1);
-				textP += 2;
+			if (*pText == CC_COLOR) {
+				CCanvas::Current ()->FontColor (0).index = * (pText+1);
+				pText += 2;
 				continue;
 				}
 
-			if (*textP == CC_LSPACING) {
+			if (*pText == CC_LSPACING) {
 				Int3 ();	//	Warning: skip lines not supported for clipped strings.
-				textP += 2;
+				pText += 2;
 				continue;
 				}
 
 			underline = 0;
-			if (*textP == CC_UNDERLINE) {
+			if (*pText == CC_UNDERLINE) {
 				if ((r == font.baseLine + 2) || (r == font.baseLine + 3))
 					underline = 1;
-				textP++;
+				pText++;
 				}
-			fontManager.Current ()->GetCharWidth (textP[0], textP[1], width, spacing);
-			letter = *textP-font.minChar;
+			fontManager.Current ()->GetCharWidth (pText[0], pText[1], width, spacing);
+			letter = *pText-font.minChar;
 			if (!fontManager.Current ()->InFont (letter)) {	//not in font, draw as space
 				x += spacing;
-				textP++;
+				pText++;
 				continue;
 				}
 
@@ -973,7 +973,7 @@ while (nextRowP != NULL) {
 					}
 				}
 			x += spacing-width;		//for kerning
-			textP++;
+			pText++;
 			}
 		y++;
 		}

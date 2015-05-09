@@ -7,18 +7,18 @@ class CWayPointManager {
 		int32_t					m_nWayPoints;
 
 	CObject* Find (int32_t nId);
-	CObject* Target (CObject* objP);
+	CObject* Target (CObject* pObj);
 	int32_t Count (void);
 	void Gather (void);
 	void Remap (int32_t& nId);
 	void Renumber (void);
 	void LinkBack (void);
 	void Attach (void);
-	CObject* Current (CObject* objP);
-	CObject* Successor (CObject* objP);
-	bool Hop (CObject* objP);
+	CObject* Current (CObject* pObj);
+	CObject* Successor (CObject* pObj);
+	bool Hop (CObject* pObj);
 	bool Synchronize (CObject* obj);
-	void Move (CObject* objP);
+	void Move (CObject* pObj);
 	inline CObject* WayPoint (uint32_t i) { return m_wayPoints.IsIndex (i) ? m_wayPoints [i] : NULL; }
 
 	public:

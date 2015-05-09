@@ -105,10 +105,10 @@ m_render.y1 = 1.0f - dy - float (y + h) / a;
 
 void CBitmap::OglTexCoord (void)
 {
-float h = float (m_info.texP->TW ());
+float h = float (m_info.pTexture->TW ());
 m_render.u1 = float (Left ()) / h;
 m_render.u2 = float (Right ()) / h;
-h = float (m_info.texP->TH ());
+h = float (m_info.pTexture->TH ());
 m_render.v1 = float (Top ()) / h;
 m_render.v2 = float (Bottom ()) / h;
 }
@@ -124,7 +124,7 @@ ogl.SelectTMU (GL_TEXTURE0);
 ogl.SetTexturing (true);
 if (Bind (bMipMaps))
 	return NULL;
-m_info.texP->Wrap (GL_REPEAT);
+m_info.pTexture->Wrap (GL_REPEAT);
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 return &m_info.texture;
@@ -132,7 +132,7 @@ return &m_info.texture;
 
 //------------------------------------------------------------------------------
 
-void CBitmap::OglRender (CFloatVector* colorP, int32_t nColors, int32_t orient)
+void CBitmap::OglRender (CFloatVector* pColor, int32_t nColors, int32_t orient)
 {
 	float				verts [4][2] = {{m_render.x0, m_render.y0}, {m_render.x1, m_render.y0}, {m_render.x1, m_render.y1}, {m_render.x0, m_render.y1}};
 	tTexCoord2f		texCoord [4];
@@ -144,9 +144,9 @@ SetTexCoord (m_render.u1, m_render.v2, orient, texCoord [3]);
 ogl.EnableClientStates (1, (nColors == 4), 0, GL_TEXTURE0);
 glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoord);
 if (nColors == 4)
-	OglColorPointer (4, GL_FLOAT, sizeof (CFloatVector), colorP);
+	OglColorPointer (4, GL_FLOAT, sizeof (CFloatVector), pColor);
 else
-	glColor4fv (reinterpret_cast<GLfloat*> (colorP));
+	glColor4fv (reinterpret_cast<GLfloat*> (pColor));
 OglVertexPointer (2, GL_FLOAT, 2 * sizeof (float), verts);
 OglDrawArrays (GL_QUADS, 0, 4);
 ogl.DisableClientStates (1, (nColors == 4), 0, GL_TEXTURE0);
@@ -165,19 +165,19 @@ ogl.SetTexturing (false);
 
 //------------------------------------------------------------------------------
 
-int32_t CBitmap::RenderScaled (int32_t x, int32_t y, int32_t w, int32_t h, int32_t scale, int32_t orient, CCanvasColor* colorP, int32_t bSmoothe)
+int32_t CBitmap::RenderScaled (int32_t x, int32_t y, int32_t w, int32_t h, int32_t scale, int32_t orient, CCanvasColor* pColor, int32_t bSmoothe)
 {
-	CBitmap*			bmoP;
+	CBitmap*			pBmo;
 	CFloatVector	color;
 
-if ((bmoP = HasOverride ()))
-	return bmoP->RenderScaled (x, y, w, h, scale, orient, colorP, bSmoothe);
+if ((pBmo = HasOverride ()))
+	return pBmo->RenderScaled (x, y, w, h, scale, orient, pColor, bSmoothe);
 DelFlags (BM_FLAG_SUPER_TRANSPARENT);
 if (!OglBeginRender (true, bSmoothe ? 0 : -1, 3))
 	return 1; // fail
 OglVertices (x, y, w, h, scale, orient);
 OglTexCoord ();
-color = GetCanvasColor (colorP);
+color = GetCanvasColor (pColor);
 OglRender (&color, 1, orient);
 OglEndRender ();
 return 0;
@@ -189,12 +189,12 @@ int32_t CBitmap::Render (CRectangle* destP,
 								 int32_t xDest, int32_t yDest, int32_t wDest, int32_t hDest,
 								 int32_t xSrc, int32_t ySrc, int32_t wSrc, int32_t hSrc,
 								 int32_t bTransp, int32_t bMipMaps, int32_t bSmoothe,
-								 float fAlpha, CFloatVector* colorP)
+								 float fAlpha, CFloatVector* pColor)
 {
-	CBitmap*		bmoP;
+	CBitmap*		pBmo;
 
-if ((bmoP = HasOverride ()))
-	return bmoP->Render (destP, xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, bTransp, bMipMaps, bSmoothe, fAlpha, colorP);
+if ((pBmo = HasOverride ()))
+	return pBmo->Render (destP, xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, bTransp, bMipMaps, bSmoothe, fAlpha, pColor);
 
 	int32_t		nTransp = (Flags () & BM_FLAG_TGA) ? -1 : HasTransparency () ? 2 : 0;
 	bool			bLocal = Texture () == NULL;
@@ -209,10 +209,10 @@ if (!OglBeginRender (bBlend, bMipMaps, nTransp))
 
 OglVertices (xDest, yDest, wDest, hDest, I2X (1), 0, destP);
 
-if (!colorP) {
+if (!pColor) {
 	color.Red () = color.Green () = color.Blue () = 1.0f;
 	color.Alpha () = bBlend ? fAlpha * gameStates.render.grAlpha : 1.0f;
-	colorP = &color;
+	pColor = &color;
 	nColors = 1;
 	}
 else
@@ -224,25 +224,25 @@ if (wSrc < 0)
 else {
 	m_render.u2 = float (wSrc) / float (Width ());
 	if (m_render.u2 < 1.0f)
-		m_render.u2 *= m_info.texP->U ();
+		m_render.u2 *= m_info.pTexture->U ();
 	else
-		m_render.u2 = m_info.texP->U ();
+		m_render.u2 = m_info.pTexture->U ();
 	}
 if (hSrc < 0)
 	m_render.v2 = float (destP->Height ()) / float (-hSrc);
 else {
 	m_render.v2 = float (hSrc) / float (Height ());
 	if (m_render.v2 < 1.0f)
-		m_render.v2 *= m_info.texP->V ();
+		m_render.v2 *= m_info.pTexture->V ();
 	else
-		m_render.v2 = m_info.texP->V ();
+		m_render.v2 = m_info.pTexture->V ();
 	}
 
-OglRender (colorP, nColors, 0);
+OglRender (pColor, nColors, 0);
 OglEndRender ();
 
 if (bLocal) {
-	m_info.texP->Destroy ();
+	m_info.pTexture->Destroy ();
 	}
 return 0;
 }

@@ -350,7 +350,7 @@ class CSubModel {
 		void Destroy (void);
 		int32_t Read (CFile& cf, CModel* po, int32_t bFlipV);
 		int32_t AddEdge (CFace *pf, int32_t i0, int32_t i1);
-		int32_t Render (CObject *objP, CModel *po, CFloatVector vo, int32_t nIndex, float *fLight);
+		int32_t Render (CObject *pObj, CModel *po, CFloatVector vo, int32_t nIndex, float *fLight);
 
 	private:
 		int32_t FindVertex (int32_t i);
@@ -359,7 +359,7 @@ class CSubModel {
 
 		void Transform (CFloatVector vo);
 		inline void TransformVertex (CFloatVector *prv, CFloatVector *pv, CFloatVector *vo);
-		int32_t Draw (CObject *objP, CModel *po, float *fLight);
+		int32_t Draw (CObject *pObj, CModel *po, float *fLight);
 };	
 
 class CModel {
@@ -395,8 +395,8 @@ class CModel {
 		int32_t ReleaseTextures (void);
 		int32_t ReloadTextures (void);
 		int32_t FreeTextures (void);
-		int32_t Render (CObject *objP, float *fLight, int32_t bCloaked);
-		int32_t RenderShadow (CObject *objP, float *fLight);
+		int32_t Render (CObject *pObj, float *fLight, int32_t bCloaked);
+		int32_t RenderShadow (CObject *pObj, float *fLight);
 
 	private:
 		int32_t ReadInfo (CFile& cf);
@@ -411,7 +411,7 @@ class CModel {
 		void GetSubModelBounds (CSubModel *pso, CFloatVector vo);
 		void GetBounds (void);
 		void ConfigureSubModels (void);
-		int32_t Draw (CObject *objP, float *fLight);
+		int32_t Draw (CObject *pObj, float *fLight);
 
 	};
 

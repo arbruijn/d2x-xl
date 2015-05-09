@@ -38,14 +38,14 @@ bool CLightningNode::CreateChild (CFixVector *vEnd, CFixVector *vDelta,
 											 int32_t nLife, int32_t nLength, int32_t nAmplitude,
 											 char nAngle, int16_t nNodes, int16_t nChildren, char nDepth, int16_t nSteps,
 											 int16_t nSmoothe, char bClamp, char bGlow, char bLight,
-											 char nStyle, float nWidth, CFloatVector *colorP, CLightning *parentP, int16_t nNode,
+											 char nStyle, float nWidth, CFloatVector *pColor, CLightning *pParent, int16_t nNode,
 											 int32_t nThread)
 {
 if (!(m_child = new CLightning))
 	return false;
 m_child->Init (&m_vPos, vEnd, vDelta, -1, nLife, 0, nLength, nAmplitude, nAngle, 0,
 					nNodes, nChildren, nSteps, nSmoothe, bClamp, bGlow, bLight,
-					nStyle, nWidth, colorP, parentP, nNode);
+					nStyle, nWidth, pColor, pParent, nNode);
 return m_child->Create (nDepth, nThread);
 }
 
@@ -341,7 +341,7 @@ Move (vj - vi, nSegment);
 
 //------------------------------------------------------------------------------
 
-bool CLightningNode::SetLight (int16_t nSegment, CFloatVector *colorP)
+bool CLightningNode::SetLight (int16_t nSegment, CFloatVector *pColor)
 {
 if (0 > (nSegment = FindSegByPos (m_vPos, nSegment, 0, 0)))
 	return false;
@@ -349,7 +349,7 @@ if (0 > (nSegment = FindSegByPos (m_vPos, nSegment, 0, 0)))
 #	pragma omp critical
 #endif
 	{
-	lightningManager.SetSegmentLight (nSegment, &m_vPos, colorP);
+	lightningManager.SetSegmentLight (nSegment, &m_vPos, pColor);
 	}
 return true;
 }

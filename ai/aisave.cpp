@@ -118,48 +118,48 @@ return 1;
 }
 //	-------------------------------------------------------------------------------------------------
 
-void CSaveGameManager::SaveAILocalInfo (tAILocalInfo *ailP)
+void CSaveGameManager::SaveAILocalInfo (tAILocalInfo *pLocalInfo)
 {
 	int32_t	i;
 
-m_cf.WriteInt (ailP->targetAwarenessType);
-m_cf.WriteInt (ailP->nRetryCount);
-m_cf.WriteInt (ailP->nConsecutiveRetries);
-m_cf.WriteInt (ailP->mode);
-m_cf.WriteInt (ailP->nPrevVisibility);
-m_cf.WriteInt (ailP->nRapidFireCount);
-m_cf.WriteInt (ailP->nGoalSegment);
-m_cf.WriteFix (ailP->nextActionTime);
-m_cf.WriteFix (ailP->nextPrimaryFire);
-m_cf.WriteFix (ailP->nextSecondaryFire);
-m_cf.WriteFix (ailP->targetAwarenessTime);
-m_cf.WriteFix (ailP->timeTargetSeen);
-m_cf.WriteFix (ailP->timeTargetSoundAttacked);
-m_cf.WriteFix (ailP->nextMiscSoundTime);
-m_cf.WriteFix (ailP->timeSinceProcessed);
+m_cf.WriteInt (pLocalInfo->targetAwarenessType);
+m_cf.WriteInt (pLocalInfo->nRetryCount);
+m_cf.WriteInt (pLocalInfo->nConsecutiveRetries);
+m_cf.WriteInt (pLocalInfo->mode);
+m_cf.WriteInt (pLocalInfo->nPrevVisibility);
+m_cf.WriteInt (pLocalInfo->nRapidFireCount);
+m_cf.WriteInt (pLocalInfo->nGoalSegment);
+m_cf.WriteFix (pLocalInfo->nextActionTime);
+m_cf.WriteFix (pLocalInfo->pNextrimaryFire);
+m_cf.WriteFix (pLocalInfo->nextSecondaryFire);
+m_cf.WriteFix (pLocalInfo->targetAwarenessTime);
+m_cf.WriteFix (pLocalInfo->timeTargetSeen);
+m_cf.WriteFix (pLocalInfo->timeTargetSoundAttacked);
+m_cf.WriteFix (pLocalInfo->nextMiscSoundTime);
+m_cf.WriteFix (pLocalInfo->timeSinceProcessed);
 for (i = 0; i < MAX_SUBMODELS; i++) {
-	m_cf.WriteAngVec (ailP->goalAngles [i]);
-	m_cf.WriteAngVec (ailP->deltaAngles [i]);
+	m_cf.WriteAngVec (pLocalInfo->goalAngles [i]);
+	m_cf.WriteAngVec (pLocalInfo->deltaAngles [i]);
 	}
-m_cf.Write (ailP->goalState, sizeof (ailP->goalState [0]), 1);
-m_cf.Write (ailP->achievedState, sizeof (ailP->achievedState [0]), 1);
+m_cf.Write (pLocalInfo->goalState, sizeof (pLocalInfo->goalState [0]), 1);
+m_cf.Write (pLocalInfo->achievedState, sizeof (pLocalInfo->achievedState [0]), 1);
 }
 
 //	-------------------------------------------------------------------------------------------------
 
-void CSaveGameManager::SaveAIPointSeg (tPointSeg *psegP)
+void CSaveGameManager::SaveAIPointSeg (tPointSeg *pSeg)
 {
-m_cf.WriteInt (psegP->nSegment);
-m_cf.WriteVector (psegP->point);
+m_cf.WriteInt (pSeg->nSegment);
+m_cf.WriteVector (pSeg->point);
 }
 
 //	-------------------------------------------------------------------------------------------------
 
-void CSaveGameManager::SaveAICloakInfo (tAICloakInfo *ciP)
+void CSaveGameManager::SaveAICloakInfo (tAICloakInfo *pCloakInfo)
 {
-m_cf.WriteFix (ciP->lastTime);
-m_cf.WriteInt (ciP->nLastSeg);
-m_cf.WriteVector (ciP->vLastPos);
+m_cf.WriteFix (pCloakInfo->lastTime);
+m_cf.WriteInt (pCloakInfo->nLastSeg);
+m_cf.WriteVector (pCloakInfo->vLastPos);
 }
 
 //	-------------------------------------------------------------------------------------------------
@@ -198,48 +198,48 @@ return 1;
 
 //	-------------------------------------------------------------------------------------------------
 
-void CSaveGameManager::LoadAILocalInfo (tAILocalInfo *ailP)
+void CSaveGameManager::LoadAILocalInfo (tAILocalInfo *pLocalInfo)
 {
 	int32_t	i;
 
-ailP->targetAwarenessType = m_cf.ReadInt ();
-ailP->nRetryCount = m_cf.ReadInt ();
-ailP->nConsecutiveRetries = m_cf.ReadInt ();
-ailP->mode = m_cf.ReadInt ();
-ailP->nPrevVisibility = m_cf.ReadInt ();
-ailP->nRapidFireCount = m_cf.ReadInt ();
-ailP->nGoalSegment = m_cf.ReadInt ();
-ailP->nextActionTime = m_cf.ReadFix ();
-ailP->nextPrimaryFire = m_cf.ReadFix ();
-ailP->nextSecondaryFire = m_cf.ReadFix ();
-ailP->targetAwarenessTime = m_cf.ReadFix ();
-ailP->timeTargetSeen = m_cf.ReadFix ();
-ailP->timeTargetSoundAttacked = m_cf.ReadFix ();
-ailP->nextMiscSoundTime = m_cf.ReadFix ();
-ailP->timeSinceProcessed = m_cf.ReadFix ();
+pLocalInfo->targetAwarenessType = m_cf.ReadInt ();
+pLocalInfo->nRetryCount = m_cf.ReadInt ();
+pLocalInfo->nConsecutiveRetries = m_cf.ReadInt ();
+pLocalInfo->mode = m_cf.ReadInt ();
+pLocalInfo->nPrevVisibility = m_cf.ReadInt ();
+pLocalInfo->nRapidFireCount = m_cf.ReadInt ();
+pLocalInfo->nGoalSegment = m_cf.ReadInt ();
+pLocalInfo->nextActionTime = m_cf.ReadFix ();
+pLocalInfo->pNextrimaryFire = m_cf.ReadFix ();
+pLocalInfo->nextSecondaryFire = m_cf.ReadFix ();
+pLocalInfo->targetAwarenessTime = m_cf.ReadFix ();
+pLocalInfo->timeTargetSeen = m_cf.ReadFix ();
+pLocalInfo->timeTargetSoundAttacked = m_cf.ReadFix ();
+pLocalInfo->nextMiscSoundTime = m_cf.ReadFix ();
+pLocalInfo->timeSinceProcessed = m_cf.ReadFix ();
 for (i = 0; i < MAX_SUBMODELS; i++) {
-	m_cf.ReadAngVec (ailP->goalAngles [i]);
-	m_cf.ReadAngVec (ailP->deltaAngles [i]);
+	m_cf.ReadAngVec (pLocalInfo->goalAngles [i]);
+	m_cf.ReadAngVec (pLocalInfo->deltaAngles [i]);
 	}
-m_cf.Read (ailP->goalState, sizeof (ailP->goalState [0]), 1);
-m_cf.Read (ailP->achievedState, sizeof (ailP->achievedState [0]), 1);
+m_cf.Read (pLocalInfo->goalState, sizeof (pLocalInfo->goalState [0]), 1);
+m_cf.Read (pLocalInfo->achievedState, sizeof (pLocalInfo->achievedState [0]), 1);
 }
 
 //	-------------------------------------------------------------------------------------------------
 
-void CSaveGameManager::LoadAIPointSeg (tPointSeg *psegP)
+void CSaveGameManager::LoadAIPointSeg (tPointSeg *pSeg)
 {
-psegP->nSegment = m_cf.ReadInt ();
-m_cf.ReadVector (psegP->point);
+pSeg->nSegment = m_cf.ReadInt ();
+m_cf.ReadVector (pSeg->point);
 }
 
 //	-------------------------------------------------------------------------------------------------
 
-void CSaveGameManager::LoadAICloakInfo (tAICloakInfo *ciP)
+void CSaveGameManager::LoadAICloakInfo (tAICloakInfo *pCloakInfo)
 {
-ciP->lastTime = m_cf.ReadFix ();
-ciP->nLastSeg = m_cf.ReadInt ();
-m_cf.ReadVector (ciP->vLastPos);
+pCloakInfo->lastTime = m_cf.ReadFix ();
+pCloakInfo->nLastSeg = m_cf.ReadInt ();
+m_cf.ReadVector (pCloakInfo->vLastPos);
 }
 
 //	-------------------------------------------------------------------------------------------------

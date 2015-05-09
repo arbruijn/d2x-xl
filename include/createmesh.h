@@ -43,14 +43,14 @@ class CTriMeshBuilder {
 		tEdge *FindEdge (uint16_t nVert1, uint16_t nVert2, int32_t i);
 		int32_t AddEdge (int32_t nTri, uint16_t nVert1, uint16_t nVert2);
 		tTriangle *CreateTriangle (tTriangle *mtP, uint16_t index [], int32_t nFace, int32_t nIndex);
-		tTriangle *AddTriangle (tTriangle *mtP, uint16_t index [], tFaceTriangle *triP);
+		tTriangle *AddTriangle (tTriangle *mtP, uint16_t index [], tFaceTriangle *pTriangle);
 		void DeleteEdge (tEdge *mlP);
 		void DeleteTriangle (tTriangle *mtP);
 		int32_t CreateTriangles (void);
 		int32_t SplitTriangleByEdge (int32_t nTri, uint16_t nVert1, uint16_t nVert2, int16_t nPass);
-		int32_t SplitEdge (CSegFace* faceP, tEdge *mlP, int16_t nPass);
+		int32_t SplitEdge (CSegFace* pFace, tEdge *mlP, int16_t nPass);
 		float NewEdgeLen (int32_t nTri, int32_t nVert1, int32_t nVert2);
-		int32_t SplitTriangle (CSegFace* faceP, tTriangle *mtP, int16_t nPass);
+		int32_t SplitTriangle (CSegFace* pFace, tTriangle *mtP, int16_t nPass);
 		int32_t SplitTriangles (void);
 		void QSortTriangles (int32_t left, int32_t right);
 		void CreateSegFaceList (void);
@@ -70,18 +70,18 @@ class CTriMeshBuilder {
 
 class CQuadMeshBuilder {
 	private:
-		CSegFace*			m_faceP;
-		tFaceTriangle*		m_triP;
+		CSegFace*			m_pFace;
+		tFaceTriangle*		m_pTriangle;
 		CFloatVector3*		m_vertexP;
-		CFloatVector3*		m_normalP;
-		tTexCoord2f*		m_texCoordP;
+		CFloatVector3*		m_pNormal;
+		tTexCoord2f*		m_pTexCoord;
 		tTexCoord2f*		m_ovlTexCoordP;
 		tTexCoord2f*		m_lMapTexCoordP;
-		CFloatVector*		m_faceColorP;
-		CFaceColor*			m_colorP;
-		CSegment*			m_segP;
-		tSegFaces*			m_segFaceP;
-		CSide*				m_sideP;
+		CFloatVector*		m_pFaceColor;
+		CFaceColor*			m_pColor;
+		CSegment*			m_pSeg;
+		tSegFaces*			m_pSegFace;
+		CSide*				m_pSide;
 
 		uint16_t				m_sideVerts [5];
 		int16_t				m_nOvlTexCount;
@@ -93,7 +93,7 @@ class CQuadMeshBuilder {
 
 	private:
 		void InitFace (int16_t nSegment, uint8_t nSide, bool bRebuild);
-		void SetupLMapTexCoord (tTexCoord2f *texCoordP);
+		void SetupLMapTexCoord (tTexCoord2f *pTexCoord);
 		void SetupFace (void);
 		void InitTexturedFace (void);
 		void InitColoredFace (int16_t nSegment);
@@ -101,7 +101,7 @@ class CQuadMeshBuilder {
 		void SplitIn4Tris (void);
 		void BuildSlidingFaceList (void);
 		int32_t IsBigFace (uint16_t* sideVerts);
-		CFloatVector3 *SetTriNormals (tFaceTriangle *triP, CFloatVector3 *m_normalP);
+		CFloatVector3 *SetTriNormals (tFaceTriangle *pTriangle, CFloatVector3 *m_pNormal);
 
 		static int32_t CompareFaceKeys (const CSegFace** pf, const CSegFace** pm);
 

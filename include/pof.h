@@ -42,7 +42,7 @@ class CFace {
 		CFloatVector CalcCenterf (CModel* po);
 		CFixVector CalcCenter (CModel* po);
 		int32_t RenderShadowVolume (CModel* po, int32_t bCullFront);
-		inline float ClipDist (CObject *objP);
+		inline float ClipDist (CObject *pObj);
 };
 
 inline int32_t operator- (CFace* f, CArray<CFace>& a) { return a.Index (f); }
@@ -68,14 +68,14 @@ class CSubModel {
 		void RotateNormals (void);
 		int32_t FindEdge (CFace* pf0, int32_t v0, int32_t v1);
 		int32_t CalcFacing (CModel* po);
-		int32_t RenderShadowCaps (CObject *objP, CModel* po, int32_t bCullFront);
+		int32_t RenderShadowCaps (CObject *pObj, CModel* po, int32_t bCullFront);
 		int32_t RenderShadowVolume (CModel* po, int32_t bCullFront);
-		int32_t RenderShadow (CObject *objP, CModel* po);
+		int32_t RenderShadow (CObject *pObj, CModel* po);
 
 	private:
-		float ClipDistByFaceCenters (CObject *objP, CModel* po, int32_t i, int32_t incr);
-		float ClipDistByFaceVerts (CObject *objP, CModel* po, float fMaxDist, int32_t i, int32_t incr);
-		float ClipDist (CObject *objP, CModel* po);
+		float ClipDistByFaceCenters (CObject *pObj, CModel* po, int32_t i, int32_t incr);
+		float ClipDistByFaceVerts (CObject *pObj, CModel* po, float fMaxDist, int32_t i, int32_t incr);
+		float ClipDist (CObject *pObj, CModel* po);
 };
 
 inline int32_t operator- (CSubModel* o, CArray<CSubModel>& a) { return a.Index (o); }

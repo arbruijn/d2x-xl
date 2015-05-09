@@ -179,26 +179,26 @@ int32_t COGL::SelectDrawBuffer (int32_t nBuffer, int32_t nColorBuffers)
 //	nBuffer = gameStates.render.nShadowMap + 5;
 int32_t nPrevBuffer = (m_states.nCamera < 0) 
 						? m_states.nCamera 
-						: (m_data.drawBufferP && m_data.drawBufferP->Active () && !m_data.drawBufferP->Resize (DrawBufferWidth (), DrawBufferHeight ())) 
-							? int32_t (m_data.drawBufferP - m_data.drawBuffers.Buffer ()) 
+						: (m_data.pDrawBuffer && m_data.pDrawBuffer->Active () && !m_data.pDrawBuffer->Resize (DrawBufferWidth (), DrawBufferHeight ())) 
+							? int32_t (m_data.pDrawBuffer - m_data.drawBuffers.Buffer ()) 
 							: 0x7FFFFFFF;
 
-CCamera* cameraP;
+CCamera* pCamera;
 
 if (nBuffer != nPrevBuffer) {
-	if (m_data.drawBufferP)
-		m_data.drawBufferP->Disable ();
+	if (m_data.pDrawBuffer)
+		m_data.pDrawBuffer->Disable ();
 	if (nBuffer >= 0) {
 		m_states.nCamera = 0;
-		m_data.drawBufferP = m_data.GetDrawBuffer (nBuffer); 
+		m_data.pDrawBuffer = m_data.GetDrawBuffer (nBuffer); 
 		CreateDrawBuffer ((nBuffer < 2) ? 1 : (nBuffer < 3) ? -1 : -2);
 		}
-	else if ((cameraP = cameraManager [-nBuffer - 1])) {
+	else if ((pCamera = cameraManager [-nBuffer - 1])) {
 		m_states.nCamera = nBuffer;
-		m_data.drawBufferP = &cameraP->FrameBuffer ();
+		m_data.pDrawBuffer = &pCamera->FrameBuffer ();
 		}
 	}
-return m_data.drawBufferP->Enable (nColorBuffers) ? labs (nPrevBuffer) : -1;
+return m_data.pDrawBuffer->Enable (nColorBuffers) ? labs (nPrevBuffer) : -1;
 }
 
 //------------------------------------------------------------------------------
@@ -230,8 +230,8 @@ else {
 		}
 	else {
 		ogl.ClearError (0);
-		if (m_data.drawBufferP)
-			m_data.drawBufferP->Disable ();
+		if (m_data.pDrawBuffer)
+			m_data.pDrawBuffer->Disable ();
 		SelectDrawBuffer (!IsSideBySideDevice () && (m_data.xStereoSeparation > 0));
 		if (ogl.ClearError (0))
 			gameOpts->render.stereo.nGlasses = 0;

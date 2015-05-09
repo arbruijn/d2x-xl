@@ -54,7 +54,7 @@ CAngleVector animAngles [N_ANIM_STATES][MAX_SUBMODELS];
 
 //set the animation angles for this robot.  Gun fields of robot info must
 //be filled in.
-void SetRobotAngles (tRobotInfo* botInfoP, CPolyModel* modelP, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS]);
+void SetRobotAngles (tRobotInfo* pRobotInfo, CPolyModel* pModel, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS]);
 
 //------------------------------------------------------------------------------
 
@@ -78,20 +78,20 @@ if (m_filePos > MODEL_BUF_SIZE)
 
 //------------------------------------------------------------------------------
 
-int32_t CPolyModel::POF_ReadInt (uint8_t *bufP)
+int32_t CPolyModel::POF_ReadInt (uint8_t *pBuffer)
 {
-int32_t i = *(reinterpret_cast<int32_t*> (&bufP [m_filePos]));
+int32_t i = *(reinterpret_cast<int32_t*> (&pBuffer [m_filePos]));
 m_filePos += 4;
 return INTEL_INT (i);
 }
 
 //------------------------------------------------------------------------------
 
-size_t CPolyModel::POF_Read (void *dst, size_t elsize, size_t nelem, uint8_t *bufP)
+size_t CPolyModel::POF_Read (void *dst, size_t elsize, size_t nelem, uint8_t *pBuffer)
 {
 if (nelem * elsize + (size_t) m_filePos > (size_t) m_fileEnd)
 	return 0;
-memcpy (dst, &bufP [m_filePos], elsize*nelem);
+memcpy (dst, &pBuffer [m_filePos], elsize*nelem);
 m_filePos += (int32_t) (elsize * nelem);
 if (m_filePos > MODEL_BUF_SIZE)
 	return 0;
@@ -100,27 +100,27 @@ return nelem;
 
 //------------------------------------------------------------------------------
 
-int16_t CPolyModel::POF_ReadShort (uint8_t *bufP)
+int16_t CPolyModel::POF_ReadShort (uint8_t *pBuffer)
 {
-int16_t s = * (reinterpret_cast<int16_t*> (&bufP [m_filePos]));
+int16_t s = * (reinterpret_cast<int16_t*> (&pBuffer [m_filePos]));
 m_filePos += 2;
 return INTEL_SHORT (s);
 }
 
 //------------------------------------------------------------------------------
 
-void CPolyModel::POF_ReadString (char *buf, int32_t max_char, uint8_t *bufP)
+void CPolyModel::POF_ReadString (char *buf, int32_t max_char, uint8_t *pBuffer)
 {
 for (int32_t i = 0; i < max_char; i++)
-	if ((*buf++ = bufP [m_filePos++]) == 0)
+	if ((*buf++ = pBuffer [m_filePos++]) == 0)
 		break;
 }
 
 //------------------------------------------------------------------------------
 
-void CPolyModel::POF_ReadVecs (CFixVector *vecs, int32_t n, uint8_t *bufP)
+void CPolyModel::POF_ReadVecs (CFixVector *vecs, int32_t n, uint8_t *pBuffer)
 {
-memcpy (vecs, &bufP [m_filePos], n * sizeof (*vecs));
+memcpy (vecs, &pBuffer [m_filePos], n * sizeof (*vecs));
 m_filePos += n * sizeof (*vecs);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 while (n > 0)
@@ -130,9 +130,9 @@ while (n > 0)
 
 //------------------------------------------------------------------------------
 
-void CPolyModel::POF_ReadAngs (CAngleVector *angs, int32_t n, uint8_t *bufP)
+void CPolyModel::POF_ReadAngs (CAngleVector *angs, int32_t n, uint8_t *pBuffer)
 {
-memcpy (angs, &bufP [m_filePos], n * sizeof (*angs));
+memcpy (angs, &pBuffer [m_filePos], n * sizeof (*angs));
 m_filePos += n * sizeof (*angs);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 while (n > 0)
@@ -172,7 +172,7 @@ int32_t get_first_chunks_index (chunk *chunk_list, int32_t no_chunks)
 
 //------------------------------------------------------------------------------
 
-void AlignPolyModelData (CPolyModel* modelP)
+void AlignPolyModelData (CPolyModel* pModel)
 {
 	int32_t i, chunk_len;
 	int32_t total_correction = 0;
@@ -180,12 +180,12 @@ void AlignPolyModelData (CPolyModel* modelP)
 	chunk cur_ch;
 	chunk ch_list [MAX_CHUNKS];
 	int32_t no_chunks = 0;
-	int32_t tmp_size = modelP->nDataSize + SHIFT_SPACE;
-	uint8_t *tmp = new uint8_t [tmp_size]; // where we build the aligned version of modelP->Data ()
+	int32_t tmp_size = pModel->nDataSize + SHIFT_SPACE;
+	uint8_t *tmp = new uint8_t [tmp_size]; // where we build the aligned version of pModel->Data ()
 
 	Assert (tmp != NULL);
 	//start with first chunk (is always aligned!)
-	cur_old = modelP->Data ();
+	cur_old = pModel->Data ();
 	cur_new = tmp;
 	chunk_len = get_chunks (cur_old, cur_new, ch_list, &no_chunks);
 	memcpy (cur_new, cur_old, chunk_len);
@@ -217,17 +217,17 @@ void AlignPolyModelData (CPolyModel* modelP)
 		cur_new = new_dest (cur_ch);
 		chunk_len = get_chunks (cur_old, cur_new, ch_list, &no_chunks);
 		memcpy (cur_new, cur_old, chunk_len);
-		//correct submodel_ptr's for modelP, too
+		//correct submodel_ptr's for pModel, too
 		for (i = 0; i < MAX_SUBMODELS; i++)
-			if (modelP->Data () + modelP->SubModels ().ptrs [i] >= cur_old
-			    && modelP->Data () + modelP->SubModels ().ptrs [i] < cur_old + chunk_len)
-				modelP->SubModels ().ptrs [i] += (cur_new - tmp) - (cur_old - modelP->Data ());
+			if (pModel->Data () + pModel->SubModels ().ptrs [i] >= cur_old
+			    && pModel->Data () + pModel->SubModels ().ptrs [i] < cur_old + chunk_len)
+				pModel->SubModels ().ptrs [i] += (cur_new - tmp) - (cur_old - pModel->Data ());
  	}
-	modelP->Data ().Destroy ();
-	modelP->nDataSize += total_correction;
-	if (!modelP->Data ().Create (modelP->nDataSize))
+	pModel->Data ().Destroy ();
+	pModel->nDataSize += total_correction;
+	if (!pModel->Data ().Create (pModel->nDataSize))
 		Error ("Not enough memory for game models.");
-	modelP->Data () = tmp;
+	pModel->Data () = tmp;
 	delete [] tmp;
 }
 #endif //def WORDS_NEED_ALIGNMENT
@@ -253,7 +253,7 @@ m_info.maxs.SetZero ();
 
 //------------------------------------------------------------------------------
 //reads a binary file containing a 3d model
-void CPolyModel::Parse (const char *filename, tRobotInfo *botInfoP)
+void CPolyModel::Parse (const char *filename, tRobotInfo *pRobotInfo)
 {
 	CFile cf;
 	int16_t version;
@@ -315,19 +315,19 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 			}
 
 		case ID_GUNS: {		//List of guns on this CObject
-			if (botInfoP) {
+			if (pRobotInfo) {
 				int32_t i;
 				CFixVector gun_dir;
-				botInfoP->nGuns = POF_ReadInt (modelBuf);
-				if (botInfoP->nGuns)
+				pRobotInfo->nGuns = POF_ReadInt (modelBuf);
+				if (pRobotInfo->nGuns)
 					animFlag++;
-				Assert (botInfoP->nGuns <= MAX_GUNS);
-				for (i = 0; i < botInfoP->nGuns; i++) {
+				Assert (pRobotInfo->nGuns <= MAX_GUNS);
+				for (i = 0; i < pRobotInfo->nGuns; i++) {
 					int32_t id = POF_ReadShort (modelBuf);
-					Assert (id < botInfoP->nGuns);
-					botInfoP->gunSubModels [id] = (char) POF_ReadShort (modelBuf);
-					Assert (botInfoP->gunSubModels [id] != 0xff);
-					POF_ReadVecs (&botInfoP->gunPoints [id], 1, modelBuf);
+					Assert (id < pRobotInfo->nGuns);
+					pRobotInfo->gunSubModels [id] = (char) POF_ReadShort (modelBuf);
+					Assert (pRobotInfo->gunSubModels [id] != 0xff);
+					POF_ReadVecs (&pRobotInfo->gunPoints [id], 1, modelBuf);
 					if (version >= 7)
 						POF_ReadVecs (&gun_dir, 1, modelBuf);
 					}
@@ -339,13 +339,13 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 
 		case ID_ANIM:		//Animation data
 			animFlag++;
-			if (botInfoP) {
+			if (pRobotInfo) {
 				int32_t f, m, n_frames = POF_ReadShort (modelBuf);
 				Assert (n_frames == N_ANIM_STATES);
 				for (m = 0; m <m_info.nModels; m++)
 					for (f = 0; f < n_frames; f++)
 						POF_ReadAngs (&animAngles [f][m], 1, modelBuf);
-				SetRobotAngles (botInfoP, this, animAngles);
+				SetRobotAngles (pRobotInfo, this, animAngles);
 				}
 			else
 				POF_Seek (len, SEEK_CUR);
@@ -374,7 +374,7 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 		POF_Seek (next_chunk, SEEK_SET);
 	}
 #ifdef WORDS_NEED_ALIGNMENT
-G3AlignPolyModelData (modelP);
+G3AlignPolyModelData (pModel);
 #endif
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 G3SwapPolyModelData (Buffer ());
@@ -432,7 +432,7 @@ extern int16_t nHighestTexture;	//from interp.c
 char pofNames [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
 //returns the number of this model
-void CPolyModel::Load (const char *filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo *botInfoP)
+void CPolyModel::Load (const char *filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo *pRobotInfo)
 {
 FindMinMax ();
 Setup ();
@@ -584,7 +584,7 @@ if (defModelP) {
 		Error ("Not enough memory for game models.");
 	}
 #ifdef WORDS_NEED_ALIGNMENT
-AlignPolyModelData (modelP);
+AlignPolyModelData (pModel);
 #endif
 G3CheckAndSwap (Buffer ());
 Setup ();
@@ -745,7 +745,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int32_t LoadPolyModel (const char* filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo *botInfoP)
+int32_t LoadPolyModel (const char* filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo *pRobotInfo)
 {
 Assert (gameData.models.nPolyModels < MAX_POLYGON_MODELS);
 Assert (nTextures < MAX_POLYOBJ_TEXTURES);
@@ -755,7 +755,7 @@ if (gameData.models.nPolyModels > MAX_POLYGON_MODELS - 10)
 #endif
 Assert (strlen (filename) <= 12);
 strcpy (pofNames [gameData.models.nPolyModels], filename);
-gameData.models.polyModels [0][gameData.models.nPolyModels++].Load (filename, nTextures, nFirstTexture, botInfoP);
+gameData.models.polyModels [0][gameData.models.nPolyModels++].Load (filename, nTextures, nFirstTexture, pRobotInfo);
 return gameData.models.nPolyModels - 1;
 }
 
@@ -766,7 +766,7 @@ return gameData.models.nPolyModels - 1;
 void CModelData::Prepare (void)
 {
 	int32_t		h, i, j;
-	CObject		o, *objP = OBJECTS.Buffer ();
+	CObject		o, *pObj = OBJECTS.Buffer ();
 	const char*	pszHires;
 
 if (!OBJECTS.Buffer ())
@@ -777,16 +777,16 @@ gameStates.render.nShadowPass = 1;
 gameStates.render.bBuildModels = 1;
 h = 0;
 #if !BUILD_ALL_MODELS
-for (i = 0, j = int32_t (OBJECTS.Length ()); i < j; i++, objP++) {
-	if ((objP->info.nSegment >= 0) && (objP->info.nType != 255) && (objP->info.renderType == RT_POLYOBJ) &&
-		 !G3HaveModel (objP->ModelId ())) {
+for (i = 0, j = int32_t (OBJECTS.Length ()); i < j; i++, pObj++) {
+	if ((pObj->info.nSegment >= 0) && (pObj->info.nType != 255) && (pObj->info.renderType == RT_POLYOBJ) &&
+		 !G3HaveModel (pObj->ModelId ())) {
 		if (gameStates.app.nLogLevel > 1)
-			PrintLog (1, "building model %d\n", objP->ModelId ());
+			PrintLog (1, "building model %d\n", pObj->ModelId ());
 #if DBG
-		if (objP->ModelId () == nDbgModel)
+		if (pObj->ModelId () == nDbgModel)
 			BRP;
 #endif
-		if (DrawPolygonObject (objP, 0))
+		if (DrawPolygonObject (pObj, 0))
 			h++;
 		if (gameStates.app.nLogLevel > 1)
 			PrintLog (-1);

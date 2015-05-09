@@ -149,18 +149,18 @@ class CSubModel {
 		bool Create (void);
 		void Destroy (void) { Init (); }
 		void InitMinMax (void);
-		void SetMinMax (CFloatVector3 *vertexP);
+		void SetMinMax (CFloatVector3 *pVertex);
 		void SortFaces (CBitmap* textureP);
 		void GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest);
-		void Size (CModel* pm, CObject* objP, CFixVector* vOffset);
+		void Size (CModel* pm, CObject* pObj, CFixVector* vOffset);
 
 		uint16_t CountEdges (void);
-		int32_t FindEdge (CModel* modelP, uint16_t v1, uint16_t v2);
-		int32_t AddEdge (CModel *modelP, CFace* faceP, uint16_t v1, uint16_t v2);
-		bool BuildEdgeList (CModel* modelP);
+		int32_t FindEdge (CModel* pModel, uint16_t v1, uint16_t v2);
+		int32_t AddEdge (CModel *pModel, CFace* pFace, uint16_t v1, uint16_t v2);
+		bool BuildEdgeList (CModel* pModel);
 
-		void GatherContourEdges (CModel* modelP);
-		void GatherLitFaces (CModel* modelP, CFloatVector3& vLight);
+		void GatherContourEdges (CModel* pModel);
+		void GatherLitFaces (CModel* pModel, CFloatVector3& vLight);
 	};
 
 inline int32_t operator- (RenderModel::CSubModel* f, CArray<RenderModel::CSubModel>& a) { return a.Index (f); }
@@ -235,19 +235,19 @@ class CModel {
 		bool Create (void);
 		void Destroy (void);
 		uint16_t FilterVertices (CArray<CFloatVector3>& vertices, uint16_t nVertices);
-		fix Radius (CObject* objP);
-		fix Size (CObject *objP, int32_t bHires);
-		int32_t Shift (CObject *objP, int32_t bHires, CFloatVector3 *vOffsetfP);
+		fix Radius (CObject* pObj);
+		fix Size (CObject *pObj, int32_t bHires);
+		int32_t Shift (CObject *pObj, int32_t bHires, CFloatVector3 *vOffsetfP);
 		int32_t MinMax (tHitbox *phb);
-		void SetGunPoints (CObject *objP, int32_t bASE);
+		void SetGunPoints (CObject *pObj, int32_t bASE);
 		void SetShipGunPoints (OOF::CModel *po);
 		void SetRobotGunPoints (OOF::CModel *po);
 
 		static int32_t CmpVerts (const CFloatVector3* pv, const CFloatVector3* pm);
 
-		int32_t BuildFromASE (CObject *objP, int32_t nModel);
-		int32_t BuildFromOOF (CObject *objP, int32_t nModel);
-		int32_t BuildFromPOF (CObject* objP, int32_t nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP);
+		int32_t BuildFromASE (CObject *pObj, int32_t nModel);
+		int32_t BuildFromOOF (CObject *pObj, int32_t nModel);
+		int32_t BuildFromPOF (CObject* pObj, int32_t nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP);
 
 	private:
 		void CountASEModelItems (ASE::CModel *pa);

@@ -53,23 +53,23 @@ typedef int32_t (* pWeaponHandler) (CObject *, int32_t, int32_t&, int32_t);
 
 //-------------------------------------------
 
-int32_t LaserHandler (CObject *objP, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
+int32_t LaserHandler (CObject *pObj, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
 {
 	uint8_t	nLaser = (nLevel <= MAX_LASER_LEVEL) ? LASER_ID + nLevel : SUPERLASER_ID + (nLevel - MAX_LASER_LEVEL - 1);
-	int16_t	nLightObj = lightClusterManager.Create (objP);
+	int16_t	nLightObj = lightClusterManager.Create (pObj);
 	int16_t nFired = 0;
 
 gameData.laser.nOffset = (I2X (2) * Rand (8)) / 8;
-if (0 <= LaserPlayerFire (objP, nLaser, 0, 1, 0, nLightObj))
+if (0 <= LaserPlayerFire (pObj, nLaser, 0, 1, 0, nLightObj))
 	nFired++;
-if (0 <= LaserPlayerFire (objP, nLaser, 1, 0, 0, nLightObj))
+if (0 <= LaserPlayerFire (pObj, nLaser, 1, 0, 0, nLightObj))
 	nFired++;
 if (nFlags & LASER_QUAD) {
 	nFired += 2;
 	//	hideous system to make quad laser 1.5x powerful as Normal laser, make every other quad laser bolt bHarmless
-	if (0 <= LaserPlayerFire (objP, nLaser, 2, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFire (pObj, nLaser, 2, 0, 0, nLightObj))
 		nFired++;
-	if (0 <= LaserPlayerFire (objP, nLaser, 3, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFire (pObj, nLaser, 3, 0, 0, nLightObj))
 		nFired++;
 	}
 if (!nFired && (nLightObj >= 0))
@@ -79,23 +79,23 @@ return nFired ? nRoundsPerShot : 0;
 
 //-------------------------------------------
 
-int32_t VulcanHandler (CObject *objP, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
+int32_t VulcanHandler (CObject *pObj, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
 {
 #	define VULCAN_SPREAD	(SRandShort () / 8)
 
-	tFiringData *fP = gameData.multiplayer.weaponStates [objP->info.nId].firing;
+	tFiringData *pFiringData = gameData.multiplayer.weaponStates [pObj->info.nId].firing;
 	int16_t			nFired = 0;
 
-if (fP->nDuration <= GATLING_DELAY)
+if (pFiringData->nDuration <= GATLING_DELAY)
 	return 0;
 //	Only make sound for 1/4 of vulcan bullets.
-if (0 <= LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 1, 0, -1))
+if (0 <= LaserPlayerFireSpread (pObj, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 1, 0, -1))
 	nFired++;
 if (nRoundsPerShot > 1) {
-	if (0 <= LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0, -1))
+	if (0 <= LaserPlayerFireSpread (pObj, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0, -1))
 	nFired++;
 	if (nRoundsPerShot > 2)
-		if (0 <= LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0, -1))
+		if (0 <= LaserPlayerFireSpread (pObj, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0, -1))
 	nFired++;
 	}
 return nFired ? nRoundsPerShot : 0;
@@ -103,24 +103,24 @@ return nFired ? nRoundsPerShot : 0;
 
 //-------------------------------------------
 
-int32_t SpreadfireHandler (CObject *objP, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
+int32_t SpreadfireHandler (CObject *pObj, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
 {
-	int16_t	nLightObj = lightClusterManager.Create (objP);
+	int16_t	nLightObj = lightClusterManager.Create (pObj);
 	int16_t	nFired = 0;
 
 if (nFlags & LASER_SPREADFIRE_TOGGLED) {
-	if (0 <= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, I2X (1) / 16, 0, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFireSpread (pObj, SPREADFIRE_ID, 6, I2X (1) / 16, 0, 0, 0, nLightObj))
 		nFired++;
-	if (0 <= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, -I2X (1) / 16, 0, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFireSpread (pObj, SPREADFIRE_ID, 6, -I2X (1) / 16, 0, 0, 0, nLightObj))
 		nFired++;
 	}
 else {
-	if (0 <= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, I2X (1) / 16, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFireSpread (pObj, SPREADFIRE_ID, 6, 0, I2X (1) / 16, 0, 0, nLightObj))
 		nFired++;
-	if (0 <= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, -I2X (1) / 16, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFireSpread (pObj, SPREADFIRE_ID, 6, 0, -I2X (1) / 16, 0, 0, nLightObj))
 		nFired++;
 	}
-if (0 <= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0, nLightObj))
+if (0 <= LaserPlayerFireSpread (pObj, SPREADFIRE_ID, 6, 0, 0, 1, 0, nLightObj))
 	nFired++;
 if (!nFired && (nLightObj >= 0))
 	OBJECT (nLightObj)->Die ();
@@ -129,22 +129,22 @@ return nFired ? nRoundsPerShot : 0;
 
 //-------------------------------------------
 
-int32_t PlasmaHandler (CObject *objP, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
+int32_t PlasmaHandler (CObject *pObj, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
 {
-	int16_t	nLightObj = lightClusterManager.Create (objP);
+	int16_t	nLightObj = lightClusterManager.Create (pObj);
 	int16_t	nFired = 0;
 
-if (0 <= LaserPlayerFire (objP, PLASMA_ID, 0, 1, 0, nLightObj))
+if (0 <= LaserPlayerFire (pObj, PLASMA_ID, 0, 1, 0, nLightObj))
 	nFired++;
-if (0 <= LaserPlayerFire (objP, PLASMA_ID, 1, 0, 0, nLightObj))
+if (0 <= LaserPlayerFire (pObj, PLASMA_ID, 1, 0, 0, nLightObj))
 	nFired++;
 if (!nFired && (nLightObj >= 0))
 	OBJECT (nLightObj)->Die ();
 if (nRoundsPerShot > 1) {
-	nLightObj = lightClusterManager.Create (objP);
-	if (0 <= FireWeaponDelayedWithSpread (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
+	nLightObj = lightClusterManager.Create (pObj);
+	if (0 <= FireWeaponDelayedWithSpread (pObj, PLASMA_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
 		nFired++;
-	if (0 <= FireWeaponDelayedWithSpread (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
+	if (0 <= FireWeaponDelayedWithSpread (pObj, PLASMA_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
 		nFired++;
 	if (!nFired && (nLightObj >= 0))
 		OBJECT (nLightObj)->Die ();
@@ -154,18 +154,18 @@ return nFired ? nRoundsPerShot : 0;
 
 //-------------------------------------------
 
-int32_t FusionHandler (CObject *objP, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
+int32_t FusionHandler (CObject *pObj, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
 {
 	CFixVector	vForce;
-	int16_t			nLightObj = lightClusterManager.Create (objP);
+	int16_t			nLightObj = lightClusterManager.Create (pObj);
 	int16_t			nFired = 0;
 
-if (0 <= LaserPlayerFire (objP, FUSION_ID, 0, 1, 0, nLightObj))
+if (0 <= LaserPlayerFire (pObj, FUSION_ID, 0, 1, 0, nLightObj))
 	nFired++;
-if (0 <= LaserPlayerFire (objP, FUSION_ID, 1, 1, 0, nLightObj))
+if (0 <= LaserPlayerFire (pObj, FUSION_ID, 1, 1, 0, nLightObj))
 	nFired++;
-if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameData.multiplayer.weaponStates [objP->info.nId].bTripleFusion)
-	if (0 <= LaserPlayerFire (objP, FUSION_ID, 6, 1, 0, nLightObj))
+if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameData.multiplayer.weaponStates [pObj->info.nId].bTripleFusion)
+	if (0 <= LaserPlayerFire (pObj, FUSION_ID, 6, 1, 0, nLightObj))
 		nFired++;
 nFlags = int8_t (gameData.FusionCharge () >> 12);
 gameData.SetFusionCharge (0);
@@ -174,37 +174,37 @@ if (!nFired) {
 		OBJECT (nLightObj)->Die ();
 	return 0;
 	}
-postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), I2X (1) / 3, objP->info.xSize, 1, 
-																  OBJPOS (objP)->vPos + OBJPOS (objP)->mOrient.m.dir.f * objP->info.xSize, objP->Index ()));
-vForce.v.coord.x = -(objP->info.position.mOrient.m.dir.f.v.coord.x << 7);
-vForce.v.coord.y = -(objP->info.position.mOrient.m.dir.f.v.coord.y << 7);
-vForce.v.coord.z = -(objP->info.position.mOrient.m.dir.f.v.coord.z << 7);
-objP->ApplyForce (vForce);
+postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), I2X (1) / 3, pObj->info.xSize, 1, 
+																  OBJPOS (pObj)->vPos + OBJPOS (pObj)->mOrient.m.dir.f * pObj->info.xSize, pObj->Index ()));
+vForce.v.coord.x = -(pObj->info.position.mOrient.m.dir.f.v.coord.x << 7);
+vForce.v.coord.y = -(pObj->info.position.mOrient.m.dir.f.v.coord.y << 7);
+vForce.v.coord.z = -(pObj->info.position.mOrient.m.dir.f.v.coord.z << 7);
+pObj->ApplyForce (vForce);
 vForce.v.coord.x = (vForce.v.coord.x >> 4) + SRandShort ();
 vForce.v.coord.y = (vForce.v.coord.y >> 4) + SRandShort ();
 vForce.v.coord.z = (vForce.v.coord.z >> 4) + SRandShort ();
-objP->ApplyRotForce (vForce);
+pObj->ApplyRotForce (vForce);
 return nRoundsPerShot;
 }
 
 //-------------------------------------------
 
-int32_t SuperlaserHandler (CObject *objP, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
+int32_t SuperlaserHandler (CObject *pObj, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
 {
 	uint8_t nSuperLevel = 3;		//make some new kind of laser eventually
-	int16_t	nLightObj = lightClusterManager.Create (objP);
+	int16_t	nLightObj = lightClusterManager.Create (pObj);
 	int16_t	nFired = 0;
 
-if (0 <= LaserPlayerFire (objP, nSuperLevel, 0, 1, 0, nLightObj))
+if (0 <= LaserPlayerFire (pObj, nSuperLevel, 0, 1, 0, nLightObj))
 	nFired++;
-if (0 <= LaserPlayerFire (objP, nSuperLevel, 1, 0, 0, nLightObj))
+if (0 <= LaserPlayerFire (pObj, nSuperLevel, 1, 0, 0, nLightObj))
 	nFired++;
 
 if (nFlags & LASER_QUAD) {
 	//	hideous system to make quad laser 1.5x powerful as Normal laser, make every other quad laser bolt bHarmless
-	if (0 <= LaserPlayerFire (objP, nSuperLevel, 2, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFire (pObj, nSuperLevel, 2, 0, 0, nLightObj))
 		nFired++;
-	if (0 <= LaserPlayerFire (objP, nSuperLevel, 3, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFire (pObj, nSuperLevel, 3, 0, 0, nLightObj))
 		nFired++;
 	}
 if (!nFired && (nLightObj >= 0))
@@ -214,24 +214,24 @@ return nFired ? nRoundsPerShot : 0;
 
 //-------------------------------------------
 
-int32_t GaussHandler (CObject *objP, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
+int32_t GaussHandler (CObject *pObj, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
 {
 #	define GAUSS_SPREAD		(VULCAN_SPREAD / 5)
 
-	tFiringData *fP = gameData.multiplayer.weaponStates [objP->info.nId].firing;
+	tFiringData *pFiringData = gameData.multiplayer.weaponStates [pObj->info.nId].firing;
 	int16_t			nFired = 0;
 
-if (fP->nDuration <= GATLING_DELAY)
+if (pFiringData->nDuration <= GATLING_DELAY)
 	return 0;
 //	Only make sound for 1/4 of vulcan bullets.
-if (0 <= LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD,
-										  (objP->info.nId != N_LOCALPLAYER) || (gameData.laser.xNextFireTime > gameData.time.xGame), 0, -1))
+if (0 <= LaserPlayerFireSpread (pObj, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD,
+										  (pObj->info.nId != N_LOCALPLAYER) || (gameData.laser.xNextFireTime > gameData.time.xGame), 0, -1))
 	nFired++;
 if (nRoundsPerShot > 1) {
-	if (0 <= LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1))
+	if (0 <= LaserPlayerFireSpread (pObj, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1))
 		nFired++;
 	if (nRoundsPerShot > 2)
-		if (0 <= LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1))
+		if (0 <= LaserPlayerFireSpread (pObj, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1))
 			nFired++;
 	}
 return nFired ? nRoundsPerShot : 0;
@@ -239,7 +239,7 @@ return nFired ? nRoundsPerShot : 0;
 
 //-------------------------------------------
 
-int32_t HelixHandler (CObject *objP, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
+int32_t HelixHandler (CObject *pObj, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
 {
 	typedef struct tSpread {
 		fix	r, u;
@@ -257,18 +257,18 @@ int32_t HelixHandler (CObject *objP, int32_t nLevel, int32_t& nFlags, int32_t nR
 		};
 
 	tSpread	spread = spreadTable [(nFlags >> LASER_HELIX_SHIFT) & LASER_HELIX_MASK];
-	int16_t		nLightObj = lightClusterManager.Create (objP);
+	int16_t		nLightObj = lightClusterManager.Create (pObj);
 	int16_t		nFired = 0;
 
-if (0 <= LaserPlayerFireSpread (objP, HELIX_ID, 6,  0,  0, 1, 0, nLightObj))
+if (0 <= LaserPlayerFireSpread (pObj, HELIX_ID, 6,  0,  0, 1, 0, nLightObj))
 	nFired++;
-if (0 <= LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r,  spread.u, 0, 0, nLightObj))
+if (0 <= LaserPlayerFireSpread (pObj, HELIX_ID, 6,  spread.r,  spread.u, 0, 0, nLightObj))
 	nFired++;
-if (0 <= LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r, -spread.u, 0, 0, nLightObj))
+if (0 <= LaserPlayerFireSpread (pObj, HELIX_ID, 6, -spread.r, -spread.u, 0, 0, nLightObj))
 	nFired++;
-if (0 <= LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r * 2,  spread.u * 2, 0, 0, nLightObj))
+if (0 <= LaserPlayerFireSpread (pObj, HELIX_ID, 6,  spread.r * 2,  spread.u * 2, 0, 0, nLightObj))
 	nFired++;
-if (0 <= LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r * 2, -spread.u * 2, 0, 0, nLightObj))
+if (0 <= LaserPlayerFireSpread (pObj, HELIX_ID, 6, -spread.r * 2, -spread.u * 2, 0, 0, nLightObj))
 	nFired++;
 if (!nFired && (nLightObj >= 0))
 	OBJECT (nLightObj)->Die ();
@@ -277,22 +277,22 @@ return nFired ? nRoundsPerShot : 0;
 
 //-------------------------------------------
 
-int32_t PhoenixHandler (CObject *objP, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
+int32_t PhoenixHandler (CObject *pObj, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
 {
-	int16_t	nLightObj = lightClusterManager.Create (objP);
+	int16_t	nLightObj = lightClusterManager.Create (pObj);
 	int16_t	nFired = 0;
 
-if (0 <= LaserPlayerFire (objP, PHOENIX_ID, 0, 1, 0, nLightObj))
+if (0 <= LaserPlayerFire (pObj, PHOENIX_ID, 0, 1, 0, nLightObj))
 	nFired++;;
-if (0 <= LaserPlayerFire (objP, PHOENIX_ID, 1, 0, 0, nLightObj))
+if (0 <= LaserPlayerFire (pObj, PHOENIX_ID, 1, 0, 0, nLightObj))
 	nFired++;
 if (!nFired && (nLightObj >= 0))
 	OBJECT (nLightObj)->Die ();
 if (nRoundsPerShot > 1) {
-	nLightObj = lightClusterManager.Create (objP);
-	if (0 <= FireWeaponDelayedWithSpread (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
+	nLightObj = lightClusterManager.Create (pObj);
+	if (0 <= FireWeaponDelayedWithSpread (pObj, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
 	nFired++;
-	if (0 <= FireWeaponDelayedWithSpread (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
+	if (0 <= FireWeaponDelayedWithSpread (pObj, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
 	nFired++;
 	if (!nFired && (nLightObj >= 0))
 		OBJECT (nLightObj)->Die ();
@@ -302,9 +302,9 @@ return nFired ? nRoundsPerShot : 0;
 
 //-------------------------------------------
 
-int32_t OmegaHandler (CObject *objP, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
+int32_t OmegaHandler (CObject *pObj, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
 {
-LaserPlayerFire (objP, OMEGA_ID, 6, 1, 0, -1);
+LaserPlayerFire (pObj, OMEGA_ID, 6, 1, 0, -1);
 return nRoundsPerShot;
 }
 

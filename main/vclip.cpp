@@ -37,65 +37,65 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //----------------- Variables for video clips -------------------
 
-inline int32_t CurFrame (CObject *objP, int32_t nClip, fix timeToLive, int32_t nFrames = -1)
+inline int32_t CurFrame (CObject *pObj, int32_t nClip, fix timeToLive, int32_t nFrames = -1)
 {
-tAnimationInfo	*animInfoP = gameData.effects.animations [0] + nClip;
+tAnimationInfo	*pAnimInfo = gameData.effects.animations [0] + nClip;
 if (nFrames < 0)
-	nFrames = animInfoP->nFrameCount;
-//	iFrame = (nFrames - X2I (FixDiv ((nFrames - 1) * timeToLive, animInfoP->xTotalTime))) - 1;
+	nFrames = pAnimInfo->nFrameCount;
+//	iFrame = (nFrames - X2I (FixDiv ((nFrames - 1) * timeToLive, pAnimInfo->xTotalTime))) - 1;
 int32_t iFrame;
-if (timeToLive > animInfoP->xTotalTime)
-	timeToLive = timeToLive % animInfoP->xTotalTime;
-if ((nClip == ANIM_AFTERBURNER_BLOB) && objP->rType.animationInfo.xFrameTime)
-	iFrame = (objP->rType.animationInfo.xTotalTime - timeToLive) / objP->rType.animationInfo.xFrameTime;
+if (timeToLive > pAnimInfo->xTotalTime)
+	timeToLive = timeToLive % pAnimInfo->xTotalTime;
+if ((nClip == ANIM_AFTERBURNER_BLOB) && pObj->rType.animationInfo.xFrameTime)
+	iFrame = (pObj->rType.animationInfo.xTotalTime - timeToLive) / pObj->rType.animationInfo.xFrameTime;
 else
-	iFrame = (animInfoP->xTotalTime - timeToLive) / animInfoP->xFrameTime;
+	iFrame = (pAnimInfo->xTotalTime - timeToLive) / pAnimInfo->xFrameTime;
 return (iFrame < nFrames) ? iFrame : nFrames - 1;
 }
 
 //------------------------------------------------------------------------------
 
-CRGBColor *AnimationColor (CObject *objP)
+CRGBColor *AnimationColor (CObject *pObj)
 {
-	int32_t			nVClip = gameData.weapons.info [objP->info.nId].nAnimationIndex;
+	int32_t			nVClip = gameData.weapons.info [pObj->info.nId].nAnimationIndex;
 	tBitmapIndex	bmi;
-	CBitmap			*bmP;
+	CBitmap			*pBm;
 
 if (nVClip) {
-	tAnimationInfo *animInfoP = gameData.effects.animations [0] + nVClip;
-	bmi = animInfoP->frames [0];
+	tAnimationInfo *pAnimInfo = gameData.effects.animations [0] + nVClip;
+	bmi = pAnimInfo->frames [0];
 	}
 else
-	bmi = gameData.weapons.info [objP->info.nId].bitmap;
+	bmi = gameData.weapons.info [pObj->info.nId].bitmap;
 LoadTexture (bmi.index, 0, 0);
-bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
-if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ())
-	bmP = bmP->Override ();
-bmP->AvgColor (NULL, false);
-return bmP->GetAvgColor ();
+pBm = gameData.pig.tex.bitmaps [0] + bmi.index;
+if ((pBm->Type () == BM_TYPE_STD) && pBm->Override ())
+	pBm = pBm->Override ();
+pBm->AvgColor (NULL, false);
+return pBm->GetAvgColor ();
 }
 
 //------------------------------------------------------------------------------
 
-int32_t SetupHiresVClip (tAnimationInfo *animInfoP, tAnimationState *vciP, CBitmap* bmP)
+int32_t SetupHiresVClip (tAnimationInfo *pAnimInfo, tAnimationState *pState, CBitmap* pBm)
 {
-	int32_t nFrames = animInfoP->nFrameCount;
+	int32_t nFrames = pAnimInfo->nFrameCount;
 
-if (animInfoP->flags & WCF_ALTFMT) {
-	if (animInfoP->flags & WCF_INITIALIZED) {
-		bmP = gameData.pig.tex.bitmaps [0][animInfoP->frames [0].index].Override ();
-		nFrames = ((bmP->Type () != BM_TYPE_ALT) && bmP->Parent ()) ? bmP->Parent ()->FrameCount () : bmP->FrameCount ();
+if (pAnimInfo->flags & WCF_ALTFMT) {
+	if (pAnimInfo->flags & WCF_INITIALIZED) {
+		pBm = gameData.pig.tex.bitmaps [0][pAnimInfo->frames [0].index].Override ();
+		nFrames = ((pBm->Type () != BM_TYPE_ALT) && pBm->Parent ()) ? pBm->Parent ()->FrameCount () : pBm->FrameCount ();
 		}
 	else {
-		bmP = SetupHiresAnim (reinterpret_cast<int16_t*> (animInfoP->frames), nFrames, -1, 0, vciP ? 1 : -1, &nFrames, bmP);
-		if (!bmP)
-			animInfoP->flags &= ~WCF_ALTFMT;
+		pBm = SetupHiresAnim (reinterpret_cast<int16_t*> (pAnimInfo->frames), nFrames, -1, 0, pState ? 1 : -1, &nFrames, pBm);
+		if (!pBm)
+			pAnimInfo->flags &= ~WCF_ALTFMT;
 		else if (!gameOpts->ogl.bGlTexMerge)
-			animInfoP->flags &= ~WCF_ALTFMT;
+			pAnimInfo->flags &= ~WCF_ALTFMT;
 		else
-			animInfoP->flags |= WCF_INITIALIZED;
-		if (vciP)
-			vciP->nCurFrame = Rand (nFrames);
+			pAnimInfo->flags |= WCF_INITIALIZED;
+		if (pState)
+			pState->nCurFrame = Rand (nFrames);
 		}
 	}
 return nFrames;
@@ -108,20 +108,20 @@ return nFrames;
 #define	THRUSTER_ALPHA		(1.0 / 4.0)
 #define	WEAPON_ALPHA		0.7
 
-void DrawVClipObject (CObject *objP, fix timeToLive, int32_t bLit, int32_t nVClip, CFloatVector *color)
+void DrawVClipObject (CObject *pObj, fix timeToLive, int32_t bLit, int32_t nVClip, CFloatVector *color)
 {
 	double		ta = 0, alpha = 0;
-	tAnimationInfo*	animInfoP = gameData.effects.animations [0] + nVClip;
-	int32_t		nFrames = SetupHiresVClip (animInfoP, &objP->rType.animationInfo);
-	int32_t		iFrame = CurFrame (objP, nVClip, timeToLive, nFrames);
-	int32_t		bThruster = (objP->info.renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
+	tAnimationInfo*	pAnimInfo = gameData.effects.animations [0] + nVClip;
+	int32_t		nFrames = SetupHiresVClip (pAnimInfo, &pObj->rType.animationInfo);
+	int32_t		iFrame = CurFrame (pObj, nVClip, timeToLive, nFrames);
+	int32_t		bThruster = (pObj->info.renderType == RT_THRUSTER) && (pObj->mType.physInfo.flags & PF_WIGGLE);
 
 if ((iFrame < 0) || (iFrame >= MAX_ANIMATION_FRAMES))
 	return;
-if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
+if ((pObj->info.nType == OBJ_FIREBALL) || (pObj->info.nType == OBJ_EXPLOSION)) {
 	if (bThruster) {
 		alpha = THRUSTER_ALPHA;
-		//if (objP->mType.physInfo.flags & PF_WIGGLE)	//CPlayerData ship
+		//if (pObj->mType.physInfo.flags & PF_WIGGLE)	//CPlayerData ship
 			iFrame = nFrames - iFrame - 1;	//render the other way round
 		}
 	else
@@ -129,29 +129,29 @@ if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
 	ta = (double) iFrame / (double) nFrames * alpha;
 	alpha = (ta >= 0) ? alpha - ta : alpha + ta;
 	}
-else if (objP->info.nType == OBJ_WEAPON) {
-	if (objP->IsMine ())
+else if (pObj->info.nType == OBJ_WEAPON) {
+	if (pObj->IsMine ())
 		alpha = 1.0;
 	else
 		alpha = WEAPON_ALPHA;
 	}
 #if 0
-if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION))
+if ((pObj->info.nType == OBJ_FIREBALL) || (pObj->info.nType == OBJ_EXPLOSION))
 	ogl.SetDepthWrite (true);	//don't set z-buffer for transparent objects
 #endif
-if (animInfoP->flags & VF_ROD)
-	DrawObjectRodTexPoly (objP, animInfoP->frames [iFrame], bLit, iFrame);
+if (pAnimInfo->flags & VF_ROD)
+	DrawObjectRodTexPoly (pObj, pAnimInfo->frames [iFrame], bLit, iFrame);
 else
-	DrawObjectBitmap (objP, animInfoP->frames [0].index, animInfoP->frames [iFrame].index, iFrame, color, (float) alpha);
+	DrawObjectBitmap (pObj, pAnimInfo->frames [0].index, pAnimInfo->frames [iFrame].index, iFrame, color, (float) alpha);
 #if 1
-if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION))
+if ((pObj->info.nType == OBJ_FIREBALL) || (pObj->info.nType == OBJ_EXPLOSION))
 	ogl.SetDepthWrite (true);
 #endif
 }
 
 // -----------------------------------------------------------------------------
 
-void DrawExplBlast (CObject *objP)
+void DrawExplBlast (CObject *pObj)
 {
 #if BLAST_TYPE == 1
 	int32_t			i;
@@ -170,35 +170,35 @@ void DrawExplBlast (CObject *objP)
 	 {1, 0.75f, 0, 1},
 	 {1, 1, 1, 3}};
 #endif
-if (objP->info.xLifeLeft <= 0)
+if (pObj->info.xLifeLeft <= 0)
 	return;
 if (!explBlast.Load ())
 	return;
 
 float fScale;
-if (true || objP->Collapsing ()) {
-	fix xTotalLife = objP->TotalLife ();
+if (true || pObj->Collapsing ()) {
+	fix xTotalLife = pObj->TotalLife ();
 	fix xPivot = xTotalLife / 8;
-	if (objP->LifeLeft () < xPivot)
-		fScale = 1.0f - X2F (xPivot - objP->LifeLeft ()) / X2F (xPivot);
+	if (pObj->LifeLeft () < xPivot)
+		fScale = 1.0f - X2F (xPivot - pObj->LifeLeft ()) / X2F (xPivot);
 	else
-		fScale = 1.0f - X2F (objP->LifeLeft () - xPivot) / X2F (xTotalLife - xPivot);
+		fScale = 1.0f - X2F (pObj->LifeLeft () - xPivot) / X2F (xTotalLife - xPivot);
 	}
 else {
-	fScale = 1.0f - X2F (objP->LifeLeft ()) / X2F (objP->TotalLife ());
+	fScale = 1.0f - X2F (pObj->LifeLeft ()) / X2F (pObj->TotalLife ());
 	}
 
-fix xSize = objP->info.xSize + (fix) ((float) objP->info.xSize * fScale * 12);
-CFixVector vPos = objP->info.position.vPos;
+fix xSize = pObj->info.xSize + (fix) ((float) pObj->info.xSize * fScale * 12);
+CFixVector vPos = pObj->info.position.vPos;
 #if MOVE_BLAST
 CFixVector vViewPos;
 if (gameStates.render.bChaseCam)
 	FLIGHTPATH.GetViewPoint (&vViewPos);
 else
-	vViewPos = OBJPOS (gameData.objData.consoleP)->vPos;
+	vViewPos = OBJPOS (gameData.objData.pConsole)->vPos;
 CFixVector vDir = vViewPos - vPos;
 CFixVector::Normalize (vDir);
-vDir *= (xSize - objP->info.xSize);
+vDir *= (xSize - pObj->info.xSize);
 vPos += vDir;
 #endif
 ogl.SetDepthWrite (false);
@@ -212,17 +212,17 @@ explBlast.Bitmap ()->SetColor (&color);
 ogl.RenderSprite (explBlast.Bitmap (), vPos, xSize, xSize, fAlpha, 2, 10);
 #elif BLAST_TYPE == 1
 xSize2 = xSize / 20;
-fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft)) / 4;
+fAlpha = (float) sqrt (X2F (pObj->info.xLifeLeft)) / 4;
 for (i = 0; i < 4; i++, xSize -= xSize2)
 	ogl.RenderSprite (explBlast.Bitmap (), &vPos, xSize, xSize, &color, fAlpha * blastColors [i].Alpha (), 0);
 #elif BLAST_TYPE == 2
 CreateSphere (&sd);
-fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft) * 3);
+fAlpha = (float) sqrt (X2F (pObj->info.xLifeLeft) * 3);
 r = X2F (xSize);
-sd.pulseP = 0;
-transformation.Begin(objP->info.position.vPos, &objP->info.position.mOrient);
+sd.pPulse = 0;
+transformation.Begin(pObj->info.position.vPos, &pObj->info.position.mOrient);
 for (i = 0; i < 3; i++) {
-	RenderSphere (&sd, reinterpret_cast<CFloatVector*> (OOF_VecVms2Oof (&p, &objP->info.position.vPos)),
+	RenderSphere (&sd, reinterpret_cast<CFloatVector*> (OOF_VecVms2Oof (&p, &pObj->info.position.vPos)),
 					  r, r, r, 1, 1, 1, fAlpha, NULL, 1);
 	r *= i ? 0.5f : 0.8f;
 	}
@@ -233,12 +233,12 @@ ogl.SetDepthWrite (true);
 
 // -----------------------------------------------------------------------------
 
-void DrawShockwave (CObject *objP)
+void DrawShockwave (CObject *pObj)
 {
 
-	CBitmap* bmP = shockwave.Bitmap (SHOCKWAVE_LIFE, objP->info.xLifeLeft);
+	CBitmap* pBm = shockwave.Bitmap (SHOCKWAVE_LIFE, pObj->info.xLifeLeft);
 
-if (!bmP)
+if (!pBm)
 	return;
 
 	CFloatVector	v, vertices [4];
@@ -246,120 +246,120 @@ if (!bmP)
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 	static CFloatVector color = {{{1.0f, 1.0f, 1.0f, 1.0f}}};
 
-if (objP->info.xLifeLeft <= 0)
+if (pObj->info.xLifeLeft <= 0)
 	return;
 if (!shockwave.Load ())
 	return;
 
-vertices [0].Assign (objP->Position ());
+vertices [0].Assign (pObj->Position ());
 vertices [1] = 
 vertices [2] = 
 vertices [3] = vertices [0];
 
-float fSize = X2F (objP->info.xSize);
-v.Assign (objP->Orientation ().m.dir.f);
+float fSize = X2F (pObj->info.xSize);
+v.Assign (pObj->Orientation ().m.dir.f);
 v *= fSize;
 vertices [0] += v;
 vertices [2] -= v;
 //vertices [0] += r;
 //vertices [1] += f;
-v.Assign (objP->Orientation ().m.dir.r);
+v.Assign (pObj->Orientation ().m.dir.r);
 v *= fSize;
 vertices [1] -= v;
 vertices [3] += v;
 //vertices [2] -= r;
 //vertices [3] -= f;
 
-bmP->SetColor (&color);
+pBm->SetColor (&color);
 #if 0
-ogl.RenderSprite (bmP, objP->Position (), objP->info.xSize * 5, objP->info.xSize * 5, 1.0f, 2, 10.0f);
+ogl.RenderSprite (pBm, pObj->Position (), pObj->info.xSize * 5, pObj->info.xSize * 5, 1.0f, 2, 10.0f);
 #else
 for (int32_t i = 0; i < 4; i++)
 	transformation.Transform (vertices [i], vertices [i], 0);
-transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoord, &color, NULL, 1, 0, GL_QUADS, GL_CLAMP, 2, -1);
+transparencyRenderer.AddPoly (NULL, NULL, pBm, vertices, 4, texCoord, &color, NULL, 1, 0, GL_QUADS, GL_CLAMP, 2, -1);
 #endif
 }
 
 // -----------------------------------------------------------------------------
 
-void ConvertPowerupToVClip (CObject *objP)
+void ConvertPowerupToVClip (CObject *pObj)
 {
-objP->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [objP->info.nId].nClipIndex;
-objP->rType.animationInfo.xFrameTime = gameData.effects.vClipP [objP->rType.animationInfo.nClipIndex].xFrameTime;
-objP->rType.animationInfo.nCurFrame = 0;
-objP->SetSizeFromPowerup ();
-objP->info.controlType = CT_POWERUP;
-objP->info.renderType = RT_POWERUP;
-objP->mType.physInfo.mass = I2X (1);
-objP->mType.physInfo.drag = 512;
+pObj->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [pObj->info.nId].nClipIndex;
+pObj->rType.animationInfo.xFrameTime = gameData.effects.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
+pObj->rType.animationInfo.nCurFrame = 0;
+pObj->SetSizeFromPowerup ();
+pObj->info.controlType = CT_POWERUP;
+pObj->info.renderType = RT_POWERUP;
+pObj->mType.physInfo.mass = I2X (1);
+pObj->mType.physInfo.drag = 512;
 }
 
 // -----------------------------------------------------------------------------
 
-void ConvertWeaponToVClip (CObject *objP)
+void ConvertWeaponToVClip (CObject *pObj)
 {
-objP->rType.animationInfo.nClipIndex = gameData.weapons.info [objP->info.nId].nAnimationIndex;
-objP->rType.animationInfo.xFrameTime = gameData.effects.vClipP [objP->rType.animationInfo.nClipIndex].xFrameTime;
-objP->rType.animationInfo.nCurFrame = 0;
-objP->info.controlType = CT_WEAPON;
-objP->info.renderType = RT_WEAPON_VCLIP;
-objP->mType.physInfo.mass = gameData.weapons.info [objP->info.nId].mass;
-objP->mType.physInfo.drag = gameData.weapons.info [objP->info.nId].drag;
-objP->SetSize (gameData.weapons.info [objP->info.nId].strength [gameStates.app.nDifficultyLevel] / 10);
-objP->info.movementType = MT_PHYSICS;
+pObj->rType.animationInfo.nClipIndex = gameData.weapons.info [pObj->info.nId].nAnimationIndex;
+pObj->rType.animationInfo.xFrameTime = gameData.effects.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
+pObj->rType.animationInfo.nCurFrame = 0;
+pObj->info.controlType = CT_WEAPON;
+pObj->info.renderType = RT_WEAPON_VCLIP;
+pObj->mType.physInfo.mass = gameData.weapons.info [pObj->info.nId].mass;
+pObj->mType.physInfo.drag = gameData.weapons.info [pObj->info.nId].drag;
+pObj->SetSize (gameData.weapons.info [pObj->info.nId].strength [gameStates.app.nDifficultyLevel] / 10);
+pObj->info.movementType = MT_PHYSICS;
 }
 
 // -----------------------------------------------------------------------------
 
-int32_t ConvertVClipToPolymodel (CObject *objP)
+int32_t ConvertVClipToPolymodel (CObject *pObj)
 {
 if (gameStates.app.bNostalgia || !gameOpts->Use3DPowerups ())
 	return 0;
-if (objP->info.renderType == RT_POLYOBJ)
+if (pObj->info.renderType == RT_POLYOBJ)
 	return 1;
-int16_t	nModel = WeaponToModel (objP->info.nId);
+int16_t	nModel = WeaponToModel (pObj->info.nId);
 if (!(nModel && HaveReplacementModel (nModel)))
 	return 0;
 #if 0 //DBG
-objP->Orientation () = gameData.objData.consoleP->Orientation ();
-objP->mType.physInfo.rotVel.v.coord.x =
-objP->mType.physInfo.rotVel.v.coord.y =
-objP->mType.physInfo.rotVel.v.coord.z = 0;
+pObj->Orientation () = gameData.objData.pConsole->Orientation ();
+pObj->mType.physInfo.rotVel.v.coord.x =
+pObj->mType.physInfo.rotVel.v.coord.y =
+pObj->mType.physInfo.rotVel.v.coord.z = 0;
 #else
 CAngleVector a;
 a.v.coord.p = 2 * SRandShort ();
 a.v.coord.b = 2 * SRandShort ();
 a.v.coord.h = 2 * SRandShort ();
-objP->info.position.mOrient = CFixMatrix::Create (a);
-objP->mType.physInfo.rotVel.v.coord.z =
-objP->mType.physInfo.rotVel.v.coord.y = 0;
-objP->mType.physInfo.rotVel.v.coord.x = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+pObj->info.position.mOrient = CFixMatrix::Create (a);
+pObj->mType.physInfo.rotVel.v.coord.z =
+pObj->mType.physInfo.rotVel.v.coord.y = 0;
+pObj->mType.physInfo.rotVel.v.coord.x = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
 #endif
 #if 0
-objP->mType.physInfo.mass = I2X (1);
-objP->mType.physInfo.drag = 512;
+pObj->mType.physInfo.mass = I2X (1);
+pObj->mType.physInfo.drag = 512;
 #endif
-//objP->info.controlType = CT_WEAPON;
-objP->info.renderType = RT_POLYOBJ;
-objP->info.movementType = MT_PHYSICS;
-objP->mType.physInfo.flags = PF_BOUNCES | PF_FREE_SPINNING;
-if (0 > (objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel))
-	objP->rType.polyObjInfo.nModel = nModel;
+//pObj->info.controlType = CT_WEAPON;
+pObj->info.renderType = RT_POLYOBJ;
+pObj->info.movementType = MT_PHYSICS;
+pObj->mType.physInfo.flags = PF_BOUNCES | PF_FREE_SPINNING;
+if (0 > (pObj->rType.polyObjInfo.nModel = gameData.weapons.info [pObj->info.nId].nModel))
+	pObj->rType.polyObjInfo.nModel = nModel;
 #if 0
-objP->AdjustSize (0, gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
+pObj->AdjustSize (0, gameData.weapons.info [pObj->info.nId].poLenToWidthRatio);
 #endif
-objP->rType.polyObjInfo.nTexOverride = -1;
-if (objP->info.nType == OBJ_POWERUP)
-	objP->SetLife (IMMORTAL_TIME);
+pObj->rType.polyObjInfo.nTexOverride = -1;
+if (pObj->info.nType == OBJ_POWERUP)
+	pObj->SetLife (IMMORTAL_TIME);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void DrawWeaponVClip (CObject *objP)
+void DrawWeaponVClip (CObject *pObj)
 {
-int32_t nVClip = gameData.weapons.info [objP->info.nId].nAnimationIndex;
-fix modTime = objP->info.xLifeLeft;
+int32_t nVClip = gameData.weapons.info [pObj->info.nId].nAnimationIndex;
+fix modTime = pObj->info.xLifeLeft;
 fix playTime = gameData.effects.vClipP [nVClip].xTotalTime;
 if (!playTime)
 	return;
@@ -369,8 +369,8 @@ if (modTime == IMMORTAL_TIME)
 //	Should cause Omega blobs (which live for one frame) to not always be the same.
 if (modTime == ONE_FRAME_TIME)
 	modTime = RandShort ();
-if (objP->info.nId == PROXMINE_ID) {		//make prox bombs spin out of sync
-	int32_t nObject = objP->Index ();
+if (pObj->info.nId == PROXMINE_ID) {		//make prox bombs spin out of sync
+	int32_t nObject = pObj->Index ();
 	modTime += (modTime * (nObject & 7)) / 16;	//add variance to spin rate
 	while (modTime > playTime)
 		modTime -= playTime;
@@ -381,10 +381,10 @@ else {
 	if (modTime > playTime)
 		modTime %= playTime;
 	}
-if (ConvertVClipToPolymodel (objP))
-	DrawPolygonObject (objP, 0);
+if (ConvertVClipToPolymodel (pObj))
+	DrawPolygonObject (pObj, 0);
 else
-	DrawVClipObject (objP, modTime, 0, nVClip, gameData.weapons.color + objP->info.nId);
+	DrawVClipObject (pObj, modTime, 0, nVClip, gameData.weapons.color + pObj->info.nId);
 }
 
 //------------------------------------------------------------------------------

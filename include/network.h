@@ -600,7 +600,7 @@ void NetworkSetGameMode (int32_t gameMode);
 int32_t CanJoinNetGame (CNetGameInfo *game, CAllNetPlayersInfo *people);
 void RestartNetSearching (CMenu& menu);
 void DeleteTimedOutNetGames (void);
-void InitMonsterballSettings (tMonsterballInfo *monsterballP);
+void InitMonsterballSettings (tMonsterballInfo *pMonsterBall);
 void InitEntropySettings (int32_t i);
 void NetworkSendExtraGameInfo (tPlayerSyncData *their);
 void NetworkSendXMLGameInfo (void);
@@ -620,7 +620,7 @@ char *iptos (char *pszIP, char *addr);
 
 extern CNetGameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
 extern CAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
-extern CAllNetPlayersInfo* playerInfoP, netPlayers [2];
+extern CAllNetPlayersInfo* pPlayerInfo, netPlayers [2];
 extern int32_t nCoopPenalties [10];
 
 #define COMPETITION			(IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)

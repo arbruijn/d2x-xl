@@ -44,9 +44,9 @@ class CTranspItem {
 
 class CTranspPoly : public CTranspItem {
 	public:
-		CSegFace*			faceP;
-		tFaceTriangle*		triP;
-		CBitmap*				bmP;
+		CSegFace*			pFace;
+		tFaceTriangle*		pTriangle;
+		CBitmap*				pBm;
 		CFloatVector		vertices [8];
 		tTexCoord2f			texCoord [8];
 		CFloatVector		color [8];
@@ -69,7 +69,7 @@ class CTranspPoly : public CTranspItem {
 
 class CTranspObject : public CTranspItem {
 	public:
-		CObject*				objP;
+		CObject*				pObj;
 		CFixVector			vScale;
 
 	virtual int32_t Size (void) { return sizeof (*this); }
@@ -79,7 +79,7 @@ class CTranspObject : public CTranspItem {
 
 class CTranspSprite : public CTranspItem {
 	public:
-		CBitmap*				bmP;
+		CBitmap*				pBm;
 		CFloatVector		position;
 		CFloatVector		color;
 		int32_t					nWidth;
@@ -132,7 +132,7 @@ class CTranspSphere : public CTranspItem {
 	public:
 		tTranspSphereType	nType;
 		CFloatVector		color;
-		CObject				*objP;
+		CObject				*pObj;
 		int32_t					nSize;
 		char					bAdditive;
 
@@ -153,7 +153,7 @@ class CTranspLightning : public CTranspItem {
 
 class CTranspLightTrail : public CTranspItem {
 	public:
-		CBitmap*					bmP;
+		CBitmap*					pBm;
 		CFloatVector			vertices [8];
 		tTexCoord2f				texCoord [8];
 		CFloatVector			color;
@@ -166,7 +166,7 @@ class CTranspLightTrail : public CTranspItem {
 
 class CTranspThruster : public CTranspItem {
 	public:
-		CObject*					objP;
+		CObject*					pObj;
 		tThrusterInfo			info;
 		int32_t						nThruster;
 
@@ -188,7 +188,7 @@ class CTranspItemBuffers {
 		int32_t						nMinOffs;
 		int32_t						nMaxOffs;
 		int32_t						nItems [2];
-		CTranspItem**			bufP;
+		CTranspItem**			pBuffer;
 
 	int32_t Create (void);
 	void Destroy (void);
@@ -225,7 +225,7 @@ class CTranspRenderData {
 		char					bRenderGlow;
 		char					bSoftBlend;
 		char					bReady;
-		CBitmap*				bmP [3];
+		CBitmap*				pBm [3];
 		CFixVector			vViewer [2];
 		CFloatVector		vViewerf [2];
 
@@ -260,22 +260,22 @@ class CTransparencyRenderer {
 		void Reset (void);
 		int32_t ItemCount (int32_t i = 1);
 		int32_t Add (CTranspItem* item, CFixVector vPos, int32_t nOffset = 0, bool bClamp = false, int32_t bTransformed = 0);
-		inline int32_t AddFace (CSegFace *faceP) {
-			return gameStates.render.bTriangleMesh ? AddFaceTris (faceP) : AddFaceQuads (faceP);
+		inline int32_t AddFace (CSegFace *pFace) {
+			return gameStates.render.bTriangleMesh ? AddFaceTris (pFace) : AddFaceQuads (pFace);
 			}
-		int32_t AddPoly (CSegFace *faceP, tFaceTriangle *triP, CBitmap *bmP,
+		int32_t AddPoly (CSegFace *pFace, tFaceTriangle *pTriangle, CBitmap *pBm,
 						 CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, CFloatVector *color,
 						 CFaceColor *altColor, char nColors, char bDepthMask, int32_t nPrimitive, int32_t nWrap, int32_t bAdditive,
 						 int16_t nSegment);
-		int32_t AddObject (CObject *objP);
-		int32_t AddSprite (CBitmap *bmP, const CFixVector& position, CFloatVector *color,
+		int32_t AddObject (CObject *pObj);
+		int32_t AddSprite (CBitmap *pBm, const CFixVector& position, CFloatVector *color,
 							  int32_t nWidth, int32_t nHeight, char nFrame, char bAdditive, float fSoftRad);
 		int32_t AddSpark (const CFixVector& position, char nType, int32_t nSize, char nFrame, char nRotFrame, char nOrient);
-		int32_t AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, CObject *objP, char bAdditive, fix nSize = 0);
+		int32_t AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, CObject *pObj, char bAdditive, fix nSize = 0);
 		int32_t AddParticle (CParticle *particle, float fBrightness, int32_t nThread);
-		int32_t AddLightning (CLightning *lightningP, int16_t nDepth);
-		int32_t AddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, CFloatVector *colorP);
-		int32_t AddThruster (CObject* objP, tThrusterInfo* infoP, int32_t nThruster);
+		int32_t AddLightning (CLightning *pLightning, int16_t nDepth);
+		int32_t AddLightTrail (CBitmap *pBm, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, CFloatVector *pColor);
+		int32_t AddThruster (CObject* pObj, tThrusterInfo* pInfo, int32_t nThruster);
 		void Render (int32_t nWindow);
 		void CreateRenderThreads (void);
 		void DestroyRenderThreads (void);
@@ -303,10 +303,10 @@ class CTransparencyRenderer {
 
 		void FlushSparkBuffer (void);
 		void FlushParticleBuffer (int32_t nType);
-		void FlushBuffers (int32_t nType, CTranspItem *itemP = NULL);
+		void FlushBuffers (int32_t nType, CTranspItem *pItem = NULL);
 
 		int32_t SoftBlend (int32_t nFlag);
-		int32_t LoadTexture (CSegFace* faceP, CBitmap *bmP, int16_t nTexture, int32_t nFrame, int32_t bDecal, int32_t bLightmaps, int32_t nWrap);
+		int32_t LoadTexture (CSegFace* pFace, CBitmap *pBm, int16_t nTexture, int32_t nFrame, int32_t bDecal, int32_t bLightmaps, int32_t nWrap);
 		void ResetBitmaps (void);
 
 		inline CTranspRenderData& Data (void) { return m_data; }
@@ -317,8 +317,8 @@ class CTransparencyRenderer {
 		inline int32_t HeapSize (void);
 		inline int32_t DepthBuffer (void);
 		void ResetFreeList (void);
-		int32_t AddFaceTris (CSegFace *faceP);
-		int32_t AddFaceQuads (CSegFace *faceP);
+		int32_t AddFaceTris (CSegFace *pFace);
+		int32_t AddFaceQuads (CSegFace *pFace);
 
 		int32_t NeedDepthBuffer (void);
 #if 0

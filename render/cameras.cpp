@@ -116,20 +116,20 @@ SetName ("Camera");
 
 //------------------------------------------------------------------------------
 
-void CCamera::Setup (int32_t nId, int16_t srcSeg, int16_t srcSide, int16_t tgtSeg, int16_t tgtSide, CObject *objP, int32_t bTeleport)
+void CCamera::Setup (int32_t nId, int16_t srcSeg, int16_t srcSide, int16_t tgtSeg, int16_t tgtSide, CObject *pObj, int32_t bTeleport)
 {
 	CAngleVector a;
 
-if (objP) {
-	m_data.objP = objP;
-	m_data.orient = objP->info.position.mOrient;
+if (pObj) {
+	m_data.pObj = pObj;
+	m_data.orient = pObj->info.position.mOrient;
 	m_data.curAngle =
 	m_data.curDelta = 0;
 	m_data.t0 = 0;
-	cameraManager.SetObjectCamera (objP->Index (), nId);
+	cameraManager.SetObjectCamera (pObj->Index (), nId);
 	}
 else {
-	m_data.objP = &m_data.obj;
+	m_data.pObj = &m_data.obj;
 	if (bTeleport) {
 		CFixVector n = *SEGMENT (srcSeg)->m_sides [srcSide].m_normals;
 		/*
@@ -159,7 +159,7 @@ m_data.bTeleport = (char) bTeleport;
 
 int32_t Pow2ize (int32_t v, int32_t max);//from ogl.c
 
-int32_t CCamera::Create (int16_t nId, int16_t srcSeg, int16_t srcSide, int16_t tgtSeg, int16_t tgtSide, CObject *objP, int32_t bShadowMap, int32_t bTeleport)
+int32_t CCamera::Create (int16_t nId, int16_t srcSeg, int16_t srcSide, int16_t tgtSeg, int16_t tgtSide, CObject *pObj, int32_t bShadowMap, int32_t bTeleport)
 {
 #if 0
 	int16_t*		corners;
@@ -198,7 +198,7 @@ else
 SetBPP (4);
 if (!CreateBuffer ()) 
 	return 0;
-Setup (nId, srcSeg, srcSide, tgtSeg, tgtSide, objP, bTeleport);
+Setup (nId, srcSeg, srcSide, tgtSeg, tgtSide, pObj, bTeleport);
 return 1;
 }
 
@@ -225,12 +225,12 @@ if (ogl.m_features.bRenderToTexture)
 
 #define EPS 0.01f
 
-void CCamera::Align (CSegFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, CFloatVector3 *vertexP)
+void CCamera::Align (CSegFace *pFace, tUVL *uvlP, tTexCoord2f *pTexCoord, CFloatVector3 *pVertex)
 {
 	int32_t	i2, i3, nType = 0, nScale = 2 - gameOpts->render.cameras.bHires;
 
 if (gameStates.render.bTriangleMesh) {
-	if ((nType = faceP->m_info.nType == SIDE_IS_TRI_13)) {
+	if ((nType = pFace->m_info.nType == SIDE_IS_TRI_13)) {
 		i2 = 4;
 		}
 	else {
@@ -257,7 +257,7 @@ else
 		int32_t	bHaveBuffer = HaveBuffer (1) == 1;
 		int32_t	bFitToWall = 1; //m_data.bTeleport || gameOpts->render.cameras.bFitToWall;
 #if DBG
-	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	if ((pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 		BRP;
 #endif
 	if (uvlP) {
@@ -280,23 +280,23 @@ else
 		duFace = X2F (uvlP [2].u - uvlP [0].u);
 		}
 	else {
-		float delta = texCoordP [1].v.u - texCoordP [0].v.u;
+		float delta = pTexCoord [1].v.u - pTexCoord [0].v.u;
 		rotLeft = (delta > EPS);
 		rotRight = (delta < -EPS);
 		if (rotLeft) {
-			yFlip = (texCoordP [1].v.u - texCoordP [i2].v.u > EPS);
-			xFlip = (texCoordP [i3].v.v - texCoordP [1].v.v < -EPS);
+			yFlip = (pTexCoord [1].v.u - pTexCoord [i2].v.u > EPS);
+			xFlip = (pTexCoord [i3].v.v - pTexCoord [1].v.v < -EPS);
 			}
 		else if (rotRight) {
-			yFlip = (texCoordP [i3].v.u - texCoordP [0].v.u > EPS);
-			xFlip = (texCoordP [1].v.v - texCoordP [i3].v.v < -EPS);
+			yFlip = (pTexCoord [i3].v.u - pTexCoord [0].v.u > EPS);
+			xFlip = (pTexCoord [1].v.v - pTexCoord [i3].v.v < -EPS);
 			}
 		else {
-			xFlip = (texCoordP [i2].v.u - texCoordP [0].v.u < -EPS);
-			yFlip = (texCoordP [1].v.v - texCoordP [0].v.v > EPS);
+			xFlip = (pTexCoord [i2].v.u - pTexCoord [0].v.u < -EPS);
+			yFlip = (pTexCoord [1].v.v - pTexCoord [0].v.v > EPS);
 			}
-		dvFace = (float) fabs (texCoordP [1].v.v - texCoordP [0].v.v);
-		duFace = (float) fabs (texCoordP [i2].v.u - texCoordP [0].v.u);
+		dvFace = (float) fabs (pTexCoord [1].v.v - pTexCoord [0].v.v);
+		duFace = (float) fabs (pTexCoord [i2].v.u - pTexCoord [0].v.u);
 		}
 	if (fabs (dvFace) <= EPS)
 		dvFace = 0.0f;
@@ -308,9 +308,9 @@ else
 		dvImage = (float) CCanvas::Current ()->Height () / (float) Height () / nScale;
 		if (!bFitToWall) {
 			aImage = (float) CCanvas::Current ()->Height () / (float) CCanvas::Current ()->Width ();
-			if (vertexP)
-				aFace = CFloatVector::Dist(*reinterpret_cast<CFloatVector*> (vertexP), *reinterpret_cast<CFloatVector*> (vertexP + 1)) / 
-				        CFloatVector::Dist(*reinterpret_cast<CFloatVector*> (vertexP + 1), *reinterpret_cast<CFloatVector*> (vertexP + i2));
+			if (pVertex)
+				aFace = CFloatVector::Dist(*reinterpret_cast<CFloatVector*> (pVertex), *reinterpret_cast<CFloatVector*> (pVertex + 1)) / 
+				        CFloatVector::Dist(*reinterpret_cast<CFloatVector*> (pVertex + 1), *reinterpret_cast<CFloatVector*> (pVertex + i2));
 			else
 				aFace = dvFace / duFace;
 			dv = (aImage - aFace) / (float) nScale;
@@ -416,7 +416,7 @@ if (!m_data.bVisible)
 	return 0;
 if (m_data.bTeleport && !EGI_FLAG (bTeleporterCams, 0, 1, 0))
 	return 0;
-if (m_data.objP && (m_data.objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+if (m_data.pObj && (m_data.pObj->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	return 0;
 if (gameOpts->render.cameras.nFPS && !m_data.bTimedOut) {
 	if (t - m_data.nTimeout < 1000 / gameOpts->render.cameras.nFPS)
@@ -445,12 +445,12 @@ if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 	cockpit->Activate (CM_FULL_SCREEN);
 //gameOpts->render.nMaxFPS = 1;
 if (ReleaseBuffer ()) {
-	CObject* viewerP = gameData.objData.viewerP;
-	gameData.objData.viewerP = m_data.objP ? m_data.objP : &m_data.obj;
+	CObject* pViewer = gameData.objData.pViewer;
+	gameData.objData.pViewer = m_data.pObj ? m_data.pObj : &m_data.obj;
 	Activate ("CCamera::Render");
 	RenderFrame (0, 0);
 	Deactivate ();
-	gameData.objData.viewerP = viewerP;
+	gameData.objData.pViewer = pViewer;
 	m_data.bValid = 1;
 	DisableBuffer ();
 	}
@@ -467,7 +467,7 @@ void CCamera::Rotate (void)
 #define	DEG45		 (I2X (1) / 8)
 #define	DEG1		 (I2X (1) / (4 * 90))
 
-if (!m_data.objP)
+if (!m_data.pObj)
 	return;
 
 	fixang	curAngle = m_data.curAngle;
@@ -479,7 +479,7 @@ if (!m_data.objP)
 
 if ((t0 < 0) || (t - t0 >= 1000 / 90))
 #endif
-	if (m_data.objP->cType.aiInfo.behavior == AIB_NORMAL) {
+	if (m_data.pObj->cType.aiInfo.behavior == AIB_NORMAL) {
 		CAngleVector	a;
 		CFixMatrix	r;
 
@@ -490,7 +490,7 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 	if (h != d)
 		curDelta = s * d;
 #if 1
-	m_data.objP->mType.physInfo.brakes = (fix) t;
+	m_data.pObj->mType.physInfo.brakes = (fix) t;
 #endif
 	if ((curAngle >= DEG45) || (curAngle <= -DEG45)) {
 		if (curAngle * s - DEG45 >= curDelta * s)
@@ -502,8 +502,8 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 	a.v.coord.h = curAngle;
 	a.v.coord.b = a.v.coord.p = 0;
 	r = CFixMatrix::Create (a);
-	m_data.objP->info.position.mOrient = m_data.orient * r;
-	m_data.objP->info.position.mOrient.CheckAndFix ();
+	m_data.pObj->info.position.mOrient = m_data.orient * r;
+	m_data.pObj->info.position.mOrient.CheckAndFix ();
 	m_data.curAngle = curAngle;
 	m_data.curDelta = curDelta;
 	}
@@ -524,9 +524,9 @@ int32_t CCameraManager::Create (void)
 {
 	int32_t		i, j, k;
 	uint8_t		t;
-	CWall		*wallP;
-	CObject	*objP;
-	CTrigger	*triggerP;
+	CWall		*pWall;
+	CObject	*pObj;
+	CTrigger	*pTrigger;
 
 if (!(/*gameStates.app.bD2XLevel &&*/ SEGMENTS.Buffer () && OBJECTS.Buffer ()))
 	return 0;
@@ -554,44 +554,44 @@ m_objectCameras.Clear (0xFF);
 m_shadowMaps.Clear (0xFF);
 #endif
 if (gameData.trigData.m_nTriggers [0]) {
-	for (i = 0, wallP = WALLS.Buffer (); (i < gameData.wallData.nWalls) && (m_cameras.ToS () < MAX_CAMERAS); i++, wallP++) {
-		t = wallP->nTrigger;
+	for (i = 0, pWall = WALLS.Buffer (); (i < gameData.wallData.nWalls) && (m_cameras.ToS () < MAX_CAMERAS); i++, pWall++) {
+		t = pWall->nTrigger;
 		if (t >= GEOTRIGGERS.Length ())
 			continue;
-		triggerP = GEOTRIGGER (t);
-		if (triggerP && (triggerP->m_info.nType == TT_CAMERA)) {
-			for (j = 0; j < triggerP->m_nLinks; j++)
+		pTrigger = GEOTRIGGER (t);
+		if (pTrigger && (pTrigger->m_info.nType == TT_CAMERA)) {
+			for (j = 0; j < pTrigger->m_nLinks; j++)
 				if (m_cameras.Grow () &&
-					 m_cameras.Top ()->Create (m_cameras.ToS () - 1, (int16_t) wallP->nSegment, (int16_t) wallP->nSide, triggerP->m_segments [j], triggerP->m_sides [j], NULL, 0, 0))
-					SetFaceCamera (triggerP->m_segments [j] * 6 + triggerP->m_sides [j], (char) m_cameras.ToS () - 1);
+					 m_cameras.Top ()->Create (m_cameras.ToS () - 1, (int16_t) pWall->nSegment, (int16_t) pWall->nSide, pTrigger->m_segments [j], pTrigger->m_sides [j], NULL, 0, 0))
+					SetFaceCamera (pTrigger->m_segments [j] * 6 + pTrigger->m_sides [j], (char) m_cameras.ToS () - 1);
 			}
 #if TELEPORT_CAMERAS
-		else if (EGI_FLAG (bTeleporterCams, 0, 1, 0) && (triggerP->m_info.nType == TT_TELEPORT)) {
+		else if (EGI_FLAG (bTeleporterCams, 0, 1, 0) && (pTrigger->m_info.nType == TT_TELEPORT)) {
 			if (m_cameras.Grow () &&
-				 m_cameras.Top ()->Create (m_cameras.ToS () - 1, triggerP->m_segments [0], triggerP->m_sides [0], (int16_t) wallP->nSegment, (int16_t) wallP->nSide, NULL, 0, 1))
-				SetFaceCamera (wallP->nSegment * 6 + wallP->nSide, (char) m_cameras.ToS () + 1);
+				 m_cameras.Top ()->Create (m_cameras.ToS () - 1, pTrigger->m_segments [0], pTrigger->m_sides [0], (int16_t) pWall->nSegment, (int16_t) pWall->nSide, NULL, 0, 1))
+				SetFaceCamera (pWall->nSegment * 6 + pWall->nSide, (char) m_cameras.ToS () + 1);
 			}
 #endif
 		}
 	}
 
 if (gameData.trigData.m_nTriggers [1]) {
-	FORALL_OBJS (objP) {
-		if ((j = gameData.trigData.objTriggerRefs [objP->Index ()].nFirst) >= int32_t (OBJTRIGGERS.Length ()))
+	FORALL_OBJS (pObj) {
+		if ((j = gameData.trigData.objTriggerRefs [pObj->Index ()].nFirst) >= int32_t (OBJTRIGGERS.Length ()))
 			continue;
-		if (!(triggerP = OBJTRIGGER (j)))
+		if (!(pTrigger = OBJTRIGGER (j)))
 			continue;
-		j = gameData.trigData.objTriggerRefs [objP->Index ()].nCount;
+		j = gameData.trigData.objTriggerRefs [pObj->Index ()].nCount;
 #if DBG
 		if (j >= 0)
 			j = j;
 #endif
-		for (; j && (m_cameras.ToS () < MAX_CAMERAS); j--, triggerP++) {
-			if (triggerP->m_info.nType == TT_CAMERA) {
-				for (k = 0; k < triggerP->m_nLinks; k++)
+		for (; j && (m_cameras.ToS () < MAX_CAMERAS); j--, pTrigger++) {
+			if (pTrigger->m_info.nType == TT_CAMERA) {
+				for (k = 0; k < pTrigger->m_nLinks; k++)
 					if (m_cameras.Grow () &&
-						 m_cameras.Top ()->Create (m_cameras.ToS () - 1, -1, -1, triggerP->m_segments [k], triggerP->m_sides [k], objP, 0, 0))
-						SetFaceCamera (triggerP->m_segments [k] * 6 + triggerP->m_sides [k], (char) m_cameras.ToS () - 1);
+						 m_cameras.Top ()->Create (m_cameras.ToS () - 1, -1, -1, pTrigger->m_segments [k], pTrigger->m_sides [k], pObj, 0, 0))
+						SetFaceCamera (pTrigger->m_segments [k] * 6 + pTrigger->m_sides [k], (char) m_cameras.ToS () - 1);
 				}
 			}
 		}
@@ -623,7 +623,7 @@ if (m_cameras.Buffer ()) {
 int32_t CCameraManager::Render (void)
 {
 	uint32_t		i;
-	CObject	*viewerSave = gameData.objData.viewerP;
+	CObject	*viewerSave = gameData.objData.pViewer;
 	time_t	t;
 	int32_t		nCamsRendered;
 	int32_t		cm = gameStates.render.cockpit.nType;
@@ -652,7 +652,7 @@ if (m_current) {
 	m_current->Reset ();
 	nCamsRendered += m_current->Render ();
 	}
-gameData.objData.viewerP = viewerSave;
+gameData.objData.pViewer = viewerSave;
 //gameOpts->render.nMaxFPS = frameCap;
 if (gameStates.render.cockpit.nType != cm) {
 	cockpit->Activate (cm);
@@ -695,18 +695,18 @@ if (m_faceCameras.Buffer ())
 
 //--------------------------------------------------------------------
 
-CCamera* CCameraManager::Camera (CObject *objP)
+CCamera* CCameraManager::Camera (CObject *pObj)
 {
-	int16_t i = GetObjectCamera (objP->Index ());
+	int16_t i = GetObjectCamera (pObj->Index ());
 
 return (i < 0) ? NULL : m_cameras + i;
 }
 
 //--------------------------------------------------------------------
 
-void CCameraManager::Rotate (CObject *objP)
+void CCameraManager::Rotate (CObject *pObj)
 {
-	int16_t i = GetObjectCamera (objP->Index ());
+	int16_t i = GetObjectCamera (pObj->Index ());
 
 if (i >= 0)
 	m_cameras [i].Rotate ();

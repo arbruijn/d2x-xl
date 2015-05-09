@@ -169,18 +169,18 @@ for (uint32_t i = 0; i < num_pixels / 4; i++) {
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap00(int32_t x, int32_t y, CBitmap *bmP)
+void gr_ubitmap00(int32_t x, int32_t y, CBitmap *pBm)
 {
-int32_t srcRowSize = bmP->RowSize ();
+int32_t srcRowSize = pBm->RowSize ();
 int32_t destRowSize = CCanvas::Current ()->RowSize () << gr_bitblt_dest_step_shift;
 uint8_t* dest = &(CCanvas::Current ()->Buffer ()[ destRowSize*y+x ]);
-uint8_t* src = bmP->Buffer ();
+uint8_t* src = pBm->Buffer ();
 
-for (int32_t y1 = 0; y1 < bmP->Height (); y1++) {
+for (int32_t y1 = 0; y1 < pBm->Height (); y1++) {
 	if (gr_bitblt_double)
-		gr_linear_rep_movsd_2x(src, dest, bmP->Width ());
+		gr_linear_rep_movsd_2x(src, dest, pBm->Width ());
 	else
-		gr_linear_movsd(src, dest, bmP->Width ());
+		gr_linear_movsd(src, dest, pBm->Width ());
 	src += srcRowSize;
 	dest+= destRowSize;
 	}
@@ -188,7 +188,7 @@ for (int32_t y1 = 0; y1 < bmP->Height (); y1++) {
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap00m(int32_t x, int32_t y, CBitmap *bmP)
+void gr_ubitmap00m(int32_t x, int32_t y, CBitmap *pBm)
 {
 	register int32_t y1;
 	int32_t destRowSize;
@@ -199,19 +199,19 @@ void gr_ubitmap00m(int32_t x, int32_t y, CBitmap *bmP)
 	destRowSize=CCanvas::Current ()->RowSize () << gr_bitblt_dest_step_shift;
 	dest = &(CCanvas::Current ()->Buffer ()[ destRowSize*y+x ]);
 
-	src = bmP->Buffer ();
+	src = pBm->Buffer ();
 
 	if (grBitBltFadeTable==NULL) {
-		for (y1=0; y1 < bmP->Height (); y1++)    {
-			gr_linear_rep_movsdm(src, dest, bmP->Width ());
-			src += bmP->RowSize ();
+		for (y1=0; y1 < pBm->Height (); y1++)    {
+			gr_linear_rep_movsdm(src, dest, pBm->Width ());
+			src += pBm->RowSize ();
 			dest+= (int32_t)(destRowSize);
 		}
 	} else {
-		for (y1=0; y1 < bmP->Height (); y1++)    {
-			gr_linear_rep_movsdm_faded (src, dest, bmP->Width (), grBitBltFadeTable [y1+y], 
-												 bmP->Palette (), CCanvas::Current ()->Palette ());
-			src += bmP->RowSize ();
+		for (y1=0; y1 < pBm->Height (); y1++)    {
+			gr_linear_rep_movsdm_faded (src, dest, pBm->Width (), grBitBltFadeTable [y1+y], 
+												 pBm->Palette (), CCanvas::Current ()->Palette ());
+			src += pBm->RowSize ();
 			dest+= (int32_t)(destRowSize);
 		}
 	}
@@ -219,15 +219,15 @@ void gr_ubitmap00m(int32_t x, int32_t y, CBitmap *bmP)
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap012(int32_t x, int32_t y, CBitmap *bmP)
+void gr_ubitmap012(int32_t x, int32_t y, CBitmap *pBm)
 {
 	register int32_t x1, y1;
 	uint8_t * src;
 
-	src = bmP->Buffer ();
+	src = pBm->Buffer ();
 
-	for (y1=y; y1 < (y+bmP->Height ()); y1++)    {
-		for (x1=x; x1 < (x+bmP->Width ()); x1++)    {
+	for (y1=y; y1 < (y+pBm->Height ()); y1++)    {
+		for (x1=x; x1 < (x+pBm->Width ()); x1++)    {
 			CCanvas::Current ()->SetColor(*src++);
 			DrawPixel(x1, y1);
 		}
@@ -236,15 +236,15 @@ void gr_ubitmap012(int32_t x, int32_t y, CBitmap *bmP)
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap012m(int32_t x, int32_t y, CBitmap *bmP)
+void gr_ubitmap012m(int32_t x, int32_t y, CBitmap *pBm)
 {
 	register int32_t x1, y1;
 	uint8_t * src;
 
-	src = bmP->Buffer ();
+	src = pBm->Buffer ();
 
-	for (y1=y; y1 < (y+bmP->Height ()); y1++) {
-		for (x1=x; x1 < (x+bmP->Width ()); x1++) {
+	for (y1=y; y1 < (y+pBm->Height ()); y1++) {
+		for (x1=x; x1 < (x+pBm->Width ()); x1++) {
 			if (*src != TRANSPARENCY_COLOR) {
 				CCanvas::Current ()->SetColor(*src);
 				DrawPixel(x1, y1);
@@ -256,13 +256,13 @@ void gr_ubitmap012m(int32_t x, int32_t y, CBitmap *bmP)
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmapGENERIC(int32_t x, int32_t y, CBitmap * bmP)
+void gr_ubitmapGENERIC(int32_t x, int32_t y, CBitmap * pBm)
 {
 	register int32_t x1, y1;
 
-	for (y1=0; y1 < bmP->Height (); y1++)    {
-		for (x1=0; x1 < bmP->Width (); x1++)    {
-			CCanvas::Current ()->SetColor(bmP->GetPixel (x1,y1));
+	for (y1=0; y1 < pBm->Height (); y1++)    {
+		for (x1=0; x1 < pBm->Width (); x1++)    {
+			CCanvas::Current ()->SetColor(pBm->GetPixel (x1,y1));
 			DrawPixel(x+x1, y+y1);
 		}
 	}
@@ -270,14 +270,14 @@ void gr_ubitmapGENERIC(int32_t x, int32_t y, CBitmap * bmP)
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmapGENERICm(int32_t x, int32_t y, CBitmap * bmP)
+void gr_ubitmapGENERICm(int32_t x, int32_t y, CBitmap * pBm)
 {
 	register int32_t x1, y1;
 	uint8_t c;
 
-	for (y1=0; y1 < bmP->Height (); y1++) {
-		for (x1=0; x1 < bmP->Width (); x1++) {
-			c = bmP->GetPixel (x1,y1);
+	for (y1=0; y1 < pBm->Height (); y1++) {
+		for (x1=0; x1 < pBm->Width (); x1++) {
+			c = pBm->GetPixel (x1,y1);
 			if (c != TRANSPARENCY_COLOR) {
 				CCanvas::Current ()->SetColor(c);
 				DrawPixel(x+x1, y+y1);
@@ -585,7 +585,7 @@ if (srcBottom >= Height ()) {
 	srcBottom = Height () - 1; 
 	}
 
-// Draw bitmap bmP[x,y] into (destLeft,destTop)-(destRight,destBottom)
+// Draw bitmap pBm[x,y] into (destLeft,destTop)-(destRight,destBottom)
 if (w < 0)
 	w = Width ();
 if (h < 0)

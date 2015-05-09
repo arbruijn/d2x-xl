@@ -740,7 +740,7 @@ int32_t CMissionManager::Parse (CFile& cf)
 {
 	int32_t	i;
 	char	*t, *v;
-	char	buf [256], *bufP;
+	char	buf [256], *pBuffer;
 
 PrintLog (1, "parsing mission file\n");
 nLastLevel = 0;
@@ -769,12 +769,12 @@ while (MsnGetS (buf, 80, cf)) {
 	else if (MsnIsTok (buf, "type"))
 		;
 	else if (MsnIsTok (buf, "hog")) {
-		bufP = buf;
-		while (*(bufP++) != '=')
+		pBuffer = buf;
+		while (*(pBuffer++) != '=')
 			;
-		while (*bufP == ' ')
-			bufP++;
-		hogFileManager.UseMission (bufP);
+		while (*pBuffer == ' ')
+			pBuffer++;
+		hogFileManager.UseMission (pBuffer);
 		}
 	else if (MsnIsTok (buf, "briefing")) {
 		if ((v = MsnGetValue (buf))) {

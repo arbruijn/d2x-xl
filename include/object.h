@@ -518,7 +518,7 @@ public:
 	char	szFilename [40];
 	fix	nVolume;
 	char	bEnabled;
-	//Mix_Chunk*	mixChunkP;
+	//Mix_Chunk*	pMixChunk;
 } tSoundInfo;
 
 class CSoundInfo {
@@ -528,8 +528,8 @@ class CSoundInfo {
 		inline tSoundInfo* GetInfo (void) { return &m_info; };
 		inline char* Filename (void) { return m_info.szFilename; }
 		inline fix Volume (void) { return (fix) FRound (float (m_info.nVolume) * I2X (1) / 10.0f); }
-		//inline Mix_Chunk* SoundHandle (void) { return m_info.mixChunkP; }
-		//inline void SetSoundHandle (Mix_Chunk* handle) { m_info.mixChunkP = handle; }
+		//inline Mix_Chunk* SoundHandle (void) { return m_info.pMixChunk; }
+		//inline void SetSoundHandle (Mix_Chunk* handle) { m_info.pMixChunk = handle; }
 };
 
 typedef struct tWayPointInfo {
@@ -694,7 +694,7 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 
 	public:
 		inline tBaseObject* GetInfo (void) { return &info; };
-		inline void GetInfo (tBaseObject* infoP) { info = *infoP; };
+		inline void GetInfo (tBaseObject* pInfo) { info = *pInfo; };
 #endif
 
 	public:
@@ -851,7 +851,7 @@ class CObject : public CObjectInfo {
 		bool Bounces (void);
 		bool AttacksRobots (void);
 		bool AttacksPlayer (void);
-		bool AttacksObject (CObject* targetP);
+		bool AttacksObject (CObject* pTarget);
 		inline void SetAttackMode (int32_t nMode) { m_nAttackRobots = nMode; }
 		inline void Arm (void) { m_nAttackRobots = ROBOT_IS_HOSTILE; }
 		inline void Disarm (void) { m_nAttackRobots = ROBOT_IS_NEUTRAL; }
@@ -942,7 +942,7 @@ class CObject : public CObjectInfo {
 		bool IsLinkedToSeg (int16_t nSegment);
 		void Initialize (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos,
 							  const CFixMatrix& mOrient, fix xSize, uint8_t cType, uint8_t mType, uint8_t rType);
-		void ToBaseObject (tBaseObject *objP);
+		void ToBaseObject (tBaseObject *pObj);
 
 		inline int16_t Key (void) { return m_nKey; }
 		inline CObject* Prev (void) { return m_prev; }
@@ -952,7 +952,7 @@ class CObject : public CObjectInfo {
 		inline fix TimeLastHit (void) { return m_xTimeLastHit; }
 		inline fix TimeLastEffect (void) { return m_xTimeLastEffect; }
 		inline tShotInfo& Shots (void) { return m_shots; }
-		inline bool IsShot (CObject* objP) { return (m_shots.nObject == objP->Index ()) && (m_shots.nSignature == objP->Signature ()); }
+		inline bool IsShot (CObject* pObj) { return (m_shots.nObject == pObj->Index ()) && (m_shots.nSignature == pObj->Signature ()); }
 		inline void ClearShot (void) { 
 			m_shots.nObject = -1; 
 			m_shots.nSignature = -1; 
@@ -1006,9 +1006,9 @@ class CObject : public CObjectInfo {
 				return &rType.lightningInfo.nWayPoint; 
 			return NULL;
 			}
-		inline int32_t NextWayPoint (CObject* objP) { 
-			return ((info.controlType == CT_WAYPOINT) && (objP->info.renderType == RT_LIGHTNING))
-					 ? cType.wayPointInfo.nSuccessor [(int32_t) objP->rType.lightningInfo.bDirection]
+		inline int32_t NextWayPoint (CObject* pObj) { 
+			return ((info.controlType == CT_WAYPOINT) && (pObj->info.renderType == RT_LIGHTNING))
+					 ? cType.wayPointInfo.nSuccessor [(int32_t) pObj->rType.lightningInfo.bDirection]
 					 : -1;
 			}
 
@@ -1040,9 +1040,9 @@ class CObject : public CObjectInfo {
 		void SetThrustFromVelocity (void);
 		void Bump (CFixVector vForce, fix xDamage);
 		void RandomBump (fix xScale, fix xForce, bool bSound = false);
-		void Bump (CObject *otherObjP, CFixVector vForce, int32_t bDamage);
-		void Bump (CObject *otherObjP, CFixVector vForce, CFixVector vRotForce, int32_t bDamage);
-		void ApplyForceDamage (fix vForce, CObject *otherObjP);
+		void Bump (CObject *pOtherObj, CFixVector vForce, int32_t bDamage);
+		void Bump (CObject *pOtherObj, CFixVector vForce, CFixVector vRotForce, int32_t bDamage);
+		void ApplyForceDamage (fix vForce, CObject *pOtherObj);
 		int32_t ApplyDamageToRobot (fix damage, int32_t nKillerObj);
 		void ApplyDamageToPlayer (CObject *killerObjP, fix damage);
 		void ApplyDamageToReactor (fix xDamage, int16_t nAttacker);
@@ -1059,23 +1059,23 @@ class CObject : public CObjectInfo {
 		int32_t CollideDebrisAndWall (fix xHitSpeed, int16_t nHitSeg, int16_t nHitWall, CFixVector& vHitPt);
 		int32_t CollideObjectAndWall (fix xHitSpeed, int16_t nHitSeg, int16_t nHitWall, CFixVector& vHitPt);
 
-		int32_t CollideRobotAndPlayer (CObject* playerObjP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
-		int32_t CollideRobotAndReactor (CObject* reactorP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int32_t CollideRobotAndPlayer (CObject* pPlayerObj, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int32_t CollideRobotAndReactor (CObject* pReactor, CFixVector& vHitPt, CFixVector* vNormal = NULL);
 		int32_t CollideRobotAndRobot (CObject* other, CFixVector& vHitPt, CFixVector* vNormal = NULL);
 
-		int32_t CollidePlayerAndReactor (CObject* reactorP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int32_t CollidePlayerAndReactor (CObject* pReactor, CFixVector& vHitPt, CFixVector* vNormal = NULL);
 		int32_t CollidePlayerAndPowerup (CObject* powerupP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
 		int32_t CollidePlayerAndMonsterball (CObject* monsterball, CFixVector& vHitPt, CFixVector* vNormal = NULL);
 		int32_t CollidePlayerAndHostage (CObject* hostageP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
-		int32_t CollidePlayerAndMarker (CObject* markerP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int32_t CollidePlayerAndMarker (CObject* pMarker, CFixVector& vHitPt, CFixVector* vNormal = NULL);
 		int32_t CollidePlayerAndPlayer (CObject* other, CFixVector& vHitPt, CFixVector* vNormal = NULL);
-		int32_t CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int32_t CollidePlayerAndNastyRobot (CObject* pRobot, CFixVector& vHitPt, CFixVector* vNormal = NULL);
 
-		int32_t CollideWeaponAndRobot (CObject* robotP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
-		int32_t CollideWeaponAndReactor (CObject* reactorP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int32_t CollideWeaponAndRobot (CObject* pRobot, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int32_t CollideWeaponAndReactor (CObject* pReactor, CFixVector& vHitPt, CFixVector* vNormal = NULL);
 		int32_t CollideWeaponAndClutter (CObject *clutterP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
 		int32_t CollideWeaponAndDebris (CObject *debrisP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
-		int32_t CollideWeaponAndPlayer (CObject *playerObjP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
+		int32_t CollideWeaponAndPlayer (CObject *pPlayerObj, CFixVector& vHitPt, CFixVector* vNormal = NULL);
 		int32_t CollideWeaponAndMonsterball (CObject *mBallP, CFixVector& vHitPt, CFixVector* vNormal = NULL);
 		int32_t CollideWeaponAndWeapon (CObject *other, CFixVector& vHitPt, CFixVector* vNormal = NULL);
 
@@ -1090,9 +1090,9 @@ class CObject : public CObjectInfo {
 		int32_t CreateWeaponEffects (int32_t bExplBlast);
 		CObject* ExplodeSplashDamage (fix damage, fix distance, fix force);
 		CObject* ExplodeSplashDamagePlayer (void);
-		CObject* ExplodeSplashDamageWeapon (CFixVector& vPos, CObject* targetP = NULL);
-		void MaybeKillWeapon (CObject *otherObjP);
-		int32_t MaybeDetonateWeapon (CObject* otherP, CFixVector& vHitPt);
+		CObject* ExplodeSplashDamageWeapon (CFixVector& vPos, CObject* pTarget = NULL);
+		void MaybeKillWeapon (CObject *pOtherObj);
+		int32_t MaybeDetonateWeapon (CObject* pOther, CFixVector& vHitPt);
 		void DoExplosionSequence (void);
 		void CreateAppearanceEffect (void);
 
@@ -1156,7 +1156,7 @@ class CObject : public CObjectInfo {
 
 		bool Cloaked (void);
 
-		inline void SetTarget (CObject* targetP) { m_target = targetP; }
+		inline void SetTarget (CObject* pTarget) { m_target = pTarget; }
 		CObject* Target (void);
 		CObject* Parent (void);
 		void DrainEnergy (void);
@@ -1249,7 +1249,7 @@ class CObject : public CObjectInfo {
 
 		int32_t ObjectIsTrackable (int32_t nTarget, fix& xDot, int32_t nThread);
 		int32_t FindTargetWindow (void);
-		void AddHomingTarget (CObject* targetP, CFixVector* vTrackerPos, fix maxTrackableDist, fix& xBestDot, int32_t& nBestObj);
+		void AddHomingTarget (CObject* pTarget, CFixVector* vTrackerPos, fix maxTrackableDist, fix& xBestDot, int32_t& nBestObj);
 
 		void ProcessDrag (CPhysSimData& simData);
 		int32_t ProcessOffset (CPhysSimData& simData);
@@ -1286,7 +1286,7 @@ class CRobotObject : public CObject, public CPhysicsInfo, public CAIStaticInfo, 
 		CRobotObject () {}
 		~CRobotObject () {}
 		void Initialize (void) {};
-		void ToBaseObject (tBaseObject *objP);
+		void ToBaseObject (tBaseObject *pObj);
 };
 
 //	-----------------------------------------------------------------------------
@@ -1296,7 +1296,7 @@ class CPowerupObject : public CObject, public CPhysicsInfo, public CPolyObjInfo 
 		CPowerupObject () {}
 		~CPowerupObject () {}
 		void Initialize (void) {};
-		void ToBaseObject (tBaseObject *objP);
+		void ToBaseObject (tBaseObject *pObj);
 };
 
 //	-----------------------------------------------------------------------------
@@ -1306,7 +1306,7 @@ class CWeaponObject : public CObject, public CPhysicsInfo, public CPolyObjInfo {
 		CWeaponObject () {}
 		~CWeaponObject () {}
 		void Initialize (void) {};
-		void ToBaseObject (tBaseObject *objP);
+		void ToBaseObject (tBaseObject *pObj);
 };
 
 //	-----------------------------------------------------------------------------
@@ -1316,7 +1316,7 @@ class CLightObject : public CObject, public CObjLightInfo {
 		CLightObject () {};
 		~CLightObject () {};
 		void Initialize (void) {};
-		void ToBaseObject (tBaseObject *objP);
+		void ToBaseObject (tBaseObject *pObj);
 };
 
 //	-----------------------------------------------------------------------------
@@ -1326,7 +1326,7 @@ class CLightningObject : public CObject, public CLightningInfo {
 		CLightningObject () {};
 		~CLightningObject () {};
 		void Initialize (void) {};
-		void ToBaseObject (tBaseObject *objP);
+		void ToBaseObject (tBaseObject *pObj);
 };
 
 class CParticleObject : public CObject, public CSmokeInfo {
@@ -1334,7 +1334,7 @@ class CParticleObject : public CObject, public CSmokeInfo {
 		CParticleObject () {};
 		~CParticleObject () {};
 		void Initialize (void) {};
-		void ToBaseObject (tBaseObject *objP);
+		void ToBaseObject (tBaseObject *pObj);
 };
 
 #endif
@@ -1360,7 +1360,7 @@ class CObjPosition : public CObjTransformation {
 
 typedef struct tWindowRenderedData {
 	int32_t     nFrame;
-	CObject*		viewerP;
+	CObject*		pViewer;
 	int32_t     bRearView;
 	int32_t     nUser;
 	int32_t     nObjects;
@@ -1376,7 +1376,7 @@ class WIndowRenderedData {
 		inline int32_t& User () { return m_data.nUser; }
 		inline int32_t& Objects () { return m_data.nObjects; }
 		inline int16_t& RenderedObjects (int32_t i) { return m_data.renderedObjects [i]; }
-		inline CObject *Viewer () { return m_data.viewerP; }
+		inline CObject *Viewer () { return m_data.pViewer; }
 };
 
 //	-----------------------------------------------------------------------------
@@ -1437,13 +1437,13 @@ extern CObject Follow;
 
 class CObjectIterator {
 	public:
-		CObject*		m_objP;
+		CObject*		m_pObj;
 		int32_t		m_i;
 		int32_t		m_nLink;
 
 	public:
 		CObjectIterator ();
-		CObjectIterator (CObject*& objP);
+		CObjectIterator (CObject*& pObj);
 		virtual ~CObjectIterator () {}
 
 		virtual CObject* Start (void);
@@ -1454,14 +1454,14 @@ class CObjectIterator {
 		CObject* Next (void);
 		CObject* Step (void);
 		CObject* Back (void);
-		CObject* Current (void) { return (m_objP); }
+		CObject* Current (void) { return (m_pObj); }
 };
 
 //	-----------------------------------------------------------------------------
 
 class CPlayerIterator : public CObjectIterator {
 	public:
-		CPlayerIterator (CObject*& objP);
+		CPlayerIterator (CObject*& pObj);
 		virtual CObject* Head (void);
 		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 1; }
@@ -1469,7 +1469,7 @@ class CPlayerIterator : public CObjectIterator {
 
 class CRobotIterator : public CObjectIterator {
 	public:
-		CRobotIterator (CObject*& objP);
+		CRobotIterator (CObject*& pObj);
 		virtual CObject* Head (void);
 		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 1; }
@@ -1477,7 +1477,7 @@ class CRobotIterator : public CObjectIterator {
 
 class CWeaponIterator : public CObjectIterator {
 	public:
-		CWeaponIterator (CObject*& objP);
+		CWeaponIterator (CObject*& pObj);
 		virtual CObject* Head (void);
 		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 1; }
@@ -1485,7 +1485,7 @@ class CWeaponIterator : public CObjectIterator {
 
 class CPowerupIterator : public CObjectIterator {
 	public:
-		CPowerupIterator (CObject*& objP);
+		CPowerupIterator (CObject*& pObj);
 		virtual CObject* Head (void);
 		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 1; }
@@ -1493,7 +1493,7 @@ class CPowerupIterator : public CObjectIterator {
 
 class CEffectIterator : public CObjectIterator {
 	public:
-		CEffectIterator (CObject*& objP);
+		CEffectIterator (CObject*& pObj);
 		virtual CObject* Head (void);
 		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 1; }
@@ -1501,7 +1501,7 @@ class CEffectIterator : public CObjectIterator {
 
 class CLightIterator : public CObjectIterator {
 	public:
-		CLightIterator (CObject*& objP);
+		CLightIterator (CObject*& pObj);
 		virtual CObject* Head (void);
 		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 1; }
@@ -1509,7 +1509,7 @@ class CLightIterator : public CObjectIterator {
 
 class CActorIterator : public CObjectIterator {
 	public:
-		CActorIterator (CObject*& objP);
+		CActorIterator (CObject*& pObj);
 		virtual CObject* Head (void);
 		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 2; }
@@ -1517,7 +1517,7 @@ class CActorIterator : public CObjectIterator {
 
 class CStaticObjectIterator : public CObjectIterator {
 	public:
-		CStaticObjectIterator (CObject*& objP);
+		CStaticObjectIterator (CObject*& pObj);
 		virtual CObject* Head (void);
 		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 2; }
@@ -1527,12 +1527,12 @@ class CStaticObjectIterator : public CObjectIterator {
 
 class CObjectIterator {
 	public:
-		CObject*		m_objP;
+		CObject*		m_pObj;
 		int32_t		m_i;
 
 	public:
 		CObjectIterator ();
-		CObjectIterator (CObject*& objP);
+		CObjectIterator (CObject*& pObj);
 
 		CObject* Start (void);
 		bool Done (void);
@@ -1548,49 +1548,49 @@ class CObjectIterator {
 
 class CPlayerIterator : public CObjectIterator {
 	public:
-		CPlayerIterator (CObject*& objP);
+		CPlayerIterator (CObject*& pObj);
 		virtual bool Match (void);
 };
 
 class CRobotIterator : public CObjectIterator {
 	public:
-		CRobotIterator (CObject*& objP);
+		CRobotIterator (CObject*& pObj);
 		virtual bool Match (void);
 };
 
 class CWeaponIterator : public CObjectIterator {
 	public:
-		CWeaponIterator (CObject*& objP);
+		CWeaponIterator (CObject*& pObj);
 		virtual bool Match (void);
 };
 
 class CPowerupIterator : public CObjectIterator {
 	public:
-		CPowerupIterator (CObject*& objP);
+		CPowerupIterator (CObject*& pObj);
 		virtual bool Match (void);
 };
 
 class CEffectIterator : public CObjectIterator {
 	public:
-		CEffectIterator (CObject*& objP);
+		CEffectIterator (CObject*& pObj);
 		virtual bool Match (void);
 };
 
 class CLightIterator : public CObjectIterator {
 	public:
-		CLightIterator (CObject*& objP);
+		CLightIterator (CObject*& pObj);
 		virtual bool Match (void);
 };
 
 class CActorIterator : public CObjectIterator {
 	public:
-		CActorIterator (CObject*& objP);
+		CActorIterator (CObject*& pObj);
 		virtual bool Match (void);
 };
 
 class CStaticObjectIterator : public CObjectIterator {
 	public:
-		CStaticObjectIterator (CObject*& objP);
+		CStaticObjectIterator (CObject*& pObj);
 		virtual bool Match (void);
 };
 
@@ -1623,14 +1623,14 @@ void InitObjects (bool bInitPlayer = true);
 
 int32_t CreateObject (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, const CFixMatrix& mOrient, 
 							 fix xSize, uint8_t cType, uint8_t mType, uint8_t rType);
-int32_t CloneObject (CObject *objP);
+int32_t CloneObject (CObject *pObj);
 int32_t CreateRobot (uint8_t nId, int16_t nSegment, const CFixVector& vPos);
 int32_t CreatePowerup (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, int32_t bIgnoreLimits, bool bForce = false);
-int32_t CreateWeaponSpeed (CObject* weaponP, bool bFix = false);
+int32_t CreateWeaponSpeed (CObject* pWeapon, bool bFix = false);
 int32_t CreateWeapon (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, fix xSize, uint8_t rType);
 int32_t CreateFireball (uint8_t nId, int16_t nSegment, const CFixVector& vPos, fix xSize, uint8_t rType);
-int32_t CreateDebris (CObject *parentP, int16_t nSubModel);
-int32_t CreateCamera (CObject *parentP);
+int32_t CreateDebris (CObject *pParent, int16_t nSubModel);
+int32_t CreateCamera (CObject *pParent);
 int32_t CreateLight (uint8_t nId, int16_t nSegment, const CFixVector& vPos);
 // returns CSegment number CObject is in.  Searches out from CObject's current
 // seg, so this shouldn't be called if the CObject has "jumped" to a new seg
@@ -1644,7 +1644,7 @@ void RelinkObjToSeg (int32_t nObject, int32_t nNewSeg);
 void ResetSegObjLists (void);
 void LinkAllObjsToSegs (void);
 void RelinkAllObjsToSegs (void);
-bool CheckSegObjList (CObject *objP, int16_t nObject, int16_t nFirstObj);
+bool CheckSegObjList (CObject *pObj, int16_t nObject, int16_t nFirstObj);
 
 // move an CObject from one CSegment to another. unlinks & relinks
 // -- unused --
@@ -1655,7 +1655,7 @@ bool CheckSegObjList (CObject *objP, int16_t nObject, int16_t nFirstObj);
 void LinkObjToSeg(int32_t nObject,int32_t nSegment);
 
 // unlinks an CObject from a CSegment's list of objects
-void UnlinkObjFromSeg (CObject *objP);
+void UnlinkObjFromSeg (CObject *pObj);
 
 // initialize a new CObject.  adds to the list for the given CSegment
 // returns the CObject number
@@ -1704,7 +1704,7 @@ void InitPlayerObject(void);
 // segs.  if not any of these, returns false, else sets obj->nSegment &
 // returns true callers should really use FindHitpoint()
 // Note: this function is in gameseg.c
-int32_t UpdateObjectSeg (CObject *objP, bool bMove = true);
+int32_t UpdateObjectSeg (CObject *pObj, bool bMove = true);
 
 
 // go through all objects and make sure they have the correct CSegment
@@ -1716,12 +1716,12 @@ void DeadPlayerEnd (void);
 // Extract information from an CObject (objp->orient, objp->pos,
 // objp->nSegment), stuff in a tShortPos structure.  See typedef
 // tShortPos.
-void CreateLongPos (tLongPos* posP, CObject* objP);
-void CreateShortPos(tShortPos *posP, CObject *objp, int32_t bSwapBytes = 0);
+void CreateLongPos (tLongPos* pPos, CObject* pObj);
+void CreateShortPos(tShortPos *pPos, CObject *objp, int32_t bSwapBytes = 0);
 
 // Extract information from a tShortPos, stuff in objp->orient
 // (matrix), objp->pos, objp->nSegment
-void ExtractLongPos (CObject* objP, tLongPos* posP);
+void ExtractLongPos (CObject* pObj, tLongPos* pPos);
 void ExtractShortPos(CObject *objp, tShortPos *spp, int32_t bSwapBytes);
 
 // delete objects, such as weapons & explosions, that shouldn't stay
@@ -1754,12 +1754,12 @@ void CreateSmallFireballOnObject (CObject *objp, fix size_scale, int32_t soundFl
 // returns CObject number
 int32_t DropMarkerObject (CFixVector& vPos, int16_t nSegment, CFixMatrix& orient, uint8_t marker_num);
 
-void WakeupRenderedObjects (CObject *viewerP, int32_t nWindow);
+void WakeupRenderedObjects (CObject *pViewer, int32_t nWindow);
 
 void AdjustMineSpawn (void);
 
-bool ResetPlayerObject(CObject *objP = NULL);
-void StopObjectMovement (CObject *objP);
+bool ResetPlayerObject(CObject *pObj = NULL);
+void StopObjectMovement (CObject *pObj);
 void StopPlayerMovement (void);
 
 void ObjectGotoNextViewer (void);
@@ -1775,8 +1775,8 @@ int32_t DelObjChildrenP (CObject *pParent);
 int32_t DelObjChildN (int32_t nChild);
 int32_t DelObjChildP (CObject *pChild);
 
-void LinkObject (CObject *objP);
-void UnlinkObject (CObject *objP);
+void LinkObject (CObject *pObj);
+void UnlinkObject (CObject *pObj);
 
 void PrepareModels (void);
 
@@ -1791,19 +1791,19 @@ void DoSlowMotionFrame (void);
 
 CFixVector* PlayerSpawnPos (int32_t nPlayer);
 CFixMatrix* PlayerSpawnOrient (int32_t nPlayer);
-void MovePlayerToSpawnPos (int32_t nPlayer, CObject *objP);
-void RecreateThief (CObject *objP);
+void MovePlayerToSpawnPos (int32_t nPlayer, CObject *pObj);
+void RecreateThief (CObject *pObj);
 void DeadPlayerFrame (void);
 
-void SetObjectType (CObject *objP, uint8_t nNewType);
+void SetObjectType (CObject *pObj, uint8_t nNewType);
 
-void AttachObject (CObject *parentObjP, CObject *childObjP);
-void DetachFromParent (CObject *objP);
-void DetachChildObjects (CObject *parentP);
+void AttachObject (CObject *pParentObj, CObject *pChildObj);
+void DetachFromParent (CObject *pObj);
+void DetachChildObjects (CObject *pParent);
 
 void InitMultiPlayerObject (int32_t nStage);
 
-bool FixWeaponObject (CObject* objP, bool bFixType = false);
+bool FixWeaponObject (CObject* pObj, bool bFixType = false);
 
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
@@ -1831,8 +1831,8 @@ extern CObject *dbgObjP;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-int32_t SetupHiresVClip (tAnimationInfo *animInfoP, tAnimationState *vciP, CBitmap* bmP = NULL);
-void UpdatePowerupClip (tAnimationInfo *animInfoP, tAnimationState *vciP, int32_t nObject);
+int32_t SetupHiresVClip (tAnimationInfo *pAnimInfo, tAnimationState *vciP, CBitmap* pBm = NULL);
+void UpdatePowerupClip (tAnimationInfo *pAnimInfo, tAnimationState *vciP, int32_t nObject);
 
 //	-----------------------------------------------------------------------------------------------------------
 

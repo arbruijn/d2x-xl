@@ -24,9 +24,9 @@ fix	xMinTrackableDot = MIN_TRACKABLE_DOT;
 class CTarget {
 	public:
 		fix		m_xDot;
-		CObject*	m_objP;
+		CObject*	m_pObj;
 
-		CTarget (fix xDot = 0, CObject* objP = NULL) : m_xDot(xDot), m_objP(objP) {}
+		CTarget (fix xDot = 0, CObject* pObj = NULL) : m_xDot(xDot), m_pObj(pObj) {}
 
 		inline bool operator< (CTarget& other) { return m_xDot < other.m_xDot; }
 		inline bool operator> (CTarget& other) { return m_xDot > other.m_xDot; }
@@ -42,7 +42,7 @@ static CStack<class CTarget>	targetLists [MAX_THREADS];
 
 class CHomingTargetData {
 	public:
-		CObject		*m_trackerP;
+		CObject		*m_pTracker;
 		CFixVector	m_vTrackerPos;
 		CFixVector	m_vTrackerViewDir;
 		fix			m_xMaxDist;
@@ -50,27 +50,27 @@ class CHomingTargetData {
 		int32_t		m_nBestObj;
 		CStack<class CTarget>& m_targets;
 
-		CHomingTargetData (CObject* trackerP, CFixVector& vTrackerPos, CStack<class CTarget>& targets) 
-			: m_trackerP (trackerP), m_vTrackerPos (vTrackerPos), m_nBestObj (-1), m_targets (targets)
+		CHomingTargetData (CObject* pTracker, CFixVector& vTrackerPos, CStack<class CTarget>& targets) 
+			: m_pTracker (pTracker), m_vTrackerPos (vTrackerPos), m_nBestObj (-1), m_targets (targets)
 			{ 
-			m_vTrackerViewDir = SPECTATOR (m_trackerP) ? gameStates.app.playerPos.mOrient.m.dir.f : m_trackerP->info.position.mOrient.m.dir.f;
-			m_xMaxDist = trackerP->MaxTrackableDist (m_xBestDot); 
+			m_vTrackerViewDir = SPECTATOR (m_pTracker) ? gameStates.app.playerPos.mOrient.m.dir.f : m_pTracker->info.position.mOrient.m.dir.f;
+			m_xMaxDist = pTracker->MaxTrackableDist (m_xBestDot); 
 #if NEW_TARGETTING
 			m_targets.SetGrowth (100);
 			m_targets.Reset ();
 #endif
 			}
 
-		void Add (CObject* targetP, float dotScale = 1.0f);
+		void Add (CObject* pTarget, float dotScale = 1.0f);
 
 		int32_t Target (int32_t nThread);
 	};
 
 //	-----------------------------------------------------------------------------
 
-void CHomingTargetData::Add (CObject* targetP, float dotScale)
+void CHomingTargetData::Add (CObject* pTarget, float dotScale)
 {
-CFixVector vTarget = (SPECTATOR (targetP) ? gameStates.app.playerPos.vPos : targetP->Position ()) - m_vTrackerPos;
+CFixVector vTarget = (SPECTATOR (pTarget) ? gameStates.app.playerPos.vPos : pTarget->Position ()) - m_vTrackerPos;
 fix dist = CFixVector::Normalize (vTarget);
 if (dist >= m_xMaxDist)
 	return;
@@ -79,17 +79,17 @@ if (dot < m_xBestDot)
 	return;
 #if NEW_TARGETTING
 #	if 1
-m_targets.Push (CTarget (dot, targetP));
+m_targets.Push (CTarget (dot, pTarget));
 #	else
-m_targets.Push (CTarget (fix (dist * (1.0f - X2F (dot) / 2.0f)), targetP));
+m_targets.Push (CTarget (fix (dist * (1.0f - X2F (dot) / 2.0f)), pTarget));
 #	endif
 #else
 //	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 //	to determine if an CObject is initially trackable.  FindHomingTarget is called on subsequent
 //	frames to determine if the CObject remains trackable.
-if (ObjectToObjectVisibility (m_trackerP, targetP, FQ_TRANSWALL, nThread)) {
+if (ObjectToObjectVisibility (m_pTracker, pTarget, FQ_TRANSWALL, nThread)) {
 	m_xBestDot = dot;
-	m_nBestObj = targetP->Index ();
+	m_nBestObj = pTarget->Index ();
 	}
 #endif
 }
@@ -105,8 +105,8 @@ if (m_targets.ToS () > 1)
 	m_targets.SortDescending ();
 
 for (uint32_t i = 0; i < m_targets.ToS (); i++) {
-	if (ObjectToObjectVisibility (m_trackerP, m_targets[i].m_objP, FQ_TRANSWALL, nThread))
-		return m_targets[i].m_objP->Index ();
+	if (ObjectToObjectVisibility (m_pTracker, m_targets[i].m_pObj, FQ_TRANSWALL, nThread))
+		return m_targets[i].m_pObj->Index ();
 	}
 return -1;
 #else
@@ -117,7 +117,7 @@ return m_nBestObj;
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
-//	Return true if weapon *trackerP is able to track CObject OBJECT (nTarget), else return false.
+//	Return true if weapon *pTracker is able to track CObject OBJECT (nTarget), else return false.
 //	In order for the CObject to be trackable, it must be within a reasonable turning radius for the missile
 //	and it must not be obstructed by a CWall.
 int32_t CObject::ObjectIsTrackable (int32_t nTarget, fix& xDot, int32_t nThread)
@@ -126,20 +126,20 @@ if (nTarget == -1)
 	return 0;
 if (IsCoopGame)
 	return 0;
-CObject* targetP = OBJECT (nTarget);
+CObject* pTarget = OBJECT (nTarget);
 //	Don't track player if he's cloaked.
 if ((nTarget == LOCALPLAYER.nObject) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 	return 0;
 //	Can't track AI CObject if he's cloaked.
-if (targetP->Type () == OBJ_ROBOT) {
-	if (targetP->cType.aiInfo.CLOAKED)
+if (pTarget->Type () == OBJ_ROBOT) {
+	if (pTarget->cType.aiInfo.CLOAKED)
 		return 0;
 	//	Your missiles don't track your escort.
-	if (targetP->IsGuideBot () && (cType.laserInfo.parent.nType == OBJ_PLAYER))
+	if (pTarget->IsGuideBot () && (cType.laserInfo.parent.nType == OBJ_PLAYER))
 		return 0;
 	}
 CFixVector vTracker = SPECTATOR (this) ? gameStates.app.playerPos.mOrient.m.dir.f : info.position.mOrient.m.dir.f;
-CFixVector vTarget = targetP->Position () - Position ();
+CFixVector vTarget = pTarget->Position () - Position ();
 CFixVector::Normalize (vTarget);
 xDot = CFixVector::Dot (vTarget, vTracker);
 if ((xDot < xMinTrackableDot) && (xDot > I2X (9) / 10)) {
@@ -150,7 +150,7 @@ if ((xDot < xMinTrackableDot) && (xDot > I2X (9) / 10)) {
 if ((xDot >= xMinTrackableDot) || 
 	 (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (Type () == OBJ_WEAPON) && (Id () == EARTHSHAKER_MEGA_ID) /*&& (xDot >= 0)*/)) {
 	//	xDot is in legal range, now see if CObject is visible
-	return ObjectToObjectVisibility (this, targetP, FQ_TRANSWALL, nThread);
+	return ObjectToObjectVisibility (this, pTarget, FQ_TRANSWALL, nThread);
 	}
 return 0;
 }
@@ -167,8 +167,8 @@ if ((Type () == OBJ_PLAYER) || (cType.laserInfo.parent.nType == OBJ_PLAYER)) {
 			 ? FindAnyHomingTarget (vTrackerPos, OBJ_ROBOT, -1, nThread) 
 			 : FindAnyHomingTarget (vTrackerPos, OBJ_PLAYER, OBJ_ROBOT, nThread);
 		} 
-CObject* parentP = Parent ();
-return FindAnyHomingTarget (vTrackerPos, OBJ_PLAYER, (parentP && (parentP->Target ()->Type () == OBJ_ROBOT)) ? OBJ_ROBOT : -1, nThread);
+CObject* pParent = Parent ();
+return FindAnyHomingTarget (vTrackerPos, OBJ_PLAYER, (pParent && (pParent->Target ()->Type () == OBJ_ROBOT)) ? OBJ_ROBOT : -1, nThread);
 }
 
 //	-----------------------------------------------------------------------------
@@ -177,7 +177,7 @@ int32_t CObject::FindTargetWindow (void)
 {
 for (int32_t i = 0; i < MAX_RENDERED_WINDOWS; i++)
 	if ((windowRenderedData [i].nFrame >= gameData.app.nFrameCount - 1) &&
-		 ((windowRenderedData [i].viewerP == gameData.objData.consoleP) || (this == GuidedInMainView ())) &&
+		 ((windowRenderedData [i].pViewer == gameData.objData.pConsole) || (this == GuidedInMainView ())) &&
 		 !windowRenderedData [i].bRearView) {
 		return i;
 		}
@@ -213,7 +213,7 @@ if (IsMultiGame)
 
 //	Not in network mode.  If not fired by player, then track player.
 if ((Type () != OBJ_PLAYER) && (cType.laserInfo.parent.nObject != LOCALPLAYER.nObject) && !(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-	return OBJ_IDX (gameData.objData.consoleP);
+	return OBJ_IDX (gameData.objData.pConsole);
 
 	int32_t nWindow = FindTargetWindow ();
 
@@ -229,26 +229,26 @@ for (int32_t i = windowRenderedData [nWindow].nObjects - 1; i >= 0; i--) {
 	int16_t nObject = windowRenderedData [nWindow].renderedObjects [i];
 	if (nObject == LOCALPLAYER.nObject)
 		continue;
-	CObject* targetP = OBJECT (nObject);
-	if (!targetP)
+	CObject* pTarget = OBJECT (nObject);
+	if (!pTarget)
 		continue;
 	//	Can't track AI CObject if he's cloaked.
-	int32_t nType = targetP->Type ();
+	int32_t nType = pTarget->Type ();
 	if (nType == OBJ_ROBOT) {
-		if (targetP->cType.aiInfo.CLOAKED)
+		if (pTarget->cType.aiInfo.CLOAKED)
 			continue;
 		//	Your missiles don't track your escort.
-		if (targetP->IsGuideBot () && (bPlayer || (cType.laserInfo.parent.nType == OBJ_PLAYER)))
+		if (pTarget->IsGuideBot () && (bPlayer || (cType.laserInfo.parent.nType == OBJ_PLAYER)))
 			continue;
 		}
 	else if (nType == OBJ_WEAPON) {
-		if (!(bOmega && EGI_FLAG (bKillMissiles, 0, 1, 0) && bOmega && (targetP->IsMissile () || targetP->IsMine ())))
+		if (!(bOmega && EGI_FLAG (bKillMissiles, 0, 1, 0) && bOmega && (pTarget->IsMissile () || pTarget->IsMine ())))
 			continue;
 		}
 	else if ((nType != OBJ_PLAYER) && (nType != OBJ_REACTOR))
 		continue;
 
-	targetData.Add (targetP);
+	targetData.Add (pTarget);
 	}
 return targetData.Target (nThread);
 }
@@ -263,43 +263,43 @@ return targetData.Target (nThread);
 int32_t CObject::FindAnyHomingTarget (CFixVector& vTrackerPos, int32_t targetType1, int32_t targetType2, int32_t nThread)
 {
 	bool bOmega = (Type () == OBJ_WEAPON) && (Id () == OMEGA_ID);
-	CObject* targetP;
+	CObject* pTarget;
 	CHomingTargetData targetData (this, vTrackerPos, targetLists [nThread]);
 
-FORALL_ACTOR_OBJS (targetP) {
-	if (OBJ_IDX (targetP) == cType.laserInfo.parent.nObject) // Don't track shooter
+FORALL_ACTOR_OBJS (pTarget) {
+	if (OBJ_IDX (pTarget) == cType.laserInfo.parent.nObject) // Don't track shooter
 		continue;
 
 	float dotScale = 1.0f;
-	int32_t nType = targetP->Type ();
+	int32_t nType = pTarget->Type ();
 	if (nType == OBJ_WEAPON) {
-		if (targetP->cType.laserInfo.parent.nSignature == cType.laserInfo.parent.nSignature)
+		if (pTarget->cType.laserInfo.parent.nSignature == cType.laserInfo.parent.nSignature)
 			continue; // target was created by tracker (e.g. a mine dropped by the tracker object)
-		if (targetP->IsPlayerMine ())
+		if (pTarget->IsPlayerMine ())
 			dotScale = 9.0f / 8.0f;
-		else if (!(bOmega && EGI_FLAG (bKillMissiles, 0, 1, 0) && (targetP->IsMissile () || targetP->IsMine ())))
+		else if (!(bOmega && EGI_FLAG (bKillMissiles, 0, 1, 0) && (pTarget->IsMissile () || pTarget->IsMine ())))
 			continue;
 		}
 	else if ((nType != targetType1) && (nType != targetType2) && (nType != OBJ_MONSTERBALL)) {
 		continue;
 		}
-	else if (targetP->Type () == OBJ_PLAYER) {
-		if (PLAYER (targetP->Id ()).flags & PLAYER_FLAGS_CLOAKED)
+	else if (pTarget->Type () == OBJ_PLAYER) {
+		if (PLAYER (pTarget->Id ()).flags & PLAYER_FLAGS_CLOAKED)
 			continue; // don't track cloaked players.
 		if (IsTeamGame) {
-			CObject *parentObjP = OBJECT (cType.laserInfo.parent.nObject);
-			if (parentObjP && (parentObjP->Type () == OBJ_PLAYER) && (GetTeam (targetP->Id ()) == GetTeam (parentObjP->Id ())))
+			CObject *pParentObj = OBJECT (cType.laserInfo.parent.nObject);
+			if (pParentObj && (pParentObj->Type () == OBJ_PLAYER) && (GetTeam (pTarget->Id ()) == GetTeam (pParentObj->Id ())))
 				continue; // don't track teammates in team games
 			}
 		}
-	else if (targetP->Type () == OBJ_ROBOT) {
-		if (targetP->cType.aiInfo.CLOAKED)
+	else if (pTarget->Type () == OBJ_ROBOT) {
+		if (pTarget->cType.aiInfo.CLOAKED)
 			continue; // don' track cloaked robots
-		if (targetP->IsGuideBot () && (cType.laserInfo.parent.nType == OBJ_PLAYER))
+		if (pTarget->IsGuideBot () && (cType.laserInfo.parent.nType == OBJ_PLAYER))
 			continue;	//	player missiles don't track the guidebot.
 		}
 
-	targetData.Add (targetP, dotScale);
+	targetData.Add (pTarget, dotScale);
 	}
 
 return targetData.Target (nThread);
@@ -325,8 +325,8 @@ if (ObjectIsTrackable (nTarget, dot, nThread) && (!gameOpts->legacy.bHomers || (
 
 if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 	//	If player fired missile, then search for an CObject, if not, then give up.
-	CObject *targetP, *parentP = OBJECT (cType.laserInfo.parent.nObject);
-	if (parentP && parentP->IsPlayer ()) {
+	CObject *pTarget, *pParent = OBJECT (cType.laserInfo.parent.nObject);
+	if (pParent && pParent->IsPlayer ()) {
 		if (nTarget == -1) {
 			if (IsMultiGame) {
 				if (IsCoopGame)
@@ -339,8 +339,8 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 			else
 				rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, OBJ_ROBOT, nThread);
 			} 
-		else if ((targetP = OBJECT (cType.laserInfo.nHomingTarget))) {
-			targetType1 = targetP->Type ();
+		else if ((pTarget = OBJECT (cType.laserInfo.nHomingTarget))) {
+			targetType1 = pTarget->Type ();
 			if ((targetType1 == OBJ_PLAYER) || (targetType1 == OBJ_ROBOT) || (targetType1 == OBJ_MONSTERBALL))
 				rVal = FindAnyHomingTarget (Position (), targetType1, -1, nThread);
 			else
@@ -352,8 +352,8 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 			targetType2 = OBJ_ROBOT;
 		if (nTarget == -1)
 			rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, targetType2, nThread);
-		else if ((targetP = OBJECT (cType.laserInfo.nHomingTarget))) {
-			rVal = FindAnyHomingTarget (Position (), targetP->Type (), targetType2, nThread);
+		else if ((pTarget = OBJECT (cType.laserInfo.nHomingTarget))) {
+			rVal = FindAnyHomingTarget (Position (), pTarget->Type (), targetType2, nThread);
 			}
 		}
 	Assert (rVal != -2);		//	This means it never got set which is bad! Contact Mike.

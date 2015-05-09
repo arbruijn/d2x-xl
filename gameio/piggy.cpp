@@ -181,7 +181,7 @@ dbh->offset = cf.ReadInt ();
 
 //------------------------------------------------------------------------------
 
-tBitmapIndex PiggyRegisterBitmap (CBitmap *bmP, const char *name, int32_t bInFile)
+tBitmapIndex PiggyRegisterBitmap (CBitmap *pBm, const char *name, int32_t bInFile)
 {
 	tBitmapIndex bmi;
 	Assert (gameData.pig.tex.nBitmaps [gameStates.app.bD1Data] < MAX_BITMAP_FILES);
@@ -197,11 +197,11 @@ if (!bInFile) {
 int32_t i = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
 strncpy (gameData.pig.tex.bitmapFileP [i].name, name, 12);
 bitmapNames [gameStates.app.bD1Data].Insert (gameData.pig.tex.bitmapFileP [i].name, i);
-bmP->Clone (gameData.pig.tex.bitmapP [i]);
-bmP->SetBuffer (NULL);	//avoid automatic destruction trying to delete the same buffer twice
+pBm->Clone (gameData.pig.tex.bitmapP [i]);
+pBm->SetBuffer (NULL);	//avoid automatic destruction trying to delete the same buffer twice
 if (!bInFile) {
 	bitmapOffsets [gameStates.app.bD1Data][i] = 0;
-	gameData.pig.tex.bitmapFlags [gameStates.app.bD1Data][i] = bmP->Flags ();
+	gameData.pig.tex.bitmapFlags [gameStates.app.bD1Data][i] = pBm->Flags ();
 	}
 gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]++;
 return bmi;
@@ -612,29 +612,29 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t ReadBitmap (CFile* cfP, CBitmap* bmP, int32_t nSize, bool bD1);
+int32_t ReadBitmap (CFile* cfP, CBitmap* pBm, int32_t nSize, bool bD1);
 
 int32_t PiggyBitmapReadD1 (
 	CFile					&cf,
-	CBitmap*				bmP, /* read into this bmP */
+	CBitmap*				pBm, /* read into this pBm */
 	int32_t				nBmDataOffs, /* specific to file */
-   tPIGBitmapHeader*	bmh, /* header info for bmP */
+   tPIGBitmapHeader*	bmh, /* header info for pBm */
    uint8_t**			pNextBmP, /* where to write it (if 0, use reinterpret_cast<uint8_t*> (D2_ALLOC) */
-   uint8_t*				colorMap) /* how to translate bmP's colors */
+   uint8_t*				colorMap) /* how to translate pBm's colors */
 {
-memset (bmP, 0, sizeof (CBitmap));
-bmP->SetWidth (bmh->width + ((int16_t) (bmh->wh_extra&0x0f)<<8));
-bmP->SetHeight (bmh->height + ((int16_t) (bmh->wh_extra&0xf0)<<4));
-bmP->SetBPP (1);
-bmP->SetAvgColorIndex (bmh->avgColor);
-bmP->AddFlags (bmh->flags & BM_FLAGS_TO_COPY);
-bmP->CreateBuffer ();
+memset (pBm, 0, sizeof (CBitmap));
+pBm->SetWidth (bmh->width + ((int16_t) (bmh->wh_extra&0x0f)<<8));
+pBm->SetHeight (bmh->height + ((int16_t) (bmh->wh_extra&0xf0)<<4));
+pBm->SetBPP (1);
+pBm->SetAvgColorIndex (bmh->avgColor);
+pBm->AddFlags (bmh->flags & BM_FLAGS_TO_COPY);
+pBm->CreateBuffer ();
 
 cf.Seek (nBmDataOffs + bmh->offset, SEEK_SET);
 
 #if 1
 
-if (ReadBitmap (&cf, bmP, bmP->FrameSize (), 1) < 0)
+if (ReadBitmap (&cf, pBm, pBm->FrameSize (), 1) < 0)
 	return 0;
 
 #else
@@ -644,19 +644,19 @@ int32_t zSize;
 if (bmh->flags & BM_FLAG_RLE) 
 	zSize = cf.ReadInt () - 4;
 else
-	zSize = bmP->Width () * bmP->Width ();
+	zSize = pBm->Width () * pBm->Width ();
 
 if (pNextBmP) {
-	bmP->SetBuffer (*pNextBmP);
+	pBm->SetBuffer (*pNextBmP);
 	*pNextBmP += zSize;
 	}
 else {
-	if (bmP->CreateBuffer ())
-		UseBitmapCache (bmP, (int32_t) bmP->FrameSize ());
+	if (pBm->CreateBuffer ())
+		UseBitmapCache (pBm, (int32_t) pBm->FrameSize ());
 	else
 		return 0;
 	}
-bmP->Read (cf, zSize);
+pBm->Read (cf, zSize);
 int32_t bSwapTranspColor = 0;
 switch (cf.Length ()) {
 	case D1_MAC_PIGSIZE:
@@ -664,14 +664,14 @@ switch (cf.Length ()) {
 		if (bmh->flags & BM_FLAG_RLE)
 			bSwapTranspColor = 1;
 		else
-			bmP->SwapTransparencyColor ();
+			pBm->SwapTransparencyColor ();
 		}
 if (bmh->flags & BM_FLAG_RLE)
-	bmP->RLEExpand (NULL, bSwapTranspColor);
+	pBm->RLEExpand (NULL, bSwapTranspColor);
 
 #endif
 
-bmP->SetPalette (paletteManager.D1 (), TRANSPARENCY_COLOR, -1);
+pBm->SetPalette (paletteManager.D1 (), TRANSPARENCY_COLOR, -1);
 return 1;
 }
 
@@ -937,7 +937,7 @@ typedef struct tBitmapInfoHeader {
 CBitmap *PiggyLoadBitmap (const char *pszFile)
 {
 	CFile					cf;
-	CBitmap				*bmP;
+	CBitmap				*pBm;
 	tBitmapFileHeader	bfh;
 	tBitmapInfoHeader	bih;
 
@@ -962,18 +962,18 @@ bih.biYPelsPerMeter = (uint32_t) cf.ReadInt ();
 bih.biClrUsed = (uint32_t) cf.ReadInt ();
 bih.biClrImportant = (uint32_t) cf.ReadInt ();
 
-if (!(bmP = CBitmap::Create (0, bih.biWidth, bih.biHeight, 1))) {
+if (!(pBm = CBitmap::Create (0, bih.biWidth, bih.biHeight, 1))) {
 	cf.Close ();
 	return NULL;
 	}
-bmP->SetName (pszFile);
+pBm->SetName (pszFile);
 cf.Seek (bfh.bfOffBits, SEEK_SET);
-if (bmP->Read (cf, bih.biWidth * bih.biHeight) != bih.biWidth * bih.biHeight) {
-	delete bmP;
+if (pBm->Read (cf, bih.biWidth * bih.biHeight) != bih.biWidth * bih.biHeight) {
+	delete pBm;
 	return NULL;
 	}
 cf.Close ();
-return bmP;
+return pBm;
 }
 
 //------------------------------------------------------------------------------

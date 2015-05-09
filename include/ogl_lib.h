@@ -48,7 +48,7 @@ typedef struct tSinCosf {
 //------------------------------------------------------------------------------
 
 void OglDeleteLists (GLuint *lp, int32_t n);
-void ComputeSinCosTable (int32_t nSides, tSinCosf *sinCosP);
+void ComputeSinCosTable (int32_t nSides, tSinCosf *pSinCos);
 int32_t CircleListInit (int32_t nSides, int32_t nType, int32_t mode);
 void G3Normal (CRenderPoint** pointList, CFixVector* pvNormal);
 void G3CalcNormal (CRenderPoint **pointList, CFloatVector *pvNormal);
@@ -98,10 +98,10 @@ class COglData {
 		CFloatVector3	depthScale;
 		tWindowScale	windowScale;
 		CStaticArray<CFBO, 9> drawBuffers;
-		CFBO*				drawBufferP;
+		CFBO*				pDrawBuffer;
 		int32_t			nPerPixelLights [9];
 		float				lightRads [8];
-		CFloatVector	lightPos [8];
+		CFloatVector	pLightos [8];
 		int32_t			bLightmaps;
 		int32_t			nHeadlights;
 		fix				xStereoSeparation;
@@ -356,22 +356,22 @@ class COGL {
 		void FlushDrawBuffer (bool bAdditive = false);
 		void ChooseDrawBuffer (void);
 
-		int32_t BindBuffers (CFloatVector *vertexP, int32_t nVertices, int32_t nDimensions,
-							  tTexCoord2f *texCoordP, 
-							  CFloatVector *colorP, int32_t nColors,
-							  CBitmap *bmP, 							  
+		int32_t BindBuffers (CFloatVector *pVertex, int32_t nVertices, int32_t nDimensions,
+							  tTexCoord2f *pTexCoord, 
+							  CFloatVector *pColor, int32_t nColors,
+							  CBitmap *pBm, 							  
 							  int32_t nTMU = -1);
 		void ReleaseBuffers (void);
-		int32_t BindBitmap (CBitmap* bmP, int32_t nFrame, int32_t nWrap, int32_t bTextured);
+		int32_t BindBitmap (CBitmap* pBm, int32_t nFrame, int32_t nWrap, int32_t bTextured);
 		int32_t RenderArrays (int32_t nPrimitive, 
-								CFloatVector *vertexP, int32_t nVertices, int32_t nDimensions = 3,
-								tTexCoord2f *texCoordP = NULL, 
-								CFloatVector *colorP = NULL, int32_t nColors = 1, 
-								CBitmap *bmP = NULL, int32_t nFrame = 0, int32_t nWrap = GL_REPEAT);
-		int32_t RenderQuad (CBitmap* bmP, CFloatVector* vertexP, int32_t nDimensions = 3, tTexCoord2f* texCoordP = NULL, CFloatVector* colorP = NULL, int32_t nColors = 1, int32_t nWrap = GL_CLAMP);
-		int32_t RenderQuad (CBitmap* bmP, CFloatVector& vPosf, float width, float height, int32_t nDimensions = 3, int32_t nWrap = GL_CLAMP);
-		int32_t RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, CFloatVector* colorP, float alpha, int32_t bAdditive);
-		int32_t RenderSprite (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, float alpha, int32_t bAdditive, float fSoftRad);
+								CFloatVector *pVertex, int32_t nVertices, int32_t nDimensions = 3,
+								tTexCoord2f *pTexCoord = NULL, 
+								CFloatVector *pColor = NULL, int32_t nColors = 1, 
+								CBitmap *pBm = NULL, int32_t nFrame = 0, int32_t nWrap = GL_REPEAT);
+		int32_t RenderQuad (CBitmap* pBm, CFloatVector* pVertex, int32_t nDimensions = 3, tTexCoord2f* pTexCoord = NULL, CFloatVector* pColor = NULL, int32_t nColors = 1, int32_t nWrap = GL_CLAMP);
+		int32_t RenderQuad (CBitmap* pBm, CFloatVector& vPosf, float width, float height, int32_t nDimensions = 3, int32_t nWrap = GL_CLAMP);
+		int32_t RenderBitmap (CBitmap* pBm, const CFixVector& vPos, fix xWidth, fix xHeight, CFloatVector* pColor, float alpha, int32_t bAdditive);
+		int32_t RenderSprite (CBitmap* pBm, const CFixVector& vPos, fix xWidth, fix xHeight, float alpha, int32_t bAdditive, float fSoftRad);
 		void RenderScreenQuad (GLuint nTexture = 0);
 
 		inline int32_t FullScreen (void) { return m_states.bFullScreen; }
@@ -539,13 +539,13 @@ class COGL {
 
 		int32_t SelectBlurBuffer (int32_t nBuffer);
 
-		inline CFBO* DrawBuffer (int32_t nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDrawBuffer (nBuffer); }
+		inline CFBO* DrawBuffer (int32_t nBuffer = -1) { return (nBuffer < 0) ? m_data.pDrawBuffer : m_data.GetDrawBuffer (nBuffer); }
 
 		inline CFBO* GlowBuffer () { return m_data.GetDrawBuffer (2); }
 
 		CFBO* BlurBuffer (int32_t nBuffer);
 
-		inline CFBO* DepthBuffer (int32_t nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDepthBuffer (nBuffer + 5); }
+		inline CFBO* DepthBuffer (int32_t nBuffer = -1) { return (nBuffer < 0) ? m_data.pDrawBuffer : m_data.GetDepthBuffer (nBuffer + 5); }
 
 		void RebuildContext (int32_t bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
@@ -625,7 +625,7 @@ class COGL {
 		inline fix StereoSeparation (void) { return m_data.xStereoSeparation; }
 
 		inline int32_t HaveDrawBuffer (void) {
-			return m_features.bRenderToTexture.Available () && m_data.drawBufferP->Handle () && m_data.drawBufferP->Active ();
+			return m_features.bRenderToTexture.Available () && m_data.pDrawBuffer->Handle () && m_data.pDrawBuffer->Active ();
 			}
 
 		int32_t StencilOff (void);

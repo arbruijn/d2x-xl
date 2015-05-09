@@ -352,16 +352,16 @@ void SpeedtestFrame(void)
 
 	gameData.speedtest.nSide=gameData.speedtest.nSegment % SEGMENT_SIDE_COUNT;
 
-	gameData.objData.viewerP->info.position.vPos = SEGMENT (gameData.speedtest.nSegment)->Center ();
-	gameData.objData.viewerP->info.position.vPos.v.coord.x += 0x10;	
-	gameData.objData.viewerP->info.position.vPos.v.coord.y -= 0x10;	
-	gameData.objData.viewerP->info.position.vPos.v.coord.z += 0x17;
+	gameData.objData.pViewer->info.position.vPos = SEGMENT (gameData.speedtest.nSegment)->Center ();
+	gameData.objData.pViewer->info.position.vPos.v.coord.x += 0x10;	
+	gameData.objData.pViewer->info.position.vPos.v.coord.y -= 0x10;	
+	gameData.objData.pViewer->info.position.vPos.v.coord.z += 0x17;
 
-	gameData.objData.viewerP->RelinkToSeg (gameData.speedtest.nSegment);
+	gameData.objData.pViewer->RelinkToSeg (gameData.speedtest.nSegment);
 	center_point = SEGMENT (gameData.speedtest.nSegment)->SideCenter (gameData.speedtest.nSide);
-	CFixVector::NormalizedDir(view_dir, center_point, gameData.objData.viewerP->info.position.vPos);
-	//gameData.objData.viewerP->info.position.mOrient = CFixMatrix::Create(view_dir, NULL, NULL);
-	gameData.objData.viewerP->info.position.mOrient = CFixMatrix::CreateF(view_dir);
+	CFixVector::NormalizedDir(view_dir, center_point, gameData.objData.pViewer->info.position.vPos);
+	//gameData.objData.pViewer->info.position.mOrient = CFixMatrix::Create(view_dir, NULL, NULL);
+	gameData.objData.pViewer->info.position.mOrient = CFixMatrix::CreateF(view_dir);
 	if (((gameData.app.nFrameCount - gameData.speedtest.nFrameStart) % 10) == 0) {
 #if TRACE
 		console.printf (CON_DBG, ".");

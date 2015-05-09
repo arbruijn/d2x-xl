@@ -394,7 +394,7 @@ for (i=0; i<MAX_CACHE_BITMAPS; i++) {
 
 //------------------------------------------------------------------------------
 
-CBitmap *rle_expand_texture (CBitmap *bmP)
+CBitmap *rle_expand_texture (CBitmap *pBm)
 {
 	int32_t i;
 	int32_t lowestCount, lc;
@@ -403,7 +403,7 @@ CBitmap *rle_expand_texture (CBitmap *bmP)
 if (!rle_cache_initialized) 
 	RLECacheInit ();
 
-Assert (!(bmP->Flags () & BM_FLAG_PAGED_OUT));
+Assert (!(pBm->Flags () & BM_FLAG_PAGED_OUT));
 
 lc = rleCounter++;
 if (rleCounter < lc) { // overflow
@@ -419,7 +419,7 @@ rle_next++;
 if (rle_next >= MAX_CACHE_BITMAPS)
 	rle_next = 0;
 for (i = 0; i < MAX_CACHE_BITMAPS; i++) {
-	if (rle_cache [i].rle_bitmap == bmP) {
+	if (rle_cache [i].rle_bitmap == pBm) {
 		rle_hits++;
 		rle_cache [i].last_used = rleCounter;
 		return rle_cache [i].expanded_bitmap;
@@ -429,10 +429,10 @@ for (i = 0; i < MAX_CACHE_BITMAPS; i++) {
 		least_recently_used = i;
 		}
 	}
-Assert (bmP->Width () <=64 && bmP->Height () <= 64); //dest buffer is 64x64
+Assert (pBm->Width () <=64 && pBm->Height () <= 64); //dest buffer is 64x64
 rle_misses++;
-bmP->ExpandTo (rle_cache [least_recently_used].expanded_bitmap);
-rle_cache [least_recently_used].rle_bitmap = bmP;
+pBm->ExpandTo (rle_cache [least_recently_used].expanded_bitmap);
+rle_cache [least_recently_used].rle_bitmap = pBm;
 rle_cache [least_recently_used].last_used = rleCounter;
 return rle_cache [least_recently_used].expanded_bitmap;
 }

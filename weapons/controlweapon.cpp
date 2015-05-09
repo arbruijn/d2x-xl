@@ -195,7 +195,7 @@ if (gameStates.app.bPlayerIsDead || OBSERVING) {
 	gameData.missiles.nGlobalFiringCount = 0;
 	return 0;
 	}
-if (gameStates.app.bD2XLevel && (SEGMENT (gameData.objData.consoleP->info.nSegment)->HasNoDamageProp ()))
+if (gameStates.app.bD2XLevel && (SEGMENT (gameData.objData.pConsole->info.nSegment)->HasNoDamageProp ()))
 	return 0;
 //	Make sure enough time has elapsed to fire laser, but if it looks like it will
 //	be a long while before laser can be fired, then there must be some mistake!
@@ -237,8 +237,8 @@ int32_t AllowedToFireMissile (int32_t nPlayer, int32_t bCheckSegment)
 
 //	Make sure enough time has elapsed to fire missile, but if it looks like it will
 //	be a long while before missile can be fired, then there must be some mistake!
-if (gameStates.app.bD2XLevel && bCheckSegment && (gameData.objData.consoleP->info.nSegment != -1) &&
-    (SEGMENT (gameData.objData.consoleP->info.nSegment)->HasNoDamageProp ()))
+if (gameStates.app.bD2XLevel && bCheckSegment && (gameData.objData.pConsole->info.nSegment != -1) &&
+    (SEGMENT (gameData.objData.pConsole->info.nSegment)->HasNoDamageProp ()))
 	return 0;
 if (!IsMultiGame && ((s = gameStates.gameplay.slowmo [0].fSpeed) > 1)) {
 	t = gameData.missiles.xLastFiredTime + (fix) ((gameData.missiles.xNextFireTime - gameData.missiles.xLastFiredTime) * s);
@@ -269,72 +269,72 @@ int32_t PlayerHasWeapon (int32_t nWeapon, int32_t bSecondary, int32_t nPlayer, i
 {
 	int32_t		returnValue = 0;
 	int32_t		nWeaponIndex;
-	CPlayerData	*playerP = gameData.multiplayer.players + ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
+	CPlayerData	*pPlayer = gameData.multiplayer.players + ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
 
 //	Hack! If energy goes negative, you can't fire a weapon that doesn't require energy.
 //	But energy should not go negative (but it does), so find out why it does!
 if (gameStates.app.bD1Mission && (nWeapon >= SUPER_WEAPON))
 	return 0;
-if (playerP->energy < 0)
-	playerP->energy = 0;
+if (pPlayer->energy < 0)
+	pPlayer->energy = 0;
 
 if (!bSecondary) {
 	nWeaponIndex = primaryWeaponToWeaponInfo [nWeapon];
 
 	if (nWeapon == SUPER_LASER_INDEX) {
-		if ((playerP->primaryWeaponFlags & (1 << LASER_INDEX)) && (bAll || playerP->HasSuperLaser ()))
+		if ((pPlayer->primaryWeaponFlags & (1 << LASER_INDEX)) && (bAll || pPlayer->HasSuperLaser ()))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else if (nWeapon == LASER_INDEX) {
-		if ((playerP->primaryWeaponFlags & (1 << LASER_INDEX)) && (bAll || playerP->HasStandardLaser ()))
+		if ((pPlayer->primaryWeaponFlags & (1 << LASER_INDEX)) && (bAll || pPlayer->HasStandardLaser ()))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else if (nWeapon == SPREADFIRE_INDEX) {
-		if ((playerP->primaryWeaponFlags & (1 << nWeapon)) && (bAll || !(extraGameInfo [0].bSmartWeaponSwitch && (playerP->primaryWeaponFlags & (1 << HELIX_INDEX)))))
+		if ((pPlayer->primaryWeaponFlags & (1 << nWeapon)) && (bAll || !(extraGameInfo [0].bSmartWeaponSwitch && (pPlayer->primaryWeaponFlags & (1 << HELIX_INDEX)))))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else if (nWeapon == VULCAN_INDEX) {
-		if ((playerP->primaryWeaponFlags & (1 << nWeapon)) && (bAll || !(extraGameInfo [0].bSmartWeaponSwitch && (playerP->primaryWeaponFlags & (1 << GAUSS_INDEX)))))
+		if ((pPlayer->primaryWeaponFlags & (1 << nWeapon)) && (bAll || !(extraGameInfo [0].bSmartWeaponSwitch && (pPlayer->primaryWeaponFlags & (1 << GAUSS_INDEX)))))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else {
-		if (playerP->primaryWeaponFlags & (1 << nWeapon))
+		if (pPlayer->primaryWeaponFlags & (1 << nWeapon))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 
 	// Special case: Gauss cannon uses vulcan ammo.	
 	if (nWeapon == GAUSS_INDEX) {
-		if (WI_ammo_usage (nWeaponIndex) <= playerP->primaryAmmo [VULCAN_INDEX])
+		if (WI_ammo_usage (nWeaponIndex) <= pPlayer->primaryAmmo [VULCAN_INDEX])
 			returnValue |= HAS_AMMO_FLAG;
 		}
 	else
-		if (WI_ammo_usage (nWeaponIndex) <= playerP->primaryAmmo [nWeapon])
+		if (WI_ammo_usage (nWeaponIndex) <= pPlayer->primaryAmmo [nWeapon])
 			returnValue |= HAS_AMMO_FLAG;
 	if (nWeapon == OMEGA_INDEX) {	// Hack: Make sure player has energy to omega
-		if (playerP->energy || gameData.omega.xCharge)
+		if (pPlayer->energy || gameData.omega.xCharge)
 			returnValue |= HAS_ENERGY_FLAG;
 		}
 	else {
 /*
 		if (nWeapon == SUPER_LASER_INDEX) {
-			if (playerP->energy || gameData.omega.xCharge)
+			if (pPlayer->energy || gameData.omega.xCharge)
 				returnValue |= HAS_ENERGY_FLAG;
 		}
 */
-		if (WI_energy_usage (nWeaponIndex) <= playerP->energy)
+		if (WI_energy_usage (nWeaponIndex) <= pPlayer->energy)
 			returnValue |= HAS_ENERGY_FLAG;
 		}
 	}
 else {
 	nWeaponIndex = secondaryWeaponToWeaponInfo [nWeapon];
 
-	if (playerP->secondaryWeaponFlags & (1 << nWeapon))
+	if (pPlayer->secondaryWeaponFlags & (1 << nWeapon))
 		returnValue |= HAS_WEAPON_FLAG;
 
-	if (WI_ammo_usage (nWeaponIndex) <= playerP->secondaryAmmo [nWeapon])
+	if (WI_ammo_usage (nWeaponIndex) <= pPlayer->secondaryAmmo [nWeapon])
 		returnValue |= HAS_AMMO_FLAG;
 
-	if (WI_energy_usage(nWeaponIndex) <= playerP->energy)
+	if (WI_energy_usage(nWeaponIndex) <= pPlayer->energy)
 		returnValue |= HAS_ENERGY_FLAG;
 }
 
@@ -570,12 +570,12 @@ return SUPER_LASER_INDEX;
 
 void SetLastSuperWeaponStates (void)
 {
-	CPlayerData	*playerP = gameData.multiplayer.players + N_LOCALPLAYER;
+	CPlayerData	*pPlayer = gameData.multiplayer.players + N_LOCALPLAYER;
 	int32_t		i, j;
 
 for (i = 0, j = 1 << 5; i < 5; i++, j <<= 1) {
-	bLastPrimaryWasSuper [i] = i ? ((playerP->primaryWeaponFlags & j) != 0) : playerP->HasSuperLaser ();
-	bLastSecondaryWasSuper [i] = (playerP->secondaryWeaponFlags & j) != 0;
+	bLastPrimaryWasSuper [i] = i ? ((pPlayer->primaryWeaponFlags & j) != 0) : pPlayer->HasSuperLaser ();
+	bLastSecondaryWasSuper [i] = (pPlayer->secondaryWeaponFlags & j) != 0;
 	}
 }
 
@@ -816,7 +816,7 @@ if (controls [0].useInvulDownCount)
 	ApplyInvul (0, -1);
 if (controls [0].fireFlareDownCount)
 	if (AllowedToFireFlare ())
-		CreateFlare (gameData.objData.consoleP);
+		CreateFlare (gameData.objData.pConsole);
 if (AllowedToFireMissile (-1, 1)) {
 	i = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
 	gameData.missiles.nGlobalFiringCount += WI_fireCount (i) * (controls [0].fireSecondaryState || controls [0].fireSecondaryDownCount);
@@ -841,7 +841,7 @@ if (gameData.missiles.nGlobalFiringCount < 0)
 	gameData.missiles.nGlobalFiringCount = 0;
 //	Drop proximity bombs.
 if (controls [0].dropBombDownCount) {
-	if (gameStates.app.bD2XLevel && (SEGMENT (gameData.objData.consoleP->info.nSegment)->HasNoDamageProp ()))
+	if (gameStates.app.bD2XLevel && (SEGMENT (gameData.objData.pConsole->info.nSegment)->HasNoDamageProp ()))
 		controls [0].dropBombDownCount = 0;
 	else {
 		int32_t ssw_save = gameData.weapons.nSecondary;

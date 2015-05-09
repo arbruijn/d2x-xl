@@ -105,15 +105,15 @@ ResetPlayerTimeout (nPlayer, -1);
 
 //------------------------------------------------------------------------------
 
-int32_t SetLocalPlayer (CAllNetPlayersInfo* playerInfoP, int32_t nPlayers, int32_t nDefault)
+int32_t SetLocalPlayer (CAllNetPlayersInfo* pPlayerInfo, int32_t nPlayers, int32_t nDefault)
 {
-	tNetPlayerInfo*	playerP = playerInfoP->m_info.players;
+	tNetPlayerInfo*	pPlayer = pPlayerInfo->m_info.players;
 	char					szLocalCallSign [CALLSIGN_LEN+1];
 	int32_t					nLocalPlayer = -1;
 
 memcpy (szLocalCallSign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
-for (int32_t i = 0; i < nPlayers; i++, playerP++) {
-	if (!CmpLocalPlayer (&playerP->network, playerP->callsign, szLocalCallSign)) {
+for (int32_t i = 0; i < nPlayers; i++, pPlayer++) {
+	if (!CmpLocalPlayer (&pPlayer->network, pPlayer->callsign, szLocalCallSign)) {
 		if (nLocalPlayer != -1) {
 			InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
 			console.printf (CON_DBG, TXT_FOUND_TWICE);
@@ -131,7 +131,7 @@ return N_LOCALPLAYER = ((nLocalPlayer < 0) ? nDefault : nLocalPlayer);
 void NetworkProcessSyncPacket (CNetGameInfo * netGameInfoP, int32_t rsinit)
 {
 	int32_t					i, j;
-	tNetPlayerInfo*	playerP;
+	tNetPlayerInfo*	pPlayer;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CNetGameInfo		tmp_info;
 
@@ -142,7 +142,7 @@ if ((gameStates.multi.nGameType >= IPX_GAME) && (netGameInfoP != &netGameInfo)) 
 #endif
 
 if (rsinit)
-	playerInfoP = &netPlayers [0];
+	pPlayerInfo = &netPlayers [0];
 	// This function is now called by all people entering the netgame.
 if (netGameInfoP != &netGameInfo) {
 	char *p = reinterpret_cast<char*> (netGameInfoP);
@@ -157,7 +157,7 @@ if (netGameInfoP != &netGameInfo) {
 			}
 		}
 	netGameInfo = *netGameInfoP;
-	netPlayers [0] = *playerInfoP;
+	netPlayers [0] = *pPlayerInfo;
 	}
 N_PLAYERS = netGameInfoP->m_info.nNumPlayers;
 gameStates.app.nDifficultyLevel = netGameInfoP->m_info.difficulty;
@@ -183,36 +183,36 @@ if (netGameInfo.GetSegmentCheckSum () != networkData.nSegmentCheckSum) {
 #endif
 	}
 // Discover my player number
-if (SetLocalPlayer (playerInfoP, N_PLAYERS, -1) < -1)
+if (SetLocalPlayer (pPlayerInfo, N_PLAYERS, -1) < -1)
 	return;
 
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	PLAYER (i).netKillsTotal = 0;
 
-for (i = 0, playerP = playerInfoP->m_info.players; i < N_PLAYERS; i++, playerP++) {
-	memcpy (PLAYER (i).callsign, playerP->callsign, CALLSIGN_LEN+1);
+for (i = 0, pPlayer = pPlayerInfo->m_info.players; i < N_PLAYERS; i++, pPlayer++) {
+	memcpy (PLAYER (i).callsign, pPlayer->callsign, CALLSIGN_LEN+1);
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 #ifdef WORDS_NEED_ALIGNMENT
 		uint32_t server;
-		memcpy (&server, playerP->network.Network (), 4);
+		memcpy (&server, pPlayer->network.Network (), 4);
 		if (server != 0)
 			IpxGetLocalTarget (
 				reinterpret_cast<uint8_t*> (&server),
-				playerInfoP->m_info.players [i].network.Node (),
+				pPlayerInfo->m_info.players [i].network.Node (),
 				PLAYER (i).netAddress);
 #else // WORDS_NEED_ALIGNMENT
-		if (playerInfoP->m_info.players [i].network.HaveNetwork ())
+		if (pPlayerInfo->m_info.players [i].network.HaveNetwork ())
 			IpxGetLocalTarget (
-				playerInfoP->m_info.players [i].network.Network (),
-				playerInfoP->m_info.players [i].network.Node (),
+				pPlayerInfo->m_info.players [i].network.Network (),
+				pPlayerInfo->m_info.players [i].network.Node (),
 				PLAYER (i).netAddress);
 #endif // WORDS_NEED_ALIGNMENT
 		else
-			memcpy (PLAYER (i).netAddress, playerInfoP->m_info.players [i].network.Node (), 6);
+			memcpy (PLAYER (i).netAddress, pPlayerInfo->m_info.players [i].network.Node (), 6);
 		}
 	PLAYER (i).nPacketsGot = -1;                            // How many packets we got from them
 	PLAYER (i).nPacketsSent = 0;                            // How many packets we sent to them
-	CONNECT (i, playerP->connected);
+	CONNECT (i, pPlayer->connected);
 	PLAYER (i).netKillsTotal = *netGameInfoP->PlayerKills (i);
 	PLAYER (i).netKilledTotal = *netGameInfoP->Killed (i);
 	if (networkData.nJoinState || (i != N_LOCALPLAYER))
@@ -261,36 +261,36 @@ MultiSortKillList ();
 
 void NetworkTrackPackets (int32_t nPlayer, int32_t nPackets)
 {
-	CPlayerData*	playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData*	pPlayer = gameData.multiplayer.players + nPlayer;
 
-if (playerP->nPacketsGot < 0) {
-	playerP->nPacketsGot = nPackets;
+if (pPlayer->nPacketsGot < 0) {
+	pPlayer->nPacketsGot = nPackets;
 	networkData.nTotalPacketsGot += nPackets;
 	}
 else {
-	playerP->nPacketsGot++;
+	pPlayer->nPacketsGot++;
 	networkData.nTotalPacketsGot++;
 	}
 ResetPlayerTimeout (nPlayer, -1);
-if  (nPackets != playerP->nPacketsGot) {
-	networkData.nMissedPackets = nPackets - playerP->nPacketsGot;
-	if (nPackets - playerP->nPacketsGot > 0)
-		networkData.nTotalMissedPackets += nPackets - playerP->nPacketsGot;
+if  (nPackets != pPlayer->nPacketsGot) {
+	networkData.nMissedPackets = nPackets - pPlayer->nPacketsGot;
+	if (nPackets - pPlayer->nPacketsGot > 0)
+		networkData.nTotalMissedPackets += nPackets - pPlayer->nPacketsGot;
 #if 1
 	if (networkData.nMissedPackets > 0)
 		console.printf (0,
 			"Missed %d packets from player #%d (%d total)\n",
-			nPackets-playerP->nPacketsGot,
+			nPackets-pPlayer->nPacketsGot,
 			nPlayer,
 			networkData.nMissedPackets);
 	else
 		console.printf (CON_DBG,
 			"Got %d late packets from player #%d (%d total)\n",
-			playerP->nPacketsGot-nPackets,
+			pPlayer->nPacketsGot-nPackets,
 			nPlayer,
 			networkData.nMissedPackets);
 #endif
-	playerP->nPacketsGot = nPackets;
+	pPlayer->nPacketsGot = nPackets;
 	}
 }
 
@@ -300,7 +300,7 @@ void NetworkReadLongPlayerDataPacket (tFrameInfoLong *pd)
 {
 	int32_t		nPlayer;
 	int32_t		nObject;
-	CObject*		objP = NULL;
+	CObject*		pObj = NULL;
 
 // tFrameInfoLong should be aligned...for mac, make the necessary adjustments
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
@@ -348,19 +348,19 @@ if ((int8_t) pd->data.nLevel != missionManager.nCurrentLevel) {
 	return;
 	}
 
-objP = OBJECT (nObject);
+pObj = OBJECT (nObject);
 NetworkTrackPackets (nPlayer, pd->header.nPackets);
 //------------ Read the player's ship's object info ----------------------
-objP->info.position.vPos = pd->objData.pos;
-objP->info.position.mOrient = pd->objData.orient;
-objP->mType.physInfo.velocity = pd->objData.vel;
-objP->mType.physInfo.rotVel = pd->objData.rotVel;
-PLAYER (nPlayer).m_flightPath.Update (objP);
-if ((objP->info.renderType != pd->data.nRenderType) && (pd->data.nRenderType == RT_POLYOBJ))
+pObj->info.position.vPos = pd->objData.pos;
+pObj->info.position.mOrient = pd->objData.orient;
+pObj->mType.physInfo.velocity = pd->objData.vel;
+pObj->mType.physInfo.rotVel = pd->objData.rotVel;
+PLAYER (nPlayer).m_fpLightath.Update (pObj);
+if ((pObj->info.renderType != pd->data.nRenderType) && (pd->data.nRenderType == RT_POLYOBJ))
 	MultiTurnGhostToPlayer (nPlayer);
 OBJECT (nObject)->RelinkToSeg (pd->objData.nSegment);
-if (objP->info.movementType == MT_PHYSICS)
-	objP->SetThrustFromVelocity ();
+if (pObj->info.movementType == MT_PHYSICS)
+	pObj->SetThrustFromVelocity ();
 //------------ Welcome them back if reconnecting --------------
 if (!PLAYER (nPlayer).connected) {
 	if (PLAYER (nPlayer).HasLeft ())
@@ -425,7 +425,7 @@ void NetworkReadShortPlayerDataPacket (tFrameInfoShort *pd)
 {
 	int32_t nPlayer;
 	int32_t nObject;
-	CObject * objP = NULL;
+	CObject * pObj = NULL;
 
 // int16_t frame info is not aligned because of tShortPos.  The mac
 // will call totally hacked and gross function to fix this up.
@@ -472,14 +472,14 @@ if ((int8_t) pd->data.nLevel != missionManager.nCurrentLevel) {
 #endif
 	return;
 	}
-objP = OBJECT (nObject);
+pObj = OBJECT (nObject);
 NetworkTrackPackets (nPlayer, pd->header.nPackets);
 //------------ Read the player's ship's CObject info ----------------------
-ExtractShortPos (objP, &pd->objData, 0);
-if ((objP->info.renderType != pd->data.nRenderType) && (pd->data.nRenderType == RT_POLYOBJ))
+ExtractShortPos (pObj, &pd->objData, 0);
+if ((pObj->info.renderType != pd->data.nRenderType) && (pd->data.nRenderType == RT_POLYOBJ))
 	MultiTurnGhostToPlayer (nPlayer);
-if (objP->info.movementType == MT_PHYSICS)
-	objP->SetThrustFromVelocity ();
+if (pObj->info.movementType == MT_PHYSICS)
+	pObj->SetThrustFromVelocity ();
 //------------ Welcome them back if reconnecting --------------
 if (!PLAYER (nPlayer).connected) {
 	if (PLAYER (nPlayer).HasLeft ())
@@ -512,18 +512,18 @@ int32_t NetworkVerifyPlayers (void)
 {
 	int32_t			i, j, t, bCoop = IsCoopGame;
 	int32_t			nPlayers, nPlayerObjs [MAX_PLAYERS];
-	CObject*			objP;
-	CPlayerData*	playerP;
+	CObject*			pObj;
+	CPlayerData*	pPlayer;
 
-for (j = 0, playerP = gameData.multiplayer.players; j < MAX_PLAYERS; j++, playerP++)
-	nPlayerObjs [j] = playerP->connected ? playerP->nObject : -1;
+for (j = 0, pPlayer = gameData.multiplayer.players; j < MAX_PLAYERS; j++, pPlayer++)
+	nPlayerObjs [j] = pPlayer->connected ? pPlayer->nObject : -1;
 #if 0
 if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 #endif
 nPlayers = 0;
-FORALL_OBJS (objP) {
-	i = objP->Index ();
-	t = objP->info.nType;
+FORALL_OBJS (pObj) {
+	i = pObj->Index ();
+	t = pObj->info.nType;
 	if (t == OBJ_GHOST) {
 		for (j = 0; j < MAX_PLAYERS; j++) {
 			if (nPlayerObjs [j] == i) {
@@ -587,7 +587,7 @@ class CObjectSynchronizer {
 
 CObjectSynchronizer objectSynchronizer;
 
-bool ObjectIsLinked (CObject *objP, int16_t nSegment);
+bool ObjectIsLinked (CObject *pObj, int16_t nSegment);
 void ResetSyncTimeout (bool bInit = false);
 
 //------------------------------------------------------------------------------
@@ -693,37 +693,37 @@ if (((m_nObjOwner == N_LOCALPLAYER) || (m_nObjOwner == -1)) && (m_nLocalObj != m
 	return -1;
 	}
 
-CObject* objP = OBJECT (m_nLocalObj);
-NW_GET_BYTES (m_data, m_bufI, &objP->info, sizeof (tBaseObject));
-if (objP->info.nType != OBJ_NONE) {
+CObject* pObj = OBJECT (m_nLocalObj);
+NW_GET_BYTES (m_data, m_bufI, &pObj->info, sizeof (tBaseObject));
+if (pObj->info.nType != OBJ_NONE) {
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 	if (gameStates.multi.nGameType >= IPX_GAME)
-		SwapObject (objP);
+		SwapObject (pObj);
 #endif
-	int32_t nSegment = objP->info.nSegment;
-	PrintLog (0, "receiving object %d (type: %d, segment: %d)\n", m_nLocalObj, objP->info.nType, nSegment);
-	objP->ResetSgmLinks ();
+	int32_t nSegment = pObj->info.nSegment;
+	PrintLog (0, "receiving object %d (type: %d, segment: %d)\n", m_nLocalObj, pObj->info.nType, nSegment);
+	pObj->ResetSgmLinks ();
 #if OBJ_LIST_TYPE
-	objP->ResetLinks ();
-	objP->Link ();
+	pObj->ResetLinks ();
+	pObj->Link ();
 #endif
-	objP->info.nAttachedObj = -1;
+	pObj->info.nAttachedObj = -1;
 	if (nSegment < 0) {
-		nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0);
+		nSegment = FindSegByPos (pObj->info.position.vPos, -1, 1, 0);
 		if (nSegment < 0) {
 #if DBG
-			nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0); 
+			nSegment = FindSegByPos (pObj->info.position.vPos, -1, 1, 0); 
 #endif
-			nSegment = FindSegByPos (objP->info.position.vPos, -1, 0, 0);
+			nSegment = FindSegByPos (pObj->info.position.vPos, -1, 0, 0);
 			if (nSegment < 0) {
 				NetworkAbortSync ();
 				return -1;
 				}
 			}
 		}
-	if (!ObjectIsLinked (objP, nSegment))
-		objP->LinkToSeg (nSegment);
-	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_GHOST))
+	if (!ObjectIsLinked (pObj, nSegment))
+		pObj->LinkToSeg (nSegment);
+	if ((pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_GHOST))
 		RemapLocalPlayerObject (m_nLocalObj, m_nRemoteObj);
 #if 1
 	SetObjNumMapping (m_nLocalObj, m_nRemoteObj, m_nObjOwner);
@@ -735,8 +735,8 @@ if (objP->info.nType != OBJ_NONE) {
 	else
 		gameData.multigame.m_nObjOwner [m_nLocalObj] = -1;
 #endif
-	if (objP->Type () == OBJ_MONSTERBALL) {
-		gameData.hoard.monsterballP = objP;
+	if (pObj->Type () == OBJ_MONSTERBALL) {
+		gameData.hoard.pMonsterBall = pObj;
 		gameData.hoard.nMonsterballSeg = nSegment;
 		}
 	}

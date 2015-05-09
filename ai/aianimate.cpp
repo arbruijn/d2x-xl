@@ -32,41 +32,41 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void AIDoRandomPatrol (CObject *objP, tAILocalInfo *ailP)
+void AIDoRandomPatrol (CObject *pObj, tAILocalInfo *pLocalInfo)
 {
 #if DBG
 static int bPatrols = 1;
 if (!bPatrols)
 	return;
-if (objP->Index () == nDbgObj)
+if (pObj->Index () == nDbgObj)
 	BRP;
 #endif
-if (!IsMultiGame && gameOpts->gameplay.bIdleAnims && (ailP->mode == AIM_IDLING)) {
+if (!IsMultiGame && gameOpts->gameplay.bIdleAnims && (pLocalInfo->mode == AIM_IDLING)) {
 		int32_t		h, i, j;
-		CSegment		*segP = SEGMENT (objP->info.nSegment);
-		CFixVector	*vVertex, vVecToGoal, vGoal = gameData.objData.vRobotGoals [objP->Index ()];
-		tRobotInfo	*botInfoP;
+		CSegment		*pSeg = SEGMENT (pObj->info.nSegment);
+		CFixVector	*vVertex, vVecToGoal, vGoal = gameData.objData.vRobotGoals [pObj->Index ()];
+		tRobotInfo	*pRobotInfo;
 
 	for (i = 0; i < 8; i++) {
-		if (segP->m_vertices [i] != 0xFFFF) {
-			vVertex = gameData.segData.vertices + segP->m_vertices [i];
+		if (pSeg->m_vertices [i] != 0xFFFF) {
+			vVertex = gameData.segData.vertices + pSeg->m_vertices [i];
 			if ((vGoal.v.coord.x == (*vVertex).v.coord.x) && (vGoal.v.coord.y == (*vVertex).v.coord.y) && (vGoal.v.coord.z == (*vVertex).v.coord.z))
 				break;
 			}
 		}
-	vVecToGoal = vGoal - objP->info.position.vPos; 
+	vVecToGoal = vGoal - pObj->info.position.vPos; 
 	CFixVector::Normalize (vVecToGoal);
 	if (i == 8)
 		h = 1;
-	else if ((botInfoP = ROBOTINFO (objP)) && (AITurnTowardsVector (&vVecToGoal, objP, botInfoP->turnTime [2]) < I2X (1) - I2X (1) / 5)) {
-		if (CFixVector::Dot (vVecToGoal, objP->info.position.mOrient.m.dir.f) > I2X (1) - I2X (1) / 5)
+	else if ((pRobotInfo = ROBOTINFO (pObj)) && (AITurnTowardsVector (&vVecToGoal, pObj, pRobotInfo->turnTime [2]) < I2X (1) - I2X (1) / 5)) {
+		if (CFixVector::Dot (vVecToGoal, pObj->info.position.mOrient.m.dir.f) > I2X (1) - I2X (1) / 5)
 			h = Rand (2) == 0;
 		else
 			h = 0;
 		}
-	else if (MoveTowardsPoint (objP, &vGoal, objP->info.xSize * 3 / 2)) {
+	else if (MoveTowardsPoint (pObj, &vGoal, pObj->info.xSize * 3 / 2)) {
 #if DBG
-		objP->CheckSpeed (1);
+		pObj->CheckSpeed (1);
 #endif
 		h = Rand (8) == 0;
 		}
@@ -74,12 +74,12 @@ if (!IsMultiGame && gameOpts->gameplay.bIdleAnims && (ailP->mode == AIM_IDLING))
 		h = 1;
 	if (h && (Rand (25) == 0)) {
 		j = Rand (8);
-		if ((segP->m_vertices [j] == 0xFFFF) || (j == i) || (Rand (3) == 0))
-			vGoal = SEGMENT (objP->info.nSegment)->Center ();
+		if ((pSeg->m_vertices [j] == 0xFFFF) || (j == i) || (Rand (3) == 0))
+			vGoal = SEGMENT (pObj->info.nSegment)->Center ();
 		else
-			vGoal = gameData.segData.vertices [segP->m_vertices [j]];
-		gameData.objData.vRobotGoals [objP->Index ()] = vGoal;
-		DoSillyAnimation (objP);
+			vGoal = gameData.segData.vertices [pSeg->m_vertices [j]];
+		gameData.objData.vRobotGoals [pObj->Index ()] = vGoal;
+		DoSillyAnimation (pObj);
 		}
 	}
 }
@@ -92,24 +92,24 @@ int32_t     nAttackScale = 24;
 
 static int8_t   xlatAnimation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
 
-int32_t DoSillyAnimation (CObject *objP)
+int32_t DoSillyAnimation (CObject *pObj)
 {
-	int32_t			nObject = objP->Index ();
+	int32_t			nObject = pObj->Index ();
 	tJointPos*		jointPositions;
-	int32_t			robotType = objP->info.nId, nGun, robotState, nJointPositions;
-	tPolyObjInfo*	polyObjInfo = &objP->rType.polyObjInfo;
-	tAIStaticInfo*	aiP = &objP->cType.aiInfo;
+	int32_t			robotType = pObj->info.nId, nGun, robotState, nJointPositions;
+	tPolyObjInfo*	polyObjInfo = &pObj->rType.polyObjInfo;
+	tAIStaticInfo*	pStaticInfo = &pObj->cType.aiInfo;
 	int32_t			nGunCount, at_goal;
 	int32_t			attackType;
 	int32_t			nFlinchAttackScale = 1;
-	tRobotInfo*		botInfoP = ROBOTINFO (robotType);
+	tRobotInfo*		pRobotInfo = ROBOTINFO (robotType);
 
-if (!botInfoP)
+if (!pRobotInfo)
 	return 0;
-if (0 > (nGunCount = botInfoP->nGuns))
+if (0 > (nGunCount = pRobotInfo->nGuns))
 	return 0;
-attackType = botInfoP->attackType;
-robotState = xlatAnimation [aiP->GOAL_STATE];
+attackType = pRobotInfo->attackType;
+robotState = xlatAnimation [pStaticInfo->GOAL_STATE];
 if (attackType) // && ((robotState == AS_FIRE) || (robotState == AS_RECOIL)))
 	nFlinchAttackScale = nAttackScale;
 else if ((robotState == AS_FLINCH) || (robotState == AS_RECOIL))
@@ -121,7 +121,7 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 	for (int32_t nJoint = 0; nJoint < nJointPositions; nJoint++) {
 		int32_t				jointnum = jointPositions [nJoint].jointnum;
 
-		if (jointnum >= gameData.models.polyModels [0][objP->ModelId ()].ModelCount ())
+		if (jointnum >= gameData.models.polyModels [0][pObj->ModelId ()].ModelCount ())
 			continue;
 
 		CAngleVector*	jointAngles = &jointPositions [nJoint].angles;
@@ -149,17 +149,17 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 		}
 
 	if (at_goal) {
-		tAILocalInfo* ailP = &gameData.ai.localInfo [objP->Index ()];
-		ailP->achievedState [nGun] = ailP->goalState [nGun];
-		if (ailP->achievedState [nGun] == AIS_RECOVER)
-			ailP->goalState [nGun] = AIS_FIRE;
-		if (ailP->achievedState [nGun] == AIS_FLINCH)
-			ailP->goalState [nGun] = AIS_LOCK;
+		tAILocalInfo* pLocalInfo = &gameData.ai.localInfo [pObj->Index ()];
+		pLocalInfo->achievedState [nGun] = pLocalInfo->goalState [nGun];
+		if (pLocalInfo->achievedState [nGun] == AIS_RECOVER)
+			pLocalInfo->goalState [nGun] = AIS_FIRE;
+		if (pLocalInfo->achievedState [nGun] == AIS_FLINCH)
+			pLocalInfo->goalState [nGun] = AIS_LOCK;
 		}
 	}
 
 if (at_goal == 1) //nGunCount)
-	aiP->CURRENT_STATE = aiP->GOAL_STATE;
+	pStaticInfo->CURRENT_STATE = pStaticInfo->GOAL_STATE;
 return 1;
 }
 
@@ -168,32 +168,32 @@ return 1;
 //	Current orientation of CObject is at:	polyObjInfo.animAngles
 //	Goal orientation of CObject is at:		aiInfo.goalAngles
 //	Delta orientation of CObject is at:		aiInfo.deltaAngles
-void AIFrameAnimation (CObject *objP)
+void AIFrameAnimation (CObject *pObj)
 {
-	int32_t	nObject = objP->Index ();
+	int32_t	nObject = pObj->Index ();
 	int32_t	nJoint;
-	int32_t	nJoints = gameData.models.polyModels [0][objP->ModelId ()].ModelCount ();
+	int32_t	nJoints = gameData.models.polyModels [0][pObj->ModelId ()].ModelCount ();
 
 for (nJoint = 1; nJoint < nJoints; nJoint++) {
 	fix				deltaToGoal;
 	fix				scaledDeltaAngle;
-	CAngleVector*	curAngP = &objP->rType.polyObjInfo.animAngles [nJoint];
-	CAngleVector*	goalAngP = &gameData.ai.localInfo [nObject].goalAngles [nJoint];
-	CAngleVector*	deltaAngP = &gameData.ai.localInfo [nObject].deltaAngles [nJoint];
+	CAngleVector*	pCurAngle = &pObj->rType.polyObjInfo.animAngles [nJoint];
+	CAngleVector*	pGoalAngle = &gameData.ai.localInfo [nObject].goalAngles [nJoint];
+	CAngleVector*	pDeltaAngle = &gameData.ai.localInfo [nObject].deltaAngles [nJoint];
 
 	Assert (nObject >= 0);
 	for (int32_t nAngle = 0; nAngle < 3; nAngle++) {
-		deltaToGoal = goalAngP->v.vec [nAngle] - curAngP->v.vec [nAngle];
+		deltaToGoal = pGoalAngle->v.vec [nAngle] - pCurAngle->v.vec [nAngle];
 		if (deltaToGoal > 32767)
 			deltaToGoal -= 65536;
 		else if (deltaToGoal < -32767)
 			deltaToGoal += deltaToGoal;
 
 		if (deltaToGoal) {
-			scaledDeltaAngle = FixMul (deltaAngP->v.vec [nAngle], gameData.time.xFrame) * DELTA_ANG_SCALE;
-			curAngP->v.vec [nAngle] += (fixang) scaledDeltaAngle;
+			scaledDeltaAngle = FixMul (pDeltaAngle->v.vec [nAngle], gameData.time.xFrame) * DELTA_ANG_SCALE;
+			pCurAngle->v.vec [nAngle] += (fixang) scaledDeltaAngle;
 			if (abs (deltaToGoal) < abs (scaledDeltaAngle))
-				curAngP->v.vec [nAngle] = goalAngP->v.vec [nAngle];
+				pCurAngle->v.vec [nAngle] = pGoalAngle->v.vec [nAngle];
 			}
 		}
 	}
@@ -203,28 +203,28 @@ for (nJoint = 1; nJoint < nJoints; nJoint++) {
 //	General purpose robot-dies-with-death-roll-and-groan code.
 //	Return true if CObject just died.
 //	scale: I2X (4) for boss, much smaller for much smaller guys
-int32_t DoRobotDyingFrame (CObject *objP, fix StartTime, fix xRollDuration, int8_t *bDyingSoundPlaying, int16_t deathSound, fix xExplScale, fix xSoundScale)
+int32_t DoRobotDyingFrame (CObject *pObj, fix StartTime, fix xRollDuration, int8_t *bDyingSoundPlaying, int16_t deathSound, fix xExplScale, fix xSoundScale)
 {
 	fix	xRollVal, temp;
 	fix	xSoundDuration;
-	CSoundSample *soundP;
+	CSoundSample *pSound;
 
 if (!xRollDuration)
 	xRollDuration = I2X (1)/4;
 
 xRollVal = FixDiv (gameData.time.xGame - StartTime, xRollDuration);
 
-FixSinCos (FixMul (xRollVal, xRollVal), &temp, &objP->mType.physInfo.rotVel.v.coord.x);
-FixSinCos (xRollVal, &temp, &objP->mType.physInfo.rotVel.v.coord.y);
-FixSinCos (xRollVal-I2X (1)/8, &temp, &objP->mType.physInfo.rotVel.v.coord.z);
+FixSinCos (FixMul (xRollVal, xRollVal), &temp, &pObj->mType.physInfo.rotVel.v.coord.x);
+FixSinCos (xRollVal, &temp, &pObj->mType.physInfo.rotVel.v.coord.y);
+FixSinCos (xRollVal-I2X (1)/8, &temp, &pObj->mType.physInfo.rotVel.v.coord.z);
 
 temp = gameData.time.xGame - StartTime;
-objP->mType.physInfo.rotVel.v.coord.x = temp / 9;
-objP->mType.physInfo.rotVel.v.coord.y = temp / 5;
-objP->mType.physInfo.rotVel.v.coord.z = temp / 7;
+pObj->mType.physInfo.rotVel.v.coord.x = temp / 9;
+pObj->mType.physInfo.rotVel.v.coord.y = temp / 5;
+pObj->mType.physInfo.rotVel.v.coord.z = temp / 7;
 if (gameOpts->sound.audioSampleRate) {
-	soundP = gameData.pig.sound.soundP + audio.XlatSound (deathSound);
-	xSoundDuration = FixDiv (soundP->nLength [soundP->bHires], gameOpts->sound.audioSampleRate);
+	pSound = gameData.pig.sound.pSound + audio.XlatSound (deathSound);
+	xSoundDuration = FixDiv (pSound->nLength [pSound->bHires], gameOpts->sound.audioSampleRate);
 	if (!xSoundDuration)
 		xSoundDuration = I2X (1);
 	}
@@ -237,44 +237,44 @@ if (StartTime + xRollDuration - xSoundDuration < gameData.time.xGame) {
 		console.printf (CON_DBG, "Starting death sound!\n");
 #endif
 		*bDyingSoundPlaying = 1;
-		audio.CreateObjectSound (deathSound, SOUNDCLASS_ROBOT, objP->Index (), 0, xSoundScale, xSoundScale * 256);	//	I2X (5)12 means play twice as loud
+		audio.CreateObjectSound (deathSound, SOUNDCLASS_ROBOT, pObj->Index (), 0, xSoundScale, xSoundScale * 256);	//	I2X (5)12 means play twice as loud
 		}
 	else if (RandShort () < gameData.time.xFrame * 16) {
-		CreateSmallFireballOnObject (objP, (I2X (1) + RandShort ()) * (16 * xExplScale/I2X (1)) / 8, RandShort () < gameData.time.xFrame * 2);
+		CreateSmallFireballOnObject (pObj, (I2X (1) + RandShort ()) * (16 * xExplScale/I2X (1)) / 8, RandShort () < gameData.time.xFrame * 2);
 		}
 	}
 else if (RandShort () < gameData.time.xFrame * 8) {
-	CreateSmallFireballOnObject (objP, (I2X (1)/2 + RandShort ()) * (16 * xExplScale / I2X (1)) / 8, RandShort () < gameData.time.xFrame);
+	CreateSmallFireballOnObject (pObj, (I2X (1)/2 + RandShort ()) * (16 * xExplScale / I2X (1)) / 8, RandShort () < gameData.time.xFrame);
 	}
 return (StartTime + xRollDuration < gameData.time.xGame);
 }
 
 //	----------------------------------------------------------------------
 
-void StartRobotDeathSequence (CObject *objP)
+void StartRobotDeathSequence (CObject *pObj)
 {
-if (!objP->cType.aiInfo.xDyingStartTime) { // if not already dying
-	objP->cType.aiInfo.xDyingStartTime = gameData.time.xGame;
-	objP->cType.aiInfo.bDyingSoundPlaying = 0;
-	objP->cType.aiInfo.SKIP_AI_COUNT = 0;
+if (!pObj->cType.aiInfo.xDyingStartTime) { // if not already dying
+	pObj->cType.aiInfo.xDyingStartTime = gameData.time.xGame;
+	pObj->cType.aiInfo.bDyingSoundPlaying = 0;
+	pObj->cType.aiInfo.SKIP_AI_COUNT = 0;
 	}
 }
 
 //	----------------------------------------------------------------------
 
-int32_t DoAnyRobotDyingFrame (CObject *objP)
+int32_t DoAnyRobotDyingFrame (CObject *pObj)
 {
-if (objP->cType.aiInfo.xDyingStartTime) {
-	tRobotInfo	*botInfoP = ROBOTINFO (objP);
-	int32_t bDeathRoll = botInfoP ? botInfoP->bDeathRoll : 0;
-	int32_t rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, I2X (Min (bDeathRoll / 2 + 1, 6)), 
-												 &objP->cType.aiInfo.bDyingSoundPlaying, botInfoP ? botInfoP->deathrollSound : 0, 
+if (pObj->cType.aiInfo.xDyingStartTime) {
+	tRobotInfo	*pRobotInfo = ROBOTINFO (pObj);
+	int32_t bDeathRoll = pRobotInfo ? pRobotInfo->bDeathRoll : 0;
+	int32_t rval = DoRobotDyingFrame (pObj, pObj->cType.aiInfo.xDyingStartTime, I2X (Min (bDeathRoll / 2 + 1, 6)), 
+												 &pObj->cType.aiInfo.bDyingSoundPlaying, pRobotInfo ? pRobotInfo->deathrollSound : 0, 
 												 I2X (bDeathRoll) / 8, I2X (bDeathRoll) / 2);
 	if (rval) {
-		objP->Explode (I2X (1)/4);
-		audio.CreateObjectSound (SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (2), I2X (512));
-		if (!gameOpts->gameplay.bNoThief && (missionManager.nCurrentLevel < 0) && objP->IsThief ())
-			RecreateThief (objP);
+		pObj->Explode (I2X (1)/4);
+		audio.CreateObjectSound (SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, pObj->Index (), 0, I2X (2), I2X (512));
+		if (!gameOpts->gameplay.bNoThief && (missionManager.nCurrentLevel < 0) && pObj->IsThief ())
+			RecreateThief (pObj);
 		}
 	return 1;
 	}

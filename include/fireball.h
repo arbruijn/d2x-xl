@@ -22,16 +22,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define BLAST_LIFE		(I2X (2) / 5)
 #define SHOCKWAVE_LIFE	I2X (1)
 
-CObject *CreateSplashDamageExplosion (CObject* parentObjP, int16_t nSegment, CFixVector& position, CFixVector& impact, fix size, uint8_t vclipType,
+CObject *CreateSplashDamageExplosion (CObject* pParentObj, int16_t nSegment, CFixVector& position, CFixVector& impact, fix size, uint8_t vclipType,
 										        fix maxdamage, fix maxdistance, fix maxforce, int16_t nParent);
 
 // blows up a splash damage weapon, creating the splash damage explosion
 // return the explosion CObject
 // blows up the player with a splash damage explosion
 // return the explosion CObject
-void DoDebrisFrame (CObject* objP);      // deal with debris for this frame
-void DrawFireball (CObject* objP);
-CObject* CreateExplosion (CObject* parentP, int16_t nSegment, CFixVector& vPos, CFixVector& vImpact, fix xSize, uint8_t nVClip, 
+void DoDebrisFrame (CObject* pObj);      // deal with debris for this frame
+void DrawFireball (CObject* pObj);
+CObject* CreateExplosion (CObject* pParent, int16_t nSegment, CFixVector& vPos, CFixVector& vImpact, fix xSize, uint8_t nVClip, 
                           fix xMaxDamage = 0, fix xMaxDistance = 0, fix xMaxForce = 0, int16_t nParent = -1);
 
 

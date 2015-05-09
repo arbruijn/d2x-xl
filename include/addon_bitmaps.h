@@ -16,16 +16,16 @@ class CAddonBitmap : public CTGA {
 		static CStack<CAddonBitmap*>	m_list;
 
 	public:
-		static void Register (CAddonBitmap* bmP);
-		static void Unregister (CAddonBitmap* bmP);
+		static void Register (CAddonBitmap* pBm);
+		static void Unregister (CAddonBitmap* pBm);
 		static void Prepare (void);
 
 	public:
 		CAddonBitmap (char *pszName = NULL, int32_t bCartoonize = 0);
 		int32_t Load (char *pszName = NULL);
 		void Unload (void);
-		inline CBitmap* Bitmap (void) { return m_bmP; }
-		inline CTexture* Texture (void) { return m_bmP ? m_bmP->Texture () : NULL; }
+		inline CBitmap* Bitmap (void) { return m_pBm; }
+		inline CTexture* Texture (void) { return m_pBm ? m_pBm->Texture () : NULL; }
 		inline void SetCartoonizable (int32_t bCartoonize) { m_bCartoonize = bCartoonize; }
 		int32_t Bind (int32_t bMipMaps);
 		~CAddonBitmap () { Unload (); }

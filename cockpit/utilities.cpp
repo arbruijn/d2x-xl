@@ -174,7 +174,7 @@ return gameOpts->render.cockpit.bTextGauges || gameOpts->render.cockpit.nShipSta
 }
 
 //	-----------------------------------------------------------------------------
-//returns true if viewerP can see CObject
+//returns true if pViewer can see CObject
 
 int32_t CGenericCockpit::CanSeeObject (int32_t nObject, int32_t bCheckObjs)
 {
@@ -182,10 +182,10 @@ if (OBJECT (nObject))
 	return 0;
 
 	CHitQuery hitQuery ((bCheckObjs ? FQ_VISIBILITY | FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_VISIBILITY | FQ_TRANSWALL),
-							  &gameData.objData.viewerP->info.position.vPos,
+							  &gameData.objData.pViewer->info.position.vPos,
 							  &OBJECT (nObject)->info.position.vPos,
-							  gameData.objData.viewerP->info.nSegment,
-							  gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objData.viewerP),
+							  gameData.objData.pViewer->info.nSegment,
+							  gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objData.pViewer),
 							  0, 0,
 							  ++gameData.physics.bIgnoreObjFlag
 							 );

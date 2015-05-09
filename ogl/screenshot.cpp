@@ -104,13 +104,13 @@ else {
 		//write .TGA header.
 		fwrite (&hdr, 18, 1, f);
 #endif
-		tRGB* rgbP = ((tRGB *) buf);// + w * (h - 1);
-		tBGR* bgrP = outBuf;
+		tRGB* pRGB = ((tRGB *) buf);// + w * (h - 1);
+		tBGR* pBGR = outBuf;
 		for (int32_t i = h; i; i--) {
-			for (int32_t j = w; j; j--, rgbP++, bgrP++) {
-				bgrP->r = rgbP->r;
-				bgrP->g = rgbP->g;
-				bgrP->b = rgbP->b;
+			for (int32_t j = w; j; j--, pRGB++, pBGR++) {
+				pBGR->r = pRGB->r;
+				pBGR->g = pRGB->g;
+				pBGR->b = pRGB->b;
 				}
 			}
 		fwrite (outBuf, imgSize, 1, f);

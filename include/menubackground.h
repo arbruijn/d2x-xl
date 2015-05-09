@@ -46,7 +46,7 @@ class CBackground : public CCanvas {
 		void DrawBox (void);
 
 		inline CBitmap* Bitmap (void) { return m_bitmap; }
-		inline CBitmap* SetBitmap (CBitmap* bmP) { return m_bitmap = bmP; }
+		inline CBitmap* SetBitmap (CBitmap* pBm) { return m_bitmap = pBm; }
 		inline CBitmap* Background (void) { return &m_saved; }
 		inline CBitmap* Saved (void) { return &m_saved; }
 		inline void GetExtent (int32_t& x, int32_t& y, int32_t& w, int32_t& h) { CCanvas::CViewport::GetExtent (x, y, w, h); }

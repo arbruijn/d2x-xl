@@ -40,16 +40,16 @@ void NetworkProcessMonitorVector (int32_t vector)
 	int32_t		i, j;
 	int32_t		tm, ec, bm;
 	int32_t		count = 0;
-	CSegment	*segP = SEGMENTS.Buffer ();
-	CSide		*sideP;
+	CSegment	*pSeg = SEGMENTS.Buffer ();
+	CSide		*pSide;
 
-for (i = 0; i <= gameData.segData.nLastSegment; i++, segP++) {
-	for (j = 0, sideP = segP->m_sides; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
-		if (!sideP->FaceCount ())
+for (i = 0; i <= gameData.segData.nLastSegment; i++, pSeg++) {
+	for (j = 0, pSide = pSeg->m_sides; j < SEGMENT_SIDE_COUNT; j++, pSide++) {
+		if (!pSide->FaceCount ())
 			continue;
-		if (((tm = sideP->m_nOvlTex) != 0) && ((ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip) != -1) && ((bm = gameData.effects.effectP [ec].destroyed.nTexture) != -1)) {
+		if (((tm = pSide->m_nOvlTex) != 0) && ((ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip) != -1) && ((bm = gameData.effects.pEffect [ec].destroyed.nTexture) != -1)) {
 			if (vector & (1 << count))
-				sideP->m_nOvlTex = bm;
+				pSide->m_nOvlTex = bm;
 			count++;
 			//Assert (count < 32);
 			}
@@ -73,12 +73,12 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 #endif
 networkData.bWaitingForPlayerInfo = 0;
 #if SECURITY_CHECK
-if (newGame.m_info.nSecurity != playerInfoP->m_info.nSecurity) {
+if (newGame.m_info.nSecurity != pPlayerInfo->m_info.nSecurity) {
 	Int3 ();     // Get Jason
    return;     // If this first half doesn't go with the second half
    }
 #endif
-Assert (playerInfoP != NULL);
+Assert (pPlayerInfo != NULL);
 int32_t i = FindActiveNetGame (newGame.m_info.szGameName, newGame.m_info.nSecurity);
 if (i == MAX_ACTIVE_NETGAMES) {
 #if 1
@@ -95,7 +95,7 @@ networkData.bGamesChanged = 1;
 // MWA  memcpy (&activeNetGames [i], data, sizeof (tNetGameInfo);
 nLastNetGameUpdate [i] = SDL_GetTicks ();
 activeNetGames [i] = newGame;
-activeNetPlayers [i] = *playerInfoP;
+activeNetPlayers [i] = *pPlayerInfo;
 if (networkData.nSecurityCheck)
 #if SECURITY_CHECK
 	if (activeNetGames [i].m_info.nSecurity == networkData.nSecurityCheck)
@@ -113,7 +113,7 @@ if (activeNetGames [i].m_info.nNumPlayers == 0) {	// Delete this game
 void NetworkProcessLiteInfo (uint8_t *data)
 {
 	int32_t					i;
-	CNetGameInfo*		actGameP;
+	CNetGameInfo*		pActGame;
 	tNetGameInfoLite*	newInfo = reinterpret_cast<tNetGameInfoLite*> (data);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CNetGameInfo		tmp_info;
@@ -133,30 +133,30 @@ if (i == networkData.nActiveGames) {
 		return;
 	networkData.nActiveGames++;
 	}
-actGameP = activeNetGames + i;
-memcpy (actGameP, reinterpret_cast<uint8_t*> (newInfo), sizeof (tNetGameInfoLite));
-memcpy (actGameP->m_server, networkData.packetDest.Network (), sizeof (actGameP->m_server));
+pActGame = activeNetGames + i;
+memcpy (pActGame, reinterpret_cast<uint8_t*> (newInfo), sizeof (tNetGameInfoLite));
+memcpy (pActGame->m_server, networkData.packetDest.Network (), sizeof (pActGame->m_server));
 nLastNetGameUpdate [i] = SDL_GetTicks ();
 // See if this is really a Hoard/Entropy/Monsterball game
 // If so, adjust all the data accordingly
 if (HoardEquipped ()) {
-	if (actGameP->m_info.gameFlags & (NETGAME_FLAG_HOARD | NETGAME_FLAG_ENTROPY | NETGAME_FLAG_MONSTERBALL)) {
-		if ((actGameP->m_info.gameFlags & NETGAME_FLAG_MONSTERBALL) == NETGAME_FLAG_MONSTERBALL)
-			actGameP->m_info.gameMode = NETGAME_MONSTERBALL; 
-		else if (actGameP->m_info.gameFlags & NETGAME_FLAG_HOARD)
-			actGameP->m_info.gameMode = NETGAME_HOARD;					  
-		else if (actGameP->m_info.gameFlags & NETGAME_FLAG_ENTROPY)
-			actGameP->m_info.gameMode = NETGAME_ENTROPY;					  
-		actGameP->m_info.gameStatus = NETSTAT_PLAYING;
-		if (actGameP->m_info.gameFlags & NETGAME_FLAG_TEAM_HOARD)
-			actGameP->m_info.gameMode = NETGAME_TEAM_HOARD;					  
-		if (actGameP->m_info.gameFlags & NETGAME_FLAG_REALLY_ENDLEVEL)
-			actGameP->m_info.gameStatus = NETSTAT_ENDLEVEL;
-		if (actGameP->m_info.gameFlags & NETGAME_FLAG_REALLY_FORMING)
-			actGameP->m_info.gameStatus = NETSTAT_STARTING;
+	if (pActGame->m_info.gameFlags & (NETGAME_FLAG_HOARD | NETGAME_FLAG_ENTROPY | NETGAME_FLAG_MONSTERBALL)) {
+		if ((pActGame->m_info.gameFlags & NETGAME_FLAG_MONSTERBALL) == NETGAME_FLAG_MONSTERBALL)
+			pActGame->m_info.gameMode = NETGAME_MONSTERBALL; 
+		else if (pActGame->m_info.gameFlags & NETGAME_FLAG_HOARD)
+			pActGame->m_info.gameMode = NETGAME_HOARD;					  
+		else if (pActGame->m_info.gameFlags & NETGAME_FLAG_ENTROPY)
+			pActGame->m_info.gameMode = NETGAME_ENTROPY;					  
+		pActGame->m_info.gameStatus = NETSTAT_PLAYING;
+		if (pActGame->m_info.gameFlags & NETGAME_FLAG_TEAM_HOARD)
+			pActGame->m_info.gameMode = NETGAME_TEAM_HOARD;					  
+		if (pActGame->m_info.gameFlags & NETGAME_FLAG_REALLY_ENDLEVEL)
+			pActGame->m_info.gameStatus = NETSTAT_ENDLEVEL;
+		if (pActGame->m_info.gameFlags & NETGAME_FLAG_REALLY_FORMING)
+			pActGame->m_info.gameStatus = NETSTAT_STARTING;
 		}
 	}
-if (actGameP->m_info.nNumPlayers == 0)
+if (pActGame->m_info.nNumPlayers == 0)
 	DeleteActiveNetGame (i);
 }
 

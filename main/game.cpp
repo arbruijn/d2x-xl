@@ -180,17 +180,17 @@ controls.Reset ();
 
 //------------------------------------------------------------------------------
 
-void MovePlayerToSegment (CSegment* segP, int32_t nSide)
+void MovePlayerToSegment (CSegment* pSeg, int32_t nSide)
 {
 	CFixVector vp;
 
-gameData.objData.consoleP->info.position.vPos = segP->Center ();
-vp = segP->SideCenter (nSide) - gameData.objData.consoleP->info.position.vPos;
+gameData.objData.pConsole->info.position.vPos = pSeg->Center ();
+vp = pSeg->SideCenter (nSide) - gameData.objData.pConsole->info.position.vPos;
 /*
-gameData.objData.consoleP->info.position.mOrient = CFixMatrix::Create(vp, NULL, NULL);
+gameData.objData.pConsole->info.position.mOrient = CFixMatrix::Create(vp, NULL, NULL);
 */
-gameData.objData.consoleP->info.position.mOrient = CFixMatrix::CreateF (vp);
-gameData.objData.consoleP->RelinkToSeg (segP->Index ());
+gameData.objData.pConsole->info.position.mOrient = CFixMatrix::CreateF (vp);
+gameData.objData.pConsole->RelinkToSeg (pSeg->Index ());
 }
 
 //------------------------------------------------------------------------------
@@ -249,14 +249,14 @@ SetupCanvasses ();
 //------------------------------------------------------------------------------
 
 //initialize flying
-void FlyInit (CObject *objP)
+void FlyInit (CObject *pObj)
 {
-objP->info.controlType = CT_FLYING;
-objP->info.movementType = MT_PHYSICS;
-objP->mType.physInfo.velocity.SetZero ();
-objP->mType.physInfo.thrust.SetZero ();
-objP->mType.physInfo.rotVel.SetZero ();
-objP->mType.physInfo.rotThrust.SetZero ();
+pObj->info.controlType = CT_FLYING;
+pObj->info.movementType = MT_PHYSICS;
+pObj->mType.physInfo.velocity.SetZero ();
+pObj->mType.physInfo.thrust.SetZero ();
+pObj->mType.physInfo.rotVel.SetZero ();
+pObj->mType.physInfo.rotThrust.SetZero ();
 }
 
 //void morph_test (), morph_step ();
@@ -312,8 +312,8 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 //@@	rx = (abScale * FixMul (SRandShort (), I2X (1)/8 + (((gameData.time.xGame + 0x4000)*4) & 0x3fff)))/16;
 //@@	rz = (abScale * FixMul (SRandShort (), I2X (1)/2 + ((gameData.time.xGame*4) & 0xffff)))/16;
 //@@
-//@@	gameData.objData.consoleP->mType.physInfo.rotVel.x += rx;
-//@@	gameData.objData.consoleP->mType.physInfo.rotVel.z += rz;
+//@@	gameData.objData.pConsole->mType.physInfo.rotVel.x += rx;
+//@@	gameData.objData.pConsole->mType.physInfo.rotVel.z += rz;
 //@@
 //@@}
 
@@ -688,11 +688,11 @@ return &gameData.render.scene;
 
 CObject *FindEscort ()
 {
-	CObject	*objP = OBJECTS.Buffer ();
+	CObject	*pObj = OBJECTS.Buffer ();
 
-FORALL_ROBOT_OBJS (objP)
-	if (objP->IsGuideBot ())
-		return objP;
+FORALL_ROBOT_OBJS (pObj)
+	if (pObj->IsGuideBot ())
+		return pObj;
 return NULL;
 }
 
@@ -703,12 +703,12 @@ void DoAmbientSounds (void)
 if (gameStates.app.bPlayerIsDead)
 	return;
 
-CSegment* segP = SEGMENT (gameData.objData.consoleP->info.nSegment);
-if (!segP)
+CSegment* pSeg = SEGMENT (gameData.objData.pConsole->info.nSegment);
+if (!pSeg)
 	return;
 
-	int32_t bLava = (segP->m_flags & S2F_AMBIENT_LAVA);
-	int32_t bWater = (segP->m_flags & S2F_AMBIENT_WATER);
+	int32_t bLava = (pSeg->m_flags & S2F_AMBIENT_LAVA);
+	int32_t bWater = (pSeg->m_flags & S2F_AMBIENT_WATER);
 	int16_t nSound;
 
 if (bLava) {							//has lava
@@ -900,8 +900,8 @@ SetScreenMode (SCREEN_GAME);
 SetWarnFunc (ShowInGameWarning);
 cockpit->Init ();
 gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
-gameData.objData.viewerP = gameData.objData.consoleP;
-FlyInit (gameData.objData.consoleP);
+gameData.objData.pViewer = gameData.objData.pConsole;
+FlyInit (gameData.objData.pConsole);
 if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
 	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
 ResetTime ();
@@ -940,7 +940,7 @@ DoInvulnerableStuff ();
 RemoveObsoleteStuckObjects ();
 InitAIFrame ();
 DoFinalBossFrame ();
-DrainHeadlightPower ();
+DrainHeadpLightower ();
 PROF_END(ptGameStates)
 
 if (IsMultiGame) {
@@ -1046,7 +1046,7 @@ else { // Note the link to above!
 
 PROF_CONT
 if (gameStates.render.bDoAppearanceEffect) {
-	gameData.objData.consoleP->CreateAppearanceEffect ();
+	gameData.objData.pConsole->CreateAppearanceEffect ();
 	gameStates.render.bDoAppearanceEffect = 0;
 	if (IsMultiGame && netGameInfo.m_info.invul) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
@@ -1297,15 +1297,15 @@ return gameLoop.Step (bRenderFrame, bReadControls, fps);
 void ComputeSlideSegs (void)
 {
 	int32_t		nSegment, nSide, bIsSlideSeg, nTexture;
-	CSegment*	segP = SEGMENTS.Buffer ();
+	CSegment*	pSeg = SEGMENTS.Buffer ();
 
 gameData.segData.nSlideSegs = 0;
-for (nSegment = 0; nSegment <= gameData.segData.nLastSegment; nSegment++, segP++) {
+for (nSegment = 0; nSegment <= gameData.segData.nLastSegment; nSegment++, pSeg++) {
 	bIsSlideSeg = 0;
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
-		if (!segP->Side (nSide)->FaceCount ())
+		if (!pSeg->Side (nSide)->FaceCount ())
 			continue;
-		nTexture = segP->m_sides [nSide].m_nBaseTex;
+		nTexture = pSeg->m_sides [nSide].m_nBaseTex;
 		if (gameData.pig.tex.tMapInfoP [nTexture].slide_u  || gameData.pig.tex.tMapInfoP [nTexture].slide_v) {
 			if (!bIsSlideSeg) {
 				bIsSlideSeg = 1;
@@ -1327,8 +1327,8 @@ void SlideTextures (void)
 {
 	int32_t			nSegment, nSide, h, i, j, tmn;
 	uint8_t			sides;
-	CSegment*	segP;
-	CSide*		sideP;
+	CSegment*	pSeg;
+	CSide*		pSide;
 	tUVL*			uvlP;
 	fix			slideU, slideV, xDelta;
 
@@ -1336,12 +1336,12 @@ if (!gameData.segData.bHaveSlideSegs)
 	ComputeSlideSegs ();
 for (h = 0; h < gameData.segData.nSlideSegs; h++) {
 	nSegment = gameData.segData.slideSegs [h].nSegment;
-	segP = SEGMENT (nSegment);
+	pSeg = SEGMENT (nSegment);
 	sides = gameData.segData.slideSegs [h].nSides;
-	for (nSide = 0, sideP = segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
-		if (!(segP->Side (nSide)->FaceCount () && (sides & (1 << nSide))))
+	for (nSide = 0, pSide = pSeg->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, pSide++) {
+		if (!(pSeg->Side (nSide)->FaceCount () && (sides & (1 << nSide))))
 			continue;
-		tmn = sideP->m_nBaseTex;
+		tmn = pSide->m_nBaseTex;
 		slideU = (fix) gameData.pig.tex.tMapInfoP [tmn].slide_u;
 		slideV = (fix) gameData.pig.tex.tMapInfoP [tmn].slide_v;
 		if (!(slideU || slideV))
@@ -1350,10 +1350,10 @@ for (h = 0; h < gameData.segData.nSlideSegs; h++) {
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				BRP;
 #endif
-		i = (segP->m_function == SEGMENT_FUNC_SKYBOX) ? 3 : 8;
+		i = (pSeg->m_function == SEGMENT_FUNC_SKYBOX) ? 3 : 8;
 		slideU = FixMul (gameData.time.xFrame, slideU << i);
 		slideV = FixMul (gameData.time.xFrame, slideV << i);
-		for (i = 0, uvlP = sideP->m_uvls; i < 4; i++) {
+		for (i = 0, uvlP = pSide->m_uvls; i < 4; i++) {
 			uvlP [i].u += slideU;
 			if (uvlP [i].u > I2X (2)) {
 				xDelta = I2X (uvlP [i].u / I2X (1) - 1);
@@ -1384,23 +1384,23 @@ for (h = 0; h < gameData.segData.nSlideSegs; h++) {
 //	-------------------------------------------------------------------------------------------------------
 //	If player is close enough to nObject, which ought to be a powerup, pick it up!
 //	This could easily be made difficulty level dependent.
-void PowerupGrabCheat (CObject *playerP, int32_t nObject)
+void PowerupGrabCheat (CObject *pPlayer, int32_t nObject)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return;
 
 	CObject*					powerupP = OBJECT (nObject);
-	tObjTransformation*	posP = OBJPOS (playerP);
+	tObjTransformation*	pPos = OBJPOS (pPlayer);
 	CFixVector				vCollision;
 
 Assert (powerupP->info.nType == OBJ_POWERUP);
 if (powerupP->info.nFlags & OF_SHOULD_BE_DEAD)
 	return;
-if (CFixVector::Dist (powerupP->info.position.vPos, posP->vPos) >=
-	 2 * (playerP->info.xSize + powerupP->info.xSize) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
+if (CFixVector::Dist (powerupP->info.position.vPos, pPos->vPos) >=
+	 2 * (pPlayer->info.xSize + powerupP->info.xSize) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
 	return;
-vCollision = CFixVector::Avg (powerupP->info.position.vPos, posP->vPos);
-playerP->CollidePlayerAndPowerup (powerupP, vCollision);
+vCollision = CFixVector::Avg (powerupP->info.position.vPos, pPos->vPos);
+pPlayer->CollidePlayerAndPowerup (powerupP, vCollision);
 }
 
 //	-------------------------------------------------------------------------------------------------------
@@ -1411,11 +1411,11 @@ playerP->CollidePlayerAndPowerup (powerupP, vCollision);
 //	way before the player gets there.
 void PowerupGrabCheatAll (void)
 {
-if (gameStates.app.tick40fps.bTick && (gameData.objData.consoleP->info.nSegment != -1)) {
-	int16_t nObject = SEGMENT (gameData.objData.consoleP->info.nSegment)->m_objects;
+if (gameStates.app.tick40fps.bTick && (gameData.objData.pConsole->info.nSegment != -1)) {
+	int16_t nObject = SEGMENT (gameData.objData.pConsole->info.nSegment)->m_objects;
 	while (nObject != -1) {
 		if (OBJECT (nObject)->info.nType == OBJ_POWERUP)
-			PowerupGrabCheat (gameData.objData.consoleP, nObject);
+			PowerupGrabCheat (gameData.objData.pConsole, nObject);
 		nObject = OBJECT (nObject)->info.nNextInSeg;
 		}
 	}
@@ -1430,14 +1430,14 @@ int32_t nLastLevelPathCreated = -1;
 int32_t MarkPlayerPathToSegment (int32_t nSegment)
 {
 	int32_t		i;
-	CObject* objP = gameData.objData.consoleP;
+	CObject* pObj = gameData.objData.pConsole;
 	int16_t		playerPathLength = 0;
 	int32_t		playerHideIndex = -1;
 
 if (nLastLevelPathCreated == missionManager.nCurrentLevel)
 	return 0;
 nLastLevelPathCreated = missionManager.nCurrentLevel;
-if (CreatePathPoints (objP, objP->info.nSegment, nSegment, gameData.ai.freePointSegs, &playerPathLength, 100, 0, 0, -1) == -1) {
+if (CreatePathPoints (pObj, pObj->info.nSegment, nSegment, gameData.ai.freePointSegs, &playerPathLength, 100, 0, 0, -1) == -1) {
 #if TRACE
 	//console.printf (CON_DBG, "Unable to form path of length %i for myself\n", 100);
 #endif
@@ -1455,7 +1455,7 @@ if (int32_t (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)) + MAX_PATH
 for (i = 1; i < playerPathLength; i++) {
 	int16_t			nSegment, nObject;
 	CFixVector	vSegCenter;
-	CObject		*objP;
+	CObject		*pObj;
 
 	nSegment = gameData.ai.routeSegs [playerHideIndex + i].nSegment;
 #if TRACE
@@ -1467,12 +1467,12 @@ for (i = 1; i < playerPathLength; i++) {
 		Int3 ();		//	Unable to drop energy powerup for path
 		return 1;
 		}
-	objP = OBJECT (nObject);
-	objP->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [objP->info.nId].nClipIndex;
-	objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
-	objP->rType.animationInfo.nCurFrame = 0;
-	objP->SetLife (I2X (100) + RandShort () * 4);
-	objP->Ignore (1, 1);
+	pObj = OBJECT (nObject);
+	pObj->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [pObj->info.nId].nClipIndex;
+	pObj->rType.animationInfo.xFrameTime = gameData.effects.animations [0][pObj->rType.animationInfo.nClipIndex].xFrameTime;
+	pObj->rType.animationInfo.nCurFrame = 0;
+	pObj->SetLife (I2X (100) + RandShort () * 4);
+	pObj->Ignore (1, 1);
 	}
 return 1;
 }

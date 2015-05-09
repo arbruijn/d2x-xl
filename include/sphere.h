@@ -19,8 +19,8 @@ public:
 		int32_t					m_nFrame;
 		tTexCoord2f				m_texCoord;
 		CPulseData				m_pulse;
-		CPulseData*				m_pulseP;
-		CBitmap*					m_bmP;
+		CPulseData*				m_pPulse;
+		CBitmap*					m_pBm;
 		CFloatVector			m_color;
 
 	public:
@@ -45,26 +45,26 @@ class CSphere : private CSphereData {
 		void Init () { CSphereData::Init (); }
 		void Destroy ();
 		int32_t Create (int32_t nRings = 32, int32_t nTiles = 1);
-		int32_t Render (CObject* objP, CFloatVector *pPos, float xScale, float yScale, float zScale,
-						float red, float green, float blue, float alpha, CBitmap *bmP, int32_t nTiles, char bAdditive);
-		inline CPulseData* Pulse (void) { return m_pulseP ? m_pulseP : &m_pulse; }
-		void SetPulse (CPulseData* pulseP);
+		int32_t Render (CObject* pObj, CFloatVector *pPos, float xScale, float yScale, float zScale,
+						float red, float green, float blue, float alpha, CBitmap *pBm, int32_t nTiles, char bAdditive);
+		inline CPulseData* Pulse (void) { return m_pPulse ? m_pPulse : &m_pulse; }
+		void SetPulse (CPulseData* pPulse);
 		void SetupPulse (float fSpeed, float fMin);
 
 	private:
 		void Pulsate (void);
-		void Animate (CBitmap* bmP);
-		int32_t InitSurface (float red, float green, float blue, float alpha, CBitmap *bmP, float fScale);
-		void RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int32_t nItems, int32_t bTextured, int32_t nPrimitive);
+		void Animate (CBitmap* pBm);
+		int32_t InitSurface (float red, float green, float blue, float alpha, CBitmap *pBm, float fScale);
+		void RenderRing (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nItems, int32_t bTextured, int32_t nPrimitive);
 		void RenderRing (int32_t nOffset, int32_t nItems, int32_t bTextured, int32_t nPrimitive);
 		void RenderRings (float fRadius, int32_t nRings, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nTiles);
 };
 
-void SetupSpherePulse (CPulseData *pulseP, float fSpeed, float fMin);
+void SetupSpherePulse (CPulseData *pPulse, float fSpeed, float fMin);
 
 int32_t CreateShieldSphere (void);
-int32_t DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha, char bAdditive, fix nSize = 0);
-void DrawMonsterball (CObject *objP, float red, float green, float blue, float alpha);
+int32_t DrawShieldSphere (CObject *pObj, float red, float green, float blue, float alpha, char bAdditive, fix nSize = 0);
+void DrawMonsterball (CObject *pObj, float red, float green, float blue, float alpha);
 
 #endif //__SPHERE_H
 

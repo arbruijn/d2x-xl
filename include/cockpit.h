@@ -164,7 +164,7 @@ class CGenericCockpit {
 		inline CCanvas& Window (int32_t nWindow) { return m_info.windows [ nWindow]; }
 		inline void PageInGauge (int32_t nGauge) { LoadTexture (gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0, 0); }
 		inline uint16_t GaugeIndex (int32_t nGauge) { return gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index; }
-		CBitmap* BitBlt (int32_t nGauge, int32_t x, int32_t y, bool bScalePos = true, bool bScaleSize = true, int32_t scale = I2X (1), int32_t orient = 0, CBitmap* bmP = NULL, CBitmap* bmoP = NULL);
+		CBitmap* BitBlt (int32_t nGauge, int32_t x, int32_t y, bool bScalePos = true, bool bScaleSize = true, int32_t scale = I2X (1), int32_t orient = 0, CBitmap* pBm = NULL, CBitmap* pBmo = NULL);
 		int32_t _CDECL_ PrintF (int32_t *idP, int32_t x, int32_t y, const char *pszFmt, ...);
 		void Rect (int32_t left, int32_t top, int32_t width, int32_t height) {
 			OglDrawFilledRect (HUD_SCALE_X (left), HUD_SCALE_Y (top), HUD_SCALE_X (width), HUD_SCALE_Y (height));
@@ -205,7 +205,7 @@ class CGenericCockpit {
 		void DrawPlayerNames (void);
 		void RenderWindows (void);
 		void Render (int32_t bExtraInfo, fix xStereoSeparation = 0);
-		void RenderWindow (int32_t nWindow, CObject *viewerP, int32_t bRearView, int32_t nUser, const char *pszLabel);
+		void RenderWindow (int32_t nWindow, CObject *pViewer, int32_t bRearView, int32_t nUser, const char *pszLabel);
 		void Activate (int32_t nType, bool bClearMessages = false);
 
 		virtual void GetHostageWindowCoords (int32_t& x, int32_t& y, int32_t& w, int32_t& h) = 0;

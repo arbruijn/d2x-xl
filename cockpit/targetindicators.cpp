@@ -32,7 +32,7 @@
 
 // -----------------------------------------------------------------------------
 
-static inline CFloatVector3 *ObjectFrameColor (CObject *objP, CFloatVector3 *pc)
+static inline CFloatVector3 *ObjectFrameColor (CObject *pObj, CFloatVector3 *pc)
 {
 	static CFloatVector3	defaultColor = {{{0, 1.0f, 0}}};
 	static CFloatVector3	botDefColor = {{{1.0f, 0, 0}}};
@@ -41,16 +41,16 @@ static inline CFloatVector3 *ObjectFrameColor (CObject *objP, CFloatVector3 *pc)
 
 if (pc)
 	return pc;
-if (objP) {
-	if (objP->info.nType == OBJ_REACTOR)
+if (pObj) {
+	if (pObj->info.nType == OBJ_REACTOR)
 		return &reactorDefColor;
-	else if (objP->info.nType == OBJ_ROBOT) {
-		if (!objP->IsGuideBot ())
+	else if (pObj->info.nType == OBJ_ROBOT) {
+		if (!pObj->IsGuideBot ())
 			return &botDefColor;
 		}
-	else if (objP->IsPlayer ()) {
+	else if (pObj->IsPlayer ()) {
 		if (IsTeamGame)
-			return playerDefColors + GetTeam (objP->info.nId) + 1;
+			return playerDefColors + GetTeam (pObj->info.nId) + 1;
 		return playerDefColors;
 		}
 	}
@@ -87,9 +87,9 @@ return ((_C / d - _A) / _B + 1.0f) * 0.5f;
 // Scale the distance between target and viewer with the view range and stretch
 // the scale to increase the alpha scaling effect.
 
-static float AlphaScale (CObject* objP)
+static float AlphaScale (CObject* pObj)
 {
-float scale = X2F (CFixVector::Dist (objP->Position (), gameData.objData.viewerP->Position ()));
+float scale = X2F (CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ()));
 scale = /*ZFAR **/ 1.0f - sqrt (scale / ZFAR);
 //scale = NDC (scale);
 //scale /= ZFAR;
@@ -98,7 +98,7 @@ return scale * scale;
 
 // -----------------------------------------------------------------------------
 
-void RenderDamageIndicator (CObject *objP, CFloatVector3 *pc)
+void RenderDamageIndicator (CObject *pObj, CFloatVector3 *pc)
 {
 	CFixVector		vPos;
 	CFloatVector	vPosf, fVerts [4];
@@ -113,24 +113,24 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 if (EGI_FLAG (bDamageIndicators, 0, 1, 0) && (extraGameInfo [IsMultiGame].bTargetIndicators < 2)) {
 	bStencil = ogl.StencilOff ();
-	pc = ObjectFrameColor (objP, pc);
-	PolyObjPos (objP, &vPos);
+	pc = ObjectFrameColor (pObj, pc);
+	PolyObjPos (pObj, &vPos);
 	vPosf.Assign (vPos);
 	transformation.Transform (vPosf, vPosf, 0);
-	r = X2F (objP->info.xSize);
+	r = X2F (pObj->info.xSize);
 	r2 = r / 10;
 	r = r2 * 9;
 	w = 2 * r;
 	vPosf.v.coord.x -= r;
 	vPosf.v.coord.y += r;
-	w *= objP->Damage ();
+	w *= pObj->Damage ();
 	fVerts [0].v.coord.x = fVerts [3].v.coord.x = vPosf.v.coord.x;
 	fVerts [1].v.coord.x = fVerts [2].v.coord.x = vPosf.v.coord.x + w;
 	fVerts [0].v.coord.y = fVerts [1].v.coord.y = vPosf.v.coord.y;
 	fVerts [2].v.coord.y = fVerts [3].v.coord.y = vPosf.v.coord.y - r2;
 	fVerts [0].v.coord.z = fVerts [1].v.coord.z = fVerts [2].v.coord.z = fVerts [3].v.coord.z = vPosf.v.coord.z;
 	fVerts [0].v.coord.w = fVerts [1].v.coord.w = fVerts [2].v.coord.w = fVerts [3].v.coord.w = 1;
-	float alphaScale = AlphaScale (objP);
+	float alphaScale = AlphaScale (pObj);
 	alphaScale *= alphaScale;
 	glColor4f (pc->Red (), pc->Green (), pc->Blue (), alphaScale * 2.0f / 3.0f);
 	ogl.SetTexturing (false);
@@ -158,7 +158,7 @@ static int32_t				nMslLockColor [2] = {0, 0};
 static int32_t				nMslLockColorIncr [2] = {-1, -1};
 static float			fMslLockGreen [2] = {0.65f, 0.0f};
 
-void RenderMslLockIndicator (CObject *objP)
+void RenderMslLockIndicator (CObject *pObj)
 {
 	#define INDICATOR_POSITIONS	60
 
@@ -170,16 +170,16 @@ void RenderMslLockIndicator (CObject *objP)
 	CFixVector			vPos;
 	CFloatVector		fPos, fVerts [3];
 	float					r, r2;
-	int32_t					nTgtInd, bHasDmg, bMarker = (objP->info.nType == OBJ_MARKER);
+	int32_t					nTgtInd, bHasDmg, bMarker = (pObj->info.nType == OBJ_MARKER);
 
 if (bMarker) {
-	if (objP != markerManager.SpawnObject (-1))
+	if (pObj != markerManager.SpawnObject (-1))
 		return;
 	}
 else {
 	if (!EGI_FLAG (bMslLockIndicators, 0, 1, 0))
 		return;
-	if (!IS_TRACK_GOAL (objP))
+	if (!IS_TRACK_GOAL (pObj))
 		return;
 	}
 if (gameStates.app.nSDLTicks [0] - t0 [bMarker] > tDelay [bMarker]) {
@@ -188,14 +188,14 @@ if (gameStates.app.nSDLTicks [0] - t0 [bMarker] > tDelay [bMarker]) {
 		nMslLockColorIncr [bMarker] = -nMslLockColorIncr [bMarker];
 	nMslLockColor [bMarker] += nMslLockColorIncr [bMarker];
 	trackGoalColor [bMarker].Green () = fMslLockGreen [bMarker] + (float) nMslLockColor [bMarker] / 100.0f;
-	trackGoalColor [bMarker].Alpha () = AlphaScale (objP);
+	trackGoalColor [bMarker].Alpha () = AlphaScale (pObj);
 	nMslLockIndPos [bMarker] = (nMslLockIndPos [bMarker] + 1) % INDICATOR_POSITIONS;
 	}
-PolyObjPos (objP, &vPos);
+PolyObjPos (pObj, &vPos);
 fPos.Assign (vPos);
 transformation.Transform (fPos, fPos, 0);
-r = X2F (objP->info.xSize);
-if (bMarker || (objP->info.nType == OBJ_MONSTERBALL))
+r = X2F (pObj->info.xSize);
+if (bMarker || (pObj->info.nType == OBJ_MONSTERBALL))
 	r = 17 * r / 12;
 r2 = r / 4;
 
@@ -278,7 +278,7 @@ else {
 	fVerts [2].v.coord.x = fPos.v.coord.x;
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	nTgtInd = extraGameInfo [IsMultiGame].bTargetIndicators;
-	bHasDmg = !EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) || (objP->Damage () < 1);
+	bHasDmg = !EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) || (pObj->Damage () < 1);
 	if (!nTgtInd ||
 		 ((nTgtInd == 1) && (!EGI_FLAG (bDamageIndicators, 0, 1, 0) || !bHasDmg)) ||
 		 ((nTgtInd == 2) && !bHasDmg)) {
@@ -310,12 +310,12 @@ ogl.SetFaceCulling (true);
 
 // -----------------------------------------------------------------------------
 
-void RenderTargetIndicator (CObject *objP, CFloatVector3 *pc)
+void RenderTargetIndicator (CObject *pObj, CFloatVector3 *pc)
 {
 	CFixVector		vPos;
 	CFloatVector	fPos, fVerts [4];
 	float				r, r2, r3;
-	int32_t				bStencil, nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1;
+	int32_t				bStencil, nPlayer = (pObj->info.nType == OBJ_PLAYER) ? pObj->info.nId : -1;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -323,11 +323,11 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 if (!EGI_FLAG (bCloakedIndicators, 0, 1, 0)) {
 	if (nPlayer >= 0) {
-		if ((PLAYER (nPlayer).flags & PLAYER_FLAGS_CLOAKED) && !GetCloakInfo (objP, 0, 0, NULL))
+		if ((PLAYER (nPlayer).flags & PLAYER_FLAGS_CLOAKED) && !GetCloakInfo (pObj, 0, 0, NULL))
 			return;
 		}
-	else if (objP->info.nType == OBJ_ROBOT) {
-		if (objP->cType.aiInfo.CLOAKED && !GetCloakInfo (objP, 0, 0, NULL))
+	else if (pObj->info.nType == OBJ_ROBOT) {
+		if (pObj->cType.aiInfo.CLOAKED && !GetCloakInfo (pObj, 0, 0, NULL))
 			return;
 		}
 	}
@@ -340,9 +340,9 @@ if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 1, 0)) {
 	}
 
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
-RenderMslLockIndicator (objP);
+RenderMslLockIndicator (pObj);
 
-if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (objP->Damage () >= 1.0f))
+if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (pObj->Damage () >= 1.0f))
 	return;
 
 if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
@@ -350,14 +350,14 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	if (!extraGameInfo [IsMultiGame].bHideIndicators)
 		ogl.SetDepthMode (GL_ALWAYS);
 	ogl.SetTexturing (false);
-	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) &&
+	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (pObj) &&
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ?
-		  reinterpret_cast<CFloatVector3*> (&trackGoalColor [0]) : ObjectFrameColor (objP, pc);
-	PolyObjPos (objP, &vPos);
+		  reinterpret_cast<CFloatVector3*> (&trackGoalColor [0]) : ObjectFrameColor (pObj, pc);
+	PolyObjPos (pObj, &vPos);
 	fPos.Assign (vPos);
 	transformation.Transform (fPos, fPos, 0);
-	r = X2F (objP->info.xSize);
-	float alphaScale = AlphaScale (objP);
+	r = X2F (pObj->info.xSize);
+	float alphaScale = AlphaScale (pObj);
 	alphaScale *= alphaScale;
 	glColor4f (pc->Red (), pc->Green (), pc->Blue (), alphaScale);
 	fVerts [0].v.coord.w = fVerts [1].v.coord.w = fVerts [2].v.coord.w = fVerts [3].v.coord.w = 1;
@@ -392,7 +392,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 		OglDrawArrays (GL_LINE_LOOP, 0, 3);
 		if (EGI_FLAG (bDamageIndicators, 0, 1, 0)) {
-			r3 = objP->Damage ();
+			r3 = pObj->Damage ();
 			if (r3 < 1.0f) {
 				if (r3 < 0.0f)
 					r3 = 0.0f;
@@ -410,7 +410,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	ogl.SetDepthMode (GL_LEQUAL);
 	ogl.StencilOn (bStencil);
 	}
-RenderDamageIndicator (objP, pc);
+RenderDamageIndicator (pObj, pc);
 }
 
 //------------------------------------------------------------------------------

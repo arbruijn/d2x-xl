@@ -414,7 +414,7 @@ else if (!m_bViewport) {
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (int32_t const nType, CFloatVector3* vertexP, int32_t nVerts)
+bool CGlowRenderer::SetViewport (int32_t const nType, CFloatVector3* pVertex, int32_t nVerts)
 {
 if (!Available (nType))
 	return true;
@@ -427,14 +427,14 @@ if (gameOpts->render.effects.bGlow != 1)
 m_itemMin.x = m_itemMin.y = 0x7FFF;
 m_itemMax.x = m_itemMax.y = -0x7FFF;
 for (int32_t i = 0; i < nVerts; i++)
-	SetItemExtent (vertexP [i]);
+	SetItemExtent (pVertex [i]);
 #endif
 return Visible ();
 }
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (int32_t const nType, CFloatVector* vertexP, int32_t nVerts)
+bool CGlowRenderer::SetViewport (int32_t const nType, CFloatVector* pVertex, int32_t nVerts)
 {
 if (!Available (nType))
 	return true;
@@ -447,7 +447,7 @@ if (!UseViewport ())
 m_itemMin.x = m_itemMin.y = 0x7FFF;
 m_itemMax.x = m_itemMax.y = -0x7FFF;
 for (int32_t i = 0; i < nVerts; i++) 
-	SetItemExtent (*(vertexP [i].XYZ ()));
+	SetItemExtent (*(pVertex [i].XYZ ()));
 #endif
 return Visible ();
 }

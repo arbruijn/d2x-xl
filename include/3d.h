@@ -107,7 +107,7 @@ class CRenderPoint {
 
 		void Project (void);
 
-		uint8_t Project (CTransformation& transformation, CFloatVector3& viewPos);
+		uint8_t Project (CTransformation& transformation, CFloatVector3& pViewos);
 
 		uint8_t ProjectAndEncode (CTransformation& transformation, int32_t nVertex);
 
@@ -236,7 +236,7 @@ int32_t G3DrawSphere (CRenderPoint *pnt,fix rad, int32_t bBigSphere);
 //G3DrawPoly ().
 //returns -1 if not facing, 1 if off screen, 0 if drew
 int32_t G3CheckAndDrawPoly (int32_t nv, CRenderPoint **pointlist, CFixVector *norm, CFixVector *pnt);
-int32_t G3CheckAndDrawTMap (int32_t nv, CRenderPoint **pointlist, tUVL *uvl_list, CBitmap *bmP, CFixVector *norm, CFixVector *pnt);
+int32_t G3CheckAndDrawTMap (int32_t nv, CRenderPoint **pointlist, tUVL *uvl_list, CBitmap *pBm, CFixVector *norm, CFixVector *pnt);
 
 //draws a line. takes two points.
 int32_t G3DrawLine (CRenderPoint *p0,CRenderPoint *p1);

@@ -199,14 +199,14 @@ for (; n; n--, lp++) {
 
 //------------------------------------------------------------------------------
 
-void ComputeSinCosTable (int32_t nSides, tSinCosf *sinCosP)
+void ComputeSinCosTable (int32_t nSides, tSinCosf *pSinCos)
 {
 	double	ang;
 
-for (int32_t i = 0; i < nSides; i++, sinCosP++) {
+for (int32_t i = 0; i < nSides; i++, pSinCos++) {
 	ang = 2.0 * PI * i / nSides;
-	sinCosP->fSin = (float) sin (ang);
-	sinCosP->fCos = (float) cos (ang);
+	pSinCos->fSin = (float) sin (ang);
+	pSinCos->fCos = (float) cos (ang);
 	}
 }
 
@@ -386,10 +386,10 @@ windowScale.dim.x =
 windowScale.dim.y = 0;
 CLEAR (nPerPixelLights);
 CLEAR (lightRads);
-CLEAR (lightPos);
+CLEAR (pLightos);
 bLightmaps = 0;
 nHeadlights = 0;
-drawBufferP = &drawBuffers [0];
+pDrawBuffer = &drawBuffers [0];
 #if DBG_OGL
 memset (clientBuffers, sizeof (clientBuffers), 0);
 #endif

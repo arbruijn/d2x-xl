@@ -21,10 +21,10 @@ class CRenderThreadInfo {
 		int32_t						nFaces;
 		int32_t						zMin [MAX_THREADS];
 		int32_t						zMax [MAX_THREADS];
-		tLightning*				lightningP;
+		tLightning*				pLightning;
 		int32_t						nLightnings;
-		CObject*					objP;
-		RenderModel::CModel*	modelP;
+		CObject*					pObj;
+		RenderModel::CModel*	pModel;
 		tParticleEmitter*		particleEmitters [MAX_THREADS];
 		int32_t						nCurTime [MAX_THREADS];
 		CThreadInfo				ti [MAX_THREADS];

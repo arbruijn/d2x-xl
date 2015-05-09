@@ -439,16 +439,16 @@ return m_pcxError;
 
 //-----------------------------------------------------------------------------
 
-void CBriefing::InitCharPos (tBriefingScreen *bsP, int32_t bRescale)
+void CBriefing::InitCharPos (tBriefingScreen *pScreen, int32_t bRescale)
 {
 if (bRescale) {
-	bsP->textLeft = AdjustX (bsP->textLeft);
-	bsP->textTop = AdjustY (bsP->textTop);
-	bsP->textWidth = AdjustX (bsP->textWidth);
-	bsP->textHeight = AdjustY (bsP->textHeight);
+	pScreen->textLeft = AdjustX (pScreen->textLeft);
+	pScreen->textTop = AdjustY (pScreen->textTop);
+	pScreen->textWidth = AdjustX (pScreen->textWidth);
+	pScreen->textHeight = AdjustY (pScreen->textHeight);
 	}
-m_info.briefingTextX = bsP->textLeft;
-m_info.briefingTextY = gameStates.app.bD1Mission ? bsP->textTop : bsP->textTop - (8 * (1 + gameStates.menus.bHires));
+m_info.briefingTextX = pScreen->textLeft;
+m_info.briefingTextY = gameStates.app.bD1Mission ? pScreen->textTop : pScreen->textTop - (8 * (1 + gameStates.menus.bHires));
 }
 
 //-----------------------------------------------------------------------------
@@ -551,9 +551,9 @@ if (*m_info.szBitmapName) {
 
 //-----------------------------------------------------------------------------
 
-void CBriefing::RenderBitmap (CBitmap* bmP)
+void CBriefing::RenderBitmap (CBitmap* pBm)
 {
-m_bitmap = bmP;
+m_bitmap = pBm;
 RenderElement (7);
 }
 
@@ -1015,10 +1015,10 @@ int32_t CBriefing::HandleC (void)
 
 if ((c == 'F') || (c == 'B')) {
 	m_info.message++;
-	CRGBAColor* colorP = (c == 'F') ? briefFgColors [gameStates.app.bD1Mission] : briefBgColors [gameStates.app.bD1Mission];
-	colorP->Red () = ParseMessageInt (m_info.message);
-	colorP->Green () = ParseMessageInt (m_info.message);
-	colorP->Blue () = ParseMessageInt (m_info.message);
+	CRGBAColor* pColor = (c == 'F') ? briefFgColors [gameStates.app.bD1Mission] : briefBgColors [gameStates.app.bD1Mission];
+	pColor->Red () = ParseMessageInt (m_info.message);
+	pColor->Green () = ParseMessageInt (m_info.message);
+	pColor->Blue () = ParseMessageInt (m_info.message);
 	m_info.nCurrentColor = 0;
 	}
 else {
@@ -1041,7 +1041,7 @@ return 1;
 int32_t CBriefing::HandleD (void)
 {
 m_info.nScreen = DefineBox ();
-m_info.bsP = &m_info.curScreen;
+m_info.pScreen = &m_info.curScreen;
 m_info.x = m_info.briefingTextX;
 m_info.y = m_info.briefingTextY;
 m_info.nLineAdjustment = 0;
@@ -1172,8 +1172,8 @@ int32_t CBriefing::HandleU (void)
 {
 m_info.nScreen = ParseMessageInt (m_info.message);
 m_info.curScreen = briefingScreens [m_info.nScreen % MAX_BRIEFING_SCREENS];
-m_info.bsP = &m_info.curScreen;
-InitCharPos (m_info.bsP, 1);
+m_info.pScreen = &m_info.curScreen;
+InitCharPos (m_info.pScreen, 1);
 m_info.x = m_info.briefingTextX;
 m_info.y = m_info.briefingTextY;
 m_info.prevCh = 10;                                   // read to eoln
@@ -1211,8 +1211,8 @@ return 1;
 
 int32_t CBriefing::HandleTAB (void)
 {
-if (m_info.briefingTextX - m_info.bsP->textLeft < m_info.nTabStop)
-	m_info.briefingTextX = m_info.bsP->textLeft + m_info.nTabStop;
+if (m_info.briefingTextX - m_info.pScreen->textLeft < m_info.nTabStop)
+	m_info.briefingTextX = m_info.pScreen->textLeft + m_info.nTabStop;
 return 1;
 }
 
@@ -1234,11 +1234,11 @@ if (m_info.prevCh != '\\') {
 		m_info.briefingTextY += 8 * (gameStates.menus.bHires + 1);
 	else
 		m_info.bDumbAdjust--;
-	m_info.briefingTextX = m_info.bsP->textLeft;
-	if (m_info.briefingTextY > m_info.bsP->textTop + m_info.bsP->textHeight) {
+	m_info.briefingTextX = m_info.pScreen->textLeft;
+	if (m_info.briefingTextY > m_info.pScreen->textTop + m_info.pScreen->textHeight) {
 		LoadImage (m_info.nScreen);
-		m_info.briefingTextX = m_info.bsP->textLeft;
-		m_info.briefingTextY = m_info.bsP->textTop;
+		m_info.briefingTextX = m_info.pScreen->textLeft;
+		m_info.briefingTextY = m_info.pScreen->textTop;
 		}
 	}
 else {
@@ -1343,7 +1343,7 @@ return 1;
 
 int32_t CBriefing::HandleNewPage (void)
 {
-if (!m_info.bNewPage && (m_info.briefingTextY <= m_info.bsP->textTop + m_info.bsP->textHeight))
+if (!m_info.bNewPage && (m_info.briefingTextY <= m_info.pScreen->textTop + m_info.pScreen->textHeight))
 	return 1;
 m_info.bNewPage = 0;
 int32_t keypress = WaitForKeyPress ();
@@ -1368,8 +1368,8 @@ m_info.pi = m_info.message;
 //	LoadImage (m_info.nScreen);
 //	ogl.Update (0);
 //	}
-m_info.briefingTextX = m_info.bsP->textLeft;
-m_info.briefingTextY = m_info.bsP->textTop;
+m_info.briefingTextX = m_info.pScreen->textLeft;
+m_info.briefingTextY = m_info.pScreen->textTop;
 m_info.nDelayCount = KEY_DELAY_DEFAULT;
 return -1;
 }
@@ -1379,8 +1379,8 @@ return -1;
 
 int32_t CBriefing::ShowMessage (int32_t nScreen, char* message, int32_t nLevel)
 {
-	tBriefingHandlerInfo	*bhP;
-	int32_t						h, i;
+	tBriefingHandlerInfo	*pInfo;
+	int32_t					h, i;
 
 m_info.Setup (message, nLevel, nScreen);
 
@@ -1404,10 +1404,10 @@ m_info.pi = m_info.pj = m_info.message;
 if (!songManager.Playing ())
 	m_info.nHumChannel = StartHum (m_info.nHumChannel, m_info.nLevel, m_info.nScreen, m_info.bExtraSounds);
 m_info.curScreen = briefingScreens [m_info.nScreen % MAX_BRIEFING_SCREENS];
-m_info.bsP = &m_info.curScreen;
+m_info.pScreen = &m_info.curScreen;
 if (gameStates.app.bD1Mission)
 	m_info.bGotZ = 1;
-InitCharPos (m_info.bsP, gameStates.app.bD1Mission);
+InitCharPos (m_info.pScreen, gameStates.app.bD1Mission);
 m_info.x = m_info.briefingTextX;
 m_info.y = m_info.briefingTextY;
 *m_info.szBriefScreen = *m_info.szBriefScreenB = '\0';
@@ -1426,8 +1426,8 @@ for (;;) {
 		m_info.briefingTextY = m_info.y;
 		LoadImage (m_info.nScreen);
 		m_info.curScreen = briefingScreens [m_info.nScreen % MAX_BRIEFING_SCREENS];
-		m_info.bsP = &m_info.curScreen;
-		InitCharPos (m_info.bsP, 1);
+		m_info.pScreen = &m_info.curScreen;
+		InitCharPos (m_info.pScreen, 1);
 		}
 
 	m_info.bRedraw = 1;
@@ -1436,9 +1436,9 @@ for (;;) {
 		m_info.ch = *m_info.message++;
 		if (m_info.ch == '$') {
 			m_info.ch = *m_info.message++;
-			for (i = sizeofa (briefingHandlers1), bhP = briefingHandlers1; i; i--, bhP++)
-				if ((m_info.ch == bhP->ch) && (!bhP->prevCh || (m_info.prevCh == bhP->prevCh))) {
-					h = bhP->handlerP ();
+			for (i = sizeofa (briefingHandlers1), pInfo = briefingHandlers1; i; i--, pInfo++)
+				if ((m_info.ch == pInfo->ch) && (!pInfo->prevCh || (m_info.prevCh == pInfo->prevCh))) {
+					h = pInfo->handlerP ();
 					if (h < 0)
 						goto redrawPage;
 					if (!h)
@@ -1447,9 +1447,9 @@ for (;;) {
 					}
 			}
 		else {
-			for (i = sizeofa (briefingHandlers2), bhP = briefingHandlers2; i; i--, bhP++)
-				if (!bhP->ch || ((m_info.ch == bhP->ch) && (!bhP->prevCh || (m_info.prevCh == bhP->prevCh)))) {
-					bhP->handlerP ();
+			for (i = sizeofa (briefingHandlers2), pInfo = briefingHandlers2; i; i--, pInfo++)
+				if (!pInfo->ch || ((m_info.ch == pInfo->ch) && (!pInfo->prevCh || (m_info.prevCh == pInfo->prevCh)))) {
+					pInfo->handlerP ();
 					break;
 					}
 			}
@@ -1458,9 +1458,9 @@ for (;;) {
 			goto done;
 			}
 
-		if (m_info.briefingTextX > m_info.bsP->textLeft + m_info.bsP->textWidth) {
-			m_info.briefingTextX = m_info.bsP->textLeft;
-			m_info.briefingTextY += m_info.bsP->textTop;
+		if (m_info.briefingTextX > m_info.pScreen->textLeft + m_info.pScreen->textWidth) {
+			m_info.briefingTextX = m_info.pScreen->textLeft;
+			m_info.briefingTextY += m_info.pScreen->textTop;
 			}
 
 		h = HandleNewPage ();
@@ -1508,7 +1508,7 @@ int32_t CBriefing::LoadImageText (char* filename, CCharArray& textBuffer)
 	CFile cf;
 	int32_t	len, i;
 	int32_t	bHaveBinary;
-	char	*bufP;
+	char	*pBuffer;
 	
 	static char fileModes [2][3] = {"rb", "rb"};
 
@@ -1529,31 +1529,31 @@ if (bHaveBinary) {
 	len = (int32_t) cf.Length ();
 	if (!textBuffer.Create (len))
 		return 0;
-	bufP = &textBuffer [0];
-	for (i = 0; i < len; i++, bufP++) {
-		cf.Read (bufP, 1, 1);
-			if (*bufP == 13)
-				bufP--;
+	pBuffer = &textBuffer [0];
+	for (i = 0; i < len; i++, pBuffer++) {
+		cf.Read (pBuffer, 1, 1);
+			if (*pBuffer == 13)
+				pBuffer--;
 		}
 	cf.Close ();
-	for (i = 0, bufP = &textBuffer [0]; i < len; i++, bufP++)
-		if (*bufP != '\n')
-			*bufP = EncodeRotateLeft ((char) (EncodeRotateLeft (*bufP) ^ BITMAP_TBL_XOR));
+	for (i = 0, pBuffer = &textBuffer [0]; i < len; i++, pBuffer++)
+		if (*pBuffer != '\n')
+			*pBuffer = EncodeRotateLeft ((char) (EncodeRotateLeft (*pBuffer) ^ BITMAP_TBL_XOR));
 	}
 else {
 	len = (int32_t) cf.Length ();
 	if (!textBuffer.Create (len + 500))
 		return 0;
-	bufP = &textBuffer [0];
-	for (i = 0; i < len; i++, bufP++) {
-		cf.Read (bufP, 1, 1);
-			if (*bufP == 13)
-				bufP--;
+	pBuffer = &textBuffer [0];
+	for (i = 0; i < len; i++, pBuffer++) {
+		cf.Read (pBuffer, 1, 1);
+			if (*pBuffer == 13)
+				pBuffer--;
 		}
-	*bufP = 0;
+	*pBuffer = 0;
 	cf.Close ();
 	}
-m_info.nBriefingTextLen = (int32_t) (bufP - textBuffer.Buffer ());
+m_info.nBriefingTextLen = (int32_t) (pBuffer - textBuffer.Buffer ());
 PrintLog (-1);
 return 1;
 }

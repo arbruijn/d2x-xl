@@ -87,7 +87,7 @@ networkData.bTraceFrames = 0;
 networkData.nJoining = 0;
 networkData.xmlGameInfoRequestTime = 0;
 memset (&networkData.refuse, 0, sizeof (networkData.refuse));
-memset (&networkData.thisPlayer, 0, sizeof (networkData.thisPlayer));
+memset (&networkData.pThislayer, 0, sizeof (networkData.pThislayer));
 memset (networkData.syncInfo, 0, sizeof (networkData.syncInfo));
 }
 
@@ -147,16 +147,16 @@ networkData.nTotalMissedPackets = 0;
 networkData.nTotalPacketsGot = 0;
 memset (&netGameInfo, 0, sizeof (netGameInfo));
 memset (&netPlayers [0], 0, sizeof (netPlayers [0]));
-networkData.thisPlayer.nType = PID_REQUEST;
-memcpy (networkData.thisPlayer.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
-networkData.thisPlayer.player.versionMajor = D2X_MAJOR;
-networkData.thisPlayer.player.versionMinor = D2X_MINOR | (IS_D2_OEM ? NETWORK_OEM : 3);
-networkData.thisPlayer.player.rank=GetMyNetRanking ();
+networkData.pThislayer.nType = PID_REQUEST;
+memcpy (networkData.pThislayer.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
+networkData.pThislayer.player.versionMajor = D2X_MAJOR;
+networkData.pThislayer.player.versionMinor = D2X_MINOR | (IS_D2_OEM ? NETWORK_OEM : 3);
+networkData.pThislayer.player.rank=GetMyNetRanking ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	memcpy (networkData.thisPlayer.player.network.Node (), IpxGetMyLocalAddress (), 6);
-	networkData.thisPlayer.player.network.SetNetwork (IpxGetMyServerAddress ());
+	memcpy (networkData.pThislayer.player.network.Node (), IpxGetMyLocalAddress (), 6);
+	networkData.pThislayer.player.network.SetNetwork (IpxGetMyServerAddress ());
 	}
-networkData.thisPlayer.player.computerType = DOS;
+networkData.pThislayer.player.computerType = DOS;
 N_LOCALPLAYER = nPlayerSave;         
 MultiNewGame ();
 networkData.bNewGame = 1;
@@ -177,13 +177,13 @@ int32_t NetworkCreateMonitorVector (void)
 	int32_t      nBlownBitmaps = 0;
 	int32_t      nMonitor = 0;
 	int32_t      vector = 0;
-	CSegment *segP = SEGMENTS.Buffer ();
-	CSide    *sideP;
+	CSegment *pSeg = SEGMENTS.Buffer ();
+	CSide    *pSide;
 	int32_t      h, i, j, k;
 	int32_t      tm, ec;
 
 for (i = 0; i < gameData.effects.nEffects [gameStates.app.bD1Data]; i++) {
-	if ((h = gameData.effects.effectP [i].destroyed.nTexture) > 0) {
+	if ((h = gameData.effects.pEffect [i].destroyed.nTexture) > 0) {
 		for (j = 0; j < nBlownBitmaps; j++)
 			if (blownBitmaps [j] == h)
 				break;
@@ -194,13 +194,13 @@ for (i = 0; i < gameData.effects.nEffects [gameStates.app.bD1Data]; i++) {
 		}
 	}               
 	
-for (i = 0; i <= gameData.segData.nLastSegment; i++, segP++) {
-	for (j = 0, sideP = segP->m_sides; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
-		if (!sideP->FaceCount ())
+for (i = 0; i <= gameData.segData.nLastSegment; i++, pSeg++) {
+	for (j = 0, pSide = pSeg->m_sides; j < SEGMENT_SIDE_COUNT; j++, pSide++) {
+		if (!pSide->FaceCount ())
 			continue;
-		if ((tm = sideP->m_nOvlTex) != 0) {
+		if ((tm = pSide->m_nOvlTex) != 0) {
 			if (((ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip) != -1) &&
-					(gameData.effects.effectP[ec].destroyed.nTexture != -1)) {
+					(gameData.effects.pEffect[ec].destroyed.nTexture != -1)) {
 				nMonitor++;
 				//Assert (nMonitor < 32);
 				}
@@ -222,67 +222,67 @@ return vector;
 
 //------------------------------------------------------------------------------
 
-void InitMonsterballSettings (tMonsterballInfo *monsterballP)
+void InitMonsterballSettings (tMonsterballInfo *pMonsterBall)
 {
-	tMonsterballForce *forceP = monsterballP->forces;
+	tMonsterballForce *pForce = pMonsterBall->forces;
 
 // primary weapons
-forceP [0].nWeaponId = LASER_ID; 
-forceP [0].nForce = 10;
-forceP [1].nWeaponId = LASER_ID + 1; 
-forceP [1].nForce = 20;
-forceP [2].nWeaponId = LASER_ID + 2; 
-forceP [2].nForce = 30;
-forceP [3].nWeaponId = LASER_ID + 3; 
-forceP [3].nForce = 50;
-forceP [4].nWeaponId = SPREADFIRE_ID; 
-forceP [4].nForce = 100;
-forceP [5].nWeaponId = VULCAN_ID; 
-forceP [5].nForce = 20;
-forceP [6].nWeaponId = PLASMA_ID; 
-forceP [6].nForce = 100;
-forceP [7].nWeaponId = FUSION_ID; 
-forceP [7].nForce = 500;
+pForce [0].nWeaponId = LASER_ID; 
+pForce [0].nForce = 10;
+pForce [1].nWeaponId = LASER_ID + 1; 
+pForce [1].nForce = 20;
+pForce [2].nWeaponId = LASER_ID + 2; 
+pForce [2].nForce = 30;
+pForce [3].nWeaponId = LASER_ID + 3; 
+pForce [3].nForce = 50;
+pForce [4].nWeaponId = SPREADFIRE_ID; 
+pForce [4].nForce = 100;
+pForce [5].nWeaponId = VULCAN_ID; 
+pForce [5].nForce = 20;
+pForce [6].nWeaponId = PLASMA_ID; 
+pForce [6].nForce = 100;
+pForce [7].nWeaponId = FUSION_ID; 
+pForce [7].nForce = 500;
 // primary "super" weapons
-forceP [8].nWeaponId = SUPERLASER_ID; 
-forceP [8].nForce = 75;
-forceP [9].nWeaponId = SUPERLASER_ID + 1; 
-forceP [9].nForce = 100;
-forceP [10].nWeaponId = HELIX_ID; 
-forceP [10].nForce = 200;
-forceP [11].nWeaponId = GAUSS_ID; 
-forceP [11].nForce = 30;
-forceP [12].nWeaponId = PHOENIX_ID; 
-forceP [12].nForce = 200;
-forceP [13].nWeaponId = OMEGA_ID; 
-forceP [13].nForce = 1;
-forceP [14].nWeaponId = FLARE_ID; 
-forceP [14].nForce = 1;
+pForce [8].nWeaponId = SUPERLASER_ID; 
+pForce [8].nForce = 75;
+pForce [9].nWeaponId = SUPERLASER_ID + 1; 
+pForce [9].nForce = 100;
+pForce [10].nWeaponId = HELIX_ID; 
+pForce [10].nForce = 200;
+pForce [11].nWeaponId = GAUSS_ID; 
+pForce [11].nForce = 30;
+pForce [12].nWeaponId = PHOENIX_ID; 
+pForce [12].nForce = 200;
+pForce [13].nWeaponId = OMEGA_ID; 
+pForce [13].nForce = 1;
+pForce [14].nWeaponId = FLARE_ID; 
+pForce [14].nForce = 1;
 // missiles
-forceP [15].nWeaponId = CONCUSSION_ID; 
-forceP [15].nForce = 500;
-forceP [16].nWeaponId = HOMINGMSL_ID; 
-forceP [16].nForce = 500;
-forceP [17].nWeaponId = SMARTMSL_ID; 
-forceP [17].nForce = 1000;
-forceP [18].nWeaponId = MEGAMSL_ID; 
-forceP [18].nForce = 5000;
+pForce [15].nWeaponId = CONCUSSION_ID; 
+pForce [15].nForce = 500;
+pForce [16].nWeaponId = HOMINGMSL_ID; 
+pForce [16].nForce = 500;
+pForce [17].nWeaponId = SMARTMSL_ID; 
+pForce [17].nForce = 1000;
+pForce [18].nWeaponId = MEGAMSL_ID; 
+pForce [18].nForce = 5000;
 // "super" missiles
-forceP [19].nWeaponId = FLASHMSL_ID; 
-forceP [19].nForce = 500;
-forceP [20].nWeaponId = GUIDEDMSL_ID; 
-forceP [20].nForce = 500;
-forceP [21].nWeaponId = MERCURYMSL_ID; 
-forceP [21].nForce = 300;
-forceP [22].nWeaponId = EARTHSHAKER_ID; 
-forceP [22].nForce = 10000;
-forceP [23].nWeaponId = EARTHSHAKER_MEGA_ID; 
-forceP [23].nForce = 2500;
+pForce [19].nWeaponId = FLASHMSL_ID; 
+pForce [19].nForce = 500;
+pForce [20].nWeaponId = GUIDEDMSL_ID; 
+pForce [20].nForce = 500;
+pForce [21].nWeaponId = MERCURYMSL_ID; 
+pForce [21].nForce = 300;
+pForce [22].nWeaponId = EARTHSHAKER_ID; 
+pForce [22].nForce = 10000;
+pForce [23].nWeaponId = EARTHSHAKER_MEGA_ID; 
+pForce [23].nForce = 2500;
 // CPlayerData ships
-forceP [24].nWeaponId = 255;
-forceP [24].nForce = 4;
-monsterballP->nBonus = 1;
-monsterballP->nSizeMod = 7;	// that is actually shield orb size * 3, because it's divided by 2, thus allowing for half sizes
+pForce [24].nWeaponId = 255;
+pForce [24].nForce = 4;
+pMonsterBall->nBonus = 1;
+pMonsterBall->nSizeMod = 7;	// that is actually shield orb size * 3, because it's divided by 2, thus allowing for half sizes
 }
 
 //------------------------------------------------------------------------------

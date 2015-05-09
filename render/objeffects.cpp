@@ -31,13 +31,13 @@
 
 // -----------------------------------------------------------------------------
 
-void RenderTowedFlag (CObject *objP)
+void RenderTowedFlag (CObject *pObj)
 {
 if (gameStates.app.bNostalgia)
 	return;
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
-if (IsTeamGame && (PLAYER (objP->info.nId).flags & PLAYER_FLAGS_FLAG)) {
+if (IsTeamGame && (PLAYER (pObj->info.nId).flags & PLAYER_FLAGS_FLAG)) {
 
 	static CFloatVector fVerts [4] = {
 		CFloatVector::Create(0.0f, 2.0f / 3.0f, 0.0f, 1.0f),
@@ -52,13 +52,13 @@ if (IsTeamGame && (PLAYER (objP->info.nId).flags & PLAYER_FLAGS_FLAG)) {
 		};
 
 
-		CFixVector		vPos = objP->info.position.vPos;
+		CFixVector		vPos = pObj->info.position.vPos;
 		CFloatVector	vPosf, verts [4];
-		tFlagData*		pf = gameData.pig.flags + !GetTeam (objP->info.nId);
+		tFlagData*		pf = gameData.pig.flags + !GetTeam (pObj->info.nId);
 		tPathPoint*		pp = pf->path.GetPoint ();
 		int32_t			i, bStencil;
 		float				r;
-		CBitmap*			bmP;
+		CBitmap*			pBm;
 
 	if (pp) {
 		bStencil = ogl.StencilOff ();
@@ -66,10 +66,10 @@ if (IsTeamGame && (PLAYER (objP->info.nId).flags & PLAYER_FLAGS_FLAG)) {
 		ogl.SetTexturing (true);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		LoadTexture (pf->bmi.index, 0, 0);
-		bmP = gameData.pig.tex.bitmapP + pf->animInfoP->frames [pf->animState.nCurFrame].index;
-		bmP->SetTranspType (2);
-		vPos += objP->info.position.mOrient.m.dir.f * (-objP->info.xSize);
-		r = X2F (objP->info.xSize);
+		pBm = gameData.pig.tex.bitmapP + pf->pAnimInfo->frames [pf->animState.nCurFrame].index;
+		pBm->SetTranspType (2);
+		vPos += pObj->info.position.mOrient.m.dir.f * (-pObj->info.xSize);
+		r = X2F (pObj->info.xSize);
 		transformation.Begin (vPos, pp->mOrient);
 		glColor3f (1.0f, 1.0f, 1.0f);
 		for (i = 0; i < 4; i++) {
@@ -78,16 +78,16 @@ if (IsTeamGame && (PLAYER (objP->info.nId).flags & PLAYER_FLAGS_FLAG)) {
 			vPosf.v.coord.z = fVerts [i].v.coord.z * r;
 			transformation.Transform (verts [i], vPosf, 0);
 			}
-		bmP->SetTexCoord (texCoordList [0]);
-		ogl.RenderQuad (bmP, verts, 3);
+		pBm->SetTexCoord (texCoordList [0]);
+		ogl.RenderQuad (pBm, verts, 3);
 		for (i = 3; i >= 0; i--) {
 			vPosf.v.coord.x = 0;
 			vPosf.v.coord.y = fVerts [i].v.coord.y * r;
 			vPosf.v.coord.z = fVerts [i].v.coord.z * r;
 			transformation.Transform (verts [3 - i], vPosf, 0);
 			}
-		bmP->SetTexCoord (texCoordList [1]);
-		ogl.RenderQuad (bmP, verts, 3);
+		pBm->SetTexCoord (texCoordList [1]);
+		ogl.RenderQuad (pBm, verts, 3);
 		transformation.End ();
 		ogl.BindTexture (0);
 		ogl.StencilOn (bStencil);
@@ -111,26 +111,26 @@ if (bWarp && (nPlayer == N_LOCALPLAYER) && !AppearanceStage ()) {
 	}
 else {
 	CFixVector vPos = info.position.vPos;
-	if (this == gameData.objData.viewerP)
+	if (this == gameData.objData.pViewer)
 		vPos += info.position.mOrient.m.dir.f * FixMul (info.xSize, flashDist);
-	CObject* effectObjP = bWarp ? CreateExplBlast (true) : CreateExplosion (info.nSegment, vPos, info.xSize, ANIM_PLAYER_APPEARANCE);
-	if (bWarp || effectObjP) {
-		if (effectObjP) {
-			effectObjP->info.position.mOrient = info.position.mOrient;
+	CObject* pEffectObj = bWarp ? CreateExplBlast (true) : CreateExplosion (info.nSegment, vPos, info.xSize, ANIM_PLAYER_APPEARANCE);
+	if (bWarp || pEffectObj) {
+		if (pEffectObj) {
+			pEffectObj->info.position.mOrient = info.position.mOrient;
 			if (gameData.effects.animations [0][ANIM_PLAYER_APPEARANCE].nSound > -1)
-				audio.CreateObjectSound (gameData.effects.animations [0][ANIM_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
+				audio.CreateObjectSound (gameData.effects.animations [0][ANIM_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (pEffectObj));
 			}
 		if (!bWarp)
-			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP ? effectObjP->LifeLeft () : I2X (1), info.xSize, 1, OBJPOS (this)->vPos));
+			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), pEffectObj ? pEffectObj->LifeLeft () : I2X (1), info.xSize, 1, OBJPOS (this)->vPos));
 		else {
 #if 1
 			static CFloatVector color = {{{0.25f, 0.125f, 0.0f, 0.2f}}};
 			lightningManager.CreateForTeleport (this, &color);
 #endif
-			if (effectObjP) {
-				effectObjP->SetLife (I2X (3) / 4);
+			if (pEffectObj) {
+				pEffectObj->SetLife (I2X (3) / 4);
 #if 1
-				effectObjP->Collapse (true);
+				pEffectObj->Collapse (true);
 #endif
 				}
 			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), I2X (1), info.xSize, 1, OBJPOS (this)->vPos));

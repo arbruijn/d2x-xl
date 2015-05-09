@@ -303,7 +303,7 @@ int32_t CFile::EoF (void)
 if (!m_info.file)
 	return 1;
 #endif
-return (m_info.rawPosition >= m_info.size) && (m_info.bufPos >= m_info.bufLen);
+return (m_info.rawPosition >= m_info.size) && (m_info.pBufferos >= m_info.bufLen);
 }
 
 // ----------------------------------------------------------------------------
@@ -426,7 +426,7 @@ m_info.rawPosition = 0;
 m_info.size = (length < 0) ? ffilelength (fp) : length;
 m_info.libOffset = (length < 0) ? 0 : ftell (fp);
 m_info.filename = const_cast<char*> (filename);
-m_info.bufPos = m_info.bufLen = 0;
+m_info.pBufferos = m_info.bufLen = 0;
 return length;
 }
 
@@ -496,26 +496,26 @@ inline
 #endif
 int32_t CFile::FillBuffer (void)
 {
-if (m_info.bufPos >= m_info.bufLen) {
+if (m_info.pBufferos >= m_info.bufLen) {
 	if (m_info.rawPosition >= m_info.size) 
 		return EOF;
 	size_t h = m_info.size - m_info.rawPosition;
 	if (h > sizeof (m_info.buffer))
 		h = sizeof (m_info.buffer);
-	m_info.bufPos = 0;
+	m_info.pBufferos = 0;
 	m_info.bufLen = int32_t (Read (m_info.buffer, 1, h));
 	m_info.rawPosition = ftell (m_info.file) - m_info.libOffset;
 	if (m_info.bufLen < (int32_t) h)
 		m_info.size = m_info.rawPosition;
 	}
-return m_info.bufPos;
+return m_info.pBufferos;
 }
 
 // ----------------------------------------------------------------------------
 
 //int32_t CFile::GetC (void) 
 //{
-//return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.bufPos++];
+//return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.pBufferos++];
 //}
 
 // ----------------------------------------------------------------------------

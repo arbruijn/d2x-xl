@@ -97,7 +97,7 @@ return h;
 
 //	-----------------------------------------------------------------------------
 
-CBitmap* CGenericCockpit::BitBlt (int32_t nGauge, int32_t x, int32_t y, bool bScalePos, bool bScaleSize, int32_t scale, int32_t orient, CBitmap* bmP, CBitmap* overrideP)
+CBitmap* CGenericCockpit::BitBlt (int32_t nGauge, int32_t x, int32_t y, bool bScalePos, bool bScaleSize, int32_t scale, int32_t orient, CBitmap* pBm, CBitmap* pOverride)
 {
 	CBitmap*	saveBmP = NULL;
 
@@ -107,18 +107,18 @@ if (nGauge >= 0) {
 		BRP;
 #endif
 	PageInGauge (nGauge);
-	bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
-	if (overrideP && overrideP->Buffer ())
-		saveBmP = bmP->SetOverride (overrideP);
+	pBm = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
+	if (pOverride && pOverride->Buffer ())
+		saveBmP = pBm->SetOverride (pOverride);
 	}
-if (bmP) {
+if (pBm) {
 #if 0
-	CBitmap* bmoP = bmP->HasOverride ();
-	if (bmoP)
-		bmP = bmoP;
+	CBitmap* pBmo = pBm->HasOverride ();
+	if (pBmo)
+		pBm = pBmo;
 #endif
-	int32_t w = bmP->Width ();
-	int32_t h = bmP->Height ();
+	int32_t w = pBm->Width ();
+	int32_t h = pBm->Height ();
 	if (bScalePos) {
 		x = ScaleX (x);
 		y = ScaleY (y);
@@ -136,12 +136,12 @@ if (bmP) {
 		x = int32_t (float (x) * X2F (scale)); // rescale
 		}
 	CCanvas::Current ()->SetColorRGBi (m_info.nColor);
-	bmP->RenderScaled (x, y, w * (gameStates.app.bDemoData + 1), h * (gameStates.app.bDemoData + 1), scale, orient, &CCanvas::Current ()->Color ());
+	pBm->RenderScaled (x, y, w * (gameStates.app.bDemoData + 1), h * (gameStates.app.bDemoData + 1), scale, orient, &CCanvas::Current ()->Color ());
 	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 	if (saveBmP)
-		bmP->SetOverride (saveBmP);
+		pBm->SetOverride (saveBmP);
 	}
-return bmP;
+return pBm;
 }
 
 //	-----------------------------------------------------------------------------
@@ -162,11 +162,11 @@ return GrString ((x < 0) ? -x : ScaleX (x), (y < 0) ? -y : ScaleY (y), szBuf, id
 int32_t _CDECL_ CGenericCockpit::DrawHUDText (int32_t *idP, int32_t x, int32_t y, const char * format, ...)
 {
 	static char buffer [1000];
-	char*			bufP = buffer;
+	char*			pBuffer = buffer;
 	va_list args;
 
 if (!*format)
-	bufP = const_cast<char*>(format + 1);
+	pBuffer = const_cast<char*>(format + 1);
 else {
 	va_start (args, format);
 	vsprintf (buffer, format, args);
@@ -180,11 +180,11 @@ fontManager.SetColorRGBi (FontColor (), 1, 0, 0);
 if (x < 0)
 	x = CCanvas::Current ()->Width () + x;
 else if (x == 0x8000)
-	x = CenteredStringPos (bufP);
+	x = CenteredStringPos (pBuffer);
 if (y < 0)
 	y = CCanvas::Current ()->Height () + y;
-int32_t nOffsetSave = AdjustCockpitXY (bufP, x, y);
-int32_t nId = GrString (x, y, bufP, idP);
+int32_t nOffsetSave = AdjustCockpitXY (pBuffer, x, y);
+int32_t nId = GrString (x, y, pBuffer, idP);
 gameData.SetStereoOffsetType (nOffsetSave);
 //fontManager.SetScale (1.0f);
 CCanvas::Current ()->FontColor (0) = fontColor;
@@ -256,8 +256,8 @@ void CGenericCockpit::DrawCruise (int32_t x, int32_t y)
 if (!gameStates.render.bRearView &&
 	 (gameStates.input.nCruiseSpeed > 0) &&
 	 (N_LOCALPLAYER > -1) &&
-	 (gameData.objData.viewerP->info.nType == OBJ_PLAYER) &&
-	 (gameData.objData.viewerP->info.nId == N_LOCALPLAYER))
+	 (gameData.objData.pViewer->info.nType == OBJ_PLAYER) &&
+	 (gameData.objData.pViewer->info.nId == N_LOCALPLAYER))
 	DrawHUDText (NULL, x, y, "%s %2d%%", TXT_CRUISE, X2I (gameStates.input.nCruiseSpeed));
 }
 
@@ -524,9 +524,9 @@ if (Hide ())
 	static int32_t nIdOrbs = 0, nIdEntropy [2] = {0, 0};
 
 if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) {
-	CBitmap* bmP = BitBlt (-1, x, y, false, false, I2X (1), 0, &gameData.hoard.icon [gameStates.render.fonts.bHires].bm);
+	CBitmap* pBm = BitBlt (-1, x, y, false, false, I2X (1), 0, &gameData.hoard.icon [gameStates.render.fonts.bHires].bm);
 
-	x += 3 * bmP->Width () / 2;
+	x += 3 * pBm->Width () / 2;
 	y += gameStates.render.fonts.bHires + 1;
 	if (IsEntropyGame) {
 		char	szInfo [20];
@@ -668,7 +668,7 @@ gameStates.render.grAlpha = 1.0f;
 
 void CGenericCockpit::DrawWeaponInfo (int32_t nWeaponType, int32_t nIndex, tGaugeBox* box, int32_t xPic, int32_t yPic, const char *pszName, int32_t xText, int32_t yText, int32_t orient)
 {
-	CBitmap*	bmP;
+	CBitmap*	pBm;
 	char		szName [100], *p;
 	int32_t		i, color;
 
@@ -678,11 +678,11 @@ i = ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode)
 	 ? gameData.weapons.info [nIndex].hiresPicture.index
 	 : gameData.weapons.info [nIndex].picture.index;
 LoadTexture (i, 0, 0);
-if (!(bmP = gameData.pig.tex.bitmaps [0] + i))
+if (!(pBm = gameData.pig.tex.bitmaps [0] + i))
 	return;
 color = (m_info.weaponBoxStates [nWeaponType] == WS_SET) ? 255 : int32_t (X2F (m_info.weaponBoxFadeValues [nWeaponType]) / float (FADE_LEVELS) * 255);
 m_info.nColor = RGBA (color, color, color, 255);
-BitBlt (-1, xPic, yPic, true, true, (gameStates.render.cockpit.nType == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient, bmP);
+BitBlt (-1, xPic, yPic, true, true, (gameStates.render.cockpit.nType == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient, pBm);
 m_info.nColor = WHITE_RGBA;
 CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -894,7 +894,7 @@ void CGenericCockpit::DrawPlayerNames (void)
 {
 	int32_t			bHasFlag, bShowName, bShowTeamNames, bShowAllNames, nObject, nTeam;
 	int32_t			nPlayer, nState;
-	CRGBColor*	colorP;
+	CRGBColor*	pColor;
 
 	static int32_t nCurColor = 1, tColorChange = 0;
 	static CRGBColor typingColors [2] = {
@@ -929,14 +929,14 @@ for (nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {	//check all players
 	else {
 		//if this is a demo, the nObject in the player struct is wrong,
 		//so we search the CObject list for the nObject
-		CObject *objP;
+		CObject *pObj;
 		nObject = -1;
-		FORALL_PLAYER_OBJS (objP)
-			if (objP->info.nId == nPlayer) {
-				nObject = objP->Index ();
+		FORALL_PLAYER_OBJS (pObj)
+			if (pObj->info.nId == nPlayer) {
+				nObject = pObj->Index ();
 				break;
 				}
-		if (IS_OBJECT (objP, objP->Index ()))		//not in list, thus not visible
+		if (IS_OBJECT (pObj, pObj->Index ()))		//not in list, thus not visible
 			bShowName = !bHasFlag;				//..so don't show name
 		}
 
@@ -965,21 +965,21 @@ for (nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {	//check all players
 							tColorChange = t;
 							nCurColor = !nCurColor;
 							}
-						colorP = typingColors + nCurColor;
+						pColor = typingColors + nCurColor;
 						}
 					else {
 						nColor = IsTeamGame ? GetTeam (nPlayer) : nPlayer % MAX_PLAYER_COLORS;
-						colorP = playerColors + nColor;
+						pColor = playerColors + nColor;
 						}
 
 					sprintf (s, "%s", (nState == 1) ? TXT_TYPING : (nState == 2) ? "Downloading..." : PLAYER (nPlayer).callsign);
 					fontManager.Current ()->StringSize (s, w, h, aw);
-					SetFontColor (RGBA_PAL2 (colorP->Red (), colorP->Green (), colorP->Blue ()));
+					SetFontColor (RGBA_PAL2 (pColor->Red (), pColor->Green (), pColor->Blue ()));
 					x1 = x - w / 2;
 					y1 = y - h / 2;
 					fontManager.SetColorRGBi (FontColor (), 1, 0, 0);
 					nIdNames [nCurColor][nPlayer] = GrString (x1, y1, s, nIdNames [nCurColor] + nPlayer);
-					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (colorP->Red (), colorP->Green (), colorP->Blue ()));
+					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (pColor->Red (), pColor->Green (), pColor->Blue ()));
 					glLineWidth ((GLfloat) 2.0f);
 					OglDrawEmptyRect (x1 - 4, y1 - 3, x1 + w + 2, y1 + h + 3);
 					glLineWidth (1);
@@ -1329,16 +1329,16 @@ void CGenericCockpit::DrawCockpit (int32_t nCockpit, int32_t y, bool bAlphaTest)
 #if 1
 if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) {
 	int32_t i = gameData.pig.tex.cockpitBmIndex [nCockpit].index;
-	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + i;
+	CBitmap *pBm = gameData.pig.tex.bitmaps [0] + i;
 	LoadTexture (i, 0, 0, true);
-	if (bmP->HasOverride ())
-		bmP = bmP->Override (-1);
+	if (pBm->HasOverride ())
+		pBm = pBm->Override (-1);
 	ogl.m_states.nTransparencyLimit = 8;	//add transparency to black areas of palettized cockpits (namely the display windows)
-	bmP->SetTranspType (3);
-	bmP->SetupTexture (0, 1);
+	pBm->SetTranspType (3);
+	pBm->SetupTexture (0, 1);
 	ogl.m_states.nTransparencyLimit = 0;
 	CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);
-	bmP->RenderScaled (0, y, -1, CCanvas::Current ()->Height () - y, I2X (1), 0, &CCanvas::Current ()->Color ());
+	pBm->RenderScaled (0, y, -1, CCanvas::Current ()->Height () - y, I2X (1), 0, &CCanvas::Current ()->Color ());
 	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 	}
 #endif
@@ -1357,7 +1357,7 @@ if (showViewTextTimer > 0) {
 	showViewTextTimer -= gameData.time.xFrame;
 
 	viewer_id = const_cast<char*>("");
-	switch (gameData.objData.viewerP->info.nType) {
+	switch (gameData.objData.pViewer->info.nType) {
 		case OBJ_FIREBALL:
 			viewer_name = const_cast<char*>("Fireball");
 			break;
@@ -1390,7 +1390,7 @@ if (showViewTextTimer > 0) {
 			break;
 		}
 
-	switch (gameData.objData.viewerP->info.controlType) {
+	switch (gameData.objData.pViewer->info.controlType) {
 		case CT_NONE:
 			control_name = const_cast<char*>("Stopped");
 			break;
@@ -1414,7 +1414,7 @@ if (showViewTextTimer > 0) {
 			break;
 		}
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-	GrPrintF (NULL, 0x8000, 45, "%i: %s [%s] View - %s", OBJ_IDX (gameData.objData.viewerP), viewer_name, viewer_id, control_name);
+	GrPrintF (NULL, 0x8000, 45, "%i: %s [%s] View - %s", OBJ_IDX (gameData.objData.pViewer), viewer_name, viewer_id, control_name);
 	}
 }
 #endif

@@ -92,7 +92,7 @@ const char *pszPowerup [MAX_POWERUP_TYPES] = {
 	"bullet time"
 	};
 
-#define	MAX_INV_ITEMS	((5 - gameStates.app.nDifficultyLevel) * ((playerP->flags & PLAYER_FLAGS_AMMO_RACK) ? 2 : 1))
+#define	MAX_INV_ITEMS	((5 - gameStates.app.nDifficultyLevel) * ((pPlayer->flags & PLAYER_FLAGS_AMMO_RACK) ? 2 : 1))
 
 int32_t powerupToDevice [MAX_POWERUP_TYPES];
 char powerupToWeaponCount [MAX_POWERUP_TYPES];
@@ -108,18 +108,18 @@ void *pickupHandler [MAX_POWERUP_TYPES];
 
 static int32_t nDbgMinFrame = 0;
 
-void UpdatePowerupClip (tAnimationInfo *animInfoP, tAnimationState *vciP, int32_t nObject)
+void UpdatePowerupClip (tAnimationInfo *pAnimInfo, tAnimationState *vciP, int32_t nObject)
 {
-if (animInfoP) {
+if (pAnimInfo) {
 	static fix	xPowerupTime = 0;
-	int32_t		h, nFrames = SetupHiresVClip (animInfoP, vciP);
+	int32_t		h, nFrames = SetupHiresVClip (pAnimInfo, vciP);
 	fix			xTime, xFudge = (xPowerupTime * (nObject & 3)) >> 4;
 
 	xPowerupTime += gameData.physics.xTime;
 	xTime = vciP->xFrameTime - (fix) ((xPowerupTime + xFudge) / gameStates.gameplay.slowmo [0].fSpeed);
-	if ((xTime < 0) && (animInfoP->xFrameTime > 0)) {
-		h = (-xTime + animInfoP->xFrameTime - 1) / animInfoP->xFrameTime;
-		xTime += h * animInfoP->xFrameTime;
+	if ((xTime < 0) && (pAnimInfo->xFrameTime > 0)) {
+		h = (-xTime + pAnimInfo->xFrameTime - 1) / pAnimInfo->xFrameTime;
+		xTime += h * pAnimInfo->xFrameTime;
 		h %= nFrames;
 		if ((nObject & 1) && (OBJECT (nObject)->info.nType != OBJ_EXPLOSION)) 
 			vciP->nCurFrame -= h;
@@ -172,8 +172,8 @@ else {
 void UpdateFlagClips (void)
 {
 if (!gameStates.app.bDemoData) {
-	UpdatePowerupClip (gameData.pig.flags [0].animInfoP, &gameData.pig.flags [0].animState, 0);
-	UpdatePowerupClip (gameData.pig.flags [1].animInfoP, &gameData.pig.flags [1].animState, 0);
+	UpdatePowerupClip (gameData.pig.flags [0].pAnimInfo, &gameData.pig.flags [0].animState, 0);
+	UpdatePowerupClip (gameData.pig.flags [1].pAnimInfo, &gameData.pig.flags [1].animState, 0);
 	}
 }
 
@@ -185,8 +185,8 @@ void CObject::DoPowerupFrame (void)
 //if (gameStates.app.tick40fps.bTick) 
 if (info.renderType != RT_POLYOBJ) {
 	tAnimationState	*vciP = &rType.animationInfo;
-	tAnimationInfo	*animInfoP = ((vciP->nClipIndex < 0) || (vciP->nClipIndex >= MAX_ANIMATIONS_D2)) ? NULL : gameData.effects.animations [0] + vciP->nClipIndex;
-	UpdatePowerupClip (animInfoP, vciP, i);
+	tAnimationInfo	*pAnimInfo = ((vciP->nClipIndex < 0) || (vciP->nClipIndex >= MAX_ANIMATIONS_D2)) ? NULL : gameData.effects.animations [0] + vciP->nClipIndex;
+	UpdatePowerupClip (pAnimInfo, vciP, i);
 	}
 if (info.xLifeLeft <= 0) {
 	CreateExplosion (this, info.nSegment, info.position.vPos, info.position.vPos, I2X (7) / 2, ANIM_POWERUP_DISAPPEARANCE);
@@ -197,23 +197,23 @@ if (info.xLifeLeft <= 0) {
 
 //------------------------------------------------------------------------------
 
-void DrawPowerup (CObject *objP)
+void DrawPowerup (CObject *pObj)
 {
 #if DBG
 //return;
 #endif
-if (objP->info.nType == OBJ_MONSTERBALL) {
-	DrawMonsterball (objP, 1.0f, 0.5f, 0.0f, 0.9f);
-	RenderMslLockIndicator (objP);
+if (pObj->info.nType == OBJ_MONSTERBALL) {
+	DrawMonsterball (pObj, 1.0f, 0.5f, 0.0f, 0.9f);
+	RenderMslLockIndicator (pObj);
 	}
-else if ((objP->rType.animationInfo.nClipIndex >= -MAX_ADDON_BITMAP_FILES) && (objP->rType.animationInfo.nClipIndex < MAX_ANIMATIONS_D2)) {
-	if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < MAX_ANIMATIONS_D2))) {
-			tBitmapIndex*	frameP = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].frames;
-			int32_t			iFrame = objP->rType.animationInfo.nCurFrame;
-		DrawObjectBitmap (objP, frameP->index, frameP [iFrame].index, iFrame, NULL, 0);
+else if ((pObj->rType.animationInfo.nClipIndex >= -MAX_ADDON_BITMAP_FILES) && (pObj->rType.animationInfo.nClipIndex < MAX_ANIMATIONS_D2)) {
+	if ((pObj->info.nId < MAX_POWERUP_TYPES_D2) || ((pObj->info.nType == OBJ_EXPLOSION) && (pObj->info.nId < MAX_ANIMATIONS_D2))) {
+			tBitmapIndex*	frameP = gameData.effects.animations [0][pObj->rType.animationInfo.nClipIndex].frames;
+			int32_t			iFrame = pObj->rType.animationInfo.nCurFrame;
+		DrawObjectBitmap (pObj, frameP->index, frameP [iFrame].index, iFrame, NULL, 0);
 		}
 	else {
-		DrawObjectBitmap (objP, objP->rType.animationInfo.nClipIndex, objP->rType.animationInfo.nClipIndex, objP->rType.animationInfo.nCurFrame, NULL, 1);
+		DrawObjectBitmap (pObj, pObj->rType.animationInfo.nClipIndex, pObj->rType.animationInfo.nClipIndex, pObj->rType.animationInfo.nCurFrame, NULL, 1);
 		}
 	}
 #if DBG
@@ -271,17 +271,17 @@ cockpit->UpdateLaserWeaponInfo ();
 
 //------------------------------------------------------------------------------
 
-int32_t PickupEnergyBoost (CObject *objP, int32_t nPlayer)
+int32_t PickupEnergyBoost (CObject *pObj, int32_t nPlayer)
 {
-	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData	*pPlayer = gameData.multiplayer.players + nPlayer;
 
-if (playerP->Energy () < playerP->MaxEnergy ()) {
+if (pPlayer->Energy () < pPlayer->MaxEnergy ()) {
 	fix boost = I2X (3) * (DIFFICULTY_LEVEL_COUNT - gameStates.app.nDifficultyLevel + 1);
 	if (gameStates.app.nDifficultyLevel == 0)
 		boost += boost / 2;
-	playerP->UpdateEnergy (boost);
+	pPlayer->UpdateEnergy (boost);
 	if (ISLOCALPLAYER (nPlayer))
-		PowerupBasic (15,15,7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (playerP->energy));
+		PowerupBasic (15,15,7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (pPlayer->energy));
 	return 1;
 	} 
 else if (ISLOCALPLAYER (nPlayer))
@@ -291,17 +291,17 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t PickupShieldBoost (CObject *objP, int32_t nPlayer)
+int32_t PickupShieldBoost (CObject *pObj, int32_t nPlayer)
 {
-	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData	*pPlayer = gameData.multiplayer.players + nPlayer;
 
-if (playerP->Shield () < playerP->MaxShield ()) {
+if (pPlayer->Shield () < pPlayer->MaxShield ()) {
 	fix boost = I2X (3) * (DIFFICULTY_LEVEL_COUNT - gameStates.app.nDifficultyLevel + 1);
 	if (gameStates.app.nDifficultyLevel == 0)
 		boost += boost / 2;
-	playerP->UpdateShield (boost);
+	pPlayer->UpdateShield (boost);
 	if (ISLOCALPLAYER (nPlayer)) {
-		PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (playerP->Shield ()));
+		PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (pPlayer->Shield ()));
 		NetworkFlushData (); // will send position, shield and weapon info
 		}
 	OBJECT (nPlayer)->ResetDamage ();
@@ -320,14 +320,14 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-int32_t PickupCloakingDevice (CObject *objP, int32_t nPlayer)
+int32_t PickupCloakingDevice (CObject *pObj, int32_t nPlayer)
 {
-	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData *pPlayer = gameData.multiplayer.players + nPlayer;
 
 if (!gameOpts->gameplay.bInventory || (IsMultiGame && !IsCoopGame)) 
 	return -ApplyCloak (1, nPlayer);
-if (playerP->nCloaks < MAX_INV_ITEMS) {
-	playerP->nCloaks++;
+if (pPlayer->nCloaks < MAX_INV_ITEMS) {
+	pPlayer->nCloaks++;
 	PowerupBasic (0, 0, 0, 0, "%s!", TXT_CLOAKING_DEVICE);
 	return 1;
 	}
@@ -338,14 +338,14 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-int32_t PickupInvulnerability (CObject *objP, int32_t nPlayer)
+int32_t PickupInvulnerability (CObject *pObj, int32_t nPlayer)
 {
-	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData *pPlayer = gameData.multiplayer.players + nPlayer;
 
 if (!gameOpts->gameplay.bInventory || (IsMultiGame && !IsCoopGame)) 
 	return -ApplyInvul (1, nPlayer);
-if (playerP->nInvuls < MAX_INV_ITEMS) {
-	playerP->nInvuls++;
+if (pPlayer->nInvuls < MAX_INV_ITEMS) {
+	pPlayer->nInvuls++;
 	PowerupBasic (0, 0, 0, 0, "%s!", TXT_INVULNERABILITY);
 	return 1;
 	}
@@ -356,7 +356,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t PickupExtraLife (CObject *objP, int32_t nPlayer)
+int32_t PickupExtraLife (CObject *pObj, int32_t nPlayer)
 {
 PLAYER (nPlayer).lives++;
 if (nPlayer == N_LOCALPLAYER)
@@ -366,37 +366,37 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int32_t PickupHoardOrb (CObject *objP, int32_t nPlayer)
+int32_t PickupHoardOrb (CObject *pObj, int32_t nPlayer)
 {
-	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData *pPlayer = gameData.multiplayer.players + nPlayer;
 
 if (IsHoardGame) {
-	if (playerP->secondaryAmmo [PROXMINE_INDEX] < 12) {
+	if (pPlayer->secondaryAmmo [PROXMINE_INDEX] < 12) {
 		if (ISLOCALPLAYER (nPlayer)) {
 			MultiSendGotOrb (N_LOCALPLAYER);
 			PowerupBasic (15, 0, 15, 0, "Orb!!!", nPlayer);
 			}
-		playerP->secondaryAmmo [PROXMINE_INDEX]++;
-		playerP->flags |= PLAYER_FLAGS_FLAG;
+		pPlayer->secondaryAmmo [PROXMINE_INDEX]++;
+		pPlayer->flags |= PLAYER_FLAGS_FLAG;
 		return 1;
 		}
 	}
 else if (IsEntropyGame) {
-	if (objP->info.nCreator != GetTeam (N_LOCALPLAYER) + 1) {
+	if (pObj->info.nCreator != GetTeam (N_LOCALPLAYER) + 1) {
 		if ((extraGameInfo [1].entropy.nVirusStability < 2) ||
 			 ((extraGameInfo [1].entropy.nVirusStability < 3) && 
-			 ((SEGMENT (objP->info.nSegment)->m_owner != objP->info.nCreator) ||
-			 (SEGMENT (objP->info.nSegment)->m_function != SEGMENT_FUNC_ROBOTMAKER))))
-			objP->Die ();	//make orb disappear if touched by opposing team CPlayerData
+			 ((SEGMENT (pObj->info.nSegment)->m_owner != pObj->info.nCreator) ||
+			 (SEGMENT (pObj->info.nSegment)->m_function != SEGMENT_FUNC_ROBOTMAKER))))
+			pObj->Die ();	//make orb disappear if touched by opposing team CPlayerData
 		}
 	else if (!extraGameInfo [1].entropy.nMaxVirusCapacity ||
-				(playerP->secondaryAmmo [PROXMINE_INDEX] < playerP->secondaryAmmo [SMARTMINE_INDEX])) {
+				(pPlayer->secondaryAmmo [PROXMINE_INDEX] < pPlayer->secondaryAmmo [SMARTMINE_INDEX])) {
 		if (ISLOCALPLAYER (nPlayer)) {
 			MultiSendGotOrb (N_LOCALPLAYER);
 			PowerupBasic (15, 0, 15, 0, "Virus!!!", nPlayer);
 			}
-		playerP->secondaryAmmo [PROXMINE_INDEX]++;
-		playerP->flags |= PLAYER_FLAGS_FLAG;
+		pPlayer->secondaryAmmo [PROXMINE_INDEX]++;
+		pPlayer->flags |= PLAYER_FLAGS_FLAG;
 		return 1;
 		}
 	}
@@ -405,21 +405,21 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t PickupEquipment (CObject *objP, int32_t nEquipment, const char *pszHave, const char *pszGot, int32_t nPlayer)
+int32_t PickupEquipment (CObject *pObj, int32_t nEquipment, const char *pszHave, const char *pszGot, int32_t nPlayer)
 {
-	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData	*pPlayer = gameData.multiplayer.players + nPlayer;
 	int32_t		id, bUsed = 0;
 
-if (playerP->flags & nEquipment) {
+if (pPlayer->flags & nEquipment) {
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %s!", TXT_ALREADY_HAVE, pszHave);
 	if (!IsMultiGame)
-		bUsed = PickupEnergyBoost (objP, nPlayer);
+		bUsed = PickupEnergyBoost (pObj, nPlayer);
 	} 
 else {
-	playerP->flags |= nEquipment;
+	pPlayer->flags |= nEquipment;
 	if (ISLOCALPLAYER (nPlayer)) {
-		id = objP->info.nId;
+		id = pObj->info.nId;
 		if (id >= MAX_POWERUP_TYPES_D2)
 			id = POW_AFTERBURNER;
 		MultiSendPlaySound (gameData.objData.pwrUp.info [id].hitSound, I2X (1));
@@ -433,19 +433,19 @@ return bUsed;
 
 //	-----------------------------------------------------------------------------
 
-int32_t PickupHeadlight (CObject *objP, int32_t nPlayer)
+int32_t PickupHeadlight (CObject *pObj, int32_t nPlayer)
 {
-	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData *pPlayer = gameData.multiplayer.players + nPlayer;
 	char		szTemp [50];
 
 sprintf (szTemp, TXT_GOT_HEADLIGHT, (EGI_FLAG (headlight.bAvailable, 0, 0, 1) && gameOpts->gameplay.bHeadlightOnWhenPickedUp) ? TXT_ON : TXT_OFF);
 HUDInitMessage (szTemp);
-int32_t bUsed = PickupEquipment (objP, PLAYER_FLAGS_HEADLIGHT, TXT_THE_HEADLIGHT, szTemp, nPlayer);
+int32_t bUsed = PickupEquipment (pObj, PLAYER_FLAGS_HEADLIGHT, TXT_THE_HEADLIGHT, szTemp, nPlayer);
 if (bUsed >= 0)
 	return bUsed;
 if (ISLOCALPLAYER (nPlayer)) {
 	if (EGI_FLAG (headlight.bAvailable, 0, 0, 1)  && gameOpts->gameplay.bHeadlightOnWhenPickedUp)
-		playerP->flags |= PLAYER_FLAGS_HEADLIGHT_ON;
+		pPlayer->flags |= PLAYER_FLAGS_HEADLIGHT_ON;
 	if IsMultiGame
 		MultiSendFlags (N_LOCALPLAYER);
 	}
@@ -454,37 +454,37 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int32_t PickupFullMap (CObject *objP, int32_t nPlayer)
+int32_t PickupFullMap (CObject *pObj, int32_t nPlayer)
 {
-return PickupEquipment (objP, PLAYER_FLAGS_FULLMAP, TXT_THE_FULLMAP, TXT_GOT_FULLMAP, nPlayer) ? 1 : 0;
+return PickupEquipment (pObj, PLAYER_FLAGS_FULLMAP, TXT_THE_FULLMAP, TXT_GOT_FULLMAP, nPlayer) ? 1 : 0;
 }
 
 
 //	-----------------------------------------------------------------------------
 
-int32_t PickupConverter (CObject *objP, int32_t nPlayer)
+int32_t PickupConverter (CObject *pObj, int32_t nPlayer)
 {
 	char		szTemp [50];
 
 sprintf (szTemp, TXT_GOT_CONVERTER, KeyToASCII (controls.GetKeyValue (56)));
 HUDInitMessage (szTemp);
-return PickupEquipment (objP, PLAYER_FLAGS_CONVERTER, TXT_THE_CONVERTER, szTemp, nPlayer) != 0;
+return PickupEquipment (pObj, PLAYER_FLAGS_CONVERTER, TXT_THE_CONVERTER, szTemp, nPlayer) != 0;
 }
 
 //	-----------------------------------------------------------------------------
 
-int32_t PickupAmmoRack (CObject *objP, int32_t nPlayer)
+int32_t PickupAmmoRack (CObject *pObj, int32_t nPlayer)
 {
 return (gameData.multiplayer.weaponStates [nPlayer].nShip != 0)
 		 ? 0
-		 : PickupEquipment (objP, PLAYER_FLAGS_AMMO_RACK, TXT_THE_AMMORACK, TXT_GOT_AMMORACK, nPlayer) != 0;
+		 : PickupEquipment (pObj, PLAYER_FLAGS_AMMO_RACK, TXT_THE_AMMORACK, TXT_GOT_AMMORACK, nPlayer) != 0;
 }
 
 //	-----------------------------------------------------------------------------
 
-int32_t PickupAfterburner (CObject *objP, int32_t nPlayer)
+int32_t PickupAfterburner (CObject *pObj, int32_t nPlayer)
 {
-	int32_t bUsed = PickupEquipment (objP, PLAYER_FLAGS_AFTERBURNER, TXT_THE_BURNER, TXT_GOT_BURNER, nPlayer);
+	int32_t bUsed = PickupEquipment (pObj, PLAYER_FLAGS_AFTERBURNER, TXT_THE_BURNER, TXT_GOT_BURNER, nPlayer);
 	
 if (bUsed >= 0)
 	return bUsed;
@@ -494,33 +494,33 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int32_t PickupSlowMotion (CObject *objP, int32_t nPlayer)
+int32_t PickupSlowMotion (CObject *pObj, int32_t nPlayer)
 {
-return PickupEquipment (objP, PLAYER_FLAGS_SLOWMOTION, TXT_THE_SLOWMOTION, TXT_GOT_SLOWMOTION, nPlayer) != 0;
+return PickupEquipment (pObj, PLAYER_FLAGS_SLOWMOTION, TXT_THE_SLOWMOTION, TXT_GOT_SLOWMOTION, nPlayer) != 0;
 }
 
 //	-----------------------------------------------------------------------------
 
-int32_t PickupBulletTime (CObject *objP, int32_t nPlayer)
+int32_t PickupBulletTime (CObject *pObj, int32_t nPlayer)
 {
-return PickupEquipment (objP, PLAYER_FLAGS_BULLETTIME, TXT_THE_BULLETTIME, TXT_GOT_BULLETTIME, nPlayer) != 0;
+return PickupEquipment (pObj, PLAYER_FLAGS_BULLETTIME, TXT_THE_BULLETTIME, TXT_GOT_BULLETTIME, nPlayer) != 0;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t PickupKey (CObject *objP, int32_t nKey, const char *pszKey, int32_t nPlayer)
+int32_t PickupKey (CObject *pObj, int32_t nKey, const char *pszKey, int32_t nPlayer)
 {
 //if (ISLOCALPLAYER (nPlayer)) 
 	{
-	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData	*pPlayer = gameData.multiplayer.players + nPlayer;
 
-	if (playerP->flags & nKey)
+	if (pPlayer->flags & nKey)
 		return 0;
-	if (objP) {
-		MultiSendPlaySound (gameData.objData.pwrUp.info [objP->info.nId].hitSound, I2X (1));
-		audio.PlaySound ((int16_t) gameData.objData.pwrUp.info [objP->info.nId].hitSound);
+	if (pObj) {
+		MultiSendPlaySound (gameData.objData.pwrUp.info [pObj->info.nId].hitSound, I2X (1));
+		audio.PlaySound ((int16_t) gameData.objData.pwrUp.info [pObj->info.nId].hitSound);
 		}
-	playerP->flags |= nKey;
+	pPlayer->flags |= nKey;
 	PowerupBasic (15, 0, 0, ISLOCALPLAYER (nPlayer) ? KEY_SCORE : 0, "%s %s", pszKey, TXT_ACCESS_GRANTED);
 	InvalidateEscortGoal ();
 	return IsMultiGame == 0;
@@ -530,20 +530,20 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t PickupFlag (CObject *objP, int32_t nThisTeam, int32_t nOtherTeam, const char *pszFlag, int32_t nPlayer)
+int32_t PickupFlag (CObject *pObj, int32_t nThisTeam, int32_t nOtherTeam, const char *pszFlag, int32_t nPlayer)
 {
 if (ISLOCALPLAYER (nPlayer)) {
-	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData	*pPlayer = gameData.multiplayer.players + nPlayer;
 	if (gameData.app.GameMode (GM_CAPTURE)) {
 		if (GetTeam (N_LOCALPLAYER) == nOtherTeam) {
 			PowerupBasic (15, 0, 15, 0, nOtherTeam ? "RED FLAG!" : "BLUE FLAG!", nPlayer);
-			playerP->flags |= PLAYER_FLAGS_FLAG;
+			pPlayer->flags |= PLAYER_FLAGS_FLAG;
 			gameData.pig.flags [nThisTeam].path.Reset (10, -1);
 			MultiSendGotFlag (N_LOCALPLAYER);
 			return 1;
 			}
 		if (GetTeam (N_LOCALPLAYER) == nThisTeam) {
-			ReturnFlagHome (objP);
+			ReturnFlagHome (pObj);
 			}
 		}
 	}
@@ -573,21 +573,21 @@ if (gameData.objData.pwrUp.info [id].hitSound > -1) {
 
 int32_t ApplyInvul (int32_t bForce, int32_t nPlayer)
 {
-	CPlayerData *playerP = gameData.multiplayer.players + ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
-	int32_t bInventory = playerP->nInvuls && gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame);
+	CPlayerData *pPlayer = gameData.multiplayer.players + ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
+	int32_t bInventory = pPlayer->nInvuls && gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame);
 
 if (!(bForce || bInventory))
 	return 0;
-if (playerP->flags & PLAYER_FLAGS_INVULNERABLE) {
+if (pPlayer->flags & PLAYER_FLAGS_INVULNERABLE) {
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %s!", TXT_ALREADY_ARE, TXT_INVULNERABLE);
 	return 0;
 	}
 if (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame))
-	playerP->nInvuls--;
+	pPlayer->nInvuls--;
 if (ISLOCALPLAYER (nPlayer)) {
-	playerP->invulnerableTime = gameData.time.xGame;
-	playerP->flags |= PLAYER_FLAGS_INVULNERABLE;
+	pPlayer->invulnerableTime = gameData.time.xGame;
+	pPlayer->flags |= PLAYER_FLAGS_INVULNERABLE;
 	if (IsMultiGame)
 		MultiSendInvul ();
 	if (bInventory)
@@ -604,21 +604,21 @@ return 1;
 
 int32_t ApplyCloak (int32_t bForce, int32_t nPlayer)
 {
-	CPlayerData *playerP = gameData.multiplayer.players + ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
-	int32_t bInventory = playerP->nCloaks && gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame);
+	CPlayerData *pPlayer = gameData.multiplayer.players + ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
+	int32_t bInventory = pPlayer->nCloaks && gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame);
 
 if (!(bForce || bInventory))
 	return 0;
-if (playerP->flags & PLAYER_FLAGS_CLOAKED) {
+if (pPlayer->flags & PLAYER_FLAGS_CLOAKED) {
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %s!", TXT_ALREADY_ARE, TXT_CLOAKED);
 	return 0;
 	}
 if (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame))
-	playerP->nCloaks--;
+	pPlayer->nCloaks--;
 if (ISLOCALPLAYER (nPlayer)) {
-	playerP->cloakTime = gameData.time.xGame;	//	Not!changed by awareness events (like CPlayerData fires laser).
-	playerP->flags |= PLAYER_FLAGS_CLOAKED;
+	pPlayer->cloakTime = gameData.time.xGame;	//	Not!changed by awareness events (like CPlayerData fires laser).
+	pPlayer->flags |= PLAYER_FLAGS_CLOAKED;
 	AIDoCloakStuff ();
 	if (IsMultiGame)
 		MultiSendCloak ();
@@ -664,16 +664,16 @@ typedef int32_t (* pPickupFlag) (CObject *, int32_t, int32_t, const char *, int3
 
 
 //	returns true if powerup consumed
-int32_t DoPowerup (CObject *objP, int32_t nPlayer)
+int32_t DoPowerup (CObject *pObj, int32_t nPlayer)
 {
 if (OBSERVING)
 	return 0;
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return 0;
-if (objP->Ignored (1, 1))
+if (pObj->Ignored (1, 1))
 	return 0;
 
-	CPlayerData*	playerP;
+	CPlayerData*	pPlayer;
 	int32_t			bUsed = 0;
 	int32_t			bSpecialUsed = 0;		//for when hitting vulcan cannon gets vulcan ammo
 	int32_t			bLocalPlayer;
@@ -681,28 +681,28 @@ if (objP->Ignored (1, 1))
 
 if (nPlayer < 0)
 	nPlayer = N_LOCALPLAYER;
-playerP = gameData.multiplayer.players + nPlayer;
-if (SPECTATOR (OBJECT (playerP->nObject)))
+pPlayer = gameData.multiplayer.players + nPlayer;
+if (SPECTATOR (OBJECT (pPlayer->nObject)))
 	return 0;
 bLocalPlayer = (nPlayer == N_LOCALPLAYER);
 if (bLocalPlayer &&
 	 (gameStates.app.bPlayerIsDead || 
-	  (gameData.objData.consoleP->info.nType == OBJ_GHOST) || 
-	  (playerP->Shield () < 0)))
+	  (gameData.objData.pConsole->info.nType == OBJ_GHOST) || 
+	  (pPlayer->Shield () < 0)))
 	return 0;
-if (objP->cType.powerupInfo.xCreationTime > gameData.time.xGame)		//gametime wrapped!
-	objP->cType.powerupInfo.xCreationTime = 0;				//allow CPlayerData to pick up
-if ((objP->cType.powerupInfo.nFlags & PF_SPAT_BY_PLAYER) && 
-	 (objP->cType.powerupInfo.xCreationTime > 0) && 
-	 (gameData.time.xGame < objP->cType.powerupInfo.xCreationTime + I2X (2)))
+if (pObj->cType.powerupInfo.xCreationTime > gameData.time.xGame)		//gametime wrapped!
+	pObj->cType.powerupInfo.xCreationTime = 0;				//allow CPlayerData to pick up
+if ((pObj->cType.powerupInfo.nFlags & PF_SPAT_BY_PLAYER) && 
+	 (pObj->cType.powerupInfo.xCreationTime > 0) && 
+	 (gameData.time.xGame < pObj->cType.powerupInfo.xCreationTime + I2X (2)))
 	return 0;		//not enough time elapsed
 gameData.hud.bPlayerMessage = 0;	//	Prevent messages from going to HUD if -PlayerMessages switch is set
-nId = objP->info.nId;
+nId = pObj->info.nId;
 if ((abs (nId) >= (int32_t) sizeofa (pickupHandler)) || !pickupHandler [nId]) // unknown/unhandled powerup type
 	return 0;
 nType = powerupType [nId];
 if (nType == POWERUP_IS_GUN) {
-	bUsed = ((pPickupGun) (pickupHandler [nId])) (objP, powerupToDevice [nId], nPlayer);
+	bUsed = ((pPickupGun) (pickupHandler [nId])) (pObj, powerupToDevice [nId], nPlayer);
 	if ((bUsed < 0) && ((nId == POW_VULCAN) || (nId == POW_GAUSS))) {
 		bUsed = -bUsed - 1;
 		bSpecialUsed = 1;
@@ -710,18 +710,18 @@ if (nType == POWERUP_IS_GUN) {
 		}
 	}
 else if (nType == POWERUP_IS_MISSILE) {
-	bUsed = ((pPickupMissile) (pickupHandler [nId])) (objP, powerupToDevice [nId], PowerupCount (nId), nPlayer);
+	bUsed = ((pPickupMissile) (pickupHandler [nId])) (pObj, powerupToDevice [nId], PowerupCount (nId), nPlayer);
 	}
 else if (nType == POWERUP_IS_KEY) {
 	int32_t nKey = nId - POW_KEY_BLUE;
-	bUsed = ((pPickupKey) (pickupHandler [nId])) (objP, PLAYER_FLAGS_BLUE_KEY << nKey, GAMETEXT (12 + nKey), nPlayer);
+	bUsed = ((pPickupKey) (pickupHandler [nId])) (pObj, PLAYER_FLAGS_BLUE_KEY << nKey, GAMETEXT (12 + nKey), nPlayer);
 	}
 else if (nType == POWERUP_IS_EQUIPMENT) {
-	bUsed = ((pPickupEquipment) (pickupHandler [nId])) (objP, nPlayer);
+	bUsed = ((pPickupEquipment) (pickupHandler [nId])) (pObj, nPlayer);
 	}
 else if (nType == POWERUP_IS_FLAG) {
 	int32_t nFlag = nId - POW_BLUEFLAG;
-	bUsed = ((pPickupFlag) (pickupHandler [nId])) (objP, nFlag, !nFlag, GT (1077 + nFlag), nPlayer);
+	bUsed = ((pPickupFlag) (pickupHandler [nId])) (pObj, nFlag, !nFlag, GT (1077 + nFlag), nPlayer);
 	}
 else
 	return 0;
@@ -738,7 +738,7 @@ return bUsed;
 
 //------------------------------------------------------------------------------
 
-int32_t SpawnPowerup (CObject *spitterP, uint8_t nId, int32_t nCount)
+int32_t SpawnPowerup (CObject *pSpitter, uint8_t nId, int32_t nCount)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return 0;
@@ -746,20 +746,20 @@ if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	int32_t			i;
 	int16_t			nObject;
 	CFixVector	velSave;
-	CObject		*objP;
+	CObject		*pObj;
 
 if (nCount <= 0)
 	return 0;
-velSave = spitterP->mType.physInfo.velocity;
-spitterP->mType.physInfo.velocity.SetZero ();
+velSave = pSpitter->mType.physInfo.velocity;
+pSpitter->mType.physInfo.velocity.SetZero ();
 for (i = nCount; i; i--) {
-	nObject = SpitPowerup (spitterP, nId);
+	nObject = SpitPowerup (pSpitter, nId);
 	if (nObject >= 0) {
-		objP = OBJECT (nObject);
-		MultiSendCreatePowerup (nId, objP->info.nSegment, nObject, &objP->info.position.vPos);
+		pObj = OBJECT (nObject);
+		MultiSendCreatePowerup (nId, pObj->info.nSegment, nObject, &pObj->info.position.vPos);
 		}
 	}
-spitterP->mType.physInfo.velocity = velSave;
+pSpitter->mType.physInfo.velocity = velSave;
 return nCount;
 }
 
@@ -767,7 +767,7 @@ return nCount;
 
 void SpawnLeftoverPowerups (int16_t nObject)
 {
-SpawnPowerup (gameData.multiplayer.leftoverPowerups [nObject].spitterP, 
+SpawnPowerup (gameData.multiplayer.leftoverPowerups [nObject].pSpitter, 
 				  gameData.multiplayer.leftoverPowerups [nObject].nType,
 				  gameData.multiplayer.leftoverPowerups [nObject].nCount);
 memset (&gameData.multiplayer.leftoverPowerups [nObject], 0, 
@@ -778,13 +778,13 @@ memset (&gameData.multiplayer.leftoverPowerups [nObject], 0,
 
 void CheckInventory (void)
 {
-	CPlayerData	*playerP = gameData.multiplayer.players + N_LOCALPLAYER;
-	CObject	*objP = OBJECT (playerP->nObject);
+	CPlayerData	*pPlayer = gameData.multiplayer.players + N_LOCALPLAYER;
+	CObject	*pObj = OBJECT (pPlayer->nObject);
 
-if (SpawnPowerup (objP, POW_CLOAK, playerP->nCloaks - MAX_INV_ITEMS))
-	playerP->nCloaks = MAX_INV_ITEMS;
-if (SpawnPowerup (objP, POW_INVUL, playerP->nInvuls - MAX_INV_ITEMS))
-	playerP->nInvuls = MAX_INV_ITEMS;
+if (SpawnPowerup (pObj, POW_CLOAK, pPlayer->nCloaks - MAX_INV_ITEMS))
+	pPlayer->nCloaks = MAX_INV_ITEMS;
+if (SpawnPowerup (pObj, POW_INVUL, pPlayer->nInvuls - MAX_INV_ITEMS))
+	pPlayer->nInvuls = MAX_INV_ITEMS;
 }
 
 //-----------------------------------------------------------------------------
@@ -1105,49 +1105,49 @@ powerupType [POW_EARTHSHAKER] = (uint8_t) POWERUP_IS_MISSILE;
 
 #define ENABLE_FILTER(_type,_flag) if (_flag) powerupFilter [_type] = 1;
 
-void SetupPowerupFilter (tNetGameInfo* infoP)
+void SetupPowerupFilter (tNetGameInfo* pInfo)
 {
-if (!infoP)
-	infoP = &netGameInfo.m_info;
+if (!pInfo)
+	pInfo = &netGameInfo.m_info;
 memset (powerupFilter, 0, sizeof (powerupFilter));
-ENABLE_FILTER (POW_INVUL, infoP->DoInvulnerability);
-ENABLE_FILTER (POW_CLOAK, infoP->DoCloak);
+ENABLE_FILTER (POW_INVUL, pInfo->DoInvulnerability);
+ENABLE_FILTER (POW_CLOAK, pInfo->DoCloak);
 ENABLE_FILTER (POW_KEY_BLUE, IsCoopGame);
 ENABLE_FILTER (POW_KEY_RED, IsCoopGame);
 ENABLE_FILTER (POW_KEY_GOLD, IsCoopGame);
-ENABLE_FILTER (POW_AFTERBURNER, infoP->DoAfterburner);
-ENABLE_FILTER (POW_FUSION, infoP->DoFusions);
-ENABLE_FILTER (POW_PHOENIX, infoP->DoPhoenix);
-ENABLE_FILTER (POW_HELIX, infoP->DoHelix);
-ENABLE_FILTER (POW_MEGAMSL, infoP->DoMegas);
-ENABLE_FILTER (POW_SMARTMSL, infoP->DoSmarts);
-ENABLE_FILTER (POW_GAUSS, infoP->DoGauss);
-ENABLE_FILTER (POW_VULCAN, infoP->DoVulcan);
-ENABLE_FILTER (POW_PLASMA, infoP->DoPlasma);
-ENABLE_FILTER (POW_OMEGA, infoP->DoOmega);
+ENABLE_FILTER (POW_AFTERBURNER, pInfo->DoAfterburner);
+ENABLE_FILTER (POW_FUSION, pInfo->DoFusions);
+ENABLE_FILTER (POW_PHOENIX, pInfo->DoPhoenix);
+ENABLE_FILTER (POW_HELIX, pInfo->DoHelix);
+ENABLE_FILTER (POW_MEGAMSL, pInfo->DoMegas);
+ENABLE_FILTER (POW_SMARTMSL, pInfo->DoSmarts);
+ENABLE_FILTER (POW_GAUSS, pInfo->DoGauss);
+ENABLE_FILTER (POW_VULCAN, pInfo->DoVulcan);
+ENABLE_FILTER (POW_PLASMA, pInfo->DoPlasma);
+ENABLE_FILTER (POW_OMEGA, pInfo->DoOmega);
 ENABLE_FILTER (POW_LASER, 1);
-ENABLE_FILTER (POW_SUPERLASER, infoP->DoSuperLaser);
+ENABLE_FILTER (POW_SUPERLASER, pInfo->DoSuperLaser);
 ENABLE_FILTER (POW_MONSTERBALL, (gameData.app.GameMode (GM_HOARD | GM_MONSTERBALL)));
-ENABLE_FILTER (POW_PROXMINE, infoP->DoProximity || (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)));
-ENABLE_FILTER (POW_SMARTMINE, infoP->DoSmartMine || IsEntropyGame);
-ENABLE_FILTER (POW_VULCAN_AMMO, (infoP->DoVulcan || infoP->DoGauss));
-ENABLE_FILTER (POW_SPREADFIRE, infoP->DoSpread);
-ENABLE_FILTER (POW_FLASHMSL_1, infoP->DoFlash);
-ENABLE_FILTER (POW_FLASHMSL_4, infoP->DoFlash);
-ENABLE_FILTER (POW_GUIDEDMSL_1, infoP->DoGuided);
-ENABLE_FILTER (POW_GUIDEDMSL_4, infoP->DoGuided);
-ENABLE_FILTER (POW_EARTHSHAKER, infoP->DoEarthShaker);
-ENABLE_FILTER (POW_MERCURYMSL_1, infoP->DoMercury);
-ENABLE_FILTER (POW_MERCURYMSL_4, infoP->DoMercury);
-ENABLE_FILTER (POW_CONVERTER, infoP->DoConverter);
-ENABLE_FILTER (POW_AMMORACK, infoP->DoAmmoRack);
-ENABLE_FILTER (POW_HEADLIGHT, infoP->DoHeadlight && (!EGI_FLAG (bDarkness, 0, 0, 0) || EGI_FLAG (headlight.bAvailable, 0, 1, 0)));
-ENABLE_FILTER (POW_LASER, infoP->DoLaserUpgrade);
+ENABLE_FILTER (POW_PROXMINE, pInfo->DoProximity || (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)));
+ENABLE_FILTER (POW_SMARTMINE, pInfo->DoSmartMine || IsEntropyGame);
+ENABLE_FILTER (POW_VULCAN_AMMO, (pInfo->DoVulcan || pInfo->DoGauss));
+ENABLE_FILTER (POW_SPREADFIRE, pInfo->DoSpread);
+ENABLE_FILTER (POW_FLASHMSL_1, pInfo->DoFlash);
+ENABLE_FILTER (POW_FLASHMSL_4, pInfo->DoFlash);
+ENABLE_FILTER (POW_GUIDEDMSL_1, pInfo->DoGuided);
+ENABLE_FILTER (POW_GUIDEDMSL_4, pInfo->DoGuided);
+ENABLE_FILTER (POW_EARTHSHAKER, pInfo->DoEarthShaker);
+ENABLE_FILTER (POW_MERCURYMSL_1, pInfo->DoMercury);
+ENABLE_FILTER (POW_MERCURYMSL_4, pInfo->DoMercury);
+ENABLE_FILTER (POW_CONVERTER, pInfo->DoConverter);
+ENABLE_FILTER (POW_AMMORACK, pInfo->DoAmmoRack);
+ENABLE_FILTER (POW_HEADLIGHT, pInfo->DoHeadlight && (!EGI_FLAG (bDarkness, 0, 0, 0) || EGI_FLAG (headlight.bAvailable, 0, 1, 0)));
+ENABLE_FILTER (POW_LASER, pInfo->DoLaserUpgrade);
 ENABLE_FILTER (POW_CONCUSSION_1, 1);
 ENABLE_FILTER (POW_CONCUSSION_4, 1);
-ENABLE_FILTER (POW_HOMINGMSL_1, infoP->DoHoming);
-ENABLE_FILTER (POW_HOMINGMSL_4, infoP->DoHoming);
-ENABLE_FILTER (POW_QUADLASER, infoP->DoQuadLasers);
+ENABLE_FILTER (POW_HOMINGMSL_1, pInfo->DoHoming);
+ENABLE_FILTER (POW_HOMINGMSL_4, pInfo->DoHoming);
+ENABLE_FILTER (POW_QUADLASER, pInfo->DoQuadLasers);
 ENABLE_FILTER (POW_BLUEFLAG, (gameData.app.GameMode (GM_CAPTURE)));
 ENABLE_FILTER (POW_REDFLAG, (gameData.app.GameMode (GM_CAPTURE)));
 }
@@ -1206,21 +1206,21 @@ return weaponToModel [nWeapon];
 
 int16_t PowerupsOnShips (int32_t nPowerup)
 {
-	CPlayerData*	playerP = gameData.multiplayer.players;
+	CPlayerData*	pPlayer = gameData.multiplayer.players;
 	int32_t			nClass, nVulcanAmmo = 0;
 	int16_t			nPowerups = 0, nIndex = PowerupToDevice (nPowerup, &nClass);
 
 if (!nClass || ((nClass < 3) && (nIndex < 0)))
 	return 0;
-for (int16_t i = 0; i < N_PLAYERS; i++, playerP++) {
+for (int16_t i = 0; i < N_PLAYERS; i++, pPlayer++) {
 	//if ((i == N_LOCALPLAYER) && (LOCALPLAYER.m_bExploded || gameStates.app.bPlayerIsDead))
 	//	continue;
-	if (playerP->Shield () < 0)
+	if (pPlayer->Shield () < 0)
 		continue; 
 #if 0 //DBG
-	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->m_tDisconnect > 600))
+	if (!pPlayer->connected && (gameStates.app.nSDLTicks [0] - pPlayer->m_tDisconnect > 600))
 #else
-	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->m_tDisconnect > TIMEOUT_KICK))
+	if (!pPlayer->connected && (gameStates.app.nSDLTicks [0] - pPlayer->m_tDisconnect > TIMEOUT_KICK))
 #endif
 		continue; // wait up to three minutes for a player to reconnect before dropping him and allowing to respawn his stuff
 	if (nClass == 5) {
@@ -1228,10 +1228,10 @@ for (int16_t i = 0; i < N_PLAYERS; i++, playerP++) {
 			nPowerups++;
 		}
 	if (nClass == 4) 
-		nVulcanAmmo += playerP->primaryAmmo [VULCAN_INDEX] + gameData.multiplayer.weaponStates [i].nAmmoUsed % VULCAN_CLIP_CAPACITY;
+		nVulcanAmmo += pPlayer->primaryAmmo [VULCAN_INDEX] + gameData.multiplayer.weaponStates [i].nAmmoUsed % VULCAN_CLIP_CAPACITY;
 	else if (nClass == 3) {	// some device
 		if (!(extraGameInfo [IsMultiGame].loadout.nDevice & nIndex))
-			nPowerups += (playerP->flags & nIndex) != 0;
+			nPowerups += (pPlayer->flags & nIndex) != 0;
 		}
 	else if (nClass == 2) {	// missiles
 		nPowerups += gameData.multiplayer.SecondaryAmmo (i, nIndex, 0);
@@ -1240,12 +1240,12 @@ for (int16_t i = 0; i < N_PLAYERS; i++, playerP++) {
 		if (!(extraGameInfo [IsMultiGame].loadout.nGuns & (1 << nIndex))) {
 			if (nIndex == LASER_INDEX) {
 				//if (!(extraGameInfo [0].loadout.nGuns & (1 << 5)))
-					nPowerups += playerP->LaserLevel (0);
+					nPowerups += pPlayer->LaserLevel (0);
 				}
 			else if (nIndex == SUPER_LASER_INDEX) {
-				nPowerups += playerP->LaserLevel (1);
+				nPowerups += pPlayer->LaserLevel (1);
 				}
-			else if (playerP->primaryWeaponFlags & (1 << nIndex)) {
+			else if (pPlayer->primaryWeaponFlags & (1 << nIndex)) {
 				nPowerups++;
 				if ((nIndex == FUSION_INDEX) && gameData.multiplayer.weaponStates [i].bTripleFusion)
 					nPowerups++;

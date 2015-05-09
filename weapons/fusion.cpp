@@ -44,7 +44,7 @@ if (gameData.fusion.xAutoFireTime) {
 			return 0;
 		t0 = t;
 		gameData.laser.nGlobalFiringCount = 0;
-		gameData.objData.consoleP->RandomBump (I2X (1) / 8, (gameData.FusionCharge () > I2X (2)) ? gameData.FusionCharge () * 4 : I2X (4));
+		gameData.objData.pConsole->RandomBump (I2X (1) / 8, (gameData.FusionCharge () > I2X (2)) ? gameData.FusionCharge () * 4 : I2X (4));
 		}
 	}
 return 1;
@@ -76,22 +76,22 @@ else {
 
 	float fScale = float (gameData.FusionCharge () >> 11) / 64.0f;
 	if (fScale > 0.0f) {
-		CFloatVector* colorP = gameData.weapons.color + FUSION_ID;
+		CFloatVector* pColor = gameData.weapons.color + FUSION_ID;
 
 		if (gameData.FusionCharge () < I2X (2)) 
-			paletteManager.BumpEffect (colorP->Red () * fScale, colorP->Green () * fScale, colorP->Blue () * fScale);
+			paletteManager.BumpEffect (pColor->Red () * fScale, pColor->Green () * fScale, pColor->Blue () * fScale);
 		else 
-			paletteManager.BumpEffect (colorP->Blue () * fScale, colorP->Red () * fScale, colorP->Green () * fScale);
+			paletteManager.BumpEffect (pColor->Blue () * fScale, pColor->Red () * fScale, pColor->Green () * fScale);
 		}
 	if (gameData.time.xGame < gameData.fusion.xLastSoundTime)		//gametime has wrapped
 		gameData.fusion.xNextSoundTime = gameData.fusion.xLastSoundTime = gameData.time.xGame;
 	if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {
 		if (gameData.FusionCharge () > I2X (2)) {
 			audio.PlaySound (11);
-			gameData.objData.consoleP->ApplyDamageToPlayer (gameData.objData.consoleP, RandShort () * 4);
+			gameData.objData.pConsole->ApplyDamageToPlayer (gameData.objData.pConsole, RandShort () * 4);
 			}
 		else {
-			CreateAwarenessEvent (gameData.objData.consoleP, WEAPON_ROBOT_COLLISION);
+			CreateAwarenessEvent (gameData.objData.pConsole, WEAPON_ROBOT_COLLISION);
 			audio.PlaySound (SOUND_FUSION_WARMUP);
 			if (IsMultiGame)
 				MultiSendPlaySound (SOUND_FUSION_WARMUP, I2X (1));

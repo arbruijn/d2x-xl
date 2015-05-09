@@ -126,10 +126,10 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::BuildFromOOF (CObject *objP, int32_t nModel)
+int32_t CModel::BuildFromOOF (CObject *pObj, int32_t nModel)
 {
 	OOF::CModel*	po = gameData.models.modelToOOF [1][nModel];
-	CBitmap*			bmP;
+	CBitmap*			pBm;
 	int32_t				i;
 
 if (!po) {
@@ -152,17 +152,17 @@ GetOOFModelItems (nModel, po, /*((nModel == 108) || (nModel == 110)) ? 0.805f :*
 m_nModel = nModel;
 m_textures = po->m_textures.m_bitmaps;
 m_nTextures = po->m_textures.m_nBitmaps;
-for (i = 0, bmP = m_textures.Buffer (); i < m_nTextures; i++, bmP++) {
-	bmP->Texture ()->SetBitmap (bmP);
+for (i = 0, pBm = m_textures.Buffer (); i < m_nTextures; i++, pBm++) {
+	pBm->Texture ()->SetBitmap (pBm);
 	sprintf (m_textures [i].Name (), "OOF model %d texture %d", nModel, i);
-	po->m_textures.m_bitmaps [i].ShareBuffer (*bmP);
+	po->m_textures.m_bitmaps [i].ShareBuffer (*pBm);
 	}
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 m_nType = -1;
-gameData.models.polyModels [0][nModel].SetRad (Size (objP, 1), 1);
+gameData.models.polyModels [0][nModel].SetRad (Size (pObj, 1), 1);
 Setup (1, 1);
 #if 1
-SetGunPoints (objP, 0);
+SetGunPoints (pObj, 0);
 #endif
 if (gameStates.app.nLogLevel > 1)
 	PrintLog (-1);

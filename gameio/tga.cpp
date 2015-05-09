@@ -23,7 +23,7 @@
 //---------------------------------------------------------------
 //---------------------------------------------------------------
 
-int32_t CTGAHeader::Read (CFile& cf, CBitmap *bmP)
+int32_t CTGAHeader::Read (CFile& cf, CBitmap *pBm)
 {
 m_data.identSize = char (cf.ReadByte ());
 m_data.colorMapType = char (cf.ReadByte ());
@@ -39,8 +39,8 @@ m_data.bits = char (cf.ReadByte ());
 m_data.descriptor = char (cf.ReadByte ());
 if (m_data.identSize && cf.Seek (m_data.identSize, SEEK_CUR))
 	return 0;
-if (bmP) {
-	bmP->Init (0, 0, 0, m_data.width, m_data.height, m_data.bits / 8, NULL, false);
+if (pBm) {
+	pBm->Init (0, 0, 0, m_data.width, m_data.height, m_data.bits / 8, NULL, false);
 	}
 return (m_data.width <= 4096) && (m_data.height <= 32768) && 
        (m_data.xStart < m_data.width) && (m_data.yStart < m_data.height) &&
@@ -49,12 +49,12 @@ return (m_data.width <= 4096) && (m_data.height <= 32768) &&
 
 //---------------------------------------------------------------
 
-int32_t CTGAHeader::Write (CFile& cf, CBitmap *bmP)
+int32_t CTGAHeader::Write (CFile& cf, CBitmap *pBm)
 {
 memset (&m_data, 0, sizeof (m_data));
-m_data.width = bmP->Width ();
-m_data.height = bmP->Height ();
-m_data.bits = bmP->BPP () * 8;
+m_data.width = pBm->Width ();
+m_data.height = pBm->Height ();
+m_data.bits = pBm->BPP () * 8;
 m_data.imageType = 2;
 cf.WriteByte (m_data.identSize);
 cf.WriteByte (m_data.colorMapType);
@@ -66,7 +66,7 @@ cf.WriteShort (m_data.xStart);
 cf.WriteShort (m_data.yStart);
 cf.WriteShort (m_data.width);
 cf.WriteShort (m_data.height);
-if (!bmP->HasTransparency ())
+if (!pBm->HasTransparency ())
 	m_data.bits = 24;
 cf.WriteByte (m_data.bits);
 cf.WriteByte (m_data.descriptor);
@@ -83,7 +83,7 @@ int32_t CTGA::Compress (void)
 {
 if (!ogl.m_features.bTextureCompression/*.Apply ()*/)
 	return 0;
-if (m_bmP->LoadTexture (0, 0, 0))
+if (m_pBm->LoadTexture (0, 0, 0))
 	return 0;
 return 1;
 }
@@ -92,18 +92,18 @@ return 1;
 
 void CTGA::ConvertToRGB (void)
 {
-if ((m_bmP->BPP () == 4) && m_bmP->Buffer ()) {
-	CRGBColor *rgbP = reinterpret_cast<CRGBColor*> (m_bmP->Buffer ());
-	CRGBAColor *rgbaP = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ());
+if ((m_pBm->BPP () == 4) && m_pBm->Buffer ()) {
+	CRGBColor *pRGB = reinterpret_cast<CRGBColor*> (m_pBm->Buffer ());
+	CRGBAColor *pRGBA = reinterpret_cast<CRGBAColor*> (m_pBm->Buffer ());
 
-	for (int32_t i = m_bmP->Length () / 4; i; i--, rgbP++, rgbaP++) {
-		rgbP->Red () = rgbaP->Red ();
-		rgbP->Green () = rgbaP->Green ();
-		rgbP->Blue () = rgbaP->Blue ();
+	for (int32_t i = m_pBm->Length () / 4; i; i--, pRGB++, pRGBA++) {
+		pRGB->Red () = pRGBA->Red ();
+		pRGB->Green () = pRGBA->Green ();
+		pRGB->Blue () = pRGBA->Blue ();
 		}
-	m_bmP->Resize (uint32_t (3 * m_bmP->Size () / 4));
-	m_bmP->SetBPP (3);
-	m_bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
+	m_pBm->Resize (uint32_t (3 * m_pBm->Size () / 4));
+	m_pBm->SetBPP (3);
+	m_pBm->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 	}
 }
 
@@ -111,15 +111,15 @@ if ((m_bmP->BPP () == 4) && m_bmP->Buffer ()) {
 
 void CTGA::PreMultiplyAlpha (float fScale)
 {
-if ((m_bmP->BPP () == 4) && m_bmP->Buffer ()) {
-	CRGBAColor *rgbaP = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ());
+if ((m_pBm->BPP () == 4) && m_pBm->Buffer ()) {
+	CRGBAColor *pRGBA = reinterpret_cast<CRGBAColor*> (m_pBm->Buffer ());
 	float alpha;
 
-	for (int32_t i = m_bmP->Length () / 4; i; i--, rgbaP++) {
-		alpha = float (rgbaP->Alpha () / 255.0f) * fScale;
-		rgbaP->Red () = (uint8_t) FRound (rgbaP->Red () * alpha);
-		rgbaP->Green () = (uint8_t) FRound (rgbaP->Green () * alpha);
-		rgbaP->Blue () = (uint8_t) FRound (rgbaP->Blue () * alpha);
+	for (int32_t i = m_pBm->Length () / 4; i; i--, pRGBA++) {
+		alpha = float (pRGBA->Alpha () / 255.0f) * fScale;
+		pRGBA->Red () = (uint8_t) FRound (pRGBA->Red () * alpha);
+		pRGBA->Green () = (uint8_t) FRound (pRGBA->Green () * alpha);
+		pRGBA->Blue () = (uint8_t) FRound (pRGBA->Blue () * alpha);
 		}
 	}
 }
@@ -129,8 +129,8 @@ if ((m_bmP->BPP () == 4) && m_bmP->Buffer ()) {
 void CTGA::SetProperties (int32_t alpha, int32_t bGrayScale, double brightness, bool bSwapRB)
 {
 	int32_t			i, n, nAlpha = 0, nFrames;
-	int32_t			h = m_bmP->Height ();
-	int32_t			w = m_bmP->Width ();
+	int32_t			h = m_pBm->Height ();
+	int32_t			w = m_pBm->Width ();
 	float				nVisible = 0;
 	CFloatVector	avgColor;
 	CRGBColor		avgColorb;
@@ -138,17 +138,17 @@ void CTGA::SetProperties (int32_t alpha, int32_t bGrayScale, double brightness, 
 
 //CRGBAColor *p;
 //if (!gameStates.app.bMultiThreaded)
-// 	p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ());
+// 	p = reinterpret_cast<CRGBAColor*> (m_pBm->Buffer ());
 
-m_bmP->AddFlags (BM_FLAG_TGA);
-m_bmP->SetTranspType (-1);
-memset (m_bmP->TransparentFrames (), 0, 4 * sizeof (int32_t));
-memset (m_bmP->SuperTranspFrames (), 0, 4 * sizeof (int32_t));
+m_pBm->AddFlags (BM_FLAG_TGA);
+m_pBm->SetTranspType (-1);
+memset (m_pBm->TransparentFrames (), 0, 4 * sizeof (int32_t));
+memset (m_pBm->SuperTranspFrames (), 0, 4 * sizeof (int32_t));
 memset (&avgColor, 0, sizeof (avgColor));
 
-m_bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
-if (m_bmP->BPP () == 3) {
-	CRGBColor*	p = reinterpret_cast<CRGBColor*> (m_bmP->Buffer ());
+m_pBm->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
+if (m_pBm->BPP () == 3) {
+	CRGBColor*	p = reinterpret_cast<CRGBColor*> (m_pBm->Buffer ());
 #if USE_OPENMP
 	if (gameStates.app.bMultiThreaded) {
 		int32_t			tId, j = w * h;
@@ -197,7 +197,7 @@ else {
 		nSuperTransp = 0;
 
 	int32_t				j = w * (h / nFrames);
-	CRGBAColor*	p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ()) + n * j;
+	CRGBAColor*	p = reinterpret_cast<CRGBAColor*> (m_pBm->Buffer ()) + n * j;
 
 #if USE_OPENMP
 		if (gameStates.app.bMultiThreaded) {
@@ -288,24 +288,24 @@ else {
 		if (nAlpha > w * w / 1000) {
 			if (!n) {
 				if (avgColor.Alpha () / nAlpha > 5.0f)
-					m_bmP->AddFlags (BM_FLAG_TRANSPARENT);
+					m_pBm->AddFlags (BM_FLAG_TRANSPARENT);
 				else
-					m_bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
+					m_pBm->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
 				}
-			m_bmP->TransparentFrames () [n / 32] |= (1 << (n % 32));
+			m_pBm->TransparentFrames () [n / 32] |= (1 << (n % 32));
 			}
 		if (nSuperTransp > w * w / 2000) {
 			if (!n)
-				m_bmP->AddFlags (BM_FLAG_SUPER_TRANSPARENT);
-			//m_bmP->AddFlags (BM_FLAG_SEE_THRU);
-			m_bmP->SuperTranspFrames () [n / 32] |= (1 << (n % 32));
+				m_pBm->AddFlags (BM_FLAG_SUPER_TRANSPARENT);
+			//m_pBm->AddFlags (BM_FLAG_SEE_THRU);
+			m_pBm->SuperTranspFrames () [n / 32] |= (1 << (n % 32));
 			}
 		}
 	}
 avgColorb.Red () = uint8_t (avgColor.Red () / nVisible);
 avgColorb.Green () = uint8_t (avgColor.Green () / nVisible);
 avgColorb.Blue () = uint8_t (avgColor.Blue () / nVisible);
-m_bmP->SetAvgColor (avgColorb);
+m_pBm->SetAvgColor (avgColorb);
 if (!nAlpha)
 	ConvertToRGB ();
 }
@@ -316,39 +316,39 @@ int32_t CTGA::ReadData (CFile& cf, int32_t alpha, double brightness, int32_t bGr
 {
 	int32_t	nBytes = int32_t (m_header.Bits ()) / 8;
 
-m_bmP->AddFlags (BM_FLAG_TGA);
-m_bmP->SetBPP (nBytes);
-if (!(m_bmP->Buffer () || m_bmP->CreateBuffer ()))
+m_pBm->AddFlags (BM_FLAG_TGA);
+m_pBm->SetBPP (nBytes);
+if (!(m_pBm->Buffer () || m_pBm->CreateBuffer ()))
 	 return 0;
-m_bmP->SetTranspType (-1);
-memset (m_bmP->TransparentFrames (), 0, 4 * sizeof (int32_t));
-memset (m_bmP->SuperTranspFrames (), 0, 4 * sizeof (int32_t));
+m_pBm->SetTranspType (-1);
+memset (m_pBm->TransparentFrames (), 0, 4 * sizeof (int32_t));
+memset (m_pBm->SuperTranspFrames (), 0, 4 * sizeof (int32_t));
 #if 1
 if (bReverse)
-	m_bmP->Read (cf);
+	m_pBm->Read (cf);
 else {
-	int32_t		h = m_bmP->Height ();
-	int32_t		w = m_bmP->RowSize ();
-	uint8_t*	bufP = m_bmP->Buffer () + w * h;
+	int32_t		h = m_pBm->Height ();
+	int32_t		w = m_pBm->RowSize ();
+	uint8_t*	pBuffer = m_pBm->Buffer () + w * h;
 	while (h--) {
-		bufP -= w;
-		cf.Read (bufP, 1, w);
+		pBuffer -= w;
+		cf.Read (pBuffer, 1, w);
 		}
 	}
 SetProperties (alpha, bGrayScale, brightness, bReverse == 0);
 #else
 	int32_t			i, j, n, nAlpha = 0, nVisible = 0, nFrames;
-	int32_t			h = m_bmP->Height ();
-	int32_t			w = m_bmP->Width ();
+	int32_t			h = m_pBm->Height ();
+	int32_t			w = m_pBm->Width ();
 	CFloatVector3	avgColor;
 	CRGBColor		avgColorb;
 	float				vec, avgAlpha = 0;
 
 avgColor.Red () = avgColor.Green () = avgColor.Blue () = 0;
-m_bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
+m_pBm->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 if (m_header.Bits () == 24) {
 	tBGRA	coord;
-	CRGBColor *p = reinterpret_cast<CRGBColor*> (m_bmP->Buffer ()) + w * (h - 1);
+	CRGBColor *p = reinterpret_cast<CRGBColor*> (m_pBm->Buffer ()) + w * (h - 1);
 
 	for (i = h; i; i--) {
 		for (j = w; j; j--, p++) {
@@ -374,10 +374,10 @@ if (m_header.Bits () == 24) {
 		}
 	}
 else {
-	m_bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
+	m_pBm->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
 	if (bReverse) {
 		tRGBA			coord;
-		CRGBAColor	*p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ());
+		CRGBAColor	*p = reinterpret_cast<CRGBAColor*> (m_pBm->Buffer ());
 		int32_t nSuperTransp;
 
 		nFrames = h / w - 1;
@@ -410,12 +410,12 @@ else {
 					}
 				if (p->Alpha () < MIN_OPACITY) {
 					if (!n) {
-						m_bmP->AddFlags (BM_FLAG_TRANSPARENT);
+						m_pBm->AddFlags (BM_FLAG_TRANSPARENT);
 						if (p->Alpha ())
-							m_bmP->DelFlags (BM_FLAG_SEE_THRU);
+							m_pBm->DelFlags (BM_FLAG_SEE_THRU);
 						}
-					if (bmP)
-						m_bmP->TransparentFrames () [n / 32] |= (1 << (n % 32));
+					if (pBm)
+						m_pBm->TransparentFrames () [n / 32] |= (1 << (n % 32));
 					avgAlpha += p->Alpha ();
 					nAlpha++;
 					}
@@ -427,14 +427,14 @@ else {
 				}
 			if (nSuperTransp > 50) {
 				if (!n)
-					m_bmP->AddFlags (BM_FLAG_SUPER_TRANSPARENT);
-				m_bmP->SuperTranspFrames () [n / 32] |= (1 << (n % 32));
+					m_pBm->AddFlags (BM_FLAG_SUPER_TRANSPARENT);
+				m_pBm->SuperTranspFrames () [n / 32] |= (1 << (n % 32));
 				}
 			}
 		}
 	else {
 		tBGRA	coord;
-		CRGBAColor *p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ()) + w * (h - 1);
+		CRGBAColor *p = reinterpret_cast<CRGBAColor*> (m_pBm->Buffer ()) + w * (h - 1);
 		int32_t nSuperTransp;
 
 		nFrames = h / w - 1;
@@ -467,11 +467,11 @@ else {
 					}
 				if (p->Alpha () < MIN_OPACITY) {
 					if (!n) {
-						m_bmP->AddFlags (BM_FLAG_TRANSPARENT);
+						m_pBm->AddFlags (BM_FLAG_TRANSPARENT);
 						if (p->Alpha ())
-							m_bmP->DelFlags (BM_FLAG_SEE_THRU);
+							m_pBm->DelFlags (BM_FLAG_SEE_THRU);
 						}
-					m_bmP->TransparentFrames () [n / 32] |= (1 << (n % 32));
+					m_pBm->TransparentFrames () [n / 32] |= (1 << (n % 32));
 					avgAlpha += p->Alpha ();
 					nAlpha++;
 					}
@@ -483,8 +483,8 @@ else {
 				}
 			if (nSuperTransp > w * w / 2000) {
 				if (!n)
-					m_bmP->AddFlags (BM_FLAG_SUPER_TRANSPARENT);
-				m_bmP->SuperTranspFrames () [n / 32] |= (1 << (n % 32));
+					m_pBm->AddFlags (BM_FLAG_SUPER_TRANSPARENT);
+				m_pBm->SuperTranspFrames () [n / 32] |= (1 << (n % 32));
 				}
 			p -= 2 * w;
 			}
@@ -494,9 +494,9 @@ vec = (float) nVisible / 255.0f;
 avgColorb.Red () = (uint8_t) (avgColor.Red () / vec);
 avgColorb.Green () = (uint8_t) (avgColor.Green () / vec);
 avgColorb.Blue () = (uint8_t) (avgColor.Blue () / vec);
-m_bmP->SetAvgColor (avgColorb);
+m_pBm->SetAvgColor (avgColorb);
 if (!nAlpha)
-	ConvertToRGB (bmP);
+	ConvertToRGB (pBm);
 #endif
 return 1;
 }
@@ -506,14 +506,14 @@ return 1;
 int32_t CTGA::WriteData (void)
 {
 	int32_t				i, j;
-	int32_t				h = m_bmP->Height ();
-	int32_t				w = m_bmP->Width ();
+	int32_t				h = m_pBm->Height ();
+	int32_t				w = m_pBm->Width ();
 
 if (m_header.Bits () == 24) {
-	if (m_bmP->BPP () == 3) {
+	if (m_pBm->BPP () == 3) {
 		tBGR	c;
-		CRGBColor *p = reinterpret_cast<CRGBColor*> (m_bmP->Buffer ()) + w * (m_bmP->Height () - 1);
-		for (i = m_bmP->Height (); i; i--) {
+		CRGBColor *p = reinterpret_cast<CRGBColor*> (m_pBm->Buffer ()) + w * (m_pBm->Height () - 1);
+		for (i = m_pBm->Height (); i; i--) {
 			for (j = w; j; j--, p++) {
 				c.r = p->Red ();
 				c.g = p->Green ();
@@ -526,8 +526,8 @@ if (m_header.Bits () == 24) {
 		}
 	else {
 		tBGR	c;
-		CRGBAColor *p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ()) + w * (m_bmP->Height () - 1);
-		for (i = m_bmP->Height (); i; i--) {
+		CRGBAColor *p = reinterpret_cast<CRGBAColor*> (m_pBm->Buffer ()) + w * (m_pBm->Height () - 1);
+		for (i = m_pBm->Height (); i; i--) {
 			for (j = w; j; j--, p++) {
 				c.r = p->Red ();
 				c.g = p->Green ();
@@ -541,7 +541,7 @@ if (m_header.Bits () == 24) {
 	}
 else {
 	tBGRA	c;
-	CRGBAColor *p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ()) + w * (m_bmP->Height () - 1);
+	CRGBAColor *p = reinterpret_cast<CRGBAColor*> (m_pBm->Buffer ()) + w * (m_pBm->Height () - 1);
 	int32_t bShaderMerge = gameOpts->ogl.bGlTexMerge;
 	for (i = 0; i < h; i++) {
 		for (j = w; j; j--, p++) {
@@ -572,14 +572,14 @@ return 1;
 
 int32_t CTGA::Load (int32_t alpha, double brightness, int32_t bGrayScale)
 {
-return m_header.Read (m_cf, m_bmP) && ReadData (m_cf, alpha, brightness, bGrayScale, m_header.m_data.yStart != 0);
+return m_header.Read (m_cf, m_pBm) && ReadData (m_cf, alpha, brightness, bGrayScale, m_header.m_data.yStart != 0);
 }
 
 //---------------------------------------------------------------
 
 int32_t CTGA::Write (void)
 {
-return m_header.Write (m_cf, m_bmP) && WriteData ();
+return m_header.Write (m_cf, m_pBm) && WriteData ();
 }
 
 //---------------------------------------------------------------
@@ -614,17 +614,17 @@ if (!m_cf.Exist (szImage, NULL, 0)) {
 #	endif
 	}
 
-SDL_Surface*	imageP;
+SDL_Surface*	pImage;
 
-if (!(imageP = IMG_Load (szImage)))
+if (!(pImage = IMG_Load (szImage)))
 	return 0;
-m_bmP->SetWidth (imageP->w);
-m_bmP->SetHeight (imageP->h);
-m_bmP->SetBPP (imageP->format->BytesPerPixel);
-if (!m_bmP->CreateBuffer ())
+m_pBm->SetWidth (pImage->w);
+m_pBm->SetHeight (pImage->h);
+m_pBm->SetBPP (pImage->format->BytesPerPixel);
+if (!m_pBm->CreateBuffer ())
 	return 0;
-memcpy (m_bmP->Buffer (), imageP->pixels, m_bmP->Size ());
-SDL_FreeSurface (imageP);
+memcpy (m_pBm->Buffer (), pImage->pixels, m_pBm->Size ());
+SDL_FreeSurface (pImage);
 SetProperties (alpha, bGrayScale, brightness);
 return 1;
 }
@@ -654,7 +654,7 @@ if (!pszFolder) {
 	}
 
 #if TEXTURE_COMPRESSION
-if (m_bmP->ReadS3TC (pszFolder, m_szFilename))
+if (m_pBm->ReadS3TC (pszFolder, m_szFilename))
 	return 1;
 #endif
 if (bAutoComplete && !(psz = const_cast<char*> (strstr (pszFile, ".tga")))) {
@@ -667,8 +667,8 @@ if (bAutoComplete && !(psz = const_cast<char*> (strstr (pszFile, ".tga")))) {
 m_cf.Open (pszFile, pszFolder, "rb", 0);
 r = (m_cf.File() != NULL) && Load (alpha, brightness, bGrayScale);
 #if TEXTURE_COMPRESSION
-if (r && CompressTGA (bmP))
-	m_bmP->SaveS3TC (pszFolder, pszFile);
+if (r && CompressTGA (pBm))
+	m_pBm->SaveS3TC (pszFolder, pszFile);
 #endif
 m_cf.Close ();
 }
@@ -680,20 +680,20 @@ return r;
 
 CBitmap* CTGA::CreateAndRead (char* pszFile)
 {
-if (!(m_bmP = CBitmap::Create (0, 0, 0, 4)))
+if (!(m_pBm = CBitmap::Create (0, 0, 0, 4)))
 	return NULL;
 
 char szName [FILENAME_LEN], szExt [FILENAME_LEN];
 CFile::SplitPath (pszFile, NULL, szName, szExt);
-sprintf (m_bmP->Name (), "%s%s", szName, szExt);
+sprintf (m_pBm->Name (), "%s%s", szName, szExt);
 
 if (Read (pszFile, NULL, -1, 1.0, 0)) {
-	m_bmP->SetType (BM_TYPE_ALT);
-	return m_bmP;
+	m_pBm->SetType (BM_TYPE_ALT);
+	return m_pBm;
 	}
-m_bmP->SetType (BM_TYPE_ALT);
-delete m_bmP;
-return m_bmP = NULL;
+m_pBm->SetType (BM_TYPE_ALT);
+delete m_pBm;
+return m_pBm = NULL;
 }
 
 //	-----------------------------------------------------------------------------
@@ -706,7 +706,7 @@ int32_t CTGA::Save (const char *pszFile, const char *pszFolder)
 if (!pszFolder)
 	pszFolder = gameFolders.game.szData [0];
 CFile::SplitPath (pszFile, NULL, fn, NULL);
-sprintf (szFolder, "%s%d/", pszFolder, m_bmP->Width ());
+sprintf (szFolder, "%s%d/", pszFolder, m_pBm->Width ());
 strcat (fn, ".tga");
 r = m_cf.Open (fn, szFolder, "wb", 0) && Write ();
 if (m_cf.File ())
@@ -718,30 +718,30 @@ return r;
 
 int32_t CTGA::Shrink (int32_t xFactor, int32_t yFactor, int32_t bRealloc)
 {
-	int32_t		bpp = m_bmP->BPP ();
+	int32_t		bpp = m_pBm->BPP ();
 	int32_t		xSrc, ySrc, xMax, yMax, xDest, yDest, x, y, w, h, i, nFactor2, nSuperTransp, bSuperTransp;
 	uint8_t		*dataP, *pSrc, *pDest;
 	int32_t		cSum [4];
 
 	static uint8_t superTranspKeys [3] = {120,88,128};
 
-if (!m_bmP->Buffer ())
+if (!m_pBm->Buffer ())
 	return 0;
 if ((xFactor < 1) || (yFactor < 1))
 	return 0;
 if ((xFactor == 1) && (yFactor == 1))
 	return 0;
-w = m_bmP->Width ();
-h = m_bmP->Height ();
+w = m_pBm->Width ();
+h = m_pBm->Height ();
 xMax = w / xFactor;
 yMax = h / yFactor;
 nFactor2 = xFactor * yFactor;
 if (!bRealloc)
-	pDest = dataP = m_bmP->Buffer ();
+	pDest = dataP = m_pBm->Buffer ();
 else {
 	if (!(dataP = new uint8_t [xMax * yMax * bpp]))
 		return 0;
-	UseBitmapCache (m_bmP, (int32_t) -m_bmP->Height () * int32_t (m_bmP->RowSize ()));
+	UseBitmapCache (m_pBm, (int32_t) -m_pBm->Height () * int32_t (m_pBm->RowSize ()));
 	pDest = dataP;
 	}
 if (bpp == 3) {
@@ -751,7 +751,7 @@ if (bpp == 3) {
 			ySrc = yDest * yFactor;
 			for (y = yFactor; y; ySrc++, y--) {
 				xSrc = xDest * xFactor;
-				pSrc = m_bmP->Buffer () + (ySrc * w + xSrc) * bpp;
+				pSrc = m_pBm->Buffer () + (ySrc * w + xSrc) * bpp;
 				for (x = xFactor; x; xSrc++, x--) {
 					for (i = 0; i < bpp; i++)
 						cSum [i] += *pSrc++;
@@ -770,7 +770,7 @@ else {
 			nSuperTransp = 0;
 			for (y = yFactor; y; ySrc++, y--) {
 				xSrc = xDest * xFactor;
-				pSrc = m_bmP->Buffer () + (ySrc * w + xSrc) * bpp;
+				pSrc = m_pBm->Buffer () + (ySrc * w + xSrc) * bpp;
 				for (x = xFactor; x; xSrc++, x--) {
 						bSuperTransp = (pSrc [0] == 120) && (pSrc [1] == 88) && (pSrc [2] == 128);
 					if (bSuperTransp) {
@@ -792,7 +792,7 @@ else {
 			else {
 				for (i = 0, bSuperTransp = 1; i < bpp; i++)
 					pDest [i] = (uint8_t) (cSum [i] / (nFactor2 - nSuperTransp));
-				if (!(m_bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT)) {
+				if (!(m_pBm->Flags () & BM_FLAG_SUPER_TRANSPARENT)) {
 					for (i = 0; i < 3; i++)
 						if (pDest [i] != superTranspKeys [i])
 							break;
@@ -808,14 +808,14 @@ else {
 		}
 	}
 if (bRealloc) {
-	m_bmP->DestroyBuffer ();
-	m_bmP->SetBuffer (dataP);
+	m_pBm->DestroyBuffer ();
+	m_pBm->SetBuffer (dataP);
 	}
-m_bmP->SetWidth (xMax);
-m_bmP->SetHeight (yMax);
-m_bmP->SetRowSize (m_bmP->RowSize () / xFactor);
+m_pBm->SetWidth (xMax);
+m_pBm->SetHeight (yMax);
+m_pBm->SetRowSize (m_pBm->RowSize () / xFactor);
 if (bRealloc)
-	UseBitmapCache (m_bmP, int32_t (m_bmP->Height ()) * int32_t (m_bmP->RowSize ()));
+	UseBitmapCache (m_pBm, int32_t (m_pBm->Height ()) * int32_t (m_pBm->RowSize ()));
 return 1;
 }
 
@@ -823,18 +823,18 @@ return 1;
 
 double CTGA::Brightness (void)
 {
-if (!m_bmP)
+if (!m_pBm)
 	return 0;
 else {
-		int32_t		bAlpha = m_bmP->BPP () == 4, i, j;
+		int32_t		bAlpha = m_pBm->BPP () == 4, i, j;
 		uint8_t		*dataP;
 		double	pixelBright, totalBright, nPixels, alpha;
 
-	if (!(dataP = m_bmP->Buffer ()))
+	if (!(dataP = m_pBm->Buffer ()))
 		return 0;
 	totalBright = 0;
 	nPixels = 0;
-	for (i = m_bmP->Width () * m_bmP->Height (); i; i--) {
+	for (i = m_pBm->Width () * m_pBm->Height (); i; i--) {
 		for (pixelBright = 0, j = 0; j < 3; j++)
 			pixelBright += ((double) (*dataP++)) / 255.0;
 		pixelBright /= 3;
@@ -853,17 +853,17 @@ else {
 
 void CTGA::ChangeBrightness (double dScale, int32_t bInverse, int32_t nOffset, int32_t bSkipAlpha)
 {
-if (m_bmP) {
-		int32_t		bpp = m_bmP->BPP (), h, i, j, c, bAlpha = (bpp == 4);
+if (m_pBm) {
+		int32_t		bpp = m_pBm->BPP (), h, i, j, c, bAlpha = (bpp == 4);
 		uint8_t		*dataP;
 
-	if ((dataP = m_bmP->Buffer ())) {
+	if ((dataP = m_pBm->Buffer ())) {
 	if (!bAlpha)
 		bSkipAlpha = 1;
 	else if (bSkipAlpha)
 		bpp = 3;
 		if (nOffset) {
-			for (i = m_bmP->Width () * m_bmP->Height (); i; i--) {
+			for (i = m_pBm->Width () * m_pBm->Height (); i; i--) {
 				for (h = 0, j = 3; j; j--, dataP++) {
 					c = (int32_t) *dataP + nOffset;
 					h += c;
@@ -882,7 +882,7 @@ if (m_bmP) {
 			}
 		else if (dScale && (dScale != 1.0)) {
 			if (dScale < 0) {
-				for (i = m_bmP->Width () * m_bmP->Height (); i; i--) {
+				for (i = m_pBm->Width () * m_pBm->Height (); i; i--) {
 					for (j = bpp; j; j--, dataP++)
 						*dataP = (uint8_t) (*dataP * dScale);
 					if (bSkipAlpha)
@@ -891,7 +891,7 @@ if (m_bmP) {
 				}
 			else if (bInverse) {
 				dScale = 1.0 / dScale;
-				for (i = m_bmP->Width () * m_bmP->Height (); i; i--) {
+				for (i = m_pBm->Width () * m_pBm->Height (); i; i--) {
 					for (j = bpp; j; j--, dataP++)
 						if ((c = 255 - *dataP))
 							*dataP = 255 - (uint8_t) (c * dScale);
@@ -900,7 +900,7 @@ if (m_bmP) {
 					}
 				}
 			else {
-				for (i = m_bmP->Width () * m_bmP->Height (); i; i--) {
+				for (i = m_pBm->Width () * m_pBm->Height (); i; i--) {
 					for (j = bpp; j; j--, dataP++)
 						if ((c = 255 - *dataP)) {
 							c = (int32_t) (*dataP * dScale);
@@ -919,7 +919,7 @@ if (m_bmP) {
 
 int32_t CTGA::Interpolate (int32_t nScale)
 {
-	uint8_t	*bufP, *destP, *srcP1, *srcP2;
+	uint8_t	*pBuffer, *destP, *srcP1, *srcP2;
 	int32_t	nSize, nFrameSize, nStride, nFrames, i, j;
 
 if (nScale < 1)
@@ -927,14 +927,14 @@ if (nScale < 1)
 else if (nScale > 3)
 	nScale = 3;
 nScale = 1 << nScale;
-nFrames = m_bmP->Height () / m_bmP->Width ();
-nFrameSize = m_bmP->Width () * m_bmP->Width () * m_bmP->BPP ();
+nFrames = m_pBm->Height () / m_pBm->Width ();
+nFrameSize = m_pBm->Width () * m_pBm->Width () * m_pBm->BPP ();
 nSize = nFrameSize * nFrames * nScale;
-if (!(bufP = new uint8_t [nSize]))
+if (!(pBuffer = new uint8_t [nSize]))
 	return 0;
-m_bmP->SetHeight (m_bmP->Height () * nScale);
-memset (bufP, 0, nSize);
-for (destP = bufP, srcP1 = m_bmP->Buffer (), i = 0; i < nFrames; i++) {
+m_pBm->SetHeight (m_pBm->Height () * nScale);
+memset (pBuffer, 0, nSize);
+for (destP = pBuffer, srcP1 = m_pBm->Buffer (), i = 0; i < nFrames; i++) {
 	memcpy (destP, srcP1, nFrameSize);
 	destP += nFrameSize * nScale;
 	srcP1 += nFrameSize;
@@ -943,12 +943,12 @@ for (destP = bufP, srcP1 = m_bmP->Buffer (), i = 0; i < nFrames; i++) {
 while (nScale > 1) {
 	nStride = nFrameSize * nScale;
 	for (i = 0; i < nFrames; i++) {
-		srcP1 = bufP + nStride * i;
-		srcP2 = bufP + nStride * ((i + 1) % nFrames);
+		srcP1 = pBuffer + nStride * i;
+		srcP2 = pBuffer + nStride * ((i + 1) % nFrames);
 		destP = srcP1 + nStride / 2;
 		for (j = nFrameSize; j; j--) {
 			*destP++ = (uint8_t) (((int16_t) *srcP1++ + (int16_t) *srcP2++) / 2);
-			if (destP - bufP > nSize)
+			if (destP - pBuffer > nSize)
 				destP = destP;
 			}
 		}
@@ -956,8 +956,8 @@ while (nScale > 1) {
 	nFrames <<= 1;
 	}
 #endif
-m_bmP->DestroyBuffer ();
-m_bmP->SetBuffer (bufP);
+m_pBm->DestroyBuffer ();
+m_pBm->SetBuffer (pBuffer);
 return nFrames;
 }
 
@@ -965,34 +965,34 @@ return nFrames;
 
 int32_t CTGA::MakeSquare (void)
 {
-	uint8_t	*bufP, *destP, *srcP;
+	uint8_t	*pBuffer, *destP, *srcP;
 	int32_t	nSize, nFrameSize, nRowSize, nFrames, i, j, w, q;
 
-nFrames = m_bmP->Height () / m_bmP->Width ();
+nFrames = m_pBm->Height () / m_pBm->Width ();
 if (nFrames < 4)
 	return 0;
 for (q = nFrames; q * q > nFrames; q >>= 1)
 	;
 if (q * q != nFrames)
 	return 0;
-w = m_bmP->Width ();
-nFrameSize = w * w * m_bmP->BPP ();
+w = m_pBm->Width ();
+nFrameSize = w * w * m_pBm->BPP ();
 nSize = nFrameSize * nFrames;
-if (!(bufP = new uint8_t [nSize]))
+if (!(pBuffer = new uint8_t [nSize]))
 	return 0;
-srcP = m_bmP->Buffer ();
-nRowSize = w * m_bmP->BPP ();
-for (destP = bufP, i = 0; i < nFrames; i++) {
+srcP = m_pBm->Buffer ();
+nRowSize = w * m_pBm->BPP ();
+for (destP = pBuffer, i = 0; i < nFrames; i++) {
 	for (j = 0; j < w; j++) {
-		destP = bufP + (i / q) * q * nFrameSize + j * q * nRowSize + (i % q) * nRowSize;
+		destP = pBuffer + (i / q) * q * nFrameSize + j * q * nRowSize + (i % q) * nRowSize;
 		memcpy (destP, srcP, nRowSize);
 		srcP += nRowSize;
 		}
 	}
-m_bmP->DestroyBuffer ();
-m_bmP->SetBuffer (bufP);
-m_bmP->SetWidth (q * w);
-m_bmP->SetHeight (q * w);
+m_pBm->DestroyBuffer ();
+m_pBm->SetBuffer (pBuffer);
+m_pBm->SetWidth (q * w);
+m_pBm->SetHeight (q * w);
 return q;
 }
 
@@ -1013,24 +1013,24 @@ if (nShrinkFactor > 1) {
 	tBase = m_cf.Date (fnBase, bCustom ? gameFolders.mods.szModels [0] : gameFolders.game.szModels, 0);
 	tShrunk = m_cf.Date (fnBase, szShrunkFolder, 0);
 	if ((tShrunk > tBase) && Read (fnBase, szShrunkFolder, -1, 1.0, 0)) {
-		UseBitmapCache (m_bmP, int32_t (m_bmP->Height ()) * int32_t (m_bmP->RowSize ()));
-		return m_bmP;
+		UseBitmapCache (m_pBm, int32_t (m_pBm->Height ()) * int32_t (m_pBm->RowSize ()));
+		return m_pBm;
 		}
 	}
 if (!(Read (pszFile, bCustom ? gameFolders.mods.szModels [bCustom - 1] : gameFolders.game.szModels, -1, 1.0, 0, false) ||
 	   Read (pszFile, bCustom ? gameFolders.mods.szModels [bCustom - 1] : gameFolders.game.szModels, -1, 1.0, 0, true)))
 	return NULL;
-UseBitmapCache (m_bmP, int32_t (m_bmP->Height ()) * int32_t (m_bmP->RowSize ()));
+UseBitmapCache (m_pBm, int32_t (m_pBm->Height ()) * int32_t (m_pBm->RowSize ()));
 if (gameStates.app.bCacheTextures && (nShrinkFactor > 1) &&
-	 (m_bmP->Width () == 512) && Shrink (nShrinkFactor, nShrinkFactor, 1)) {
+	 (m_pBm->Width () == 512) && Shrink (nShrinkFactor, nShrinkFactor, 1)) {
 	strcat (fn, ".tga");
 	if (!m_cf.Open (fn, bCustom ? gameFolders.mods.szModels [bCustom - 1] : gameFolders.game.szModels, "rb", 0))
-		return m_bmP;
+		return m_pBm;
 	if (m_header.Read (m_cf, NULL))
 		Save (fn, gameFolders.var.szModels [bCustom]);
 	m_cf.Close ();
 	}
-return m_bmP;
+return m_pBm;
 }
 
 //------------------------------------------------------------------------------
@@ -1039,17 +1039,17 @@ return m_bmP;
 
 int32_t CModelTextures::ReadBitmap (int32_t i, int32_t bCustom)
 {
-	CBitmap*	bmP = m_bitmaps + i;
-	CTGA		tga (bmP);
+	CBitmap*	pBm = m_bitmaps + i;
+	CTGA		tga (pBm);
 
-bmP->Destroy ();
-if (!(bmP = tga.ReadModelTexture (m_names [i].Buffer (), bCustom)))
+pBm->Destroy ();
+if (!(pBm = tga.ReadModelTexture (m_names [i].Buffer (), bCustom)))
 	return 0;
-if (bmP->Buffer ()) {
-	bmP = bmP->Override (-1);
-	if (bmP->Frames ())
-		bmP = bmP->CurFrame ();
-	bmP->Bind (1);
+if (pBm->Buffer ()) {
+	pBm = pBm->Override (-1);
+	if (pBm->Frames ())
+		pBm = pBm->CurFrame ();
+	pBm->Bind (1);
 	m_bitmaps [i].SetTeam (m_nTeam.Buffer () ? m_nTeam [i] : 0);
 	}
 return 1;

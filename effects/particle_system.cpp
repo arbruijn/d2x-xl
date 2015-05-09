@@ -48,7 +48,7 @@
 int32_t CParticleSystem::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 											int16_t nSegment, int32_t nMaxEmitters, int32_t nMaxParts,
 											float fScale, /*int32_t nDensity, int32_t nPartsPerPos,*/ int32_t nLife, int32_t nSpeed, char nType,
-											int32_t nObject, CFloatVector *colorP, int32_t bBlowUpParts, char nSide)
+											int32_t nObject, CFloatVector *pColor, int32_t bBlowUpParts, char nSide)
 {
 	int32_t		i;
 	CFixVector	vEmittingFace [4];
@@ -60,12 +60,12 @@ if (!m_emitters.Create (nMaxEmitters)) {
 	return 0;
 	}
 
-CObject* objP;
+CObject* pObj;
 
-if (((m_nObject = nObject) < 0x70000000) && (objP = OBJECT (m_nObject))) {
-	m_nSignature = objP->info.nSignature;
-	m_nObjType = objP->info.nType;
-	m_nObjId = objP->info.nId;
+if (((m_nObject = nObject) < 0x70000000) && (pObj = OBJECT (m_nObject))) {
+	m_nSignature = pObj->info.nSignature;
+	m_nObjType = pObj->info.nType;
+	m_nObjId = pObj->info.nId;
 	}
 m_nEmitters = 0;
 m_nLife = nLife;
@@ -74,7 +74,7 @@ m_nBirth = gameStates.app.nSDLTicks [0];
 m_nMaxEmitters = nMaxEmitters;
 for (i = 0; i < nMaxEmitters; i++)
 	if (m_emitters [i].Create (vPos, vDir, mOrient, nSegment, nObject, nMaxParts, fScale, /*nDensity, nPartsPerPos,*/ 
-										nLife, nSpeed, nType, colorP, gameStates.app.nSDLTicks [0], bBlowUpParts, (nSide < 0) ? NULL : vEmittingFace))
+										nLife, nSpeed, nType, pColor, gameStates.app.nSDLTicks [0], bBlowUpParts, (nSide < 0) ? NULL : vEmittingFace))
 		m_nEmitters++;
 	else {
 		particleManager.Destroy (m_nId);
@@ -123,21 +123,21 @@ if (m_bValid < 1)
 	return 0;
 
 	int32_t	h = 0;
-	CParticleEmitter* emitterP = m_emitters.Buffer ();
+	CParticleEmitter* pEmitter = m_emitters.Buffer ();
 
-if (emitterP) {
+if (pEmitter) {
 	if (!particleImageManager.Load (m_nType))
 		return 0;
 	if (m_nObject < 0x70000000) {
-		CObject* objP = OBJECT (m_nObject);
-		if (!objP ||
-			 (objP->info.nType == OBJ_NONE) ||
-			 (objP->info.nSignature != m_nSignature) ||
+		CObject* pObj = OBJECT (m_nObject);
+		if (!pObj ||
+			 (pObj->info.nType == OBJ_NONE) ||
+			 (pObj->info.nSignature != m_nSignature) ||
 			 (particleManager.GetObjectSystem (m_nObject) < 0))
 		SetLife (0);
 		}
-	for (int32_t i = m_nEmitters; i; i--, emitterP++)
-		h += emitterP->Render (nThread);
+	for (int32_t i = m_nEmitters; i; i--, pEmitter++)
+		h += pEmitter->Render (nThread);
 	}
 #if DBG
 if (!h)
@@ -264,7 +264,7 @@ int32_t CParticleSystem::Update (int32_t nThread)
 if (m_bValid < 1)
 	return 0;
 
-	CParticleEmitter*				emitterP;
+	CParticleEmitter*				pEmitter;
 	CArray<CParticleEmitter*>	emitters;
 	int32_t							nEmitters = 0;
 
@@ -272,13 +272,13 @@ if ((m_nObject == 0x7fffffff) && (m_nType <= SMOKE_PARTICLES) &&
 	 (gameStates.app.nSDLTicks [0] - m_nBirth > (MAX_SHRAPNEL_LIFE / I2X (1)) * 1000))
 	SetLife (0);
 
-if ((emitterP = m_emitters.Buffer ()) && emitters.Create (m_nEmitters)) {
-	CObject *objP;
-	bool bKill = (m_nObject < 0x70000000) && (!(objP = OBJECT (m_nObject)) || (objP->info.nSignature != m_nSignature) || (objP->info.nType == OBJ_NONE));
+if ((pEmitter = m_emitters.Buffer ()) && emitters.Create (m_nEmitters)) {
+	CObject *pObj;
+	bool bKill = (m_nObject < 0x70000000) && (!(pObj = OBJECT (m_nObject)) || (pObj->info.nSignature != m_nSignature) || (pObj->info.nType == OBJ_NONE));
 	while (nEmitters < m_nEmitters) {
-		if (!emitterP)
+		if (!pEmitter)
 			return 0;
-		if (emitterP->IsDead (gameStates.app.nSDLTicks [0])) {
+		if (pEmitter->IsDead (gameStates.app.nSDLTicks [0])) {
 			if (!RemoveEmitter (nEmitters)) {
 				m_bDestroy = true;
 				break;
@@ -286,9 +286,9 @@ if ((emitterP = m_emitters.Buffer ()) && emitters.Create (m_nEmitters)) {
 			}
 		else {
 			if (bKill)
-				emitterP->SetLife (0);
-			emitterP->Update (gameStates.app.nSDLTicks [0], nThread);
-			nEmitters++, emitterP++;
+				pEmitter->SetLife (0);
+			pEmitter->Update (gameStates.app.nSDLTicks [0], nThread);
+			nEmitters++, pEmitter++;
 			}
 		}
 	}

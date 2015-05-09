@@ -66,7 +66,7 @@ typedef struct tObjectProducerInfo {
 int32_t StartObjectProducer (int16_t nSegment);
 void DisableObjectProducers (void);
 void InitAllObjectProducers (void);
-void OperateRobotMaker (CObject *objP, int16_t nSegment);
+void OperateRobotMaker (CObject *pObj, int16_t nSegment);
 void SetEquipmentMakerStates (void);
 
 void OldReadObjectProducerInfo(old_tObjProducerInfo *mi, CFile& cf);
@@ -75,7 +75,7 @@ void ReadObjectProducerInfo (tObjectProducerInfo *ps, CFile& cf, bool bOldFormat
 void ResetGenerators (void);
 void UpdateAllProducers (void);
 
-#define PRODUCER_IDX(_producerP)	((int16_t) ((_producerP) - gameData.producers.producers.Buffer ()))
-#define OBJECT_PRODUCER_IDX(_producerP)	((int16_t) ((_objProducerP) - gameData.producers.producers.Buffer ()))
+#define PRODUCER_IDX(_pProducer)	((int16_t) ((_pProducer) - gameData.producers.producers.Buffer ()))
+#define OBJECT_PRODUCER_IDX(_pProducer)	((int16_t) ((_pObjProducer) - gameData.producers.producers.Buffer ()))
 
 #endif

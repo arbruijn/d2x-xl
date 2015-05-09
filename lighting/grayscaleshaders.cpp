@@ -144,7 +144,7 @@ if (!gameOpts->ogl.bGlTexMerge) {
 
 //------------------------------------------------------------------------------
 
-int32_t SetupGrayScaleShader (int32_t nType, CFloatVector *colorP)
+int32_t SetupGrayScaleShader (int32_t nType, CFloatVector *pColor)
 {
 if (!gameStates.render.textures.bHaveGrayScaleShader)
 	return -1;
@@ -157,7 +157,7 @@ if (!shaderProg)
 	return -1;
 shaderManager.Rebuild (shaderProg);
 if (!nType)
-	glUniform4fv (glGetUniformLocation (shaderProg, "faceColor"), 1, reinterpret_cast<GLfloat*> (colorP));
+	glUniform4fv (glGetUniformLocation (shaderProg, "faceColor"), 1, reinterpret_cast<GLfloat*> (pColor));
 else {
 	glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), bLightmaps);
 	if (nType > 1)

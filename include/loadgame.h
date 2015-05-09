@@ -75,7 +75,7 @@ void UpdatePlayerStats (void);
 
 void show_high_scores(int32_t place);
 void draw_high_scores(int32_t place);
-int32_t add_player_to_high_scores(CPlayerInfo *playerP);
+int32_t add_player_to_high_scores(CPlayerInfo *pPlayer);
 void input_name (int32_t place);
 int32_t reset_high_scores();
 
@@ -98,7 +98,7 @@ extern int32_t NumNetPlayerPositions;
 void BashToShield(int32_t, const char *);
 void BashToEnergy(int32_t, const char *);
 
-fix RobotDefaultShield (CObject *objP);
+fix RobotDefaultShield (CObject *pObj);
 
 char *LevelName (int32_t nLevel);
 char *LevelSongName (int32_t nLevel);

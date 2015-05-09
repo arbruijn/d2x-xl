@@ -289,7 +289,7 @@ int32_t PlayerHasWeapon (int32_t nWeapon, int32_t secondaryFlag, int32_t nPlayer
 
 //called when one of these weapons is picked up
 //when you pick up a secondary, you always get the weapon & ammo for it
-int32_t PickupSecondary (CObject *objP, int32_t nWeaponIndex, int32_t nAmount, int32_t nPlayer);
+int32_t PickupSecondary (CObject *pObj, int32_t nWeaponIndex, int32_t nAmount, int32_t nPlayer);
 
 // max. amount of ammo of type 'nWeapon' player can carry depending on equipment (ammo rack) and game settings
 int32_t MaxSecondaryAmmo (int32_t nWeapon);
@@ -301,12 +301,12 @@ int32_t PickupPrimary (int32_t nWeaponIndex, int32_t nPlayer);
 //called when ammo (for the vulcan cannon) is picked up
 int32_t PickupAmmo (int32_t classFlag, int32_t nWeaponIndex, int32_t ammoCount, int32_t nPlayer);
 
-int32_t PickupLaser (CObject *objP, int32_t nId, int32_t nPlayer);
-int32_t PickupSuperLaser (CObject *objP, int32_t nId, int32_t nPlayer);
-int32_t PickupQuadLaser (CObject *objP, int32_t nId, int32_t nPlayer);
-int32_t PickupGun (CObject *objP, int32_t nId, int32_t nPlayer);
-int32_t PickupGatlingGun (CObject *objP, int32_t nId, int32_t nPlayer);
-int32_t PickupVulcanAmmo (CObject *objP, int32_t nPlayer);
+int32_t PickupLaser (CObject *pObj, int32_t nId, int32_t nPlayer);
+int32_t PickupSuperLaser (CObject *pObj, int32_t nId, int32_t nPlayer);
+int32_t PickupQuadLaser (CObject *pObj, int32_t nId, int32_t nPlayer);
+int32_t PickupGun (CObject *pObj, int32_t nId, int32_t nPlayer);
+int32_t PickupGatlingGun (CObject *pObj, int32_t nId, int32_t nPlayer);
+int32_t PickupVulcanAmmo (CObject *pObj, int32_t nPlayer);
 
 int32_t AttemptToStealItem (CObject *objp, int32_t player_num);
 

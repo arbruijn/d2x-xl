@@ -407,9 +407,9 @@ m_vMax = CFloatVector3::Create ((float) -1e30, (float) -1e30, (float) -1e30);
 
 //------------------------------------------------------------------------------
 
-void CSubModel::SetMinMax (CFloatVector3 *vertexP)
+void CSubModel::SetMinMax (CFloatVector3 *pVertex)
 {
-	CFloatVector3	v = *vertexP;
+	CFloatVector3	v = *pVertex;
 
 #if 0
 dir.dir.coord.x += X2F (psm->m_vOffset.dir.coord.x);
@@ -455,24 +455,24 @@ for (int32_t i = 0; i < m_nFaces; i++)
 
 //------------------------------------------------------------------------------
 
-void CSubModel::GatherContourEdges (CModel* modelP)
+void CSubModel::GatherContourEdges (CModel* pModel)
 {
-	CModelEdge* edgeP = m_edges.Buffer ();
+	CModelEdge* pEdge = m_edges.Buffer ();
 
-modelP->m_contourEdges.Reset ();
-for (uint16_t i = 0; i < m_nEdges; i++, edgeP++)
-	if (edgeP->IsContour ())
-		modelP->m_contourEdges.Push (i);
+pModel->m_contourEdges.Reset ();
+for (uint16_t i = 0; i < m_nEdges; i++, pEdge++)
+	if (pEdge->IsContour ())
+		pModel->m_contourEdges.Push (i);
 }
 
 //------------------------------------------------------------------------------
 
-void CSubModel::GatherLitFaces (CModel* modelP, CFloatVector3& vLight)
+void CSubModel::GatherLitFaces (CModel* pModel, CFloatVector3& vLight)
 {
-modelP->m_litFaces.Reset ();
+pModel->m_litFaces.Reset ();
 for (uint16_t i = 0; i < m_nFaces; i++)
 	if (m_faces [i].IsLit (vLight))
-		modelP->m_litFaces.Push (m_faces + i);
+		pModel->m_litFaces.Push (m_faces + i);
 }
 
 //------------------------------------------------------------------------------
@@ -480,38 +480,38 @@ for (uint16_t i = 0; i < m_nFaces; i++)
 #define DIST_TOLERANCE	0.001f
 #define MATCH_METHOD		0
 
-#define EDGE_LIST			m_edges	// modelP->m_edges
-#define EDGE_COUNT		m_nEdges	// modelP->m_nEdges
+#define EDGE_LIST			m_edges	// pModel->m_edges
+#define EDGE_COUNT		m_nEdges	// pModel->m_nEdges
 
-int32_t CSubModel::FindEdge (CModel* modelP, uint16_t v1, uint16_t v2)
+int32_t CSubModel::FindEdge (CModel* pModel, uint16_t v1, uint16_t v2)
 {
-	CModelEdge		*edgeP = EDGE_LIST.Buffer ();
+	CModelEdge		*pEdge = EDGE_LIST.Buffer ();
 #if MATCH_METHOD
 	CFloatVector	v [2], d;
 	float				l;
 	
-v [0].Assign (modelP->m_vertices [v1]);
-v [1].Assign (modelP->m_vertices [v2]);
+v [0].Assign (pModel->m_vertices [v1]);
+v [1].Assign (pModel->m_vertices [v2]);
 #endif
 
-for (int32_t i = 0; i < EDGE_COUNT; i++, edgeP++) {
+for (int32_t i = 0; i < EDGE_COUNT; i++, pEdge++) {
 #if !MATCH_METHOD
-	if ((edgeP->m_nFaces < 2) && (edgeP->m_nVertices [0] == v1) && (edgeP->m_nVertices [1] == v2))
+	if ((pEdge->m_nFaces < 2) && (pEdge->m_nVertices [0] == v1) && (pEdge->m_nVertices [1] == v2))
 		return i;
 #elif MATCH_METHOD == 1
-	if (((edgeP->m_vertices [0][0] == v [0]) && (edgeP->m_vertices [0][1] == v [1])) ||
-		 ((edgeP->m_vertices [0][0] == v [1]) && (edgeP->m_vertices [0][1] == v [0])))
+	if (((pEdge->m_vertices [0][0] == v [0]) && (pEdge->m_vertices [0][1] == v [1])) ||
+		 ((pEdge->m_vertices [0][0] == v [1]) && (pEdge->m_vertices [0][1] == v [0])))
 		return i;
 #else
-	d = edgeP->m_vertices [0][0] - v [0];
+	d = pEdge->m_vertices [0][0] - v [0];
 	if ((l = d.Mag ()) < DIST_TOLERANCE) {
-		d = edgeP->m_vertices [0][1] - v [1];
+		d = pEdge->m_vertices [0][1] - v [1];
 		if ((l = d.Mag ()) < DIST_TOLERANCE)
 			return i;
 		}
-	d = edgeP->m_vertices [0][0] - v [1];
+	d = pEdge->m_vertices [0][0] - v [1];
 	if ((l = d.Mag ()) < DIST_TOLERANCE) {
-		d = edgeP->m_vertices [0][1] - v [0];
+		d = pEdge->m_vertices [0][1] - v [0];
 		if ((l = d.Mag ()) < DIST_TOLERANCE)
 			return i;
 		}
@@ -522,47 +522,47 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int32_t CSubModel::AddEdge (CModel *modelP, CFace* faceP, uint16_t v1, uint16_t v2)
+int32_t CSubModel::AddEdge (CModel *pModel, CFace* pFace, uint16_t v1, uint16_t v2)
 {
 if (v1 > v2)
 	Swap (v1, v2);
-int32_t i = FindEdge (modelP, v1, v2);
+int32_t i = FindEdge (pModel, v1, v2);
 
-CModelEdge *edgeP;
+CModelEdge *pEdge;
 
 if (i >= 0) {
-	edgeP = EDGE_LIST + i;
-	if (edgeP->m_faces [0].m_nItem != faceP->m_nSubModel)
+	pEdge = EDGE_LIST + i;
+	if (pEdge->m_faces [0].m_nItem != pFace->m_nSubModel)
 		BRP;
-	if (edgeP->m_nFaces < 1)
-		i = FindEdge (modelP, v1, v2);
-	edgeP->m_nFaces = 2;
-	edgeP->m_faces [1].m_nItem = faceP->m_nSubModel;
-	edgeP->m_faces [1].m_vNormal [0].Assign (faceP->m_vNormalf [0]);
-	edgeP->m_faces [1].m_vCenter [0].Assign (faceP->m_vCenterf [0]);
-	edgeP->Setup ();
+	if (pEdge->m_nFaces < 1)
+		i = FindEdge (pModel, v1, v2);
+	pEdge->m_nFaces = 2;
+	pEdge->m_faces [1].m_nItem = pFace->m_nSubModel;
+	pEdge->m_faces [1].m_vNormal [0].Assign (pFace->m_vNormalf [0]);
+	pEdge->m_faces [1].m_vCenter [0].Assign (pFace->m_vCenterf [0]);
+	pEdge->Setup ();
 	}
 else {
-	edgeP = EDGE_LIST + EDGE_COUNT++;
-	edgeP->m_nFaces = 1;
-	edgeP->m_nVertices [0] = v1;
-	edgeP->m_nVertices [1] = v2;
-	edgeP->m_vertices [0][0].Assign (modelP->m_vertices [v1]);
-	edgeP->m_vertices [0][1].Assign (modelP->m_vertices [v2]);
-	if (faceP->m_nSubModel < 0)
+	pEdge = EDGE_LIST + EDGE_COUNT++;
+	pEdge->m_nFaces = 1;
+	pEdge->m_nVertices [0] = v1;
+	pEdge->m_nVertices [1] = v2;
+	pEdge->m_vertices [0][0].Assign (pModel->m_vertices [v1]);
+	pEdge->m_vertices [0][1].Assign (pModel->m_vertices [v2]);
+	if (pFace->m_nSubModel < 0)
 		BRP;
-	edgeP->m_faces [0].m_nItem = faceP->m_nSubModel;
-	edgeP->m_faces [0].m_vNormal [0].Assign (faceP->m_vNormalf [0]);
-	edgeP->m_faces [0].m_vCenter [0].Assign (faceP->m_vCenterf [0]);
+	pEdge->m_faces [0].m_nItem = pFace->m_nSubModel;
+	pEdge->m_faces [0].m_vNormal [0].Assign (pFace->m_vNormalf [0]);
+	pEdge->m_faces [0].m_vCenter [0].Assign (pFace->m_vCenterf [0]);
 	}
-return edgeP->m_nFaces == 2;
+return pEdge->m_nFaces == 2;
 }
 
 //------------------------------------------------------------------------------
 
-bool CSubModel::BuildEdgeList (CModel* modelP)
+bool CSubModel::BuildEdgeList (CModel* pModel)
 {
-	CFace*			faceP = m_faces;
+	CFace*			pFace = m_faces;
 	CFloatVector3	vCenter;
 	int32_t			nComplete = 0;
 
@@ -570,53 +570,53 @@ vCenter.Assign (m_vCenter);
 m_nEdges = 0;
 
 #if 1
-for (uint16_t i = 0; i < m_nFaces; i++, faceP++)
-	m_nEdges += faceP->m_nVerts;
+for (uint16_t i = 0; i < m_nFaces; i++, pFace++)
+	m_nEdges += pFace->m_nVerts;
 if (!(m_edges.Create (m_nEdges)))
 	return false;
 m_nEdges = 0;
 #endif
 
-faceP = m_faces;
-for (uint16_t i = 0; i < m_nFaces; i++, faceP++) {
-	faceP->m_vCenterf [0].SetZero ();
-	for (uint16_t j = 0; j < faceP->m_nVerts; j++)
-		faceP->m_vCenterf [0] += modelP->m_faceVerts [faceP->m_nIndex + j].m_vertex;
-	faceP->m_vCenterf [0] /= float (faceP->m_nVerts);
-	faceP->m_faceWinding = FaceWinding (&modelP->m_faceVerts [faceP->m_nIndex].m_vertex, 
-													&modelP->m_faceVerts [faceP->m_nIndex + 1].m_vertex, 
-													&modelP->m_faceVerts [faceP->m_nIndex + 2].m_vertex);
+pFace = m_faces;
+for (uint16_t i = 0; i < m_nFaces; i++, pFace++) {
+	pFace->m_vCenterf [0].SetZero ();
+	for (uint16_t j = 0; j < pFace->m_nVerts; j++)
+		pFace->m_vCenterf [0] += pModel->m_faceVerts [pFace->m_nIndex + j].m_vertex;
+	pFace->m_vCenterf [0] /= float (pFace->m_nVerts);
+	pFace->m_faceWinding = FaceWinding (&pModel->m_faceVerts [pFace->m_nIndex].m_vertex, 
+													&pModel->m_faceVerts [pFace->m_nIndex + 1].m_vertex, 
+													&pModel->m_faceVerts [pFace->m_nIndex + 2].m_vertex);
 #if 0
-	faceP->m_vNormalf [0].Assign (faceP->m_vNormal);
+	pFace->m_vNormalf [0].Assign (pFace->m_vNormal);
 #else
-	faceP->m_vNormalf [0] = CFloatVector3::Normal (modelP->m_faceVerts [faceP->m_nIndex].m_vertex, 
-																  modelP->m_faceVerts [faceP->m_nIndex + 1].m_vertex, 
-																  modelP->m_faceVerts [faceP->m_nIndex + 2].m_vertex);
+	pFace->m_vNormalf [0] = CFloatVector3::Normal (pModel->m_faceVerts [pFace->m_nIndex].m_vertex, 
+																  pModel->m_faceVerts [pFace->m_nIndex + 1].m_vertex, 
+																  pModel->m_faceVerts [pFace->m_nIndex + 2].m_vertex);
 #	if 0
 #		if 0
-	CFloatVector3 v = faceP->m_vCenterf [0];
+	CFloatVector3 v = pFace->m_vCenterf [0];
 	v -= vCenter;
 	CFloatVector3::Normalize (v);
-	if (CFloatVector3::Dot (v, faceP->m_vNormalf [0]) < 0.0f)
-		faceP->m_vNormalf [0].Neg ();
+	if (CFloatVector3::Dot (v, pFace->m_vNormalf [0]) < 0.0f)
+		pFace->m_vNormalf [0].Neg ();
 #	else
-	if (faceP->m_faceWinding == GL_CW)
-		faceP->m_vNormalf [0].Neg ();
+	if (pFace->m_faceWinding == GL_CW)
+		pFace->m_vNormalf [0].Neg ();
 #		endif
 #	endif
-	faceP->m_vNormal.Assign (faceP->m_vNormalf [0]);
+	pFace->m_vNormal.Assign (pFace->m_vNormalf [0]);
 #endif
 
-	for (uint16_t j = 0; j < faceP->m_nVerts; j++)
-		if (AddEdge (modelP, faceP, modelP->m_faceVerts [faceP->m_nIndex + j].m_nIndex, modelP->m_faceVerts [faceP->m_nIndex + (j + 1) % faceP->m_nVerts].m_nIndex))
+	for (uint16_t j = 0; j < pFace->m_nVerts; j++)
+		if (AddEdge (pModel, pFace, pModel->m_faceVerts [pFace->m_nIndex + j].m_nIndex, pModel->m_faceVerts [pFace->m_nIndex + (j + 1) % pFace->m_nVerts].m_nIndex))
 			++nComplete;
 	}
 
 #if 0 //DBG
-CModelEdge *edgeP = m_edges.Buffer ();
+CModelEdge *pEdge = m_edges.Buffer ();
 int32_t nIncomplete = 0;
-for (int32_t i = m_nEdges; i; i--, edgeP++) 
-	if (edgeP->m_nFaces < 2) 
+for (int32_t i = m_nEdges; i; i--, pEdge++) 
+	if (pEdge->m_nFaces < 2) 
 		nIncomplete++;
 #endif
 
@@ -670,10 +670,10 @@ for (i = 0; i < m_nSubModels; i++) {
 	}
 
 #if 0// DBG
-CModelEdge *edgeP = m_edges.Buffer ();
+CModelEdge *pEdge = m_edges.Buffer ();
 int32_t nIncomplete = 0;
-for (int32_t i = m_nEdges; i; i--, edgeP++) 
-	if (edgeP->m_nFaces < 2) 
+for (int32_t i = m_nEdges; i; i--, pEdge++) 
+	if (pEdge->m_nFaces < 2) 
 		nIncomplete++;
 #endif
 
@@ -740,7 +740,7 @@ gameStates.render.DisableCartoonStyle ();
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::Shift (CObject *objP, int32_t bHires, CFloatVector3 *vOffsetfP)
+int32_t CModel::Shift (CObject *pObj, int32_t bHires, CFloatVector3 *vOffsetfP)
 {
 #if 1
 return 0;
@@ -750,11 +750,11 @@ return 0;
 	CFloatVector3		vOffsetf;
 	CVertex*				pmv;
 
-if (objP->info.nType == OBJ_PLAYER) {
+if (pObj->info.nType == OBJ_PLAYER) {
 	if (IsMultiGame && !IsCoopGame)
 		return 0;
 	}
-else if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_HOSTAGE) && (objP->info.nType != OBJ_POWERUP))
+else if ((pObj->info.nType != OBJ_ROBOT) && (pObj->info.nType != OBJ_HOSTAGE) && (pObj->info.nType != OBJ_POWERUP))
 	return 0;
 if (vOffsetfP)
 	vOffsetf = *vOffsetfP;
@@ -785,7 +785,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CSubModel::Size (CModel* pm, CObject* objP, CFixVector* vOffset)
+void CSubModel::Size (CModel* pm, CObject* pObj, CFixVector* vOffset)
 {
 	tHitbox		*phb = (m_nHitbox < 0) ? NULL : gameData.models.hitboxes [pm->m_nModel].hitboxes + m_nHitbox;
 	CFixVector	vMin, vMax, vOffs;
@@ -812,7 +812,7 @@ if (m_bBullets) {
 m_nRad = CFixVector::Dist (vMin, vMax) / 2;
 for (i = 0, j = pm->m_nSubModels, psm = pm->m_subModels.Buffer (); i < j; i++, psm++)
 	if (psm->m_nParent == m_nSubModel)
-		psm->Size (pm, objP, &vOffs);
+		psm->Size (pm, pObj, &vOffs);
 }
 
 //------------------------------------------------------------------------------
@@ -854,7 +854,7 @@ return (uint16_t) (pi - vertices) + 1;
 
 //------------------------------------------------------------------------------
 
-fix CModel::Radius (CObject *objP)
+fix CModel::Radius (CObject *pObj)
 {
 	CSubModel*					psm;
 	CFace*						pmf;
@@ -947,7 +947,7 @@ return F2X (fRad);
 
 //------------------------------------------------------------------------------
 
-fix CModel::Size (CObject *objP, int32_t bHires)
+fix CModel::Size (CObject *pObj, int32_t bHires)
 {
 	CSubModel*		psm;
 	int32_t			i, j;
@@ -984,10 +984,10 @@ do {
 	if (bHires) {
 		for (i = 0; i < m_nSubModels; i++)
 			if (m_subModels [i].m_nParent == -1)
-				m_subModels [i].Size (this, objP, NULL);
+				m_subModels [i].Size (this, pObj, NULL);
 		}
 	else
-		m_subModels [0].Size (this, objP, NULL);
+		m_subModels [0].Size (this, pObj, NULL);
 	// determine min and max size
 	for (i = 0, psm = m_subModels.Buffer (); i < m_nSubModels; i++, psm++) {
 		if (0 < (j = psm->m_nHitbox)) {
@@ -1024,7 +1024,7 @@ do {
 		gameData.models.offsets [m_nModel].v.coord.y = (phb [0].vMin.v.coord.y + phb [0].vMax.v.coord.y) / -2;
 		gameData.models.offsets [m_nModel].v.coord.z = (phb [0].vMin.v.coord.z + phb [0].vMax.v.coord.z) / -2;
 		}
-	} while (Shift (objP, bHires, NULL));
+	} while (Shift (pObj, bHires, NULL));
 
 psm = m_subModels.Buffer ();
 vOffset = psm->m_vMin - vOffset;
@@ -1036,14 +1036,14 @@ if (m_nModel == nDbgModel)
 #if 1
 //VmVecInc (&psm [0].vOffset, gameData.models.offsets + m_nModel);
 #else
-G3ShiftModel (objP, m_nModel, bHires, &vOffset);
+G3ShiftModel (pObj, m_nModel, bHires, &vOffset);
 #endif
 phb [0].vSize = phb [0].vMax - phb [0].vMin;
 gameData.models.offsets [m_nModel] = CFixVector::Avg (phb [0].vMax, phb [0].vMin);
 //phb [0].vOffset = gameData.models.offsets [m_nModel];
 for (i = 0; i <= j; i++)
 	ComputeHitbox (m_nModel, i);
-return Radius (objP);
+return Radius (pObj);
 }
 
 //------------------------------------------------------------------------------
@@ -1142,16 +1142,16 @@ return h;
 
 //------------------------------------------------------------------------------
 
-fix G3ModelRad (CObject *objP, int32_t m_nModel, int32_t bHires)
+fix G3ModelRad (CObject *pObj, int32_t m_nModel, int32_t bHires)
 {
-return gameData.models.renderModels [bHires][m_nModel].Radius (objP);
+return gameData.models.renderModels [bHires][m_nModel].Radius (pObj);
 }
 
 //------------------------------------------------------------------------------
 
-fix G3ModelSize (CObject *objP, int32_t m_nModel, int32_t bHires)
+fix G3ModelSize (CObject *pObj, int32_t m_nModel, int32_t bHires)
 {
-return gameData.models.renderModels [bHires][m_nModel].Size (objP, bHires);
+return gameData.models.renderModels [bHires][m_nModel].Size (pObj, bHires);
 }
 
 //------------------------------------------------------------------------------
@@ -1170,7 +1170,7 @@ pm->SetRobotGunPoints (po);
 
 //------------------------------------------------------------------------------
 
-void CModel::SetGunPoints (CObject *objP, int32_t bASE)
+void CModel::SetGunPoints (CObject *pObj, int32_t bASE)
 {
 	CFixVector*	vGunPoints;
 	int32_t		nParent, h, i, j;
@@ -1197,9 +1197,9 @@ else {
 	if (!po)
 		po = gameData.models.modelToOOF [0][m_nModel];
 	pp = po->m_gunPoints.Buffer ();
-	if (objP->info.nType == OBJ_PLAYER)
+	if (pObj->info.nType == OBJ_PLAYER)
 		SetShipGunPoints (po);
-	else if (objP->info.nType == OBJ_ROBOT)
+	else if (pObj->info.nType == OBJ_ROBOT)
 		SetRobotGunPoints (po);
 	else {
 		gameData.models.gunInfo [m_nModel].nGuns = 0;
@@ -1225,7 +1225,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int32_t G3BuildModel (CObject* objP, int32_t nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* pObjColor, int32_t bHires)
+int32_t G3BuildModel (CObject* pObj, int32_t nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* pObjColor, int32_t bHires)
 {
 	RenderModel::CModel*	pm = gameData.models.renderModels [bHires] + nModel;
 
@@ -1241,9 +1241,9 @@ if (nModel == nDbgModel)
 pm->Init ();
 return bHires
 		 ? GetASEModel (nModel)
-			? pm->BuildFromASE (objP, nModel)
-			: pm->BuildFromOOF (objP, nModel)
-		 : pm->BuildFromPOF (objP, nModel, pp, modelBitmaps, pObjColor);
+			? pm->BuildFromASE (pObj, nModel)
+			: pm->BuildFromOOF (pObj, nModel)
+		 : pm->BuildFromPOF (pObj, nModel, pp, modelBitmaps, pObjColor);
 }
 
 //------------------------------------------------------------------------------

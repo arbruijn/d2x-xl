@@ -33,15 +33,15 @@ extern char bNameReturning;
 
 void MultiSendMessage (void)
 {
-	int32_t bufP = 0;
+	int32_t pBuffer = 0;
 
 if (gameData.multigame.msg.nReceiver != -1) {
-	gameData.multigame.msg.buf [bufP++] = (uint8_t) MULTI_MESSAGE;            
-	gameData.multigame.msg.buf [bufP++] = (uint8_t) N_LOCALPLAYER;                       
-	strncpy ((char*) gameData.multigame.msg.buf + bufP, gameData.multigame.msg.szMsg, MAX_MESSAGE_LEN); 
-	bufP += MAX_MESSAGE_LEN;
-	gameData.multigame.msg.buf [bufP-1] = '\0';
-	MultiSendData (gameData.multigame.msg.buf, bufP, 0);
+	gameData.multigame.msg.buf [pBuffer++] = (uint8_t) MULTI_MESSAGE;            
+	gameData.multigame.msg.buf [pBuffer++] = (uint8_t) N_LOCALPLAYER;                       
+	strncpy ((char*) gameData.multigame.msg.buf + pBuffer, gameData.multigame.msg.szMsg, MAX_MESSAGE_LEN); 
+	pBuffer += MAX_MESSAGE_LEN;
+	gameData.multigame.msg.buf [pBuffer-1] = '\0';
+	MultiSendData (gameData.multigame.msg.buf, pBuffer, 0);
 	gameData.multigame.msg.nReceiver = -1;
 	}
 }
@@ -517,54 +517,54 @@ if ((choice > -1) && (strlen (gameData.multigame.msg.szMsg) > 0)) {
 
 //-----------------------------------------------------------------------------
 
-static int32_t IsTeamId (char *bufP, int32_t nLen)
+static int32_t IsTeamId (char *pBuffer, int32_t nLen)
 {
 	int32_t	i;
 
 if (!IsTeamGame)
 	return 0;
-i = atoi (bufP);
+i = atoi (pBuffer);
 if ((i >= 1) && (i <= 2))
 	return 1;
 for (i = 0; i < 2; i++)
-	if (!strnicmp (netGameInfo.m_info.szTeamName [i], bufP, nLen))
+	if (!strnicmp (netGameInfo.m_info.szTeamName [i], pBuffer, nLen))
 		return 1;
 return 0;
 }
 
 //-----------------------------------------------------------------------------
 
-static int32_t IsMyTeamId (char *bufP, int32_t nLen)
+static int32_t IsMyTeamId (char *pBuffer, int32_t nLen)
 {
 	int32_t	i;
 
 if (!IsTeamGame)
 	return 0;
 i = GetTeam (N_LOCALPLAYER);
-if (i == atoi (bufP) - 1)
+if (i == atoi (pBuffer) - 1)
 	return 1;
-if (!strnicmp (netGameInfo.m_info.szTeamName [i], bufP, nLen))
+if (!strnicmp (netGameInfo.m_info.szTeamName [i], pBuffer, nLen))
 	return 1;
 return 0;
 }
 
 //-----------------------------------------------------------------------------
 
-static int32_t IsPlayerId (char *bufP, int32_t nLen)
+static int32_t IsPlayerId (char *pBuffer, int32_t nLen)
 {
 	int32_t	i;
 
 for (i = 0; i < N_PLAYERS; i++)
-	if (!strnicmp (PLAYER (i).callsign, bufP, nLen))
+	if (!strnicmp (PLAYER (i).callsign, pBuffer, nLen))
 		return 1;
 return 0;
 }
 
 //-----------------------------------------------------------------------------
 
-static int32_t IsMyPlayerId (char *bufP, int32_t nLen)
+static int32_t IsMyPlayerId (char *pBuffer, int32_t nLen)
 {
-return strnicmp (LOCALPLAYER.callsign, bufP, nLen) == 0;
+return strnicmp (LOCALPLAYER.callsign, pBuffer, nLen) == 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -574,21 +574,21 @@ void MultiDoMsg (uint8_t* buf)
 	char *colon;
 	char *tilde, msgBuf [200];
 	int32_t tloc, t, l;
-	int32_t bufP = 2;
+	int32_t pBuffer = 2;
 
-if ((tilde = strchr ((char*) buf + bufP, '$'))) { 
-	tloc = (int32_t) (tilde - ((char*) buf + bufP));			
+if ((tilde = strchr ((char*) buf + pBuffer, '$'))) { 
+	tloc = (int32_t) (tilde - ((char*) buf + pBuffer));			
 	if (tloc > 0)
-		strncpy (msgBuf, (char*) buf + bufP, tloc);
+		strncpy (msgBuf, (char*) buf + pBuffer, tloc);
 	strcpy (msgBuf + tloc, LOCALPLAYER.callsign);
-	strcpy (msgBuf + strlen (LOCALPLAYER.callsign) + tloc, (char*) buf + bufP + tloc + 1);
-	strcpy ((char*) buf + bufP, msgBuf);
+	strcpy (msgBuf + strlen (LOCALPLAYER.callsign) + tloc, (char*) buf + pBuffer + tloc + 1);
+	strcpy ((char*) buf + pBuffer, msgBuf);
 	}
-if ((colon = strrchr ((char*) buf + bufP, ':'))) {	//message may be addressed to a certain team or CPlayerData
-	l = (int32_t) (colon - ((char*) buf + bufP));
+if ((colon = strrchr ((char*) buf + pBuffer, ':'))) {	//message may be addressed to a certain team or CPlayerData
+	l = (int32_t) (colon - ((char*) buf + pBuffer));
 	if (l && (l <= CALLSIGN_LEN) &&
-		 ((IsTeamId ((char*) buf + bufP, l) && !IsMyTeamId ((char*) buf + bufP, l)) ||
-		  (IsPlayerId ((char*) buf + bufP, l) && !IsMyPlayerId ((char*) buf + bufP, l))))
+		 ((IsTeamId ((char*) buf + pBuffer, l) && !IsMyTeamId ((char*) buf + pBuffer, l)) ||
+		  (IsPlayerId ((char*) buf + pBuffer, l) && !IsMyPlayerId ((char*) buf + pBuffer, l))))
 		return;
 	}
 msgBuf [0] = (char) 1;

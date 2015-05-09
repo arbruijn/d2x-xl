@@ -114,15 +114,15 @@ return i;
 
 int32_t KillAllBuddyBots (int32_t bVerbose)
 {
-	CObject*		objP;
+	CObject*		pObj;
 	int32_t		nKilled = 0;
 
-FORALL_ROBOT_OBJS (objP)
-	if (objP->IsGuideBot ()) {
+FORALL_ROBOT_OBJS (pObj)
+	if (pObj->IsGuideBot ()) {
 		if (gameStates.app.bNostalgia)
-			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			pObj->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else 
-			objP->ApplyDamageToRobot (objP->info.xShield + 1, -1);
+			pObj->ApplyDamageToRobot (pObj->info.xShield + 1, -1);
 		if (bVerbose)
 			HUDInitMessage (TXT_BUDDY_TOASTED);
 		nKilled++;
@@ -136,18 +136,18 @@ return nKilled;
 
 void KillAllRobots (int32_t bVerbose)
 {
-	CObject*		objP;
+	CObject*		pObj;
 	int32_t		nKilled = 0;
 	
 // Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
-FORALL_ROBOT_OBJS (objP) {
-	if (!(objP->IsGuideBot () || objP->IsBoss () || objP->IsGeometry ())) {
+FORALL_ROBOT_OBJS (pObj) {
+	if (!(pObj->IsGuideBot () || pObj->IsBoss () || pObj->IsGeometry ())) {
 		nKilled++;
 		if (gameStates.app.bNostalgia)
-			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			pObj->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else {
-			objP->ApplyDamageToRobot (objP->info.xShield + 1, -1);
-			objP->info.nFlags |= OF_ARMAGEDDON;
+			pObj->ApplyDamageToRobot (pObj->info.xShield + 1, -1);
+			pObj->info.nFlags |= OF_ARMAGEDDON;
 			}
 		}
 	}
@@ -162,20 +162,20 @@ if (bVerbose)
 
 void KillAllBossRobots (int32_t bVerbose)
 {
-	CObject*		objP;
+	CObject*		pObj;
 	int32_t		nKilled = 0;
 
 if (gameStates.gameplay.bKillBossCheat)
 	gameStates.gameplay.bKillBossCheat = 0;
 else {
-	FORALL_ROBOT_OBJS (objP) {
-		if (objP->IsBoss ()) {
+	FORALL_ROBOT_OBJS (pObj) {
+		if (pObj->IsBoss ()) {
 			nKilled++;
 			if (gameStates.app.bNostalgia)
-				objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+				pObj->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 			else {
-				objP->ApplyDamageToRobot (objP->info.xShield + 1, -1);
-				objP->info.nFlags |= OF_ARMAGEDDON;
+				pObj->ApplyDamageToRobot (pObj->info.xShield + 1, -1);
+				pObj->info.nFlags |= OF_ARMAGEDDON;
 				}
 			gameStates.gameplay.bKillBossCheat = 1;
 			}
@@ -194,20 +194,20 @@ if (bVerbose)
 void KillEverything (int32_t bVerbose)
 {
 	int32_t  i, j;
-	CObject*	objP;
+	CObject*	pObj;
 
 if (bVerbose)
 	HUDInitMessage (TXT_KILL_ETC);
-FORALL_OBJS (objP) {
-	switch (objP->info.nType) {
+FORALL_OBJS (pObj) {
+	switch (pObj->info.nType) {
 		case OBJ_ROBOT:
-			if (objP->IsGeometry ())
+			if (pObj->IsGeometry ())
 				break;
 		case OBJ_REACTOR:
-			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			pObj->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 			break;
 		case OBJ_POWERUP:
-			DoPowerup (objP, -1);
+			DoPowerup (pObj, -1);
 			break;
 		}
 	}
@@ -221,10 +221,10 @@ for (i = 0; i < gameData.trigData.m_nTriggers [0]; i++) {
 		for (j = 0; j < gameData.wallData.nWalls; j++) {
 			if (WALL (j)->nTrigger == i) {
 				int16_t nSegment = WALL (j)->nSegment;
-				gameData.objData.consoleP->info.position.vPos = SEGMENT (nSegment)->Center ();
-				gameData.objData.consoleP->RelinkToSeg (nSegment);
-				gameData.objData.consoleP->info.position.mOrient.m.dir.f = SEGMENT (nSegment)->m_sides [WALL (j)->nSide].m_normals [0];
-				gameData.objData.consoleP->info.position.mOrient.m.dir.f.Neg ();
+				gameData.objData.pConsole->info.position.vPos = SEGMENT (nSegment)->Center ();
+				gameData.objData.pConsole->RelinkToSeg (nSegment);
+				gameData.objData.pConsole->info.position.mOrient.m.dir.f = SEGMENT (nSegment)->m_sides [WALL (j)->nSide].m_normals [0];
+				gameData.objData.pConsole->info.position.mOrient.m.dir.f.Neg ();
 				return;
 				}
 			}
@@ -239,15 +239,15 @@ gameStates.app.cheats.bEnabled |= 2;
 
 void KillThief (int32_t bVerbose)
 {
-	CObject*	objP;
+	CObject*	pObj;
 
-FORALL_ROBOT_OBJS (objP)
-	if (objP->IsThief ()) {
+FORALL_ROBOT_OBJS (pObj)
+	if (pObj->IsThief ()) {
 		if (gameStates.app.bNostalgia)
-			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+			pObj->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else {
-			objP->ApplyDamageToRobot (objP->info.xShield + 1, -1);
-			objP->info.nFlags |= OF_ARMAGEDDON;
+			pObj->ApplyDamageToRobot (pObj->info.xShield + 1, -1);
+			pObj->info.nFlags |= OF_ARMAGEDDON;
 			}
 		if (bVerbose)
 			HUDInitMessage (TXT_THIEF_TOASTED);
@@ -260,14 +260,14 @@ FORALL_ROBOT_OBJS (objP)
 
 void KillAllSnipers (int32_t bVerbose)
 {
-	CObject*		objP;
+	CObject*		pObj;
 	int32_t		nKilled = 0;
 
 //	Kill all snipers.
-FORALL_ROBOT_OBJS (objP)
-	if ((objP->info.nType == OBJ_ROBOT) && (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
+FORALL_ROBOT_OBJS (pObj)
+	if ((pObj->info.nType == OBJ_ROBOT) && (pObj->cType.aiInfo.behavior == AIB_SNIPE)) {
 		nKilled++;
-		objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+		pObj->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		}
 if (bVerbose)
 	HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
@@ -279,12 +279,12 @@ if (bVerbose)
 
 void KillBuddy (int32_t bVerbose)
 {
-	CObject*	objP;
+	CObject*	pObj;
 
 //	Kill buddy.
-FORALL_ROBOT_OBJS (objP)
-	if (objP->IsGuideBot ()) {
-		objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
+FORALL_ROBOT_OBJS (pObj)
+	if (pObj->IsGuideBot ()) {
+		pObj->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		if (bVerbose)
 			HUDInitMessage (TXT_BUDDY_TOASTED);
 		}
@@ -709,11 +709,11 @@ else
 
 void TriFusionCheat (int32_t bVerbose)
 {
-	CPlayerData	*playerP = &LOCALPLAYER;
+	CPlayerData	*pPlayer = &LOCALPLAYER;
 
 if (gameData.multiplayer.weaponStates [N_LOCALPLAYER].bTripleFusion)
 	return;
-playerP->primaryWeaponFlags |= 1 << FUSION_INDEX;
+pPlayer->primaryWeaponFlags |= 1 << FUSION_INDEX;
 gameData.weapons.bTripleFusion = 1;
 SelectWeapon (4, 0, 1, 1);
 DoCheatPenalty ();

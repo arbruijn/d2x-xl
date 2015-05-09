@@ -40,7 +40,7 @@
 //static SDL_mutex* semaphore;
 #endif
 
-int32_t SegmentIsVisible (CSegment *segP, CTransformation& transformation, int32_t nThread);
+int32_t SegmentIsVisible (CSegment *pSeg, CTransformation& transformation, int32_t nThread);
 
 //------------------------------------------------------------------------------
 
@@ -198,10 +198,10 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-static inline int32_t IsLightVert (int32_t nVertex, CSegFace *faceP)
+static inline int32_t IsLightVert (int32_t nVertex, CSegFace *pFace)
 {
-uint16_t *pv = (gameStates.render.bTriangleMesh ? faceP->triIndex : faceP->m_info.index);
-for (int32_t i = faceP->m_info.nVerts; i; i--, pv++)
+uint16_t *pv = (gameStates.render.bTriangleMesh ? pFace->triIndex : pFace->m_info.index);
+for (int32_t i = pFace->m_info.nVerts; i; i--, pv++)
 	if (*pv == (uint16_t) nVertex)
 		return 1;
 return 0;
@@ -211,8 +211,8 @@ return 0;
 
 int32_t ComputeNearestSegmentLights (int32_t i, int32_t nThread)
 {
-	CSegment*			segP;
-	CDynLight*			lightP;
+	CSegment*			pSeg;
+	CDynLight*			pLight;
 	int32_t					h, j, k, l, n, nMaxLights;
 	CFixVector			center;
 	struct tLightDist	*pDists;
@@ -228,16 +228,16 @@ if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
 
 nMaxLights = MAX_NEAREST_LIGHTS;
 i = GetLoopLimits (i, j, gameData.segData.nSegments, nThread);
-for (segP = SEGMENT (i); i < j; i++, segP++) {
-	center = segP->Center ();
-	lightP = lightManager.Lights ();
-	for (l = n = 0; l < lightManager.LightCount (0); l++, lightP++) {
-		if (!((lightP->info.nSegment < 0) ? gameData.segData.SegVis (OBJECT (lightP->info.nObject)->info.nSegment, i) : gameData.segData.LightVis (lightP->Index (), i)))
+for (pSeg = SEGMENT (i); i < j; i++, pSeg++) {
+	center = pSeg->Center ();
+	pLight = lightManager.Lights ();
+	for (l = n = 0; l < lightManager.LightCount (0); l++, pLight++) {
+		if (!((pLight->info.nSegment < 0) ? gameData.segData.SegVis (OBJECT (pLight->info.nObject)->info.nSegment, i) : gameData.segData.LightVis (pLight->Index (), i)))
 			continue;
-		h = int32_t (CFixVector::Dist (center, lightP->info.vPos) - F2X (lightP->info.fRad));
+		h = int32_t (CFixVector::Dist (center, pLight->info.vPos) - F2X (pLight->info.fRad));
 		if (h < 0)
 			h = 0;
-		else if (h > MAX_LIGHT_RANGE * lightP->info.fRange)
+		else if (h > MAX_LIGHT_RANGE * pLight->info.fRange)
 			continue;
 		pDists [n].nDist = h;
 		pDists [n++].nIndex = l;
@@ -263,8 +263,8 @@ extern int32_t nDbgVertex;
 
 int32_t ComputeNearestVertexLights (int32_t nVertex, int32_t nThread)
 {
-	CFixVector*				vertP;
-	CDynLight*				lightP;
+	CFixVector*				pVertex;
+	CDynLight*				pLight;
 	int32_t						h, j, k, l, n, nMaxLights;
 	CFixVector				vLightToVert;
 	struct tLightDist*	pDists;
@@ -288,34 +288,34 @@ if (nVertex == nDbgVertex)
 nMaxLights = MAX_NEAREST_LIGHTS;
 nVertex = GetLoopLimits (nVertex, j, gameData.segData.nVertices, nThread);
 
-for (vertP = gameData.segData.vertices + nVertex; nVertex < j; nVertex++, vertP++) {
+for (pVertex = gameData.segData.vertices + nVertex; nVertex < j; nVertex++, pVertex++) {
 #if DBG
 	if (nVertex == nDbgVertex)
 		BRP;
 #endif
-	lightP = lightManager.Lights ();
-	for (l = n = 0; l < lightManager.LightCount (0); l++, lightP++) {
+	pLight = lightManager.Lights ();
+	for (l = n = 0; l < lightManager.LightCount (0); l++, pLight++) {
 #if DBG
-		if (lightP->info.nSegment == nDbgSeg)
+		if (pLight->info.nSegment == nDbgSeg)
 			BRP;
 #endif
-		if (IsLightVert (nVertex, lightP->info.faceP))
+		if (IsLightVert (nVertex, pLight->info.pFace))
 			h = 0;
 		else {
-			h = (lightP->info.nSegment < 0) ? OBJECT (lightP->info.nObject)->info.nSegment : lightP->info.nSegment;
+			h = (pLight->info.nSegment < 0) ? OBJECT (pLight->info.nObject)->info.nSegment : pLight->info.nSegment;
 			if (!VERTVIS (h, nVertex))
 				continue;
-			vLightToVert = *vertP - lightP->info.vPos;
-			h = CFixVector::Normalize (vLightToVert) - (int32_t) (lightP->info.fRad * 6553.6f);
-			if (h > MAX_LIGHT_RANGE * lightP->info.fRange)
+			vLightToVert = *pVertex - pLight->info.vPos;
+			h = CFixVector::Normalize (vLightToVert) - (int32_t) (pLight->info.fRad * 6553.6f);
+			if (h > MAX_LIGHT_RANGE * pLight->info.fRange)
 				continue;
 #if 0
-			if ((lightP->info.nSegment >= 0) && (lightP->info.nSide >= 0)) {
-				CSide* sideP = SEGMENT (lightP->info.nSegment)->m_sides + lightP->info.nSide;
-				if ((CFixVector::Dot (sideP->m_normals [0], vLightToVert) < 0) &&
-					 ((sideP->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals [1], vLightToVert) < 0))) {
-					h = simpleRouter [nThread].PathLength (VERTICES [nVertex], -1, lightP->info.vPos, lightP->info.nSegment, X2I (xMaxLightRange / 5), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
-					if (h > 4 * MAX_LIGHT_RANGE / 3 * lightP->info.fRange)
+			if ((pLight->info.nSegment >= 0) && (pLight->info.nSide >= 0)) {
+				CSide* pSide = SEGMENT (pLight->info.nSegment)->m_sides + pLight->info.nSide;
+				if ((CFixVector::Dot (pSide->m_normals [0], vLightToVert) < 0) &&
+					 ((pSide->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (pSide->m_normals [1], vLightToVert) < 0))) {
+					h = simpleRouter [nThread].PathLength (VERTICES [nVertex], -1, pLight->info.vPos, pLight->info.nSegment, X2I (xMaxLightRange / 5), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
+					if (h > 4 * MAX_LIGHT_RANGE / 3 * pLight->info.fRange)
 						continue;
 					}
 				}
@@ -376,26 +376,26 @@ if (gameData.segData.LightVisIdx (nLight, nSegment) / 4 >= int32_t (gameData.seg
 while (!gameData.segData.SetLightVis (nLight, nSegment, 2))
 	;
 
-	tSegFaces*		segFaceP = SEGFACES + nSegment;
-	CSegFace*		faceP;
-	tFaceTriangle*	triP;
+	tSegFaces*		pSegFace = SEGFACES + nSegment;
+	CSegFace*		pFace;
+	tFaceTriangle*	pTriangle;
 	int32_t				i, nFaces, nTris;
 	int16_t				nStartSeg = lightManager.Lights (nLight)->info.nSegment;
 
-for (nFaces = segFaceP->nFaces, faceP = segFaceP->faceP; nFaces; nFaces--, faceP++) {
+for (nFaces = pSegFace->nFaces, pFace = pSegFace->pFace; nFaces; nFaces--, pFace++) {
 #if DBG
-if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 	BRP;
 #endif
 	if (gameStates.render.bTriangleMesh) {
-		for (nTris = faceP->m_info.nTris, triP = FACES.tris + faceP->m_info.nTriIndex; nTris; nTris--, triP++)
+		for (nTris = pFace->m_info.nTris, pTriangle = FACES.tris + pFace->m_info.nTriIndex; nTris; nTris--, pTriangle++)
 			for (i = 0; i < 3; i++)
-				while (!SetVertVis (nStartSeg, triP->index [i], 1))
+				while (!SetVertVis (nStartSeg, pTriangle->index [i], 1))
 					;
 		}
 	else {
 		for (i = 0; i < 4; i++)
-			while (!SetVertVis (nStartSeg, faceP->m_info.index [i], 1))
+			while (!SetVertVis (nStartSeg, pFace->m_info.index [i], 1))
 				;
 		}
 	}
@@ -441,8 +441,8 @@ ogl.EndFrame (-1);
 
 static void ComputeSingleSegmentVisibility (int32_t nThread, int16_t nStartSeg, int16_t nFirstSide, int16_t nLastSide, int32_t bLights)
 {
-	CSegment*			startSegP;
-	CSide*				sideP;
+	CSegment*			pStartSeg;
+	CSide*				pSide;
 	int16_t					nSegment, nSide, nLight = -1, i;
 	CFixVector			fVec, uVec, rVec;
 	CObject				viewer;
@@ -461,29 +461,29 @@ else {
 	nStartSeg = lightManager.Lights (nLight)->info.nSegment;
 	SetLightVis (nLight, nStartSeg);
 	}
-startSegP = SEGMENT (nStartSeg);
-sideP = startSegP->m_sides + nFirstSide;
+pStartSeg = SEGMENT (nStartSeg);
+pSide = pStartSeg->m_sides + nFirstSide;
 	
 viewer.info.nSegment = nStartSeg;
-gameData.objData.viewerP = &viewer;
+gameData.objData.pViewer = &viewer;
 
 transformation.ComputeAspect (1024, 1024);
 
-for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
+for (nSide = nFirstSide; nSide <= nLastSide; nSide++, pSide++) {
 #if DBG
-	sideP = startSegP->m_sides + nSide;
+	pSide = pStartSeg->m_sides + nSide;
 #endif
-	fVec = sideP->m_normals [2];
+	fVec = pSide->m_normals [2];
 	if (!bLights) {
 		viewer.info.position.vPos = SEGMENT (nStartSeg)->Center ();// + fVec;
 		fVec.Neg (); // point from segment center outwards
-		rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]) - sideP->Center ();
+		rVec = CFixVector::Avg (VERTICES [pSide->m_corners [0]], VERTICES [pSide->m_corners [1]]) - pSide->Center ();
 		CFixVector::Normalize (rVec);
 		}
 	else { // point from side center across the segment
 		if (bLights == 5) { // from side center, pointing to normal
-			viewer.info.position.vPos = sideP->Center () + fVec;
-			rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]) - sideP->Center ();
+			viewer.info.position.vPos = pSide->Center () + fVec;
+			rVec = CFixVector::Avg (VERTICES [pSide->m_corners [0]], VERTICES [pSide->m_corners [1]]) - pSide->Center ();
 			CFixVector::Normalize (rVec);
 			}
 		else { // from side corner, pointing to average between vector from center to corner and side normal
@@ -491,12 +491,12 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide)))
 				BRP;
 #endif
-			viewer.info.position.vPos = VERTICES [sideP->m_corners [bLights - 1]];
-			CFixVector h = sideP->Center () - viewer.info.position.vPos;
+			viewer.info.position.vPos = VERTICES [pSide->m_corners [bLights - 1]];
+			CFixVector h = pSide->Center () - viewer.info.position.vPos;
 			CFixVector::Normalize (h);
 			fVec = CFixVector::Avg (fVec, h);
 			CFixVector::Normalize (fVec);
-			rVec = sideP->m_normals [2];
+			rVec = pSide->m_normals [2];
 			h.Neg ();
 			rVec = CFixVector::Avg (rVec, h);
 			CFixVector::Normalize (rVec);
@@ -580,8 +580,8 @@ if ((lightManager.Lights (nLight)->info.nSegment == nDbgSeg) && (lightManager.Li
 	BRP;
 #endif
 
-	CDynLight* lightP = lightManager.Lights (nLight);
-	int16_t nLightSeg = lightP->info.nSegment;
+	CDynLight* pLight = lightManager.Lights (nLight);
+	int16_t nLightSeg = pLight->info.nSegment;
 
 #if DBG
 	CArray<uint8_t>& lightVis = gameData.segData.bLightVis;
@@ -608,7 +608,7 @@ uint8_t* flagP = &lightVis [i >> 2];
 uint8_t flag = 3 << ((i & 3) << 1);
 
 if ((0 < dPath) || // path from light to dest blocked
-	 (lightP->info.bSelf && (nLightSeg != nDestSeg)) || // light only illuminates its own face
+	 (pLight->info.bSelf && (nLightSeg != nDestSeg)) || // light only illuminates its own face
 	 (CFixVector::Dist (SEGMENT (nLightSeg)->Center (), SEGMENT (nDestSeg)->Center ()) - SEGMENT (nLightSeg)->MaxRad () - SEGMENT (nDestSeg)->MaxRad () >= xMaxDist)) { // distance to great
 
 #ifdef _OPENMP
@@ -623,26 +623,26 @@ if (*flagP & flag) // face visible
 	CHitQuery		hitQuery (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nLightSeg, -1, 1, 0);
 	CHitResult		hitResult;
 	CFloatVector	v0, v1;
-	CSegment*		segP = SEGMENT (nLightSeg);
-	CSide*			sideP = segP->m_sides;
+	CSegment*		pSeg = SEGMENT (nLightSeg);
+	CSide*			pSide = pSeg->m_sides;
 	fix				d, dMin = 0x7FFFFFFF;
 
 // cast rays from light segment (corners and center) to target segment and see if at least one of them isn't blocked by geometry
-segP = SEGMENT (nDestSeg);
+pSeg = SEGMENT (nDestSeg);
 for (i = 4; i >= -4; i--) {
 	if (i == 4) 
-		v0.Assign (sideP->Center ());
+		v0.Assign (pSide->Center ());
 	else if (i >= 0) 
-		v0 = FVERTICES [sideP->m_corners [i]];
+		v0 = FVERTICES [pSide->m_corners [i]];
 	else 
-		v0 = CFloatVector::Avg (FVERTICES [sideP->m_corners [4 + i]], FVERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
+		v0 = CFloatVector::Avg (FVERTICES [pSide->m_corners [4 + i]], FVERTICES [pSide->m_corners [(5 + i) & 3]]); // center of face's edges
 	for (int32_t j = 8; j >= 0; j--) {
 		if (j == 8)
 			v1.Assign (*hitQuery.p1);
-		else if (segP->m_vertices [j] == 0xFFFF)
+		else if (pSeg->m_vertices [j] == 0xFFFF)
 			continue;
 		else
-			v1 = FVERTICES [segP->m_vertices [j]];
+			v1 = FVERTICES [pSeg->m_vertices [j]];
 		if ((d = CFixVector::Dist (*hitQuery.p0, *hitQuery.p1)) > xMaxDist)
 			continue;
 		if (dMin > d)
@@ -684,20 +684,20 @@ return true;
 
 static void ComputeSingleLightVisibility (int32_t nLight, int32_t nThread)
 {
-CDynLight* lightP = lightManager.Lights () + nLight;
-if ((lightP->info.nSegment >= 0) && (lightP->info.nSide >= 0)) {
+CDynLight* pLight = lightManager.Lights () + nLight;
+if ((pLight->info.nSegment >= 0) && (pLight->info.nSide >= 0)) {
 #if DBG
-	if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (lightP->info.nSide == nDbgSide)))
+	if ((nDbgSeg >= 0) && (pLight->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pLight->info.nSide == nDbgSide)))
 		BRP;
 #endif
 #if FAST_LIGHTVIS
 	for (int32_t i = 1; i <= 5; i++)
-		ComputeSingleSegmentVisibility (nThread, lightP->Index (), lightP->info.nSide, lightP->info.nSide, i);
+		ComputeSingleSegmentVisibility (nThread, pLight->Index (), pLight->info.nSide, pLight->info.nSide, i);
 #endif
 #if 1
-	fix xLightRange = fix (MAX_LIGHT_RANGE * lightP->info.fRange);
+	fix xLightRange = fix (MAX_LIGHT_RANGE * pLight->info.fRange);
 	for (int32_t i = 0; i < gameData.segData.nSegments; i++)
-		CheckLightVisibility (lightP->Index (), i, xLightRange, lightP->info.fRange, nThread);
+		CheckLightVisibility (pLight->Index (), i, xLightRange, pLight->info.fRange, nThread);
 #endif
 	}
 }

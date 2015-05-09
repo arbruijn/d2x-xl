@@ -105,9 +105,9 @@ class CDownloadManager {
 		int32_t FindClient (void);
 		int32_t AcceptClient (void);
 		int32_t RemoveClient (int32_t i);
-		int32_t SendRequest (uint8_t pId, uint8_t pIdFn, tClient* clientP = NULL);
+		int32_t SendRequest (uint8_t pId, uint8_t pIdFn, tClient* pClient = NULL);
 		int32_t RequestUpload (void);
-		int32_t RequestDownload (tClient* clientP);
+		int32_t RequestDownload (tClient* pClient);
 		int32_t ConnectToServer (void);
 		int32_t ConnectToClient (tClient& client);
 		void ResendRequest (void);

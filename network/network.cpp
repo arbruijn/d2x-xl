@@ -97,7 +97,7 @@ int32_t nLastNetGameUpdate [MAX_ACTIVE_NETGAMES];
 CNetGameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
 tExtraGameInfo activeExtraGameInfo [MAX_ACTIVE_NETGAMES];
 CAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
-CAllNetPlayersInfo *playerInfoP, netPlayers [2];
+CAllNetPlayersInfo *pPlayerInfo, netPlayers [2];
 
 int32_t nCoopPenalties [10] = {0, 1, 2, 3, 5, 10, 25, 50, 75, 90};
 
@@ -286,17 +286,17 @@ int32_t NetworkTimeoutPlayer (int32_t nPlayer, int32_t t)
 if (!gameOpts->multi.bTimeoutPlayers)
 	return 0;
 
-CObject* objP = (LOCALPLAYER.connected == CONNECT_PLAYING) ? OBJECT (PLAYER (nPlayer).nObject) : NULL;
+CObject* pObj = (LOCALPLAYER.connected == CONNECT_PLAYING) ? OBJECT (PLAYER (nPlayer).nObject) : NULL;
 
 if (PLAYER (nPlayer).TimedOut ()) {
 	if (t - PLAYER (nPlayer).m_tDisconnect > extraGameInfo [0].timeout.nKickPlayer) { // drop player when he disconnected for 3 minutes
 		PLAYER (nPlayer).callsign [0] = '\0';
 		memset (PLAYER (nPlayer).netAddress, 0, sizeof (PLAYER (nPlayer).netAddress));
-		if (objP)
+		if (pObj)
 			MultiDestroyPlayerShip (nPlayer);
 		}
 #if 0
-	if (objP && (objP->Type () == OBJ_GHOST))
+	if (pObj && (pObj->Type () == OBJ_GHOST))
 #endif
 		return 0;
 	}
@@ -307,8 +307,8 @@ if ((LOCALPLAYER.connected == CONNECT_END_MENU) || (LOCALPLAYER.connected == CON
 	if ((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ())
 		NetworkSendEndLevelSub (nPlayer);
 	}
-else if (objP) {
-	objP->CreateAppearanceEffect ();
+else if (pObj) {
+	pObj->CreateAppearanceEffect ();
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 	HUDInitMessage ("%s %s", PLAYER (nPlayer).callsign, TXT_DISCONNECTING);
 	}

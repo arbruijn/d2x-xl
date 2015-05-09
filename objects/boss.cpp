@@ -72,8 +72,8 @@ m_nGateInterval = I2X (4) - gameStates.app.nDifficultyLevel * I2X (2) / 3;
 //	bOneWallHack added by MK, 10/13/95: A mega-hack! Set to !0 to ignore the
 bool CBossInfo::SetupSegments (CShortArray& segments, int32_t bSizeCheck, int32_t bOneWallHack)
 {
-	CSegment		*segP;
-	CObject		*bossObjP = OBJECT (m_nObject);
+	CSegment		*pSeg;
+	CObject		*pBossObj = OBJECT (m_nObject);
 	CFixVector	vBossHomePos;
 	int32_t		nMaxSegments, nSegments = 0;
 	int32_t		nBossHomeSeg;
@@ -85,10 +85,10 @@ bool CBossInfo::SetupSegments (CShortArray& segments, int32_t bSizeCheck, int32_
 	static int16_t bossSegs [MAX_BOSS_TELEPORT_SEGS];
 
 //	See if there is a boss.  If not, quick out.
-xBossSizeSave = bossObjP->info.xSize;
-// -- Causes problems!!	-- bossObjP->SetSize (FixMul (I2X (3) / 4, bossObjP->info.xSize));
-nBossHomeSeg = bossObjP->info.nSegment;
-vBossHomePos = bossObjP->info.position.vPos;
+xBossSizeSave = pBossObj->info.xSize;
+// -- Causes problems!!	-- pBossObj->SetSize (FixMul (I2X (3) / 4, pBossObj->info.xSize));
+nBossHomeSeg = pBossObj->info.nSegment;
+vBossHomePos = pBossObj->info.position.vPos;
 nGroup = SEGMENT (nBossHomeSeg)->m_group;
 if (!queue.Create (gameData.segData.nSegments))
 	return false;
@@ -100,11 +100,11 @@ nMaxSegments = Min (MAX_BOSS_TELEPORT_SEGS, LEVEL_SEGMENTS);
 gameData.render.mine.visibility [0].BumpVisitedFlag ();
 
 while (tail != head) {
-	segP = SEGMENT (queue [tail++]);
+	pSeg = SEGMENT (queue [tail++]);
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
-		childSeg = segP->m_children [nSide];
+		childSeg = pSeg->m_children [nSide];
 		if (!bOneWallHack) {
-			w = segP->IsPassable (nSide, NULL);
+			w = pSeg->IsPassable (nSide, NULL);
 			if (!(w & WID_PASSABLE_FLAG))
 				continue;
 			}
@@ -118,7 +118,7 @@ while (tail != head) {
 		if (nGroup != SEGMENT (childSeg)->m_group)
 			continue;
 		gameData.render.mine.Visit (childSeg);
-		if (bSizeCheck && !BossFitsInSeg (bossObjP, childSeg))
+		if (bSizeCheck && !BossFitsInSeg (pBossObj, childSeg))
 			continue;
 		queue [head++] = childSeg;
 		if (nSegments >= nMaxSegments - 1)
@@ -137,8 +137,8 @@ segments.Destroy ();
 if (!(nSegments && segments.Create (nSegments)))
 	return false;
 memcpy (segments.Buffer (), bossSegs, nSegments * sizeof (segments [0]));
-bossObjP->SetSize (xBossSizeSave);
-bossObjP->info.position.vPos = vBossHomePos;
+pBossObj->SetSize (xBossSizeSave);
+pBossObj->info.position.vPos = vBossHomePos;
 OBJECT (m_nObject)->RelinkToSeg (nBossHomeSeg);
 return true;
 }
@@ -260,8 +260,8 @@ cf.Read (&m_nDyingStartTime, sizeof (fix), 1);
 int32_t h;
 cf.Read (&h, sizeof (int32_t), 1);
 m_nDying = int16_t (h);
-CObject* objP = OBJECT (m_nDying);
-if (!objP || !objP->IsBoss ())
+CObject* pObj = OBJECT (m_nDying);
+if (!pObj || !pObj->IsBoss ())
 	m_nDying = -1;
 else if (m_nDying && (m_nDyingStartTime > gameData.time.xGame))
 	m_nDyingStartTime = gameData.time.xGame;

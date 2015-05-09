@@ -486,7 +486,7 @@ return (m_nFaces < 2) || (Height () <= PLANE_DIST_TOLERANCE);
 // -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
 //this CSegment.  See CSegMasks structure for info on fields
-CSegMasks CSide::Masks (const CFixVector& refPoint, fix xRad, int16_t sideBit, int16_t faceBit, bool bCheckPoke)
+CSegMasks CSide::Masks (const CFixVector& pRefoint, fix xRad, int16_t sideBit, int16_t faceBit, bool bCheckPoke)
 {
 	CSegMasks	masks;
 	fix			xDist;
@@ -498,7 +498,7 @@ if (m_nFaces == 2) {
 
 	CFixVector vMin = MinVertex ();
 	for (int32_t nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
-		xDist = refPoint.DistToPlane (Normal (nFace), vMin);
+		xDist = pRefoint.DistToPlane (Normal (nFace), vMin);
 		if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
 			nCenterCount++;
 		if ((xDist - xRad < -PLANE_DIST_TOLERANCE) && (!bCheckPoke || (xDist + xRad >= -PLANE_DIST_TOLERANCE))) {
@@ -523,9 +523,9 @@ else {
 #if DBG
 	fix vDist [3];
 	for (int32_t i = 0;  i < m_nCorners; i++)
-		vDist [i] = CFixVector::Dist (refPoint, VERTICES [m_corners [i]]);
+		vDist [i] = CFixVector::Dist (pRefoint, VERTICES [m_corners [i]]);
 #endif
-	xDist = refPoint.DistToPlane (Normal (0), MinVertex ());
+	xDist = pRefoint.DistToPlane (Normal (0), MinVertex ());
 	if (xDist < -PLANE_DIST_TOLERANCE)
 		masks.m_center |= sideBit;
 	if ((xDist - xRad < -PLANE_DIST_TOLERANCE) && (!bCheckPoke || (xDist + xRad >= -PLANE_DIST_TOLERANCE))) {
@@ -539,7 +539,7 @@ return masks;
 
 // -------------------------------------------------------------------------------
 
-uint8_t CSide::Dist (const CFixVector& refPoint, fix& xSideDist, int32_t bBehind, int16_t sideBit)
+uint8_t CSide::Dist (const CFixVector& pRefoint, fix& xSideDist, int32_t bBehind, int16_t sideBit)
 {
 	fix	xDist;
 	uint8_t mask = 0;
@@ -550,7 +550,7 @@ if (m_nFaces == 2) {
 
 	CFixVector vMin = MinVertex ();
 	for (int32_t nFace = 0; nFace < 2; nFace++) {
-		xDist = refPoint.DistToPlane (Normal (nFace), vMin);
+		xDist = pRefoint.DistToPlane (Normal (nFace), vMin);
 		if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {	//in front of face
 			nCenterCount++;
 			xSideDist += xDist;
@@ -571,7 +571,7 @@ if (m_nFaces == 2) {
 		}
 	}
 else {				//only one face on this CSide
-	xDist = refPoint.DistToPlane (Normal (0), MinVertex ());
+	xDist = pRefoint.DistToPlane (Normal (0), MinVertex ());
 	if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {
 		mask |= sideBit;
 		xSideDist = xDist;
@@ -582,7 +582,7 @@ return mask;
 
 // -------------------------------------------------------------------------------
 
-uint8_t CSide::Distf (const CFloatVector& refPoint, float& fSideDist, int32_t bBehind, int16_t sideBit)
+uint8_t CSide::Distf (const CFloatVector& pRefoint, float& fSideDist, int32_t bBehind, int16_t sideBit)
 {
 	float	fDist;
 	uint8_t mask = 0;
@@ -595,7 +595,7 @@ if (m_nFaces == 2) {
 
 	for (int32_t nFace = 0; nFace < 2; nFace++) {
 		vNormal.Assign (Normal (nFace));
-		fDist = refPoint.DistToPlane (vNormal, vMin);
+		fDist = pRefoint.DistToPlane (vNormal, vMin);
 		if ((fDist < -X2F (PLANE_DIST_TOLERANCE)) == bBehind) {	//in front of face
 			nCenterCount++;
 			fSideDist += fDist;
@@ -618,9 +618,9 @@ if (m_nFaces == 2) {
 else {				//only one face on this CSide
 	vNormal.Assign (Normal (0));
 #if DBG
-	fDist = CFloatVector::Dist (refPoint, vMin);
+	fDist = CFloatVector::Dist (pRefoint, vMin);
 #endif
-	fDist = refPoint.DistToPlane (vNormal, vMin);
+	fDist = pRefoint.DistToPlane (vNormal, vMin);
 	if ((fDist < -X2F (PLANE_DIST_TOLERANCE)) == bBehind) {
 		mask |= sideBit;
 		fSideDist = fDist;
@@ -637,7 +637,7 @@ fix CSide::DistToPoint (CFixVector v)
 	fix				dist, minDist = 0x7fffffff;
 	int32_t			i, j;
 
-// compute vIntersection of perpendicular through refP with the plane spanned up by the face
+// compute vIntersection of perpendicular through pRef with the plane spanned up by the face
 for (i = j = 0; i < m_nFaces; i++, j += 3) {
 	n = m_normals [i];
 	h = v - VERTICES [m_vertices [j]];
@@ -668,7 +668,7 @@ float CSide::DistToPointf (CFloatVector v)
 	float				dist, minDist = 1e30f;
 	int32_t				i, j;
 
-// compute vIntersection of perpendicular through refP with the plane spanned up by the face
+// compute vIntersection of perpendicular through pRef with the plane spanned up by the face
 for (i = j = 0; i < m_nFaces; i++, j += 3) {
 	n.Assign (m_normals [i]);
 	h = v - FVERTICES [m_vertices [j]];
@@ -733,10 +733,10 @@ return 0;
 }
 
 //	-----------------------------------------------------------------------------
-//see if a refP is inside a face by projecting into 2d
+//see if a pRef is inside a face by projecting into 2d
 uint32_t CSide::PointToFaceRelationf (CFloatVector& vRef, int16_t nFace, CFloatVector& vNormal)
 {
-//now do 2d check to see if refP is in CSide
+//now do 2d check to see if pRef is in CSide
 //project polygon onto plane by finding largest component of Normal
 CFloatVector vt;
 vt.Set (fabs (vNormal.v.coord.x), fabs (vNormal.v.coord.y), fabs (vNormal.v.coord.z));
@@ -777,7 +777,7 @@ return nEdgeMask;
 }
 
 //	-----------------------------------------------------------------------------
-//see if a refP is inside a face by projecting into 2d
+//see if a pRef is inside a face by projecting into 2d
 uint32_t CSide::PointToFaceRelation (CFixVector& vRef, int16_t nFace, CFixVector vNormal)
 {
 #if 0
@@ -791,7 +791,7 @@ uint32_t CSide::PointToFaceRelation (CFixVector& vRef, int16_t nFace, CFixVector
 	CFixVector2		vEdge, vCheck;
 	int64_t			d;
 
-//now do 2d check to see if refP is in CSide
+//now do 2d check to see if pRef is in CSide
 //project polygon onto plane by finding largest component of Normal
 t.v.coord.x = labs (vNormal.v.coord.x);
 t.v.coord.y = labs (vNormal.v.coord.y);
@@ -845,7 +845,7 @@ return nEdgeMask;
 	CFixVector*		v0, * v1;
 	CFixVector2		vEdge, vCheck, vRef2D;
 
-//now do 2d check to see if refP is in CSide
+//now do 2d check to see if pRef is in CSide
 //project polygon onto plane by finding largest component of Normal
 t.Set (labs (vNormal.v.coord.x), labs (vNormal.v.coord.y), labs (vNormal.v.coord.z));
 if (t.v.coord.x > t.v.coord.y)
@@ -894,7 +894,7 @@ int32_t CSide::SphereToFaceRelationf (CFloatVector& vRef, float rad, int16_t iFa
 	int32_t			nEdge;
 	uint32_t			nEdgeMask;
 
-//now do 2d check to see if refP is in side
+//now do 2d check to see if pRef is in side
 nEdgeMask = PointToFaceRelationf (vRef, iFace, vNormal);
 //we've gone through all the sides, are we inside?
 if (nEdgeMask == 0)
@@ -911,17 +911,17 @@ else {
 	v0 = FVERTICES [m_vertices [iFace + nEdge]];
 	v1 = FVERTICES [m_vertices [iFace + ((nEdge + 1) % 3)]];
 	}
-//check if we are touching an edge or refP
+//check if we are touching an edge or pRef
 vCheck = vRef - v0;
 vEdge = v1 - v0;
 xEdgeLen = CFloatVector::Normalize (vEdge);
-//find refP dist from planes of ends of edge
+//find pRef dist from planes of ends of edge
 d = CFloatVector::Dot (vEdge, vCheck);
 if (d + rad < 0)
-	return IT_NONE;                  //too far behind start refP
+	return IT_NONE;                  //too far behind start pRef
 if (d - rad > xEdgeLen)
-	return IT_NONE;    //too far part end refP
-//find closest refP on edge to check refP
+	return IT_NONE;    //too far part end pRef
+//find closest pRef on edge to check pRef
 iType = IT_POINT;
 if (d < 0)
 	vNearest = v0;
@@ -955,7 +955,7 @@ int32_t CSide::SphereToFaceRelation (CFixVector& vRef, fix rad, int16_t iFace, C
 	int32_t		nEdge;
 	uint32_t		nEdgeMask;
 
-//now do 2d check to see if refP is in side
+//now do 2d check to see if pRef is in side
 nEdgeMask = PointToFaceRelation (vRef, iFace, vNormal);
 //we've gone through all the sides, are we inside?
 if (nEdgeMask == 0)
@@ -972,16 +972,16 @@ else {
 	v0 = VERTICES + m_vertices [iFace + nEdge];
 	v1 = VERTICES + m_vertices [iFace + ((nEdge + 1) % 3)];
 	}
-//check if we are touching an edge or refP
+//check if we are touching an edge or pRef
 vCheck = vRef - *v0;
 xEdgeLen = CFixVector::NormalizedDir (vEdge, *v1, *v0);
-//find refP dist from planes of ends of edge
+//find pRef dist from planes of ends of edge
 d = CFixVector::Dot (vEdge, vCheck);
 if (d + rad < 0)
-	return IT_NONE;                  //too far behind start refP
+	return IT_NONE;                  //too far behind start pRef
 if (d - rad > xEdgeLen)
-	return IT_NONE;    //too far part end refP
-//find closest refP on edge to check refP
+	return IT_NONE;    //too far part end pRef
+//find closest pRef on edge to check pRef
 iType = IT_POINT;
 if (d < 0)
 	vNearest = *v0;
@@ -1005,14 +1005,14 @@ return IT_NONE;
 
 //	-----------------------------------------------------------------------------
 //returns true if line intersects with face. fills in vIntersection with vIntersection
-//refP on plane, whether or not line intersects CSide
+//pRef on plane, whether or not line intersects CSide
 //iFace determines which of four possible faces we have
-//note: the seg parm is temporary, until the face itself has a refP field
+//note: the seg parm is temporary, until the face itself has a pRef field
 int32_t CSide::CheckLineToFaceRegularf (CFloatVector& vIntersection, CFloatVector* p0, CFloatVector* p1, float rad, int16_t iFace, CFloatVector& vNormal)
 {
 	int32_t bCheckRad = 0;
 
-//use lowest refP number
+//use lowest pRef number
 #if DBG
 if (m_nFaces <= iFace) {
 	Error ("invalid face number in CSegment::CheckLineToFace()");
@@ -1040,7 +1040,7 @@ int32_t pli = FindPlaneLineIntersectionf (vIntersection, v, vNormal, *p0, *p1, r
 if (!pli)
 	return IT_NONE;
 CFloatVector vHit = vIntersection;
-//if rad != 0, project the refP down onto the plane of the polygon
+//if rad != 0, project the pRef down onto the plane of the polygon
 if (rad)
 	vHit += vNormal * (-rad);
 if ((pli = SphereToFaceRelationf (vHit, rad, iFace, vNormal)))
@@ -1060,9 +1060,9 @@ return IT_NONE;
 
 //	-----------------------------------------------------------------------------
 //returns true if line intersects with face. fills in vIntersection with vIntersection
-//refP on plane, whether or not line intersects CSide
+//pRef on plane, whether or not line intersects CSide
 //iFace determines which of four possible faces we have
-//note: the seg parm is temporary, until the face itself has a refP field
+//note: the seg parm is temporary, until the face itself has a pRef field
 int32_t CSide::CheckLineToFaceRegular (CFixVector& vIntersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal)
 {
 #if 0 // FLOAT_COLLISION_MATH
@@ -1082,7 +1082,7 @@ return i;
 	CFixVector	v1;
 	int32_t		bCheckRad = 0;
 
-//use lowest refP number
+//use lowest pRef number
 #if DBG
 if (m_nFaces <= iFace) {
 	Error ("invalid face number in CSegment::CheckLineToFace()");
@@ -1105,7 +1105,7 @@ int32_t pli = FindPlaneLineIntersection (vIntersection, gameStates.render.bRende
 if (!pli)
 	return IT_NONE;
 CFixVector vHit = vIntersection;
-//if rad != 0, project the refP down onto the plane of the polygon
+//if rad != 0, project the pRef down onto the plane of the polygon
 if (rad)
 	vHit += vNormal * (-rad);
 if ((pli = SphereToFaceRelation (vHit, rad, iFace, vNormal)))
@@ -1145,8 +1145,8 @@ for (nEdge = 0; !(nEdgeMask & 1); nEdgeMask >>= 1, nEdge++)
 CFloatVector* edge_v0 = FVERTICES + m_vertices [iFace * 3 + nEdge];
 CFloatVector* edge_v1 = FVERTICES + m_vertices [iFace * 3 + ((nEdge + 1) % 3)];
 CFloatVector vEdge = *edge_v1 - *edge_v0;
-//is the start refP already touching the edge?
-//first, find refP of closest approach of vec & edge
+//is the start pRef already touching the edge?
+//first, find pRef of closest approach of vec & edge
 float edge_len = CFloatVector::Normalize (vEdge);
 float move_len = CFloatVector::Normalize (vMove);
 float edge_t, move_t;
@@ -1202,8 +1202,8 @@ for (nEdge = 0; !(nEdgeMask & 1); nEdgeMask >>= 1, nEdge++)
 CFixVector* v0 = VERTICES + m_vertices [iFace * 3 + nEdge];
 CFixVector* v1 = VERTICES + m_vertices [iFace * 3 + (nEdge + 1) % 3];
 CFixVector vEdge = *v1 - *v0;
-//is the start refP already touching the edge?
-//first, find refP of closest approach of vec & edge
+//is the start pRef already touching the edge?
+//first, find pRef of closest approach of vec & edge
 fix edgeLen = CFixVector::Normalize (vEdge);
 fix moveLen = CFixVector::Normalize (vMove);
 fix edge_t, move_t;
@@ -1233,7 +1233,7 @@ return IT_NONE;			//no hit
 }
 
 //	-----------------------------------------------------------------------------
-//finds the uv coords of the given refP on the given seg & side
+//finds the uv coords of the given pRef on the given seg & side
 //fills in u & v. if l is non-NULL fills it in also
 void CSide::HitPointUV (fix *u, fix *v, fix *l, CFixVector& vIntersection, int32_t iFace)
 {
@@ -1258,7 +1258,7 @@ if (abs (vNormal.v.coord.z) > abs (vNormal.v.vec [nProjPlane]))
 	nProjPlane = 2;
 nProjX = (nProjPlane == 0);
 nProjY = (nProjPlane == 2) ? 1 : 2;
-//2. compute u, v of vIntersection refP
+//2. compute u, v of vIntersection pRef
 //vec from 1 -> 0
 h = iFace * 3;
 vPoints = VERTICES + m_vertices [h+1];
@@ -1355,8 +1355,8 @@ return IsWall () && Wall ()->IsSolid ();
 int32_t CSide::Physics (fix& damage, bool bSolid)
 {
 if (!bSolid) {
-	CWall* wallP = Wall ();
-	if (!wallP || (wallP->nType != WALL_ILLUSION) || (wallP->flags & WALL_ILLUSION_OFF))
+	CWall* pWall = Wall ();
+	if (!pWall || (pWall->nType != WALL_ILLUSION) || (pWall->flags & WALL_ILLUSION_OFF))
 		return 0;
 	}
 if (gameData.pig.tex.tMapInfoP [m_nBaseTex].damage) {
@@ -1372,17 +1372,17 @@ return 0;
 
 int32_t CSide::CheckTransparency (void)
 {
-	CBitmap	*bmP;
+	CBitmap	*pBm;
 
 if (m_nOvlTex) {
-	bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [m_nOvlTex].index].Override (-1);
-	if (bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT)
+	pBm = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [m_nOvlTex].index].Override (-1);
+	if (pBm->Flags () & BM_FLAG_SUPER_TRANSPARENT)
 		return 1;
-	if (!(bmP->Flags () & BM_FLAG_TRANSPARENT))
+	if (!(pBm->Flags () & BM_FLAG_TRANSPARENT))
 		return 0;
 	}
-bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [m_nBaseTex].index].Override (-1);
-if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
+pBm = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [m_nBaseTex].index].Override (-1);
+if (pBm->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
 if (gameStates.app.bD2XLevel && IS_WALL (m_nWall)) {
 	int16_t c = WALL (m_nWall)->cloakValue;
@@ -1430,7 +1430,7 @@ if (!nType)
 	m_nBaseTex =
 	m_nOvlTex = 0;
 else {
-	// Read int16_t sideP->m_nBaseTex;
+	// Read int16_t pSide->m_nBaseTex;
 	uint16_t nTexture;
 	if (bNewFileFormat) {
 		nTexture = cf.ReadUShort ();

@@ -5625,7 +5625,7 @@ typedef void (GLAPIENTRY * PFNGLSEPARABLEFILTER2DEXTPROC) (GLenum target, GLenum
 typedef void (GLAPIENTRY * PFNGLBINORMALPOINTEREXTPROC) (GLenum type, GLsizei stride, void* pointer);
 typedef void (GLAPIENTRY * PFNGLTANGENTPOINTEREXTPROC) (GLenum type, GLsizei stride, void* pointer);
 
-#define glBinormalPointerEXT GLEW_GET_FUN(__glewBinormalPointerEXT)
+#define glBipNormalointerEXT GLEW_GET_FUN(__glewBipNormalointerEXT)
 #define glTangentPointerEXT GLEW_GET_FUN(__glewTangentPointerEXT)
 
 #define GLEW_EXT_coordinate_frame GLEW_GET_VAR(__GLEW_EXT_coordinate_frame)
@@ -11983,7 +11983,7 @@ GLEW_FUN_EXPORT PFNGLGETCONVOLUTIONPARAMETERIVEXTPROC __glewGetConvolutionParame
 GLEW_FUN_EXPORT PFNGLGETSEPARABLEFILTEREXTPROC __glewGetSeparableFilterEXT;
 GLEW_FUN_EXPORT PFNGLSEPARABLEFILTER2DEXTPROC __glewSeparableFilter2DEXT;
 
-GLEW_FUN_EXPORT PFNGLBINORMALPOINTEREXTPROC __glewBinormalPointerEXT;
+GLEW_FUN_EXPORT PFNGLBINORMALPOINTEREXTPROC __glewBipNormalointerEXT;
 GLEW_FUN_EXPORT PFNGLTANGENTPOINTEREXTPROC __glewTangentPointerEXT;
 
 GLEW_FUN_EXPORT PFNGLCOPYTEXIMAGE1DEXTPROC __glewCopyTexImage1DEXT;

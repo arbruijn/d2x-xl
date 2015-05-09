@@ -85,7 +85,7 @@ void BuildRenderObjLists (int32_t nSegCount, int32_t nThread = 0);
 void BuildRenderSegList (int16_t nStartSeg, int32_t nWindow, bool bIgnoreDoors = false, int32_t nThread = 0);
 
 void ResetFaceList (void);
-int32_t AddFaceListItem (CSegFace *faceP, int32_t nThread);
+int32_t AddFaceListItem (CSegFace *pFace, int32_t nThread);
 
 //------------------------------------------------------------------------------
 
@@ -101,9 +101,9 @@ static inline CObject *GuidedInMainView (void)
 if (!gameOpts->render.cockpit.bGuidedInMainView)
 	return NULL;
 
-CObject *objP;
+CObject *pObj;
 
-return GuidedMslView (&objP) ? objP : NULL;
+return GuidedMslView (&pObj) ? pObj : NULL;
 }
 
 //------------------------------------------------------------------------------

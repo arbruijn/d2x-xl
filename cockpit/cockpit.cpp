@@ -196,17 +196,17 @@ void CCockpit::DrawShieldText (void)
 	char szShield [20];
 
 #if 0
-CBitmap* bmP = BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
+CBitmap* pBm = BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
 #else
 PageInGauge (GAUGE_NUMERICAL);
-CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
+CBitmap* pBm = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
 #endif
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 sprintf (szShield, "%d", (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
 int32_t w, h, aw;
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 fontManager.Current ()->StringSize (szShield, w, h, aw);
-nIdShield = PrintF (&nIdShield, -(ScaleX (NUMERICAL_GAUGE_X + bmP->Width () / 2) - w / 2), 
+nIdShield = PrintF (&nIdShield, -(ScaleX (NUMERICAL_GAUGE_X + pBm->Width () / 2) - w / 2), 
 						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16) + HeightPad (), szShield);
 fontManager.SetScale (1.0f);
 }
@@ -220,17 +220,17 @@ void CCockpit::DrawEnergyText (void)
 	char szEnergy [20];
 
 #if 0
-CBitmap* bmP = BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
+CBitmap* pBm = BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
 #else
 PageInGauge (GAUGE_NUMERICAL);
-CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
+CBitmap* pBm = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
 #endif
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 sprintf (szEnergy, "%d", (int32_t) FRound (m_info.nEnergy * LOCALPLAYER.EnergyScale ()));
 int32_t w, h, aw;
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);
-nIdEnergy = PrintF (&nIdEnergy, -(ScaleX (NUMERICAL_GAUGE_X + bmP->Width () / 2) - w / 2), 
+nIdEnergy = PrintF (&nIdEnergy, -(ScaleX (NUMERICAL_GAUGE_X + pBm->Width () / 2) - w / 2), 
 						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 5 : 2), szEnergy);
 fontManager.SetScale (1.0f);
 }

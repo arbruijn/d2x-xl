@@ -67,19 +67,19 @@ for (int32_t i = 0; i < vc->nFrameCount; i++)
 
 void LoadWallEffectTextures (int32_t nTexture)
 {
-	tEffectInfo*	effectInfoP = gameData.effects.effectP.Buffer ();
+	tEffectInfo*	pEffectInfo = gameData.effects.pEffect.Buffer ();
 
-for (int32_t i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, effectInfoP++) {
-	if (effectInfoP->changing.nWallTexture == nTexture) {
-		LoadAnimationTextures (&effectInfoP->animationInfo, gameStates.app.bD1Data);
-		if (effectInfoP->destroyed.nTexture >= 0)
-			LoadTexture (gameData.pig.tex.bmIndexP [effectInfoP->destroyed.nTexture].index, 0, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
-		if (effectInfoP->destroyed.nAnimation >= 0)
-			LoadAnimationTextures (&gameData.effects.vClipP [effectInfoP->destroyed.nAnimation], gameStates.app.bD1Data);		  //what animation to play when exploding
-		if (effectInfoP->destroyed.nEffect >= 0)
-			LoadAnimationTextures (&gameData.effects.effectP [effectInfoP->destroyed.nEffect].animationInfo, gameStates.app.bD1Data); //what effect to play when exploding
-		if (effectInfoP->nCriticalAnimation >= 0)
-			LoadAnimationTextures (&gameData.effects.effectP [effectInfoP->nCriticalAnimation].animationInfo, gameStates.app.bD1Data); //what effect to play when mine critical
+for (int32_t i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, pEffectInfo++) {
+	if (pEffectInfo->changing.nWallTexture == nTexture) {
+		LoadAnimationTextures (&pEffectInfo->animationInfo, gameStates.app.bD1Data);
+		if (pEffectInfo->destroyed.nTexture >= 0)
+			LoadTexture (gameData.pig.tex.bmIndexP [pEffectInfo->destroyed.nTexture].index, 0, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
+		if (pEffectInfo->destroyed.nAnimation >= 0)
+			LoadAnimationTextures (&gameData.effects.vClipP [pEffectInfo->destroyed.nAnimation], gameStates.app.bD1Data);		  //what animation to play when exploding
+		if (pEffectInfo->destroyed.nEffect >= 0)
+			LoadAnimationTextures (&gameData.effects.pEffect [pEffectInfo->destroyed.nEffect].animationInfo, gameStates.app.bD1Data); //what effect to play when exploding
+		if (pEffectInfo->nCriticalAnimation >= 0)
+			LoadAnimationTextures (&gameData.effects.pEffect [pEffectInfo->nCriticalAnimation].animationInfo, gameStates.app.bD1Data); //what effect to play when mine critical
 		}
 	}
 }
@@ -88,22 +88,22 @@ for (int32_t i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, eff
 
 void LoadObjectEffectTextures (int32_t nTexture)
 {
-	tEffectInfo *effectInfoP = gameData.effects.effectP.Buffer ();
+	tEffectInfo *pEffectInfo = gameData.effects.pEffect.Buffer ();
 
-for (int32_t i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, effectInfoP++)
-	if (effectInfoP->changing.nObjectTexture == nTexture)
-		LoadAnimationTextures (&effectInfoP->animationInfo, 0);
+for (int32_t i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, pEffectInfo++)
+	if (pEffectInfo->changing.nObjectTexture == nTexture)
+		LoadAnimationTextures (&pEffectInfo->animationInfo, 0);
 }
 
 //------------------------------------------------------------------------------
 
 void LoadModelTextures (int32_t nModel)
 {
-	CPolyModel*	modelP = gameData.models.polyModels [0] + nModel;
-	uint16_t*		pi = gameData.pig.tex.objBmIndexP + modelP->FirstTexture ();
+	CPolyModel*	pModel = gameData.models.polyModels [0] + nModel;
+	uint16_t*		pi = gameData.pig.tex.objBmIndexP + pModel->FirstTexture ();
 	int32_t			j;
 
-for (int32_t h = modelP->TextureCount (), i = 0; i < h; i++, pi++) {
+for (int32_t h = pModel->TextureCount (), i = 0; i < h; i++, pi++) {
 	j = *pi;
 	LoadTexture (gameData.pig.tex.objBmIndex [j].index, 0 /*i*/, 0); // don't pass frame number to avoid checking for hires replacement textures
 	LoadObjectEffectTextures (j);
@@ -152,20 +152,20 @@ int8_t superBossGateTypeList [13] = {0, 1, 8, 9, 10, 11, 12, 15, 16, 18, 19, 20,
 
 void LoadRobotTextures (int32_t robotIndex)
 {
-tRobotInfo* botInfoP = ROBOTINFO (robotIndex);
+tRobotInfo* pRobotInfo = ROBOTINFO (robotIndex);
 
-if (!botInfoP)
+if (!pRobotInfo)
 	return;
 // Page in robotIndex
-LoadModelTextures (botInfoP->nModel);
-if (botInfoP->nExp1VClip >= 0)
-	LoadAnimationTextures (&gameData.effects.animations [0][botInfoP->nExp1VClip], 0);
-if (botInfoP->nExp2VClip >= 0)
-	LoadAnimationTextures (&gameData.effects.animations [0][botInfoP->nExp2VClip], 0);
+LoadModelTextures (pRobotInfo->nModel);
+if (pRobotInfo->nExp1VClip >= 0)
+	LoadAnimationTextures (&gameData.effects.animations [0][pRobotInfo->nExp1VClip], 0);
+if (pRobotInfo->nExp2VClip >= 0)
+	LoadAnimationTextures (&gameData.effects.animations [0][pRobotInfo->nExp2VClip], 0);
 // Page in his weapons
-LoadWeaponTextures (botInfoP->nWeaponType);
+LoadWeaponTextures (pRobotInfo->nWeaponType);
 // A super-boss can gate in robots...
-if (botInfoP->bossFlag == 2) {
+if (pRobotInfo->bossFlag == 2) {
 	for (int32_t i = 0; i < 13; i++)
 		LoadRobotTextures (superBossGateTypeList [i]);
 	LoadAnimationTextures (&gameData.effects.animations [0][ANIM_MORPHING_ROBOT], 0);
@@ -285,11 +285,11 @@ for (i = 0; i < 2; i++, robotIndex += 32) {
 
 void LoadObjectTextures (int32_t nType)
 {
-	CObject*	objP;
+	CObject*	pObj;
 
-FORALL_OBJS (objP)
-	if ((nType < 0) || (objP->info.nType == nType))
-		objP->LoadTextures ();
+FORALL_OBJS (pObj)
+	if ((nType < 0) || (pObj->info.nType == nType))
+		pObj->LoadTextures ();
 }
 
 //------------------------------------------------------------------------------
@@ -315,7 +315,7 @@ for (nObject = m_objects; nObject != -1; nObject = OBJECT (nObject)->info.nNextI
 void CWall::LoadTextures (void)
 {
 if (nClip>= 0) {
-	tWallEffect* anim = gameData.wallData.animP + nClip;
+	tWallEffect* anim = gameData.wallData.pAnim + nClip;
 	for (int32_t j = 0; j < anim->nFrameCount; j++)
 		LoadTexture (gameData.pig.tex.bmIndexP [anim->frames [j]].index, j, gameStates.app.bD1Data);
 	}

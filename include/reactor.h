@@ -55,7 +55,7 @@ int32_t ReadReactors (CFile& cf);
  */
 int32_t ReadReactorTriggers (CFile& cf);
 
-int32_t FindReactor (CObject *objP);
-void InitCountdown (CTrigger *trigP, int32_t bReactorDestroyed, int32_t nTimer);
+int32_t FindReactor (CObject *pObj);
+void InitCountdown (CTrigger *pTrigger, int32_t bReactorDestroyed, int32_t nTimer);
 
 #endif /* _CNTRLCEN_H */

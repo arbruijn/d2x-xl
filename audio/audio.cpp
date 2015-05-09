@@ -112,10 +112,10 @@ if (!audio.Available ())
 	return;
 memset (stream, 0x80, len); // fix "static" sound bug on Mac OS X
 
-CAudioChannel*	channelP = audio.m_channels.Buffer ();
+CAudioChannel*	pChannel = audio.m_channels.Buffer ();
 
-for (int32_t i = audio.MaxChannels (); i; i--, channelP++)
-	channelP->Mix (reinterpret_cast<uint8_t*> (stream), len);
+for (int32_t i = audio.MaxChannels (); i; i--, pChannel++)
+	pChannel->Mix (reinterpret_cast<uint8_t*> (stream), len);
 }
 
 //------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ m_info.bPersistent = 0;
 m_info.bResampled = 0;
 m_info.bBuiltIn = 0;
 #if USE_SDL_MIXER
-m_info.mixChunkP = NULL;
+m_info.pMixChunk = NULL;
 m_info.nChannel = 0;
 #endif
 #if USE_OPENAL
@@ -238,13 +238,13 @@ if (gameOpts->sound.bUseOpenAL) {
 #endif
 #if USE_SDL_MIXER
 if (audio.Available () && gameOpts->sound.bUseSDLMixer) {
-	if (m_info.mixChunkP) {
+	if (m_info.pMixChunk) {
 		Mix_HaltChannel (m_info.nChannel);
 		if (m_info.bBuiltIn)
 			m_info.bBuiltIn = 0;
 		else
-			Mix_FreeChunk (m_info.mixChunkP);
-		m_info.mixChunkP = NULL;
+			Mix_FreeChunk (m_info.pMixChunk);
+		m_info.pMixChunk = NULL;
 		}
 	//Mix_FadeOutChannel (nChannel, 500);
 	}
@@ -261,23 +261,23 @@ if (m_info.bResampled) {
 
 void SetupWAVInfo (uint8_t* buffer, int32_t nLength)
 {
-	tWAVInfo*	infoP = reinterpret_cast<tWAVInfo*> (buffer);
+	tWAVInfo*	pInfo = reinterpret_cast<tWAVInfo*> (buffer);
 
-memcpy (infoP->header.chunkID, "RIFF", 4);
-infoP->header.chunkSize = nLength + sizeof (tWAVInfo) - 8;
-memcpy (infoP->header.riffType, "WAVE", 4);
+memcpy (pInfo->header.chunkID, "RIFF", 4);
+pInfo->header.chunkSize = nLength + sizeof (tWAVInfo) - 8;
+memcpy (pInfo->header.riffType, "WAVE", 4);
 
-memcpy (infoP->format.chunkID, "fmt ", 4);
-infoP->format.chunkSize = sizeof (tWAVFormat) - sizeof (infoP->format.chunkID) - sizeof (infoP->format.chunkSize);
-infoP->format.format = 1; //PCM
-infoP->format.channels = 2;
-infoP->format.sampleRate = SAMPLE_RATE_22K;
-infoP->format.bitsPerSample = (audio.Format () == AUDIO_U8) ? 8 : 16;
-infoP->format.blockAlign = infoP->format.channels * ((infoP->format.bitsPerSample + 7) / 8);
-infoP->format.avgBytesPerSec = infoP->format.sampleRate * infoP->format.blockAlign;
+memcpy (pInfo->format.chunkID, "fmt ", 4);
+pInfo->format.chunkSize = sizeof (tWAVFormat) - sizeof (pInfo->format.chunkID) - sizeof (pInfo->format.chunkSize);
+pInfo->format.format = 1; //PCM
+pInfo->format.channels = 2;
+pInfo->format.sampleRate = SAMPLE_RATE_22K;
+pInfo->format.bitsPerSample = (audio.Format () == AUDIO_U8) ? 8 : 16;
+pInfo->format.blockAlign = pInfo->format.channels * ((pInfo->format.bitsPerSample + 7) / 8);
+pInfo->format.avgBytesPerSec = pInfo->format.sampleRate * pInfo->format.blockAlign;
 
-memcpy (infoP->data.chunkID, "data", 4);
-infoP->data.chunkSize = nLength;
+memcpy (pInfo->data.chunkID, "data", 4);
+pInfo->data.chunkSize = nLength;
 }
 
 #endif
@@ -358,15 +358,15 @@ return nSrcLen * 2;
 //------------------------------------------------------------------------------
 // resample to 16 bit stereo
 
-int32_t CAudioChannel::Resample (CSoundSample *soundP, int32_t bD1Sound, int32_t bMP3)
+int32_t CAudioChannel::Resample (CSoundSample *pSound, int32_t bD1Sound, int32_t bMP3)
 {
 	int32_t	h, i, l;
 
 #if DBG
-if (soundP->bCustom)
+if (pSound->bCustom)
 	BRP;
 #endif
-l = soundP->nLength [soundP->bCustom];
+l = pSound->nLength [pSound->bCustom];
 i = gameOpts->sound.audioSampleRate / gameOpts->sound.soundSampleRate;
 h = l * 2 * i;
 if (audio.Format () == AUDIO_S16SYS)
@@ -377,14 +377,14 @@ if (!m_info.sample.Create (h + WAVINFO_SIZE))
 m_info.bResampled = 1;
 
 if (audio.Format () == AUDIO_S16SYS) {
-	uint16_t* bufP = reinterpret_cast<uint16_t*> (m_info.sample.Buffer () + WAVINFO_SIZE);
-	l = ResampleFormat (bufP, soundP->data [soundP->bCustom].Buffer (), l);
+	uint16_t* pBuffer = reinterpret_cast<uint16_t*> (m_info.sample.Buffer () + WAVINFO_SIZE);
+	l = ResampleFormat (pBuffer, pSound->data [pSound->bCustom].Buffer (), l);
 	for (; i > 1; i >>= 1)
-		l = ResampleRate (bufP, bufP, l);
-	l = ResampleChannels (bufP, bufP, l);
+		l = ResampleRate (pBuffer, pBuffer, l);
+	l = ResampleChannels (pBuffer, pBuffer, l);
 	}
 else {
-	uint8_t* srcP = soundP->data [soundP->bCustom].Buffer ();
+	uint8_t* srcP = pSound->data [pSound->bCustom].Buffer ();
 	uint8_t* destP = reinterpret_cast<uint8_t*> (m_info.sample.Buffer () + WAVINFO_SIZE);
 	for (; i > 1; i >>= 1) {
 		l = ResampleRate (destP, srcP, l);
@@ -423,15 +423,15 @@ return l > 0;
 
 //------------------------------------------------------------------------------
 
-int32_t CAudioChannel::Speedup (CSoundSample *soundP, int32_t speed)
+int32_t CAudioChannel::Speedup (CSoundSample *pSound, int32_t speed)
 {
 	int32_t	h, i, j, l;
 	uint8_t	*pDest, *pSrc;
 
-l = FixMulDiv (m_info.bResampled ? m_info.nLength : soundP->nLength [soundP->bCustom], speed, I2X (1));
+l = FixMulDiv (m_info.bResampled ? m_info.nLength : pSound->nLength [pSound->bCustom], speed, I2X (1));
 if (!(pDest = new uint8_t [l]))
 	return -1;
-pSrc = m_info.bResampled ? m_info.sample.Buffer () : soundP->data [soundP->bCustom].Buffer ();
+pSrc = m_info.bResampled ? m_info.sample.Buffer () : pSound->data [pSound->bCustom].Buffer ();
 for (h = i = j = 0; i < l; i++) {
 	pDest [j] = pSrc [i];
 	h += speed;
@@ -476,9 +476,9 @@ if ((m_info.bPlaying != bPlaying) && !(m_info.bPlaying = bPlaying)) {
 
 fix CAudioChannel::Duration (void)
 {
-if (!m_info.mixChunkP)
+if (!m_info.pMixChunk)
 	return 0;
-return F2X (float (m_info.mixChunkP->alen) / float (gameOpts->sound.audioSampleRate * ((audio.Format () == AUDIO_U8) ? 2 : 4)) + 0.5f);
+return F2X (float (m_info.pMixChunk->alen) / float (gameOpts->sound.audioSampleRate * ((audio.Format () == AUDIO_U8) ? 2 : 4)) + 0.5f);
 }
 
 //------------------------------------------------------------------------------
@@ -488,7 +488,7 @@ int32_t CAudioChannel::Start (int16_t nSound, int32_t nSoundClass, fix nVolume, 
 								  int32_t nLoopStart, int32_t nLoopEnd, int32_t nSoundObj, int32_t nSpeed, 
 								  const char *pszWAV, CFixVector* vPos)
 {
-	CSoundSample*	soundP = NULL;
+	CSoundSample*	pSound = NULL;
 	int32_t				bPersistent = (nSoundObj > -1) || bLooping || (nVolume > I2X (1));
 
 if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
@@ -496,8 +496,8 @@ if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
 		return -1;
 	if (!gameData.pig.sound.nSoundFiles [gameStates.sound.bD1Sound])
 		return -1;
-	soundP = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound % gameData.pig.sound.nSoundFiles [gameStates.sound.bD1Sound];
-	if (!(soundP->data [soundP->bCustom].Buffer () && soundP->nLength [soundP->bCustom]))
+	pSound = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound % gameData.pig.sound.nSoundFiles [gameStates.sound.bD1Sound];
+	if (!(pSound->data [pSound->bCustom].Buffer () && pSound->nLength [pSound->bCustom]))
 		return -1;
 	}
 #if DBG
@@ -517,7 +517,7 @@ if (m_info.source == 0xFFFFFFFF) {
 	alGenSources (1, &m_info.source);
 	if (DigiALError ())
 		return -1;
-	alSourcei (m_info.source, AL_BUFFER, soundP->buffer);
+	alSourcei (m_info.source, AL_BUFFER, pSound->buffer);
 	if (DigiALError ())
 		return -1;
 	alSourcef (m_info.source, AL_GAIN, ((nVolume < I2X (1)) ? X2F (nVolume) : 1) * 2 * X2F (m_info.nVolume));
@@ -535,13 +535,13 @@ if (m_info.source == 0xFFFFFFFF) {
 #endif
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer) {
-	if (m_info.mixChunkP) {
+	if (m_info.pMixChunk) {
 		Mix_HaltChannel (m_info.nChannel);
 		if (m_info.bBuiltIn)
 			m_info.bBuiltIn = 0;
 		else
-			Mix_FreeChunk (m_info.mixChunkP);
-		m_info.mixChunkP = NULL;
+			Mix_FreeChunk (m_info.pMixChunk);
+		m_info.pMixChunk = NULL;
 		}
 	}
 #endif
@@ -565,33 +565,33 @@ if (gameOpts->sound.bUseSDLMixer) {
 	//resample to two channels
 	m_info.nChannel = audio.FreeChannel ();
 	if (pszWAV && *pszWAV) {
-		if (!(m_info.mixChunkP = LoadAddonSound (pszWAV, &m_info.bBuiltIn)))
+		if (!(m_info.pMixChunk = LoadAddonSound (pszWAV, &m_info.bBuiltIn)))
 			return -1;
 		}
 	else {
 		if (!gameOpts->sound.bHires [0]) 
-			m_info.mixChunkP = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (soundP->data [soundP->bCustom].Buffer ()), soundP->nLength [soundP->bCustom]);
-		else if (soundP->bHires) {
-			int32_t l = soundP->nLength [soundP->bCustom];
-			m_info.sample.SetBuffer (soundP->data [soundP->bCustom].Buffer (), 1, l);
-			m_info.mixChunkP = Mix_QuickLoad_WAV (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()));
+			m_info.pMixChunk = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (pSound->data [pSound->bCustom].Buffer ()), pSound->nLength [pSound->bCustom]);
+		else if (pSound->bHires) {
+			int32_t l = pSound->nLength [pSound->bCustom];
+			m_info.sample.SetBuffer (pSound->data [pSound->bCustom].Buffer (), 1, l);
+			m_info.pMixChunk = Mix_QuickLoad_WAV (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()));
 			}
 		else {
-			int32_t l = Resample (soundP, (gameStates.sound.bD1Sound || gameStates.app.bDemoData) && (gameOpts->sound.audioSampleRate != SAMPLE_RATE_11K), 0);
+			int32_t l = Resample (pSound, (gameStates.sound.bD1Sound || gameStates.app.bDemoData) && (gameOpts->sound.audioSampleRate != SAMPLE_RATE_11K), 0);
 			if (l <= 0)
 				return -1;
 			if (nSpeed < I2X (1))
-				l = Speedup (soundP, nSpeed);
+				l = Speedup (pSound, nSpeed);
 #if MAKE_WAV
-			m_info.mixChunkP = Mix_QuickLoad_WAV (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()));
+			m_info.pMixChunk = Mix_QuickLoad_WAV (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()));
 #else
-			m_info.mixChunkP = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()), l);
+			m_info.pMixChunk = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()), l);
 #endif
 			}
 		}
 	Mix_VolPan (m_info.nChannel, m_info.nVolume, nPan);
 	try {
-		Mix_PlayChannel (m_info.nChannel, m_info.mixChunkP, bLooping ? -1 : nLoopEnd - nLoopStart);
+		Mix_PlayChannel (m_info.nChannel, m_info.pMixChunk, bLooping ? -1 : nLoopEnd - nLoopStart);
 		}
 	catch (...) {
 		PrintLog (0, "Error in Mix_PlayChannel\n");
@@ -604,16 +604,16 @@ if (pszWAV && *pszWAV)
 #endif
 	{
 	if ((gameStates.sound.bD1Sound || gameStates.app.bDemoData) && (gameOpts->sound.audioSampleRate != SAMPLE_RATE_11K)) {
-		int32_t l = Resample (soundP, 0, 0);
+		int32_t l = Resample (pSound, 0, 0);
 		if (l <= 0)
 			return -1;
 		m_info.nLength = l;
 		}
 	else {
-		m_info.sample.SetBuffer (soundP->data [soundP->bCustom].Buffer (), 1, m_info.nLength = soundP->nLength [soundP->bCustom]);
+		m_info.sample.SetBuffer (pSound->data [pSound->bCustom].Buffer (), 1, m_info.nLength = pSound->nLength [pSound->bCustom]);
 		}
 	if (nSpeed < I2X (1))
-		Speedup (soundP, nSpeed);
+		Speedup (pSound, nSpeed);
 	}
 m_info.nSound = nSound;
 m_info.bAmbient = (nSoundClass == SOUNDCLASS_AMBIENT);
@@ -900,10 +900,10 @@ if (gameStates.sound.bDynamic && m_info.bAvailable) {
 
 //------------------------------------------------------------------------------
 
-int32_t CAudio::RegisterChannel (CAudioChannel* channelP)
+int32_t CAudio::RegisterChannel (CAudioChannel* pChannel)
 {
-	int32_t nChannel = int32_t (channelP - m_channels.Buffer ());
-	int32_t nIndex = channelP->GetIndex ();
+	int32_t nChannel = int32_t (pChannel - m_channels.Buffer ());
+	int32_t nIndex = pChannel->GetIndex ();
 	int32_t nToS = int32_t (m_usedChannels.ToS ());
 
 if ((nIndex >= 0) && (nIndex < nToS) && (m_usedChannels [nIndex] == nChannel))
@@ -958,11 +958,11 @@ gameData.weapons.firing [0].bSound = 0;
 
 int32_t CAudio::SoundClassCount (int32_t nSoundClass)
 {
-	CAudioChannel	*channelP;
+	CAudioChannel	*pChannel;
 	int32_t			h, i;
 
-for (h = 0, i = m_info.nMaxChannels, channelP = audio.m_channels.Buffer (); i; i--, channelP++)
-	if (channelP->Playing () && (channelP->SoundClass () == nSoundClass))
+for (h = 0, i = m_info.nMaxChannels, pChannel = audio.m_channels.Buffer (); i; i--, pChannel++)
+	if (pChannel->Playing () && (pChannel->SoundClass () == nSoundClass))
 		h++;
 return h;
 }
@@ -971,19 +971,19 @@ return h;
 
 CAudioChannel* CAudio::FindFreeChannel (int32_t nSoundClass)
 {
-	CAudioChannel*	channelP, * channelMinVolP [2] = {NULL, NULL};
+	CAudioChannel*	pChannel, * channelMinVolP [2] = {NULL, NULL};
 	int32_t				nStartChannel;
 	int32_t				bUseClass = SoundClassCount (nSoundClass) >= m_info.nMaxChannels / 2;
 
 nStartChannel = m_info.nFreeChannel;
 DestroyObjectSound (-1); // destroy all 
 do {
-	channelP = audio.m_channels + m_info.nFreeChannel;
-	if (!channelP->Playing ())
-		return channelP;
-	if ((!bUseClass || (channelP->SoundClass () == nSoundClass)) &&
-	    (!channelMinVolP [channelP->Persistent ()] || (channelMinVolP [channelP->Persistent ()]->Volume () > channelP->Volume ())))
-		channelMinVolP [channelP->Persistent ()] = channelP;
+	pChannel = audio.m_channels + m_info.nFreeChannel;
+	if (!pChannel->Playing ())
+		return pChannel;
+	if ((!bUseClass || (pChannel->SoundClass () == nSoundClass)) &&
+	    (!channelMinVolP [pChannel->Persistent ()] || (channelMinVolP [pChannel->Persistent ()]->Volume () > pChannel->Volume ())))
+		channelMinVolP [pChannel->Persistent ()] = pChannel;
 	m_info.nFreeChannel = (m_info.nFreeChannel + 1) % m_info.nMaxChannels;
 	} while (m_info.nFreeChannel != nStartChannel);
 m_info.nFreeChannel = audio.m_channels.Index (channelMinVolP [0] ? channelMinVolP [0] : channelMinVolP [1]);
@@ -997,7 +997,7 @@ int32_t CAudio::StartSound (int16_t nSound, int32_t nSoundClass, fix nVolume, in
 								int32_t nLoopStart, int32_t nLoopEnd, int32_t nSoundObj, int32_t nSpeed, 
 								const char *pszWAV, CFixVector* vPos)
 {
-	CAudioChannel*	channelP;
+	CAudioChannel*	pChannel;
 
 if (!gameStates.app.bUseSound)
 	return -1;
@@ -1005,9 +1005,9 @@ if (!m_info.bAvailable)
 	return -1;
 if (((nSoundObj > -1) || bLooping || (nVolume > I2X (1))) && !nSoundClass)
 	nSoundClass = -1;
-if (!(channelP = FindFreeChannel (nSoundClass)))
+if (!(pChannel = FindFreeChannel (nSoundClass)))
 	return -1;
-if (0 > channelP->Start (nSound, nSoundClass, nVolume, nPan, bLooping, nLoopStart, nLoopEnd, nSoundObj, nSpeed, pszWAV, vPos)) {
+if (0 > pChannel->Start (nSound, nSoundClass, nVolume, nPan, bLooping, nLoopStart, nLoopEnd, nSoundObj, nSpeed, pszWAV, vPos)) {
 	return -1;
 	}
 int32_t i = m_info.nFreeChannel;
@@ -1027,8 +1027,8 @@ if (!m_info.bAvailable)
 	return -1;
 if (nSound < 0)
 	return -1;
-CSoundSample *soundP = &gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound];
-if (!soundP->data [soundP->bCustom].Buffer ()) {
+CSoundSample *pSound = &gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound];
+if (!pSound->data [pSound->bCustom].Buffer ()) {
 	Int3 ();
 	return -1;
 	}
@@ -1191,12 +1191,12 @@ if (!gameOpts->sound.bUseSDLMixer)
 
 void CAudio::DestroyBuffers (void)
 {
-	CAudioChannel	*channelP;
+	CAudioChannel	*pChannel;
 	int32_t			i;
 
-for (channelP = audio.m_channels.Buffer (), i = audio.m_channels.Length (); i; i--, channelP++)
-	if (channelP->Resampled ())
-		channelP->Destroy ();
+for (pChannel = audio.m_channels.Buffer (), i = audio.m_channels.Length (); i; i--, pChannel++)
+	if (pChannel->Resampled ())
+		pChannel->Destroy ();
 }
 
 //------------------------------------------------------------------------------

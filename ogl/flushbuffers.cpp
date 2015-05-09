@@ -130,21 +130,21 @@ if (profilerValueOffset)
 	return;
 
 int32_t	i, w, h, aw, wMax = 0;
-CFont* fontP = fontManager.Current ();
+CFont* pFont = fontManager.Current ();
 
 for (i = (int32_t) ptFrame; i < (int32_t) ptTagCount; i++) {
-	fontP->StringSize (szTags [i].szLabel, w, h, aw);
+	pFont->StringSize (szTags [i].szLabel, w, h, aw);
 	if (profilerValueOffset < w)
 		profilerValueOffset = w;
 	}
-fontP->StringSize (" .", w, h, aw);
+pFont->StringSize (" .", w, h, aw);
 profilerValueOffset += w + 5;
 
 for (i = (int32_t) ptFrame; i < (int32_t) ptTagCount; i++) {
-	fontP->PadString (szTags [i].szPad, szTags [i].szLabel, " .", profilerValueOffset);
+	pFont->PadString (szTags [i].szPad, szTags [i].szLabel, " .", profilerValueOffset);
 	szTags [i].pszPad = strstr (szTags [i].szPad, " .");
 	*szTags [i].pszPad++ = '\0';
-	fontP->StringSize (szTags [i].pszPad, w, h, aw);
+	pFont->StringSize (szTags [i].pszPad, w, h, aw);
 	szTags [i].nPadOffset = profilerValueOffset - w;
 	}
 }
@@ -217,7 +217,7 @@ if (gameStates.render.bShowProfiler && !gameStates.menus.nInMenu && fontManager.
 	int32_t h = fontManager.Current ()->Height () + 3;
 	fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
 	fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);
-	CFont* fontP = fontManager.Current ();
+	CFont* pFont = fontManager.Current ();
 
 	int32_t nLine = 3;
 	float s = 0;

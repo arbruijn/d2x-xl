@@ -137,12 +137,12 @@ transformation.Transform (m_vertex [1], m_vertex [0]);
 
 // -----------------------------------------------------------------------------------
 
-uint8_t CRenderPoint::Project (CTransformation& transformation, CFloatVector3& viewPos)
+uint8_t CRenderPoint::Project (CTransformation& transformation, CFloatVector3& pViewos)
 {
 if ((m_flags & PF_PROJECTED) || (m_codes & CC_BEHIND))
 	return m_flags;
-CFloatVector3 v = transformation.m_info.projection * viewPos;
-float z = fabs (viewPos.v.coord.z);
+CFloatVector3 v = transformation.m_info.projection * pViewos;
+float z = fabs (pViewos.v.coord.z);
 #if 0
 m_screen.x = fix ((float) gameData.render.screen.Width () * 0.5f * (1.0f + v.v.coord.x / z));
 m_screen.y = fix ((float) gameData.render.screen.Height () * 0.5f * (1.0f + v.v.coord.y / z));
@@ -158,9 +158,9 @@ return m_flags;
 
 void CRenderPoint::Project (void)
 {
-CFloatVector3 viewPosf;
-viewPosf.Assign (ViewPos ());
-m_flags = Project (transformation, viewPosf);
+CFloatVector3 pViewosf;
+pViewosf.Assign (ViewPos ());
+m_flags = Project (transformation, pViewosf);
 }
 
 // -----------------------------------------------------------------------------------
@@ -173,13 +173,13 @@ if (nVertex == nDbgVertex)
 #endif
 if (!Projected ()) {
 	WorldPos () = VERTICES [nVertex];
-	CFloatVector3 viewPosf;
-	transformation.Transform (viewPosf, *FVERTICES [nVertex].XYZ ());
-	ViewPos ().Assign (viewPosf);
-	Project (transformation, viewPosf);
+	CFloatVector3 pViewosf;
+	transformation.Transform (pViewosf, *FVERTICES [nVertex].XYZ ());
+	ViewPos ().Assign (pViewosf);
+	Project (transformation, pViewosf);
 	Encode ();
 	AddFlags (PF_PROJECTED);
-	SetCodes ((viewPosf.v.coord.z < 0.0f) ? CC_BEHIND : 0);
+	SetCodes ((pViewosf.v.coord.z < 0.0f) ? CC_BEHIND : 0);
 #if TRANSP_DEPTH_HASH
 	fix d = ViewPos ().Mag ();
 	if (gameData.render.zMin > d)

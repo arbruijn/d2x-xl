@@ -38,7 +38,7 @@ bool CLightningEmitter::Create (int32_t nBolts, CFixVector *vPos, CFixVector *vE
 										 int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude,
 										 char nAngle, int32_t nOffset, int16_t nNodes, int16_t nChildren, char nDepth, int16_t nSteps,
 										 int16_t nSmoothe, char bClamp, char bGlow, char bSound, char bLight,
-										 char nStyle, float nWidth, CFloatVector *colorP)
+										 char nStyle, float nWidth, CFloatVector *pColor)
 {
 m_nObject = nObject;
 if (!(nLife && nLength && (nNodes > 4)))
@@ -58,7 +58,7 @@ m_lightning.Clear ();
 CLightning l;
 l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 		  nAngle, nOffset, nNodes, nChildren, nSteps,
-		  nSmoothe, bClamp, bGlow, bLight, nStyle, nWidth, colorP, NULL, -1);
+		  nSmoothe, bClamp, bGlow, bLight, nStyle, nWidth, pColor, NULL, -1);
 
 int32_t bChildren = (gameOpts->render.lightning.nStyle > 1);
 
@@ -153,21 +153,21 @@ int32_t CLightningEmitter::SetLife (void)
 if (!m_bValid)
 	return 0;
 
-	CLightning*	lightningP = m_lightning.Buffer ();
+	CLightning*	pLightning = m_lightning.Buffer ();
 	int32_t			i;
 
 for (i = 0; i < m_nBolts; ) {
-	if (!lightningP->SetLife ()) {
-		lightningP->DestroyNodes ();
+	if (!pLightning->SetLife ()) {
+		pLightning->DestroyNodes ();
 		if (!--m_nBolts)
 			return 0;
 		if (i < m_nBolts) {
-			*lightningP = m_lightning [m_nBolts];
+			*pLightning = m_lightning [m_nBolts];
 			memset (m_lightning + m_nBolts, 0, sizeof (m_lightning [m_nBolts]));
 			continue;
 			}
 		}
-	i++, lightningP++;
+	i++, pLightning++;
 	}
 return m_nBolts;
 }
@@ -219,11 +219,11 @@ if (m_bValid < 1) {
 if (!m_bSound)
 	return;
 
-	CLightning	*lightningP;
+	CLightning	*pLightning;
 	int32_t			i;
 
-for (i = m_nBolts, lightningP = m_lightning.Buffer (); i > 0; i--, lightningP++)
-	if (lightningP->m_nNodes > 0) {
+for (i = m_nBolts, pLightning = m_lightning.Buffer (); i > 0; i--, pLightning++)
+	if (pLightning->m_nNodes > 0) {
 		if (m_bSound < 0)
 			CreateSound (1, nThread);
 		return;
@@ -273,9 +273,9 @@ void CLightningEmitter::MoveForObject (void)
 if (!m_bValid)
 	return;
 
-	CObject* objP = OBJECT (m_nObject);
+	CObject* pObj = OBJECT (m_nObject);
 
-Move (OBJPOS (objP)->vPos, objP->info.nSegment);
+Move (OBJPOS (pObj)->vPos, pObj->info.nSegment);
 }
 
 //------------------------------------------------------------------------------

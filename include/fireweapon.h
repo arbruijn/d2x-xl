@@ -108,7 +108,7 @@ void RenderLaser (CObject *obj);
 void find_goal_texture (CObject * obj, uint8_t nType, int32_t gun_num, int32_t makeSound, int32_t harmlessFlag);
 void CreateFlare (CObject *obj);
 int32_t LasersAreRelated (int32_t o1, int32_t o2);
-int32_t FireWeaponDelayedWithSpread (CObject *objP, uint8_t laserType, int32_t gun_num, fix spreadr, 
+int32_t FireWeaponDelayedWithSpread (CObject *pObj, uint8_t laserType, int32_t gun_num, fix spreadr, 
 												 fix spreadu, fix delayTime, int32_t makeSound, int32_t harmless, int16_t nLightObj);
 int32_t LocalPlayerFireGun (void);
 void DoMissileFiring (int32_t do_autoselect);
@@ -134,7 +134,7 @@ void FireGun (void);
 // direction "direction" from the position "position"
 // Returns CObject number of laser fired or -1 if not possible to fire
 // laser.
-int16_t CreateClusterLight (CObject *objP);
+int16_t CreateClusterLight (CObject *pObj);
 
 int32_t CreateNewWeaponSimple(CFixVector * direction, CFixVector * position, int16_t parent, uint8_t weaponType, int32_t makeSound);
 
@@ -145,10 +145,10 @@ int32_t CreateWeaponObject (uint8_t weaponType, int16_t nSegment,CFixVector *pos
 void ReleaseGuidedMissile(int32_t player_num);
 
 void CreateSmartChildren (CObject *objp, int32_t count);
-int32_t UpdateOmegaLightnings (CObject *parentObjP, CObject *targetObjP);
+int32_t UpdateOmegaLightnings (CObject *pParentObj, CObject *targetObjP);
 void StopPrimaryFire (void);
 void StopSecondaryFire (void);
-float MissileSpeedScale (CObject *objP);
+float MissileSpeedScale (CObject *pObj);
 
 void ChargeFusion (void);
 int32_t FusionBump (void);
@@ -156,8 +156,8 @@ int32_t FusionBump (void);
 int32_t GetPlayerGun (int32_t nPlayer, int32_t *bFiring);
 
 void GetPlayerMslLock (void);
-CFixVector *GetGunPoints (CObject *objP, int32_t nGun);
-CFixVector *TransformGunPoint (CObject *objP, CFixVector *vGunPoints, int32_t nGun, 
+CFixVector *GetGunPoints (CObject *pObj, int32_t nGun);
+CFixVector *TransformGunPoint (CObject *pObj, CFixVector *vGunPoints, int32_t nGun, 
 										fix xDelay, uint8_t nLaserType, CFixVector *vMuzzle, CFixMatrix *mP);
 typedef struct tMuzzleInfo {
 	fix         createTime;
@@ -173,17 +173,17 @@ extern int32_t nOmegaDuration [7];
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static inline int32_t LaserPlayerFireSpread (CObject *objP, uint8_t laserType, int32_t nGun, fix spreadr, fix spreadu, 
+static inline int32_t LaserPlayerFireSpread (CObject *pObj, uint8_t laserType, int32_t nGun, fix spreadr, fix spreadu, 
 													  int32_t makeSound, int32_t harmless, int16_t nLightObj)
 {
-return FireWeaponDelayedWithSpread (objP, laserType, nGun, spreadr, spreadu, 0, makeSound, harmless, nLightObj);
+return FireWeaponDelayedWithSpread (pObj, laserType, nGun, spreadr, spreadu, 0, makeSound, harmless, nLightObj);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static int32_t inline LaserPlayerFire (CObject *objP, uint8_t laserType, int32_t nGun, int32_t makeSound, int32_t harmless, int16_t nLightObj)
+static int32_t inline LaserPlayerFire (CObject *pObj, uint8_t laserType, int32_t nGun, int32_t makeSound, int32_t harmless, int16_t nLightObj)
 {
-return LaserPlayerFireSpread (objP, laserType, nGun, 0, 0, makeSound, harmless, nLightObj);
+return LaserPlayerFireSpread (pObj, laserType, nGun, 0, 0, makeSound, harmless, nLightObj);
 }
 
 // ---------------------------------------------------------------------------------

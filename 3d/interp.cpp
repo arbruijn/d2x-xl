@@ -328,7 +328,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void GetThrusterPos (int32_t nModel, CFixVector *vNormal, CFixVector *vOffset, CBitmap *bmP, int32_t nPoints)
+void GetThrusterPos (int32_t nModel, CFixVector *vNormal, CFixVector *vOffset, CBitmap *pBm, int32_t nPoints)
 {
 	int32_t					h, i, nSize;
 	CFixVector			v, vForward = CFixVector::Create(0,0,I2X (1));
@@ -336,10 +336,10 @@ void GetThrusterPos (int32_t nModel, CFixVector *vNormal, CFixVector *vOffset, C
 
 if (mtP->nCount >= 2)
 	return;
-if (bmP) {
-	if (!gameData.pig.tex.bitmaps [0].IsElement (bmP))
+if (pBm) {
+	if (!gameData.pig.tex.bitmaps [0].IsElement (pBm))
 		return;
-	i = (int32_t) (bmP - gameData.pig.tex.bitmaps [0]);
+	i = (int32_t) (pBm - gameData.pig.tex.bitmaps [0]);
 	if ((i != 24) && ((i < 1741) || (i > 1745)))
 		return;
 	}
@@ -377,14 +377,14 @@ if (!mtP->nCount++) {
 #define CHECK_NORMAL_FACING	0
 
 int32_t G3DrawPolyModel (
-	CObject*				objP,
+	CObject*				pObj,
 	void*					modelDataP,
 	CArray<CBitmap*>&	modelBitmaps,
 	CAngleVector*		pAnimAngles,
 	CFixVector*			vOffset,
 	fix					xModelLight,
 	fix*					xGlowValues,
-	CFloatVector*		colorP,
+	CFloatVector*		pColor,
 	POF::CModel*		po,
 	int32_t				nModel)
 {
@@ -398,8 +398,8 @@ if (gameStates.app.bNostalgia)
 	bGetThrusterPos = 
 	bLightning = 0;
 else {
-	bGetThrusterPos = !objP || (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->IsProjectile ());
-	bLightning = SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage && objP && (objP->Damage () < 0.5f);
+	bGetThrusterPos = !pObj || (pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_ROBOT) || (pObj->IsProjectile ());
+	bLightning = SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage && pObj && (pObj->Damage () < 0.5f);
 	}
 #if DBG_SHADOWS
 if (bShadowTest)
@@ -412,9 +412,9 @@ if (bShadowTest)
 nDepth++;
 G3CheckAndSwap (modelDataP);
 if (SHOW_DYN_LIGHT &&
-	!nDepth && !po && objP && ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_PLAYER))) {
+	!nDepth && !po && pObj && ((pObj->info.nType == OBJ_ROBOT) || (pObj->info.nType == OBJ_PLAYER))) {
 	po = gameData.models.pofData [gameStates.app.bD1Mission][0] + nModel;
-	POFGatherPolyModelItems (objP, modelDataP, pAnimAngles, po, 0);
+	POFGatherPolyModelItems (pObj, modelDataP, pAnimAngles, po, 0);
 	}
 nGlow = -1;		//glow off by default
 ogl.SetFaceCulling (true);
@@ -446,10 +446,10 @@ for (;;) {
 			//fix l = X2I (32 * xModelLight);
 			CCanvas::Current ()->SetColorRGB15bpp (WORDVAL (p+28), (uint8_t) (255 * gameStates.render.grAlpha));
 			CCanvas::Current ()->FadeColorRGB (1.0);
-			if (colorP) {
-				colorP->Red () = (float) CCanvas::Current ()->Color ().Red () / 255.0f;
-				colorP->Green () = (float) CCanvas::Current ()->Color ().Green () / 255.0f;
-				colorP->Blue () = (float) CCanvas::Current ()->Color ().Blue () / 255.0f;
+			if (pColor) {
+				pColor->Red () = (float) CCanvas::Current ()->Color ().Red () / 255.0f;
+				pColor->Green () = (float) CCanvas::Current ()->Color ().Green () / 255.0f;
+				pColor->Blue () = (float) CCanvas::Current ()->Color ().Blue () / 255.0f;
 				}
 			p += 30;
 			for (int32_t i = 0; i < nVerts; i++)
@@ -485,8 +485,8 @@ for (;;) {
 				nGlow = -1;
 				}
 			//now poke light into l values
-			if (colorP)
-				paletteManager.Game ()->ToRgbaf (modelBitmaps [WORDVAL (p+28)]->AvgColor (), *colorP);
+			if (pColor)
+				paletteManager.Game ()->ToRgbaf (modelBitmaps [WORDVAL (p+28)]->AvgColor (), *pColor);
 			p += 30;
 			uvlList = reinterpret_cast<tUVL*> (p + (nVerts | 1) * 2);
 			for (i = 0; i < nVerts; i++) {
@@ -500,7 +500,7 @@ for (;;) {
 				G3DrawTexPolySimple (nVerts, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
 			if (!gameStates.render.bBriefing) {
 				if (bLightning)
-					lightningManager.RenderForDamage (objP, pointList, NULL, nVerts);
+					lightningManager.RenderForDamage (pObj, pointList, NULL, nVerts);
 				if (bGetThrusterPos)
 					GetThrusterPos (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nVerts);
 				}
@@ -517,14 +517,14 @@ for (;;) {
 #endif
 		 {		//facing
 			//draw back then front
-			if (!(G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel) &&
-					G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel)))
+			if (!(G3DrawPolyModel (pObj, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel) &&
+					G3DrawPolyModel (pObj, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel)))
 				return 0;
 			}
 #if CHECK_NORMAL_FACING
 		else {			//not facing.  draw front then back
-			if (!(G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel) &&
-					G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel)))
+			if (!(G3DrawPolyModel (pObj, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel) &&
+					G3DrawPolyModel (pObj, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel)))
 				return 0;
 			}
 #endif
@@ -548,7 +548,7 @@ for (;;) {
 		transformation.Begin (vo, va);
 		if (vOffset)
 			vo += *vOffset;
-		if (!G3DrawPolyModel (objP, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, colorP, po, nModel)) {
+		if (!G3DrawPolyModel (pObj, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, pColor, po, nModel)) {
 			transformation.End ();
 			return 0;
 			}
@@ -573,13 +573,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 //alternate interpreter for morphing CObject
-int32_t G3DrawMorphingModel (void *modelP, CArray<CBitmap*>& modelBitmaps, CAngleVector *pAnimAngles, CFixVector *vOffset,
+int32_t G3DrawMorphingModel (void *pModel, CArray<CBitmap*>& modelBitmaps, CAngleVector *pAnimAngles, CFixVector *vOffset,
 								  fix xModelLight, CFixVector *new_points, int32_t nModel)
 {
-	uint8_t *p = reinterpret_cast<uint8_t*> (modelP);
+	uint8_t *p = reinterpret_cast<uint8_t*> (pModel);
 	fix *xGlowValues = NULL;
 
-G3CheckAndSwap (modelP);
+G3CheckAndSwap (pModel);
 nGlow = -1;		//glow off by default
 for (;;) {
 	switch (WORDVAL (p)) {

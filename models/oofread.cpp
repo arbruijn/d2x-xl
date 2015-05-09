@@ -1712,13 +1712,13 @@ return 1;
 
 int32_t OOF_ReleaseTextures (void)
 {
-	CModel*	modelP;
+	CModel*	pModel;
 	int32_t		bCustom, i;
 
 PrintLog (1, "releasing OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.models.nHiresModels, modelP = gameData.models.oofModels [bCustom].Buffer (); i; i--, modelP++)
-		modelP->ReleaseTextures ();
+	for (i = gameData.models.nHiresModels, pModel = gameData.models.oofModels [bCustom].Buffer (); i; i--, pModel++)
+		pModel->ReleaseTextures ();
 PrintLog (-1);
 return 0;
 }
@@ -1727,13 +1727,13 @@ return 0;
 
 int32_t OOF_ReloadTextures (void)
 {
-	CModel*	modelP;
+	CModel*	pModel;
 	int32_t		bCustom, i;
 
 PrintLog (1, "reloading OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.models.nHiresModels, modelP = gameData.models.oofModels [bCustom].Buffer (); i; i--, modelP++)
-		if (!modelP->ReloadTextures ())
+	for (i = gameData.models.nHiresModels, pModel = gameData.models.oofModels [bCustom].Buffer (); i; i--, pModel++)
+		if (!pModel->ReloadTextures ())
 			return 0;
 PrintLog (-1);
 return 1;

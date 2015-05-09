@@ -148,8 +148,8 @@ void CMarkerManager::Render (void)
 {
 	CRenderPoint spherePoint;
 	int32_t		i, j, nMaxDrop, bSpawn;
-	CObject*	objP;
-	uint8_t*	colorP;
+	CObject*	pObj;
+	uint8_t*	pColor;
 
 	static int32_t cyc = 10, cycdir = 1;
 	static uint8_t	colors [2][3] = {{20, 30, 40},{40, 50, 60}};
@@ -159,13 +159,13 @@ if (m_data.fScale == 0.0f)
 nMaxDrop = MaxDrop ();
 spherePoint.SetIndex (-1);
 for (i = 0; i < nMaxDrop; i++)
-	if ((objP = GetObject (-1, i))) {
-		bSpawn = (objP == markerManager.SpawnObject (-1));
-		colorP = &colors [bSpawn][0];
+	if ((pObj = GetObject (-1, i))) {
+		bSpawn = (pObj == markerManager.SpawnObject (-1));
+		pColor = &colors [bSpawn][0];
 		DrawNumber (i);
-		spherePoint.TransformAndEncode (objP->info.position.vPos);
-		for (j = 0; j < 3; j++, colorP++) {
-			CCanvas::Current ()->SetColorRGB (PAL2RGBA (*colorP), 0, 0, 255);
+		spherePoint.TransformAndEncode (pObj->info.position.vPos);
+		for (j = 0; j < 3; j++, pColor++) {
+			CCanvas::Current ()->SetColorRGB (PAL2RGBA (*pColor), 0, 0, 255);
 			G3DrawSphere (&spherePoint, int32_t (m_data.fScale * MARKER_SPHERE_SIZE) >> j, 1);
 			}
 		}
@@ -187,14 +187,14 @@ else {
 
 //------------------------------------------------------------------------------
 
-int32_t CMarkerManager::MoveSpawnPoint (tObjTransformation *posP, int16_t nSegment)
+int32_t CMarkerManager::MoveSpawnPoint (tObjTransformation *pPos, int16_t nSegment)
 {
-	CObject	*markerP = markerManager.SpawnObject (-1);
+	CObject	*pMarker = markerManager.SpawnObject (-1);
 
-if (!markerP)
+if (!pMarker)
 	return 0;
-markerP->info.position = *posP;
-markerP->RelinkToSeg (nSegment);
+pMarker->info.position = *pPos;
+pMarker->RelinkToSeg (nSegment);
 return 1;
 }
 
@@ -203,19 +203,19 @@ return 1;
 void CMarkerManager::Drop (char nPlayerMarker, int32_t bSpawn)
 {
 	uint8_t		nMarker = (N_LOCALPLAYER * 2) + nPlayerMarker;
-	CObject	*playerP = OBJECT (LOCALPLAYER.nObject);
+	CObject	*pPlayer = OBJECT (LOCALPLAYER.nObject);
 
-if (!(bSpawn && markerManager.MoveSpawnPoint (&playerP->info.position, playerP->info.nSegment))) {
-	m_data.position [nMarker] = playerP->info.position.vPos;
+if (!(bSpawn && markerManager.MoveSpawnPoint (&pPlayer->info.position, pPlayer->info.nSegment))) {
+	m_data.position [nMarker] = pPlayer->info.position.vPos;
 	int16_t nObject = m_data.objects [nMarker];
 	if ((nObject >= 0) && (nObject <= gameData.objData.nLastObject [0]) && (OBJECT (nObject)->info.nType == OBJ_MARKER))
 		ReleaseObject (nObject);
 	if (bSpawn)
 		strcpy (m_data.szMessage [nMarker], "SPAWN");
 	m_data.objects [nMarker] =
-		DropMarkerObject (playerP->info.position.vPos, (int16_t) playerP->info.nSegment, playerP->info.position.mOrient, nMarker);
+		DropMarkerObject (pPlayer->info.position.vPos, (int16_t) pPlayer->info.nSegment, pPlayer->info.position.mOrient, nMarker);
 	if (IsMultiGame)
-		MultiSendDropMarker (N_LOCALPLAYER, playerP->info.position.vPos, nPlayerMarker, m_data.szMessage [nMarker]);
+		MultiSendDropMarker (N_LOCALPLAYER, pPlayer->info.position.vPos, nPlayerMarker, m_data.szMessage [nMarker]);
 	}
 }
 
@@ -236,7 +236,7 @@ if ((!IsMultiGame || IsCoopGame) && !(LOCALPLAYER.m_bExploded || gameStates.app.
 
 //------------------------------------------------------------------------------
 
-void CMarkerManager::DropForGuidebot (CObject *objP)
+void CMarkerManager::DropForGuidebot (CObject *pObj)
 {
 	uint8_t	nMarker = MAX_DROP_SINGLE + 1;
 
@@ -244,10 +244,10 @@ void CMarkerManager::DropForGuidebot (CObject *objP)
 if (nMarker > NUM_MARKERS - 1)
 	nMarker = NUM_MARKERS - 1;
 sprintf (m_data.szMessage [nMarker], "RIP: %s",gameData.escort.szName);
-m_data.position [nMarker] = objP->info.position.vPos;
+m_data.position [nMarker] = pObj->info.position.vPos;
 if ((m_data.objects [nMarker] != -1) && (m_data.objects [nMarker] != 0))
 	ReleaseObject (m_data.objects [nMarker]);
-m_data.objects [nMarker] = DropMarkerObject (objP->info.position.vPos, (int16_t) objP->info.nSegment, objP->info.position.mOrient, nMarker);
+m_data.objects [nMarker] = DropMarkerObject (pObj->info.position.vPos, (int16_t) pObj->info.nSegment, pObj->info.position.mOrient, nMarker);
 }
 
 //------------------------------------------------------------------------------
@@ -305,10 +305,10 @@ return (i < 0) ? NULL : OBJECT (m_data.objects [i]);
 
 //------------------------------------------------------------------------------
 
-int32_t CMarkerManager::IsSpawnObject (CObject *objP)
+int32_t CMarkerManager::IsSpawnObject (CObject *pObj)
 {
-if (objP->info.nType == OBJ_MARKER) {
-	int32_t nMaxDrop, h, i, nObject = objP->Index ();
+if (pObj->info.nType == OBJ_MARKER) {
+	int32_t nMaxDrop, h, i, nObject = pObj->Index ();
 
 	nMaxDrop = MaxDrop ();
 	for (i = N_LOCALPLAYER * 2, h = i + nMaxDrop; i < h; i++)
@@ -333,7 +333,7 @@ if ((m_data.nHighlight > -1) && ((nObject = m_data.objects [m_data.nHighlight]) 
 void CMarkerManager::Delete (int32_t bForce)
 {
 if ((m_data.nHighlight > -1) && (m_data.objects [m_data.nHighlight] != -1)) {
-	gameData.objData.viewerP = OBJECT (m_data.objects [m_data.nHighlight]);
+	gameData.objData.pViewer = OBJECT (m_data.objects [m_data.nHighlight]);
 	if (bForce || !InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_DELETE_MARKER)) {
 		int32_t	h, i;
 		ReleaseObject (m_data.objects [m_data.nHighlight]);
@@ -355,7 +355,7 @@ if ((m_data.nHighlight > -1) && (m_data.objects [m_data.nHighlight] != -1)) {
 			m_data.szMessage [i][0] = '\0';
 			}
 		}
-	gameData.objData.viewerP = gameData.objData.consoleP;
+	gameData.objData.pViewer = gameData.objData.pConsole;
 	}
 }
 
@@ -370,19 +370,19 @@ if (!IsMultiGame || IsCoopGame) {
 	else
 #endif
 	if ((m_data.nHighlight > -1) && (m_data.objects [m_data.nHighlight] != -1)) {
-		gameData.objData.viewerP = OBJECT (m_data.objects [m_data.nHighlight]);
+		gameData.objData.pViewer = OBJECT (m_data.objects [m_data.nHighlight]);
 		if (!InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_JUMP_TO_MARKER)) {
-			CObject	*markerP = OBJECT (m_data.objects [m_data.nHighlight]);
+			CObject	*pMarker = OBJECT (m_data.objects [m_data.nHighlight]);
 
 #if 1 //!DBG
 			LOCALPLAYER.UpdateEnergy (-I2X (101) / 2);
 			LOCALPLAYER.UpdateShield (-I2X (51) / 2);
 #endif
-			LOCALOBJECT->info.position.vPos = markerP->info.position.vPos;
-			LOCALOBJECT->RelinkToSeg (markerP->info.nSegment);
+			LOCALOBJECT->info.position.vPos = pMarker->info.position.vPos;
+			LOCALOBJECT->RelinkToSeg (pMarker->info.nSegment);
 			gameStates.render.bDoAppearanceEffect = 1;
 			}
-		gameData.objData.viewerP = gameData.objData.consoleP;
+		gameData.objData.pViewer = gameData.objData.pConsole;
 		}
 	}
 }

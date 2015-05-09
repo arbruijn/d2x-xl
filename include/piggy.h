@@ -188,16 +188,16 @@ tBitmapIndex PiggyFindBitmap (const char * name, int32_t bD1Data );
 int32_t PiggyFindSound (const char * name);
 int32_t LoadSoundReplacements (const char *pszFileName);
 void FreeSoundReplacements (void);
-void LoadTextureColors (const char *pszLevelName, CFaceColor *colorP);
+void LoadTextureColors (const char *pszLevelName, CFaceColor *pColor);
 int32_t LoadModelData (void);
 int32_t SaveModelData (void);
 
 void piggy_read_bitmap_data (CBitmap * bmp);
 void piggy_readSound_data (CSoundSample *snd);
 
-int32_t ReadHiresBitmap (CBitmap* bmP, const char* bmName, int32_t nIndex, int32_t bD1);
+int32_t ReadHiresBitmap (CBitmap* pBm, const char* bmName, int32_t nIndex, int32_t bD1);
 int32_t PiggyBitmapPageIn (int32_t bmi, int32_t bD1, bool bHires = false);
-int32_t PageInBitmap (CBitmap *bmP, const char *bmName, int32_t nIndex, int32_t bD1, bool bHires = false);
+int32_t PageInBitmap (CBitmap *pBm, const char *bmName, int32_t nIndex, int32_t bD1, bool bHires = false);
 void UnloadTextures (void);
 void ResetTextureFlags (void);
 
@@ -231,11 +231,11 @@ void PIGBitmapHeaderRead (tPIGBitmapHeader *dbh, CFile& cf);
 void PIGBitmapHeaderD1Read (tPIGBitmapHeader *dbh, CFile& cf);
 
 CBitmap *PiggyLoadBitmap (const char *pszFile);
-int32_t CreateSuperTranspMasks (CBitmap *bmP);
+int32_t CreateSuperTranspMasks (CBitmap *pBm);
 void UnloadHiresAnimations (void);
 
 CPalette* LoadD1Palette (void);
-void UseBitmapCache (CBitmap *bmP, int32_t nSize);
+void UseBitmapCache (CBitmap *pBm, int32_t nSize);
 int32_t IsAnimatedTexture (int16_t nTexture);
 
 int32_t SetupSounds (CFile& fpSound, int32_t nSoundNum, int32_t nSoundStart, bool bCustom = false, bool bUseLowRes = true);
@@ -244,7 +244,7 @@ int32_t IsMacDataFile (CFile* cfP, int32_t bD1);
 
 void PiggyCriticalError (void);
 
-void swap_0_255 (CBitmap *bmP);
+void swap_0_255 (CBitmap *pBm);
 
 #define HIRES_SOUND_FOLDER(_bD1)		((_bD1) ? 3 : gameOpts->UseHiresSound ())
 

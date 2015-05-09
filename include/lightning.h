@@ -35,7 +35,7 @@ class CLightningNode : public tLightningNode {
 							   int32_t nLife, int32_t nLength, int32_t nAmplitude,
 							   char nAngle, int16_t nNodes, int16_t nChildren, char nDepth, int16_t nSteps,
 							   int16_t nSmoothe, char bClamp, char bGlow, char bLight,
-							   char nStyle, float nWidth, CFloatVector *colorP, CLightning *parentP, int16_t nNode,
+							   char nStyle, float nWidth, CFloatVector *pColor, CLightning *pParent, int16_t nNode,
 								int32_t nThread);
 		void ComputeOffset (int32_t nSteps);
 		int32_t ComputeAttractor (CFixVector *vAttract, CFixVector *vDest, CFixVector *vPos, int32_t nMinDist, int32_t i);
@@ -53,7 +53,7 @@ class CLightningNode : public tLightningNode {
 		void Move (const CFixVector& vOldPos, const CFixVector& vOldEnd, 
 					  const CFixVector& vNewPos, const CFixVector& vNewEnd, 
 					  float fScale, int16_t nSegment);
-		bool SetLight (int16_t nSegment, CFloatVector *colorP);
+		bool SetLight (int16_t nSegment, CFloatVector *pColor);
 		inline CLightning *GetChild (void) { return m_child; }
 		inline void GetChild (CLightning * child) { m_child = child; }
 		inline fix Offset (CFixVector& vStart, CFixVector& vEnd) {
@@ -118,7 +118,7 @@ class CLightning : public tLightning {
 					  int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude,
 					  char nAngle, int32_t nOffset, int16_t nNodes, int16_t nChildren, int16_t nSteps,
 					  int16_t nSmoothe, char bClamp, char bGlow, char bLight,
-					  char nStyle, float nWidth, CFloatVector *colorP, CLightning *parentP, int16_t nNode);
+					  char nStyle, float nWidth, CFloatVector *pColor, CLightning *pParent, int16_t nNode);
 		void Setup (bool bInit);
 		void Destroy (void);
 		void DestroyNodes (void);
@@ -143,15 +143,15 @@ class CLightning : public tLightning {
 		int32_t ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int32_t nLength);
 		void ComputeGlow (int32_t nDepth, int32_t nThread);
 		void ComputeCore (void);
-		void RenderCore (CFloatVector *colorP, int32_t nDepth, int32_t nThread);
+		void RenderCore (CFloatVector *pColor, int32_t nDepth, int32_t nThread);
 		void RenderSetup (int32_t nDepth, int32_t nThread);
 		int32_t SetupGlow (void);
-		void RenderGlow (CFloatVector *colorP, int32_t nDepth, int32_t nThread);
+		void RenderGlow (CFloatVector *pColor, int32_t nDepth, int32_t nThread);
 		void Draw (int32_t nDepth, int32_t nThread);
 		void Rotate (int32_t nSteps);
 		void Scale (int32_t nSteps, int32_t nAmplitude);
-		void ComputeExtent (CFloatVector* vertexP);
-		float ComputeAvgDist (CFloatVector3* vertexP, int32_t nVerts);
+		void ComputeExtent (CFloatVector* pVertex);
+		float ComputeAvgDist (CFloatVector3* pVertex, int32_t nVerts);
 		float ComputeDistScale (float zPivot);
 
 };
@@ -181,7 +181,7 @@ class CLightningEmitter : public tLightningSystem {
 		bool Create (int32_t nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 						 int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude, char nAngle, int32_t nOffset,
 						 int16_t nNodeC, int16_t nChildC, char nDepth, int16_t nSteps, int16_t nSmoothe, 
-						 char bClamp, char bGlow, char bSound, char bLight, char nStyle, float nWidth, CFloatVector *colorP);
+						 char bClamp, char bGlow, char bSound, char bLight, char nStyle, float nWidth, CFloatVector *pColor);
 		void Destroy (void);
 		void Animate (int32_t nStart, int32_t nBolts, int32_t nThread);
 		void Render (int32_t nStart, int32_t nBolts, int32_t nThread);
@@ -236,9 +236,9 @@ class CLightningManager : public tLightningData {
 		int32_t Create (int32_t nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 						int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude, char nAngle, int32_t nOffset,
 						int16_t nNodeC, int16_t nChildC, char nDepth, int16_t nSteps, int16_t nSmoothe, 
-						char bClamp, char bGlow, char bSound, char bLight, char nStyle, float nWidth, CFloatVector *colorP);
+						char bClamp, char bGlow, char bSound, char bLight, char nStyle, float nWidth, CFloatVector *pColor);
 		int32_t Create (tLightningInfo& li, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta, int16_t nObject = -1);
-		void Destroy (CLightningEmitter* systemP, CLightning *lightningP);
+		void Destroy (CLightningEmitter* pSystem, CLightning *pLightning);
 		void Cleanup (void);
 		int32_t Shutdown (bool bForce);
 		void Render (void);
@@ -246,27 +246,27 @@ class CLightningManager : public tLightningData {
 		void Move (int32_t i, CFixVector vNewPos, int16_t nSegment);
 		void Move (int32_t i, CFixVector vNewPos, CFixVector vNewEnd, int16_t nSegment);
 		void Mute (void);
-		void MoveForObject (CObject *objP);
-		void Render (tLightning *lightningP, int32_t nBolts, int16_t nDepth);
+		void MoveForObject (CObject *pObj);
+		void Render (tLightning *pLightning, int32_t nBolts, int16_t nDepth);
 		void RenderBuffered (tLightning *lightningRootP, int32_t nStart, int32_t nBolts, int32_t nDepth, int32_t nThread);
 		void RenderSystem (void);
-		int32_t RenderForDamage (CObject *objP, CRenderPoint **pointList, RenderModel::CVertex *pVerts, int32_t nVertices);
-		void Animate (tLightning *lightningP, int32_t nStart, int32_t nBolts, int32_t nDepth);
-		int32_t Enable (CObject* objP);
-		int32_t CreateForMissile (CObject *objP);
-		void CreateForShaker (CObject *objP);
-		void CreateForShakerMega (CObject *objP);
-		void CreateForMega (CObject *objP);
-		void CreateForBlowup (CObject *objP);
-		void CreateForDamage (CObject *objP, CFloatVector *colorP);
-		void CreateForRobot (CObject *objP, CFloatVector *colorP);
-		void CreateForPlayer (CObject *objP, CFloatVector *colorP);
-		void CreateForExplosion (CObject *objP, CFloatVector *colorP, int32_t nRods, int32_t nRad, int32_t nTTL);
-		void CreateForTeleport (CObject* objP, CFloatVector *colorP, float fRodScale = 1.0f);
-		void CreateForPlayerTeleport (CObject *objP);
-		void CreateForRobotTeleport (CObject *objP);
-		void CreateForPowerupTeleport (CObject *objP);
-		void DestroyForObject (CObject *objP);
+		int32_t RenderForDamage (CObject *pObj, CRenderPoint **pointList, RenderModel::CVertex *pVerts, int32_t nVertices);
+		void Animate (tLightning *pLightning, int32_t nStart, int32_t nBolts, int32_t nDepth);
+		int32_t Enable (CObject* pObj);
+		int32_t CreateForMissile (CObject *pObj);
+		void CreateForShaker (CObject *pObj);
+		void CreateForShakerMega (CObject *pObj);
+		void CreateForMega (CObject *pObj);
+		void CreateForBlowup (CObject *pObj);
+		void CreateForDamage (CObject *pObj, CFloatVector *pColor);
+		void CreateForRobot (CObject *pObj, CFloatVector *pColor);
+		void CreateForPlayer (CObject *pObj, CFloatVector *pColor);
+		void CreateForExplosion (CObject *pObj, CFloatVector *pColor, int32_t nRods, int32_t nRad, int32_t nTTL);
+		void CreateForTeleport (CObject* pObj, CFloatVector *pColor, float fRodScale = 1.0f);
+		void CreateForPlayerTeleport (CObject *pObj);
+		void CreateForRobotTeleport (CObject *pObj);
+		void CreateForPowerupTeleport (CObject *pObj);
+		void DestroyForObject (CObject *pObj);
 		void DestroyForAllObjects (int32_t nType, int32_t nId);
 		void DestroyForPlayers (void);
 		void DestroyForRobots (void);
@@ -276,14 +276,14 @@ class CLightningManager : public tLightningData {
 		void DoFrame (void);
 		void StaticFrame (void);
 		int32_t FindDamageLightning (int16_t nObject, int32_t *pKey);
-		void SetSegmentLight (int16_t nSegment, CFixVector *vPosP, CFloatVector *colorP);
-		CFloatVector *LightningColor (CObject *objP);
+		void SetSegmentLight (int16_t nSegment, CFixVector *vPosP, CFloatVector *pColor);
+		CFloatVector *LightningColor (CObject *pObj);
 		inline int16_t GetObjectSystem (int16_t nObject) { return (m_objects.Buffer () && (nObject >= 0)) ? m_objects [nObject] : -1; }
 		inline void SetObjectSystem (int16_t nObject, int32_t i) { if (m_objects.Buffer () && (nObject >= 0)) m_objects [nObject] = i; }
 		inline tLightningLight* GetLight (int16_t nSegment) { return m_lights + nSegment; }
 
 	private:
-		CFixVector *FindTargetPos (CObject *emitterP, int16_t nTarget);
+		CFixVector *FindTargetPos (CObject *pEmitter, int16_t nTarget);
 
 };
 
@@ -310,15 +310,15 @@ class COmegaLightning {
 			m_nHandles = 0; 
 			memset (m_handles, 0xFF, sizeof (m_handles));
 			};
-		int32_t Create (CFixVector *vTargetPos, CObject *parentObjP, CObject *targetObjP);
-		int32_t Update (CObject *parentObjP, CObject *targetObjP, CFixVector* vTargetPos = NULL);
+		int32_t Create (CFixVector *vTargetPos, CObject *pParentObj, CObject *targetObjP);
+		int32_t Update (CObject *pParentObj, CObject *targetObjP, CFixVector* vTargetPos = NULL);
 		void Destroy (int16_t nObject);
 		inline bool Exist (void) { return m_nHandles > 0; }
 
 	private:
 		int32_t Find (int16_t nObject);
 		void Delete (int16_t nHandle);
-		CFixVector *GetGunPoint (CObject *objP, CFixVector *vMuzzle);
+		CFixVector *GetGunPoint (CObject *pObj, CFixVector *vMuzzle);
 };
 
 extern COmegaLightning	omegaLightning;

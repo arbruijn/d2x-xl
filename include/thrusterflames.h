@@ -40,16 +40,16 @@ class CThrusterFlames {
 
 	public:
 		CThrusterFlames () { m_bHaveFlame [0] = m_bHaveFlame [1] = false; }
-		void Render (CObject *objP, tThrusterInfo* infoP = NULL, int32_t nThruster = -1);
-		void Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, CFloatVector *colorP);
-		int32_t CalcPos (CObject *objP, tThrusterInfo* tiP = NULL, int32_t bAfterburnerBlob = 0);
+		void Render (CObject *pObj, tThrusterInfo* pInfo = NULL, int32_t nThruster = -1);
+		void Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, CFloatVector *pColor);
+		int32_t CalcPos (CObject *pObj, tThrusterInfo* tiP = NULL, int32_t bAfterburnerBlob = 0);
 
 	private:
 		void Create (void);
-		void CalcPosOnShip (CObject *objP, CFixVector *vPos);
+		void CalcPosOnShip (CObject *pObj, CFixVector *vPos);
 		void RenderCap (int32_t i);
 		void Render3D (int32_t i);
-		bool Setup (CObject *objP, int32_t nStages = 3);
+		bool Setup (CObject *pObj, int32_t nStages = 3);
 		bool IsFiring (CWeaponState* ws, int32_t i);
 };
 

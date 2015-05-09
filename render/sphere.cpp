@@ -119,7 +119,7 @@ shaderManager.Deploy (-1);
 
 // -----------------------------------------------------------------------------
 
-int32_t SetupSphereShader (CObject* objP, float alpha)
+int32_t SetupSphereShader (CObject* pObj, float alpha)
 {
 	int32_t	nHits = 0;
 
@@ -129,23 +129,23 @@ if (CreateSphereShader () < 1) {
 	return 0;
 	}
 
-	CObjHitInfo	hitInfo = objP->HitInfo ();
-	float fSize = 1.0f + 2.0f / X2F (objP->Size ());
+	CObjHitInfo	hitInfo = pObj->HitInfo ();
+	float fSize = 1.0f + 2.0f / X2F (pObj->Size ());
 	float fScale [3];
 	CFloatVector vHitf [3];
 
-	tObjTransformation *posP = OBJPOS (objP);
+	tObjTransformation *pPos = OBJPOS (pObj);
 	CFixMatrix m;
 	CFixVector vPos;
 
 if (!ogl.UseTransform ()) {
-	fSize *= X2F (objP->Size ());
+	fSize *= X2F (pObj->Size ());
 	ogl.SetupTransform (0);
 	m = CFixMatrix::IDENTITY;
-	transformation.Begin (*PolyObjPos (objP, &vPos), m); 
+	transformation.Begin (*PolyObjPos (pObj, &vPos), m); 
 	}
 else {
-	m = posP->mOrient;
+	m = pPos->mOrient;
 	m.Transpose (m);
 	m = m.Inverse ();
 	}
@@ -209,7 +209,7 @@ m_nTessDepth = 0;
 m_nFaces = 0;
 m_nFaceNodes = 4; //tesselate using quads
 #endif
-m_pulseP = NULL;
+m_pPulse = NULL;
 m_nFrame = 0;
 }
 
@@ -392,14 +392,14 @@ OOF::CTriangle *RotateSphere (CFloatVector *rotSphereP, CFloatVector *vPosP, flo
 {
 	CFloatMatrix	mat;
 	CFloatVector	h, dir, p,
-					*vertP = m_vertices.Buffer (),
+					*pVertex = m_vertices.Buffer (),
 					*s = rotSphereP;
 	int32_t			nFaces;
 
 OOF_MatVms2Oof (&mat, transformation.m_info.view[0]);
 OOF_VecVms2Oof (&p, transformation.m_info.coord);
-for (nFaces = m_nFaces * (m_nFaceNodes + 1); nFaces; nFaces--, vertP++, rotSphereP++) {
-	dir = *vertP;
+for (nFaces = m_nFaces * (m_nFaceNodes + 1); nFaces; nFaces--, pVertex++, rotSphereP++) {
+	dir = *pVertex;
 	dir.x *= xScale;
 	dir.y *= yScale;
 	dir.z *= zScale;
@@ -444,18 +444,18 @@ return sphereP;
 
 void CSphere::Pulsate (void)
 {
-if (m_pulseP) {
+if (m_pPulse) {
 	static time_t	t0 = 0;
 	if (gameStates.app.nSDLTicks [0] - t0 > 25) {
 		t0 = gameStates.app.nSDLTicks [0];
-		m_pulseP->fScale += m_pulseP->fDir;
-		if (m_pulseP->fScale > 1.0f) {
-			m_pulseP->fScale = 1.0f;
-			m_pulseP->fDir = -m_pulseP->fSpeed;
+		m_pPulse->fScale += m_pPulse->fDir;
+		if (m_pPulse->fScale > 1.0f) {
+			m_pPulse->fScale = 1.0f;
+			m_pPulse->fDir = -m_pPulse->fSpeed;
 			}
-		else if (m_pulseP->fScale < m_pulseP->fMin) {
-			m_pulseP->fScale = m_pulseP->fMin;
-			m_pulseP->fDir = m_pulseP->fSpeed;
+		else if (m_pPulse->fScale < m_pPulse->fMin) {
+			m_pPulse->fScale = m_pPulse->fMin;
+			m_pPulse->fDir = m_pPulse->fSpeed;
 			}
 		}
 	}
@@ -463,14 +463,14 @@ if (m_pulseP) {
 
 // -----------------------------------------------------------------------------
 
-void CSphere::Animate (CBitmap* bmP)
+void CSphere::Animate (CBitmap* pBm)
 {
 #if 1
-if (bmP && (bmP == shield.Bitmap ())) {
+if (pBm && (pBm == shield.Bitmap ())) {
 	static time_t t0 = 0;
-	if ((gameStates.app.nSDLTicks [0] - t0 > 40) && bmP->CurFrame ()) {
+	if ((gameStates.app.nSDLTicks [0] - t0 > 40) && pBm->CurFrame ()) {
 		t0 = gameStates.app.nSDLTicks [0];
-		bmP->NextFrame ();
+		pBm->NextFrame ();
 		}
 	}
 #endif
@@ -478,27 +478,27 @@ if (bmP && (bmP == shield.Bitmap ())) {
 
 // -----------------------------------------------------------------------------
 
-int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, CBitmap *bmP, float fScale)
+int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, CBitmap *pBm, float fScale)
 {
-	int32_t	bTextured = bmP != NULL;
+	int32_t	bTextured = pBm != NULL;
 
 gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
 gameStates.render.EnableCartoonStyle ();
-fScale = m_pulseP ? m_pulseP->fScale : 1.0f;
+fScale = m_pPulse ? m_pPulse->fScale : 1.0f;
 ogl.ResetClientStates (0);
-if (bmP) {
-	Animate (bmP);
+if (pBm) {
+	Animate (pBm);
 	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-	if (bmP->CurFrame ())
-		bmP = bmP->CurFrame ();
-	if (bmP->Bind (1))
-		bmP = NULL;
+	if (pBm->CurFrame ())
+		pBm = pBm->CurFrame ();
+	if (pBm->Bind (1))
+		pBm = NULL;
 	else {
 		if (!bTextured)
 			bTextured = -1;
 		}
 	}
-if (!bmP) {
+if (!pBm) {
 	ogl.SetTexturing (false);
 	bTextured = 0;
 	alpha /= 2;
@@ -510,14 +510,14 @@ if (alpha < 1.0f) {
 #if ADDITIVE_SPHERE_BLENDING
 	fScale *= coronaIntensities [gameOpts->render.coronas.nObjIntensity];
 #endif
-	if (m_pulseP && m_pulseP->fScale) {
+	if (m_pPulse && m_pPulse->fScale) {
 		red *= fScale;
 		green *= fScale;
 		blue *= fScale;
 		}
 	}
 ogl.SetDepthWrite (false);
-m_bmP = bmP;
+m_pBm = pBm;
 m_color.Set (red, green, blue, alpha);
 gameStates.render.DisableCartoonStyle ();
 return bTextured;
@@ -552,7 +552,7 @@ m_nTiles = nTiles;
 m_nVertices = h;
 h = nRings / 2;
 a = float (2 * PI / nRings);
-svP = m_vertices.Buffer ();
+pVertex = m_vertices.Buffer ();
 for (j = 0; j < h; j++) {
 	t1 = float (j * a - PI / 2);
 	t2 = t1 + a;
@@ -564,18 +564,18 @@ for (j = 0; j < h; j++) {
 		t3 = i * a;
 		sint3 = float (sin (t3));
 		cost3 = float (cos (t3));
-		svP->vPos.v.coord.x = cost2 * cost3;
-		svP->vPos.v.coord.y = sint2;
-		svP->vPos.v.coord.z = cost2 * sint3;
-		svP->uv.v.u =(1.0f - float (i) / nRings) * nTiles * UV_SCALE;
-		svP->uv.v.v = (float (2 * j + 2) / nRings) * nTiles * UV_SCALE;
-		svP++;
-		svP->vPos.v.coord.x = cost1 * cost3;
-		svP->vPos.v.coord.y = sint1;
-		svP->vPos.v.coord.z = cost1 * sint3;
-		svP->uv.v.u = (1.0f - float (i) / nRings) * nTiles * UV_SCALE;
-		svP->uv.v.v = (float (2 * j) / nRings) * nTiles * UV_SCALE;
-		svP++;
+		pVertex->vPos.v.coord.x = cost2 * cost3;
+		pVertex->vPos.v.coord.y = sint2;
+		pVertex->vPos.v.coord.z = cost2 * sint3;
+		pVertex->uv.v.u =(1.0f - float (i) / nRings) * nTiles * UV_SCALE;
+		pVertex->uv.v.v = (float (2 * j + 2) / nRings) * nTiles * UV_SCALE;
+		pVertex++;
+		pVertex->vPos.v.coord.x = cost1 * cost3;
+		pVertex->vPos.v.coord.y = sint1;
+		pVertex->vPos.v.coord.z = cost1 * sint3;
+		pVertex->uv.v.u = (1.0f - float (i) / nRings) * nTiles * UV_SCALE;
+		pVertex->uv.v.v = (float (2 * j) / nRings) * nTiles * UV_SCALE;
+		pVertex++;
 		}
 	}
 return 1;
@@ -586,7 +586,7 @@ return 1;
 void CSphere::RenderRing (int32_t nOffset, int32_t nItems, int32_t bTextured, int32_t nPrimitive)
 {
 ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-if (bTextured && !m_bmP->Bind (1))
+if (bTextured && !m_pBm->Bind (1))
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].uv));
 OglVertexPointer (3, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].vPos));
 glColor4fv ((GLfloat*) m_color.v.vec);
@@ -595,12 +595,12 @@ OglDrawArrays (nPrimitive, 0, nItems);
 
 // -----------------------------------------------------------------------------
 
-void CSphere::RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int32_t nItems, int32_t bTextured, int32_t nPrimitive)
+void CSphere::RenderRing (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nItems, int32_t bTextured, int32_t nPrimitive)
 {
 ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-if (bTextured && !m_bmP->Bind (1))
-	OglTexCoordPointer (2, GL_FLOAT, 0, texCoordP);
-OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
+if (bTextured && !m_pBm->Bind (1))
+	OglTexCoordPointer (2, GL_FLOAT, 0, pTexCoord);
+OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), pVertex);
 glColor4fv ((GLfloat*) m_color.v.vec);
 OglDrawArrays (nPrimitive, 0, nItems);
 }
@@ -686,7 +686,7 @@ OglCullFace (0);
 #else //!RINGED_SPHERE
 
 int32_t CSphere::RenderTesselated (CFloatVector *vPosP, float xScale, float yScale, float zScale,
-										 float red, float green, float blue, float alpha, CBitmap *bmP)
+										 float red, float green, float blue, float alpha, CBitmap *pBm)
 {
 	int32_t			i, j, nFaces = m_nFaces;
 	CFloatVector *ps,
@@ -706,7 +706,7 @@ if (m_nFaceNodes == 3) {
 		for (i = 0; i < 3; i++, ps++)
 			glVertex3fv (reinterpret_cast<GLfloat*> (ps));
 	glEnd ();
-	if (bmP)
+	if (pBm)
 		glColor4f (red, green, blue, 1.0f);
 	else
 		glColor4f (red, green, blue, alpha);
@@ -744,30 +744,30 @@ delete[] rotSphereP;
 
 // -----------------------------------------------------------------------------
 
-int32_t CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float yScale, float zScale,
-								 float red, float green, float blue, float alpha, CBitmap *bmP, int32_t nTiles, char bAdditive)
+int32_t CSphere::Render (CObject* pObj, CFloatVector *vPosP, float xScale, float yScale, float zScale,
+								 float red, float green, float blue, float alpha, CBitmap *pBm, int32_t nTiles, char bAdditive)
 {
 	float	fScale = 1.0f;
 	int32_t	bTextured = 0;
 #if 0 //DBG
 	int32_t	bEffect = 0;
 #else
-	int32_t	bAppearing = objP->Appearing ();
-	int32_t	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
+	int32_t	bAppearing = pObj->Appearing ();
+	int32_t	bEffect = (pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_ROBOT);
 	int32_t	bGlow = /*!bAppearing &&*/ (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
 #endif
 
 CFixVector vPos;
-PolyObjPos (objP, &vPos);
+PolyObjPos (pObj, &vPos);
 if (bAppearing) {
-	float scale = objP->AppearanceScale ();
+	float scale = pObj->AppearanceScale ();
 	red *= scale;
 	green *= scale;
 	blue *= scale;
 	}
 #if !RINGED_SPHERE
 if (m_nFaceNodes == 3)
-	bmP = NULL;
+	pBm = NULL;
 else
 #endif
 Pulsate ();
@@ -788,7 +788,7 @@ ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetTransform (1);
 if (bAppearing) {
 	UnloadSphereShader ();
-	float scale = objP->AppearanceScale ();
+	float scale = pObj->AppearanceScale ();
 	scale = Min (1.0f, (float) pow (1.0f - scale, 0.25f));
 #if 1
 	xScale *= scale;
@@ -799,18 +799,18 @@ if (bAppearing) {
 else if (!bEffect)
 	UnloadSphereShader ();
 else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
-	if (!SetupSphereShader (objP, alpha)) {
+	if (!SetupSphereShader (pObj, alpha)) {
 		if (bGlow)
 			glowRenderer.Done (GLOW_SHIELDS);
 		return 0;
 		}
 	}
 
-bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
+bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, pBm, fScale);
 
 //ogl.SetupTransform (0);
-tObjTransformation *posP = OBJPOS (objP);
-transformation.Begin (vPos, posP->mOrient);
+tObjTransformation *pPos = OBJPOS (pObj);
+transformation.Begin (vPos, pPos->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
 //ogl.ResetTransform (0);
@@ -822,7 +822,7 @@ if (bGlow)
 	glowRenderer.End ();
 #endif
 #else
-RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
+RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, pBm);
 #endif //RINGED_SPHERE
 ogl.SetDepthWrite (true);
 //ogl.SetDepthMode (GL_LEQUAL);
@@ -839,9 +839,9 @@ Init ();
 
 // -----------------------------------------------------------------------------
 
-void CSphere::SetPulse (CPulseData* pulseP)
+void CSphere::SetPulse (CPulseData* pPulse)
 {
-m_pulseP = pulseP;
+m_pPulse = pPulse;
 }
 
 // -----------------------------------------------------------------------------
@@ -856,12 +856,12 @@ m_pulse.fDir = fSpeed;
 
 // -----------------------------------------------------------------------------
 
-void SetupSpherePulse (CPulseData *pulseP, float fSpeed, float fMin)
+void SetupSpherePulse (CPulseData *pPulse, float fSpeed, float fMin)
 {
-pulseP->fScale =
-pulseP->fMin = fMin;
-pulseP->fSpeed =
-pulseP->fDir = fSpeed;
+pPulse->fScale =
+pPulse->fMin = fMin;
+pPulse->fSpeed =
+pPulse->fDir = fSpeed;
 }
 
 // -----------------------------------------------------------------------------
@@ -888,7 +888,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-int32_t DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha, char bAdditive, fix nSize)
+int32_t DrawShieldSphere (CObject *pObj, float red, float green, float blue, float alpha, char bAdditive, fix nSize)
 {
 if (!CreateShieldSphere ())
 	return 0;
@@ -898,28 +898,28 @@ if (gameData.render.shield.nFaces > 0)
  {
 	if (!nSize) {
 #if 0 //DBG
-		nSize = objP->info.xSize;
+		nSize = pObj->info.xSize;
 #else
-		if (objP->rType.polyObjInfo.nModel < 0) 
-			nSize = objP->info.xSize;
+		if (pObj->rType.polyObjInfo.nModel < 0) 
+			nSize = pObj->info.xSize;
 		else {
-			CPolyModel* modelP = GetPolyModel (objP, NULL, objP->ModelId (), 0);
-			nSize = modelP ? modelP->Rad () : objP->info.xSize;
+			CPolyModel* pModel = GetPolyModel (pObj, NULL, pObj->ModelId (), 0);
+			nSize = pModel ? pModel->Rad () : pObj->info.xSize;
 			}
 #endif
 		}
 	float r = X2F (nSize);
 	if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
-		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, shield.Bitmap (), 1, bAdditive);
+		gameData.render.shield.Render (pObj, NULL, r, r, r, red, green, blue, alpha, shield.Bitmap (), 1, bAdditive);
 	else
-		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, bAdditive, nSize);
+		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, pObj, bAdditive, nSize);
 	}
 return 1;
 }
 
 // -----------------------------------------------------------------------------
 
-void DrawMonsterball (CObject *objP, float red, float green, float blue, float alpha)
+void DrawMonsterball (CObject *pObj, float red, float green, float blue, float alpha)
 {
 #if !RINGED_SPHERE
 if (!gameData.render.monsterball.sphereP) {
@@ -930,12 +930,12 @@ if (gameData.render.monsterball.nFaces > 0)
 #endif
 	{
 	if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY)
-		transparencyRenderer.AddSphere (riMonsterball, red, green, blue, alpha, objP, 0);
+		transparencyRenderer.AddSphere (riMonsterball, red, green, blue, alpha, pObj, 0);
 	else {
-		float r = X2F (objP->info.xSize);
+		float r = X2F (pObj->info.xSize);
 		CFloatVector p;
 		p.SetZero ();
-		gameData.render.monsterball.Render (objP, &p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha,
+		gameData.render.monsterball.Render (pObj, &p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha,
 														&gameData.hoard.monsterball.bm, 4, 0);
 		ogl.ResetTransform (1);
 		ogl.SetTransform (0);

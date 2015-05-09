@@ -50,12 +50,12 @@ typedef struct tAnimationInfo {
 //extern tAnimationInfo Vclip [2][MAX_ANIMATIONS_D2];
 
 // draw an CObject which renders as a tAnimationInfo.
-void DrawVClipObject (CObject *objP, fix timeleft, int32_t lighted, int32_t vclip_num, CFloatVector *color);
-void DrawWeaponVClip (CObject *objP);
-void DrawExplBlast (CObject *objP);
-void DrawShockwave (CObject *objP);
-void ConvertWeaponToVClip (CObject *objP);
-CRGBColor *AnimationColor (CObject *objP);
+void DrawVClipObject (CObject *pObj, fix timeleft, int32_t lighted, int32_t vclip_num, CFloatVector *color);
+void DrawWeaponVClip (CObject *pObj);
+void DrawExplBlast (CObject *pObj);
+void DrawShockwave (CObject *pObj);
+void ConvertWeaponToVClip (CObject *pObj);
+CRGBColor *AnimationColor (CObject *pObj);
 
 void ReadVideoClip (tAnimationInfo& vc, CFile& cf);
 int32_t ReadAnimationInfo (CArray<tAnimationInfo>& vc, int32_t n, CFile& cf);

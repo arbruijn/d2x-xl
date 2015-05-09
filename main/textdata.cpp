@@ -18,51 +18,51 @@
 
 //------------------------------------------------------------------------------
 
-void FreeTextData (CTextData *msgP)
+void FreeTextData (CTextData *pMsg)
 {
-delete[] msgP->textBuffer;
-msgP->textBuffer = NULL;
-delete[] msgP->index;
-msgP->index = NULL;
-if (msgP->bmP) {
-	delete msgP->bmP;
-	msgP->bmP = NULL;
+delete[] pMsg->textBuffer;
+pMsg->textBuffer = NULL;
+delete[] pMsg->index;
+pMsg->index = NULL;
+if (pMsg->pBm) {
+	delete pMsg->pBm;
+	pMsg->pBm = NULL;
 	}
-msgP->nMessages = 0;
+pMsg->nMessages = 0;
 }
 
 //------------------------------------------------------------------------------
 
-void QSortTextData (tTextIndex *indexP, int32_t left, int32_t right)
+void QSortTextData (tTextIndex *pIndex, int32_t left, int32_t right)
 {
 	int32_t	l = left,
 			r = right,
-			m = indexP [(left + right) / 2].nId;
+			m = pIndex [(left + right) / 2].nId;
 
 do {
-	while (indexP [l].nId < m)
+	while (pIndex [l].nId < m)
 		l++;
-	while (indexP [r].nId > m)
+	while (pIndex [r].nId > m)
 		r--;
 	if (l <= r) {
 		if (l < r) {
-			tTextIndex h = indexP [l];
-			indexP [l] = indexP [r];
-			indexP [r] = h;
+			tTextIndex h = pIndex [l];
+			pIndex [l] = pIndex [r];
+			pIndex [r] = h;
 			}
 		l++;
 		r--;
 		}
 	} while (l <= r);
 if (l < right)
-	QSortTextData (indexP, l, right);
+	QSortTextData (pIndex, l, right);
 if (left < r)
-	QSortTextData (indexP, left, r);
+	QSortTextData (pIndex, left, r);
 }
 
 //------------------------------------------------------------------------------
 
-void LoadTextData (const char *pszLevelName, const char *pszExt, CTextData *msgP)
+void LoadTextData (const char *pszLevelName, const char *pszExt, CTextData *pMsg)
 {
 	char			szFilename [FILENAME_LEN];
 	CFile			cf;
@@ -72,38 +72,38 @@ void LoadTextData (const char *pszLevelName, const char *pszExt, CTextData *msgP
 
 //first, free up data allocated for old bitmaps
 PrintLog (1, "loading mission messages\n");
-FreeTextData (msgP);
+FreeTextData (pMsg);
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, pszExt);
 bufSize = (int32_t) cf.Size (szFilename, gameFolders.game.szData [0], 0);
 if (bufSize <= 0) {
 	PrintLog (-1);
 	return;
 	}
-if (!(msgP->textBuffer = new char [bufSize + 2])) {
+if (!(pMsg->textBuffer = new char [bufSize + 2])) {
 	PrintLog (-1);
 	return;
 	}
 if (!cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
-	FreeTextData (msgP);
+	FreeTextData (pMsg);
  	PrintLog (-1);
 	return;
 	}
-cf.Read (msgP->textBuffer + 1, 1, bufSize);
+cf.Read (pMsg->textBuffer + 1, 1, bufSize);
 cf.Close ();
-msgP->textBuffer [0] = '\n';
-msgP->textBuffer [bufSize + 1] = '\0';
-for (p = msgP->textBuffer + 1, nLines = 1; *p; p++) {
+pMsg->textBuffer [0] = '\n';
+pMsg->textBuffer [bufSize + 1] = '\0';
+for (p = pMsg->textBuffer + 1, nLines = 1; *p; p++) {
 	if (*p == '\n')
 		nLines++;
 	}
-if (!(msgP->index = new tTextIndex [nLines])) {
-	FreeTextData (msgP);
+if (!(pMsg->index = new tTextIndex [nLines])) {
+	FreeTextData (pMsg);
  	PrintLog (-1);
 	return;
 	}
-msgP->nMessages = nLines;
+pMsg->nMessages = nLines;
 nLines = 0;
-for (p = q = msgP->textBuffer, pi = msgP->index; ; p++) {
+for (p = q = pMsg->textBuffer, pi = pMsg->index; ; p++) {
 	if (!*p) {
 		*q++ = *p;
 		(pi - 1)->nLines = nLines;
@@ -138,88 +138,88 @@ for (p = q = msgP->textBuffer, pi = msgP->index; ; p++) {
 	else
 		*q++ = *p;
 	}
-msgP->nMessages = (int32_t) (pi - msgP->index);
-QSortTextData (msgP->index, 0, msgP->nMessages - 1);
+pMsg->nMessages = (int32_t) (pi - pMsg->index);
+QSortTextData (pMsg->index, 0, pMsg->nMessages - 1);
 PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
 
-tTextIndex *FindTextData (CTextData *msgP, int32_t nId)
+tTextIndex *FindTextData (CTextData *pMsg, int32_t nId)
 {
-if (!msgP->index)
+if (!pMsg->index)
 	return NULL;
 
-	int32_t	h, m, l = 0, r = msgP->nMessages - 1;
+	int32_t	h, m, l = 0, r = pMsg->nMessages - 1;
 
 do {
 	m = (l + r) / 2;
-	h = msgP->index [m].nId;
+	h = pMsg->index [m].nId;
 	if (nId > h)
 		l = m + 1;
 	else if (nId < h)
 		r = m - 1;
 	else
-		return msgP->index + m;
+		return pMsg->index + m;
 	} while (l <= r);
 return NULL;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t ShowGameMessage (CTextData *msgP, int32_t nId, int32_t nDuration)
+int32_t ShowGameMessage (CTextData *pMsg, int32_t nId, int32_t nDuration)
 {
-	tTextIndex	*indexP;
+	tTextIndex	*pIndex;
 	int16_t			w, h, x, y;
 	float			fAlpha;
 
 if (nId < 0) {
-	if (!(indexP = msgP->currentMsg))
+	if (!(pIndex = pMsg->currentMsg))
 		return 0;
-	if ((msgP->nEndTime > 0) && (msgP->nEndTime <= gameStates.app.nSDLTicks [0])) {
-		msgP->currentMsg = NULL;
+	if ((pMsg->nEndTime > 0) && (pMsg->nEndTime <= gameStates.app.nSDLTicks [0])) {
+		pMsg->currentMsg = NULL;
 		return 0;
 		}
 	}
 else {
-	if (!(indexP = FindTextData (msgP, nId)))
+	if (!(pIndex = FindTextData (pMsg, nId)))
 		return 0;
-	msgP->currentMsg = indexP;
-	msgP->nStartTime = gameStates.app.nSDLTicks [0];
-	msgP->nEndTime = (nDuration < 0) ? -1 : gameStates.app.nSDLTicks [0] + 1000 * nDuration;
-	if (msgP->bmP) {
-		delete msgP->bmP;
-		msgP->bmP = NULL;
+	pMsg->currentMsg = pIndex;
+	pMsg->nStartTime = gameStates.app.nSDLTicks [0];
+	pMsg->nEndTime = (nDuration < 0) ? -1 : gameStates.app.nSDLTicks [0] + 1000 * nDuration;
+	if (pMsg->pBm) {
+		delete pMsg->pBm;
+		pMsg->pBm = NULL;
 		}
 	}
-if (msgP->nEndTime < 0) {
+if (pMsg->nEndTime < 0) {
 	if (nId < 0)
 		return 0;
 	PauseGame ();
-	TextBox (NULL, BG_STANDARD, 1, TXT_CLOSE, indexP->pszText);
-	msgP->currentMsg = NULL;
+	TextBox (NULL, BG_STANDARD, 1, TXT_CLOSE, pIndex->pszText);
+	pMsg->currentMsg = NULL;
 	ResumeGame ();
 	}
 else if (!gameStates.render.nWindow [0]) {
-	if (!msgP->bmP) {
+	if (!pMsg->pBm) {
 		fontManager.SetCurrent (NORMAL_FONT);
 		fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);
 		}
-	if (msgP->bmP || (msgP->bmP = CreateStringBitmap (indexP->pszText, 0, 0, NULL, 0, 0, 0, 0))) {
-		w = msgP->bmP->Width ();
-		h = msgP->bmP->Height ();
+	if (pMsg->pBm || (pMsg->pBm = CreateStringBitmap (pIndex->pszText, 0, 0, NULL, 0, 0, 0, 0))) {
+		w = pMsg->pBm->Width ();
+		h = pMsg->pBm->Height ();
 		x = (CCanvas::Current ()->Width () - w) / 2;
 		y = (CCanvas::Current ()->Height () - h) * 2 / 5;
-		if (msgP->nEndTime < 0)
+		if (pMsg->nEndTime < 0)
 			fAlpha = 1.0f;
-		else if (gameStates.app.nSDLTicks [0] - msgP->nStartTime < 250)
-			fAlpha = (float) (gameStates.app.nSDLTicks [0] - msgP->nStartTime) / 250.0f;
-		else if (msgP->nEndTime - gameStates.app.nSDLTicks [0] < 500)
-			fAlpha = (float) (msgP->nEndTime - gameStates.app.nSDLTicks [0]) / 500.0f;
+		else if (gameStates.app.nSDLTicks [0] - pMsg->nStartTime < 250)
+			fAlpha = (float) (gameStates.app.nSDLTicks [0] - pMsg->nStartTime) / 250.0f;
+		else if (pMsg->nEndTime - gameStates.app.nSDLTicks [0] < 500)
+			fAlpha = (float) (pMsg->nEndTime - gameStates.app.nSDLTicks [0]) / 500.0f;
 		else
 			fAlpha = 1.0f;
 		backgroundManager.DrawBox (x - 8, y - 8, x + w + 8, y + h + 8, 3, fAlpha, 1);
-		msgP->bmP->Render (CCanvas::Current (), x, y, w, h, 0, 0, w, h, 1, 0, 0, fAlpha);
+		pMsg->pBm->Render (CCanvas::Current (), x, y, w, h, 0, 0, w, h, 1, 0, 0, fAlpha);
 		}
 	}
 return 1;

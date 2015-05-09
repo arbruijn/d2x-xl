@@ -46,7 +46,7 @@ class CRadar {
 		void RenderSetup (void);
 		void RenderBackground (void);
 		void RenderDevice (void);
-		void RenderBlip (CObject *objP, float r, float g, float b, float a, int32_t bAbove);
+		void RenderBlip (CObject *pObj, float r, float g, float b, float a, int32_t bAbove);
 		void RenderObjects (int32_t bAbove);
 
 	};

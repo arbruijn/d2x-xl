@@ -1564,7 +1564,7 @@ class CShadowData {
 		int16_t					nLight;
 		int16_t					nLights;
 		int16_t					nShadowMaps;
-		CDynLight*			lightP;
+		CDynLight*			pLight;
 		CObject				lightSource;
 		CFloatVector		vLightPos;
 		CFixVector			vLightDir [MAX_SHADOW_LIGHTS];
@@ -1600,7 +1600,7 @@ class CTerrainRenderData {
 		CArray<uint8_t>			heightmap;
 		CArray<fix>				lightmap;
 		CArray<CFixVector>	points;
-		CBitmap*					bmP;
+		CBitmap*					pBm;
 		CStaticArray< CRenderPoint, TERRAIN_GRID_MAX_SIZE >		saveRow; // [TERRAIN_GRID_MAX_SIZE];
 		CFixVector				vStartPoint;
 		tUVL						uvlList [2][3];
@@ -1618,7 +1618,7 @@ class CTerrainRenderData {
 
 class CThrusterData {
 	public:
-		CFlightPath		path;
+		CFpLightath		path;
 		float				fSpeed;
 		int16_t				nPulse;
 		time_t			tPulse;
@@ -1752,7 +1752,7 @@ class CVertColorData {
 	};
 
 typedef struct tFaceListItem {
-	CSegFace*			faceP;
+	CSegFace*			pFace;
 	int32_t					nNextItem;
 } tFaceListItem;
 
@@ -1781,11 +1781,11 @@ class CFaceListIndex {
 class CRiftData {
 	public:
 #if OCULUS_RIFT
-		OVR::Ptr<OVR::DeviceManager>			m_managerP;
-		OVR::Ptr<OVR::HMDDevice>				m_hmdP;
-		OVR::Ptr<OVR::SensorDevice>			m_sensorP;
+		OVR::Ptr<OVR::DeviceManager>			m_pManager;
+		OVR::Ptr<OVR::HMDDevice>				m_pHMD;
+		OVR::Ptr<OVR::SensorDevice>			m_pSensorP;
 		OVR::HMDInfo								m_hmdInfo;
-		OVR::SensorFusion*						m_sensorFusion;
+		OVR::SensorFusion*						m_pSensorFusion;
 		OVR::Util::Render::StereoConfig		m_stereoConfig;
 		OVR::Util::Render::StereoEyeParams	m_eyes [2];
 #	if 0 // manual calibration removed from Rift SDK since v0.25
@@ -1839,7 +1839,7 @@ class CRenderData {
 		CArray<tFaceListItem>	faceList;
 		fix							xFlashEffect;
 		fix							xTimeFlashLastPlayed;
-		CFloatVector*				vertP;
+		CFloatVector*				pVertex;
 		CFloatVector*				vertexList;
 		CLightData					lights;
 		CMorphData					morph;
@@ -1929,8 +1929,8 @@ class CFaceData {
 #endif	
 		GLuint						vboDataHandle;
 		GLuint						vboIndexHandle;
-		uint8_t*						vertexP;
-		uint16_t*					indexP;
+		uint8_t*						pVertex;
+		uint16_t*					pIndex;
 		int32_t						nFaces;
 		int32_t						nTriangles;
 		int32_t						nVertices;
@@ -2307,7 +2307,7 @@ class CWallData {
 		CArray<int32_t>			bitmaps; //[MAX_WALL_ANIMS];
 		int32_t						nWalls;
 		int32_t						nAnims [2];
-		CArray<tWallEffect>		animP;
+		CArray<tWallEffect>		pAnim;
 
 	public:
 		CWallData ();
@@ -2388,7 +2388,7 @@ typedef struct tObjectViewData {
 } tObjectViewData;
 
 typedef struct tGuidedMissileInfo {
-	CObject*				objP;
+	CObject*				pObj;
 	int32_t				nSignature;
 } tGuidedMissileInfo;
 
@@ -2433,10 +2433,10 @@ class CObjectData {
 		int16_t						nFreeDropped;
 		int16_t						nDropped;
 		tGuidedMissileInfo		guidedMissile [MAX_PLAYERS];
-		CObject*						consoleP;
-		CObject*						viewerP;
+		CObject*						pConsole;
+		CObject*						pViewer;
 		CObject*						trackGoals [2];
-		CObject*						missileViewerP;
+		CObject*						pMissileViewer;
 		CObject*						deadPlayerCamera;
 		CObject*						endLevelCamera;
 		int32_t						nMaxObjects;
@@ -2467,8 +2467,8 @@ class CObjectData {
 		void Destroy (void);
 		void InitFreeList (void);
 		void GatherEffects (void);
-		void SetGuidedMissile (uint8_t nPlayer, CObject* objP);
-		bool IsGuidedMissile (CObject* objP);
+		void SetGuidedMissile (uint8_t nPlayer, CObject* pObj);
+		bool IsGuidedMissile (CObject* pObj);
 		bool HasGuidedMissile (uint8_t nPlayer);
 		CObject* GetGuidedMissile (uint8_t nPlayer);
 		int32_t RebuildEffects (void);
@@ -2538,7 +2538,7 @@ class CRobotData {
 		int32_t					nTypes [2];
 		int32_t					nDefaultTypes;
 		int32_t					bReplacementsLoaded;
-		CArray<tRobotInfo>	infoP;
+		CArray<tRobotInfo>	pInfo;
 		CArray<POF::CModel>	pofData;
 	public:
 		CRobotData ();
@@ -2565,7 +2565,7 @@ class CSoundData {
 		//CArray<uint8_t>			data [2];
 		CArray<CSoundSample>	sounds [2]; //[MAX_SOUND_FILES];
 		int32_t					nSoundFiles [2];
-		CArray<CSoundSample>	soundP;
+		CArray<CSoundSample>	pSound;
 #if USE_OPENAL
 		tOpenALData				openAL;
 #endif
@@ -2627,7 +2627,7 @@ class CEffectData {
 		CArray<tAnimationInfo>	animations [2]; //[MAX_ANIMATIONS_D2];
 		int32_t						nEffects [2];
 		int32_t 						nClips [2];
-		CArray<tEffectInfo>		effectP;
+		CArray<tEffectInfo>		pEffect;
 		CArray<tAnimationInfo>	vClipP;
 
 	public:
@@ -2651,9 +2651,9 @@ class CShipData {
 
 typedef struct tFlagData {
 	tBitmapIndex		bmi;
-	tAnimationInfo*	animInfoP;
+	tAnimationInfo*	pAnimInfo;
 	tAnimationState	animState;
-	CFlightPath			path;
+	CFpLightath			path;
 } tFlagData;
 
 //------------------------------------------------------------------------------
@@ -2834,7 +2834,7 @@ class CAutoNetGame {
 };
 
 typedef struct tLeftoverPowerup {
-	CObject				*spitterP;
+	CObject				*pSpitter;
 	uint8_t					nCount;
 	uint8_t					nType;
 } tLeftoverPowerup;
@@ -3346,10 +3346,10 @@ class CAITarget {
 		fix							nDistToLastPosFiredAt;
 		fix							xDist;
 		CFixVector					vDir;
-		CObject*						objP;
+		CObject*						pObj;
 };
 
-#define TARGETOBJ	(gameData.ai.target.objP ? gameData.ai.target.objP : gameData.objData.consoleP)
+#define TARGETOBJ	(gameData.ai.target.pObj ? gameData.ai.target.pObj : gameData.objData.pConsole)
 
 class CAIData {
 	public:
@@ -3389,13 +3389,13 @@ inline int32_t operator- (tPointSeg* o, CArray<tPointSeg>& a) { return a.Index (
 
 typedef struct tSatelliteData {
 	CBitmap			bmInstance;
-	CBitmap			*bmP;
+	CBitmap			*pBm;
 	CFixVector		vPos;
 	CFixVector		vUp;
 } tSatelliteData;
 
 typedef struct tStationData {
-	CBitmap			*bmP;
+	CBitmap			*pBm;
 	CBitmap			**bmList [1];
 	CFixVector		vPos;
 	int32_t			nModel;
@@ -3404,7 +3404,7 @@ typedef struct tStationData {
 class CTerrainData {
 	public:
 		CBitmap			bmInstance;
-		CBitmap			*bmP;
+		CBitmap			*pBm;
 };
 
 typedef struct tExitData {
@@ -3582,7 +3582,7 @@ class CHoardData {
 		tHoardItem	monsterball;
 		int16_t		nMonsterballSeg;
 		CFixVector	vMonsterballPos;
-		CObject		*monsterballP;
+		CObject		*pMonsterBall;
 		int16_t		nLastHitter;
 };
 
@@ -3625,7 +3625,7 @@ class CVertColorThreadData {
 
 class CClipDistData {
 	public:
-		CObject*				objP;
+		CObject*				pObj;
 		POF::CModel*		po;
 		POF::CSubModel*	pso;
 		float					fClipDist [2];
@@ -3767,7 +3767,7 @@ class CTextData {
 		int32_t		nMessages;
 		int32_t		nStartTime;
 		int32_t		nEndTime;
-		CBitmap*		bmP;
+		CBitmap*		pBm;
 };
 
 //------------------------------------------------------------------------------
@@ -3882,7 +3882,7 @@ class CGameData {
 		CTrigger* GeoTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 		CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 		tRobotInfo* RobotInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine);
-		tRobotInfo* RobotInfo (CObject* objP, int32_t nChecks, const char* pszFile, int32_t nLine);
+		tRobotInfo* RobotInfo (CObject* pObj, int32_t nChecks, const char* pszFile, int32_t nLine);
 
 #else
 
@@ -3893,7 +3893,7 @@ class CGameData {
 		CTrigger* GeoTrigger (int32_t nTrigger);
 		CTrigger* ObjTrigger (int32_t nTrigger);
 		tRobotInfo* RobotInfo (int32_t nId);
-		tRobotInfo* RobotInfo (CObject* objP);
+		tRobotInfo* RobotInfo (CObject* pObj);
 
 #endif
 		inline int32_t X (int32_t x, bool bForce = false) { return render.nStereoOffsetType ? x - ((render.nStereoOffsetType == STEREO_OFFSET_FLOATING) ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()) : x; }
@@ -3922,8 +3922,8 @@ extern char szAutoMission [255];
 extern char szAutoHogFile [255];
 
 #if 0
-static inline uint16_t WallNumS (CSide *sideP) { return (sideP)->nWall; }
-static inline uint16_t WallNumP (CSegment *segP, int16_t nSide) { return WallNumS ((segP)->m_sides + (nSide)); }
+static inline uint16_t WallNumS (CSide *pSide) { return (pSide)->nWall; }
+static inline uint16_t WallNumP (CSegment *pSeg, int16_t nSide) { return WallNumS ((pSeg)->m_sides + (nSide)); }
 static inline uint16_t WallNumI (int16_t nSegment, int16_t nSide) { return WallNumP (SEGMENT (nSegment), nSide); }
 #endif
 
@@ -3967,14 +3967,14 @@ extern tGameFileInfo gameFileInfo;
 
 //-----------------------------------------------------------------------------
 
-static inline int16_t ObjIdx (CObject *objP)
+static inline int16_t ObjIdx (CObject *pObj)
 {
 #if DBG
-if (gameData.objData.objects.IsElement (objP))
-	return gameData.objData.objects.Index (objP);
+if (gameData.objData.objects.IsElement (pObj))
+	return gameData.objData.objects.Index (pObj);
 return -1;
 #else
-return gameData.objData.objects.IsElement (objP) ? gameData.objData.objects.Index (objP) : -1;
+return gameData.objData.objects.IsElement (pObj) ? gameData.objData.objects.Index (pObj) : -1;
 #endif
 }
 
@@ -3987,7 +3987,7 @@ return gameData.objData.objects.IsElement (objP) ? gameData.objData.objects.Inde
 #define SEG2_IDX(_seg2P)		((int16_t) ((_seg2P) - SEGMENTS))
 #define WALL_IDX(_wallP)		((int16_t) ((_wallP) - WALLS))
 #define OBJ_IDX(_objP)			ObjIdx (_objP)
-#define TRIG_IDX(_triggerP)	((int16_t) ((_triggerP) - TRIGGERS))
+#define TRIG_IDX(_pTrigger)	((int16_t) ((_pTrigger) - TRIGGERS))
 #define FACE_IDX(_faceP)		((int32_t) ((_faceP) - FACES.faces))
 
 void GrabMouse (int32_t bGrab, int32_t bForce);
@@ -4009,13 +4009,13 @@ if (v) {
 	if (i < 0)
 		v->Assign (p->ViewPos ());
 	else
-		*v = gameData.render.vertP [i];
+		*v = gameData.render.pVertex [i];
 	}
 else {
 	if (i < 0)
 		OglVertex3x (p->ViewPos ().v.coord.x, p->ViewPos ().v.coord.y, p->ViewPos ().v.coord.z);
 	else
-		glVertex3fv (reinterpret_cast<GLfloat *> (gameData.render.vertP + i));
+		glVertex3fv (reinterpret_cast<GLfloat *> (gameData.render.pVertex + i));
 	}
 }
 
@@ -4109,11 +4109,11 @@ extern fix nDebrisLife [];
 
 //	-----------------------------------------------------------------------------
 
-static inline CFixVector *PolyObjPos (CObject *objP, CFixVector *vPosP)
+static inline CFixVector *PolyObjPos (CObject *pObj, CFixVector *vPosP)
 {
-CFixVector vPos = OBJPOS (objP)->vPos;
-if (objP->info.renderType == RT_POLYOBJ) {
-	*vPosP = *objP->View (0) * gameData.models.offsets [objP->ModelId ()];
+CFixVector vPos = OBJPOS (pObj)->vPos;
+if (pObj->info.renderType == RT_POLYOBJ) {
+	*vPosP = *pObj->View (0) * gameData.models.offsets [pObj->ModelId ()];
 	*vPosP += vPos;
 	return vPosP;
 	}
@@ -4299,8 +4299,8 @@ inline tRobotInfo* CGameData::RobotInfo (int32_t nId) {
 	return botData.info [gameStates.app.bD1Mission && (nId < botData.nTypes [1])] + nId; 
 	}
 
-inline tRobotInfo* CGameData::RobotInfo (CObject* objP) {
-	return (objP && (objP->IsRobot () || objP->IsReactor ())) ? RobotInfo (objP->Id ()) : NULL;
+inline tRobotInfo* CGameData::RobotInfo (CObject* pObj) {
+	return (pObj && (pObj->IsRobot () || pObj->IsReactor ())) ? RobotInfo (pObj->Id ()) : NULL;
 	}
 
 #endif

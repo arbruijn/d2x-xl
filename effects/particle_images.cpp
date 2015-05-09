@@ -177,10 +177,10 @@ if (pii.bAnimate && (pii.nFrames > 1)) {
 	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 	if (gameStates.app.nSDLTicks [0] - t0 [nType] >= to [nType]) {
-		CBitmap*	bmP = ParticleImageInfo (GetType (nType)).bmP;
-		if (!(bmP && bmP->Frames ()))
+		CBitmap*	pBm = ParticleImageInfo (GetType (nType)).pBm;
+		if (!(pBm && pBm->Frames ()))
 			return;
-		bmP->SetCurFrame (pii.iFrame);
+		pBm->SetCurFrame (pii.iFrame);
 		t0 [nType] = gameStates.app.nSDLTicks [0];
 		pii.iFrame = (pii.iFrame + 1) % pii.nFrames;
 		}
@@ -189,25 +189,25 @@ if (pii.bAnimate && (pii.nFrames > 1)) {
 
 //	-----------------------------------------------------------------------------
 
-void CParticleImageManager::AdjustBrightness (CBitmap *bmP)
+void CParticleImageManager::AdjustBrightness (CBitmap *pBm)
 {
-	CBitmap*	bmfP;
-	int32_t		i, j = bmP->FrameCount ();
+	CBitmap*	pBmf;
+	int32_t		i, j = pBm->FrameCount ();
 	float*	fFrameBright, fAvgBright = 0, fMaxBright = 0;
 
 if (j < 2)
 	return;
 if (!(fFrameBright = new float [j]))
 	return;
-for (i = 0, bmfP = bmP->Frames (); i < j; i++, bmfP++) {
-	CTGA tga (bmfP);
+for (i = 0, pBmf = pBm->Frames (); i < j; i++, pBmf++) {
+	CTGA tga (pBmf);
 	fAvgBright += (fFrameBright [i] = (float) tga.Brightness ());
 	if (fMaxBright < fFrameBright [i])
 		fMaxBright = fFrameBright [i];
 	}
 fAvgBright /= j;
-for (i = 0, bmfP = bmP->Frames (); i < j; i++, bmfP++) {
-	CTGA tga (bmfP);
+for (i = 0, pBmf = pBm->Frames (); i < j; i++, pBmf++) {
+	CTGA tga (pBmf);
 	tga.ChangeBrightness (0, 1, 2 * (int32_t) (255 * fFrameBright [i] * (fAvgBright - fFrameBright [i])), 0);
 	}
 delete[] fFrameBright;
@@ -232,12 +232,12 @@ nType = particleImageManager.GetType (nType);
 if (pii.bHave && !bForce)
 	return pii.bHave > 0;
 pii.bHave = 0;
-if (!LoadAddonBitmap (&pii.bmP, pii.szName, &pii.bHave, Bind (nType)))
+if (!LoadAddonBitmap (&pii.pBm, pii.szName, &pii.bHave, Bind (nType)))
 	return 0;
 
 #if 0
 if (strstr (pii.szName, "smoke")) {
-	CTGA tga (pii.bmP);
+	CTGA tga (pii.pBm);
 	tga.PreMultiplyAlpha (0.1f);
 	tga.ConvertToRGB ();
 	}
@@ -247,15 +247,15 @@ if (strstr (pii.szName, "smoke")) {
 {
 	tTGAHeader h;
 
-TGAInterpolate (bmP, 2);
-if (TGAMakeSquare (bmP)) {
+TGAInterpolate (pBm, 2);
+if (TGAMakeSquare (pBm)) {
 	memset (&h, 0, sizeof (h));
-	SaveTGA (ParticleImageInfo (nType).szName, gameFolders.game.szData [0], &h, bmP);
+	SaveTGA (ParticleImageInfo (nType).szName, gameFolders.game.szData [0], &h, pBm);
 	}
 }
 #endif
-pii.bmP->SetFrameCount ();
-pii.bmP->SetupTexture (0, 1);
+pii.pBm->SetFrameCount ();
+pii.pBm->SetupTexture (0, 1);
 pii.xBorder = 
 pii.yBorder = 0;
 if (nType <= SMOKE_PARTICLES)
@@ -270,11 +270,11 @@ else if (nType == WATERFALL_PARTICLES)
 	;//pii.nFrames = 8;
 else if (nType == FIRE_PARTICLES) {
 	;//pii.nFrames = 4; 
-	pii.xBorder = 1.0f / float (pii.bmP->Width ());
-	pii.yBorder = 1.0f / float (pii.bmP->Height ());
+	pii.xBorder = 1.0f / float (pii.pBm->Width ());
+	pii.yBorder = 1.0f / float (pii.pBm->Height ());
 	}
 else {
-	pii.nFrames = pii.bmP->FrameCount ();
+	pii.nFrames = pii.pBm->FrameCount ();
 	pii.bAnimate = pii.nFrames > 1;
 	}
 return 1;
@@ -291,7 +291,7 @@ for (int32_t i = 0; i < PARTICLE_TYPES; i++) {
 		return 0;
 	Animate (i);
 	}
-SetupMultipleTextures (ParticleImageInfo (SPARK_PARTICLES).bmP, ParticleImageInfo (SMOKE_PARTICLES).bmP, ParticleImageInfo (BUBBLE_PARTICLES).bmP);
+SetupMultipleTextures (ParticleImageInfo (SPARK_PARTICLES).pBm, ParticleImageInfo (SMOKE_PARTICLES).pBm, ParticleImageInfo (BUBBLE_PARTICLES).pBm);
 return 1;
 }
 
@@ -305,14 +305,14 @@ if (m_textureArray) {
 	}
 
 	int32_t	i, j;
-	tParticleImageInfo* piiP = particleImageInfo [0];
+	tParticleImageInfo* pInfo = particleImageInfo [0];
 
 for (i = 0; i < MAX_PARTICLE_QUALITY + 1; i++)
-	for (j = 0; j < PARTICLE_TYPES; j++, piiP++)
-		if (piiP->bmP) {
-			delete piiP->bmP;
-			piiP->bmP = NULL;
-			piiP->bHave = 0;
+	for (j = 0; j < PARTICLE_TYPES; j++, pInfo++)
+		if (pInfo->pBm) {
+			delete pInfo->pBm;
+			pInfo->pBm = NULL;
+			pInfo->bHave = 0;
 			}
 }
 

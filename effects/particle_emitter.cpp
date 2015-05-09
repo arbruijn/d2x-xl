@@ -48,16 +48,16 @@
 char CParticleEmitter::ObjectClass (int32_t nObject)
 {
 if ((nObject >= 0) && (nObject < 0x70000000)) {
-	CObject	*objP = OBJECT (nObject);
-	if (!objP)
+	CObject	*pObj = OBJECT (nObject);
+	if (!pObj)
 		return 0;
-	if (objP->info.nType == OBJ_PLAYER)
+	if (pObj->info.nType == OBJ_PLAYER)
 		return 1;
-	if (objP->info.nType == OBJ_ROBOT)
+	if (pObj->info.nType == OBJ_ROBOT)
 		return 2;
-	if (objP->info.nType == OBJ_WEAPON)
+	if (pObj->info.nType == OBJ_WEAPON)
 		return 3;
-	if (objP->info.nType == OBJ_DEBRIS)
+	if (pObj->info.nType == OBJ_DEBRIS)
 		return 4;
 	}
 return 0;
@@ -74,7 +74,7 @@ return (m_nSegment < 0) || (SEGMENT (m_nSegment)->m_function == SEGMENT_FUNC_SKY
 
 float  CParticleEmitter::Brightness (void)
 {
-	CObject	*objP;
+	CObject	*pObj;
 
 if (m_nObject >= 0x70000000)
 	return 0.5f;
@@ -88,17 +88,17 @@ if (m_nObjType == OBJ_DEBRIS)
 	return 0.5f;
 if ((m_nObjType == OBJ_WEAPON) && (m_nObjId == PROXMINE_ID))
 	return 0.2f;
-objP = OBJECT (m_nObject);
-if (!objP || (objP->info.nType != m_nObjType) || (objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
+pObj = OBJECT (m_nObject);
+if (!pObj || (pObj->info.nType != m_nObjType) || (pObj->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
 	return m_fBrightness;
-return m_fBrightness = (float) objP->Damage () * 0.5f + 0.1f;
+return m_fBrightness = (float) pObj->Damage () * 0.5f + 0.1f;
 }
 
 //------------------------------------------------------------------------------
 
 #if MT_PARTICLES
 
-int32_t RunEmitterThread (tParticleEmitter *emitterP, int32_t nCurTime, tRenderTask nTask)
+int32_t RunEmitterThread (tParticleEmitter *pEmitter, int32_t nCurTime, tRenderTask nTask)
 {
 int32_t	i;
 
@@ -107,7 +107,7 @@ if (!gameStates.app.bMultiThreaded)
 while (tiRender.ti [0].bExec && tiRender.ti [1].bExec)
 	G3_SLEEP (0);
 i = tiRender.ti [0].bExec ? 1 : 0;
-tiRender.emitters [i] = emitterP;
+tiRender.emitters [i] = pEmitter;
 tiRender.nCurTime [i] = nCurTime;
 tiRender.nTask = nTask;
 tiRender.ti [i].bExec = 1;
@@ -121,7 +121,7 @@ return 1;
 int32_t CParticleEmitter::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 											 int16_t nSegment, int32_t nObject, int32_t nMaxParts, float fScale,
 											 int32_t nLife, int32_t nSpeed, char nType,
-											 CFloatVector *colorP, int32_t nCurTime, int32_t bBlowUpParts, CFixVector *vEmittingFace)
+											 CFloatVector *pColor, int32_t nCurTime, int32_t bBlowUpParts, CFixVector *vEmittingFace)
 {
 if (!m_particles.Create (nMaxParts))
 	return 0;
@@ -132,8 +132,8 @@ m_nSpeed = nSpeed;
 m_nType = nType;
 m_nFadeType = 0;
 m_nClass = ObjectClass (nObject);
-if ((m_bHaveColor = (colorP != NULL)))
-	m_color = *colorP;
+if ((m_bHaveColor = (pColor != NULL)))
+	m_color = *pColor;
 else
 	m_color = defaultParticleColor;
 if ((m_bHaveDir = (vDir != NULL)))
@@ -156,10 +156,10 @@ m_fScale = fScale;
 //m_nPartsPerPos = nPartsPerPos;
 m_nSegment = nSegment;
 m_nObject = nObject;
-CObject* objP;
-if ((nObject >= 0) && (nObject < 0x70000000) && (objP = OBJECT (nObject))) {
-	m_nObjType = objP->info.nType;
-	m_nObjId = objP->info.nId;
+CObject* pObj;
+if ((nObject >= 0) && (nObject < 0x70000000) && (pObj = OBJECT (nObject))) {
+	m_nObjType = pObj->info.nType;
+	m_nObjId = pObj->info.nId;
 	}
 m_fPartsPerTick = float (nMaxParts) / float (abs (nLife) * 1.25f);
 m_nTicks = 0;
@@ -202,7 +202,7 @@ int32_t CParticleEmitter::Update (int32_t nCurTime, int32_t nThread)
 if (!m_particles)
 	return 0;
 #if MT_PARTICLES
-if ((nThread < 0) && RunEmitterThread (emitterP, nCurTime, rtUpdateParticles)) {
+if ((nThread < 0) && RunEmitterThread (pEmitter, nCurTime, rtUpdateParticles)) {
 	return 0;
 	}
 else
@@ -302,7 +302,7 @@ int32_t CParticleEmitter::Render (int32_t nThread)
 if (!m_particles)
 	return 0;
 #if MT_PARTICLES
-if (((nThread < 0)) && RunEmitterThread (emitterP, 0, rtRenderParticles)) {
+if (((nThread < 0)) && RunEmitterThread (pEmitter, 0, rtRenderParticles)) {
 	return 0;
 	}
 else

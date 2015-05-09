@@ -4,7 +4,7 @@
 #include "descent.h"
 #include "renderlib.h"
 
-void RenderFaceShadow (tFaceProps *propsP);
+void RenderFaceShadow (tFaceProps *pProps);
 void RenderShadowQuad (void);
 void CreateShadowTexture (void);
 void RenderShadowTexture (void);

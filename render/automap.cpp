@@ -94,7 +94,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define LEAVE_TIME				0x4000
 
-#define EDGE_IDX(_edgeP)		((int32_t) ((_edgeP) - m_edges.Buffer ()))
+#define EDGE_IDX(_pEdge)		((int32_t) ((_pEdge) - m_edges.Buffer ()))
 
 CAutomap automap;
 
@@ -171,21 +171,21 @@ markerManager.Clear ();
 
 //------------------------------------------------------------------------------
 
-void CAutomap::DrawPlayer (CObject* objP)
+void CAutomap::DrawPlayer (CObject* pObj)
 {
 	CFixVector		vArrowPos, vHeadPos;
 	CRenderPoint	spherePoint, arrowPoint, headPoint;
-	int32_t			size = objP->info.xSize * (m_bRadar ? 2 : 1);
+	int32_t			size = pObj->info.xSize * (m_bRadar ? 2 : 1);
 //	int32_t			bUseTransform = ogl.m_states.bUseTransform;
 
 spherePoint.SetIndex (-1);
 // Draw Console CPlayerData -- shaped like a ellipse with an arrow.
 //spherePoint.m_vertex [1].SetZero ();
-spherePoint.TransformAndEncode (objP->info.position.vPos);
-//transformation.Rotate (&spherePoint.m_vertex [1], &objP->info.position.vPos, 0);
-G3DrawSphere (&spherePoint, m_bRadar ? objP->info.xSize * 2 : objP->info.xSize, !m_bRadar);
+spherePoint.TransformAndEncode (pObj->info.position.vPos);
+//transformation.Rotate (&spherePoint.m_vertex [1], &pObj->info.position.vPos, 0);
+G3DrawSphere (&spherePoint, m_bRadar ? pObj->info.xSize * 2 : pObj->info.xSize, !m_bRadar);
 
-if (m_bRadar && (objP->Index () != LOCALPLAYER.nObject))
+if (m_bRadar && (pObj->Index () != LOCALPLAYER.nObject))
 	return;
 if (ogl.SizeVertexBuffer (3)) {
 	ogl.SetBlending (true);
@@ -193,23 +193,23 @@ if (ogl.SizeVertexBuffer (3)) {
 	arrowPoint.SetIndex (-1);
 	ogl.VertexBuffer () [1].Assign (spherePoint.ViewPos ());
 	// Draw CPlayerData's up vector
-	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.u * (size*2);
+	vArrowPos = pObj->info.position.vPos + pObj->info.position.mOrient.m.dir.u * (size*2);
 	arrowPoint.TransformAndEncode (vArrowPos);
 	ogl.VertexBuffer () [0].Assign (arrowPoint.ViewPos ());
 	// Draw shaft of arrow
-	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size * 3);
+	vArrowPos = pObj->info.position.vPos + pObj->info.position.mOrient.m.dir.f * (size * 3);
 	arrowPoint.TransformAndEncode (vArrowPos);
 	ogl.VertexBuffer () [2].Assign (arrowPoint.ViewPos ());
 	ogl.FlushBuffers (GL_LINE_STRIP, 3);
 	ogl.VertexBuffer () [1].Assign (arrowPoint.ViewPos ());
 	// Draw right head of arrow
-	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size*2);
-	vHeadPos += objP->info.position.mOrient.m.dir.r * (size*1);
+	vHeadPos = pObj->info.position.vPos + pObj->info.position.mOrient.m.dir.f * (size*2);
+	vHeadPos += pObj->info.position.mOrient.m.dir.r * (size*1);
 	headPoint.TransformAndEncode (vHeadPos);
 	ogl.VertexBuffer () [0].Assign (headPoint.ViewPos ());
 	// Draw left head of arrow
-	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.m.dir.f * (size*2);
-	vHeadPos += objP->info.position.mOrient.m.dir.r * (size* (-1));
+	vHeadPos = pObj->info.position.vPos + pObj->info.position.mOrient.m.dir.f * (size*2);
+	vHeadPos += pObj->info.position.mOrient.m.dir.r * (size* (-1));
 	headPoint.TransformAndEncode (vHeadPos);
 	ogl.VertexBuffer () [2].Assign (headPoint.ViewPos ());
 	ogl.FlushBuffers (GL_LINE_STRIP, 3);
@@ -257,28 +257,28 @@ if (AM_SHOW_PLAYERS) {
 		}
 	}
 
-	CObject*			objP;
+	CObject*			pObj;
 	CRenderPoint	spherePoint;
 
-FORALL_OBJS (objP) {
-	int32_t size = objP->info.xSize;
+FORALL_OBJS (pObj) {
+	int32_t size = pObj->info.xSize;
 	if (bTextured)
 		ogl.SetBlending (true);
-	switch (objP->info.nType) {
+	switch (pObj->info.nType) {
 		case OBJ_HOSTAGE:
 			CCanvas::Current ()->SetColorRGBi (m_colors.nHostage);
-			spherePoint.TransformAndEncode (objP->info.position.vPos);
+			spherePoint.TransformAndEncode (pObj->info.position.vPos);
 			G3DrawSphere (&spherePoint, size, !m_bRadar);
 			break;
 
 		case OBJ_MONSTERBALL:
 			CCanvas::Current ()->SetColorRGBi (m_colors.nMonsterball);
-			spherePoint.TransformAndEncode (objP->info.position.vPos);
+			spherePoint.TransformAndEncode (pObj->info.position.vPos);
 			G3DrawSphere (&spherePoint,size, !m_bRadar);
 			break;
 
 		case OBJ_ROBOT:
-			if (AM_SHOW_ROBOTS && ((gameStates.render.bAllVisited && bTextured) || m_visited [objP->info.nSegment])) {
+			if (AM_SHOW_ROBOTS && ((gameStates.render.bAllVisited && bTextured) || m_visited [pObj->info.nSegment])) {
 				static int32_t t = 0;
 				static int32_t d = 1;
 				int32_t h = SDL_GetTicks ();
@@ -287,7 +287,7 @@ FORALL_OBJS (objP) {
 					d = -d;
 					}
 				float fScale = float (h - t) / 333.0f;
-				if (objP->IsGuideBot ()) {
+				if (pObj->IsGuideBot ()) {
 					if (d < 0)
 						CCanvas::Current ()->SetColorRGB (0, 123 - (int32_t) FRound ((123 - 78) * fScale), 151 - (int32_t) FRound ((151 - 112) * fScale), 255);
 					else
@@ -299,8 +299,8 @@ FORALL_OBJS (objP) {
 					else
 						CCanvas::Current ()->SetColorRGB (78 + (int32_t) FRound ((123 - 78) * fScale), 0, 96 + (int32_t) FRound ((135 - 96) * fScale), 255);
 					}
-				spherePoint.TransformAndEncode (objP->info.position.vPos);
-				//transformation.Begin (&objP->info.position.vPos, &objP->info.position.mOrient);
+				spherePoint.TransformAndEncode (pObj->info.position.vPos);
+				//transformation.Begin (&pObj->info.position.vPos, &pObj->info.position.mOrient);
 				G3DrawSphere (&spherePoint, bTextured ? size : (size * 3) / 2, !m_bRadar);
 				//transformation.End ();
 				}
@@ -308,10 +308,10 @@ FORALL_OBJS (objP) {
 
 		case OBJ_POWERUP:
 #if DBG
-			if (objP->info.nSegment == nDbgSeg)
+			if (pObj->info.nSegment == nDbgSeg)
 				BRP;
 #endif
-			switch (objP->info.nId) {
+			switch (pObj->info.nId) {
 				case POW_KEY_RED:
 					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 5, 5));
 					size *= 4;
@@ -325,16 +325,16 @@ FORALL_OBJS (objP) {
 					size *= 4;
 					break;
 				default:
-					if (!(AM_SHOW_POWERUPS (1) && (gameStates.render.bAllVisited || m_visited [objP->info.nSegment])))
+					if (!(AM_SHOW_POWERUPS (1) && (gameStates.render.bAllVisited || m_visited [pObj->info.nSegment])))
 						continue;
 					CCanvas::Current ()->SetColorRGBi (ORANGE_RGBA); //orange
 					break;
 				}
 #if DBG
-			if (objP->info.nSegment == nDbgSeg)
+			if (pObj->info.nSegment == nDbgSeg)
 				BRP;
 #endif
-			spherePoint.TransformAndEncode (objP->info.position.vPos);
+			spherePoint.TransformAndEncode (pObj->info.position.vPos);
 			G3DrawSphere (&spherePoint, size, !m_bRadar);
 			break;
 		}
@@ -474,7 +474,7 @@ else {
 UpdateSlidingFaces ();
 if (!m_bRadar && (gameStates.app.bNostalgia < 2) && (Texturing () & 1)) {
 	gameData.render.mine.viewer = viewer;
-	RenderMine (gameData.objData.consoleP->info.nSegment, 0, 0);
+	RenderMine (gameData.objData.pConsole->info.nSegment, 0, 0);
 	RenderEffects (0);
 	}
 if (m_bRadar || (Texturing () & 2)) {
@@ -563,7 +563,7 @@ int32_t CAutomap::SetSegmentDepths (int32_t nStartSeg, uint16_t *depthBufP)
 	int32_t	nDepth = 1;
 	int32_t	nSegment, nSide, nChild;
 	uint16_t	nParentDepth = 0;
-	int16_t*	childP;
+	int16_t*	pChild;
 
 	head = 0;
 	tail = 0;
@@ -585,9 +585,9 @@ while (head < tail) {
 		BRP;
 #endif
 	nParentDepth = depthBufP [nSegment];
-	childP = SEGMENT (nSegment)->m_children;
-	for (nSide = SEGMENT_SIDE_COUNT; nSide; nSide--, childP++) {
-		if (0 > (nChild = *childP))
+	pChild = SEGMENT (nSegment)->m_children;
+	for (nSide = SEGMENT_SIDE_COUNT; nSide; nSide--, pChild++) {
+		if (0 > (nChild = *pChild))
 			continue;
 #if DBG
 		if (nChild >= gameData.segData.nSegments) {
@@ -617,12 +617,12 @@ return (nParentDepth + 1) * gameStates.render.bViewDist;
 void CAutomap::InitView (void)
 {
 m_vTAngles.Set (PITCH_DEFAULT, 0, 0);
-CObject*	playerP = OBJECT (LOCALPLAYER.nObject);
+CObject*	pPlayer = OBJECT (LOCALPLAYER.nObject);
 if (OBSERVING)
-	m_data.viewer.mOrient = playerP->info.position.mOrient;
+	m_data.viewer.mOrient = pPlayer->info.position.mOrient;
 m_data.nViewDist = ZOOM_DEFAULT;
-m_data.viewer = playerP->info.position;
-m_data.viewTarget = playerP->info.position.vPos;
+m_data.viewer = pPlayer->info.position;
+m_data.viewTarget = pPlayer->info.position.vPos;
 }
 
 //------------------------------------------------------------------------------
@@ -712,12 +712,12 @@ return gameData.app.bGamePaused;
 
 int32_t CAutomap::Update (void)
 {
-		CObject* playerP = OBJECT (LOCALPLAYER.nObject);
+		CObject* pPlayer = OBJECT (LOCALPLAYER.nObject);
 
 if (OBSERVING && (LOCALPLAYER.ObservedPlayer () < 0)) {
-	playerP->Update ();
+	pPlayer->Update ();
 	if (controls [0].firePrimaryDownCount) {
-		playerP->info.position = m_data.viewer;
+		pPlayer->info.position = m_data.viewer;
 		InitView ();
 		}
 	}
@@ -736,11 +736,11 @@ else {
 	//fZoomScale = pow (fZoomScale, 2.0f / 3.0f);
 	m = CFixMatrix::Create (m_vTAngles);
 	if (controls [0].verticalThrustTime || controls [0].sidewaysThrustTime) {
-		m_data.viewer.mOrient = playerP->info.position.mOrient * m;
+		m_data.viewer.mOrient = pPlayer->info.position.mOrient * m;
 		m_data.viewTarget += m_data.viewer.mOrient.m.dir.u * fix (controls [0].verticalThrustTime * SLIDE_SPEED * fZoomScale);
 		m_data.viewTarget += m_data.viewer.mOrient.m.dir.r * fix (controls [0].sidewaysThrustTime * SLIDE_SPEED * fZoomScale);
 		}
-	m_data.viewer.mOrient = playerP->info.position.mOrient * m;
+	m_data.viewer.mOrient = pPlayer->info.position.mOrient * m;
 
 	//fZoomScale = 1.0f + sqrt (X2F (m_data.nViewDist) / X2F (ZOOM_MAX_VALUE));
 	m_vTAngles.v.coord.p += (fixang) (float (controls [0].pitchTime) / X2F (ROT_SPEED_DIVISOR) * fZoomScale);
@@ -987,12 +987,12 @@ if (!bPauseGame) {
 	uint16_t bWiggleSave;
 	controlInfoSave = controls [0];				// Save controls so we can zero them
 	controls.Reset ();
-	bWiggleSave = gameData.objData.consoleP->mType.physInfo.flags & PF_WIGGLE;	// Save old wiggle
-	gameData.objData.consoleP->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
+	bWiggleSave = gameData.objData.pConsole->mType.physInfo.flags & PF_WIGGLE;	// Save old wiggle
+	gameData.objData.pConsole->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
 	if (MultiMenuPoll ())
 		bDone = 1;
 	::GameFrame (0, 0);		// Do game loop with no rendering and no reading controls.
-	gameData.objData.consoleP->mType.physInfo.flags |= bWiggleSave;	// Restore wiggle
+	gameData.objData.pConsole->mType.physInfo.flags |= bWiggleSave;	// Restore wiggle
 	controls [0] = controlInfoSave;
 	}
 return bDone;
@@ -1148,7 +1148,7 @@ void CAutomap::DrawEdges (void)
 	tRenderCodes	cc;
 	int32_t			i, j, nbright = 0;
 	uint8_t			nfacing, nnfacing;
-	tEdgeInfo*		edgeP;
+	tEdgeInfo*		pEdge;
 	CFixVector		*tv1;
 	fix				distance;
 	fix				minDistance = 0x7fffffff;
@@ -1167,27 +1167,27 @@ m_fScale = 1e10f;
 m_nVerts = 0;
 
 for (i = 0; i <= m_nLastEdge; i++) {
-	//edgeP = &m_edges [Edge_used_list [i]];
-	edgeP = m_edges + i;
-	if (!(edgeP->flags & EF_USED))
+	//pEdge = &m_edges [Edge_used_list [i]];
+	pEdge = m_edges + i;
+	if (!(pEdge->flags & EF_USED))
 		continue;
-	if (edgeP->flags & EF_TOO_FAR)
+	if (pEdge->flags & EF_TOO_FAR)
 		continue;
-	if (edgeP->flags & EF_FRONTIER) {		// A line that is between what we have seen and what we haven't
-		if ((!(edgeP->flags & EF_SECRET)) && (edgeP->color == m_colors.walls.nNormal))
+	if (pEdge->flags & EF_FRONTIER) {		// A line that is between what we have seen and what we haven't
+		if ((!(pEdge->flags & EF_SECRET)) && (pEdge->color == m_colors.walls.nNormal))
 			continue;		// If a line isn't secret and is Normal color, then don't draw it
 		}
 
-	cc = TransformVertexList (2, edgeP->verts);
-	distance = RENDERPOINTS [edgeP->verts [1]].ViewPos ().v.coord.z;
+	cc = TransformVertexList (2, pEdge->verts);
+	distance = RENDERPOINTS [pEdge->verts [1]].ViewPos ().v.coord.z;
 	if (minDistance > distance)
 		minDistance = distance;
 	if (!cc.ccAnd)  {	//all off screen?
 		nfacing = nnfacing = 0;
-		tv1 = gameData.segData.vertices + edgeP->verts [0];
+		tv1 = gameData.segData.vertices + pEdge->verts [0];
 		j = 0;
-		while ((j < edgeP->nFaces) && !(nfacing && nnfacing)) {
-			if (!G3CheckNormalFacing (*tv1, SEGMENT (edgeP->nSegment [j])->m_sides [edgeP->sides [j]].m_normals [0]))
+		while ((j < pEdge->nFaces) && !(nfacing && nnfacing)) {
+			if (!G3CheckNormalFacing (*tv1, SEGMENT (pEdge->nSegment [j])->m_sides [pEdge->sides [j]].m_normals [0]))
 				nfacing++;
 			else
 				nnfacing++;
@@ -1196,14 +1196,14 @@ for (i = 0; i <= m_nLastEdge; i++) {
 
 		if (nfacing && nnfacing) {
 			// a corners line
-			m_brightEdges [nbright++] = edgeP;
+			m_brightEdges [nbright++] = pEdge;
 			}
-		else if (edgeP->flags & (EF_DEFINING|EF_GRATE)) {
+		else if (pEdge->flags & (EF_DEFINING|EF_GRATE)) {
 			if (nfacing) 
-				m_brightEdges [nbright++] = edgeP;
+				m_brightEdges [nbright++] = pEdge;
 			else {
-				SetEdgeColor (int32_t (edgeP->color), (edgeP->flags & EF_NO_FADE) != 0, 8.0f);
-				DrawLine (edgeP->verts [0], edgeP->verts [1]);
+				SetEdgeColor (int32_t (pEdge->color), (pEdge->flags & EF_NO_FADE) != 0, 8.0f);
+				DrawLine (pEdge->verts [0], pEdge->verts [1]);
 				}
 			}
 		}
@@ -1246,16 +1246,16 @@ while (incr > 0) {
 
 // Draw the bright ones
 for (i = 0; i < nbright; i++) {
-	edgeP = m_brightEdges [i];
-	p1 = RENDERPOINTS + edgeP->verts [0];
+	pEdge = m_brightEdges [i];
+	p1 = RENDERPOINTS + pEdge->verts [0];
 	fix xDist = p1->ViewPos ().v.coord.z - minDistance;
 	// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
 	if (xDist < 0)
 		xDist = 0;
 	else if (xDist >= m_data.nMaxDist)
 		continue;
-	SetEdgeColor (int32_t (edgeP->color), (edgeP->flags & EF_NO_FADE) != 0, X2F (I2X (1) - FixDiv (xDist, m_data.nMaxDist)) * 31);
-	DrawLine (edgeP->verts [0], edgeP->verts [1]);
+	SetEdgeColor (int32_t (pEdge->color), (pEdge->flags & EF_NO_FADE) != 0, X2F (I2X (1) - FixDiv (xDist, m_data.nMaxDist)) * 31);
+	DrawLine (pEdge->verts [0], pEdge->verts [1]);
 	}
 if (m_bDrawBuffers && m_nVerts) {
 	ogl.FlushBuffers (GL_LINES, m_nVerts, 3, 0, 1);
@@ -1277,7 +1277,7 @@ ogl.SetTransform (bUseTransform);
 
 
 //finds edge, filling in edge_ptr. if found old edge, returns index, else return -1
-int32_t CAutomap::FindEdge (int32_t v0, int32_t v1, tEdgeInfo*& edgeP)
+int32_t CAutomap::FindEdge (int32_t v0, int32_t v1, tEdgeInfo*& pEdge)
 {
 	int32_t vv, evv;
 	int32_t hash,oldhash;
@@ -1301,7 +1301,7 @@ while (ret == -1) {
 			Error ("Edge list full!");
 		}
 	}
-edgeP = &m_edges [hash];
+pEdge = &m_edges [hash];
 return ret ? hash : -1;
 }
 
@@ -1317,7 +1317,7 @@ if ((va == 0xFFFF) || (vb == 0xFFFF))
 	return;
 
 	int32_t			found;
-	tEdgeInfo*	edgeP;
+	tEdgeInfo*	pEdge;
 
 	if (m_nEdges >= MAX_EDGES) {
 		// GET JOHN!(And tell him that his
@@ -1338,37 +1338,37 @@ if ((va == 1) && (vb == 3))
 	BRP;
 #endif
 
-found = FindEdge (va, vb, edgeP);
+found = FindEdge (va, vb, pEdge);
 
 if (found == -1) {
-	edgeP->verts [0] = va;
-	edgeP->verts [1] = vb;
-	edgeP->color = color;
-	edgeP->nFaces = 1;
-	edgeP->flags = EF_USED | EF_DEFINING;			// Assume a Normal line
-	edgeP->sides [0] = nSide;
-	edgeP->nSegment [0] = nSegment;
-	//Edge_used_list [m_nEdges] = EDGE_IDX (edgeP);
-	if (EDGE_IDX (edgeP) > m_nLastEdge)
-		m_nLastEdge = EDGE_IDX (edgeP);
+	pEdge->verts [0] = va;
+	pEdge->verts [1] = vb;
+	pEdge->color = color;
+	pEdge->nFaces = 1;
+	pEdge->flags = EF_USED | EF_DEFINING;			// Assume a Normal line
+	pEdge->sides [0] = nSide;
+	pEdge->nSegment [0] = nSegment;
+	//Edge_used_list [m_nEdges] = EDGE_IDX (pEdge);
+	if (EDGE_IDX (pEdge) > m_nLastEdge)
+		m_nLastEdge = EDGE_IDX (pEdge);
 	m_nEdges++;
 	}
 else {
-	//Assert (edgeP->nFaces < 8);
+	//Assert (pEdge->nFaces < 8);
 	if ((color != m_colors.walls.nNormal) && (color != m_colors.walls.nRevealed))
-		edgeP->color = color;
-	if (edgeP->nFaces < 4) {
-		edgeP->sides [edgeP->nFaces] = nSide;
-		edgeP->nSegment [edgeP->nFaces] = nSegment;
-		edgeP->nFaces++;
+		pEdge->color = color;
+	if (pEdge->nFaces < 4) {
+		pEdge->sides [pEdge->nFaces] = nSide;
+		pEdge->nSegment [pEdge->nFaces] = nSegment;
+		pEdge->nFaces++;
 		}
 	}
 if (bGrate)
-	edgeP->flags |= EF_GRATE;
+	pEdge->flags |= EF_GRATE;
 if (bHidden)
-	edgeP->flags |= EF_SECRET;		// Mark this as a bHidden edge
+	pEdge->flags |= EF_SECRET;		// Mark this as a bHidden edge
 if (bNoFade)
-	edgeP->flags |= EF_NO_FADE;
+	pEdge->flags |= EF_NO_FADE;
 }
 
 //------------------------------------------------------------------------------
@@ -1378,37 +1378,37 @@ void CAutomap::AddUnknownEdge (int32_t va, int32_t vb)
 if (va == vb)
 	return;
 
-	tEdgeInfo *edgeP;
+	tEdgeInfo *pEdge;
 
 if (va > vb)
 	Swap (va, vb);
-if (FindEdge (va, vb, edgeP) != -1)
-	edgeP->flags |= EF_FRONTIER;		// Mark as a border edge
+if (FindEdge (va, vb, pEdge) != -1)
+	pEdge->flags |= EF_FRONTIER;		// Mark as a border edge
 }
 
 //------------------------------------------------------------------------------
 
-void CAutomap::AddSegmentEdges (CSegment *segP)
+void CAutomap::AddSegmentEdges (CSegment *pSeg)
 {
 	int32_t		bIsGrate, bNoFade;
 	uint32_t		color;
 	uint8_t		nSide;
-	int16_t		nSegment = segP->Index ();
+	int16_t		nSegment = pSeg->Index ();
 	int32_t		bHidden;
 	uint16_t*	corners;
-	CSide*	sideP = segP->Side (0);
+	CSide*	pSide = pSeg->Side (0);
 
-for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
-	if (sideP->m_nShape > SIDE_SHAPE_TRIANGLE)
+for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, pSide++) {
+	if (pSide->m_nShape > SIDE_SHAPE_TRIANGLE)
 		continue;
 	bHidden = 0;
 	bIsGrate = 0;
 	bNoFade = 1;
 	color = WHITE_RGBA;
-	if (segP->m_children [nSide] == -1)
+	if (pSeg->m_children [nSide] == -1)
 		color = m_colors.walls.nNormal;
 
-	switch (segP->m_function) {
+	switch (pSeg->m_function) {
 		case SEGMENT_FUNC_FUELCENTER:
 			color = GOLD_RGBA;
 			break;
@@ -1428,39 +1428,39 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 		case SEGMENT_FUNC_SKYBOX:
 			continue;
 		case SEGMENT_FUNC_NONE:
-			if (segP->HasBlockedProp ())
+			if (pSeg->HasBlockedProp ())
 				color = RGBA_PAL2 (13, 13, 13);
 		default:
 			bNoFade = 0;
 			break;
 		}
 
-	CWall* wallP = segP->Wall (nSide);
-	if (wallP) {
-		CTrigger* triggerP = wallP->Trigger ();
-		if (triggerP && (triggerP->m_info.nType == TT_SECRET_EXIT)) {
+	CWall* pWall = pSeg->Wall (nSide);
+	if (pWall) {
+		CTrigger* pTrigger = pWall->Trigger ();
+		if (pTrigger && (pTrigger->m_info.nType == TT_SECRET_EXIT)) {
 	 		color = RGBA_PAL2 (29, 0, 31);
 			bNoFade = 1;
 			goto addEdge;
 			}
-		switch (wallP->nType) {
+		switch (pWall->nType) {
 			case WALL_DOOR:
-				if (wallP->keys == KEY_BLUE) {
+				if (pWall->keys == KEY_BLUE) {
 					bNoFade = 1;
 					color = m_colors.walls.nDoorBlue;
 					}
-				else if (wallP->keys == KEY_GOLD) {
+				else if (pWall->keys == KEY_GOLD) {
 					bNoFade = 1;
 					color = m_colors.walls.nDoorGold;
 					}
-				else if (wallP->keys == KEY_RED) {
+				else if (pWall->keys == KEY_RED) {
 					bNoFade = 1;
 					color = m_colors.walls.nDoorRed;
 					}
-				else if (!(gameData.wallData.animP [wallP->nClip].flags & WCF_HIDDEN)) {
-					int16_t	nConnSeg = segP->m_children [nSide];
+				else if (!(gameData.wallData.pAnim [pWall->nClip].flags & WCF_HIDDEN)) {
+					int16_t	nConnSeg = pSeg->m_children [nSide];
 					if (nConnSeg != -1) {
-						int16_t nConnSide = segP->ConnectedSide (SEGMENT (nConnSeg));
+						int16_t nConnSide = pSeg->ConnectedSide (SEGMENT (nConnSeg));
 						CWall* connWallP = SEGMENT (nConnSeg)->Wall (nConnSide);
 						if (connWallP) {
 							switch (connWallP->keys) {
@@ -1489,7 +1489,7 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 				break;
 			case WALL_CLOSED:
 				// Make bGrates draw properly
-				if (segP->IsPassable (nSide, NULL) & WID_TRANSPARENT_FLAG)
+				if (pSeg->IsPassable (nSide, NULL) & WID_TRANSPARENT_FLAG)
 					bIsGrate = 1;
 				else
 					bHidden = 1;
@@ -1514,7 +1514,7 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 addEdge:
 
 		corners = SEGMENT (nSegment)->Corners (nSide);
-		int32_t nCorners = sideP->CornerCount ();
+		int32_t nCorners = pSide->CornerCount ();
 		for (int32_t i = 0; i < nCorners; i++)
 			AddEdge (corners [i % nCorners], corners [(i + 1) % nCorners], color, nSide, nSegment, bHidden, 0, bNoFade);
 		if (bIsGrate && (nCorners == 4)) {
@@ -1528,15 +1528,15 @@ addEdge:
 //------------------------------------------------------------------------------
 // Adds all the edges from a CSegment we haven't visited yet.
 
-void CAutomap::AddUnknownSegmentEdges (CSegment* segP)
+void CAutomap::AddUnknownSegmentEdges (CSegment* pSeg)
 {
 for (int32_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	// Only add edges that have no children
-	if (segP->Side (nSide)->m_nShape > SIDE_SHAPE_TRIANGLE)
+	if (pSeg->Side (nSide)->m_nShape > SIDE_SHAPE_TRIANGLE)
 		continue;
-	if (segP->m_children [nSide] == -1) {
-		uint16_t* vertices = segP->m_vertices;
-		int32_t nVertices = segP->m_nVertices;
+	if (pSeg->m_children [nSide] == -1) {
+		uint16_t* vertices = pSeg->m_vertices;
+		int32_t nVertices = pSeg->m_nVertices;
 		for (int32_t i = 0; i <= nVertices; i++)
 			AddUnknownEdge (vertices [i], vertices [(i + 1) % nVertices]);
 		}

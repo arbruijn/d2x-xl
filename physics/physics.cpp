@@ -52,7 +52,7 @@ static int32_t bNewPhysCode = 1;
 
 int32_t bFloorLeveling = 0;
 
-fix CheckVectorObjectCollision (CHitData& hitData, CFixVector *p0, CFixVector *p1, fix rad, CObject *thisObjP, CObject *otherObjP, bool bCheckVisibility);
+fix CheckVectorObjectCollision (CHitData& hitData, CFixVector *p0, CFixVector *p1, fix rad, CObject *pThisObj, CObject *pOtherObj, bool bCheckVisibility);
 
 //	-----------------------------------------------------------------------------
 
@@ -82,28 +82,28 @@ if (nSegment < 0)
 if (nDepth > 2)
 	return -1;
 
-	CSegment*		segP = SEGMENT (nSegment);
-	CSide*			sideP = segP->Side (0);
+	CSegment*		pSeg = SEGMENT (nSegment);
+	CSide*			pSide = pSeg->Side (0);
 	int32_t				nBestSide = -1;
 // bank CPlayerData according to CSegment orientation
 //find CSide of CSegment that CPlayerData is most aligned with
-for (int32_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
-	if (!sideP->FaceCount ())
+for (int32_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, pSide++) {
+	if (!pSide->FaceCount ())
 		continue;
-	if (sideP->Shape () > SIDE_SHAPE_TRIANGLE)
+	if (pSide->Shape () > SIDE_SHAPE_TRIANGLE)
 		continue;
 	float dist = DistToFace (vPos, nSegment, nSide);
 	if (dist > 60.0f)
 		continue;
-	if (segP->IsSolid (nSide)) {
-		float dot = (float) CFixVector::Dot (sideP->m_normals [2], vDir) / dist;
+	if (pSeg->IsSolid (nSide)) {
+		float dot = (float) CFixVector::Dot (pSide->m_normals [2], vDir) / dist;
 		if (maxDot < dot) {
 			maxDot = dot; 
 			nBestSide = (nSegment << 3) | nSide;
 			}
 		}
 	else {
-		int32_t h = FindBestAlignedSide (segP->ChildId (nSide), vPos, vDir, maxDot, nDepth + 1);
+		int32_t h = FindBestAlignedSide (pSeg->ChildId (nSide), vPos, vDir, maxDot, nDepth + 1);
 		if (h >= 0)
 			nBestSide = h;
 		}
@@ -113,40 +113,40 @@ return nBestSide;
 
 //	-----------------------------------------------------------------------------
 
-void DoPhysicsAlignObject (CObject * objP)
+void DoPhysicsAlignObject (CObject * pObj)
 {
-if (!objP->mType.physInfo.rotThrust.IsZero ())
+if (!pObj->mType.physInfo.rotThrust.IsZero ())
 	return;
 
 	CFixVector		desiredUpVec;
 	float				maxDot = -1.0f;
 	CFloatVector3	vPos;
 
-vPos.Assign (objP->info.position.vPos);
-int32_t nBestSide = FindBestAlignedSide (objP->Segment (), vPos, objP->info.position.mOrient.m.dir.u, maxDot, 0);
+vPos.Assign (pObj->info.position.vPos);
+int32_t nBestSide = FindBestAlignedSide (pObj->Segment (), vPos, pObj->info.position.mOrient.m.dir.u, maxDot, 0);
 if (nBestSide < 0)
 	return;
-CSegment* segP = SEGMENT (nBestSide >> 3);
+CSegment* pSeg = SEGMENT (nBestSide >> 3);
 nBestSide &= 7;
 // bank CPlayerData according to CSegment orientation
 //find CSide of CSegment that CPlayerData is most aligned with
 if (gameOpts->gameplay.nAutoLeveling == 1)	// old way: used floor's Normal as upvec
-	desiredUpVec = segP->m_sides [3].FaceCount () ? segP->m_sides [3].m_normals [2] : segP->m_sides [nBestSide].m_normals [2];
+	desiredUpVec = pSeg->m_sides [3].FaceCount () ? pSeg->m_sides [3].m_normals [2] : pSeg->m_sides [nBestSide].m_normals [2];
 else if (gameOpts->gameplay.nAutoLeveling == 2) {	 // new CPlayerData leveling code: use Normal of CSide closest to our up vec
-	CSide* sideP = segP->m_sides + nBestSide;
-	desiredUpVec = sideP->m_normals [2];
+	CSide* pSide = pSeg->m_sides + nBestSide;
+	desiredUpVec = pSide->m_normals [2];
 	}
 else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
 	desiredUpVec = (*PlayerSpawnOrient (N_LOCALPLAYER)).m.dir.u;
 else
 	return;
-if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.m.dir.f)) < I2X (1)/2) {
+if (labs (CFixVector::Dot (desiredUpVec, pObj->info.position.mOrient.m.dir.f)) < I2X (1)/2) {
 	CAngleVector turnAngles;
 
-	CFixMatrix m = CFixMatrix::CreateFU(objP->info.position.mOrient.m.dir.f, desiredUpVec);
-//	m = CFixMatrix::CreateFU(objP->info.position.mOrient.m.v.f, &desiredUpVec, NULL);
-	fixang deltaAngle = CFixVector::DeltaAngle(objP->info.position.mOrient.m.dir.u, m.m.dir.u, &objP->info.position.mOrient.m.dir.f);
-	deltaAngle += objP->mType.physInfo.turnRoll;
+	CFixMatrix m = CFixMatrix::CreateFU(pObj->info.position.mOrient.m.dir.f, desiredUpVec);
+//	m = CFixMatrix::CreateFU(pObj->info.position.mOrient.m.v.f, &desiredUpVec, NULL);
+	fixang deltaAngle = CFixVector::DeltaAngle(pObj->info.position.mOrient.m.dir.u, m.m.dir.u, &pObj->info.position.mOrient.m.dir.f);
+	deltaAngle += pObj->mType.physInfo.turnRoll;
 	if (abs (deltaAngle) > /*DAMP_ANG*/1) {
 		CFixMatrix mRotate, new_pm;
 
@@ -158,8 +158,8 @@ if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.m.dir.f)) <
 		turnAngles.v.coord.p = turnAngles.v.coord.h = 0;
 		turnAngles.v.coord.b = rollAngle;
 		mRotate = CFixMatrix::Create(turnAngles);
-		new_pm = objP->info.position.mOrient * mRotate;
-		objP->info.position.mOrient = new_pm;
+		new_pm = pObj->info.position.mOrient * mRotate;
+		pObj->info.position.mOrient = new_pm;
 		}
 #if 0
 	else
@@ -224,7 +224,7 @@ if (mType.physInfo.drag) {
 	fix			xDrag = (mType.physInfo.drag * 5) / 2;
 	fix			xScale = I2X (1) - xDrag;
 
-	if (this == gameData.objData.consoleP)
+	if (this == gameData.objData.pConsole)
 		xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
 	if (mType.physInfo.flags & PF_USES_THRUST) {
 		accel = mType.physInfo.rotThrust * FixDiv (I2X (1), mType.physInfo.mass);
@@ -263,7 +263,7 @@ turnAngles.v.coord.p = fixang (FixMul (mType.physInfo.rotVel.v.coord.x, t));
 turnAngles.v.coord.h = fixang (FixMul (mType.physInfo.rotVel.v.coord.y, t));
 turnAngles.v.coord.b = fixang (FixMul (mType.physInfo.rotVel.v.coord.z, t));
 if (!IsMultiGame) {
-	int32_t i = (this != gameData.objData.consoleP) ? 0 : 1;
+	int32_t i = (this != gameData.objData.pConsole) ? 0 : 1;
 	float fSpeed = gameStates.gameplay.slowmo [i].fSpeed;
 	if (fSpeed != 1) {
 		turnAngles.v.coord.p = fixang (turnAngles.v.coord.p / fSpeed);
@@ -297,15 +297,15 @@ void CObject::DoBumpHack (void)
 	CFixVector vCenter, vBump;
 
 //bump CPlayerData a little towards vCenter of CSegment to unstick
-CSegment* segP = SEGMENT (info.nSegment);
-vCenter = segP->Center ();
+CSegment* pSeg = SEGMENT (info.nSegment);
+vCenter = pSeg->Center ();
 //don't bump CPlayerData towards center of reactor CSegment
 CFixVector::NormalizedDir (vBump, vCenter, info.position.vPos);
-if (segP->m_function == SEGMENT_FUNC_REACTOR)
+if (pSeg->m_function == SEGMENT_FUNC_REACTOR)
 	vBump.Neg ();
 info.position.vPos += vBump * (info.xSize / 5);
 //if moving away from seg, might move out of seg, so update
-if (segP->m_function == SEGMENT_FUNC_REACTOR)
+if (pSeg->m_function == SEGMENT_FUNC_REACTOR)
 	UpdateObjectSeg (this);
 }
 
@@ -397,21 +397,21 @@ if (fviResult == HIT_WALL)
 
 //	-----------------------------------------------------------------------------
 
-void UpdateStats (CObject *objP, int32_t nHitType)
+void UpdateStats (CObject *pObj, int32_t nHitType)
 {
 	int32_t	i;
 
 if (!nHitType)
 	return;
-if (objP->info.nType != OBJ_WEAPON)
+if (pObj->info.nType != OBJ_WEAPON)
 	return;
-if (objP->cType.laserInfo.parent.nObject != OBJ_IDX (gameData.objData.consoleP))
+if (pObj->cType.laserInfo.parent.nObject != OBJ_IDX (gameData.objData.pConsole))
 	return;
-switch (objP->info.nId) {
+switch (pObj->info.nId) {
 	case FUSION_ID:
 		if (nHitType == HIT_OBJECT)
 			return;
-		if (objP->cType.laserInfo.nLastHitObj > 0)
+		if (pObj->cType.laserInfo.nLastHitObj > 0)
 			nHitType = HIT_OBJECT;
 	case LASER_ID:
 	case LASER_ID + 1:
@@ -477,22 +477,22 @@ gameData.physics.nSegments = 0;
 speedBoost = gameData.objData.speedBoost [nObject];
 bSpeedBoost = speedBoost.bBoosted;
 
-objP = OBJECT (nObject);
-bGetPhysSegs = (objP->Type () == OBJ_PLAYER) || (objP->Type () == OBJ_ROBOT);
-velocity = objP->Velocity ();
+pObj = OBJECT (nObject);
+bGetPhysSegs = (pObj->Type () == OBJ_PLAYER) || (pObj->Type () == OBJ_ROBOT);
+velocity = pObj->Velocity ();
 #if DBG
 if (!velocity.IsZero ())
 	BRP;
 #endif
 
-vOldPos = vStartPos = objP->Position ();
-nOldSeg = nStartSeg = objP->Segment ();
+vOldPos = vStartPos = pObj->Position ();
+nOldSeg = nStartSeg = pObj->Segment ();
 #if DBG
-bUseHitbox = (objP->Type () == OBJ_PLAYER) && CollisionModel () && UseHitbox (objP);
+bUseHitbox = (pObj->Type () == OBJ_PLAYER) && CollisionModel () && UseHitbox (pObj);
 #else
 bUseHitbox = 0;
 #endif
-bScaleSpeed = !(gameStates.app.bNostalgia || bInitialize) && (objP->IsMissile () && (objP->Id () != EARTHSHAKER_MEGA_ID) && (objP->Id () != ROBOT_SHAKER_MEGA_ID)) ;
+bScaleSpeed = !(gameStates.app.bNostalgia || bInitialize) && (pObj->IsMissile () && (pObj->Id () != EARTHSHAKER_MEGA_ID) && (pObj->Id () != ROBOT_SHAKER_MEGA_ID)) ;
 
 if (extraGameInfo [IsMultiGame].bFluidPhysics) {
 	if (SEGMENT (nStartSeg)->HasWaterProp ())
@@ -545,7 +545,7 @@ if (fScale < 1.0f) {
 else
 	simData.vOffset = Velocity () /*simData.velocity*/ * FixMulDiv (simData.xSimTime, simData.xTimeScale, 100);
 if (!(IsMultiGame || simData.bInitialize)) {
-	int32_t i = (this != gameData.objData.consoleP) ? 0 : 1;
+	int32_t i = (this != gameData.objData.pConsole) ? 0 : 1;
 	if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
 		simData.vOffset *= (fix) (I2X (1) / gameStates.gameplay.slowmo [i].fSpeed);
 		}
@@ -761,10 +761,10 @@ return 1;
 
 void CObject::UnstickFromObject (CPhysSimData& simData, CFixVector& vOldVel)
 {
-	CObject* hitObjP = OBJECT (simData.hitResult.nObject);
+	CObject* pHitObj = OBJECT (simData.hitResult.nObject);
 
 if (vOldVel.IsZero ()) {
-	simData.vOffset = OBJPOS (hitObjP)->vPos - OBJPOS (this)->vPos;
+	simData.vOffset = OBJPOS (pHitObj)->vPos - OBJPOS (this)->vPos;
 	CFixVector::Normalize (simData.vOffset);
 	simData.vOffset *= info.xSize;
 	}	
@@ -779,7 +779,7 @@ for (int32_t i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
 	vTestPos += vOffset * s;
 	if (!bMoved)
 		info.position.vPos = vTestPos;
-	s = CheckVectorObjectCollision (simData.hitResult, &info.position.vPos, &vTestPos, info.xSize, this, hitObjP, false) ? -I2X (1) : I2X (1);
+	s = CheckVectorObjectCollision (simData.hitResult, &info.position.vPos, &vTestPos, info.xSize, this, pHitObj, false) ? -I2X (1) : I2X (1);
 	if (s > 0)
 		simData.vNewPos = vTestPos;
 	}
@@ -790,18 +790,18 @@ info.position.vPos = simData.vNewPos;
 
 int32_t CObject::ProcessObjectCollision (CPhysSimData& simData)
 {
-CObject* hitObjP = OBJECT (simData.hitResult.nObject);
-if (!hitObjP)
+CObject* pHitObj = OBJECT (simData.hitResult.nObject);
+if (!pHitObj)
 	return -1;
 CFixVector vOldVel = Velocity () /*simData.velocity*/;
-if (!hitObjP->IsPowerup () && (CollisionModel () || hitObjP->IsStatic ())) {
-	CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint, &simData.hitResult.vNormal);
+if (!pHitObj->IsPowerup () && (CollisionModel () || pHitObj->IsStatic ())) {
+	CollideTwoObjects (this, pHitObj, simData.hitResult.vPoint, &simData.hitResult.vNormal);
 #if 1 // unstick objects
 	UnstickFromObject (simData, vOldVel);
 #endif
 	}
 else {
-	CFixVector& pos0 = OBJECT (simData.hitResult.nObject)->info.position.vPos;
+	CFixVector& pos0 = pHitObj->info.position.vPos;
 	CFixVector& pos1 = info.position.vPos;
 	fix size0 = OBJECT (simData.hitResult.nObject)->info.xSize;
 	fix size1 = info.xSize;
@@ -809,17 +809,17 @@ else {
 	simData.hitResult.vPoint = pos1 - pos0;
 	simData.hitResult.vPoint *= FixDiv (size0, size0 + size1);
 	simData.hitResult.vPoint += pos0;
-	CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint);
+	CollideTwoObjects (this, pHitObj, simData.hitResult.vPoint);
 	}
-if (simData.bSpeedBoost && (this == gameData.objData.consoleP))
+if (simData.bSpeedBoost && (this == gameData.objData.pConsole))
 	Velocity () /*simData.velocity*/ = vOldVel;
 // Let object continue its movement
 if (info.nFlags & OF_SHOULD_BE_DEAD)
 	return -1;
 if ((mType.physInfo.flags & PF_PERSISTENT) || (vOldVel == Velocity () /*simData.velocity*/)) {
-	if (hitObjP->Type () == OBJ_POWERUP) 
+	if (pHitObj->Type () == OBJ_POWERUP) 
 		simData.nTries--;
-	hitObjP->Ignore (simData.hitQuery.bIgnoreObjFlag);
+	pHitObj->Ignore (simData.hitQuery.bIgnoreObjFlag);
 	return 1;
 	}
 return 0;
@@ -841,7 +841,7 @@ fix xDrag = mType.physInfo.drag;
 fix r = simData.xSimTime % FT;
 fix k = FixDiv (r, FT);
 
-if (this == gameData.objData.consoleP)
+if (this == gameData.objData.pConsole)
 	xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
 
 fix d = I2X (1) - xDrag;
@@ -952,7 +952,7 @@ if (info.controlType == CT_AI) {
 		simData.vMoved *= (FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), simData.xTimeScale, 100));
 		if (!simData.bSpeedBoost)
 			Velocity () /*simData.velocity*/ = simData.vMoved;
-		if ((this == gameData.objData.consoleP) && simData.vMoved.IsZero () && !mType.physInfo.thrust.IsZero ())
+		if ((this == gameData.objData.pConsole) && simData.vMoved.IsZero () && !mType.physInfo.thrust.IsZero ())
 			DoBumpHack ();
 		}
 
@@ -964,11 +964,11 @@ if (info.controlType == CT_AI) {
 		if (nSide != -1) {
 			if (!(SEGMENT (simData.nStartSeg)->IsPassable (nSide, (info.nType == OBJ_PLAYER) ? this : NULL) & WID_PASSABLE_FLAG)) {
 				//bump object back
-				CSide* sideP = SEGMENT (simData.nStartSeg)->m_sides + nSide;
+				CSide* pSide = SEGMENT (simData.nStartSeg)->m_sides + nSide;
 				if (simData.nStartSeg == -1)
 					Error ("simData.nStartSeg == -1 in physics");
-				fix dist = simData.vStartPos.DistToPlane (sideP->m_normals [0], gameData.segData.vertices [sideP->m_nMinVertex [0]]);
-				info.position.vPos = simData.vStartPos + sideP->m_normals [0] * (info.xSize - dist);
+				fix dist = simData.vStartPos.DistToPlane (pSide->m_normals [0], gameData.segData.vertices [pSide->m_nMinVertex [0]]);
+				info.position.vPos = simData.vStartPos + pSide->m_normals [0] * (info.xSize - dist);
 				UpdateObjectSeg (this);
 				}
 			}
@@ -1048,10 +1048,10 @@ void CObject::FinishPhysicsSim (CPhysSimData& simData)
 void CheckObjPos (void)
 {
 if (nDbgObj != -1) {
-	CObject* objP = OBJECT (nDbgObj);
+	CObject* pObj = OBJECT (nDbgObj);
 	static int32_t factor = 2;
-	fix d = CFixVector::Dist (objP->info.vLastPos, objP->Position ());
-	if (objP->info.xSize / factor  < d)
+	fix d = CFixVector::Dist (pObj->info.vLastPos, pObj->Position ());
+	if (pObj->info.xSize / factor  < d)
 		BRP;
 	}
 }
@@ -1123,7 +1123,7 @@ if (Velocity () .IsZero ()) {
 #	endif
 		}
 	else {
-		if (this == gameData.objData.consoleP)
+		if (this == gameData.objData.pConsole)
 			gameData.objData.speedBoost [simData.nObject].bBoosted = simData.bSpeedBoost = 0;
 #if 1
 		if (mType.physInfo.thrust.IsZero ())
@@ -1288,14 +1288,14 @@ if (mType.physInfo.mass == 0)
 	return;
 if (info.movementType != MT_PHYSICS)
 	return;
-if ((automap.Active () && (this == gameData.objData.consoleP)) || SPECTATOR (this))
+if ((automap.Active () && (this == gameData.objData.pConsole)) || SPECTATOR (this))
 	return;
 #ifdef FORCE_FEEDBACK
   if (TactileStick && (obj == OBJECT (LOCALPLAYER.nObject)))
 	Tactile_apply_force (vForce, &info.position.mOrient);
 #endif
 //Add in acceleration due to force
-if (!gameData.objData.speedBoost [OBJ_IDX (this)].bBoosted || (this != gameData.objData.consoleP)) {
+if (!gameData.objData.speedBoost [OBJ_IDX (this)].bBoosted || (this != gameData.objData.pConsole)) {
 #if DBG
 	fix xScale = FixDiv (I2X (1), mType.physInfo.mass);
 	vForce *= xScale;
@@ -1337,7 +1337,7 @@ void CObject::TurnTowardsVector (CFixVector vGoal, fix rate)
 // If no one moves, will be facing vGoal in 1 second.
 
 //	Detect null vector.
-if (automap.Active () && (this == gameData.objData.consoleP))
+if (automap.Active () && (this == gameData.objData.pConsole))
 	return;
 if (vGoal.IsZero ())
 	return;
@@ -1362,7 +1362,7 @@ delta_h = FixDiv (delta_h, rate);
 if (abs (delta_p) < I2X (1)/16) delta_p *= 4;
 if (abs (delta_h) < I2X (1)/16) delta_h *= 4;
 if (!IsMultiGame) {
-	int32_t i = (this != gameData.objData.consoleP) ? 0 : 1;
+	int32_t i = (this != gameData.objData.pConsole) ? 0 : 1;
 	if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
 		delta_p = (fix) (delta_p / gameStates.gameplay.slowmo [i].fSpeed);
 		delta_h = (fix) (delta_h / gameStates.gameplay.slowmo [i].fSpeed);
@@ -1393,8 +1393,8 @@ else {
 		if (xRate < I2X (1)/4)
 			xRate = I2X (1)/4;
 		//	Changed by mk, 10/24/95, claw guys should not slow down when attacking!
-		tRobotInfo* botInfoP = ROBOTINFO (info.nId);
-		if (!botInfoP || !(botInfoP->thief || botInfoP->attackType)) {
+		tRobotInfo* pRobotInfo = ROBOTINFO (info.nId);
+		if (!pRobotInfo || !(pRobotInfo->thief || pRobotInfo->attackType)) {
 			if (cType.aiInfo.SKIP_AI_COUNT * gameData.physics.xTime < I2X (3)/4) {
 				fix	xTime = FixDiv (I2X (1), 8 * gameData.physics.xTime);
 				int32_t	nTime = X2I (xTime);
@@ -1478,7 +1478,7 @@ if (Velocity ().IsZero ()) {
 #	if UNSTICK_OBJS
 	Unstick ();
 #	endif
-	if (this == gameData.objData.consoleP)
+	if (this == gameData.objData.pConsole)
 		gameData.objData.speedBoost [simData.nObject].bBoosted = simData.speedBoost.bBoosted = 0;
 #if 1
 	if (mType.physInfo.thrust.IsZero ())
@@ -1510,7 +1510,7 @@ else {
 		fix			k = FixDiv (r, FT);
 		fix			a;
 
-		if (this == gameData.objData.consoleP)
+		if (this == gameData.objData.pConsole)
 			xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
 
 		fix		d = I2X (1) - xDrag;
@@ -1607,7 +1607,7 @@ do {	//Move the object
 		else
 			simData.vOffset = Velocity () * FixMulDiv (simData.xSimTime, simData.xTimeScale, 100);
 		if (!(IsMultiGame || simData.bInitialize)) {
-			int32_t i = (this != gameData.objData.consoleP) ? 0 : 1;
+			int32_t i = (this != gameData.objData.pConsole) ? 0 : 1;
 			if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
 				simData.vOffset *= (fix) (I2X (1) / gameStates.gameplay.slowmo [i].fSpeed);
 				}
@@ -1719,8 +1719,8 @@ retryMove:
 				break;
 			}
 		else {
-			CObject	*hitObjP = OBJECT (simData.hitResult.nObject);
-			if (hitObjP->IsPlayerMine ())
+			CObject	*pHitObj = OBJECT (simData.hitResult.nObject);
+			if (pHitObj->IsPlayerMine ())
 				simData.nTries--;
 			}
 		}
@@ -1892,19 +1892,19 @@ retryMove:
 		if (bNewPhysCode & 1024)
 			bRetry = ProcessObjectCollision (simData);
 		else {
-			CObject* hitObjP = OBJECT (simData.hitResult.nObject);
+			CObject* pHitObj = OBJECT (simData.hitResult.nObject);
 			//	Calculate the hit point between the two objects.
-			CFixVector vHitPos = Position () - hitObjP->Position ();
-			vHitPos *= FixDiv (hitObjP->info.xSize, hitObjP->info.xSize + info.xSize);
+			CFixVector vHitPos = Position () - pHitObj->Position ();
+			vHitPos *= FixDiv (pHitObj->info.xSize, pHitObj->info.xSize + info.xSize);
 #if DBG
 			int32_t l = vHitPos.Mag ();
-			l = CFixVector::Dist (hitObjP->Position (), simData.hitResult.vPoint);
+			l = CFixVector::Dist (pHitObj->Position (), simData.hitResult.vPoint);
 #endif
-			vHitPos += hitObjP->Position ();
+			vHitPos += pHitObj->Position ();
 			CFixVector vOldVel = Velocity ();
 			//if (!(SPECTATOR (this) || SPECTATOR (OBJECT (simData.hitResult.nObject))))
 				CollideTwoObjects (this, OBJECT (simData.hitResult.nObject), vHitPos);
-			if (simData.speedBoost.bBoosted && (this == gameData.objData.consoleP))
+			if (simData.speedBoost.bBoosted && (this == gameData.objData.pConsole))
 				Velocity () = vOldVel;
 			// Let object continue its movement
 			if (!(info.nFlags & OF_SHOULD_BE_DEAD)) {
@@ -1919,7 +1919,7 @@ retryMove:
 		}
 	else if (simData.hitResult.nType == HIT_NONE) {
 #ifdef FORCE_FEEDBACK
-		if (TactileStick && (this == gameData.objData.consoleP) && !(FrameCount & 15))
+		if (TactileStick && (this == gameData.objData.pConsole) && !(FrameCount & 15))
 			Tactile_Xvibrate_clear ();
 #endif
 		}
@@ -1954,7 +1954,7 @@ else {
 			vMoved *= (FixMulDiv (FixDiv (I2X (1), gameData.physics.xTime), simData.xTimeScale, 100));
 			if (!simData.bSpeedBoost)
 				Velocity () = vMoved;
-			if ((this == gameData.objData.consoleP) && vMoved.IsZero () && !mType.physInfo.thrust.IsZero ())
+			if ((this == gameData.objData.pConsole) && vMoved.IsZero () && !mType.physInfo.thrust.IsZero ())
 				DoBumpHack ();
 			}
 
@@ -1967,11 +1967,11 @@ else {
 			if (nSide != -1) {
 				if (!(SEGMENT (simData.nStartSeg)->IsPassable (nSide, (info.nType == OBJ_PLAYER) ? this : NULL) & WID_PASSABLE_FLAG)) {
 					//bump object back
-					CSide* sideP = SEGMENT (simData.nStartSeg)->m_sides + nSide;
+					CSide* pSide = SEGMENT (simData.nStartSeg)->m_sides + nSide;
 					if (simData.nStartSeg == -1)
 						Error ("simData.nStartSeg == -1 in physics");
-					fix dist = simData.vStartPos.DistToPlane (sideP->m_normals [0], gameData.segData.vertices [sideP->m_nMinVertex [0]]);
-					info.position.vPos = simData.vStartPos + sideP->m_normals [0] * (info.xSize - dist);
+					fix dist = simData.vStartPos.DistToPlane (pSide->m_normals [0], gameData.segData.vertices [pSide->m_nMinVertex [0]]);
+					info.position.vPos = simData.vStartPos + pSide->m_normals [0] * (info.xSize - dist);
 					UpdateObjectSeg (this);
 					}
 				}

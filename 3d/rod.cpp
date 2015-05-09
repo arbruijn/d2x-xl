@@ -103,7 +103,7 @@ return G3DrawPoly (4, rodPointList);
 //------------------------------------------------------------------------------
 //draw a bitmap CObject that is always facing you
 //returns 1 if off screen, 0 if drew
-int32_t G3DrawRodTexPoly (CBitmap *bmP, CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList, int32_t bAdditive)
+int32_t G3DrawRodTexPoly (CBitmap *pBm, CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList, int32_t bAdditive)
 {
 if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;
@@ -113,7 +113,7 @@ uvlList [0].l =
 uvlList [1].l =
 uvlList [2].l =
 uvlList [3].l = light;
-return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1, bAdditive, -1);
+return G3DrawTexPoly (4, rodPointList, uvlList, pBm, NULL, 1, bAdditive, -1);
 }
 
 //------------------------------------------------------------------------------
@@ -121,10 +121,10 @@ return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1, bAdditive, -1);
 
 #define ADJUST_HIRES_HOSTAGE	0
 
-void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int32_t bLit, int32_t iFrame)
+void DrawObjectRodTexPoly (CObject *pObj, tBitmapIndex bmi, int32_t bLit, int32_t iFrame)
 {
-	CBitmap*			bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
-	fix				xSize = objP->info.xSize;
+	CBitmap*			pBm = gameData.pig.tex.bitmaps [0] + bmi.index;
+	fix				xSize = pObj->info.xSize;
 	CRenderPoint	pTop, pBottom;
 #if ADJUST_HIRES_HOSTAGE
 	CFixVector		vOffset;
@@ -132,27 +132,27 @@ void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int32_t bLit, int32_
 vOffset.SetZero ();
 #endif
 LoadTexture (bmi.index, 0, gameStates.app.bD1Mission);
-if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
-	bmP->SetupTexture (1, 0);
-	bmP = bmP->Override (iFrame);
+if ((pBm->Type () == BM_TYPE_STD) && pBm->Override ()) {
+	pBm->SetupTexture (1, 0);
+	pBm = pBm->Override (iFrame);
 #if ADJUST_HIRES_HOSTAGE
-	if (objP->Type () == OBJ_HOSTAGE)
+	if (pObj->Type () == OBJ_HOSTAGE)
 		xSize = 7 * xSize / 6;
-	vOffset = objP->info.position.mOrient.m.dir.u * (xSize / 12);
+	vOffset = pObj->info.position.mOrient.m.dir.u * (xSize / 12);
 #endif
 	}
-CFixVector delta = objP->info.position.mOrient.m.dir.u * xSize;
-CFixVector vTop = objP->info.position.vPos + delta;
-CFixVector vBottom = objP->info.position.vPos - delta;
+CFixVector delta = pObj->info.position.mOrient.m.dir.u * xSize;
+CFixVector vTop = pObj->info.position.vPos + delta;
+CFixVector vBottom = pObj->info.position.vPos - delta;
 #if ADJUST_HIRES_HOSTAGE
 vTop += vOffset;
 vBottom += vOffset;
 #endif
 pTop.TransformAndEncode (vTop);
 pBottom.TransformAndEncode (vBottom);
-fix light = bLit ? ComputeObjectLight (objP, &pTop.ViewPos ()) : I2X (1);
+fix light = bLit ? ComputeObjectLight (pObj, &pTop.ViewPos ()) : I2X (1);
 if (!gameStates.render.bPerPixelLighting)
-	G3DrawRodTexPoly (bmP, &pBottom, xSize, &pTop, xSize, light, NULL, objP->info.nType == OBJ_FIREBALL);
+	G3DrawRodTexPoly (pBm, &pBottom, xSize, &pTop, xSize, light, NULL, pObj->info.nType == OBJ_FIREBALL);
 else {
 	if (CalcRodCorners (&pBottom, xSize, &pTop, xSize))
 		return;
@@ -165,14 +165,14 @@ else {
 		texCoords [i].v.u = X2F (rodUvlList [i].u);
 		texCoords [i].v.v = X2F (rodUvlList [i].v);
 		}
-	if (objP->info.nType == OBJ_FIREBALL)
-		transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoords, NULL, &gameData.objData.color, 1, 1, GL_TRIANGLE_FAN, GL_REPEAT, 1, -1);
+	if (pObj->info.nType == OBJ_FIREBALL)
+		transparencyRenderer.AddPoly (NULL, NULL, pBm, vertices, 4, texCoords, NULL, &gameData.objData.color, 1, 1, GL_TRIANGLE_FAN, GL_REPEAT, 1, -1);
 	else {
-		bmP = bmP->Override (-1);
-		bmP->SetupTexture (1, 0);
-		bmP->SetTexCoord (texCoords);
-		bmP->SetColor (&gameData.objData.color);
-		ogl.RenderQuad (bmP, vertices, 3);
+		pBm = pBm->Override (-1);
+		pBm->SetupTexture (1, 0);
+		pBm->SetTexCoord (texCoords);
+		pBm->SetColor (&gameData.objData.color);
+		ogl.RenderQuad (pBm, vertices, 3);
 		}
 	}
 }

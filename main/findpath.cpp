@@ -149,9 +149,9 @@ int16_t m_nDepth = m_path [nPredSeg].m_nDepth + 1;
 if (m_nDepth > scanInfo.m_maxDist)
 	return m_nLinkSeg = scanInfo.Scanning (m_nDir) ? 0 : -1;
 
-CSegment* segP = SEGMENT (nPredSeg);
+CSegment* pSeg = SEGMENT (nPredSeg);
 for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
-	int16_t nSuccSeg = segP->m_children [nSide];
+	int16_t nSuccSeg = pSeg->m_children [nSide];
 	if (nSuccSeg < 0)
 		continue;
 	if (m_nDir) {
@@ -161,7 +161,7 @@ for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 			continue;
 		}
 	else {
-		if (!(segP->IsPassable (nSide, NULL) & scanInfo.m_widFlag))
+		if (!(pSeg->IsPassable (nSide, NULL) & scanInfo.m_widFlag))
 			continue;
 		}
 
@@ -505,7 +505,7 @@ fix CDACSUniDirRouter::FindPath (void)
 {
 	uint32_t		nDist;
 	int16_t		nSegment, nSide;
-	CSegment*	segP;
+	CSegment*	pSeg;
 
 m_heap.Setup (m_nStartSeg);
 
@@ -517,18 +517,18 @@ for (;;) {
 		return (m_nDestSeg < 0) ? nExpanded : -1;
 	if (nSegment == m_nDestSeg)
 		return BuildPath (nSegment);
-	segP = SEGMENT (nSegment);
+	pSeg = SEGMENT (nSegment);
 #if DBG
 	if (nSegment == nDbgSeg)
 		BRP;
 #endif
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
-		if ((segP->m_children [nSide] >= 0) && (segP->IsPassable (nSide, NULL) & m_widFlag)) {
+		if ((pSeg->m_children [nSide] >= 0) && (pSeg->IsPassable (nSide, NULL) & m_widFlag)) {
 #if DBG
-			if (segP->m_children [nSide] == nDbgSeg)
+			if (pSeg->m_children [nSide] == nDbgSeg)
 				BRP;
 #endif
-			if (m_heap.Push (segP->m_children [nSide], nSegment, nSide, nDist + uint16_t (segP->m_childDists [1][nSide])))
+			if (m_heap.Push (pSeg->m_children [nSide], nSegment, nSide, nDist + uint16_t (pSeg->m_childDists [1][nSide])))
 				++nExpanded;
 			}
 		}
@@ -566,12 +566,12 @@ if ((nSegment < 0) || (nSegment == m_nDestSeg))
 	return nSegment;
 if (m_heap [!nDir].Popped (nSegment))
 	return nSegment;
-CSegment* segP = SEGMENT (nSegment);
+CSegment* pSeg = SEGMENT (nSegment);
 for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
-	if ((segP->m_children [nSide] >= 0) && (segP->IsPassable (nSide, NULL) & m_widFlag)) {
-		uint32_t nNewDist = nDist + uint16_t (segP->m_childDists [1][nSide]);
+	if ((pSeg->m_children [nSide] >= 0) && (pSeg->IsPassable (nSide, NULL) & m_widFlag)) {
+		uint32_t nNewDist = nDist + uint16_t (pSeg->m_childDists [1][nSide]);
 		if (nNewDist < uint32_t (m_maxDist))
-			m_heap [nDir].Push (segP->m_children [nSide], nSegment, nSide, nNewDist);
+			m_heap [nDir].Push (pSeg->m_children [nSide], nSegment, nSide, nNewDist);
 		}
 	}
 return nSegment;

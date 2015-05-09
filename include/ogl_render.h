@@ -11,7 +11,7 @@
 #include "ogl_lib.h"
 #include "lightmap.h"
 
-void OglDrawEllipse (int32_t nSides, int32_t nType, float xsc, float xo, float ysc, float yo, tSinCosf *sinCosP);
+void OglDrawEllipse (int32_t nSides, int32_t nType, float xsc, float xo, float ysc, float yo, tSinCosf *pSinCos);
 void OglDrawCircle (int32_t nSides, int32_t nType);
 int32_t G3DrawWhitePoly (int32_t nv, CRenderPoint **pointList);
 int32_t G3DrawPolyAlpha (int32_t nv, CRenderPoint **pointlist, CFloatVector *color, char bDepthMask, int16_t nSegment);
@@ -62,7 +62,7 @@ int32_t G3DrawTexPolySimple (
 	int32_t			nVertices, 
 	CRenderPoint		**pointList, 
 	tUVL			*uvlList, 
-	CBitmap		*bmP, 
+	CBitmap		*pBm, 
 	CFixVector	*pvNormal,
 	int32_t			bBlend);
 
@@ -70,11 +70,11 @@ void OglCachePolyModelTextures (int32_t nModel);
 
 void DrawTexPolyFlat (CBitmap *bm,int32_t nv,CRenderPoint **vertlist);
 
-void OglDrawFilledPoly (int32_t* x, int32_t* y, int32_t nVerts, CCanvasColor *colorP = NULL, int32_t nColors = 1);
-void OglDrawFilledRect (int32_t left,int32_t top, int32_t right,int32_t bot, CCanvasColor* colorP = NULL);
-void OglDrawPixel (int32_t x, int32_t y, CCanvasColor* colorP = NULL);
-void OglDrawLine (int32_t left,int32_t top, int32_t right,int32_t bot, CCanvasColor* colorP = NULL);
-void OglDrawEmptyRect (int32_t left, int32_t top, int32_t right, int32_t bot, CCanvasColor* colorP = NULL);
+void OglDrawFilledPoly (int32_t* x, int32_t* y, int32_t nVerts, CCanvasColor *pColor = NULL, int32_t nColors = 1);
+void OglDrawFilledRect (int32_t left,int32_t top, int32_t right,int32_t bot, CCanvasColor* pColor = NULL);
+void OglDrawPixel (int32_t x, int32_t y, CCanvasColor* pColor = NULL);
+void OglDrawLine (int32_t left,int32_t top, int32_t right,int32_t bot, CCanvasColor* pColor = NULL);
+void OglDrawEmptyRect (int32_t left, int32_t top, int32_t right, int32_t bot, CCanvasColor* pColor = NULL);
 
 void InitGrayScaleShader (void);
 
@@ -91,9 +91,9 @@ extern GLhandleARB	activeShaderProg;
 //------------------------------------------------------------------------------
 
 static inline int32_t G3DrawTexPoly (int32_t nVerts, CRenderPoint **points, tUVL *uvls,
-											CBitmap *bmP, CFixVector *pvNormal, int32_t bBlend, int32_t bAdditive, int16_t nSegment)
+											CBitmap *pBm, CFixVector *pvNormal, int32_t bBlend, int32_t bAdditive, int16_t nSegment)
 {
-return fpDrawTexPolyMulti (nVerts, points, uvls, NULL, bmP, NULL, NULL, pvNormal, 0, bBlend, bAdditive, nSegment);
+return fpDrawTexPolyMulti (nVerts, points, uvls, NULL, pBm, NULL, NULL, pvNormal, 0, bBlend, bAdditive, nSegment);
 }
 
 //------------------------------------------------------------------------------

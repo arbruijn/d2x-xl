@@ -696,12 +696,12 @@ Check ();
 #endif
 
 for (uint32_t i = m_textures.ToS (); i > 0; ) {
-	CTexture* texP = m_textures [--i];
+	CTexture* pTexture = m_textures [--i];
 #if DBG
-	if (texP->Registered () != i + 1)
+	if (pTexture->Registered () != i + 1)
 		TextureError ();
 #endif
-	texP->Destroy ();
+	pTexture->Destroy ();
 #if DBG
 	if (texIds [i])
 		delete texIds [i];
@@ -715,10 +715,10 @@ texIds.Reset ();
 
 //------------------------------------------------------------------------------
 
-uint32_t CTextureManager::Check (CTexture* texP)
+uint32_t CTextureManager::Check (CTexture* pTexture)
 {
-uint32_t i = texP->Registered ();
-return i && (i <= m_textures.ToS ()) && (m_textures [i] != texP) ? i : 0;
+uint32_t i = pTexture->Registered ();
+return i && (i <= m_textures.ToS ()) && (m_textures [i] != pTexture) ? i : 0;
 }
 
 //------------------------------------------------------------------------------
@@ -727,8 +727,8 @@ bool CTextureManager::Check (void)
 {
 #if DBG
 for (uint32_t i = 0, j = m_textures.ToS (); i < j; i++) {
-	CTexture* texP = m_textures [i]; 
-	if (texP->Registered () != i + 1) {
+	CTexture* pTexture = m_textures [i]; 
+	if (pTexture->Registered () != i + 1) {
 		TextureError ();
 		return false;
 		}
@@ -739,19 +739,19 @@ return true;
 
 //------------------------------------------------------------------------------
 
-uint32_t CTextureManager::Find (CTexture* texP)
+uint32_t CTextureManager::Find (CTexture* pTexture)
 {
 for (uint32_t i = 0, j = m_textures.ToS (); i < j; i++) 
-	if (m_textures [i] == texP)
+	if (m_textures [i] == pTexture)
 		return i + 1;
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-uint32_t CTextureManager::Register (CTexture* texP)
+uint32_t CTextureManager::Register (CTexture* pTexture)
 {
-uint32_t i = Find (texP);
+uint32_t i = Find (pTexture);
 if (i) {
 #if DBG
 	if (m_textures [i - 1]->Registered () != i)
@@ -759,12 +759,12 @@ if (i) {
 #endif
 	return i;
 	}
-m_textures.Push (texP);
+m_textures.Push (pTexture);
 #if DBG
-int32_t l = (int32_t) strlen (texP->Bitmap ()->Name ()) + 1;
+int32_t l = (int32_t) strlen (pTexture->Bitmap ()->Name ()) + 1;
 char* s = new char [l];
 if (s)
-	strcpy (s, texP->Bitmap ()->Name ());
+	strcpy (s, pTexture->Bitmap ()->Name ());
 texIds.Push (s);
 s = NULL;
 #endif
@@ -773,14 +773,14 @@ return m_textures.ToS ();
 
 //------------------------------------------------------------------------------
 
-bool CTextureManager::Release (CTexture* texP)
+bool CTextureManager::Release (CTexture* pTexture)
 {
 #if DBG
 Check ();
 #endif
-uint32_t i = Check (texP);
+uint32_t i = Check (pTexture);
 if (!i)
-	i = Find (texP);
+	i = Find (pTexture);
 if (!i)
 	return false;
 
@@ -830,13 +830,13 @@ m_info.u =
 m_info.v = 0;
 m_info.bRenderBuffer = 0;
 m_info.prio = 0.3f;
-m_info.bmP = NULL;
+m_info.pBm = NULL;
 m_nRegistered = 0;
 }
 
 //------------------------------------------------------------------------------
 
-void CTexture::Setup (int32_t w, int32_t h, int32_t lw, int32_t bpp, int32_t bMask, int32_t bMipMap, int32_t bSmoothe, CBitmap *bmP)
+void CTexture::Setup (int32_t w, int32_t h, int32_t lw, int32_t bpp, int32_t bMask, int32_t bMipMap, int32_t bSmoothe, CBitmap *pBm)
 {
 m_info.w = w;
 m_info.h = h;
@@ -905,8 +905,8 @@ if (m_info.handle && (m_info.handle != GLuint (-1))) {
 		ogl.DeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 	m_info.handle = 0;
 #if 1
-	if (m_info.bmP)
-		m_info.bmP->NeedSetup ();
+	if (m_info.pBm)
+		m_info.pBm->NeedSetup ();
 #endif
 	}
 }
@@ -918,7 +918,7 @@ void CTexture::Destroy (void)
 Release ();
 textureManager.Release (this);
 m_nRegistered = 0;
-//m_info.bmP = NULL;
+//m_info.pBm = NULL;
 Init ();
 }
 
@@ -1027,13 +1027,13 @@ return 0;
 // will be computed so that only the part of the buffer containing the image
 // is rendered.
 
-uint8_t* CTexture::Convert (int32_t dxo, int32_t dyo, CBitmap* bmP, int32_t nTranspType, int32_t bSuperTransp, int32_t& bpp)
+uint8_t* CTexture::Convert (int32_t dxo, int32_t dyo, CBitmap* pBm, int32_t nTranspType, int32_t bSuperTransp, int32_t& bpp)
 {
-paletteManager.SetTexture (bmP->Parent () ? bmP->Parent ()->Palette () : bmP->Palette ());
+paletteManager.SetTexture (pBm->Parent () ? pBm->Parent ()->Palette () : pBm->Palette ());
 if (!paletteManager.Texture ())
 	return NULL;
 
-int32_t bTransp = (nTranspType || bSuperTransp) && bmP->HasTransparency ();
+int32_t bTransp = (nTranspType || bSuperTransp) && pBm->HasTransparency ();
 if (!bTransp)
 	m_info.format = GL_RGB;
 #if DBG
@@ -1063,23 +1063,23 @@ switch (m_info.format) {
 		break;
 	}
 
-if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer [0]))//shouldn'texP happen, descent never uses textures that big.
+if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer [0]))//shouldn'pTexture happen, descent never uses textures that big.
 	Error ("texture too big %i %i", m_info.tw, m_info.th);
 
-	uint8_t*		rawData = bmP->Buffer ();
-	GLubyte*		bufP = ogl.m_data.buffer [0];
-	CRGBColor*	colorP;
+	uint8_t*		rawData = pBm->Buffer ();
+	GLubyte*		pBuffer = ogl.m_data.buffer [0];
+	CRGBColor*	pColor;
 	int32_t		transparencyColor, superTranspColor;
 #if 1
-	if (bmP) {
-		colorP = bmP->Palette ()->Color ();
-		transparencyColor = bmP->Palette ()->TransparentColor ();
-		superTranspColor =  bmP->Palette ()->SuperTranspColor ();
+	if (pBm) {
+		pColor = pBm->Palette ()->Color ();
+		transparencyColor = pBm->Palette ()->TransparentColor ();
+		superTranspColor =  pBm->Palette ()->SuperTranspColor ();
 		}
 	else
 #endif
 		{
-		colorP = paletteManager.Texture ()->Color ();
+		pColor = paletteManager.Texture ()->Color ();
 		transparencyColor = paletteManager.Texture ()->TransparentColor ();
 		superTranspColor =  paletteManager.Texture ()->SuperTranspColor ();
 		}
@@ -1089,24 +1089,24 @@ if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer [0]))//sho
 	int32_t		bPosterize = gameStates.render.bCartoonize;
 
 
-//bmP->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
+//pBm->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 for (y = 0; y < m_info.h; y++) {
 	for (x = 0; x < m_info.w; x++) {
 #if DBG
-		if (!bmP->IsElement (rawData))
+		if (!pBm->IsElement (rawData))
 			break;
 #endif
 		c = *rawData++;
 		if (nTranspType && (c == transparencyColor)) {
-			//bmP->Flags () |= BM_FLAG_TRANSPARENT;
+			//pBm->Flags () |= BM_FLAG_TRANSPARENT;
 			switch (m_info.format) {
 				case GL_LUMINANCE:
-					(*(bufP++)) = 0;
+					(*(pBuffer++)) = 0;
 					break;
 
 				case GL_LUMINANCE_ALPHA:
-					*reinterpret_cast<GLushort*> (bufP) = 0;
-					bufP += 2;
+					*reinterpret_cast<GLushort*> (pBuffer) = 0;
+					pBuffer += 2;
 					break;
 
 				case GL_RGB:
@@ -1116,38 +1116,38 @@ for (y = 0; y < m_info.h; y++) {
 					break;
 
 				case GL_RGBA:
-					*reinterpret_cast<GLuint*> (bufP) = (nTranspType ? 0 : 0xffffffff);
-					bufP += 4;
+					*reinterpret_cast<GLuint*> (pBuffer) = (nTranspType ? 0 : 0xffffffff);
+					pBuffer += 4;
 					break;
 
 				case GL_RGBA4:
-					*reinterpret_cast<GLushort*> ( bufP) = (nTranspType ? 0 : 0xffff);
-					bufP += 2;
+					*reinterpret_cast<GLushort*> ( pBuffer) = (nTranspType ? 0 : 0xffff);
+					pBuffer += 2;
 					break;
 				}
 			}
 		else {
 			switch (m_info.format) {
 				case GL_LUMINANCE://these could prolly be done to make the intensity based upon the intensity of the resulting color, but its not needed for anything (yet?) so no point. :)
-						(*(bufP++)) = 255;
+						(*(pBuffer++)) = 255;
 					break;
 
 				case GL_LUMINANCE_ALPHA:
-						(*(bufP++)) = 255;
-						(*(bufP++)) = 255;
+						(*(pBuffer++)) = 255;
+						(*(pBuffer++)) = 255;
 					break;
 
 				case GL_RGB:
 				case GL_RGB5:
 					if (bSuperTransp && (c == superTranspColor)) {
-						//bmP->Flags () |= BM_FLAG_SUPER_TRANSPARENT;
+						//pBm->Flags () |= BM_FLAG_SUPER_TRANSPARENT;
 						m_info.format = ogl.m_states.nRGBAFormat;
 						goto restart;
 						}
 					else {
-						r = colorP [c].Red () * 4;
-						g = colorP [c].Green () * 4;
-						b = colorP [c].Blue () * 4;
+						r = pColor [c].Red () * 4;
+						g = pColor [c].Green () * 4;
+						b = pColor [c].Blue () * 4;
 						if (bPosterize) {
 							r = (r / 16) * 16;
 							g = (g / 16) * 16;
@@ -1160,16 +1160,16 @@ for (y = 0; y < m_info.h; y++) {
 							goto restart;
 							}
 						if (m_info.format == GL_RGB) {
-							(*(bufP++)) = (GLubyte) r;
-							(*(bufP++)) = (GLubyte) g;
-							(*(bufP++)) = (GLubyte) b;
+							(*(pBuffer++)) = (GLubyte) r;
+							(*(pBuffer++)) = (GLubyte) g;
+							(*(pBuffer++)) = (GLubyte) b;
 							}
 						else {
 							r >>= 3;
 							g >>= 2;
 							b >>= 3;
-							*reinterpret_cast<GLushort*> ( bufP) = r + (g << 5) + (b << 11);
-							bufP += 2;
+							*reinterpret_cast<GLushort*> ( pBuffer) = r + (g << 5) + (b << 11);
+							pBuffer += 2;
 							}
 						}
 					break;
@@ -1177,7 +1177,7 @@ for (y = 0; y < m_info.h; y++) {
 				case GL_RGBA:
 				case GL_RGBA4: {
 					if (bSuperTransp && (c == SUPER_TRANSP_COLOR)) {
-						//bmP->Flags () |= BM_FLAG_SUPER_TRANSPARENT;
+						//pBm->Flags () |= BM_FLAG_SUPER_TRANSPARENT;
 #if 0
 						if (bShaderMerge) {
 							r = g = b = 0;
@@ -1193,9 +1193,9 @@ for (y = 0; y < m_info.h; y++) {
 							}
 						}
 					else {
-						r = colorP [c].Red () * 4;
-						g = colorP [c].Green () * 4;
-						b = colorP [c].Blue () * 4;
+						r = pColor [c].Red () * 4;
+						g = pColor [c].Green () * 4;
+						b = pColor [c].Blue () * 4;
 						if (bPosterize) {
 							r = (r / 16) * 16;
 							g = (g / 16) * 16;
@@ -1220,14 +1220,14 @@ for (y = 0; y < m_info.h; y++) {
 							a = 255;	//not transparent
 						}
 					if (m_info.format == GL_RGBA) {
-						(*(bufP++)) = (GLubyte) r;
-						(*(bufP++)) = (GLubyte) g;
-						(*(bufP++)) = (GLubyte) b;
-						(*(bufP++)) = (GLubyte) a;
+						(*(pBuffer++)) = (GLubyte) r;
+						(*(pBuffer++)) = (GLubyte) g;
+						(*(pBuffer++)) = (GLubyte) b;
+						(*(pBuffer++)) = (GLubyte) a;
 						}
 					else {
-						*reinterpret_cast<GLushort*> (bufP) = (r >> 4) + ((g >> 4) << 4) + ((b >> 4) << 8) + ((a >> 4) << 12);
-						bufP += 2;
+						*reinterpret_cast<GLushort*> (pBuffer) = (r >> 4) + ((g >> 4) << 4) + ((b >> 4) << 8) + ((a >> 4) << 12);
+						pBuffer += 2;
 						}
 					break;
 					}
@@ -1235,16 +1235,16 @@ for (y = 0; y < m_info.h; y++) {
 			}
 		}
 #if DBG
-	memset (bufP, 0, (m_info.tw - m_info.w) * bpp);	//erase the entire unused rightmost part of the line
+	memset (pBuffer, 0, (m_info.tw - m_info.w) * bpp);	//erase the entire unused rightmost part of the line
 #else
-	memset (bufP, 0, bpp); //erase one pixel to compensate for rounding problems with the u coordinate
+	memset (pBuffer, 0, bpp); //erase one pixel to compensate for rounding problems with the u coordinate
 #endif
-	bufP += (m_info.tw - m_info.w) * bpp;
+	pBuffer += (m_info.tw - m_info.w) * bpp;
 	}
 #if DBG
-memset (bufP, 0, (m_info.th - m_info.h) * m_info.tw * bpp);
+memset (pBuffer, 0, (m_info.th - m_info.h) * m_info.tw * bpp);
 #else
-memset (bufP, 0, m_info.tw * bpp);
+memset (pBuffer, 0, m_info.tw * bpp);
 #endif
 if (m_info.format == GL_RGB)
 	m_info.internalFormat = 3;
@@ -1264,21 +1264,21 @@ if ((gameStates.render.bCartoonize >= 0) && !dxo && !dyo && (m_info.w == m_info.
 	return data;	//can use data 1:1
 else {	//need to reformat
 	int32_t	h, w, tw;
-	GLubyte	*bufP;
+	GLubyte	*pBuffer;
 
 	h = m_info.lw / m_info.w;
 	w = (m_info.w - dxo) * h;
 	data += m_info.lw * dyo + h * dxo;
-	bufP = ogl.m_data.buffer [0];
+	pBuffer = ogl.m_data.buffer [0];
 	tw = m_info.tw * h;
 	h = tw - w;
 	for (; dyo < m_info.h; dyo++, data += m_info.lw) {
-		memcpy (bufP, data, w);
-		bufP += w;
-		memset (bufP, 0, h);
-		bufP += h;
+		memcpy (pBuffer, data, w);
+		pBuffer += w;
+		memset (pBuffer, 0, h);
+		pBuffer += h;
 		}
-	memset (bufP, 0, m_info.th * tw - (bufP - ogl.m_data.buffer [0]));
+	memset (pBuffer, 0, m_info.th * tw - (pBuffer - ogl.m_data.buffer [0]));
 	return ogl.m_data.buffer [0];
 	}
 }
@@ -1395,7 +1395,7 @@ while (!FormatSupported ()) {
 
 		default:
 #if TRACE
-			console.printf (CON_DBG,"...no texP format to fall back on\n");
+			console.printf (CON_DBG,"...no pTexture format to fall back on\n");
 #endif
 			return 1;
 		}
@@ -1407,7 +1407,7 @@ return 0;
 
 void CTexture::SetBufSize (int32_t dbits, int32_t bits, int32_t w, int32_t h)
 {
-if (bits <= 0) //the beta nvidia GLX server. doesn'texP ever return any bit sizes, so just use some assumptions.
+if (bits <= 0) //the beta nvidia GLX server. doesn'pTexture ever return any bit sizes, so just use some assumptions.
 	bits = dbits;
 }
 
@@ -1417,22 +1417,22 @@ void CTexture::SetSize (void)
 {
 	GLint	w, h;
 	int32_t	nBits = 16, a = 0;
-	GLint texP;
+	GLint pTexture;
 
 glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
 glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
-glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_LUMINANCE_SIZE, &texP);
-a += texP;
-glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_INTENSITY_SIZE, &texP);
-a += texP;
-glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_RED_SIZE, &texP);
-a += texP;
-glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_GREEN_SIZE, &texP);
-a += texP;
-glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_BLUE_SIZE, &texP);
-a += texP;
-glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_ALPHA_SIZE, &texP);
-a += texP;
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_LUMINANCE_SIZE, &pTexture);
+a += pTexture;
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_INTENSITY_SIZE, &pTexture);
+a += pTexture;
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_RED_SIZE, &pTexture);
+a += pTexture;
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_GREEN_SIZE, &pTexture);
+a += pTexture;
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_BLUE_SIZE, &pTexture);
+a += pTexture;
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_ALPHA_SIZE, &pTexture);
+a += pTexture;
 switch (m_info.format) {
 	case GL_LUMINANCE:
 		nBits = 8;
@@ -1536,7 +1536,7 @@ if (m_info.internalFormat != GL_COMPRESSED_RGBA)
 	return 0;
 
 	GLint		nParam, nFormat, nSize;
-	CBitmap	*bmP = m_info.bmP;
+	CBitmap	*pBm = m_info.pBm;
 
 glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_ARB, &nParam);
 if (nParam) {
@@ -1546,16 +1546,16 @@ if (nParam) {
 		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) ||
 		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)) {
 		glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &nSize);
-		if (bmP->CompressedBuffer ().Resize (nSize)) {
-			glGetCompressedTexImage (GL_TEXTURE_2D, 0, reinterpret_cast<GLvoid*> (bmP->CompressedBuffer ().Buffer ()));
-			bmP->SetFormat (nFormat);
-			bmP->SetCompressed (1);
+		if (pBm->CompressedBuffer ().Resize (nSize)) {
+			glGetCompressedTexImage (GL_TEXTURE_2D, 0, reinterpret_cast<GLvoid*> (pBm->CompressedBuffer ().Buffer ()));
+			pBm->SetFormat (nFormat);
+			pBm->SetCompressed (1);
 			}
 		}
 	}
-if (bmP->Compressed ())
+if (pBm->Compressed ())
 	return 1;
-if (bmP->BPP () == 3) {
+if (pBm->BPP () == 3) {
 	m_info.format = GL_RGB;
 	m_info.internalFormat = 3;
 	}
@@ -1623,8 +1623,8 @@ else
 		}
 #if 0
 	try {
-		if (ogl.m_states.bLowMemory && m_info.bMipMaps && (!m_info.bmP->Static () || (m_info.format == GL_RGB)))
-			m_info.bmP->FreeData ();
+		if (ogl.m_states.bLowMemory && m_info.bMipMaps && (!m_info.pBm->Static () || (m_info.format == GL_RGB)))
+			m_info.pBm->FreeData ();
 		}
 	catch (...) {
 		}
@@ -1655,7 +1655,7 @@ if (Texture () && (Texture ()->Handle () == -1)) {
 
 void CBitmap::Unlink (int32_t bAddon)
 {
-	CBitmap	*altBmP, *bmfP;
+	CBitmap	*pAltBm, *pBmf;
 	int32_t			i, j;
 
 if (bAddon || (Type () == BM_TYPE_STD)) {
@@ -1664,17 +1664,17 @@ if (bAddon || (Type () == BM_TYPE_STD)) {
 	if (!(bAddon || Override ()))
 		UnlinkTexture ();
 	else {
-		altBmP = bAddon ? this : Override ();
-		if (altBmP->Mask ())
-			altBmP->Mask ()->UnlinkTexture ();
-		altBmP->UnlinkTexture ();
-		if ((altBmP->Type () == BM_TYPE_ALT) && altBmP->Frames ()) {
-			i = altBmP->FrameCount ();
+		pAltBm = bAddon ? this : Override ();
+		if (pAltBm->Mask ())
+			pAltBm->Mask ()->UnlinkTexture ();
+		pAltBm->UnlinkTexture ();
+		if ((pAltBm->Type () == BM_TYPE_ALT) && pAltBm->Frames ()) {
+			i = pAltBm->FrameCount ();
 			if (i > 1) {
-				for (j = i, bmfP = altBmP->Frames (); j; j--, bmfP++) {
-					if (bmfP->Mask ())
-						bmfP->Mask ()->UnlinkTexture ();
-					bmfP->UnlinkTexture ();
+				for (j = i, pBmf = pAltBm->Frames (); j; j--, pBmf++) {
+					if (pBmf->Mask ())
+						pBmf->Mask ()->UnlinkTexture ();
+					pBmf->UnlinkTexture ();
 					}
 				}
 			}
@@ -1686,7 +1686,7 @@ if (bAddon || (Type () == BM_TYPE_STD)) {
 
 //------------------------------------------------------------------------------
 
-int32_t BitmapFrame (CBitmap* bmP, int16_t nTexture, int16_t nSegment, int32_t nFrame)
+int32_t BitmapFrame (CBitmap* pBm, int16_t nTexture, int16_t nSegment, int32_t nFrame)
 {
 if (nSegment < 0)
 	return nFrame;
@@ -1704,7 +1704,7 @@ return 3; // that's the number of the animation's darkest frame
 
 CBitmap *LoadFaceBitmap (int16_t nTexture, int16_t nFrameIdx, int32_t bLoadTextures)
 {
-	CBitmap*	bmP, * bmoP, * bmfP;
+	CBitmap*	pBm, * pBmo, * pBmf;
 	int32_t	nFrames;
 
 #if DBG
@@ -1712,26 +1712,26 @@ if (nTexture == nDbgTexture)
 	BRP;
 #endif
 LoadTexture (gameData.pig.tex.bmIndexP [nTexture].index, 0, gameStates.app.bD1Mission);
-bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
-bmP->SetStatic (1);
-if (!(bmoP = bmP->Override ()))
-	return bmP;
-bmoP->SetStatic (1);
-if (!bmoP->WallAnim ())
-	return bmoP;
-if (2 > (nFrames = bmoP->FrameCount ()))
-	return bmoP;
-bmoP->SetTranspType (3);
-bmoP->SetupTexture (1, bLoadTextures);
-if (!(bmfP = bmoP->Frames ()))
-	return bmoP;
+pBm = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
+pBm->SetStatic (1);
+if (!(pBmo = pBm->Override ()))
+	return pBm;
+pBmo->SetStatic (1);
+if (!pBmo->WallAnim ())
+	return pBmo;
+if (2 > (nFrames = pBmo->FrameCount ()))
+	return pBmo;
+pBmo->SetTranspType (3);
+pBmo->SetupTexture (1, bLoadTextures);
+if (!(pBmf = pBmo->Frames ()))
+	return pBmo;
 if ((nFrameIdx < 0) && (nFrames >= -nFrameIdx))
-	bmfP -= (nFrameIdx + 1);
-bmoP->SetCurFrame (bmfP);
-bmfP->SetTranspType (3);
-bmfP->SetupTexture (1, bLoadTextures);
-bmfP->SetStatic (1);
-return bmfP;
+	pBmf -= (nFrameIdx + 1);
+pBmo->SetCurFrame (pBmf);
+pBmf->SetTranspType (3);
+pBmf->SetupTexture (1, bLoadTextures);
+pBmf->SetStatic (1);
+return pBmf;
 }
 
 //------------------------------------------------------------------------------
@@ -1745,28 +1745,28 @@ int32_t CBitmap::LoadTexture (int32_t dxo, int32_t dyo, int32_t superTransp)
 if (!data)
 	return 1;
 
-	GLubyte*		bufP = NULL;
+	GLubyte*		pBuffer = NULL;
 	CTexture		texture;
 	bool			bLocal;
 	int32_t		funcRes = 0;
 
-if ((bLocal = (m_info.texP == NULL))) {
+if ((bLocal = (m_info.pTexture == NULL))) {
 	texture.Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP);
 	}
 #if TEXTURE_COMPRESSION
-m_info.texP->Prepare (m_info.compressed.bCompressed);
+m_info.pTexture->Prepare (m_info.compressed.bCompressed);
 #	ifndef __macosx__
 if (!(m_info.compressed.bCompressed || Parent ())) {
 	if (ogl.m_features.bTextureCompression &&
-		 ((m_info.texP->Format () == GL_RGBA) || (m_info.texP->Format () == GL_RGB)) &&
-		 (m_info.texP->TW () >= 64) && (m_info.texP->TH () >= 64))
-		m_info.texP->SetInternalFormat (GL_COMPRESSED_RGBA);
-	if (m_info.texP->Verify ())
+		 ((m_info.pTexture->Format () == GL_RGBA) || (m_info.pTexture->Format () == GL_RGB)) &&
+		 (m_info.pTexture->TW () >= 64) && (m_info.pTexture->TH () >= 64))
+		m_info.pTexture->SetInternalFormat (GL_COMPRESSED_RGBA);
+	if (m_info.pTexture->Verify ())
 		return 1;
 	}
 #	endif
 #else
-m_info.texP->Prepare ();
+m_info.pTexture->Prepare ();
 #endif
 
 #if DBG
@@ -1777,22 +1777,22 @@ if (strstr (m_info.szName, "shield.tga"))
 #endif
 //	if (width!=twidth || height!=theight)
 #if RENDER2TEXTURE
-if (!m_info.texP->IsRenderBuffer ())
+if (!m_info.pTexture->IsRenderBuffer ())
 #endif
  {
 	if (data) {
 #if TEXTURE_COMPRESSION
 		if (m_info.compressed.bCompressed)
-			bufP = CompressedBuffer ().Buffer ();
+			pBuffer = CompressedBuffer ().Buffer ();
 		else
 #endif
 		int32_t nColors;
 		if (m_info.nTranspType < 0) {
-			bufP = m_info.texP->Copy (dxo, dyo, data);
+			pBuffer = m_info.pTexture->Copy (dxo, dyo, data);
 			nColors = BPP ();
 			}
 		else {
-			bufP = m_info.texP->Convert (dxo = 0, dyo = 0, this, m_info.nTranspType, superTransp, nColors);
+			pBuffer = m_info.pTexture->Convert (dxo = 0, dyo = 0, this, m_info.nTranspType, superTransp, nColors);
 			}
 #if DBG
 		if (strstr (m_info.szName, "String Bitmap"))
@@ -1812,20 +1812,20 @@ if (!m_info.texP->IsRenderBuffer ())
 			int32_t h = Height () - dxo;
 			int32_t s = (w >= 512) ? 3 : (w >= 256) ? 2 : (w >= 128) ? 1 : 0;
 #if 0
-			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), blurRads [0][s], nColors, !gameStates.render.bClampBlur, 1);
+			pBuffer = GaussianBlur (ogl.m_data.buffer [1], pBuffer, w, h, m_info.pTexture->TW (), m_info.pTexture->TH (), blurRads [0][s], nColors, !gameStates.render.bClampBlur, 1);
 #else
-			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), blurRads [-gameStates.render.bCartoonize - 1][s], nColors, !gameStates.render.bClampBlur, -gameStates.render.bCartoonize);
+			pBuffer = GaussianBlur (ogl.m_data.buffer [1], pBuffer, w, h, m_info.pTexture->TW (), m_info.pTexture->TH (), blurRads [-gameStates.render.bCartoonize - 1][s], nColors, !gameStates.render.bClampBlur, -gameStates.render.bCartoonize);
 #endif
-			Posterize (bufP, w, h, m_info.texP->TW (), nColors);
+			Posterize (pBuffer, w, h, m_info.pTexture->TW (), nColors);
 			}
 		}
 #if TEXTURE_COMPRESSION
-	m_info.texP->Load (bufP, m_info.compressed.buffer.Size (), m_info.compressed.nFormat, m_info.compressed.bCompressed);
+	m_info.pTexture->Load (pBuffer, m_info.compressed.buffer.Size (), m_info.compressed.nFormat, m_info.compressed.bCompressed);
 #else
-	funcRes = m_info.texP->Load (bufP);
+	funcRes = m_info.pTexture->Load (pBuffer);
 #endif
 	if (bLocal)
-		m_info.texP->Destroy ();
+		m_info.pTexture->Destroy ();
 	}
 return funcRes;
 }
@@ -1852,24 +1852,24 @@ if (strstr (m_info.szName, "shield.tga"))
 	BRP;
 #endif
 
-if (!m_info.texP)
-	m_info.texP = &m_info.texture;
+if (!m_info.pTexture)
+	m_info.pTexture = &m_info.texture;
 #if DBG
-if (m_info.texP->Bitmap () && (m_info.texP->Bitmap () != this))
-	m_info.texP->SetBitmap (this);
+if (m_info.pTexture->Bitmap () && (m_info.pTexture->Bitmap () != this))
+	m_info.pTexture->SetBitmap (this);
 else
 #endif
-//if (!m_info.texP->Bitmap ())
-	m_info.texP->SetBitmap (this);
-if (m_info.texP->Register ()) {
-	m_info.texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
-	m_info.texP->SetRenderBuffer (renderBuffer);
+//if (!m_info.pTexture->Bitmap ())
+	m_info.pTexture->SetBitmap (this);
+if (m_info.pTexture->Register ()) {
+	m_info.pTexture->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
+	m_info.pTexture->SetRenderBuffer (renderBuffer);
 	}
 else {
-	if (m_info.texP->Handle () > 0)
+	if (m_info.pTexture->Handle () > 0)
 		return 0;
-	if (!m_info.texP->Width ())
-		m_info.texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
+	if (!m_info.pTexture->Width ())
+		m_info.pTexture->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
 	}
 #if 0
 if (Flags () & BM_FLAG_RLE)
@@ -1885,7 +1885,7 @@ if (m_info.nId == nDbgTexture)
 	BRP;
 #endif
 LoadTexture (0, 0, (m_info.props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
-return m_info.texP->Handle () == 0;
+return m_info.pTexture->Handle () == 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1905,31 +1905,31 @@ else {
 		BRP;
 #endif
 
-	m_info.frames.bmP = new CBitmap [nFrames];
+	m_info.frames.pBm = new CBitmap [nFrames];
 
 	int32_t	i, w = m_info.props.w;
-	CBitmap* bmfP = m_info.frames.currentP = m_info.frames.bmP;
+	CBitmap* pBmf = m_info.frames.pCurrent = m_info.frames.pBm;
 
 	m_info.frames.nCurrent = 0;
-	for (i = 0; i < nFrames; i++, bmfP++) {
+	for (i = 0; i < nFrames; i++, pBmf++) {
 #if 0 //DBG
-		bmfP->InitChild (this, 0, 0, w, w);
+		pBmf->InitChild (this, 0, 0, w, w);
 #else
-		bmfP->InitChild (this, 0, i * w, w, w);
+		pBmf->InitChild (this, 0, i * w, w, w);
 #endif
-		bmfP->SetType (BM_TYPE_FRAME);
-		bmfP->SetTop (0);
+		pBmf->SetType (BM_TYPE_FRAME);
+		pBmf->SetTop (0);
 		nFlags = BM_FLAG_TGA;
 		if (m_info.transparentFrames [i / 32] & (1 << (i % 32)))
 			nFlags |= BM_FLAG_TRANSPARENT;
 		if (m_info.supertranspFrames [i / 32] & (1 << (i % 32)))
 			nFlags |= BM_FLAG_SUPER_TRANSPARENT;
-		bmfP->SetFlags (nFlags);
-		bmfP->SetTranspType (m_info.nTranspType);
-		bmfP->SetCartoonizable (m_info.bCartoonizable);
-		bmfP->SetStatic (1);	// don't unload because this is just a child texture
+		pBmf->SetFlags (nFlags);
+		pBmf->SetTranspType (m_info.nTranspType);
+		pBmf->SetCartoonizable (m_info.bCartoonizable);
+		pBmf->SetStatic (1);	// don't unload because this is just a child texture
 		if (bLoad)
-			bmfP->PrepareTexture (bMipMaps, 0, NULL);
+			pBmf->PrepareTexture (bMipMaps, 0, NULL);
 		}
 	}
 return 1;
@@ -1990,7 +1990,7 @@ if (!gameStates.render.textures.bHaveMaskShader)
 if (m_info.nMasks)
 	return m_info.nMasks;
 m_info.nMasks = -1;
-if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames.bmP) {
+if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames.pBm) {
 	if (m_info.props.flags & BM_FLAG_SUPER_TRANSPARENT)
 		return CreateMask () != NULL;
 	return 0;
@@ -1998,7 +1998,7 @@ if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames.bmP) {
 nFrames = FrameCount ();
 for (nMasks = i = 0; i < nFrames; i++)
 	if (m_info.supertranspFrames [i / 32] & (1 << (i % 32)))
-		if (m_info.frames.bmP [i].CreateMask ())
+		if (m_info.frames.pBm [i].CreateMask ())
 			nMasks++;
 if (nMasks > 0)
 	m_info.nMasks = nMasks;
@@ -2010,7 +2010,7 @@ return nMasks;
 
 int32_t CBitmap::Bind (int32_t bMipMaps)
 {
-	CBitmap		*bmP;
+	CBitmap		*pBm;
 
 	static int32_t nDepth = 0;
 
@@ -2019,16 +2019,16 @@ if (nDepth > 1)
 	return -1;
 nDepth++;
 
-if ((nDepth < 2) && (bmP = HasOverride ()) && (bmP != this)) {
-	int32_t i = bmP->Bind (bMipMaps);
+if ((nDepth < 2) && (pBm = HasOverride ()) && (pBm != this)) {
+	int32_t i = pBm->Bind (bMipMaps);
 	nDepth--;
 	return i;
 	}
 
 #else
 
-if ((bmP = HasOverride ()) && (bmP != this)) {
-	int32_t i = bmP->Bind (bMipMaps);
+if ((pBm = HasOverride ()) && (pBm != this)) {
+	int32_t i = pBm->Bind (bMipMaps);
 	return i;
 	}
 
@@ -2040,7 +2040,7 @@ if (strstr (m_info.szName, "shield.tga"))
 #endif
 
 #if RENDER2TEXTURE
-if (!(m_info.texP && m_info.texP->IsRenderBuffer ()))
+if (!(m_info.pTexture && m_info.pTexture->IsRenderBuffer ()))
 #endif
 	{
 	if (!Prepared ()) {
@@ -2056,9 +2056,9 @@ if (!(m_info.texP && m_info.texP->IsRenderBuffer ()))
 	if (maskP && !maskP->Prepared ())
 		maskP->SetupTexture (0, 1);
 	}
-if (!m_info.texP)
+if (!m_info.pTexture)
 	return -1;
-m_info.texP->Bind ();
+m_info.pTexture->Bind ();
 #if 0
 nDepth--;
 #endif
@@ -2087,11 +2087,11 @@ else if (!Frames ()) {
 	CreateFrames (bMipMaps, bLoad);
 	CreateMasks ();
 	if (bLoad) {
-		CBitmap*	bmfP = Frames ();
-		for (int32_t i = nFrames; i; i--, bmfP++) {
-			if (bmfP->PrepareTexture (bMipMaps, 1))
+		CBitmap*	pBmf = Frames ();
+		for (int32_t i = nFrames; i; i--, pBmf++) {
+			if (pBmf->PrepareTexture (bMipMaps, 1))
 				return false;
-			if (bmfP->Mask () && (bmfP->Mask ()->PrepareTexture (0, 1, NULL)))
+			if (pBmf->Mask () && (pBmf->Mask ()->PrepareTexture (0, 1, NULL)))
 				return false;
 			}
 		}
@@ -2103,7 +2103,7 @@ return (m_info.bSetup = true);
 
 bool CBitmap::SetupTexture (int32_t bMipMaps, int32_t bLoad)
 {
-	CBitmap *bmP;
+	CBitmap *pBm;
 
 #if DBG
 if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
@@ -2116,11 +2116,11 @@ if (strstr (m_info.szName, "shield.tga"))
 
 switch (m_info.nType) {
 	case BM_TYPE_STD: // primary (low res) texture
-		if ((bmP = HasOverride ())) {
-			if (bmP == this)
-				m_info.overrideP = NULL;
+		if ((pBm = HasOverride ())) {
+			if (pBm == this)
+				m_info.pOverride = NULL;
 			else
-				return bmP->SetupTexture (bMipMaps, bLoad);
+				return pBm->SetupTexture (bMipMaps, bLoad);
 			}
 		if (m_info.bSetup)
 			return Prepared () || !PrepareTexture (bMipMaps, 0);
@@ -2129,8 +2129,8 @@ switch (m_info.nType) {
 	case BM_TYPE_ALT:	// alternative (hires) textures
 		if (!(m_info.bSetup || SetupFrames (bMipMaps, bLoad)))
 			return false;
-		if ((bmP = HasOverride ()))
-			return bmP->SetupTexture (bMipMaps, bLoad);
+		if ((pBm = HasOverride ()))
+			return pBm->SetupTexture (bMipMaps, bLoad);
 		if (bLoad)
 			return Prepared () || !PrepareTexture (bMipMaps, 0);
 		return true;

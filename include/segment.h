@@ -277,7 +277,7 @@ class CSide {
 		uint8_t Distf (const CFloatVector& point, float& fSideDist, int32_t bBehind, int16_t sideBit);
 		fix DistToPoint (CFixVector v);
 		float DistToPointf (CFloatVector v);
-		CSegMasks Masks (const CFixVector& refP, fix xRad, int16_t sideBit, int16_t faceBit, bool bCheckPoke = false);
+		CSegMasks Masks (const CFixVector& pRef, fix xRad, int16_t sideBit, int16_t faceBit, bool bCheckPoke = false);
 		void HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int32_t iFace);
 		int32_t CheckForTranspPixel (CFixVector& intersection, int16_t iFace);
 		int32_t Physics (fix& damage, bool bSolid);
@@ -354,7 +354,7 @@ class CSegment {
 		void CheckSum (uint32_t& sum1, uint32_t& sum2);
 
 		inline bool IsWall (int32_t nSide) { return m_sides [nSide].IsWall (); }
-		void SetTexture (int32_t nSide, CSegment *connSegP, int16_t nConnSide, int32_t nAnim, int32_t nFrame);
+		void SetTexture (int32_t nSide, CSegment *pConnSeg, int16_t nConnSide, int32_t nAnim, int32_t nFrame);
 		void DestroyWall (int32_t nSide);
 		void DamageWall (int32_t nSide, fix damage);
 		void BlastWall (int32_t nSide);
@@ -367,7 +367,7 @@ class CSegment {
 		int32_t AnimateOpeningDoor (int32_t nSide, fix xElapsedTime);
 		int32_t AnimateClosingDoor (int32_t nSide, fix xElapsedTime);
 		void ToggleWall (int32_t nSide);
-		int32_t ProcessWallHit (int32_t nSide, fix damage, int32_t nPlayer, CObject *objP);
+		int32_t ProcessWallHit (int32_t nSide, fix damage, int32_t nPlayer, CObject *pObj);
 		int32_t DoorIsBlocked (int32_t nSide, bool bIgnoreMarker = false);
 		int32_t TextureIsDestructable (int32_t nSide, tDestructableTextureProps* dtpP = NULL);
 		int32_t BlowupTexture (int32_t nSide, CFixVector& vHit, CObject* blower, int32_t bForceBlowup);
@@ -431,10 +431,10 @@ class CSegment {
 		 { return m_sides [nSide].CheckLineToFaceEdges (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 
 		inline int32_t FaceCount (int32_t nSide) { return m_sides [nSide].FaceCount (); }
-		CSegMasks Masks (const CFixVector& refP, fix xRad);
-		CSegMasks SideMasks (int32_t nSide, const CFixVector& refP, fix xRad, bool bCheckPoke = false);
-		uint8_t GetSideDists (const CFixVector& refP, fix* xSideDists, int32_t bBehind);
-		uint8_t GetSideDistsf (const CFloatVector& refP, float* fSideDists, int32_t bBehind);
+		CSegMasks Masks (const CFixVector& pRef, fix xRad);
+		CSegMasks SideMasks (int32_t nSide, const CFixVector& pRef, fix xRad, bool bCheckPoke = false);
+		uint8_t GetSideDists (const CFixVector& pRef, fix* xSideDists, int32_t bBehind);
+		uint8_t GetSideDistsf (const CFloatVector& pRef, float* fSideDists, int32_t bBehind);
 		void HitPointUV (int32_t nSide, fix *u, fix *v, fix *l, CFixVector& intersection, int32_t iFace)
 			{ m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }
 
@@ -451,7 +451,7 @@ class CSegment {
 
 		CFixVector RandomPoint (void);
 
-		int32_t IsPassable (int32_t nSide, CObject* objP, bool bIgnoreDoors = false);
+		int32_t IsPassable (int32_t nSide, CObject* pObj, bool bIgnoreDoors = false);
 		int32_t HasOpenableDoor (void);
 
 		inline int32_t CheckForTranspPixel (CFixVector& intersection, int16_t nSide, int16_t iFace) 
@@ -463,7 +463,7 @@ class CSegment {
 		int32_t TexturedSides (void);
 		CBitmap* ChangeTextures (int16_t nBaseTex, int16_t nOvlTex, int16_t nSide = -1);
 
-		void OperateTrigger (int32_t nSide, CObject *objP, int32_t bShot);
+		void OperateTrigger (int32_t nSide, CObject *pObj, int32_t bShot);
 
 		inline uint8_t Function (void) { return m_function; }
 
@@ -556,15 +556,15 @@ class CSegFace {
 #endif
 		CBitmap*				bmBot;
 		CBitmap*				bmTop;
-		tTexCoord2f*		texCoordP;	//needed to override default tex coords, e.g. for camera outputs
+		tTexCoord2f*		pTexCoord;	//needed to override default tex coords, e.g. for camera outputs
 		CSegFace*			nextSlidingFace;
 
 	public:
 		CSegment* Segment (void);
 		inline CSide* Side (void) { return Segment ()->Side (m_info.nSide); }
 		inline CFloatVector Normal (void) { 
-			CSide* sideP = Side ();
-			return (sideP->m_nType == 1) ? sideP->m_fNormals [0] : CFloatVector::Avg (sideP->m_fNormals [0], sideP->m_fNormals [1]);
+			CSide* pSide = Side ();
+			return (pSide->m_nType == 1) ? pSide->m_fNormals [0] : CFloatVector::Avg (pSide->m_fNormals [0], pSide->m_fNormals [1]);
 			}
 		};
 
@@ -573,7 +573,7 @@ inline int32_t operator- (CSegFace* f, CArray<CSegFace>& a) { return a.Index (f)
 //------------------------------------------------------------------------------
 
 typedef struct tSegFaces {
-	CSegFace*	faceP;
+	CSegFace*	pFace;
 	uint8_t		nFaces;
 	uint8_t		bVisible;
 } tSegFaces;

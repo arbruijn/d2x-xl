@@ -771,13 +771,13 @@ for (int32_t i = 0; i < MAX_OPEN_FONTS; i++)
 
  //------------------------------------------------------------------------------
 
-void CFontManager::SetCurrent (CFont* fontP)
+void CFontManager::SetCurrent (CFont* pFont)
 {
 #if DBG
-if (!fontP)
-	fontP = GAME_FONT;
+if (!pFont)
+	pFont = GAME_FONT;
 #endif
-CCanvas::Current ()->SetFont (m_current = fontP); 
+CCanvas::Current ()->SetFont (m_current = pFont); 
 }
  
  //------------------------------------------------------------------------------

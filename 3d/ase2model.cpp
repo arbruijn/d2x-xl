@@ -35,7 +35,7 @@ void CModel::GetASEModelItems (int32_t nModel, ASE::CModel *pa, float fScale)
 	CSubModel*			psm;
 	CFace*				pmf = m_faces.Buffer ();
 	CVertex*				pmv = m_faceVerts.Buffer ();
-	CBitmap*				bmP;
+	CBitmap*				pBm;
 	int32_t				h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
 	int32_t				bTextured;
 
@@ -77,8 +77,8 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 #else
 		i = pfa->m_nBitmap;
 #endif
-		bmP = pa->m_textures.m_bitmaps + i;
-		bTextured = !bmP->Flat ();
+		pBm = pa->m_textures.m_bitmaps + i;
+		bTextured = !pBm->Flat ();
 		pmf->m_nBitmap = bTextured ? i : -1;
 		pmf->m_nVerts = 3;
 		pmf->m_nId = iFace;
@@ -89,7 +89,7 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 				pmv->m_baseColor.Green () =
 				pmv->m_baseColor.Blue () = 1;
 			else 
-				bmP->GetAvgColor (&pmv->m_baseColor);
+				pBm->GetAvgColor (&pmv->m_baseColor);
 			pmv->m_baseColor.Alpha () = 1;
 			pmv->m_renderColor = pmv->m_baseColor;
 			pmv->m_normal = psa->m_vertices [h].m_normal;
@@ -120,7 +120,7 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::BuildFromASE (CObject *objP, int32_t nModel)
+int32_t CModel::BuildFromASE (CObject *pObj, int32_t nModel)
 {
 	ASE::CModel*	pa = gameData.models.modelToASE [1][nModel];
 	int32_t			i, j;
@@ -154,10 +154,10 @@ for (i = 0; i < m_nTextures; i++)
 	if ((j = (int32_t) m_textures [i].Team ()))
 		m_teamTextures [j - 1] = i;
 m_nType = 2;
-gameData.models.polyModels [0][nModel].SetRad (Size (objP, 1), 1);
+gameData.models.polyModels [0][nModel].SetRad (Size (pObj, 1), 1);
 Setup (1, 1);
 #if 1
-SetGunPoints (objP, 1);
+SetGunPoints (pObj, 1);
 #endif
 if (gameStates.app.nLogLevel > 1)
 	PrintLog (-1);

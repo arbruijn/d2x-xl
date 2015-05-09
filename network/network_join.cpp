@@ -38,12 +38,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-int32_t NetworkFindPlayer (tNetPlayerInfo *playerP)
+int32_t NetworkFindPlayer (tNetPlayerInfo *pPlayer)
 {
 	int32_t	i;
 
 for (i = 0; i < N_PLAYERS; i++)
-	if (!CmpNetPlayers (NULL, NULL, &NETPLAYER (i).network, &playerP->network))
+	if (!CmpNetPlayers (NULL, NULL, &NETPLAYER (i).network, &pPlayer->network))
 		return i;         // already got them
 return -1;
 }
@@ -124,7 +124,7 @@ if (!people) {
 for (i = 0; i < nNumPlayers; i++)
 	if (!CmpNetPlayers (LOCALPLAYER.callsign, 
 							  people->m_info.players [i].callsign, 
-							  &networkData.thisPlayer.player.network, 
+							  &networkData.pThislayer.player.network, 
 							  &people->m_info.players [i].network))
 		return 1;
 #if 1      
@@ -364,21 +364,21 @@ if (player->player.connected != missionManager.nCurrentLevel) {
 	return NULL;
 	}
 
-tNetworkSyncInfo* syncInfoP;
+tNetworkSyncInfo* pSyncInfo;
 int16_t nConnection = FindJoiningPlayer (player);
 
 if (nConnection < 0) {
 	if (networkData.nJoining == MAX_JOIN_REQUESTS)
 		return NULL;
-	syncInfoP = networkData.syncInfo + networkData.nJoining++;
+	pSyncInfo = networkData.syncInfo + networkData.nJoining++;
 	}
 else { //prevent flooding with connection attempts from the same player
-	syncInfoP = networkData.syncInfo + nConnection;
-	if (gameStates.app.nSDLTicks [0] - syncInfoP->tLastJoined < 2100)
+	pSyncInfo = networkData.syncInfo + nConnection;
+	if (gameStates.app.nSDLTicks [0] - pSyncInfo->tLastJoined < 2100)
 		return NULL;
-	syncInfoP->tLastJoined = gameStates.app.nSDLTicks [0];
+	pSyncInfo->tLastJoined = gameStates.app.nSDLTicks [0];
 	}
-return syncInfoP;
+return pSyncInfo;
 }
 
 //------------------------------------------------------------------------------
@@ -388,7 +388,7 @@ void NetworkWelcomePlayer (tPlayerSyncData *player)
 {
 	int32_t				nPlayer;
 	uint8_t				newAddress [6];
-	tNetworkSyncInfo*	syncInfoP;
+	tNetworkSyncInfo*	pSyncInfo;
 
 networkData.refuse.bWaitForAnswer = 0;
 if (FindArg ("-NoMatrixCheat")) {
@@ -408,9 +408,9 @@ if (HoardEquipped ()) {
 		return;
 		}
 	}
-if (!(syncInfoP = AcceptJoinRequest (player)))
+if (!(pSyncInfo = AcceptJoinRequest (player)))
 	return;
-memset (&syncInfoP->player [1], 0, sizeof (tPlayerSyncData));
+memset (&pSyncInfo->player [1], 0, sizeof (tPlayerSyncData));
 networkData.bPlayerAdded = 0;
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (player->player.network.GetNetwork () != 0)
@@ -421,7 +421,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 if (0 > (nPlayer = FindNetworkPlayer (player, newAddress))) {
 	// Player is new to this game
 	if (0 > (nPlayer = FindPlayerSlot (player))) {
-		DeleteSyncData (int16_t (syncInfoP - networkData.syncInfo));
+		DeleteSyncData (int16_t (pSyncInfo - networkData.syncInfo));
 		return;
 		}
 	gameData.multiplayer.bAdjustPowerupCap [nPlayer] = true;
@@ -446,33 +446,33 @@ PLAYER (nPlayer).nScoreGoalCount = 0;
 PLAYER (nPlayer).m_nLevel = missionManager.nCurrentLevel;
 CONNECT (nPlayer, CONNECT_DISCONNECTED);
 // Send updated OBJECTS data to the new/returning CPlayerData
-syncInfoP->player [0] = 
-syncInfoP->player [1] = *player;
-syncInfoP->player [1].player.connected = nPlayer;
-syncInfoP->bExtraGameInfo = 0;
-syncInfoP->nState = 1;
-syncInfoP->objs.nCurrent = -1;
-syncInfoP->nExtras = 0;
-syncInfoP->timeout = 0;
-syncInfoP->objs.nFramesToSkip = (gameStates.multi.nGameType == UDP_GAME) ? player->nObjFramesToSkip : 0;
-syncInfoP->tLastJoined = gameStates.app.nSDLTicks [0];
+pSyncInfo->player [0] = 
+pSyncInfo->player [1] = *player;
+pSyncInfo->player [1].player.connected = nPlayer;
+pSyncInfo->bExtraGameInfo = 0;
+pSyncInfo->nState = 1;
+pSyncInfo->objs.nCurrent = -1;
+pSyncInfo->nExtras = 0;
+pSyncInfo->timeout = 0;
+pSyncInfo->objs.nFramesToSkip = (gameStates.multi.nGameType == UDP_GAME) ? player->nObjFramesToSkip : 0;
+pSyncInfo->tLastJoined = gameStates.app.nSDLTicks [0];
 NetworkSendSync (nPlayer);
 NetworkDoSyncFrame ();
 }
 
 //------------------------------------------------------------------------------
 
-void NetworkAddPlayer (tPlayerSyncData* playerInfoP)
+void NetworkAddPlayer (tPlayerSyncData* pPlayerInfo)
 {
-if (NetworkFindPlayer (&playerInfoP->player) > -1)
+if (NetworkFindPlayer (&pPlayerInfo->player) > -1)
 	return;
 tNetPlayerInfo& playerInfo = NETPLAYER (N_PLAYERS);
-memcpy (&playerInfo.network, &playerInfoP->player.network, sizeof (CNetworkInfo));
-ClipRank (reinterpret_cast<char*> (&playerInfoP->player.rank));
-memcpy (playerInfo.callsign, playerInfoP->player.callsign, CALLSIGN_LEN + 1);
-playerInfo.versionMajor = playerInfoP->player.versionMajor;
-playerInfo.versionMinor = playerInfoP->player.versionMinor;
-playerInfo.rank = playerInfoP->player.rank;
+memcpy (&playerInfo.network, &pPlayerInfo->player.network, sizeof (CNetworkInfo));
+ClipRank (reinterpret_cast<char*> (&pPlayerInfo->player.rank));
+memcpy (playerInfo.callsign, pPlayerInfo->player.callsign, CALLSIGN_LEN + 1);
+playerInfo.versionMajor = pPlayerInfo->player.versionMajor;
+playerInfo.versionMinor = pPlayerInfo->player.versionMinor;
+playerInfo.rank = pPlayerInfo->player.rank;
 playerInfo.connected = CONNECT_PLAYING;
 NetworkCheckForOldVersion ((char) N_PLAYERS);
 CPlayerData& player = PLAYER (N_PLAYERS);
@@ -569,7 +569,7 @@ if (!networkData.refuse.bWaitForAnswer) {
 	gameData.messages [1].nStartTime = gameStates.app.nSDLTicks [0];
 	gameData.messages [1].nEndTime = gameStates.app.nSDLTicks [0] + 5000;
 	gameData.messages [1].textBuffer = NULL;
-	gameData.messages [1].bmP = NULL;
+	gameData.messages [1].pBm = NULL;
 #endif
 	strcpy (networkData.refuse.szPlayer, their->player.callsign);
 	networkData.refuse.xTimeLimit = TimerGetApproxSeconds ();   

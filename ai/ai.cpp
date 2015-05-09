@@ -33,11 +33,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void AIDoCloakStuff (void)
 {
-	CObject*	objP = TARGETOBJ ? TARGETOBJ : gameData.objData.consoleP;
+	CObject*	pObj = TARGETOBJ ? TARGETOBJ : gameData.objData.pConsole;
 
 for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
-	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (objP)->vPos;
-	gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (objP);
+	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (pObj)->vPos;
+	gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (pObj);
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
 	}
 // Make work for control centers.
@@ -47,7 +47,7 @@ gameData.ai.target.nBelievedSeg = gameData.ai.cloakInfo [0].nLastSeg;
 
 // ----------------------------------------------------------------------------
 // Returns false if awareness is considered too puny to add, else returns true.
-int32_t AddAwarenessEvent (CObject *objP, int32_t nType)
+int32_t AddAwarenessEvent (CObject *pObj, int32_t nType)
 {
 	// If player cloaked and hit a robot, then increase awareness
 if (nType >= WEAPON_WALL_COLLISION)
@@ -55,11 +55,11 @@ if (nType >= WEAPON_WALL_COLLISION)
 
 if (gameData.ai.nAwarenessEvents < MAX_AWARENESS_EVENTS) {
 	if ((nType == WEAPON_WALL_COLLISION) || (nType == WEAPON_ROBOT_COLLISION))
-		if (objP->info.nId == VULCAN_ID)
+		if (pObj->info.nId == VULCAN_ID)
 			if (RandShort () > 3276)
 				return 0;       // For vulcan cannon, only about 1/10 actually cause awareness
-	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].nSegment = objP->info.nSegment;
-	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].pos = objP->info.position.vPos;
+	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].nSegment = pObj->info.nSegment;
+	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].pos = pObj->info.position.vPos;
 	gameData.ai.awarenessEvents [gameData.ai.nAwarenessEvents].nType = nType;
 	gameData.ai.nAwarenessEvents++;
 	} 
@@ -68,12 +68,12 @@ return 1;
 
 // ----------------------------------------------------------------------------------
 // Robots will become aware of the player based on something that occurred.
-// The CObject (probably player or weapon) which created the awareness is objP.
-void CreateAwarenessEvent (CObject *objP, int32_t nType)
+// The CObject (probably player or weapon) which created the awareness is pObj.
+void CreateAwarenessEvent (CObject *pObj, int32_t nType)
 {
 	// If not in multiplayer, or in multiplayer with robots, do this, else unnecessary!
 if (IsRobotGame) {
-	if (AddAwarenessEvent (objP, nType)) {
+	if (AddAwarenessEvent (pObj, nType)) {
 		if (((RandShort () * (nType+4)) >> 15) > 4)
 			gameData.ai.nOverallAgitation++;
 		if (gameData.ai.nOverallAgitation > OVERALL_AGITATION_MAX)
@@ -91,11 +91,11 @@ void pae_aux (int32_t nSegment, int32_t nType, int32_t level)
 if ((nSegment >= 0) && (nSegment < gameData.segData.nSegments)) {
 	if (newAwareness [nSegment] < nType)
 		newAwareness [nSegment] = nType;
-	CSegment* segP = SEGMENT (nSegment);
+	CSegment* pSeg = SEGMENT (nSegment);
 	for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-		if (IS_CHILD (segP->m_children [i])) {
+		if (IS_CHILD (pSeg->m_children [i])) {
 			if (level <= 3) {
-				pae_aux (segP->m_children [i], (nType == 4) ? nType - 1 : nType, level + 1);
+				pae_aux (pSeg->m_children [i], (nType == 4) ? nType - 1 : nType, level + 1);
 				}
 			}
 		}
@@ -120,12 +120,12 @@ void SetPlayerAwarenessAll (void)
 {
 	int32_t		i;
 	int16_t		nSegment;
-	CObject	*objP;
+	CObject	*pObj;
 
 ProcessAwarenessEvents ();
-FORALL_OBJS (objP)
-	if (objP->info.controlType == CT_AI) {
-		i = objP->Index ();
+FORALL_OBJS (pObj)
+	if (pObj->info.controlType == CT_AI) {
+		i = pObj->Index ();
 		nSegment = OBJECT (i)->info.nSegment;
 		if (newAwareness [nSegment] > gameData.ai.localInfo [i].targetAwarenessType) {
 			gameData.ai.localInfo [i].targetAwarenessType = newAwareness [nSegment];
@@ -133,7 +133,7 @@ FORALL_OBJS (objP)
 			}
 		// Clear the bit that says this robot is only awake because a camera woke it up.
 		if (newAwareness [nSegment] > gameData.ai.localInfo [i].targetAwarenessType)
-			objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
+			pObj->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		}
 }
 
@@ -144,7 +144,7 @@ FORALL_OBJS (objP)
 void DoAIFrameAll (void)
 {
 	int32_t	h, j;
-	CObject*	objP;
+	CObject*	pObj;
 
 SetPlayerAwarenessAll ();
 if (USE_D1_AI)
@@ -153,8 +153,8 @@ if (gameData.ai.nLastMissileCamera != -1) {
 	// Clear if supposed misisle camera is not a weapon, or just every so often, just in case.
 	if (((gameData.app.nFrameCount & 0x0f) == 0) || (OBJECT (gameData.ai.nLastMissileCamera)->info.nType != OBJ_WEAPON)) {
 		gameData.ai.nLastMissileCamera = -1;
-		FORALL_ROBOT_OBJS (objP) {
-			objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
+		FORALL_ROBOT_OBJS (pObj) {
+			pObj->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 			}
 		}
 	}
@@ -163,10 +163,10 @@ for (h = gameData.bosses.ToS (), j = 0; j < h; j++)
 		if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 			DoBossDyingFrame (OBJECT (gameData.bosses [j].m_nDying));
 		else {
-			CObject *objP = OBJECTS.Buffer ();
-			FORALL_ROBOT_OBJS (objP) {
-				if (objP->IsBoss ())
-					DoBossDyingFrame (objP);
+			CObject *pObj = OBJECTS.Buffer ();
+			FORALL_ROBOT_OBJS (pObj) {
+				if (pObj->IsBoss ())
+					DoBossDyingFrame (pObj);
 				}
 		}
 	}

@@ -319,21 +319,21 @@ return nLvlMap [gameStates.app.bD1Mission][j + (gameStates.app.bD1Mission ? i * 
 
 CBitmap* CHUDIcons::LoadWeaponIcon (int32_t i, int32_t l)
 {
-	CBitmap * bmP, * bmoP;
+	CBitmap * pBm, * pBmo;
 
 int32_t m = i ? secondaryWeaponToWeaponInfo [l] : primaryWeaponToWeaponInfo [l];
 if ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
 	LoadTexture (gameData.weapons.info [m].hiresPicture.index, 0, 0);
-	bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].hiresPicture.index;
+	pBm = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].hiresPicture.index;
 	}
 else {
-	bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].picture.index;
+	pBm = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].picture.index;
 	LoadTexture (gameData.weapons.info [m].picture.index, 0, 0);
 	}
 
-if ((bmoP = bmP->HasOverride ()))
-	bmP = bmoP;
-return bmP;
+if ((pBmo = pBm->HasOverride ()))
+	pBm = pBmo;
+return pBm;
 }
 
 //	-----------------------------------------------------------------------------
@@ -389,7 +389,7 @@ void CHUDIcons::DrawWeapons (void)
 #if 0
 								((nWeaponIcons == 2) 
 								 && ((gameStates.app.nSDLTicks [0] - LOCALOBJECT->TimeLastRepaired () > 3000) || 
-								     gameData.objData.consoleP->CriticalDamage ()))) ? 32 : 0;
+								     gameData.objData.pConsole->CriticalDamage ()))) ? 32 : 0;
 #endif
 	int32_t	ox = 6, 
 			oy = 6, 
@@ -457,13 +457,13 @@ for (int32_t i = 0; i < 2; i++) {
 		int32_t bActive, bHave, bAvailable;
 		int32_t fw, fh, faw;
 		int32_t l = GetWeaponIndex (i, j, nMaxAutoSelect);
-		CBitmap* bmP = LoadWeaponIcon (i, l);
+		CBitmap* pBm = LoadWeaponIcon (i, l);
 
-		Assert (bmP != NULL);
-		if (w < bmP->Width ())
-			w = bmP->Width ();
-		if (h < bmP->Height ())
-			h = bmP->Height ();
+		Assert (pBm != NULL);
+		if (w < pBm->Width ())
+			w = pBm->Width ();
+		if (h < pBm->Height ())
+			h = pBm->Height ();
 		wIcon = (int32_t) ((w + nIconScale - 1) / nIconScale * m_xScale);
 		hIcon = (int32_t) ((h + nIconScale - 1) / nIconScale * m_yScale);
 
@@ -483,7 +483,7 @@ for (int32_t i = 0; i < 2; i++) {
 			OglDrawEmptyRect (cockpit->X (x - 1), y - hIcon - 1, cockpit->X (x + wIcon + 2), y + 2);
 			}
 
-		cockpit->BitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
+		cockpit->BitBlt (-1, nIconScale * (x + (w - pBm->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, pBm);
 
 		nAmmoColor = GREEN_RGBA;
 		*szAmmo = '\0';
@@ -588,7 +588,7 @@ void CHUDIcons::DrawInventory (void)
 if (ogl.IsOculusRift ())
 	return;
 
-	CBitmap*	bmP;
+	CBitmap*	pBm;
 	char		szCount [20];
 	int32_t	nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 3 : 2;
 	int32_t	nIconPos = extraGameInfo [0].nWeaponIcons & 1;
@@ -606,7 +606,7 @@ if (ogl.IsOculusRift ())
 #if 0
 									(nIconPos
 									 && ((gameStates.app.nSDLTicks [0] - LOCALOBJECT->TimeLastRepaired () > 3000) || 
-									     gameData.objData.consoleP->CriticalDamage ()))) ? 80 : 0;
+									     gameData.objData.pConsole->CriticalDamage ()))) ? 80 : 0;
 #endif
 	float		fLineWidth = float (gameData.render.scene.Width ()) / 640.0f;
 	uint8_t		alpha = gameOpts->render.weaponIcons.alpha;
@@ -643,10 +643,10 @@ if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].n
 //y += gameData.render.scene.Top ();
 for (j = firstItem; j < n; j++) {
 	int32_t bHave, bAvailable, bActive = EquipmentActive (nInvFlags [j]);
-	bmP = bmInvItems + j;
+	pBm = bmInvItems + j;
 	if (j == (n - firstItem + 1) / 2)
 		x += nDmgIconWidth;
-	cockpit->BitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
+	cockpit->BitBlt (-1, nIconScale * (x + (w - pBm->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, pBm);
 	//m = 9 - j;
 	*szCount = '\0';
 	if (j == INV_ITEM_HEADLIGHT)

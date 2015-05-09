@@ -81,7 +81,7 @@ return i;
 
 int32_t CGlareRenderer::FaceHasCorona (int16_t nSegment, int16_t nSide, int32_t *bAdditiveP, float *fIntensityP)
 {
-	CSide			*sideP;
+	CSide			*pSide;
 	char			*pszName;
 	int32_t			i, bAdditive, nTexture, nBrightness;
 
@@ -91,22 +91,22 @@ if (IsMultiGame && extraGameInfo [1].bDarkness)
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	BRP;
 #endif
-sideP = SEGMENT (nSegment)->m_sides + nSide;
-CWall* wallP = sideP->Wall ();
-if (wallP) {
-	uint8_t nType = wallP->nType;
+pSide = SEGMENT (nSegment)->m_sides + nSide;
+CWall* pWall = pSide->Wall ();
+if (pWall) {
+	uint8_t nType = pWall->nType;
 
 	if ((nType == WALL_BLASTABLE) || (nType == WALL_DOOR) || (nType == WALL_OPEN) || (nType == WALL_CLOAKED))
 		return 0;
-	if (wallP->flags & (WALL_BLASTED | WALL_ILLUSION_OFF))
+	if (pWall->flags & (WALL_BLASTED | WALL_ILLUSION_OFF))
 		return 0;
 	}
 // get and check the corona emitting texture
-nBrightness = (nTexture = sideP->m_nOvlTex) ? IsLight (nTexture) : 0;
+nBrightness = (nTexture = pSide->m_nOvlTex) ? IsLight (nTexture) : 0;
 if (nBrightness >= I2X (1) / 8) {
 	bAdditive = gameOpts->render.coronas.bAdditive;
 	}
-else if ((nBrightness = IsLight (nTexture = sideP->m_nBaseTex))) {
+else if ((nBrightness = IsLight (nTexture = pSide->m_nBaseTex))) {
 	if (fIntensityP)
 		*fIntensityP /= 2;
 	bAdditive = gameOpts->render.coronas.bAdditive;
@@ -184,7 +184,7 @@ return nTexture;
 
 float CGlareRenderer::ComputeCoronaSprite (int16_t nSegment, int16_t nSide)
 {
-	CSide*			sideP = SEGMENT (nSegment)->m_sides + nSide;
+	CSide*			pSide = SEGMENT (nSegment)->m_sides + nSide;
 	uint16_t*			corners;
 	int32_t				i;
 	float				fLight = 0;
@@ -193,7 +193,7 @@ float CGlareRenderer::ComputeCoronaSprite (int16_t nSegment, int16_t nSide)
 corners = SEGMENT (nSegment)->Corners (nSide);
 m_nVertices = SEGMENT (nSegment)->Side (nSide)->CornerCount ();
 for (i = 0; i < m_nVertices; i++) {
-	fLight += X2F (sideP->m_uvls [i].l);
+	fLight += X2F (pSide->m_uvls [i].l);
 	transformation.Transform (m_sprite [i], gameData.segData.fVertices [corners [i]], 0);
 	}
 v.Assign (SEGMENT (nSegment)->SideCenter (nSide));
@@ -318,9 +318,9 @@ void CGlareRenderer::RenderSoftGlare (int32_t nTexture, float fIntensity, int32_
 {
 	CFloatVector color;
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
-	CBitmap*		bmP = NULL;
+	CBitmap*		pBm = NULL;
 
-if (!(bmP = (bAdditive ? glare.Bitmap () : corona.Bitmap ())))
+if (!(pBm = (bAdditive ? glare.Bitmap () : corona.Bitmap ())))
 	return;
 if (gameStates.render.bAmbientColor)
 	color = gameData.render.color.textures [nTexture];
@@ -332,7 +332,7 @@ if (bAdditive)
 	glColor4f (fIntensity * color.Red (), fIntensity * color.Green (), fIntensity * color.Blue (), 1);
 else
 	glColor4f (color.Red (), color.Green (), color.Blue (), fIntensity);
-bmP->Bind (1);
+pBm->Bind (1);
 OglTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_sprite);
 if (m_nVertices == 3)

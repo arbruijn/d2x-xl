@@ -58,7 +58,7 @@ class CFrustum {
 		CFixVector		m_normals [6];
 
 	void Compute (void);
-	bool Contains (CSide* sideP);
+	bool Contains (CSide* pSide);
 	};
 
 typedef struct tTransformation {
@@ -181,7 +181,7 @@ class CTransformation {
 
 		inline void ComputeFrustum (void) { Frustum ().Compute (); }
 
-		inline bool FrustumContains (CSide* sideP) { return Frustum ().Contains (sideP); }
+		inline bool FrustumContains (CSide* pSide) { return Frustum ().Contains (pSide); }
 
 		inline int32_t HaveHeadAngles (void) { return m_info.bUsePlayerHeadAngles && (m_info.playerHeadAngles.Mag () > 0.05f); }
 	};

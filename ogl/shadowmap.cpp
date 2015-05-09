@@ -120,17 +120,17 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 			glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
 			shaderManager.Set (szShadowMap [i], i + 2);
-			CDynLight* lightP = cameraManager.ShadowLightSource (i);
-			if (!shaderManager.Set ("lightPos", lightP->render.vPosf [0]))
+			CDynLight* pLight = cameraManager.ShadowLightSource (i);
+			if (!shaderManager.Set ("pLightos", pLight->render.vPosf [0]))
 				return;
-			if (!shaderManager.Set ("lightRange", fabs (lightP->info.fRange) * 400.0f))
+			if (!shaderManager.Set ("lightRange", fabs (pLight->info.fRange) * 400.0f))
 				return;
 			}
 		if (!shaderManager.Set ("sceneColor", 0))
 			return;
 		if (!shaderManager.Set ("sceneDepth", 1))
 			return;
-		if (!shaderManager.Set ("modelviewProjInverse", transformation.SystemMatrix (-3)))
+		if (!shaderManager.Set ("modelpViewrojInverse", transformation.SystemMatrix (-3)))
 			return;
 		if (!shaderManager.Set ("windowScale", windowScale))
 			return;
@@ -164,8 +164,8 @@ const char* shadowMapFS =
 	"uniform sampler2D sceneColor;\r\n" \
 	"uniform sampler2D sceneDepth;\r\n" \
 	"uniform sampler2DShadow shadowMap;\r\n" \
-	"uniform mat4 modelviewProjInverse;\r\n" \
-	"uniform vec3 lightPos;\r\n" \
+	"uniform mat4 modelpViewrojInverse;\r\n" \
+	"uniform vec3 pLightos;\r\n" \
 	"uniform float lightRange;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
@@ -187,8 +187,8 @@ const char* shadowMapFS =
 	"if (lit == 1)\r\n" \
 	"   light = 1.0;\r\n" \
 	"else {\r\n" \
-	"   vec4 worldPos = modelviewProjInverse * cameraClipPos;\r\n" \
-	"   float lightDist = length (lightPos - worldPos.xyz);\r\n" \
+	"   vec4 worldPos = modelpViewrojInverse * cameraClipPos;\r\n" \
+	"   float lightDist = length (pLightos - worldPos.xyz);\r\n" \
 	"   light = 0.25 + 0.75 * sqrt ((lightRange - min (lightRange, lightDist)) / lightRange);\r\n" \
 	"   }\r\n" \
 	"gl_FragColor = vec4 (texture2D (sceneColor, gl_TexCoord [0].xy).rgb * light, 1.0);\r\n" \
@@ -199,9 +199,9 @@ const char* shadowMapFS =
 	"uniform sampler2D sceneColor;\r\n" \
 	"uniform sampler2D sceneDepth;\r\n" \
 	"uniform sampler2DShadow shadowMap;\r\n" \
-	"uniform mat4 modelviewProjInverse;\r\n" \
+	"uniform mat4 modelpViewrojInverse;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
-	"uniform vec3 lightPos;\r\n" \
+	"uniform vec3 pLightos;\r\n" \
 	"uniform float lightRange;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
@@ -230,8 +230,8 @@ const char* shadowMapFS =
 	"    light += ((w < 0.00001) || (abs (samplePos.x) > w) || (abs (samplePos.y) > w)) ? 1.0 : shadow2DProj (shadowMap, samplePos).r;\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
-	"vec4 worldPos = modelviewProjInverse * cameraClipPos;\r\n" \
-	"float lightDist = length (lightPos - worldPos.xyz);\r\n" \
+	"vec4 worldPos = modelpViewrojInverse * cameraClipPos;\r\n" \
+	"float lightDist = length (pLightos - worldPos.xyz);\r\n" \
 	"light = 1.0 - 0.75 * sqrt ((lightRange - min (lightRange, lightDist)) / lightRange) * (1.0 - light / SAMPLE_COUNT);\r\n" \
 	"gl_FragColor = vec4 (texture2D (sceneColor, gl_TexCoord [0].xy).rgb * light, 1.0);\r\n" \
 	"}\r\n";

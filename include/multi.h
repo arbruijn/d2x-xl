@@ -538,7 +538,7 @@ extern CAllNetPlayersInfo netPlayers [2];
 
 int32_t IAmGameHost (void);
 void ChangePlayerNumTo (int32_t nPlayer);
-int32_t SetLocalPlayer (CAllNetPlayersInfo* playerInfoP, int32_t nPlayers, int32_t nDefault = -1);
+int32_t SetLocalPlayer (CAllNetPlayersInfo* pPlayerInfo, int32_t nPlayers, int32_t nDefault = -1);
 
 //how to encode missiles & flares in weapon packets
 #define MISSILE_ADJUST  100
@@ -566,11 +566,11 @@ void MultiSendDoorOpenSpecific (int32_t nPlayer, int32_t nSegment, int32_t nSide
 void MultiSendWallStatusSpecific (int32_t nPlayer, int32_t wallnum, uint8_t nType, uint16_t flags, uint8_t state);
 void MultiSendLightSpecific (int32_t nPlayer, int32_t nSegment, uint8_t val);
 void MultiSendTriggerSpecific (uint8_t nPlayer, uint8_t trig);
-void MultiSetObjectTextures (CObject *objP);
+void MultiSetObjectTextures (CObject *pObj);
 void MultiSendSeismic (fix start, fix end);
 void MultiSendDropBlobs (uint8_t nPlayer);
 void InitDefaultShipProps (void);
-void SetupPowerupFilter (tNetGameInfo* infoP = NULL);
+void SetupPowerupFilter (tNetGameInfo* pInfo = NULL);
 void MultiDestroyPlayerShip (int32_t nPlayer, int32_t bExplode = 1, int32_t nRemoteCreated = 0, int16_t* objList = NULL);
 
 bool MultiTrackMessage (uint8_t* buf);
@@ -586,11 +586,11 @@ CObject* MultiRobot (int32_t nObject);
 
 
 // Reserve space for the message id in the message. This macro will place the message id right after the one byte message type in the message buffer.
-// bufP must point to the byte in the message buffer following the player id. The variable _msgId is created and points to the first byte of the reserved space in the message buffer.
-#define ADD_MSG_ID				uint8_t* _msgIdP = gameData.multigame.msg.buf + bufP; \
+// pBuffer must point to the byte in the message buffer following the player id. The variable _msgId is created and points to the first byte of the reserved space in the message buffer.
+#define ADD_MSG_ID				uint8_t* _msgIdP = gameData.multigame.msg.buf + pBuffer; \
 										if (gameStates.multi.nGameType == UDP_GAME) { \
-											PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, 0); \
-											bufP += 4; \
+											PUT_INTEL_INT (gameData.multigame.msg.buf + pBuffer, 0); \
+											pBuffer += 4; \
 											}
 
 // Put the actual message id in the message buffer and add the message to the list of important messages.
@@ -600,13 +600,13 @@ CObject* MultiRobot (int32_t nObject);
 // If no, add the sender's player id and the message id to the list of important messages the receipt of which needs to be confirmed and send a receipt confirmation.
 // That list entry is subsequently being used to determine whether a message has already been processed and has been resent by its originator because it hasn't received a 
 // receipt confirmation for it from all game participants
-#define CHECK_MSG_ID				if (!MultiProcessMessage (buf + bufP)) \
+#define CHECK_MSG_ID				if (!MultiProcessMessage (buf + pBuffer)) \
 											return; \
-										bufP += 4;
+										pBuffer += 4;
 
 // Same as above, just returns the value specified by _r
-#define CHECK_MSG_ID_RVAL(_r)	if (!MultiProcessMessage (buf + bufP)) \
+#define CHECK_MSG_ID_RVAL(_r)	if (!MultiProcessMessage (buf + pBuffer)) \
 											return (_r); \
-										bufP += 4;
+										pBuffer += 4;
 
 #endif /* _MULTI_H */

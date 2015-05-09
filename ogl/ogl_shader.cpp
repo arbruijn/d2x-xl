@@ -126,7 +126,7 @@ if (bAll)
 char* CShaderManager::Load (const char* fileName) //, char* Shadersource)
 {
 	FILE*	fp;
-	char*	bufP = NULL;
+	char*	pBuffer = NULL;
 	int32_t 	fSize;
 #ifdef _WIN32
 	int32_t	f;
@@ -158,14 +158,14 @@ if (fSize <= 0) {
 	}
 #endif
 
-if (!(bufP = new char [fSize + 1])) {
+if (!(pBuffer = new char [fSize + 1])) {
 	fclose (fp);
 	return NULL;	// out of memory
 	}
-fSize = (int32_t) fread (bufP, sizeof (char), fSize, fp);
-bufP [fSize] = '\0';
+fSize = (int32_t) fread (pBuffer, sizeof (char), fSize, fp);
+pBuffer [fSize] = '\0';
 fclose (fp);
-return bufP;
+return pBuffer;
 }
 
 //------------------------------------------------------------------------------
@@ -241,13 +241,13 @@ if (shaderProg) {
 
 int32_t CShaderManager::Alloc (int32_t& nShader)
 {
-if ((nShader >= 0) && (nShader < int32_t (m_shaders.ToS ())) && (m_shaders [nShader].refP == &nShader))
+if ((nShader >= 0) && (nShader < int32_t (m_shaders.ToS ())) && (m_shaders [nShader].pRef == &nShader))
 	return nShader;
 if (!m_shaders.Grow ())
 	return nShader = -1;
 nShader = m_shaders.ToS () - 1;
 memset (&m_shaders [nShader], 0, sizeof (m_shaders [nShader]));
-m_shaders [nShader].refP = &nShader;
+m_shaders [nShader].pRef = &nShader;
 return nShader;
 }
 
@@ -380,8 +380,8 @@ return 1;
 void CShaderManager::Reset (int32_t nShader)
 {
 if ((nShader >= 0) && (nShader < int32_t (m_shaders.ToS ()))) {
-	*m_shaders [nShader].refP = -1;
-	m_shaders [nShader].refP = NULL;
+	*m_shaders [nShader].pRef = -1;
+	m_shaders [nShader].pRef = NULL;
 	}
 }
 

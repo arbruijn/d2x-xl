@@ -108,24 +108,24 @@ glMatrixMode (matrixMode);
 void SetupRenderView (fix xStereoSeparation, int16_t *nStartSegP, int32_t bOglScale)
 {
 	int16_t		nStartSeg;
-	bool			bPlayer = (gameData.objData.viewerP == LOCALOBJECT);
-	CFixMatrix	mView = gameData.objData.viewerP->info.position.mOrient;
+	bool			bPlayer = (gameData.objData.pViewer == LOCALOBJECT);
+	CFixMatrix	mView = gameData.objData.pViewer->info.position.mOrient;
 	fix			xZoom = gameStates.render.xZoom;
 
 
-gameData.render.mine.viewer = gameData.objData.viewerP->info.position;
+gameData.render.mine.viewer = gameData.objData.pViewer->info.position;
 if (LOCALPLAYER.ObservedPlayer () == N_LOCALPLAYER)
 	FLIGHTPATH.SetPos (NULL);
 
 if (gameStates.render.cameras.bActive)
-	nStartSeg = gameData.objData.viewerP->info.nSegment;
+	nStartSeg = gameData.objData.pViewer->info.nSegment;
 else {
 	if (bPlayer) {
 		if (xStereoSeparation)
-			gameData.render.mine.viewer.vPos += gameData.objData.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
+			gameData.render.mine.viewer.vPos += gameData.objData.pViewer->info.position.mOrient.m.dir.r * xStereoSeparation;
 #if 0 // is done in the game loop anyway
 		if ((LOCALPLAYER.ObservedPlayer () == N_LOCALPLAYER) && !gameStates.render.nWindow [0])
-			FLIGHTPATH.Update (gameData.objData.viewerP);
+			FLIGHTPATH.Update (gameData.objData.pViewer);
 #endif
 		if (gameStates.render.bRearView) { // no zoom, no head tracking
 			mView.m.dir.f.Neg ();
@@ -148,7 +148,7 @@ else {
 		else {
 			if (transformation.m_info.bUsePlayerHeadAngles) {
 				CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
-				mView = gameData.objData.viewerP->info.position.mOrient * mHead;
+				mView = gameData.objData.pViewer->info.position.mOrient * mHead;
 				}
 			if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) { // zoom?
 				if (!(gameStates.zoom.nMinFactor = I2X (gameStates.render.glAspect)))
@@ -161,8 +161,8 @@ else {
 		}
 	if (!nStartSegP)
 		nStartSeg = gameStates.render.nStartSeg; // re-use start segment
-	else if (0 > (nStartSeg = FindSegByPos (gameData.render.mine.viewer.vPos, gameData.objData.viewerP->info.nSegment, 1, 0)))
-		nStartSeg = gameData.objData.viewerP->info.nSegment;
+	else if (0 > (nStartSeg = FindSegByPos (gameData.render.mine.viewer.vPos, gameData.objData.pViewer->info.nSegment, 1, 0)))
+		nStartSeg = gameData.objData.pViewer->info.nSegment;
 	}
 if (nStartSegP)
 	*nStartSegP = nStartSeg;
@@ -237,7 +237,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 	lightManager.Transform (0, 1);
 	}
 PROF_END(ptAux);
-return !gameStates.render.cameras.bActive && (gameData.objData.viewerP->info.nType != OBJ_ROBOT);
+return !gameStates.render.cameras.bActive && (gameData.objData.pViewer->info.nType != OBJ_ROBOT);
 }
 
 //------------------------------------------------------------------------------

@@ -80,19 +80,19 @@ static int32_t NetworkBadCombinedPacketSize (uint8_t* data, int32_t nLength)
 
 for (;;) {
 	uint8_t pId = data [i];
-	tPacketHandlerInfo* piP = packetHandlers + pId;
-	if (!piP->packetHandler) {
+	tPacketHandlerInfo* pInfo = packetHandlers + pId;
+	if (!pInfo->packetHandler) {
 		PrintLog (0, "invalid packet id %d\n", pId);
 		return 0;
 		}
-	nLength -= piP->nLength;
+	nLength -= pInfo->nLength;
 	if (nLength == 0)
 		return 1;
 	if (nLength < 0) {
 		PrintLog (0, "invalid packet size for packet type %d\n", pId);
 		return 0;
 		}
-	i += piP->nLength;
+	i += pInfo->nLength;
 	}
 }
 
@@ -185,9 +185,9 @@ else
 	memcpy (&netPlayers [1].m_info, data, netPlayers [1].Size ());
 if (NetworkBadSecurity (netPlayers [1].m_info.nSecurity, "PID_PLAYERSINFO"))
 	return 0;
-playerInfoP = &netPlayers [1];
+pPlayerInfo = &netPlayers [1];
 networkData.bWaitingForPlayerInfo = 0;
-networkData.nSecurityNum = playerInfoP->m_info.nSecurity;
+networkData.nSecurityNum = pPlayerInfo->m_info.nSecurity;
 networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_SYNC;
 return 1;
 }
@@ -282,7 +282,7 @@ if (NetworkBadSecurity (tempNetInfo.m_info.nSecurity, "PID_SYNC"))
 	return 0;
 if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_SYNC) {
 #if SECURITY_CHECK
-	if (tempNetInfo.m_info.nSecurity == playerInfoP->m_info.nSecurity) {
+	if (tempNetInfo.m_info.nSecurity == pPlayerInfo->m_info.nSecurity) {
 #endif
 		NetworkProcessSyncPacket (&tempNetInfo, 0);
 		networkData.nSecurityFlag = 0;
@@ -462,12 +462,12 @@ return 1;
 
 void InitPacketHandler (uint8_t pId, pPacketHandler packetHandler, const char *pszInfo, int32_t nLength, int16_t nStatusFilter)
 {
-	tPacketHandlerInfo	*piP = packetHandlers + pId;
+	tPacketHandlerInfo	*pInfo = packetHandlers + pId;
 
-piP->packetHandler = packetHandler;
-piP->pszInfo = pszInfo;
-piP->nLength = nLength;
-piP->nStatusFilter = nStatusFilter;
+pInfo->packetHandler = packetHandler;
+pInfo->pszInfo = pszInfo;
+pInfo->nLength = nLength;
+pInfo->nStatusFilter = nStatusFilter;
 }
 
 //-----------------------------------------------------------------------------------------------------------------
@@ -512,7 +512,7 @@ PHINIT (PID_CONFIRM_MESSAGE, ConfirmMessageHandler, 0, (1 << NETSTAT_PLAYING));
 int32_t NetworkProcessSinglePacket (uint8_t* data, int32_t nLength)
 {
 	uint8_t					pId = data [0];
-	tPacketHandlerInfo*	piP = packetHandlers + pId;
+	tPacketHandlerInfo*	pInfo = packetHandlers + pId;
 	int32_t					nFuncRes = 0;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
@@ -524,15 +524,15 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	}
 #endif
 
-if (!piP->packetHandler)
+if (!pInfo->packetHandler)
 	PrintLog (0, "invalid packet id %d\n", pId);
-else if (!(piP->nStatusFilter & (1 << networkData.nStatus)))
+else if (!(pInfo->nStatusFilter & (1 << networkData.nStatus)))
 	PrintLog (0, "invalid status %d for packet id %d\n", networkData.nStatus, pId);
-else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
-	console.printf (0, "received %s\n", piP->pszInfo);
+else if (!NetworkBadPacketSize (nLength, pInfo->nLength, pInfo->pszInfo)) {
+	console.printf (0, "received %s\n", pInfo->pszInfo);
 	if (!addressFilter [pId])	// patch the proper IP address into the packet header
 		reinterpret_cast<tPlayerSyncData*>(data)->player.network.SetServer (networkData.packetDest.Server ());
-	nFuncRes = piP->packetHandler (data, nLength);
+	nFuncRes = pInfo->packetHandler (data, nLength);
 	}
 return nFuncRes;
 }
@@ -547,17 +547,17 @@ if (!networkThread.Available () || !(data [0] & 0x80))
 if (NetworkBadCombinedPacketSize (data, nLength)) 
 	return 0;
 
-tPacketHandlerInfo* piP = NULL;
+tPacketHandlerInfo* pInfo = NULL;
 
 int32_t nPackets = 0;
 int32_t nProcessed = 0;
 
 data [0] &= ~0x80;
 networkThread.LockProcess ();
-for (int32_t i = 0; i < nLength; i += piP->nLength) {
+for (int32_t i = 0; i < nLength; i += pInfo->nLength) {
 	++nPackets;
-	piP = packetHandlers + data [i];
-	if (NetworkProcessSinglePacket (data + i, piP->nLength))
+	pInfo = packetHandlers + data [i];
+	if (NetworkProcessSinglePacket (data + i, pInfo->nLength))
 		++nProcessed;
 	}
 networkThread.UnlockProcess ();
