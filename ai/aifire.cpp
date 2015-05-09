@@ -130,7 +130,7 @@ int32_t LeadTarget (CObject *objP, CFixVector *vFirePoint, CFixVector *vBelieved
 	tRobotInfo	*botInfoP = ROBOTINFO (objP);
 
 if (!botInfoP)
-	return;
+	return 0;
 if (TARGETOBJ->Cloaked ())
 	return 0;
 vTargetMovementDir = TARGETOBJ->mType.physInfo.velocity;
