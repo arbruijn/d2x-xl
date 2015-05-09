@@ -605,7 +605,7 @@ void CreateOutline (tRGBA *pTexture, int32_t w, int32_t h, int32_t tw, int32_t n
 {
 	int32_t offsets [9] = { -tw - 1, -tw, -tw + 1, -1, 0, 1, tw - 1, tw, tw + 1};
 	int32_t l = (h - 1) * tw + w;
-	int32_t nTag = 255;
+	int32_t nTag = 255, n = 0;
 
 for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
 	for (int32_t y = nStart; y < h; y += nStep) {
@@ -628,6 +628,7 @@ for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
 					pTexture [i].g = 
 					pTexture [i].b = 2;
 					pTexture [i].a = 255;
+					n++;
 					break;
 					}
 				}
@@ -693,7 +694,7 @@ if (pBm->m_info.bCartoonizable && (gameStates.render.bCartoonize < 0)) {
 									nColors, !gameStates.render.bClampBlur, -gameStates.render.bCartoonize);
 #endif
 	Posterize (pBuffer, w, h, tw, nColors);
-	if ((nColors == 4) && !strstr (pBm->Name (), "lava") && !strstr (pBm->Name (), "water"))
+	if (gameStates.render.bOutlineTextures && (nColors == 4) && !strstr (pBm->Name (), "lava") && !strstr (pBm->Name (), "water"))
 		Outline (pBuffer, w, h, tw, 1 << s);
 	}
 return pBuffer;
