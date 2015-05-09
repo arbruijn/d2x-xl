@@ -195,9 +195,9 @@ if (!bInFile) {
 	nBitmapFilesNew++;
 	}
 int32_t i = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
-strncpy (gameData.pig.tex.bitmapFileP [i].name, name, 12);
-bitmapNames [gameStates.app.bD1Data].Insert (gameData.pig.tex.bitmapFileP [i].name, i);
-pBm->Clone (gameData.pig.tex.bitmapP [i]);
+strncpy (gameData.pig.tex.pBitmapFile [i].name, name, 12);
+bitmapNames [gameStates.app.bD1Data].Insert (gameData.pig.tex.pBitmapFile [i].name, i);
+pBm->Clone (gameData.pig.tex.pBitmap [i]);
 pBm->SetBuffer (NULL);	//avoid automatic destruction trying to delete the same buffer twice
 if (!bInFile) {
 	bitmapOffsets [gameStates.app.bD1Data][i] = 0;
@@ -882,7 +882,7 @@ cf.Close ();
 if (bmi.index) {
 	newBm->SetAvgColorIndex (0);
 	bmi.index = gameData.pig.tex.nExtraBitmaps;
-	gameData.pig.tex.bitmapP [gameData.pig.tex.nExtraBitmaps++] = *newBm;
+	gameData.pig.tex.pBitmap [gameData.pig.tex.nExtraBitmaps++] = *newBm;
 	}
 return bmi;
 }

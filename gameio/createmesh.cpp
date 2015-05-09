@@ -1056,7 +1056,7 @@ m_pFace->m_info.bTextured = 1;
 m_pFace->m_info.bTransparent = 0;
 int32_t nTexture = m_pFace->m_info.nOvlTex ? m_pFace->m_info.nOvlTex : m_pFace->m_info.nBaseTex;
 char *pszName = (nTexture < MAX_WALL_TEXTURES)
-					 ? gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.bmIndexP [nTexture].index].name
+					 ? gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [nTexture].index].name
 					 : szEmpty;
 if (strstr (pszName, "misc17") != NULL)
 	m_pFace->m_info.bSparks = (nTexture == m_pFace->m_info.nBaseTex) ? 1 : 2;

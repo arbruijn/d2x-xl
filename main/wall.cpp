@@ -123,7 +123,7 @@ int32_t WallEffectFrameCount (tWallEffect *anim)
 {
 	int32_t	n;
 
-CBitmap *pBm = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [anim->frames [0]].index;
+CBitmap *pBm = gameData.pig.tex.pBitmap + gameData.pig.tex.pBmIndex [anim->frames [0]].index;
 if (pBm->Override ())
 	pBm = pBm->Override ();
 n = (pBm->Type () == BM_TYPE_ALT) ? pBm->FrameCount () : anim->nFrameCount;

@@ -1711,8 +1711,8 @@ CBitmap *LoadFaceBitmap (int16_t nTexture, int16_t nFrameIdx, int32_t bLoadTextu
 if (nTexture == nDbgTexture)
 	BRP;
 #endif
-LoadTexture (gameData.pig.tex.bmIndexP [nTexture].index, 0, gameStates.app.bD1Mission);
-pBm = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
+LoadTexture (gameData.pig.tex.pBmIndex [nTexture].index, 0, gameStates.app.bD1Mission);
+pBm = gameData.pig.tex.pBitmap + gameData.pig.tex.pBmIndex [nTexture].index;
 pBm->SetStatic (1);
 if (!(pBmo = pBm->Override ()))
 	return pBm;

@@ -73,7 +73,7 @@ for (int32_t i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, pEf
 	if (pEffectInfo->changing.nWallTexture == nTexture) {
 		LoadAnimationTextures (&pEffectInfo->animationInfo, gameStates.app.bD1Data);
 		if (pEffectInfo->destroyed.nTexture >= 0)
-			LoadTexture (gameData.pig.tex.bmIndexP [pEffectInfo->destroyed.nTexture].index, 0, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
+			LoadTexture (gameData.pig.tex.pBmIndex [pEffectInfo->destroyed.nTexture].index, 0, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
 		if (pEffectInfo->destroyed.nAnimation >= 0)
 			LoadAnimationTextures (&gameData.effects.vClipP [pEffectInfo->destroyed.nAnimation], gameStates.app.bD1Data);		  //what animation to play when exploding
 		if (pEffectInfo->destroyed.nEffect >= 0)
@@ -241,10 +241,10 @@ if (!FaceCount ())
 	return;
 LoadWallEffectTextures (m_nBaseTex);
 if (m_nOvlTex) {
-	LoadTexture (gameData.pig.tex.bmIndexP [m_nOvlTex].index, 0, gameStates.app.bD1Data);
+	LoadTexture (gameData.pig.tex.pBmIndex [m_nOvlTex].index, 0, gameStates.app.bD1Data);
 	LoadWallEffectTextures (m_nOvlTex);
 	}
-LoadTexture (gameData.pig.tex.bmIndexP [m_nBaseTex].index, 0, gameStates.app.bD1Data);
+LoadTexture (gameData.pig.tex.pBmIndex [m_nBaseTex].index, 0, gameStates.app.bD1Data);
 }
 
 //------------------------------------------------------------------------------
@@ -317,7 +317,7 @@ void CWall::LoadTextures (void)
 if (nClip>= 0) {
 	tWallEffect* anim = gameData.wallData.pAnim + nClip;
 	for (int32_t j = 0; j < anim->nFrameCount; j++)
-		LoadTexture (gameData.pig.tex.bmIndexP [anim->frames [j]].index, j, gameStates.app.bD1Data);
+		LoadTexture (gameData.pig.tex.pBmIndex [anim->frames [j]].index, j, gameStates.app.bD1Data);
 	}
 }
 

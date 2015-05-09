@@ -453,10 +453,10 @@ if (!(pBuffer = Buffer ())) {
 	m_info.avgColor.Blue () = 0;
 	return -1;
 	}
-if (gameData.pig.tex.bitmapP.IsElement (this))
-	h = int32_t (this - gameData.pig.tex.bitmapP);
-else if (gameData.pig.tex.altBitmapP.IsElement (this))
-	h = int32_t (this - gameData.pig.tex.altBitmapP);
+if (gameData.pig.tex.pBitmap.IsElement (this))
+	h = int32_t (this - gameData.pig.tex.pBitmap);
+else if (gameData.pig.tex.pAltBitmap.IsElement (this))
+	h = int32_t (this - gameData.pig.tex.pAltBitmap);
 else if (gameData.pig.tex.bitmaps [0].IsElement (this))
 	h = int32_t (this - gameData.pig.tex.bitmaps [0]);
 else

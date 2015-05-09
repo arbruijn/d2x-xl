@@ -771,7 +771,7 @@ if (!IS_WALL (m_nWall))
 	m_nWall = -1;
 m_nTexture = int32_t (pSide->m_nOvlTex & TEXTURE_ID_MASK);
 if (m_nTexture) {
-	CBitmap *pBm = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [m_nTexture].index].Override (-1);
+	CBitmap *pBm = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [m_nTexture].index].Override (-1);
 	if (!pBm || (pBm->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)))
 		m_nTexture = 0;
 	}

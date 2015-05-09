@@ -417,7 +417,7 @@ else
 	pBm->SetPalette (NULL, -1, 254);
 pBm->AvgColorIndex ();
 bmi.index = gameData.pig.tex.nExtraBitmaps;
-gameData.pig.tex.bitmapP [gameData.pig.tex.nExtraBitmaps++] = *pBm;
+gameData.pig.tex.pBitmap [gameData.pig.tex.nExtraBitmaps++] = *pBm;
 return bmi;
 }
 

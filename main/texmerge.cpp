@@ -107,8 +107,8 @@ CBitmap * TexMergeGetCachedBitmap (int32_t tMapBot, int32_t tMapTop, int32_t nOr
 
 nLRU = 0;
 nLowestFrame = texCache [0].nLastFrameUsed;
-bmTop = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapTop].index].Override (-1);
-bmBot = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapBot].index].Override (-1);
+bmTop = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [tMapTop].index].Override (-1);
+bmBot = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [tMapBot].index].Override (-1);
 
 for (i = 0, pCache = &texCache [0]; i < nCacheEntries; i++, pCache++) {
 #if 1//!DBG
@@ -131,17 +131,17 @@ for (i = 0, pCache = &texCache [0]; i < nCacheEntries; i++, pCache++) {
 nCacheMisses++;
 // Make sure the bitmaps are paged in...
 gameData.pig.tex.bPageFlushed = 0;
-LoadTexture (gameData.pig.tex.bmIndexP [tMapTop].index, 0, gameStates.app.bD1Mission);
-LoadTexture (gameData.pig.tex.bmIndexP [tMapBot].index, 0, gameStates.app.bD1Mission);
+LoadTexture (gameData.pig.tex.pBmIndex [tMapTop].index, 0, gameStates.app.bD1Mission);
+LoadTexture (gameData.pig.tex.pBmIndex [tMapBot].index, 0, gameStates.app.bD1Mission);
 if (gameData.pig.tex.bPageFlushed) {	// If cache got flushed, re-read 'em.
 	gameData.pig.tex.bPageFlushed = 0;
-	LoadTexture (gameData.pig.tex.bmIndexP [tMapTop].index, 0, gameStates.app.bD1Mission);
-	LoadTexture (gameData.pig.tex.bmIndexP [tMapBot].index, 0, gameStates.app.bD1Mission);
+	LoadTexture (gameData.pig.tex.pBmIndex [tMapTop].index, 0, gameStates.app.bD1Mission);
+	LoadTexture (gameData.pig.tex.pBmIndex [tMapBot].index, 0, gameStates.app.bD1Mission);
 	}
 Assert (gameData.pig.tex.bPageFlushed == 0);
 
-bmTop = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapTop].index].Override (-1);
-bmBot = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapBot].index].Override (-1);
+bmTop = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [tMapTop].index].Override (-1);
+bmBot = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [tMapBot].index].Override (-1);
 if (!bmTop->Palette ())
 	bmTop->SetPalette (paletteManager.Game ());
 if (!bmBot->Palette ())

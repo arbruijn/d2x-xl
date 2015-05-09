@@ -66,7 +66,7 @@ if (IsTeamGame && (PLAYER (pObj->info.nId).flags & PLAYER_FLAGS_FLAG)) {
 		ogl.SetTexturing (true);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		LoadTexture (pf->bmi.index, 0, 0);
-		pBm = gameData.pig.tex.bitmapP + pf->pAnimInfo->frames [pf->animState.nCurFrame].index;
+		pBm = gameData.pig.tex.pBitmap + pf->pAnimInfo->frames [pf->animState.nCurFrame].index;
 		pBm->SetTranspType (2);
 		vPos += pObj->info.position.mOrient.m.dir.f * (-pObj->info.xSize);
 		r = X2F (pObj->info.xSize);

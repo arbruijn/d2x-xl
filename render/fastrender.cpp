@@ -138,8 +138,8 @@ else {
 		pFace->bmTop = NULL;
 		}
 	else {
-		pFace->bmBot = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [pFace->m_info.nBaseTex].index;
-		LoadTexture (gameData.pig.tex.bmIndexP [pFace->m_info.nBaseTex].index, 0, gameStates.app.bD1Mission);
+		pFace->bmBot = gameData.pig.tex.pBitmap + gameData.pig.tex.pBmIndex [pFace->m_info.nBaseTex].index;
+		LoadTexture (gameData.pig.tex.pBmIndex [pFace->m_info.nBaseTex].index, 0, gameStates.app.bD1Mission);
 		}
 	}
 }

@@ -196,7 +196,7 @@ int32_t IsOpaqueDoor (int32_t i)
 
 if (i >= 0)
 	for (p = d2OpaqueDoors; *p >= 0; p++)
-		if (i == gameData.pig.tex.bmIndexP [*p].index)
+		if (i == gameData.pig.tex.pBmIndex [*p].index)
 			return 1;
 return 0;
 }
@@ -286,7 +286,7 @@ int32_t FindTextureByIndex (int32_t nIndex)
 	int32_t	i, j = gameData.pig.tex.nBitmaps [gameStates.app.bD1Mission];
 
 for (i = 0; i < j; i++)
-	if (gameData.pig.tex.bmIndexP [i].index == nIndex)
+	if (gameData.pig.tex.pBmIndex [i].index == nIndex)
 		return i;
 return -1;
 }
@@ -348,7 +348,7 @@ tWallEffect *FindWallEffect (int32_t nTexture)
 
 for (i = gameData.wallData.nAnims [gameStates.app.bD1Data]; i; i--, pWallEffect++)
 	for (h = pWallEffect->nFrameCount, j = 0; j < h; j++)
-		if (gameData.pig.tex.bmIndexP [pWallEffect->frames [j]].index == nTexture)
+		if (gameData.pig.tex.pBmIndex [pWallEffect->frames [j]].index == nTexture)
 			return pWallEffect;
 return NULL;
 }
@@ -436,7 +436,7 @@ pf->animState.nCurFrame = 0;
 
 int32_t IsAnimatedTexture (int16_t nTexture)
 {
-return (nTexture > 0) && (strchr (gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.bmIndexP [nTexture].index].name, '#') != NULL);
+return (nTexture > 0) && (strchr (gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [nTexture].index].name, '#') != NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -993,7 +993,7 @@ return 1;
 int32_t PiggyBitmapExistsSlow (char * name)
 {
 for (int32_t i = 0, j = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]; i < j; i++)
-	if (!strcmp (gameData.pig.tex.bitmapFileP[i].name, name))
+	if (!strcmp (gameData.pig.tex.pBitmapFile [i].name, name))
 		return 1;
 return 0;
 }
@@ -1104,30 +1104,30 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 #endif
 			bm.SetKey (j);
 			bm.RLEExpand (NULL, 0);
-			*bm.Props () = *gameData.pig.tex.bitmapP [j].Props ();
+			*bm.Props () = *gameData.pig.tex.pBitmap [j].Props ();
 			bm.SetPalette (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			}
 #if DBG
 		if (j == nDbgTexture)
 			BRP;
 #endif
-		gameData.pig.tex.bitmapP [j].Unload (j, 0);
+		gameData.pig.tex.pBitmap [j].Unload (j, 0);
 		bm.SetFromPog (1);
 		char szName [20];
-		if (*gameData.pig.tex.bitmapP [j].Name ())
-			sprintf (szName, "[%s]", gameData.pig.tex.bitmapP [j].Name ());
+		if (*gameData.pig.tex.pBitmap [j].Name ())
+			sprintf (szName, "[%s]", gameData.pig.tex.pBitmap [j].Name ());
 		else
 			sprintf (szName, "POG#%04d", j);
 		bm.SetName (szName);
-		gameData.pig.tex.altBitmapP [j] = bm;
-		gameData.pig.tex.altBitmapP [j].SetBuffer (bm.Buffer (), 0, bm.Length ());
+		gameData.pig.tex.pAltBitmap [j] = bm;
+		gameData.pig.tex.pAltBitmap [j].SetBuffer (bm.Buffer (), 0, bm.Length ());
 		bm.SetBuffer (NULL);
-		gameData.pig.tex.bitmapP [j].SetOverride (gameData.pig.tex.altBitmapP + j);
-		CBitmap* pBm = gameData.pig.tex.altBitmapP + j;
+		gameData.pig.tex.pBitmap [j].SetOverride (gameData.pig.tex.pAltBitmap + j);
+		CBitmap* pBm = gameData.pig.tex.pAltBitmap + j;
 		CFloatVector3 color;
 		if (0 <= pBm->AvgColor (&color))
 			pBm->SetAvgColorIndex (pBm->Palette ()->ClosestColor (&color));
-		UseBitmapCache (gameData.pig.tex.altBitmapP + j, (int32_t) bm.Width () * (int32_t) bm.RowSize ());
+		UseBitmapCache (gameData.pig.tex.pAltBitmap + j, (int32_t) bm.Width () * (int32_t) bm.RowSize ());
 		}
 	delete[] indices;
 	delete[] bmh;

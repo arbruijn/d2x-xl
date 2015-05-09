@@ -1386,10 +1386,10 @@ bitmapColors.Create (MAX_BITMAP_FILES);
 brightness.Create (MAX_WALL_TEXTURES);
 brightness.Clear ();
 
-bitmaps [0].ShareBuffer (bitmapP);
-altBitmaps [0].ShareBuffer (altBitmapP);
-bmIndex [0].ShareBuffer (bmIndexP);
-bitmapFiles [0].ShareBuffer (bitmapFileP);
+bitmaps [0].ShareBuffer (pBitmap);
+altBitmaps [0].ShareBuffer (pAltBitmap);
+bmIndex [0].ShareBuffer (pBmIndex);
+bitmapFiles [0].ShareBuffer (pBitmapFile);
 tMapInfo [0].ShareBuffer (pTexMapInfo);
 gameData.pig.tex.nFirstMultiBitmap = -1;
 nObjBitmaps = 0;
@@ -2212,10 +2212,10 @@ void SetDataVersion (int32_t v)
 {
 gameStates.app.bD1Data = (v < 0) ? gameStates.app.bD1Mission && gameStates.app.bHaveD1Data : v;
 PrintLog (0, "Setting data version %d (D%d) (D1 mission = %d, have D1 data = %d)\n", v, 2 - gameStates.app.bD1Data, gameStates.app.bD1Mission, gameStates.app.bHaveD1Data);
-gameData.pig.tex.bitmaps [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.bitmapP);
-gameData.pig.tex.altBitmaps [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.altBitmapP);
-gameData.pig.tex.bmIndex [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.bmIndexP);
-gameData.pig.tex.bitmapFiles [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.bitmapFileP);
+gameData.pig.tex.bitmaps [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.pBitmap);
+gameData.pig.tex.altBitmaps [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.pAltBitmap);
+gameData.pig.tex.bmIndex [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.pBmIndex);
+gameData.pig.tex.bitmapFiles [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.pBitmapFile);
 gameData.pig.tex.tMapInfo [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.pTexMapInfo);
 gameData.pig.sound.sounds [gameStates.app.bD1Data].ShareBuffer (gameData.pig.sound.pSound);
 gameData.effects.effects [gameStates.app.bD1Data].ShareBuffer (gameData.effects.pEffect);

@@ -446,7 +446,7 @@ switch (nObjType) {
 			tAnimationInfo*	pAnimInfo = gameData.effects.animations [0] + pObj->info.nId;
 			fix			xLight = pAnimInfo->lightValue;
 			int32_t		i, j;
-			CBitmap*		pBmo, * pBm; // = gameData.pig.tex.bitmapP [pAnimInfo->frames [0].index].Override (-1);
+			CBitmap*		pBmo, * pBm; // = gameData.pig.tex.pBitmap [pAnimInfo->frames [0].index].Override (-1);
 #if 0
 			if (pBm) {
 				pBm->GetAvgColor (pColor);

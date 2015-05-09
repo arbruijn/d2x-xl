@@ -34,7 +34,7 @@ return pEffectInfo->animationInfo.xFrameTime;
 if ((pEffectInfo->changing.nWallTexture < 0) && (pEffectInfo->changing.nObjectTexture < 0))
 	return pEffectInfo->animationInfo.xFrameTime;
 else {
-	CBitmap	*pBm = gameData.pig.tex.bitmapP + pEffectInfo->animationInfo.frames [0].index;
+	CBitmap	*pBm = gameData.pig.tex.pBitmap + pEffectInfo->animationInfo.frames [0].index;
 	return (fix) ((((pBm->Type () == BM_TYPE_ALT) && pBm->Frames ()) ? 
 					  (pEffectInfo->animationInfo.xFrameTime * pEffectInfo->animationInfo.nFrameCount) / pBm->FrameCount () : 
 					  pEffectInfo->animationInfo.xFrameTime) /  gameStates.gameplay.slowmo [0].fSpeed);
@@ -112,7 +112,7 @@ for (int32_t bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 
 #define BM_INDEX(_fP,_i,_bI,_bO)	\
 			((_bI) ? (_bO) ? gameData.pig.tex.objBmIndex [((_fP) [_i])].index : \
-								  gameData.pig.tex.bmIndexP [((_fP) [_i])].index : \
+								  gameData.pig.tex.pBmIndex [((_fP) [_i])].index : \
 								  ((_fP) [_i]))
 
 CBitmap *FindAnimBaseTex (int16_t *frameP, int32_t nFrames, int32_t bIndirect, int32_t bObject, int32_t *piBaseFrame)
@@ -123,7 +123,7 @@ for (int32_t i = 0; i < nFrames; i++) {
 	if (bObject)
 		pBm = gameData.pig.tex.bitmaps [0] + BM_INDEX (frameP, i, bIndirect, bObject);
 	else
-		pBm = gameData.pig.tex.bitmapP + BM_INDEX (frameP, i, bIndirect, bObject);
+		pBm = gameData.pig.tex.pBitmap + BM_INDEX (frameP, i, bIndirect, bObject);
 	if ((pBm = pBm->Override ()) && (pBm->Type () != BM_TYPE_FRAME)) {
 		*piBaseFrame = i;
 		return pBm;
@@ -270,7 +270,7 @@ xEffectTime += gameData.time.xFrame;
 		if ((pEffectInfo->nCriticalAnimation != -1) && gameData.reactor.bDestroyed) {
 			int32_t n = pEffectInfo->nCriticalAnimation;
 			bmi = gameData.effects.pEffect [n].animationInfo.frames [gameData.effects.pEffect [n].nCurFrame];
-			gameData.pig.tex.bmIndexP [t] = bmi;
+			gameData.pig.tex.pBmIndex [t] = bmi;
 			}
 		else if (gameOpts->ogl.bGlTexMerge && (pEffectInfo->flags & EF_ALTFMT)) {
 			pBm->SetTranspType (-1);
@@ -285,7 +285,7 @@ xEffectTime += gameData.time.xFrame;
 			if ((pEffectInfo->flags & EF_ALTFMT) && (pEffectInfo->nCurFrame >= nFrames))
 				pEffectInfo->nCurFrame = 0;
 			bmi = pEffectInfo->animationInfo.frames [pEffectInfo->nCurFrame];
-			gameData.pig.tex.bmIndexP [t] = bmi;
+			gameData.pig.tex.pBmIndex [t] = bmi;
 			}
 		}
 
@@ -377,7 +377,7 @@ for (i = 0, j = gameData.effects.nEffects [gameStates.app.bD1Data], pEffectInfo 
 	if (!(pEffectInfo->flags & EF_CRITICAL)) {
 		bmi = pEffectInfo->animationInfo.frames [0];
 		if (pEffectInfo->changing.nWallTexture != -1)
-			gameData.pig.tex.bmIndexP[pEffectInfo->changing.nWallTexture] = bmi;
+			gameData.pig.tex.pBmIndex[pEffectInfo->changing.nWallTexture] = bmi;
 		if (pEffectInfo->changing.nObjectTexture != -1)
 			gameData.pig.tex.objBmIndex [pEffectInfo->changing.nObjectTexture] = bmi;
 		}
@@ -403,7 +403,7 @@ pEffectInfo->flags |= EF_STOPPED;
 pEffectInfo->nCurFrame = 0;
 //*pEffectInfo->bm_ptr = &gameData.pig.tex.bitmaps [pEffectInfo->animationInfo.frames [0].index];
 if (pEffectInfo->changing.nWallTexture != -1)
-	gameData.pig.tex.bmIndexP[pEffectInfo->changing.nWallTexture] = pEffectInfo->animationInfo.frames [0];
+	gameData.pig.tex.pBmIndex[pEffectInfo->changing.nWallTexture] = pEffectInfo->animationInfo.frames [0];
 if (pEffectInfo->changing.nObjectTexture != -1)
 	gameData.pig.tex.objBmIndex [pEffectInfo->changing.nObjectTexture] = pEffectInfo->animationInfo.frames [0];
 }
