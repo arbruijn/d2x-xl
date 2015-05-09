@@ -1642,40 +1642,6 @@ return 1;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CMeshEdge::Setup (void)
-{
-m_fScale = 1.0f;
-m_fSplit = 0.0f;
-m_vOffset.SetZero ();
-m_fDot = (m_nFaces == 1) ? 0.0f : fabs (CFloatVector::Dot (Normal (0), Normal (1)));
-if (Planar () && (m_faces [0].m_nTexture != m_faces [1].m_nTexture))
-	m_fDot = PartialAngle () + (PlanarAngle () - PartialAngle ()) * 0.5f;
-if (Partial () && (m_faces [0].m_nTexture == m_faces [1].m_nTexture)) { 
-	m_fScale = 0.5f + 0.25f * (1.0f - m_fDot * m_fDot);
-	if (m_fScale < 0.75f) {
-		if (Rand (8) == 0)
-			m_fSplit = 0.3f + 0.4f * RandFloat ();
-		else {
-			m_fSplit = 0.0f;
-			m_vOffset = Vertex (1);
-			m_vOffset -= Vertex (0);
-#if 1
-			if (Rand (2) == 0)
-				m_fOffset = 1.0f - m_fScale;
-#else
-			m_fOffset = (1.0f - m_fScale) * 0.25f;
-			m_fOffset *= m_fOffset + (2.0f * m_fOffset) * RandFloat ();
-#endif
-			m_vOffset *= m_fOffset;
-			}
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
 int32_t CSegmentData::CountEdges (void)
 {
 	CSegment	*segP = gameData.Segment (0);
@@ -1740,13 +1706,7 @@ else {
 	edgeP->m_vertices [0][1] = gameData.segData.fVertices [nVertex2];
 	edgeP->m_nFaces = 1;
 	}
-edgeP->m_faces [i].m_nItem = nSegment;
-edgeP->m_faces [i].m_nFace = nSide;
-CSide* sideP = gameData.Segment (nSegment)->Side (nSide);
-edgeP->m_faces [i].m_vNormal [0] = sideP->Normalf (2);
-edgeP->m_faces [i].m_vCenter [0].Assign (sideP->Center ());
-edgeP->m_faces [i].m_nTexture = int32_t (sideP->m_nBaseTex & TEXTURE_ID_MASK) | (int32_t (sideP->m_nBaseTex & TEXTURE_ID_MASK) << 16);
-
+edgeP->m_faces [i].Setup (nSegment, nSide);
 if (i == 0)
 	return 1;
 edgeP->Setup ();
@@ -1772,15 +1732,8 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 		if ((i == nDbgSeg) && ((nDbgSide < 0) || (j == nDbgSide)))
 			BRP;
 #endif
-		if (segP->ChildId (j) >= 0) {
-			CWall *wallP = sideP->Wall ();
-			if (!wallP)
+		if ((segP->ChildId (j) >= 0) && !sideP->Wall ())
 				continue;
-			if (wallP->IsInvisible ())
-			 continue;
-			if (wallP->IsPassable (NULL, false) & WID_NO_WALL)
-				continue;
-			}
 		int32_t nVertices;
 		switch (sideP->Shape ()) {
 			case SIDE_SHAPE_RECTANGLE:

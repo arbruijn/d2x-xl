@@ -2092,11 +2092,14 @@ class CEdgeFaceInfo {
 	public:
 		int16_t			m_nItem;		// segment / (sub) model id
 		int16_t			m_nFace;
-		int32_t			m_nTexture;
+		int16_t			m_nTexture;
+		int16_t			m_nWall;
 		CFloatVector	m_vNormal [2];
 		CFloatVector	m_vCenter [2];
 
-		CEdgeFaceInfo () : m_nItem (-1), m_nFace (-1), m_nTexture (0) {}
+		CEdgeFaceInfo () : m_nItem (-1), m_nFace (-1), m_nTexture (0), m_nWall (-1) {}
+		void CEdgeFaceInfo::Setup (int16_t nSegment, int16_t nSide);
+		int32_t Visible (void);
 	};
 
 class CMeshEdge {

@@ -130,7 +130,7 @@ class CBitmapRenderData {
 	public:
 		GLfloat		x0, x1, y0, y1, u1, v1, u2, v2, aspect;
 		GLint			depthFunc, bBlendState;
-		int32_t			nOrient;
+		int32_t		nOrient;
 
 	CBitmapRenderData() { memset (this, 0, sizeof (*this)); }
 	};

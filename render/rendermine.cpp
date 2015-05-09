@@ -743,6 +743,46 @@ if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_CO
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+int32_t CEdgeFaceInfo::Visible (void)
+{
+if (m_nWall < 0)
+	return 1;
+CWall *wallP = WALL (m_nWall);
+if (!wallP)
+	return 1;
+if (wallP->IsInvisible ())
+	return 0;
+if (wallP->IsPassable (NULL, false) & WID_NO_WALL)
+	return 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CEdgeFaceInfo::Setup (int16_t nSegment, int16_t nSide)
+{
+m_nItem = nSegment;
+m_nFace = nSide;
+CSide* sideP = gameData.Segment (nSegment)->Side (nSide);
+m_vNormal [0] = sideP->Normalf (2);
+m_vCenter [0].Assign (sideP->Center ());
+m_nWall = sideP->WallNum ();
+if (!IS_WALL (m_nWall))
+	m_nWall = -1;
+m_nTexture = int32_t (sideP->m_nOvlTex & TEXTURE_ID_MASK);
+if (m_nTexture) {
+	CBitmap *bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [m_nTexture].index].Override (-1);
+	if (!bmP || (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)))
+		m_nTexture = 0;
+	}
+if (!m_nTexture)
+	m_nTexture = int32_t (sideP->m_nBaseTex & TEXTURE_ID_MASK);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 #if POLYGONAL_OUTLINE
 bool bPolygonalOutline = false;
 #endif
@@ -768,6 +808,9 @@ return nVisible;
 
 int32_t CMeshEdge::Type (void)
 {
+for (int32_t i = 0; i < m_nFaces; i++)
+	if (!m_faces [i].Visible ())
+	return -1;
 int32_t h = Visibility ();
 return ((h == 0) ? -1 : (h != 3) ? 0 : Planar () ? -1 : Partial () ? 2 : 1);
 }
@@ -829,6 +872,38 @@ if (bPolygonalOutline) {
 		transformation.Transform (m_vertices [1][i], m_vertices [0][i]);
 	}
 #endif
+}
+
+//------------------------------------------------------------------------------
+
+void CMeshEdge::Setup (void)
+{
+m_fScale = 1.0f;
+m_fSplit = 0.0f;
+m_vOffset.SetZero ();
+m_fDot = (m_nFaces == 1) ? 0.0f : fabs (CFloatVector::Dot (Normal (0), Normal (1)));
+if (Planar () && (m_faces [0].m_nTexture != m_faces [1].m_nTexture))
+	m_fDot = PartialAngle () + (PlanarAngle () - PartialAngle ()) * 0.5f;
+if (Partial () && (m_faces [0].m_nTexture == m_faces [1].m_nTexture)) { 
+	m_fScale = 0.5f + 0.25f * (1.0f - m_fDot * m_fDot);
+	if (m_fScale < 0.75f) {
+		if (Rand (8) == 0)
+			m_fSplit = 0.3f + 0.4f * RandFloat ();
+		else {
+			m_fSplit = 0.0f;
+			m_vOffset = Vertex (1);
+			m_vOffset -= Vertex (0);
+#if 1
+			if (Rand (2) == 0)
+				m_fOffset = 1.0f - m_fScale;
+#else
+			m_fOffset = (1.0f - m_fScale) * 0.25f;
+			m_fOffset *= m_fOffset + (2.0f * m_fOffset) * RandFloat ();
+#endif
+			m_vOffset *= m_fOffset;
+			}
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
