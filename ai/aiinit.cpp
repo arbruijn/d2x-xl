@@ -186,14 +186,14 @@ if (gameStates.app.bLunacy)	//already on
 	return;
 gameStates.app.bLunacy = 1;
 nDiffSave = gameStates.app.nDifficultyLevel;
-gameStates.app.nDifficultyLevel = NDL-1;
+gameStates.app.nDifficultyLevel = DIFFICULTY_LEVEL_COUNT-1;
 for (i = 0; i < MAX_ROBOT_TYPES; i++) {
-	Firing_wait_copy [i] = gameData.botData.infoP [i].primaryFiringWait [NDL-1];
-	Firing_wait2_copy [i] = gameData.botData.infoP [i].secondaryFiringWait [NDL-1];
-	RapidfireCount_copy [i] = gameData.botData.infoP [i].nRapidFireCount [NDL-1];
-	gameData.botData.infoP [i].primaryFiringWait [NDL-1] = gameData.botData.infoP [i].primaryFiringWait [1];
-	gameData.botData.infoP [i].secondaryFiringWait [NDL-1] = gameData.botData.infoP [i].secondaryFiringWait [1];
-	gameData.botData.infoP [i].nRapidFireCount [NDL-1] = gameData.botData.infoP [i].nRapidFireCount [1];
+	Firing_wait_copy [i] = gameData.botData.infoP [i].primaryFiringWait [DIFFICULTY_LEVEL_COUNT-1];
+	Firing_wait2_copy [i] = gameData.botData.infoP [i].secondaryFiringWait [DIFFICULTY_LEVEL_COUNT-1];
+	RapidfireCount_copy [i] = gameData.botData.infoP [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1];
+	gameData.botData.infoP [i].primaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = gameData.botData.infoP [i].primaryFiringWait [1];
+	gameData.botData.infoP [i].secondaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = gameData.botData.infoP [i].secondaryFiringWait [1];
+	gameData.botData.infoP [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1] = gameData.botData.infoP [i].nRapidFireCount [1];
 	}
 }
 
@@ -207,9 +207,9 @@ if (!gameStates.app.bLunacy)	//already off
 	return;
 gameStates.app.bLunacy = 0;
 for (i = 0; i < MAX_ROBOT_TYPES; i++) {
-	gameData.botData.infoP [i].primaryFiringWait [NDL-1] = Firing_wait_copy [i];
-	gameData.botData.infoP [i].secondaryFiringWait [NDL-1] = Firing_wait2_copy [i];
-	gameData.botData.infoP [i].nRapidFireCount [NDL-1] = RapidfireCount_copy [i];
+	gameData.botData.infoP [i].primaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = Firing_wait_copy [i];
+	gameData.botData.infoP [i].secondaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = Firing_wait2_copy [i];
+	gameData.botData.infoP [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1] = RapidfireCount_copy [i];
 	}
 gameStates.app.nDifficultyLevel = nDiffSave;
 }

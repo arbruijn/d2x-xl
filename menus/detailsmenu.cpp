@@ -153,13 +153,13 @@ return nCurItem;
 
 void SetMaxCustomDetails (void)
 {
-gameStates.render.detail.nRenderDepth = detailData.renderDepths [NDL - 1];
-gameStates.render.detail.nMaxPerspectiveDepth = detailData.maxPerspectiveDepths [NDL - 1];
-gameStates.render.detail.nMaxLinearDepth = detailData.maxLinearDepths [NDL - 1];
-gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [NDL - 1];
-gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [NDL - 1];
-gameData.models.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [NDL - 1];
-gameStates.render.detail.nMaxLinearDepthObjects = detailData.maxLinearDepthObjects [NDL - 1];
+gameStates.render.detail.nRenderDepth = detailData.renderDepths [DIFFICULTY_LEVEL_COUNT - 1];
+gameStates.render.detail.nMaxPerspectiveDepth = detailData.maxPerspectiveDepths [DIFFICULTY_LEVEL_COUNT - 1];
+gameStates.render.detail.nMaxLinearDepth = detailData.maxLinearDepths [DIFFICULTY_LEVEL_COUNT - 1];
+gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [DIFFICULTY_LEVEL_COUNT - 1];
+gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [DIFFICULTY_LEVEL_COUNT - 1];
+gameData.models.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [DIFFICULTY_LEVEL_COUNT - 1];
+gameStates.render.detail.nMaxLinearDepthObjects = detailData.maxLinearDepthObjects [DIFFICULTY_LEVEL_COUNT - 1];
 }
 
 // -----------------------------------------------------------------------------
@@ -190,11 +190,11 @@ void CustomDetailsMenu (void)
 do {
 	m.Destroy ();
 	m.Create (DL_MAX);
-	m.AddSlider ("object complexity", TXT_OBJ_COMPLEXITY, gameStates.render.detail.nObjectComplexity, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	m.AddSlider ("object detail", TXT_OBJ_DETAIL, gameStates.render.detail.nObjectDetail, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	m.AddSlider ("wall detail", TXT_WALL_DETAIL, gameStates.render.detail.nWallDetail, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	m.AddSlider ("render depth", TXT_WALL_RENDER_DEPTH, gameStates.render.detail.nWallRenderDepth, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	m.AddSlider ("debris amount", TXT_DEBRIS_AMOUNT, gameStates.render.detail.nDebrisAmount, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("object complexity", TXT_OBJ_COMPLEXITY, gameStates.render.detail.nObjectComplexity, 0, DIFFICULTY_LEVEL_COUNT-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("object detail", TXT_OBJ_DETAIL, gameStates.render.detail.nObjectDetail, 0, DIFFICULTY_LEVEL_COUNT-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("wall detail", TXT_WALL_DETAIL, gameStates.render.detail.nWallDetail, 0, DIFFICULTY_LEVEL_COUNT-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("render depth", TXT_WALL_RENDER_DEPTH, gameStates.render.detail.nWallRenderDepth, 0, DIFFICULTY_LEVEL_COUNT-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("debris amount", TXT_DEBRIS_AMOUNT, gameStates.render.detail.nDebrisAmount, 0, DIFFICULTY_LEVEL_COUNT-1, 0, HTX_ONLINE_MANUAL);
 	if (!gameStates.app.bGameRunning)
 		m.AddSlider ("sound channels", TXT_SOUND_CHANNELS, gameStates.sound.nSoundChannels, 0, sizeofa (detailData.nSoundChannels) - 1, 0, HTX_ONLINE_MANUAL);
 	m.AddText ("", TXT_LO_HI, 0);

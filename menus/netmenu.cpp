@@ -427,7 +427,7 @@ void NetworkMoreGameOptions (void)
 do {
 	m.Destroy ();
 	m.Create (40);
-	m.AddSlider ("difficulty", TXT_DIFFICULTY, mpParams.nDifficulty, 0, NDL - 1, KEY_D, HTX_GPLAY_DIFFICULTY); 
+	m.AddSlider ("difficulty", TXT_DIFFICULTY, mpParams.nDifficulty, 0, DIFFICULTY_LEVEL_COUNT - 1, KEY_D, HTX_GPLAY_DIFFICULTY); 
 	sprintf (szInvul + 1, "%s: %d %s", TXT_REACTOR_LIFE, mpParams.nReactorLife * 5, TXT_MINUTES_ABBREV);
 	strupr (szInvul + 1);
 	*szInvul = * (TXT_REACTOR_LIFE - 1);

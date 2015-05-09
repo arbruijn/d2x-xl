@@ -2001,6 +2001,14 @@ return (this == gameData.objData.guidedMissile [nPlayer].objP) && (Signature () 
 
 //------------------------------------------------------------------------------
 
+fix CObject::MaxSpeed (void)
+{
+tRobotInfo* botInfoP;
+return ((info.nType == OBJ_ROBOT) && (botInfoP = ROBOTINFO (info.nId))) ? botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel] : 0;
+}
+
+//------------------------------------------------------------------------------
+
 bool CObject::IsGuideBot (void) 
 {
 tRobotInfo* botInfoP;
@@ -2507,7 +2515,7 @@ if (!botInfoP)
 
 	CFixVector	v0, v1;
 	fix			t0, t1;
-	float			maxSpeed = X2F (botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel]);
+	float			maxSpeed = X2F (botInfoP->MaxSpeed ());
 
 for (int32_t i = m_nCurPos, j = 0; j < m_nPosCount; j++, i = (i + 1) % POSTRACK_MAXFRAMES) {
 	if (!j) {

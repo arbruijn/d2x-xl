@@ -276,7 +276,7 @@ int32_t PickupEnergyBoost (CObject *objP, int32_t nPlayer)
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 
 if (playerP->Energy () < playerP->MaxEnergy ()) {
-	fix boost = I2X (3) * (NDL - gameStates.app.nDifficultyLevel + 1);
+	fix boost = I2X (3) * (DIFFICULTY_LEVEL_COUNT - gameStates.app.nDifficultyLevel + 1);
 	if (gameStates.app.nDifficultyLevel == 0)
 		boost += boost / 2;
 	playerP->UpdateEnergy (boost);
@@ -296,7 +296,7 @@ int32_t PickupShieldBoost (CObject *objP, int32_t nPlayer)
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 
 if (playerP->Shield () < playerP->MaxShield ()) {
-	fix boost = I2X (3) * (NDL - gameStates.app.nDifficultyLevel + 1);
+	fix boost = I2X (3) * (DIFFICULTY_LEVEL_COUNT - gameStates.app.nDifficultyLevel + 1);
 	if (gameStates.app.nDifficultyLevel == 0)
 		boost += boost / 2;
 	playerP->UpdateShield (boost);

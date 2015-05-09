@@ -287,7 +287,7 @@ FORALL_OBJS (objP) {
 					d = -d;
 					}
 				float fScale = float (h - t) / 333.0f;
-				if (ROBOTINFO (objP)->companion) {
+				if (objP->IsGuideBot ()) {
 					if (d < 0)
 						CCanvas::Current ()->SetColorRGB (0, 123 - (int32_t) FRound ((123 - 78) * fScale), 151 - (int32_t) FRound ((151 - 112) * fScale), 255);
 					else

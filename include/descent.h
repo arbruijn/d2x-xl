@@ -2849,7 +2849,7 @@ class CWeaponState {
 		CWeaponState () { memset (this, 0, sizeof (*this)); }
 	};
 
-#define BUILTIN_MISSILES	(2 + NDL - gameStates.app.nDifficultyLevel)
+#define BUILTIN_MISSILES	(2 + DIFFICULTY_LEVEL_COUNT - gameStates.app.nDifficultyLevel)
 
 class CExtraPlayerData {
 	public:
@@ -3542,7 +3542,7 @@ class CThiefData {
 		CStaticArray< uint8_t, MAX_STOLEN_ITEMS >	stolenItems; // [MAX_STOLEN_ITEMS];
 		int32_t			nStolenItem;
 		fix				xReInitTime;
-		fix				xWaitTimes [NDL];
+		fix				xWaitTimes [DIFFICULTY_LEVEL_COUNT];
 
 	public:
 		CThiefData ();

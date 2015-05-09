@@ -428,9 +428,9 @@ wiP->bitmap.index = cf.ReadShort ();
 wiP->blob_size = cf.ReadFix ();
 wiP->xFlashSize = cf.ReadFix ();
 wiP->xImpactSize = cf.ReadFix ();
-for (i = 0; i < NDL; i++)
+for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
 	wiP->strength [i] = cf.ReadFix ();
-for (i = 0; i < NDL; i++)
+for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
 	wiP->speed [i] = cf.ReadFix ();
 wiP->mass = cf.ReadFix ();
 wiP->drag = cf.ReadFix ();
@@ -469,10 +469,10 @@ PrintLog (0, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,
 	wiP->blob_size,
 	wiP->xFlashSize,
 	wiP->xImpactSize);
-for (i = 0; i < NDL; i++)
+for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
 	PrintLog (0, "%s%d", i ? "," : "", wiP->strength [i]);
 PrintLog (1, "},{");
-for (i = 0; i < NDL; i++)
+for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
 	PrintLog (0, "%s%d", i ? "," : "", wiP->speed [i]);
 PrintLog (0, "},%d,%d,%d,%d,%d,%d,%d,{%d}},\n",
 	wiP->mass,
@@ -623,8 +623,8 @@ for (i = 0, pr = &gameData.botData.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr+
 		sizeof (int16_t) * 5 +
 		sizeof (int8_t) * 7 +
 		sizeof (fix) * 4 +
-		sizeof (fix) * 7 * NDL +
-		sizeof (int8_t) * 2 * NDL,
+		sizeof (fix) * 7 * DIFFICULTY_LEVEL_COUNT +
+		sizeof (int8_t) * 2 * DIFFICULTY_LEVEL_COUNT,
 		SEEK_CUR);
 
 	pr->seeSound = (uint8_t) cf.ReadByte ();

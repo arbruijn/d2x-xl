@@ -251,7 +251,7 @@ for (CObjectIterator iter (objP); objP; objP = (prevObjP ? iter.Step () : iter.S
 		j++;
 		}
 	else if (t == OBJ_ROBOT) {
-		if (ROBOTINFO (objP)->companion && IsMultiGame) {
+		if (objP->IsGuideBot () && IsMultiGame) {
 			prevObjP = iter.Back ();
 			ReleaseObject (objP->Index ());
 			}
@@ -1002,6 +1002,7 @@ int32_t LoadLevel (int32_t nLevel, bool bLoadTextures, bool bRestore)
 strlwr (pszLevelName = LevelName (nLevel));
 /*---*/PrintLog (1, "loading level '%s'\n", pszLevelName);
 CleanupBeforeGame (nLevel, bRestore);
+gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (missionManager [missionManager.nCurrentMission].nDescentVersion == 1);
 MakeModFolders (hogFileManager.MissionName (), nLevel);
@@ -2413,7 +2414,7 @@ if (botInfoP->thief || botInfoP->companion) {
 		}
 	}
 else if (botInfoP->bossFlag) {	//	MK, 01/16/95, make boss shield lower on lower diff levels.
-	shield = shield / (NDL + 3) * (gameStates.app.nDifficultyLevel + 4);
+	shield = shield / (DIFFICULTY_LEVEL_COUNT + 3) * (gameStates.app.nDifficultyLevel + 4);
 //	Additional wimpification of bosses at Trainee
 	if (gameStates.app.nDifficultyLevel == 0)
 		shield /= 2;

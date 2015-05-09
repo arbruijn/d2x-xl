@@ -75,6 +75,8 @@ void DoAIRobotHitAttack (CObject *robotP, CObject *targetP, CFixVector *vCollisi
 	tAILocalInfo	*ailP = gameData.ai.localInfo + OBJ_IDX (robotP);
 	tRobotInfo		*botInfoP = ROBOTINFO (robotP->info.nId);
 
+if (!botInfoP)
+	return;
 if (!robotP->AttacksObject (targetP))
 	return;
 if (robotP->IsStatic ())
@@ -123,10 +125,12 @@ int32_t LeadTarget (CObject *objP, CFixVector *vFirePoint, CFixVector *vBelieved
 {
 	fix			dot, xTargetSpeed, xDistToTarget, xMaxWeaponSpeed, xProjectedTime;
 	CFixVector	vTargetMovementDir, vVecToTarget;
-	int32_t			nWeaponType;
+	int32_t		nWeaponType;
 	CWeaponInfo	*wiP;
-	tRobotInfo	*botInfoP;
+	tRobotInfo	*botInfoP = ROBOTINFO (objP);
 
+if (!botInfoP)
+	return;
 if (TARGETOBJ->Cloaked ())
 	return 0;
 vTargetMovementDir = TARGETOBJ->mType.physInfo.velocity;
@@ -141,7 +145,6 @@ dot = CFixVector::Dot (vVecToTarget, vTargetMovementDir);
 if ((dot < -LEAD_RANGE) || (dot > LEAD_RANGE))
 	return 0;
 //	Looks like it might be worth trying to lead the player.
-botInfoP = ROBOTINFO (objP);
 nWeaponType = botInfoP->nWeaponType;
 if ((nGuns == 0) && (botInfoP->nSecWeaponType != -1))
 	nWeaponType = botInfoP->nSecWeaponType;
@@ -158,7 +161,7 @@ if (wiP->matter) {
 	if (gameStates.app.nDifficultyLevel <= 1)
 		return 0;
 	else
-		xMaxWeaponSpeed *= (NDL-gameStates.app.nDifficultyLevel);
+		xMaxWeaponSpeed *= (DIFFICULTY_LEVEL_COUNT-gameStates.app.nDifficultyLevel);
    }
 xProjectedTime = FixDiv (xDistToTarget, xMaxWeaponSpeed);
 (*vFire).v.coord.x = ComputeLeadComponent ((*vBelievedTargetPos).v.coord.x, (*vFirePoint).v.coord.x, TARGETOBJ->mType.physInfo.velocity.v.coord.x, xProjectedTime);
@@ -192,7 +195,8 @@ void AIFireLaserAtTarget (CObject *objP, CFixVector *vFirePoint, int32_t nGun, C
 	fix				aim, dot;
 	int32_t			count, i;
 
-Assert (nObject >= 0);
+if (!botInfoP)
+	return;
 //	If this robot is only awake because a camera woke it up, don't fire.
 if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE)
 	return;
@@ -272,7 +276,7 @@ if (RandShort () < 16384) {
 if (gameStates.app.bNostalgia) {
 #endif
 	count = 4;			//	Don't want to sit in this loop foreverd:\temp\dm_test.
-	i = (NDL - gameStates.app.nDifficultyLevel - 1) * 4 * aim;
+	i = (DIFFICULTY_LEVEL_COUNT - gameStates.app.nDifficultyLevel - 1) * 4 * aim;
 	do {
 		vRandTargetPos.v.coord.x = (*vBelievedTargetPos).v.coord.x + FixMul (SRandShort (), aim);
 		vRandTargetPos.v.coord.y = (*vBelievedTargetPos).v.coord.y + FixMul (SRandShort (), aim);
@@ -383,7 +387,6 @@ if (objP->cType.aiInfo.behavior != AIB_STILL)
 	return;
 int32_t r = RandShort ();
 //	Attack robots (eg, green guy) shouldn't have behavior = still.
-//Assert (ROBOTINFO (objP)->attackType == 0);
 //	1/8 time, charge player, 1/4 time create path, rest of time, do nothing
 if (r < 4096) {
 	CreatePathToTarget (objP, 10, 1);

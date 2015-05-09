@@ -902,14 +902,13 @@ if (!(nTargetVisibility || nPrevVisibility) && (xDistToTarget > I2X (200)) && !I
 		return;
 		}
 	else {
-		tRobotInfo	*botInfoP = ROBOTINFO (objP);
-		fix	xCurSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel] / 2;
+		fix	xCurSpeed = objP->MaxSpeed () / 2;
 		fix	xCoverableDist = FixMul (gameData.time.xFrame, xCurSpeed);
 		// int32_t	nConnSide = ConnectedSide (objP->info.nSegment, nGoalSeg);
 		//	Only move to goal if allowed to fly through the CSide.p.
 		//	Buddy-bot can create paths he can't fly, waiting for player.
 		// -- bah, this isn't good enough, buddy will fail to get through any door!if (WALL_IS_DOORWAY (&SEGMENTS]objP->info.nSegment], nConnSide) & WID_PASSABLE_FLAG) {
-		if (!(botInfoP->companion || botInfoP->thief)) {
+		if (!(objP->IsGuideBot () || objP->IsThief ())) {
 			if ((xCoverableDist >= xDistToGoal) || ((RandShort () >> 1) < FixDiv (xCoverableDist, xDistToGoal)))
 				MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
 			return;
@@ -1114,8 +1113,10 @@ void AIPathSetOrientAndVel (CObject *objP, CFixVector *vGoalPoint, int32_t nTarg
 	fix			dot;
 	tRobotInfo	*botInfoP = ROBOTINFO (objP);
 
+if (!botInfoP)
+	return;
 //	If evading CPlayerData, use highest difficulty level speed, plus something based on diff level
-xMaxSpeed = FixMul (botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel], 2 * objP->DriveDamage ());
+xMaxSpeed = FixMul (objP->MaxSpeed (), 2 * objP->DriveDamage ());
 if ((gameData.ai.localInfo [objP->Index ()].mode == AIM_RUN_FROM_OBJECT) || (objP->cType.aiInfo.behavior == AIB_SNIPE))
 	xMaxSpeed = 3 * xMaxSpeed / 2;
 vNormToGoal = *vGoalPoint - vCurPos;
@@ -1144,14 +1145,14 @@ if ((objP->cType.aiInfo.behavior == AIB_SNIPE) && (dot < I2X (1)/2))
 xSpeedScale = FixMul (xMaxSpeed, dot);
 vNormCurVel *= xSpeedScale;
 objP->mType.physInfo.velocity = vNormCurVel;
-if ((gameData.ai.localInfo [objP->Index ()].mode == AIM_RUN_FROM_OBJECT) || (botInfoP->companion == 1) || (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
+if ((gameData.ai.localInfo [objP->Index ()].mode == AIM_RUN_FROM_OBJECT) || (objP->IsGuideBot ()) || (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
 	if (gameData.ai.localInfo [objP->Index ()].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
 		if ((nTargetVisibility) && (vecToTarget != NULL))
 			vNormToGoal = *vecToTarget;
 		else
 			vNormToGoal.Neg ();
 		}
-	AITurnTowardsVector (&vNormToGoal, objP, botInfoP->turnTime [NDL-1]/2);
+	AITurnTowardsVector (&vNormToGoal, objP, botInfoP->turnTime [DIFFICULTY_LEVEL_COUNT - 1] / 2);
 	}
 else
 	AITurnTowardsVector (&vNormToGoal, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
@@ -1166,10 +1167,10 @@ void AICollectPathGarbage (void)
 #if DBG
 	int32_t					i;
 #endif
-	int32_t					nFreeIndex = 0;
-	int32_t					nObjects = 0;
-	int32_t					nObject;
-	int32_t					nObjIdx, nOldIndex;
+	int32_t				nFreeIndex = 0;
+	int32_t				nObjects = 0;
+	int32_t				nObject;
+	int32_t				nObjIdx, nOldIndex;
 	CObject*				objP;
 	tAIStaticInfo*		aiP;
 	CStaticArray<CObjPath, MAX_OBJECTS_D2X>	objectList;

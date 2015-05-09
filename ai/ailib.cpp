@@ -271,7 +271,7 @@ if (objP == gameData.objData.consoleP) {
 	if (wallP->nType == WALL_DOOR)
 		return 1;
 	}
-if ((objP == NULL) || (ROBOTINFO (objP)->companion == 1)) {
+if ((objP == NULL) || objP->IsGuideBot ()) {
 	int32_t	ailp_mode;
 
 	if (wallP->flags & WALL_BUDDY_PROOF) {

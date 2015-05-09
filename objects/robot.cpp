@@ -245,20 +245,20 @@ for (i = 0; i < n; i++) {
 	botInfo [h].mass = cf.ReadFix ();
 	botInfo [h].drag = cf.ReadFix ();
 
-	for (j = 0; j < NDL; j++)
+	for (j = 0; j < DIFFICULTY_LEVEL_COUNT; j++)
 		botInfo [h].fieldOfView [j] = cf.ReadFix ();
-	for (j = 0; j < NDL; j++)
+	for (j = 0; j < DIFFICULTY_LEVEL_COUNT; j++)
 		botInfo [h].primaryFiringWait [j] = cf.ReadFix ();
-	for (j = 0; j < NDL; j++)
+	for (j = 0; j < DIFFICULTY_LEVEL_COUNT; j++)
 		botInfo [h].secondaryFiringWait [j] = cf.ReadFix ();
-	for (j = 0; j < NDL; j++)
+	for (j = 0; j < DIFFICULTY_LEVEL_COUNT; j++)
 		botInfo [h].turnTime [j] = cf.ReadFix ();
-	for (j = 0; j < NDL; j++)
+	for (j = 0; j < DIFFICULTY_LEVEL_COUNT; j++)
 		botInfo [h].xMaxSpeed [j] = cf.ReadFix ();
-	for (j = 0; j < NDL; j++)
+	for (j = 0; j < DIFFICULTY_LEVEL_COUNT; j++)
 		botInfo [h].circleDistance [j] = cf.ReadFix ();
-	cf.Read (botInfo [h].nRapidFireCount, NDL, 1);
-	cf.Read (botInfo [h].evadeSpeed, NDL, 1);
+	cf.Read (botInfo [h].nRapidFireCount, DIFFICULTY_LEVEL_COUNT, 1);
+	cf.Read (botInfo [h].evadeSpeed, DIFFICULTY_LEVEL_COUNT, 1);
 	botInfo [h].cloakType = cf.ReadByte ();
 	botInfo [h].attackType = cf.ReadByte ();
 	botInfo [h].seeSound = cf.ReadByte ();

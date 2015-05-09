@@ -1481,7 +1481,7 @@ CThiefData::CThiefData ()
 {
 nStolenItem = 0;
 xReInitTime = 0x3f000000;
-for (int32_t i = 0; i < NDL; i++)
+for (int32_t i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
 	xWaitTimes [i] = I2X (30 - i * 5);
 }
 

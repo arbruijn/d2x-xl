@@ -259,6 +259,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	}
 PrintLog (-1);
 
+gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
 gameStates.render.EnableCartoonStyle ();
 
 PrintLog (1, "caching geometry textures\n");

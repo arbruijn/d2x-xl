@@ -844,7 +844,7 @@ if (speed < 0)
 if ((speed <= 0) || (speed > 10))
 	speed = 10;
 speedBoostSpeed = speed;
-v = OBJECT (nObject)->MaxSpeed () + (COMPETITION ? 100 : extraGameInfo [IsMultiGame].nSpeedBoost) * 4 * speed;
+v = OBJECT (nObject)->MaxSpeedScaled () + (COMPETITION ? 100 : extraGameInfo [IsMultiGame].nSpeedBoost) * 4 * speed;
 if (sbd.bBoosted) {
 	if (pSrcPt && pDestPt) {
 		n = *pDestPt - *pSrcPt;

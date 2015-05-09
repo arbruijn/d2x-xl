@@ -215,7 +215,7 @@ objProducerP = gameData.producers.producers + gameData.producers.robotMakers [se
 if (objProducerP->bEnabled)
 	return 0;
 //	MK: 11/18/95, At insane, object producers work forever!
-if (gameStates.app.bD1Mission || (gameStates.app.nDifficultyLevel + 1 < NDL)) {
+if (gameStates.app.bD1Mission || (gameStates.app.nDifficultyLevel + 1 < DIFFICULTY_LEVEL_COUNT)) {
 	if (!objProducerP->nLives)
 		return 0;
 	--objProducerP->nLives;

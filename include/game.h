@@ -75,7 +75,7 @@ extern int32_t ft_preference;
 // Deathmatch mode via modem with robots is GM_MODEM | GM_MULTI_ROBOTS
 // Cooperative mode via serial link is GM_SERIAL | GM_MULTI_COOP
 
-#define NDL 5       // Number of difficulty levels.
+#define DIFFICULTY_LEVEL_COUNT 5       // Number of difficulty levels.
 
 //------------------------------------------------------------------------------
 
@@ -133,7 +133,7 @@ void CalcFrameTime (int32_t fps = 0);
 int32_t do_flythrough(CObject *obj,int32_t firstTime);
 
 extern jmp_buf gameExitPoint;       // Do a long jump to this when game is over.
-extern int32_t DifficultyLevel;    // Difficulty level in 0..NDL-1, 0 = easiest, NDL-1 = hardest
+extern int32_t DifficultyLevel;    // Difficulty level in 0..DIFFICULTY_LEVEL_COUNT-1, 0 = easiest, DIFFICULTY_LEVEL_COUNT-1 = hardest
 extern int32_t nDifficultyLevel;
 extern int32_t DetailLevel;        // Detail level in 0..NUM_DETAIL_LEVELS-1, 0 = boringest, NUM_DETAIL_LEVELS = coolest
 extern int32_t Global_laser_firingCount;

@@ -67,8 +67,8 @@ class __pack__ CWeaponInfo {
 		fix blob_size;              // Size of blob if blob nType
 		fix xFlashSize;             // How big to draw the flash
 		fix xImpactSize;            // How big of an impact
-		fix strength [NDL];         // How much damage it can inflict
-		fix speed [NDL];            // How fast it can move, difficulty level based.
+		fix strength [DIFFICULTY_LEVEL_COUNT];         // How much damage it can inflict
+		fix speed [DIFFICULTY_LEVEL_COUNT];            // How fast it can move, difficulty level based.
 		fix mass;                   // How much mass it has
 		fix drag;                   // How much drag it has
 		fix thrust;                 // How much thrust it has
@@ -119,8 +119,8 @@ class __pack__ CD1WeaponInfo {
 		fix	blob_size;					// Size of blob if blob nType
 		fix	xFlashSize;					// How big to draw the flash
 		fix	xImpactSize;				// How big of an impact
-		fix	strength [NDL];				// How much damage it can inflict
-		fix	speed [NDL];					// How fast it can move, difficulty level based.
+		fix	strength [DIFFICULTY_LEVEL_COUNT];				// How much damage it can inflict
+		fix	speed [DIFFICULTY_LEVEL_COUNT];					// How fast it can move, difficulty level based.
 		fix	mass;							// How much mass it has
 		fix	drag;							// How much drag it has
 		fix	thrust;						//	How much thrust it has
@@ -144,8 +144,8 @@ class __pack__ CD2D1WeaponInfo {
 		int8_t	homingFlag;				//	Set if this weapon can home in on a target.
 		fix	xEnergyUsage;				//	How much fuel is consumed to fire this weapon.
 		fix	xFireWait;					//	Time until this weapon can be fired again.
-		fix	strength [NDL];				// How much damage it can inflict
-		fix	speed [NDL];					// How fast it can move, difficulty level based.
+		fix	strength [DIFFICULTY_LEVEL_COUNT];				// How much damage it can inflict
+		fix	speed [DIFFICULTY_LEVEL_COUNT];					// How fast it can move, difficulty level based.
 		fix	mass;							// How much mass it has
 		fix	drag;							// How much drag it has
 		fix	thrust;						//	How much thrust it has

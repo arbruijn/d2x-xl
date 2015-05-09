@@ -960,9 +960,9 @@ ReadBitmapIndex (&bitmap, cf);
 blob_size = cf.ReadFix ();
 xFlashSize = cf.ReadFix ();
 xImpactSize = cf.ReadFix ();
-for (i = 0; i < NDL; i++)
+for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
 	strength [i] = cf.ReadFix ();
-for (i = 0; i < NDL; i++)
+for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
 	speed [i] = cf.ReadFix ();
 mass = cf.ReadFix ();
 drag = cf.ReadFix ();
@@ -1018,10 +1018,10 @@ PrintLog (0, "%d,%d,%d,%d,{%d},%d,%d,%d,{",
 	blob_size,
 	xFlashSize,
 	xImpactSize);
-for (i = 0; i < NDL; i++)
+for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
 	PrintLog (0, "%s%d", i ? "," : "", strength [i]);
 PrintLog (1, "},{");
-for (i = 0; i < NDL; i++)
+for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
 	PrintLog (0, "%s%d", i ? "," : "", speed [i]);
 PrintLog (0, "},%d,%d,%d,%d,%d,%d,%d,{%d},{%d}}\n",
 	mass,

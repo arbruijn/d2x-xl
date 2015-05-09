@@ -82,7 +82,7 @@ HUDInitMessage (TXT_TAKE_THAT);
 inline fix BoostVal (fix *curVal, fix maxVal)
 {
 if (*curVal < maxVal) {
-	fix boost = I2X (3) + I2X (3) * (NDL - gameStates.app.nDifficultyLevel);
+	fix boost = I2X (3) + I2X (3) * (DIFFICULTY_LEVEL_COUNT - gameStates.app.nDifficultyLevel);
 	if (gameStates.app.nDifficultyLevel == 0)
 		boost += boost / 2;
 	*curVal += boost;
@@ -140,8 +140,8 @@ void KillAllRobots (int32_t bVerbose)
 	int32_t		nKilled = 0;
 	
 // Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
-FORALL_ROBOT_OBJS (objP)
-	if (!(ROBOTINFO (objP)->companion || ROBOTINFO (objP)->bossFlag || objP->IsGeometry ())) {
+FORALL_ROBOT_OBJS (objP) {
+	if (!(objP->IsGuideBot () || objP->IsBoss () || objP->IsGeometry ())) {
 		nKilled++;
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -150,6 +150,7 @@ FORALL_ROBOT_OBJS (objP)
 			objP->info.nFlags |= OF_ARMAGEDDON;
 			}
 		}
+	}
 // Toast the buddy if nothing else toasted!
 if (!nKilled)
 	nKilled += KillAllBuddyBots (bVerbose);
@@ -167,8 +168,8 @@ void KillAllBossRobots (int32_t bVerbose)
 if (gameStates.gameplay.bKillBossCheat)
 	gameStates.gameplay.bKillBossCheat = 0;
 else {
-	FORALL_ROBOT_OBJS (objP)
-		if (ROBOTINFO (objP)->bossFlag) {
+	FORALL_ROBOT_OBJS (objP) {
+		if (objP->IsBoss ()) {
 			nKilled++;
 			if (gameStates.app.bNostalgia)
 				objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -178,6 +179,7 @@ else {
 				}
 			gameStates.gameplay.bKillBossCheat = 1;
 			}
+		}
 	}
 if (bVerbose)
 	HUDInitMessage (TXT_BOTS_TOASTED, nKilled);

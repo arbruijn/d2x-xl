@@ -382,7 +382,7 @@ if (nStages & 1) {
 		m_pt->fSpeed = fSpeed;
 
 	m_ti.pp = NULL;
-	m_ti.fScale = fSpeed / float (objP->MaxSpeed ()) + 0.5f;
+	m_ti.fScale = fSpeed / float (objP->MaxSpeedScaled ()) + 0.5f;
 	//if (m_ti.fScale < m_ti.fSize / 2)
 	//	m_ti.fScale = m_ti.fSize / 2;
 	m_ti.fScale += float (Rand (100)) / 1000.0f;

@@ -1612,7 +1612,7 @@ if (cType.laserInfo.parent.nSignature == robotP->info.nSignature)
 if (botInfoP && botInfoP->energyBlobs && (cType.laserInfo.parent.nType == OBJ_PLAYER))
 	if (!robotP->IsStatic () && (robotP->info.xShield > 0) && IsEnergyProjectile ()) {
 		fix xProb = (gameStates.app.nDifficultyLevel+2) * Min (info.xShield, robotP->info.xShield);
-		xProb = botInfoP->energyBlobs * xProb / (NDL * 32);
+		xProb = botInfoP->energyBlobs * xProb / (DIFFICULTY_LEVEL_COUNT * 32);
 		int32_t nBlobs = xProb >> 16;
 		if (2 * RandShort () < (xProb & 0xffff))
 			nBlobs++;
@@ -1657,7 +1657,7 @@ if (botInfoP && botInfoP->energyBlobs && (cType.laserInfo.parent.nType == OBJ_PL
 			//	hit, and missing a robotP is what prevents the Gauss from being game-breaking.
 			if (info.nId == GAUSS_ID) {
 				if (botInfoP && botInfoP->bossFlag)
-					xDamage = (xDamage * (2 * NDL - gameStates.app.nDifficultyLevel)) / (2 * NDL);
+					xDamage = (xDamage * (2 * DIFFICULTY_LEVEL_COUNT - gameStates.app.nDifficultyLevel)) / (2 * DIFFICULTY_LEVEL_COUNT);
 				}
 			else if (info.nId == FUSION_ID) {
 				xDamage = gameData.FusionDamage (xDamage);

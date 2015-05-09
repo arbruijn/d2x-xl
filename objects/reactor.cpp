@@ -84,7 +84,7 @@ return nBestGun;
 }
 
 //how long to blow up on insane
-int32_t nAlanPavlishReactorTimes [2][NDL] = {{90,60,45,35,30},{50,45,40,35,30}};
+int32_t nAlanPavlishReactorTimes [2][DIFFICULTY_LEVEL_COUNT] = {{90,60,45,35,30},{50,45,40,35,30}};
 
 //	-----------------------------------------------------------------------------
 //	Called every frame.  If control center been destroyed, then actually do something.
@@ -190,7 +190,7 @@ if (trigP && (trigP->m_info.time > 0))
 	gameData.reactor.countdown.nTotalTime = trigP->m_info.time [0];
 else if (gameStates.app.nBaseCtrlCenExplTime != DEFAULT_CONTROL_CENTER_EXPLOSION_TIME)
 	gameData.reactor.countdown.nTotalTime = 
-		gameStates.app.nBaseCtrlCenExplTime + gameStates.app.nBaseCtrlCenExplTime * (NDL - gameStates.app.nDifficultyLevel - 1) / 2;
+		gameStates.app.nBaseCtrlCenExplTime + gameStates.app.nBaseCtrlCenExplTime * (DIFFICULTY_LEVEL_COUNT - gameStates.app.nDifficultyLevel - 1) / 2;
 else
 	gameData.reactor.countdown.nTotalTime = nAlanPavlishReactorTimes [gameStates.app.bD1Mission][gameStates.app.nDifficultyLevel];
 gameData.reactor.countdown.nTimer = (nTimer < 0) ? I2X (gameData.reactor.countdown.nTotalTime) : (nTimer ? nTimer : I2X (1));
@@ -379,7 +379,7 @@ if ((rStatP->nNextFireTime < 0) &&
 			CreateNewWeaponSimple (&vecToGoal, &rStatP->vGunPos [nBestGun], objP->Index (), CONTROLCEN_WEAPON_NUM, 0);
 			count++;
 			}
-		xDeltaFireTime = I2X (NDL - gameStates.app.nDifficultyLevel) / 4;
+		xDeltaFireTime = I2X (DIFFICULTY_LEVEL_COUNT - gameStates.app.nDifficultyLevel) / 4;
 		if (gameStates.app.nDifficultyLevel == 0)
 			xDeltaFireTime += (fix) (I2X (1) / 2 * gameStates.gameplay.slowmo [0].fSpeed);
 		if (IsMultiGame) // slow down rate of fire in multi player
@@ -521,7 +521,7 @@ console.printf (CON_DBG, "Mucking with reactor countdown time.\n");
 #endif
 if (gameData.reactor.bDestroyed) {
 	gameData.reactor.countdown.nTimer += 
-		I2X (gameStates.app.nBaseCtrlCenExplTime + (NDL - 1 - gameStates.app.nDifficultyLevel) * gameStates.app.nBaseCtrlCenExplTime / (NDL-1));
+		I2X (gameStates.app.nBaseCtrlCenExplTime + (DIFFICULTY_LEVEL_COUNT - 1 - gameStates.app.nDifficultyLevel) * gameStates.app.nBaseCtrlCenExplTime / (DIFFICULTY_LEVEL_COUNT-1));
 	gameData.reactor.countdown.nTotalTime = X2I (gameData.reactor.countdown.nTimer) + 2;	//	Will prevent "Self destruct sequence activated" message from replaying.
 	}
 }
