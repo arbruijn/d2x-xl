@@ -561,7 +561,7 @@ RenderElement (7);
 
 void CBriefing::RenderRobotFrame (void)
 {
-if (m_info.nRobot == -1)
+if (!ROBOTINFO (m_info.nRobot))
 	return;
 int32_t t = SDL_GetTicks ();
 if (t - m_info.tAnimate < 10)
@@ -696,13 +696,13 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 			break;
 
 		case 6:
-			{
-			SetupAnimationCanvas (baseCanv);
-			DrawModelPicture (ROBOTINFO (m_info.nRobot)->nModel, &m_info.vRobotAngles);
-			AnimCanv ().Deactivate ();
-			glLineWidth (1);
-			AnimCanv ().Deactivate ();
-			}
+			if (ROBOTINFO (m_info.nRobot)) {
+				SetupAnimationCanvas (baseCanv);
+				DrawModelPicture (ROBOTINFO (m_info.nRobot)->nModel, &m_info.vRobotAngles);
+				AnimCanv ().Deactivate ();
+				glLineWidth (1);
+				AnimCanv ().Deactivate ();
+				}
 			break;
 
 		case 7:

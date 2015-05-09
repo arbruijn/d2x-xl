@@ -663,7 +663,7 @@ switch (nType) {
 			}
 		break;
 
-	case OBJ_ROBOT:
+	case OBJ_ROBOT: {
 		vNewVel = vInitVel;
 		xOldMag = vInitVel.Mag();
 		CFixVector::Normalize (vNewVel);
@@ -678,28 +678,32 @@ switch (nType) {
 		if (IsMultiGame)
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 		objP = OBJECT (nObject);
-		//Set polygon-CObject-specific data
-		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP)->nModel;
-		objP->rType.polyObjInfo.nSubObjFlags = 0;
-		//set Physics info
-		objP->mType.physInfo.velocity = vNewVel;
-		objP->mType.physInfo.mass = ROBOTINFO (objP)->mass;
-		objP->mType.physInfo.drag = ROBOTINFO (objP)->drag;
-		objP->mType.physInfo.flags |= (PF_LEVELLING);
-		objP->SetShield (ROBOTINFO (objP)->strength);
-		objP->cType.aiInfo.behavior = AIB_NORMAL;
-		gameData.ai.localInfo [nObject].targetAwarenessType = WEAPON_ROBOT_COLLISION;
-		gameData.ai.localInfo [nObject].targetAwarenessTime = I2X (3);
-		objP->cType.aiInfo.CURRENT_STATE = AIS_LOCK;
-		objP->cType.aiInfo.GOAL_STATE = AIS_LOCK;
-		objP->cType.aiInfo.REMOTE_OWNER = -1;
-		if (ROBOTINFO (nId)->bossFlag)
-			gameData.bosses.Add (nObject);
+		tRobotInfo *botInfoP = ROBOTINFO (objP);
+		if (botInfoP) {
+			//Set polygon-CObject-specific data
+			objP->rType.polyObjInfo.nModel = botInfoP->nModel;
+			objP->rType.polyObjInfo.nSubObjFlags = 0;
+			//set Physics info
+			objP->mType.physInfo.velocity = vNewVel;
+			objP->mType.physInfo.mass = botInfoP->mass;
+			objP->mType.physInfo.drag = botInfoP->drag;
+			objP->mType.physInfo.flags |= (PF_LEVELLING);
+			objP->SetShield (botInfoP->strength);
+			objP->cType.aiInfo.behavior = AIB_NORMAL;
+			gameData.ai.localInfo [nObject].targetAwarenessType = WEAPON_ROBOT_COLLISION;
+			gameData.ai.localInfo [nObject].targetAwarenessTime = I2X (3);
+			objP->cType.aiInfo.CURRENT_STATE = AIS_LOCK;
+			objP->cType.aiInfo.GOAL_STATE = AIS_LOCK;
+			objP->cType.aiInfo.REMOTE_OWNER = -1;
+			if (objP->IsBoss ())
+				gameData.bosses.Add (nObject);
+			}
 
-		// At JasenW's request, robots which contain robots sometimes drop shield.
-		if (bDropExtras && (RandShort () > 16384)) {
-			AddAllowedPowerup (POW_SHIELD_BOOST);
-			DropPowerup (OBJ_POWERUP, POW_SHIELD_BOOST, -1, 0, vInitVel, vPos, nSegment);
+			// At JasenW's request, robots which contain robots sometimes drop shield.
+			if (bDropExtras && (RandShort () > 16384)) {
+				AddAllowedPowerup (POW_SHIELD_BOOST);
+				DropPowerup (OBJ_POWERUP, POW_SHIELD_BOOST, -1, 0, vInitVel, vPos, nSegment);
+				}
 			}
 		break;
 

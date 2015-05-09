@@ -502,13 +502,11 @@ switch (nObjType) {
 			}
 		break;
 
-	case OBJ_ROBOT:
+	case OBJ_ROBOT: {
 		*pbGotColor = 1;
-#if 0//DBG
-		return ROBOTINFO (objP)->lighting;
-#else
-		return ROBOTINFO (objP)->lightcast ? ROBOTINFO (objP)->lighting ? ROBOTINFO (objP)->lighting : I2X (1) : 0;
-#endif
+		tRobotInfo *botInfoP = ROBOTINFO (objP);
+		return botInfoP ? botInfoP->lightcast ? botInfoP->lighting ? botInfoP->lighting : I2X (1) : 0 : 0;
+		}
 		break;
 
 	case OBJ_WEAPON: {

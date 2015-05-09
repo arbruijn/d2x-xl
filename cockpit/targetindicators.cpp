@@ -45,10 +45,10 @@ if (objP) {
 	if (objP->info.nType == OBJ_REACTOR)
 		return &reactorDefColor;
 	else if (objP->info.nType == OBJ_ROBOT) {
-		if (!ROBOTINFO (objP)->companion)
+		if (!objP->IsGuideBot ())
 			return &botDefColor;
 		}
-	else if (objP->info.nType == OBJ_PLAYER) {
+	else if (objP->IsPlayer ()) {
 		if (IsTeamGame)
 			return playerDefColors + GetTeam (objP->info.nId) + 1;
 		return playerDefColors;

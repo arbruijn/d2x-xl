@@ -263,7 +263,7 @@ FORALL_OBJS (objP) {
 					cockpit->AddPointsToScore (ROBOTINFO (objP)->scoreValue);
 				}
 			}
-		if (!flash && ROBOTINFO (objP)->companion)
+		if (!flash && objP->IsGuideBot ())
 			BuddyOuchMessage (damage);
 		}
 	else if (nType == OBJ_REACTOR) {
@@ -514,10 +514,13 @@ if (objP->info.xLifeLeft > 0)
 int16_t GetExplosionVClip (CObject *objP, int32_t stage)
 {
 if (objP->info.nType == OBJ_ROBOT) {
-	if ((stage == 0) && (ROBOTINFO (objP)->nExp1VClip > -1))
-		return ROBOTINFO (objP)->nExp1VClip;
-	else if ((stage == 1) && (ROBOTINFO (objP)->nExp2VClip > -1))
-		return ROBOTINFO (objP)->nExp2VClip;
+	tRobotInfo *botInfoP = ROBOTINFO (objP);
+	if (botInfoP) {
+		if ((stage == 0) && (botInfoP->nExp1VClip > -1))
+			return botInfoP->nExp1VClip;
+		else if ((stage == 1) && (botInfoP->nExp2VClip > -1))
+			return botInfoP->nExp2VClip;
+		}
 	}
 else if ((objP->info.nType == OBJ_PLAYER) && (gameData.pig.ship.player->nExplVClip >- 1))
 	return gameData.pig.ship.player->nExplVClip;
@@ -733,7 +736,6 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDestroyedO
 		}
 	if (botInfoP && (botInfoP->nExp2Sound > -1))
 		audio.CreateSegmentSound (botInfoP->nExp2Sound, delObjP->info.nSegment, 0, *vSpawnPos, 0, I2X (1));
-		//PLAY_SOUND_3D (ROBOTINFO (delObjP->info.nId).nExp2Sound, vSpawnPos, delObjP->info.nSegment);
 	cType.explInfo.nSpawnTime = -1;
 	//make debris
 	if (delObjP->info.renderType == RT_POLYOBJ) {

@@ -143,19 +143,17 @@ while ((head != tail) && (head < nMaxSegs)) {
 //	AND he has never yet, since being initialized for level, been allowed to talk.
 int32_t BuddyMayTalk (void)
 {
-	int32_t		i;
-	CSegment	*segP;
-	CObject	*objP;
+CObject* objP = OBJECT (gameData.escort.nObjNum);
 
-if ((gameData.escort.nObjNum < 0) || !OBJECT (gameData.escort.nObjNum)->IsRobot ()) {
+if ((gameData.escort.nObjNum < 0) || (objP && !objP->IsRobot ())) {
 	gameData.escort.bMayTalk = 0;
 	return 0;
 	}
+
 if (gameData.escort.bMayTalk)
 	return 1;
-if ((OBJECT (gameData.escort.nObjNum)->IsRobot ()) &&
-	 (gameData.escort.nObjNum <= gameData.objData.nLastObject [0]) &&
-	!ROBOTINFO (OBJECT (gameData.escort.nObjNum))->companion) {
+
+if (objP && !objP->IsGuideBot ()) {
 	FORALL_ROBOT_OBJS (objP)
 		if (objP->IsGuideBot ())
 			break;
@@ -163,8 +161,10 @@ if ((OBJECT (gameData.escort.nObjNum)->IsRobot ()) &&
 		return 0;
 	gameData.escort.nObjNum = objP->Index ();
 	}
-segP = SEGMENT (OBJECT (gameData.escort.nObjNum)->info.nSegment);
-for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
+
+CSegment *segP = SEGMENT (OBJECT (gameData.escort.nObjNum)->info.nSegment);
+
+for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	CWall* wallP = segP->Wall (i);
 	if (wallP && (wallP->nType == WALL_BLASTABLE) && !(wallP->flags & WALL_BLASTED))
 		return 0;
@@ -857,7 +857,7 @@ return 1;
 
 fix Last_come_back_messageTime = 0;
 
-fix Buddy_last_missileTime;
+fix buddyLastMissileTime;
 
 //	-----------------------------------------------------------------------------
 
@@ -939,22 +939,22 @@ void DoBuddyDudeStuff (void)
 if (!BuddyMayTalk ())
 	return;
 
-if (Buddy_last_missileTime > gameData.time.xGame)
-	Buddy_last_missileTime = 0;
+if (buddyLastMissileTime > gameData.time.xGame)
+	buddyLastMissileTime = 0;
 
-if (Buddy_last_missileTime + I2X (2) < gameData.time.xGame) {
+if (buddyLastMissileTime + I2X (2) < gameData.time.xGame) {
 	//	See if a robot potentially in view cone
 	FORALL_ROBOT_OBJS (objP)
-		if (!ROBOTINFO (objP)->companion)
+		if (!objP->IsGuideBot ())
 			if (MaybeBuddyFireMega (objP->Index ())) {
-				Buddy_last_missileTime = gameData.time.xGame;
+				buddyLastMissileTime = gameData.time.xGame;
 				return;
 			}
 	//	See if a robot near enough that buddy should fire smart missile
 	FORALL_ROBOT_OBJS (objP)
-		if (!ROBOTINFO (objP)->companion)
+		if (!objP->IsGuideBot ())
 			if (MaybeBuddyFireSmart (objP->Index ())) {
-				Buddy_last_missileTime = gameData.time.xGame;
+				buddyLastMissileTime = gameData.time.xGame;
 				return;
 			}
 	}
@@ -964,11 +964,14 @@ if (Buddy_last_missileTime + I2X (2) < gameData.time.xGame) {
 //	Called every frame (or something).
 void DoEscortFrame (CObject *objP, fix xDistToPlayer, int32_t nPlayerVisibility)
 {
-	int32_t				nObject = objP->Index ();
+	int32_t			nObject = objP->Index ();
+
+if (nObject < 0)
+	return;
+
 	tAIStaticInfo*	aip = &objP->cType.aiInfo;
 	tAILocalInfo*	ailp = gameData.ai.localInfo + nObject;
 
-Assert (nObject >= 0);
 gameData.escort.nObjNum = nObject;
 if (nPlayerVisibility) {
 	xBuddyLastSeenPlayer = gameData.time.xGame;
@@ -1127,7 +1130,7 @@ if (gameStates.app.bD1Mission)
 	CObject	*objP;
 
 FORALL_ROBOT_OBJS (objP) {
-	if (ROBOTINFO (objP)->companion)
+	if (objP->IsGuideBot ())
 		break;
 	}
 

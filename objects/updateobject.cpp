@@ -524,8 +524,12 @@ void CObject::UpdateEffects (void)
 	uint8_t nEffect;
 
 if ((info.nType == OBJ_ROBOT) && gameOpts->render.lightning.bRobots) {
-	bNeedEffect = ROBOTINFO (info.nId)->energyDrain && (gameStates.app.nSDLTicks [0] - m_xTimeEnergyDrain <= 1000);
-	nEffect = ROBOT_LIGHTNING;
+	if (!ROBOTINFO (info.nId)) 
+		bNeedEffect = false;
+	else {
+		bNeedEffect = ROBOTINFO (info.nId)->energyDrain && (gameStates.app.nSDLTicks [0] - m_xTimeEnergyDrain <= 1000);
+		nEffect = ROBOT_LIGHTNING;
+		}
 	}
 else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	nEffect = PLAYER_LIGHTNING;
@@ -567,7 +571,7 @@ if (OBJ_IDX (this) == nDbgObj)
 if (!FixWeaponObject (this))
 	return 0;
 if (info.nType == OBJ_ROBOT) {
-	if (gameOpts->gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (info.nId)->thief) {
+	if (gameOpts->gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (info.nId) && ROBOTINFO (info.nId)->thief) {
 #if 1
 		ApplyDamageToRobot (info.xShield + I2X (1), -1);
 #else

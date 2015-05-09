@@ -102,7 +102,7 @@ gameData.thief.xReInitTime = gameData.time.xGame + I2X (10);		//	In 10 seconds, 
 
 void DoThiefFrame (CObject *objP)
 {
-	int32_t				nObject = objP->Index ();
+	int32_t			nObject = objP->Index ();
 	tAILocalInfo*	ailP = gameData.ai.localInfo + nObject;
 	fix				connectedDistance;
 
@@ -165,7 +165,7 @@ switch (ailP->mode) {
 					if (aiP->nPathLength < 4) {
 						CreateNSegmentPath (objP, 10, -1);
 						}
-					else if (objP->info.xShield * 4 < ROBOTINFO (objP)->strength) {
+					else if (ROBOTINFO (objP) && (objP->info.xShield * 4 < ROBOTINFO (objP)->strength)) {
 						//	If robot really low on hits, will run through player with even longer path
 						if (aiP->nPathLength < 8) {
 							CreateNSegmentPath (objP, 10, -1);

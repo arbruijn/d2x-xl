@@ -40,6 +40,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 fix AITurnTowardsVector (CFixVector *vGoal, CObject *objP, fix rate)
 {
 //	Not all robots can turn, eg, SPECIAL_REACTOR_ROBOT
+if (!ROBOTINFO (objP))
+	return 0;
 if (rate == 0)
 	return 0;
 if ((objP->info.nId == BABY_SPIDER_ID) && (objP->info.nType == OBJ_ROBOT)) {

@@ -52,14 +52,14 @@ CRadar radar;
 // -----------------------------------------------------------------------------------
 
 int32_t				CRadar::radarRanges [5] = {0, 100, 250, 500, 2000};
-float				CRadar::radarSizes [3] = {2.0f, 3.0f, 4.0f};
-float				CRadar::sizeOffsets [2][3] = {{4.0f, 2.0f, 0.0f}, {4.0f, 2.0f, 0.0f}};
+float					CRadar::radarSizes [3] = {2.0f, 3.0f, 4.0f};
+float					CRadar::sizeOffsets [2][3] = {{4.0f, 2.0f, 0.0f}, {4.0f, 2.0f, 0.0f}};
 
-CAngleVector	CRadar::aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
-float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, -18.0f, -20.5f, -19.0f}, {16.0f, 19.5f, 17.0f, 19.5f, 18.0f}};
+CAngleVector		CRadar::aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
+float					CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, -18.0f, -20.5f, -19.0f}, {16.0f, 19.5f, 17.0f, 19.5f, 18.0f}};
 
-tSinCosf			CRadar::sinCosRadar [RADAR_SLICES];
-tSinCosf			CRadar::sinCosBlip [BLIP_SLICES];
+tSinCosf				CRadar::sinCosRadar [RADAR_SLICES];
+tSinCosf				CRadar::sinCosBlip [BLIP_SLICES];
 
 CFloatVector3		CRadar::shipColors [8];
 CFloatVector3		CRadar::guidebotColor = {{{0, 0.75f / 4, 0.25f}}};
@@ -339,7 +339,7 @@ FORALL_OBJS (objP) {
 		}
 	else if (objP->info.nType == OBJ_ROBOT) {
 		if (AM_SHOW_ROBOTS) {
-			if (ROBOTINFO (objP)->companion)
+			if (objP->IsGuideBot ())
 				RenderBlip (objP, guidebotColor.Red (), guidebotColor.Green (), guidebotColor.Blue (), 0.9f * 0.25f, bAbove);
 			else
 				RenderBlip (objP, robotColor.Red (), robotColor.Green (), robotColor.Blue (), 0.9f * 0.25f, bAbove);

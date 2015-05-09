@@ -209,7 +209,7 @@ if (!objP)
 	int32_t lowest_agitated_bot = -1;
 	int32_t first_freeRobot = -1;
 
-if (ROBOTINFO (objP)->bossFlag) // this is a boss, so make sure he gets a slot
+if (objP->IsBoss ()) // this is a boss, so make sure he gets a slot
 	agitation = (agitation * 3) + N_LOCALPLAYER;  
 if (objP->cType.aiInfo.REMOTE_SLOT_NUM > 0) {
 	objP->cType.aiInfo.REMOTE_SLOT_NUM -= 1;
@@ -684,7 +684,6 @@ void MultiDoRobotFire (uint8_t* buf)
 	int16_t		nRemoteBot;
 	int32_t		nGun;
 	CFixVector	vFire, vGunPoint;
-	tRobotInfo	*robotP;
 
 nRemoteBot = GET_INTEL_SHORT (buf + bufP);
 nRobot = GetLocalObjNum (nRemoteBot, (int8_t)buf [bufP+2]); 
@@ -708,13 +707,12 @@ if (nGun == -1 || nGun==-2)
 	vGunPoint = objP->info.position.vPos + vFire;
 else 
 	CalcGunPoint (&vGunPoint, objP, nGun);
-robotP = ROBOTINFO (objP);
 if (nGun == -1) 
 	CreateNewWeaponSimple (&vFire, &vGunPoint, nRobot, PROXMINE_ID, 1);
 else if (nGun == -2)
 	CreateNewWeaponSimple (&vFire, &vGunPoint, nRobot, SMARTMINE_ID, 1);
-else
-	CreateNewWeaponSimple (&vFire, &vGunPoint, nRobot, robotP->nWeaponType, 1);
+else if (ROBOTINFO (objP))
+	CreateNewWeaponSimple (&vFire, &vGunPoint, nRobot, ROBOTINFO (objP)->nWeaponType, 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -737,6 +735,8 @@ if (robotP->cType.aiInfo.REMOTE_OWNER == N_LOCALPLAYER) {
 	}
 
 tRobotInfo* botInfoP = ROBOTINFO (robotP);
+if (!botInfoP)
+	return 0;
 if (bIsThief || botInfoP->thief)
 	DropStolenItems (robotP);
 if (botInfoP->bossFlag) {
@@ -793,7 +793,7 @@ bufP += 3;
 CObject* objP = MultiExplodeRobot (nRobot, nKiller, buf [bufP]);
 if (!objP)
 	return;
-if (nKiller == LOCALPLAYER.nObject)
+if ((nKiller == LOCALPLAYER.nObject) && ROBOTINFO (objP))
 	cockpit->AddPointsToScore (ROBOTINFO (objP)->scoreValue);
 }
 

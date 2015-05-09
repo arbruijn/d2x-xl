@@ -100,16 +100,19 @@ if (Type () == OBJ_ROBOT) {
 	if (Id () >= gameData.botData.nTypes [gameStates.app.bD1Data])
 		SetId (Id () % gameData.botData.nTypes [0]);
 	// Make sure model number & size are correct...
-	if (info.renderType == RT_POLYOBJ) {
-		rType.polyObjInfo.nModel = ROBOTINFO (Id ())->nModel;
-		AdjustSize ();
+	tRobotInfo *botInfoP = ROBOTINFO (Id ());
+	if (botInfoP) {
+		if (info.renderType == RT_POLYOBJ) {
+			rType.polyObjInfo.nModel = botInfoP->nModel;
+			AdjustSize ();
+			}
+		if (info.movementType == MT_PHYSICS) {
+			mType.physInfo.mass = botInfoP->mass;
+			mType.physInfo.drag = botInfoP->drag;
+			}
 		}
 	if (Id () == 65)						//special "reactor" robots
 		info.movementType = MT_NONE;
-	if (info.movementType == MT_PHYSICS) {
-		mType.physInfo.mass = ROBOTINFO (Id ())->mass;
-		mType.physInfo.drag = ROBOTINFO (Id ())->drag;
-		}
 	}
 else if (Type () == OBJ_EFFECT) {
 	gameData.objData.nEffects++;

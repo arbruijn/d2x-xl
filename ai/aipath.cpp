@@ -420,7 +420,7 @@ ValidatePath (3, origPointSegs, lNumPoints);
 // -- MK, 10/30/95 -- This code causes apparent discontinuities in the path, moving a point
 //	into a new CSegment.  It is not necessarily bad, but it makes it hard to track down actual
 //	discontinuity xProblems.
-if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP)->companion)
+if (objP->IsGuideBot ())
 	MoveTowardsOutside (origPointSegs, &lNumPoints, objP, 0);
 
 #if PATH_VALIDATION
@@ -457,7 +457,7 @@ if (numPoints <= 4)
 	return numPoints;
 
 //	Prevent the buddy from polishing his path twice in one frame, which can cause him to get hung up.  Pretty ugly, huh?
-if (ROBOTINFO (objP)->companion) {
+if (objP->IsGuideBot ()) {
 	if (gameData.app.nFrameCount == Last_buddy_polish_path_frame)
 		return numPoints;
 	Last_buddy_polish_path_frame = gameData.app.nFrameCount;
@@ -818,13 +818,15 @@ void AIFollowPath (CObject *objP, int32_t nTargetVisibility, int32_t nPrevVisibi
 
 	CFixVector		vGoalPoint;
 	fix				xDistToGoal;
-	tRobotInfo*		botInfoP = ROBOTINFO (objP);
-	int32_t				originalDir, originalIndex;
+	int32_t			originalDir, originalIndex;
 	fix				xDistToTarget;
-	int16_t				nGoalSeg = -1;
+	int16_t			nGoalSeg = -1;
 	tAILocalInfo*	ailP = gameData.ai.localInfo + objP->Index ();
 	fix				thresholdDistance;
+	tRobotInfo*		botInfoP = ROBOTINFO (objP);
 
+if (!botInfoP)
+	return;
 #if DBG
 if (objP->Index () == nDbgObj)
 	BRP;
@@ -1300,7 +1302,7 @@ void AttemptToResumePath (CObject *objP)
 //	int32_t				nGoalSegnum, object_segnum,
 //	int32_t				nAbsIndex, nNewPathIndex;
 
-if ((aiP->behavior == AIB_STATION) && (ROBOTINFO (objP)->companion != 1))
+if ((aiP->behavior == AIB_STATION) && !objP->IsGuideBot ())
 	if (RandShort () > 8192) {
 		tAILocalInfo *ailP = &gameData.ai.localInfo [objP->Index ()];
 

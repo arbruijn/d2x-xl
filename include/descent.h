@@ -4289,7 +4289,7 @@ inline tRobotInfo* CGameData::RobotInfo (int32_t nId) {
 	}
 
 inline tRobotInfo* CGameData::RobotInfo (CObject* objP) {
-	return (objP->IsRobot () || objP->IsReactor ()) ? RobotInfo (objP->Id ()) : NULL;
+	return (objP && (objP->IsRobot () || objP->IsReactor ())) ? RobotInfo (objP->Id ()) : NULL;
 	}
 
 #endif

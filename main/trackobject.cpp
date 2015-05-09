@@ -135,7 +135,7 @@ if (targetP->Type () == OBJ_ROBOT) {
 	if (targetP->cType.aiInfo.CLOAKED)
 		return 0;
 	//	Your missiles don't track your escort.
-	if (ROBOTINFO (targetP->Id ())->companion && (cType.laserInfo.parent.nType == OBJ_PLAYER))
+	if (targetP->IsGuideBot () && (cType.laserInfo.parent.nType == OBJ_PLAYER))
 		return 0;
 	}
 CFixVector vTracker = SPECTATOR (this) ? gameStates.app.playerPos.mOrient.m.dir.f : info.position.mOrient.m.dir.f;
@@ -238,8 +238,7 @@ for (int32_t i = windowRenderedData [nWindow].nObjects - 1; i >= 0; i--) {
 		if (targetP->cType.aiInfo.CLOAKED)
 			continue;
 		//	Your missiles don't track your escort.
-		if (ROBOTINFO (targetP->Id ())->companion && 
-			 (bPlayer || (cType.laserInfo.parent.nType == OBJ_PLAYER)))
+		if (targetP->IsGuideBot () && (bPlayer || (cType.laserInfo.parent.nType == OBJ_PLAYER)))
 			continue;
 		}
 	else if (nType == OBJ_WEAPON) {
@@ -296,7 +295,7 @@ FORALL_ACTOR_OBJS (targetP) {
 	else if (targetP->Type () == OBJ_ROBOT) {
 		if (targetP->cType.aiInfo.CLOAKED)
 			continue; // don' track cloaked robots
-		if (ROBOTINFO (targetP->Id ())->companion && (cType.laserInfo.parent.nType == OBJ_PLAYER))
+		if (targetP->IsGuideBot () && (cType.laserInfo.parent.nType == OBJ_PLAYER))
 			continue;	//	player missiles don't track the guidebot.
 		}
 

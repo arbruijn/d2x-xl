@@ -33,15 +33,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int32_t CalcGunPoint (CFixVector *vGunPoint, CObject *objP, int32_t nGun)
 {
 	CPolyModel*	pm = gameData.models.polyModels [0] + objP->ModelId ();
-	tRobotInfo*	botInfoP;
 	CFixVector*	vGunPoints, vGunPos, vRot;
 	CFixMatrix	m;
 	int32_t		nSubModel;				//submodel number
 
-Assert(objP->info.renderType == RT_POLYOBJ || objP->info.renderType == RT_MORPH);
 //Assert(objP->info.nId < gameData.botData.nTypes [gameStates.app.bD1Data]);
 
-botInfoP = ROBOTINFO (objP);
+tRobotInfo*	botInfoP = ROBOTINFO (objP);
+if (!botInfoP)
+	return 0;
 if (!(vGunPoints = GetGunPoints (objP, nGun)))
 	return 0;
 vGunPos = vGunPoints [nGun];
@@ -66,12 +66,16 @@ return 1;
 //takes the robot nType (CObject id), gun number, and desired state
 int32_t RobotGetAnimState (tJointPos **jointPosP, int32_t robotType, int32_t nGun, int32_t state)
 {
-	int32_t nJoints = ROBOTINFO (robotType)->animStates [nGun][state].n_joints;
+tRobotInfo*	botInfoP = ROBOTINFO (robotType);
+if (!botInfoP)
+	return 0;
+
+int32_t nJoints = botInfoP->animStates [nGun][state].n_joints;
 
 if (nJoints <= 0)
 	memset (jointPosP, 0, sizeof (*jointPosP));
 else
-	*jointPosP = &gameData.botData.joints [ROBOTINFO (robotType)->animStates [nGun][state].offset];
+	*jointPosP = &gameData.botData.joints [botInfoP->animStates [nGun][state].offset];
 return nJoints;
 }
 
@@ -80,14 +84,14 @@ return nJoints;
 //for test, set a robot to a specific state
 void SetRobotState (CObject *objP, int32_t state)
 {
-	int32_t			g, j, jo;
-	tRobotInfo*	ri;
+	int32_t		g, j, jo;
 	jointlist*	jl;
 
-Assert(objP->info.nType == OBJ_ROBOT);
-ri = ROBOTINFO (objP);
-for (g = 0; g < ri->nGuns + 1; g++) {
-	jl = &ri->animStates [g][state];
+tRobotInfo*	botInfoP = ROBOTINFO (objP);
+if (!botInfoP)
+	return;
+for (g = 0; g < botInfoP->nGuns + 1; g++) {
+	jl = &botInfoP->animStates [g][state];
 	jo = jl->offset;
 	for (j = 0; j < jl->n_joints; j++, jo++) {
 		int32_t jn = gameData.botData.joints [jo].jointnum;

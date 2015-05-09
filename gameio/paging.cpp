@@ -165,7 +165,7 @@ if (botInfoP->nExp2VClip >= 0)
 // Page in his weapons
 LoadWeaponTextures (botInfoP->nWeaponType);
 // A super-boss can gate in robots...
-if (ROBOTINFO (robotIndex)->bossFlag == 2) {
+if (botInfoP->bossFlag == 2) {
 	for (int32_t i = 0; i < 13; i++)
 		LoadRobotTextures (superBossGateTypeList [i]);
 	LoadAnimationTextures (&gameData.effects.animations [0][ANIM_MORPHING_ROBOT], 0);
