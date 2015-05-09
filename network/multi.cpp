@@ -2181,9 +2181,9 @@ else
 	{
 	pBmIndex = mpTextureIndex [--id];
 	for (i = 0, j = pModel->FirstTexture (); i < N_PLAYER_SHIP_TEXTURES; i++, j++)
-		pBmIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [j]];
-	pBmIndex [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + 2 * id]];
-	pBmIndex [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + 2 * id + 1]];
+		pBmIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [j]];
+	pBmIndex [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap + 2 * id]];
+	pBmIndex [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap + 2 * id + 1]];
 	pObj->rType.polyObjInfo.nAltTextures = id + 1;
 	}
 }
@@ -3370,7 +3370,7 @@ int32_t MultiFindGoalTexture (int16_t t)
 if (t == TMI_PRODUCER)
 	return 333;
 for (i = 0; i < gameData.pig.tex.nTextures [gameStates.app.bD1Data]; i++)
-	if (gameData.pig.tex.tMapInfoP [i].flags & t)
+	if (gameData.pig.tex.pTexMapInfo [i].flags & t)
 		return i;
 Int3 (); // Hey, there is no goal texture for this PIG!!!!
 // Edit bitmaps.tbl and designate two textures to be RED and BLUE

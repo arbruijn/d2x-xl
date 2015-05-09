@@ -213,9 +213,9 @@ if (!gameData.hoard.bInitialized) {
 		}
 	i = gameData.pig.tex.nTextures [0];
 	if (0 <= (j = MultiFindGoalTexture (TMI_GOAL_BLUE)))
-		gameData.pig.tex.tMapInfoP [i] = gameData.pig.tex.tMapInfoP [j];
-	gameData.pig.tex.tMapInfoP [i].nEffectClip = gameData.hoard.goal.nClip;
-	gameData.pig.tex.tMapInfoP [i].flags = TMI_GOAL_HOARD;
+		gameData.pig.tex.pTexMapInfo [i] = gameData.pig.tex.pTexMapInfo [j];
+	gameData.pig.tex.pTexMapInfo [i].nEffectClip = gameData.hoard.goal.nClip;
+	gameData.pig.tex.pTexMapInfo [i].flags = TMI_GOAL_HOARD;
 	gameData.hoard.nTextures = gameData.pig.tex.nTextures [0]++;
 	Assert (gameData.pig.tex.nTextures [0] < MAX_TEXTURES);
 	bmDataP = new uint8_t [gameData.hoard.goal.nSize];

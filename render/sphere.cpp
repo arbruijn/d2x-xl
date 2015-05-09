@@ -533,7 +533,7 @@ int32_t CSphere::Create (int32_t nRings, int32_t nTiles)
 {
 	int32_t			h, i, j;
 	float				t1, t2, t3, a, sint1, cost1, sint2, cost2, sint3, cost3;
-	tSphereVertex*	svP;
+	tSphereVertex	*pVertex;
 
 if (nRings > MAX_SPHERE_RINGS)
 	nRings = MAX_SPHERE_RINGS;

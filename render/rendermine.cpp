@@ -1048,10 +1048,6 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 #endif
 		gameData.segData.edgeVertexData [bPartial].Add (v);
 		}
-#if DBG
-	if (nMaxDist < nDistance)
-		nMaxDist = nDistance;
-#endif
 	if (bScale)
 		gameData.segData.edgeVertexData [bPartial].SetDistance (nDistance);
 #if POLYGONAL_OUTLINE

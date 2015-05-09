@@ -216,9 +216,9 @@ return pTriangle;
 
 //------------------------------------------------------------------------------
 
-tTriangle *CTriMeshBuilder::AddTriangle (tTriangle *pTriangle, uint16_t index [], tFaceTriangle *pTriangle)
+tTriangle *CTriMeshBuilder::AddTriangle (tTriangle *pTriangle, uint16_t index [], tFaceTriangle *pFaceTriangle)
 {
-return CreateTriangle (pTriangle, index, pTriangle->nFace, pTriangle - TRIANGLES);
+return CreateTriangle (pTriangle, index, pTriangle->nFace, pFaceTriangle - TRIANGLES);
 }
 
 //------------------------------------------------------------------------------
@@ -280,7 +280,7 @@ if (!AllocData ()) {
 	}
 
 CSegFace *pFace;
-tFaceTriangle *pTriangle;
+tFaceTriangle *pFaceTriangle;
 tTriangle *pTriangle;
 int32_t i, nFace = -1;
 int16_t nId = 0;
@@ -292,8 +292,8 @@ if (gameStates.render.nMeshQuality) {
 		return 0;
 	}
 #endif
-for (i = FACES.nTriangles, pTriangle = TRIANGLES.Buffer (); i; i--, pTriangle++) {
-	if (!(pTriangle = AddTriangle (NULL, pTriangle->index, pTriangle))) {
+for (i = FACES.nTriangles, pFaceTriangle = TRIANGLES.Buffer (); i; i--, pTriangle++) {
+	if (!(pTriangle = AddTriangle (NULL, pFaceTriangle->index, pFaceTriangle))) {
 		FreeData ();
 		PrintLog (-1);
 		return 0;
@@ -577,7 +577,7 @@ ComputeVertexNormals ();
 int32_t CTriMeshBuilder::InsertTriangles (void)
 {
 	tTriangle*		pTriangle = &m_triangles [0];
-	tFaceTriangle*	pTriangle = TRIANGLES.Buffer ();
+	tFaceTriangle*	pFaceTriangle = TRIANGLES.Buffer ();
 	CSegFace*		m_pFace = NULL;
 	CFixVector		vNormal;
 	int32_t				h, i, nFace = -1;
@@ -1048,7 +1048,7 @@ void CQuadMeshBuilder::InitTexturedFace (void)
 m_pFace->m_info.nBaseTex = m_pSide->m_nBaseTex;
 if ((m_pFace->m_info.nOvlTex = m_pSide->m_nOvlTex))
 	m_nOvlTexCount++;
-m_pFace->m_info.bSlide = (gameData.pig.tex.tMapInfoP [m_pFace->m_info.nBaseTex].slide_u || gameData.pig.tex.tMapInfoP [m_pFace->m_info.nBaseTex].slide_v);
+m_pFace->m_info.bSlide = (gameData.pig.tex.pTexMapInfo [m_pFace->m_info.nBaseTex].slide_u || gameData.pig.tex.pTexMapInfo [m_pFace->m_info.nBaseTex].slide_v);
 m_pFace->m_info.nCamera = IsMonitorFace (m_pFace->m_info.nSegment, m_pFace->m_info.nSide, 1);
 m_pFace->m_info.bIsLight = IsLight (m_pFace->m_info.nBaseTex) || (m_pFace->m_info.nOvlTex && IsLight (m_pFace->m_info.nOvlTex));
 m_pFace->m_info.nOvlOrient = (uint8_t) m_pSide->m_nOvlOrient;

@@ -207,7 +207,7 @@ if (N_D2_OBJBITMAPPTRS + t >= MAX_OBJ_BITMAPS) {
 	return -1;
 	}
 for (i = N_D2_OBJBITMAPPTRS; i < (N_D2_OBJBITMAPPTRS + t); i++)
-	gameData.pig.tex.objBmIndexP [i] = cf.ReadShort ();
+	gameData.pig.tex.pObjBmIndex [i] = cf.ReadShort ();
 cf.Close ();
 return 1;
 }
@@ -379,7 +379,7 @@ for (j = 0; j < t; j++) {
 		gameData.models.nPolyModels = nPolyModelSave;
 		return -1;
 		}
-	gameData.pig.tex.objBmIndexP [i] = cf.ReadShort ();
+	gameData.pig.tex.pObjBmIndex [i] = cf.ReadShort ();
 	}
 cf.Close ();
 return 1;
@@ -440,7 +440,7 @@ if (!(i = bip->index))
 	return NULL;
 //if (gameData.pig.tex.bitmaps [0][i].Width () != 64 || gameData.pig.tex.bitmaps [0][i].Height () != 64)
 //	Error ("Bitmap <%s> is not 64x64", name);
-gameData.pig.tex.objBmIndexP [gameData.pig.tex.nObjBitmaps] = gameData.pig.tex.nObjBitmaps;
+gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nObjBitmaps] = gameData.pig.tex.nObjBitmaps;
 gameData.pig.tex.nObjBitmaps++;
 Assert (gameData.pig.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
 return gameData.pig.tex.bitmaps [0] + i;

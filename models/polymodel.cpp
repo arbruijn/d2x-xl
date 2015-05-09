@@ -658,7 +658,7 @@ if (altTextures) {
 	}
 else {
 	for (i = 0, j = m_info.nFirstTexture; i < nTextures; i++, j++) {
-		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [j]];
+		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [j]];
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + gameData.models.textureIndex [i].index;
 		if (gameStates.render.bBuildModels)
 			LoadTexture (gameData.models.textureIndex [i].index, 0, gameStates.app.bD1Model);

@@ -248,7 +248,7 @@ if ((nSegment < 0) || (nSide < 0))
 
 	CTrigger*	pTrigger;
 	int32_t			i = 0;
-	bool			bForceField = (gameData.pig.tex.tMapInfoP [SEGMENT (nSegment)->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0;
+	bool			bForceField = (gameData.pig.tex.pTexMapInfo [SEGMENT (nSegment)->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0;
 
 while ((i = FindTriggerTarget (nSegment, nSide, i))) {
 	if (i < 0)
@@ -289,12 +289,12 @@ if (!nTexture)
 	return 0;
 if (IsMultiGame && netGameInfo.m_info.bIndestructibleLights)
 	return 0;
-int16_t nClip = gameData.pig.tex.tMapInfoP [nTexture].nEffectClip;
+int16_t nClip = gameData.pig.tex.pTexMapInfo [nTexture].nEffectClip;
 tEffectInfo	*pEffectInfo = (nClip < 0) ? NULL : gameData.effects.pEffect + nClip;
 int16_t	nDestBM = pEffectInfo ? pEffectInfo->destroyed.nTexture : -1;
 uint8_t	bOneShot = pEffectInfo ? (pEffectInfo->flags & EF_ONE_SHOT) != 0 : 0;
 if (nClip == -1)
-	return gameData.pig.tex.tMapInfoP [nTexture].destroyed != -1;
+	return gameData.pig.tex.pTexMapInfo [nTexture].destroyed != -1;
 return (nDestBM != -1) && !bOneShot;
 }
 

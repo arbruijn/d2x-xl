@@ -368,7 +368,7 @@ gameData.pig.tex.nObjBitmaps = cf.ReadInt ();
 ReadBitmapIndices (gameData.pig.tex.objBmIndex, gameData.pig.tex.nObjBitmaps, cf);
 gameData.pig.tex.defaultObjBmIndex = gameData.pig.tex.objBmIndex;
 for (i = 0; i < gameData.pig.tex.nObjBitmaps; i++)
-	gameData.pig.tex.objBmIndexP [i] = cf.ReadShort ();
+	gameData.pig.tex.pObjBmIndex [i] = cf.ReadShort ();
 PrintLog (-1);
 
 /*---*/PrintLog (1, "Loading CPlayerData ship description\n");

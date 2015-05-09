@@ -1359,11 +1359,11 @@ if (!bSolid) {
 	if (!pWall || (pWall->nType != WALL_ILLUSION) || (pWall->flags & WALL_ILLUSION_OFF))
 		return 0;
 	}
-if (gameData.pig.tex.tMapInfoP [m_nBaseTex].damage) {
-	damage = gameData.pig.tex.tMapInfoP [m_nBaseTex].damage;
+if (gameData.pig.tex.pTexMapInfo [m_nBaseTex].damage) {
+	damage = gameData.pig.tex.pTexMapInfo [m_nBaseTex].damage;
 	return 3;
 	}
-if (gameData.pig.tex.tMapInfoP [m_nBaseTex].flags & TMI_WATER)
+if (gameData.pig.tex.pTexMapInfo [m_nBaseTex].flags & TMI_WATER)
 	return bSolid ? 2 : 4;
 return 0;
 }

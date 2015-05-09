@@ -1042,9 +1042,9 @@ CSegment* pSeg = SEGMENT (nSegment);
 if (!(pSeg->IsPassable (nSide, NULL) & WID_VISIBLE_FLAG))
 	return -1;
 int16_t nOvlTex = pSeg->m_sides [nSide].m_nOvlTex;
-int16_t nEffect = nOvlTex ? gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip : -1;
+int16_t nEffect = nOvlTex ? gameData.pig.tex.pTexMapInfo [nOvlTex].nEffectClip : -1;
 if (nEffect < 0)
-	nEffect = gameData.pig.tex.tMapInfoP [pSeg->m_sides [nSide].m_nBaseTex].nEffectClip;
+	nEffect = gameData.pig.tex.pTexMapInfo [pSeg->m_sides [nSide].m_nBaseTex].nEffectClip;
 if (nEffect < 0)
 	return -1;
 int32_t nSound = gameData.effects.pEffect [nEffect].nSound;

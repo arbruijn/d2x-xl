@@ -100,7 +100,7 @@ for (int32_t i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, pEf
 void LoadModelTextures (int32_t nModel)
 {
 	CPolyModel*	pModel = gameData.models.polyModels [0] + nModel;
-	uint16_t*		pi = gameData.pig.tex.objBmIndexP + pModel->FirstTexture ();
+	uint16_t*		pi = gameData.pig.tex.pObjBmIndex + pModel->FirstTexture ();
 	int32_t			j;
 
 for (int32_t h = pModel->TextureCount (), i = 0; i < h; i++, pi++) {

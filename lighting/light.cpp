@@ -937,7 +937,7 @@ void ChangeSegmentLight (int16_t nSegment, int16_t nSide, int32_t dir)
 if (pSeg->IsPassable (nSide, NULL) & WID_VISIBLE_FLAG) {
 	CSide	*pSide = pSeg->m_sides+nSide;
 	fix	xBrightness;
-	xBrightness = gameData.pig.tex.tMapInfoP [pSide->m_nBaseTex].lighting + gameData.pig.tex.tMapInfoP [pSide->m_nOvlTex].lighting;
+	xBrightness = gameData.pig.tex.pTexMapInfo [pSide->m_nBaseTex].lighting + gameData.pig.tex.pTexMapInfo [pSide->m_nOvlTex].lighting;
 	xBrightness *= dir;
 	nChangedSegs = 0;
 	if (xBrightness) {

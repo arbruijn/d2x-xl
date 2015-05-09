@@ -692,7 +692,7 @@ if (info.nFlags & OF_SHOULD_BE_DEAD)
 if (info.nType == OBJ_DEBRIS)
 	return 0;
 
-int32_t bForceFieldBounce = (gameData.pig.tex.tMapInfoP [SEGMENT (simData.hitResult.nSideSegment)->m_sides [simData.hitResult.nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0;
+int32_t bForceFieldBounce = (gameData.pig.tex.pTexMapInfo [SEGMENT (simData.hitResult.nSideSegment)->m_sides [simData.hitResult.nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0;
 if (!bForceFieldBounce && (mType.physInfo.flags & PF_STICK)) {		//stop moving
 	AddStuckObject (this, simData.hitResult.nSideSegment, simData.hitResult.nSide);
 	Velocity ().SetZero ();
@@ -1845,7 +1845,7 @@ retryMove:
 				int32_t bForceFieldBounce;		//bounce off a forcefield
 
 				///Assert (gameStates.app.cheats.bBouncingWeapons || ((mType.physInfo.flags & (PF_STICK | PF_BOUNCES)) != (PF_STICK | PF_BOUNCES)));	//can't be bounce and stick
-				bForceFieldBounce = (gameData.pig.tex.tMapInfoP [SEGMENT (simData.hitResult.nSideSegment)->m_sides [simData.hitResult.nSide].m_nBaseTex].flags & TMI_FORCE_FIELD);
+				bForceFieldBounce = (gameData.pig.tex.pTexMapInfo [SEGMENT (simData.hitResult.nSideSegment)->m_sides [simData.hitResult.nSide].m_nBaseTex].flags & TMI_FORCE_FIELD);
 				if (!bForceFieldBounce && (mType.physInfo.flags & PF_STICK)) {		//stop moving
 					AddStuckObject (this, simData.hitResult.nSideSegment, simData.hitResult.nSide);
 					Velocity ().SetZero ();

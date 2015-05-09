@@ -199,7 +199,7 @@ for (i = 0; i <= gameData.segData.nLastSegment; i++, pSeg++) {
 		if (!pSide->FaceCount ())
 			continue;
 		if ((tm = pSide->m_nOvlTex) != 0) {
-			if (((ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip) != -1) &&
+			if (((ec = gameData.pig.tex.pTexMapInfo [tm].nEffectClip) != -1) &&
 					(gameData.effects.pEffect[ec].destroyed.nTexture != -1)) {
 				nMonitor++;
 				//Assert (nMonitor < 32);

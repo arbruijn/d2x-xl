@@ -515,9 +515,9 @@ if (info.nId != N_LOCALPLAYER) // Execute only for local player
 	return;
 nBaseTex = SEGMENT (nHitSeg)->m_sides [nHitSide].m_nBaseTex;
 //	If this CWall does damage, don't make *BONK* sound, we'll be making another sound.
-if (gameData.pig.tex.tMapInfoP [nBaseTex].damage > 0)
+if (gameData.pig.tex.pTexMapInfo [nBaseTex].damage > 0)
 	return;
-if (gameData.pig.tex.tMapInfoP [nBaseTex].flags & TMI_FORCE_FIELD) {
+if (gameData.pig.tex.pTexMapInfo [nBaseTex].flags & TMI_FORCE_FIELD) {
 	CFixVector vForce;
 	paletteManager.BumpEffect (0, 0, 60);	//flash blue
 	//knock player around
@@ -555,8 +555,8 @@ if (gameStates.app.bD2XLevel && (SEGMENT (nHitSeg)->HasNoDamageProp ()))
 damage = (xHitSpeed / DAMAGE_SCALE) * (bForceFieldHit * 8 + 1);
 nOvlTex = SEGMENT (nHitSeg)->m_sides [nHitSide].m_nOvlTex;
 //don't do CWall damage and sound if hit lava or water
-if ((gameData.pig.tex.tMapInfoP [nBaseTex].flags & (TMI_WATER|TMI_VOLATILE)) ||
-		(nOvlTex && (gameData.pig.tex.tMapInfoP [nOvlTex].flags & (TMI_WATER|TMI_VOLATILE))))
+if ((gameData.pig.tex.pTexMapInfo [nBaseTex].flags & (TMI_WATER|TMI_VOLATILE)) ||
+		(nOvlTex && (gameData.pig.tex.pTexMapInfo [nOvlTex].flags & (TMI_WATER|TMI_VOLATILE))))
 	damage = 0;
 if (damage >= DAMAGE_THRESHOLD) {
 	int32_t volume = (xHitSpeed - (DAMAGE_SCALE * DAMAGE_THRESHOLD)) / WALL_LOUDNESS_SCALE;
@@ -780,7 +780,7 @@ int32_t bBounce = (mType.physInfo.flags & PF_BOUNCES) != 0;
 if (!bBounce)
 	CreateWeaponEffects (1);
 //if an energy this hits a forcefield, let it bounce
-if (pSide && (gameData.pig.tex.tMapInfoP [pSide->m_nBaseTex].flags & TMI_FORCE_FIELD) &&
+if (pSide && (gameData.pig.tex.pTexMapInfo [pSide->m_nBaseTex].flags & TMI_FORCE_FIELD) &&
 	 ((info.nType != OBJ_WEAPON) || pWeaponInfo->xEnergyUsage)) {
 
 	//make sound
@@ -811,8 +811,8 @@ if (info.nId == EARTHSHAKER_ID)
 	ShakerRockStuff (&Position ());
 int32_t wallType = (nHitSide < 0) ? WHP_NOT_SPECIAL : pSeg->ProcessWallHit (nHitSide, info.xShield, nPlayer, this);
 // Wall is volatile if either tmap 1 or 2 is volatile
-if (pSide && ((gameData.pig.tex.tMapInfoP [pSide->m_nBaseTex].flags & TMI_VOLATILE) ||
-	           (pSide->m_nOvlTex && (gameData.pig.tex.tMapInfoP [pSide->m_nOvlTex].flags & TMI_VOLATILE)))) {
+if (pSide && ((gameData.pig.tex.pTexMapInfo [pSide->m_nBaseTex].flags & TMI_VOLATILE) ||
+	           (pSide->m_nOvlTex && (gameData.pig.tex.pTexMapInfo [pSide->m_nOvlTex].flags & TMI_VOLATILE)))) {
 	uint8_t tAnimationInfo;
 	//we've hit a volatile CWall
 	audio.CreateSegmentSound (SOUND_VOLATILE_WALL_HIT, nHitSeg, 0, vHitPt);
@@ -827,8 +827,8 @@ if (pSide && ((gameData.pig.tex.tMapInfoP [pSide->m_nBaseTex].flags & TMI_VOLATI
 											  nStrength / 2 + VOLATILE_WALL_DAMAGE_FORCE, cType.laserInfo.parent.nObject);
 	Die ();		//make flares die in lava
 	}
-else if (pSide && ((gameData.pig.tex.tMapInfoP [pSide->m_nBaseTex].flags & TMI_WATER) ||
-			          (pSide->m_nOvlTex && (gameData.pig.tex.tMapInfoP [pSide->m_nOvlTex].flags & TMI_WATER)))) {
+else if (pSide && ((gameData.pig.tex.pTexMapInfo [pSide->m_nBaseTex].flags & TMI_WATER) ||
+			          (pSide->m_nOvlTex && (gameData.pig.tex.pTexMapInfo [pSide->m_nOvlTex].flags & TMI_WATER)))) {
 	//we've hit water
 	//	MK: 09/13/95: SplashDamage in water is 1/2 Normal intensity.
 	if (pWeaponInfo->matter) {
@@ -878,7 +878,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 		}
 
 	//don't let flares stick in vForce fields
-	if ((info.nId == FLARE_ID) && (!pSide || (gameData.pig.tex.tMapInfoP [pSide->m_nBaseTex].flags & TMI_FORCE_FIELD))) {
+	if ((info.nId == FLARE_ID) && (!pSide || (gameData.pig.tex.pTexMapInfo [pSide->m_nBaseTex].flags & TMI_FORCE_FIELD))) {
 		Die ();
 		}
 	if (!(info.nFlags & OF_SILENT)) {

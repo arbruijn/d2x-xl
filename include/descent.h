@@ -2593,7 +2593,7 @@ class CTextureData {
 		CArray<tBitmapIndex>		objBmIndex ; //[MAX_OBJ_BITMAPS];
 		CArray<tBitmapIndex>		defaultObjBmIndex ; //[MAX_OBJ_BITMAPS];
 		CArray<int16_t>			textureIndex [2]; //[MAX_BITMAP_FILES];
-		CArray<uint16_t>			objBmIndexP ; //[MAX_OBJ_BITMAPS];
+		CArray<uint16_t>			pObjBmIndex ; //[MAX_OBJ_BITMAPS];
 		CArray<tBitmapIndex>		cockpitBmIndex; //[N_COCKPIT_BITMAPS];
 		CArray<CFloatVector3>	bitmapColors ; //[MAX_BITMAP_FILES];
 		int32_t						nBitmaps [2];
@@ -2605,11 +2605,11 @@ class CTextureData {
 		int32_t						nHamFileVersion;
 		int32_t						nTextures [2];
 		int32_t						nFirstMultiBitmap;
-		CArray<tBitmapFile>		bitmapFileP;
-		CArray<CBitmap>			bitmapP;
-		CArray<CBitmap>			altBitmapP;
-		CArray<tBitmapIndex>		bmIndexP;
-		CArray<tTexMapInfo>		tMapInfoP;
+		CArray<tBitmapFile>		pBitmapFile;
+		CArray<CBitmap>			pBitmap;
+		CArray<CBitmap>			pAltBitmap;
+		CArray<tBitmapIndex>		pBmIndex;
+		CArray<tTexMapInfo>		pTexMapInfo;
 		CArray<uint8_t>			rleBuffer;
 		CArray<int32_t>			brightness; // [MAX_WALL_TEXTURES];
 		CArray<int32_t>			defaultBrightness [2]; //[MAX_WALL_TEXTURES];

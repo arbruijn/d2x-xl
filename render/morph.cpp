@@ -301,8 +301,8 @@ for (i = m; i < n; i++) {
 	if (m == nSubModel) {
 		h = pModel->TextureCount ();
 		for (j = 0; j < h; j++) {
-			gameData.models.textureIndex [j] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [pModel->FirstTexture () + j]];
-			gameData.models.textures [j] = gameData.pig.tex.bitmaps [0] + /*gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [pModel->FirstTexture ()+j]]*/gameData.models.textureIndex [j].index;
+			gameData.models.textureIndex [j] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [pModel->FirstTexture () + j]];
+			gameData.models.textures [j] = gameData.pig.tex.bitmaps [0] + /*gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [pModel->FirstTexture ()+j]]*/gameData.models.textureIndex [j].index;
 			}
 
 		// Make sure the textures for this CObject are paged in..

@@ -1095,11 +1095,11 @@ pTexProps->nOvlTex = m_sides [nSide].m_nOvlTex;
 if (!pTexProps->nOvlTex)
 	return 0;
 pTexProps->nOvlOrient = m_sides [nSide].m_nOvlOrient;	//nOvlTex flags
-pTexProps->nEffect = gameData.pig.tex.tMapInfoP [pTexProps->nOvlTex].nEffectClip;
+pTexProps->nEffect = gameData.pig.tex.pTexMapInfo [pTexProps->nOvlTex].nEffectClip;
 if (pTexProps->nEffect < 0) {
 	if (IsMultiGame && netGameInfo.m_info.bIndestructibleLights)
 		return 0;
-	pTexProps->nBitmap = gameData.pig.tex.tMapInfoP [pTexProps->nOvlTex].destroyed;
+	pTexProps->nBitmap = gameData.pig.tex.pTexMapInfo [pTexProps->nOvlTex].destroyed;
 	if (pTexProps->nBitmap < 0)
 		return 0;
 	pTexProps->nSwitchType = 0;
@@ -1198,7 +1198,7 @@ if (dtp.nSwitchType) {
 	}
 else {
 	if (!bPermaTrigger)
-		m_sides [nSide].m_nOvlTex = gameData.pig.tex.tMapInfoP [dtp.nOvlTex].destroyed;
+		m_sides [nSide].m_nOvlTex = gameData.pig.tex.pTexMapInfo [dtp.nOvlTex].destroyed;
 	//assume this is a light, and play light sound
 	audio.CreateSegmentSound (SOUND_LIGHT_BLOWNUP, Index (), 0, vHit);
 	}

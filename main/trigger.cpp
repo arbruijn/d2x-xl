@@ -266,7 +266,7 @@ for (int32_t i = 0; i < m_nLinks; i++) {
 	nSide = m_sides [i];
 	//check if tmap2 casts light before turning the light on.  This
 	//is to keep us from turning on blown-out lights
-	if (gameData.pig.tex.tMapInfoP [SEGMENT (nSegment)->m_sides [nSide].m_nOvlTex].lighting) {
+	if (gameData.pig.tex.pTexMapInfo [SEGMENT (nSegment)->m_sides [nSide].m_nOvlTex].lighting) {
 		ret |= AddLight (nSegment, nSide); 		//any light sets flag
 		EnableVariableLight (nSegment, nSide);
 		}
@@ -287,7 +287,7 @@ for (int32_t i = 0; i < m_nLinks; i++) {
 	nSide = m_sides [i];
 	//check if tmap2 casts light before turning the light off.  This
 	//is to keep us from turning off blown-out lights
-	if (gameData.pig.tex.tMapInfoP [SEGMENT (nSegment)->m_sides [nSide].m_nOvlTex].lighting) {
+	if (gameData.pig.tex.pTexMapInfo [SEGMENT (nSegment)->m_sides [nSide].m_nOvlTex].lighting) {
 		ret |= SubtractLight (nSegment, nSide); 	//any light sets flag
 		DisableVariableLight (nSegment, nSide);
 		}
@@ -589,7 +589,7 @@ for (int32_t i = 0; i < m_nLinks; i++) {
 			break;
 		}
 
-	bForceField = ((gameData.pig.tex.tMapInfoP [pSeg->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0);
+	bForceField = ((gameData.pig.tex.pTexMapInfo [pSeg->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0);
 	if (!(pWall = pSeg->Wall (nSide))) {
 #if DBG
 		PrintLog (0, "WARNING: Wall trigger %d targets non-existent wall @ %d,%d\n", Index (), pSeg->Index (), nSide);
@@ -1048,7 +1048,7 @@ return true;
 int32_t CTrigger::WallIsForceField (void)
 {
 for (int32_t i = 0; i < m_nLinks; i++)
-	if ((gameData.pig.tex.tMapInfoP [SEGMENT (m_segments [i])->m_sides [m_sides [i]].m_nBaseTex].flags & TMI_FORCE_FIELD))
+	if ((gameData.pig.tex.pTexMapInfo [SEGMENT (m_segments [i])->m_sides [m_sides [i]].m_nBaseTex].flags & TMI_FORCE_FIELD))
 		return 1;
 return 0;
 }
@@ -1744,9 +1744,9 @@ for (; i < gameData.trigData.m_nTriggers [0]; i++) {
 	nOvlTex = SEGMENT (nSegSide / 65536)->m_sides [nSegSide & 0xffff].m_nOvlTex;
 	if (nOvlTex <= 0)
 		continue;
-	ec = gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip;
+	ec = gameData.pig.tex.pTexMapInfo [nOvlTex].nEffectClip;
 	if (ec < 0) {
-		if (gameData.pig.tex.tMapInfoP [nOvlTex].destroyed == -1)
+		if (gameData.pig.tex.pTexMapInfo [nOvlTex].destroyed == -1)
 			continue;
 		}
 	else {

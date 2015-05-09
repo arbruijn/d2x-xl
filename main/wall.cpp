@@ -1007,12 +1007,12 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 
 	//	Process only walls which have glass.
 	if ((tm = pSeg->m_sides [nSide].m_nOvlTex)) {
-		int32_t ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip;
+		int32_t ec = gameData.pig.tex.pTexMapInfo [tm].nEffectClip;
 		tEffectInfo* pEffectInfo = (ec < 0) ? NULL : gameData.effects.pEffect + ec;
 		int32_t db = pEffectInfo ? pEffectInfo->destroyed.nTexture : -1;
 
 		if (((ec != -1) && (db != -1) && !(pEffectInfo->flags & EF_ONE_SHOT)) ||
-		 	 ((ec == -1) && (gameData.pig.tex.tMapInfoP [tm].destroyed != -1))) {
+		 	 ((ec == -1) && (gameData.pig.tex.pTexMapInfo [tm].destroyed != -1))) {
 			pnt = pSeg->SideCenter (nSide);
 			dist = CFixVector::Dist(pnt, pObj->info.position.vPos);
 			if (dist < damage / 2) {
