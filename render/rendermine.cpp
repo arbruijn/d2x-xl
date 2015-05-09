@@ -769,7 +769,7 @@ return nVisible;
 int32_t CMeshEdge::Type (void)
 {
 int32_t h = Visibility ();
-return ((h == 0) ? -1 : (h != 3) ? 0 : Planar () ? -1 : (m_fScale < 1.0f) ? 2 : 1);
+return ((h == 0) ? -1 : (h != 3) ? 0 : Planar () ? -1 : Partial () ? 2 : 1);
 }
 
 //------------------------------------------------------------------------------
@@ -841,6 +841,8 @@ int32_t nMaxDist;
 
 static inline int32_t DistToScale (float fDistance) 
 { 
+if (fDistance <= 0.0f)
+	return 0;
 fDistance = log10f (fDistance / Max (1.0f, logf (fDistance)));
 return Clamp (int32_t (fDistance * fDistance + 0.5f), int32_t (0), int32_t (31));
 }
@@ -883,16 +885,20 @@ int32_t bScale = fDistance < 0;
 int32_t nDistance;
 if (!bScale) {
 #if DBG
-	float l = Max (1.0f, logf (fDistance));
-	fDistance /= l;
-	fDistance = log10f (fDistance);
+	if (fDistance <= 0.0f)
+		nDistance = 0;
+	else {
+		float l = Max (1.0f, logf (fDistance));
+		fDistance /= l;
+		fDistance = log10f (fDistance);
 #if 1
-	fDistance *= fDistance;
-	fDistance += 0.5f;
+		fDistance *= fDistance;
+		fDistance += 0.5f;
 #else
-	fDistance += 0.5f;
+		fDistance += 0.5f;
 #endif
-	nDistance = int32_t (fDistance);
+		nDistance = int32_t (fDistance);
+		}
 #else
 	nDistance = DistToScale (fDistance);
 #endif
@@ -902,6 +908,11 @@ if (!bScale) {
 float fLineWidths [2] = { automap.Active () ? 3.0f : 6.0f, automap.Active () ? 1.0f : 2.0f };
 float wPixel = 2.0f / float (CCanvas::Current ()->Width ());
 float fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
+#endif
+
+#if DBG
+if ((m_faces [0].m_nItem == 166) && (m_faces [0].m_nFace == 3) && (m_faces [1].m_nItem == 176) && (m_faces [1].m_nFace == 3))
+	BRP;
 #endif
 
 for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
@@ -1116,7 +1127,7 @@ if (!bPolygonalOutline)
 
 void RenderMeshOutline (int32_t nScale)
 {
-float	fLineWidths [2] = { automap.Active () ? 1.5f : 2.5f, automap.Active () ? 1.0f : 2.0f };
+float	fLineWidths [2] = { automap.Active () ? 3.0f : 5.0f, automap.Active () ? 1.5f : 2.5f };
 
 ogl.SetBlendMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
@@ -1151,10 +1162,12 @@ for (int32_t j = 0; j < 2; j++) {
 	if (nScale >= 0) {
 		int32_t n = gameData.segData.edgeVertexData [j].VertexCount ();
 		if (n) {
-			float w = fScale * fLineWidths [j];
+			float w = fScale * fLineWidths [0];
+			if (j)
+				w *= 2.0f / 3.0f;
 			if (nScale)
 				w /= float (nScale * 2);
-			w = Clamp (w, lineWidthRange [0], lineWidthRange [1]);
+			w = Clamp (w + 0.5f, lineWidthRange [0], lineWidthRange [1]);
 			glLineWidth (w);
 			OglDrawArrays (GL_LINES, 0, n);
 			glPointSize (w);
@@ -1175,11 +1188,11 @@ for (int32_t j = 0; j < 2; j++) {
 					int32_t n = gameData.segData.edgeVertexData [j].VertexCountPerDist (d) * 2;
 					if (n) {
 						float w = fScale * fLineWidths [0];
-						if (d)
-							w /= float (d * 2);
-						w = Clamp (w, lineWidthRange [0], lineWidthRange [1]);
 						if (j)
 							w *= 2.0f / 3.0f;
+						if (d)
+							w /= float (d * 2);
+						w = Clamp (w + 0.5f, lineWidthRange [0], lineWidthRange [1]);
 						glLineWidth (w);
 						OglDrawArrays (GL_LINES, i, n);
 						glPointSize (w);

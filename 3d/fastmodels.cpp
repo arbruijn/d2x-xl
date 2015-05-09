@@ -580,7 +580,11 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (bEdges) {
 		if (!subModelP->m_bThruster) {
 			CFloatVector vViewer;
+#if 0
 			float d = X2F (Max (0, CFixVector::Dist (OBJPOS (objP)->vPos, transformation.m_info.pos) - objP->Size ()));
+#else
+			float d = X2F (Max (0, CFixVector::Dist (objP->Position (), gameData.objData.viewerP->Position ()) - objP->Size ()));
+#endif
 			vViewer.Assign (OBJPOS (objP)->vPos - gameData.objData.viewerP->Position ());
 			RenderModel::CModelEdge* edgeP = subModelP->m_edges.Buffer ();
 			int32_t nScale, nEdgeFilter = objP->IsWeapon () ? 0 : bHires; //0 : 2; //bHires;
