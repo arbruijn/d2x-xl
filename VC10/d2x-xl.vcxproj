@@ -1624,6 +1624,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\ogl\ogl_cartoonize.cpp" />
     <ClCompile Include="..\render\automap.cpp" />
     <ClCompile Include="..\render\cameras.cpp" />
     <ClCompile Include="..\render\fastrender.cpp" />

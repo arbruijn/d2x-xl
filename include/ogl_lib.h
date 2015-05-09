@@ -92,6 +92,7 @@ typedef struct tClientBuffer {
 class COglData {
 	public:
 		GLubyte			buffer [2][OGLTEXBUFSIZE];
+		uint8_t			outlineFilter [OGLTEXBUFSIZE / 4];
 		CPalette*		palette;
 		float				zNear;
 		float				zFar;
