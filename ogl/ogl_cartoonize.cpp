@@ -99,11 +99,27 @@ static int32_t nColorSteps = 15;
 
 #endif
 
+//------------------------------------------------------------------------------
+
 static inline int32_t Wrap (int32_t i, int32_t l)
 {
 if (i < 0)
 	return i + l;
 return i % l;
+}
+
+//------------------------------------------------------------------------------
+
+static inline int32_t Visible (tRGB& color)
+{
+return Visible (color);
+}
+
+//------------------------------------------------------------------------------
+
+static inline int32_t Visible (tRGBA& color)
+{
+return color.a && Visible ((tRGB&) color);
 }
 
 //------------------------------------------------------------------------------
@@ -120,7 +136,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 	for (int32_t x = -r; x < w + r; x++) {
 		if (x > r) {
 			tRGBA& color = src [i + Wrap (x - l, w)];
-			if (color.a) {
+			if (Visible (color)) {
 				a [0] -= (int32_t) color.r;
 				a [1] -= (int32_t) color.g;
 				a [2] -= (int32_t) color.b;
@@ -129,7 +145,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 			}
  
 		tRGBA& color = src [i + Wrap (x, w)];
-		if (color.a) {
+		if (Visible (color)) {
 			a [0] += (int32_t) color.r;
 			a [1] += (int32_t) color.g;
 			a [2] += (int32_t) color.b;
@@ -137,10 +153,10 @@ for (int32_t y = nStart; y < h; y += nStep) {
 			}
  
 		if (x >= r) {
-			tRGBA& srcColor = src [(y - r) * tw + x];
-			tRGBA& destColor = dest [(y - r) * tw + x];
-			destColor.a = srcColor.a;
-			if (n && destColor.a) {
+			tRGBA& srcColor = src [i + x - r];
+			tRGBA& destColor = dest [i + x - r];
+			if (n && Visible (srcColor)) {
+				destColor.a = srcColor.a;
 				destColor.r = uint8_t (a [0] / n);
 				destColor.g = uint8_t (a [1] / n);
 				destColor.b = uint8_t (a [2] / n);
@@ -166,7 +182,7 @@ for (int32_t x = nStart; x < w; x += nStep) {
 	for (int32_t y = -r; y < h + r; y++) {
 		if (y > r) {
 			tRGBA& color = src [Wrap (y - l, h) * tw + x];
-			if (color.a) {
+			if (Visible (color)) {
 				a [0] -= (int32_t) color.r;
 				a [1] -= (int32_t) color.g;
 				a [2] -= (int32_t) color.b;
@@ -175,7 +191,7 @@ for (int32_t x = nStart; x < w; x += nStep) {
 			}
  
 		tRGBA& color = src [Wrap (y, h) * tw + x];
-		if (color.a) {
+		if (Visible (color)) {
 			a [0] += (int32_t) color.r;
 			a [1] += (int32_t) color.g;
 			a [2] += (int32_t) color.b;
@@ -185,8 +201,8 @@ for (int32_t x = nStart; x < w; x += nStep) {
 		if (y >= r) {
 			tRGBA& srcColor = src [(y - r) * tw + x];
 			tRGBA& destColor = dest [(y - r) * tw + x];
-			destColor.a = srcColor.a;
-			if (n && color.a) {
+			if (n && Visible (srcColor)) {
+				destColor.a = srcColor.a;
 				destColor.r = uint8_t (a [0] / n);
 				destColor.g = uint8_t (a [1] / n);
 				destColor.b = uint8_t (a [2] / n);
@@ -206,28 +222,35 @@ int32_t i = nStart * tw;
 for (int32_t y = nStart; y < h; y += nStep) {
 	int32_t l = 2 * r + 1;
 	int32_t a [3] = { 0, 0, 0 };
+	int32_t n = 0;
 
 	for (int32_t x = -r; x < w + r; x++) {
 		if (x > r) {
 			tRGB& color = src [i + Wrap (x - l, w)];
-			a [0] -= (int32_t) color.r;
-			a [1] -= (int32_t) color.g;
-			a [2] -= (int32_t) color.b;
+			if (Visible (color)) {
+				a [0] -= (int32_t) color.r;
+				a [1] -= (int32_t) color.g;
+				a [2] -= (int32_t) color.b;
+				--n;
+				}
 			}
  
 		tRGB& color = src [i + Wrap (x, w)];
-		a [0] += (int32_t) color.r;
-		a [1] += (int32_t) color.g;
-		a [2] += (int32_t) color.b;
+		if (Visible (color)) {
+			a [0] += (int32_t) color.r;
+			a [1] += (int32_t) color.g;
+			a [2] += (int32_t) color.b;
+			++n;
+			}
  
 		if (x >= r) {
 			int32_t h = i + x - r;
 			tRGB& color = src [h];
-			if ((color.r != 120) || (color.g != 88) || (color.b != 128)) {
+			if (Visible (color)) {
 				color = dest [h];
-				color.r = uint8_t (a [0] / l);
-				color.g = uint8_t (a [1] / l);
-				color.b = uint8_t (a [2] / l);
+				color.r = uint8_t (a [0] / n);
+				color.g = uint8_t (a [1] / n);
+				color.b = uint8_t (a [2] / n);
 				}
 			else
 				dest [h] = color;
@@ -245,28 +268,35 @@ static void VBoxBlurRGBWrapped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int
 
 for (int32_t x = nStart; x < w; x += nStep) {
 	int32_t a [3] = { 0, 0, 0 };
+	int32_t n = 0;
 
 	for (int32_t y = -r; y < h + r; y++) {
 		if (y > r) {
 			tRGB& color = src [Wrap (y - l, h) * tw + x];
-			a [0] -= (int32_t) color.r;
-			a [1] -= (int32_t) color.g;
-			a [2] -= (int32_t) color.b;
+			if (Visible (color)) {
+				a [0] -= (int32_t) color.r;
+				a [1] -= (int32_t) color.g;
+				a [2] -= (int32_t) color.b;
+				--n;
+				}
 			}
  
 		tRGB& color = src [Wrap (y, h) * tw + x];
-		a [0] += (int32_t) color.r;
-		a [1] += (int32_t) color.g;
-		a [2] += (int32_t) color.b;
+		if (Visible (color)) {
+			a [0] += (int32_t) color.r;
+			a [1] += (int32_t) color.g;
+			a [2] += (int32_t) color.b;
+			++n;
+			}
  
 		if (y >= r) {
 			int32_t h = (y - r) * tw + x;
 			color = src [h];
-			if ((color.r != 120) || (color.g != 88) || (color.b != 128)) {
+			if (Visible (color)) {
 				color = dest [h];
-				color.r = uint8_t (a [0] / l);
-				color.g = uint8_t (a [1] / l);
-				color.b = uint8_t (a [2] / l);
+				color.r = uint8_t (a [0] / n);
+				color.g = uint8_t (a [1] / n);
+				color.b = uint8_t (a [2] / n);
 				}
 			else
 				dest [h] = color;
@@ -288,7 +318,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 		int32_t j = x - r - 1;
 		if (j >= 0) {
 			tRGBA& color = src [i + j];
-			if (color.a) {
+			if (Visible (color)) {
 				a [0] -= (int32_t) color.r;
 				a [1] -= (int32_t) color.g;
 				a [2] -= (int32_t) color.b;
@@ -299,7 +329,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 		j = x + r;
 		if (j < w) {
 			tRGBA& color = src [i + j];
-			if (color.a) {
+			if (Visible (color)) {
 				a [0] += (int32_t) color.r;
 				a [1] += (int32_t) color.g;
 				a [2] += (int32_t) color.b;
@@ -310,7 +340,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 		if (x >= 0) {
 			tRGBA& srcColor = src [i + x];
 			tRGBA& destColor = dest [i + x];
-			if (n && srcColor.a) {
+			if (n && Visible (srcColor)) {
 				destColor.a = srcColor.a;
 				destColor.r = uint8_t (a [0] / n);
 				destColor.g = uint8_t (a [1] / n);
@@ -339,7 +369,7 @@ for (int32_t x = nStart; x < w; x += nStep) {
 		int32_t j = y - r - 1;
 		if (j >= 0) {
 			tRGBA& color = src [i + o [0]];
-			if (color.a) {
+			if (Visible (color)) {
 				a [0] -= (int32_t) color.r;
 				a [1] -= (int32_t) color.g;
 				a [2] -= (int32_t) color.b;
@@ -350,7 +380,7 @@ for (int32_t x = nStart; x < w; x += nStep) {
 		j = y + r;
 		if (j < h) {
 			tRGBA& color = src [i + o [1]];
-			if (color.a) {
+			if (Visible (color)) {
 				a [0] += (int32_t) color.r;
 				a [1] += (int32_t) color.g;
 				a [2] += (int32_t) color.b;
@@ -361,7 +391,7 @@ for (int32_t x = nStart; x < w; x += nStep) {
 		if (y >= 0) {
 			tRGBA& srcColor = dest [y * tw + x];
 			tRGBA& destColor = dest [y * tw + x];
-			if (n && destColor.a) {
+			if (n && Visible (srcColor)) {
 				destColor.a = srcColor.a;
 				destColor.r = uint8_t (a [0] / n);
 				destColor.g = uint8_t (a [1] / n);
@@ -372,6 +402,54 @@ for (int32_t x = nStart; x < w; x += nStep) {
 			}
 		i += tw;
 		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+static void HBoxBlurRGBClamped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
+{
+int32_t i = nStart * tw;
+for (int32_t y = nStart; y < h; y += nStep) {
+	int32_t n = 0;
+	int32_t a [3] = { 0, 0, 0 };
+	for (int32_t x = -r; x < w; x++) {
+		int32_t j = x - r - 1;
+		if (j >= 0) {
+			tRGB& color = src [i + j];
+			if (Visible (color)) {
+				a [0] -= (int32_t) color.r;
+				a [1] -= (int32_t) color.g;
+				a [2] -= (int32_t) color.b;
+				n--;
+				}
+			}
+ 
+		j = x + r;
+		if (j < w) {
+			tRGB& color = src [i + j];
+			if (Visible (color)) {
+				a [0] += (int32_t) color.r;
+				a [1] += (int32_t) color.g;
+				a [2] += (int32_t) color.b;
+				}
+			n++;
+			}
+ 
+		if (x >= 0) {
+			int32_t h = i + x;
+			tRGB& color = src [h];
+			if (Visible (color)) {
+				color = dest [h];
+				color.r = uint8_t (a [0] / n);
+				color.g = uint8_t (a [1] / n);
+				color.b = uint8_t (a [2] / n);
+				}
+			else
+				dest [h] = color;
+			}
+		}
+	i += nStep * tw;
 	}
 }
 
@@ -408,7 +486,7 @@ for (int32_t x = nStart; x < w; x += nStep) {
 		if (y >= 0) {
 			int32_t h = y * tw + x;
 			tRGB& color = src [h];
-			if ((color.r != 120) || (color.g != 88) || (color.b != 128)) {
+			if (Visible (color)) {
 				color = dest [h];
 				color.r = uint8_t (a [0] / n);
 				color.g = uint8_t (a [1] / n);
@@ -419,50 +497,6 @@ for (int32_t x = nStart; x < w; x += nStep) {
 			}
 		i += tw;
 		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-static void HBoxBlurRGBClamped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
-{
-int32_t i = nStart * tw;
-for (int32_t y = nStart; y < h; y += nStep) {
-	int32_t n = 0;
-	int32_t a [3] = { 0, 0, 0 };
-	for (int32_t x = -r; x < w; x++) {
-		int32_t j = x - r - 1;
-		if (j >= 0) {
-			tRGB& color = src [i + j];
-			a [0] -= (int32_t) color.r;
-			a [1] -= (int32_t) color.g;
-			a [2] -= (int32_t) color.b;
-			n--;
-			}
- 
-		j = x + r;
-		if (j < w) {
-			tRGB& color = src [i + j];
-			a [0] += (int32_t) color.r;
-			a [1] += (int32_t) color.g;
-			a [2] += (int32_t) color.b;
-			n++;
-			}
- 
-		if (x >= 0) {
-			int32_t h = i + x;
-			tRGB& color = src [h];
-			if ((color.r != 120) || (color.g != 88) || (color.b != 128)) {
-				color = dest [h];
-				color.r = uint8_t (a [0] / n);
-				color.g = uint8_t (a [1] / n);
-				color.b = uint8_t (a [2] / n);
-				}
-			else
-				dest [h] = color;
-			}
-		}
-	i += nStep * tw;
 	}
 }
 
