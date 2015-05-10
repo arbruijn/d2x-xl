@@ -630,7 +630,7 @@ for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
 				}
 			}
 		}
-	a -= 128 >> nPasses;
+	a -= 256 >> nPasses;
 	}
 }
 
@@ -661,7 +661,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 
 void Outline (GLubyte *src, int32_t w, int32_t h, int32_t tw, int32_t nPasses)
 {
-#if USE_OPENMP
+#if 0 //USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
 #	pragma omp parallel
 #	pragma omp for
@@ -710,7 +710,7 @@ if (pBm->m_info.bCartoonizable && (gameStates.render.bCartoonize < 0)) {
 	if (gameStates.render.bPosterizeTextures)
 		Posterize (pBuffer, w, h, tw, nColors);
 	if (gameStates.render.bOutlineTextures && (nColors == 4) && !strstr (pBm->Name (), "lava") && !strstr (pBm->Name (), "water"))
-		Outline (pBuffer, w, h, tw, 1 << s);
+		Outline (pBuffer, w, h, tw, /*1 << s*/s + 1);
 	}
 return pBuffer;
 }
