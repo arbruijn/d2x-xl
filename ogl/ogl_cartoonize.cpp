@@ -603,9 +603,13 @@ else if (nColors == 4)
 
 void CreateOutline (tRGBA *pTexture, int32_t w, int32_t h, int32_t tw, int32_t nPasses, int32_t nStart = 0, int32_t nStep = 1)
 {
+#if 0
 	int32_t offsets [9] = { -tw - 1, -tw, -tw + 1, -1, 0, 1, tw - 1, tw, tw + 1};
+#else
+	int32_t offsets [8][2] = { {-1, -1}, {0, -1}, {1, -1}, {-1, 0}, /*{0, 0}, */{1, 0}, {-1, 1,}, {0, 1}, {1, 1} };
+#endif
 	int32_t l = (h - 1) * tw + w;
-	int32_t nTag = 254, n = 0;
+	int32_t nTag = 254, n = 0, a = 255;
 
 for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
 	for (int32_t y = nStart; y < h; y += nStep) {
@@ -613,27 +617,22 @@ for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
 		for (int32_t x = 0; x < w; x++, i++) {
 			if (ogl.m_data.outlineFilter [i])
 				continue;
-			for (int32_t o = 0; o < 9; o++) {
-				int32_t j = offsets [o];
-				if (j == 0)
-					continue;
-				j += i;
-				if (j < 0)
-					continue;
-				if (j >= l)
-					continue;
+			for (int32_t o = 0; o < 8; o++) {
+				int32_t j = Clamp (y + offsets [o][1], 0, h) * tw + Clamp (x + offsets [o][0], 0, w);
 				if (ogl.m_data.outlineFilter [j] > nTag) {
 					ogl.m_data.outlineFilter [i] = nTag;
 					pTexture [i].r = 
 					pTexture [i].g = 
 					pTexture [i].b = 2;
-					pTexture [i].a = 255;
+					pTexture [i].a = a;
 					n++;
 					break;
 					}
 				}
 			}
 		}
+	if (nPass)
+		a /= 2;
 	}
 }
 
