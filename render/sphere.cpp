@@ -813,11 +813,23 @@ bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, pBm, fScale);
 tObjTransformation *pPos = OBJPOS (pObj);
 transformation.Begin (vPos, pPos->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
-if (!bEffect && gameStates.render.CartoonStyle ()) {
-	glLineWidth (gameStates.render.OutlineWidth (0, 0.0f, CMeshEdge::DistToScale (X2F (vPos.Mag ()))));
-	OglDrawCircle (CFloatVector::ZERO, 32, GL_LINE_LOOP);
-	}
 transformation.End ();
+if (!bEffect) {
+	int32_t bCartoonStyle = gameStates.render.EnableCartoonStyle (1, 1, 1);
+	if (gameStates.render.CartoonStyle ()) {
+		CFloatVector vPosf;
+		vPosf.Assign (vPos);
+		glLineWidth (2 * gameStates.render.OutlineWidth (0, 0.0f, CMeshEdge::DistToScale (vPosf.Mag ())));
+		CFixMatrix m = transformation.m_info.view [0];
+		m.Inverse ();
+		transformation.Begin (vPos, m);
+		glScalef (float (xScale), float (yScale), 1.0f);
+		glColor3f (float (gameStates.render.outlineColor.r) / 255.0f, float (gameStates.render.outlineColor.g) / 255.0f, float (gameStates.render.outlineColor.b) / 255.0f);
+		OglDrawCircle (CFloatVector::ZERO, 32, GL_LINE_LOOP);
+		transformation.End ();
+		gameStates.render.SetCartoonStyle (bCartoonStyle);
+		}
+	}
 //ogl.ResetTransform (0);
 ogl.SetTransform (0);
 if (bGlow) 

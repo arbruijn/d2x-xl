@@ -218,7 +218,7 @@ if (ogl.SizeVertexBuffer (nSides)) {
 		ogl.VertexBuffer () [i].v.coord.y = float (sin (a));
 		ogl.VertexBuffer () [i].v.coord.z = vCenter.v.coord.z;
 		}
-	ogl.FlushBuffers (nType, nSides, 2);
+	ogl.FlushBuffers (nType, nSides, 3);
 	}
 }
 

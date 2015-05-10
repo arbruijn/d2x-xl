@@ -71,12 +71,12 @@ class CTriMeshBuilder {
 class CQuadMeshBuilder {
 	private:
 		CSegFace*			m_pFace;
-		tFaceTriangle*		m_pTriangle;
-		CFloatVector3*		m_vertexP;
+		tFaceTriangle*		m_pFaceTriangle;
+		CFloatVector3*		m_pVertex;
 		CFloatVector3*		m_pNormal;
 		tTexCoord2f*		m_pTexCoord;
-		tTexCoord2f*		m_ovlTexCoordP;
-		tTexCoord2f*		m_lMapTexCoordP;
+		tTexCoord2f*		m_pOvlTexCoord;
+		tTexCoord2f*		m_pLightmapTexCoord;
 		CFloatVector*		m_pFaceColor;
 		CFaceColor*			m_pColor;
 		CSegment*			m_pSeg;
