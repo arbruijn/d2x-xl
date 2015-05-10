@@ -21,9 +21,9 @@ CGlowRenderer glowRenderer;
 
 int32_t hBlurShader = -1;
 
-#define LINEAR_SAMPLING 1
+#define DISCRETE_SAMPLING 1
 
-#	if LINEAR_SAMPLING
+#	if DISCRETE_SAMPLING
 
 // linear sampling
 const char *blurFS = 
@@ -142,7 +142,7 @@ const char *blurVS =
 bool CGlowRenderer::LoadShader (int32_t const direction, float const radius)
 {
 	//float fScale [2] = {ogl.m_data.windowScale.dim.y * (radius * 0.5f + 1.0f), ogl.m_data.windowScale.dim.x * (radius * 0.5f + 1.0f)};
-	float fScale [2] = {ogl.m_data.windowScale.dim.y * 2.0f, ogl.m_data.windowScale.dim.x * 2.0f};
+	float fScale [2] = {ogl.m_data.windowScale.dim.y /** 2.0f*/, ogl.m_data.windowScale.dim.x /** 2.0f*/};
 	//float fScale [2] = {1.0f / float (gameData.render.scene.Height ()) * radius, 1.0f / float (gameData.render.scene.Width ()) * radius};
 
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hBlurShader /*[direction]*/));
