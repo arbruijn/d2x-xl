@@ -608,7 +608,6 @@ void CreateOutline (tRGBA *pTexture, int32_t w, int32_t h, int32_t tw, int32_t n
 #else
 	int32_t offsets [8][2] = { {-1, -1}, {0, -1}, {1, -1}, {-1, 0}, /*{0, 0}, */{1, 0}, {-1, 1,}, {0, 1}, {1, 1} };
 #endif
-	int32_t l = (h - 1) * tw + w;
 	int32_t nTag = 254, n = 0, a = 255;
 
 for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
@@ -631,8 +630,7 @@ for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
 				}
 			}
 		}
-	if (nPass)
-		a /= 2;
+	a -= 128 / nPasses;
 	}
 }
 
