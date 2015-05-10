@@ -1144,13 +1144,7 @@ class CRenderStates {
 			SetOutlineColor ();
 			}
 
-		inline int32_t EnableCartoonStyle (int32_t bBlur = 1, int32_t bPosterize = 1, int32_t bOutline = 0) {
-			bBlurTextures = bBlur;
-			bPosterizeTextures = bPosterize;
-			bOutlineTextures = bOutline;
-			SetOutlineColor ();
-			return SetCartoonStyle (gameOpts->render.bCartoonize);
-			}
+		int32_t EnableCartoonStyle (int32_t bBlur = 1, int32_t bPosterize = 1, int32_t bOutline = 0);
 
 		inline int32_t DisableCartoonStyle (void) {
 			bOutlineTextures = 0;
@@ -1503,7 +1497,7 @@ class CColorData {
 		CArray<CFaceColor>	textures; // [MAX_WALL_TEXTURES];
 		CArray<CFaceColor>	defaultTextures [2]; //[MAX_WALL_TEXTURES];
 		CArray<tLightRef>		visibleLights;
-		int32_t						nVisibleLights;
+		int32_t					nVisibleLights;
 		CFloatVector3			flagTag;
 	public:
 		CColorData ();
@@ -1549,21 +1543,21 @@ class CFlickerLightData : public CArray< CVariableLight > {};
 
 class CLightData {
 	public:
-		int32_t								nStatic;
-		int32_t								nCoronas;
+		int32_t							nStatic;
+		int32_t							nCoronas;
 		CArray<fix>						segDeltas;
 		CArray<CLightDeltaIndex>	deltaIndices;
 		CArray<CLightDelta>			deltas;
-		CArray<uint8_t>					subtracted;
+		CArray<uint8_t>				subtracted;
 		CFlickerLightData				flicker;
 		CArray<fix>						dynamicLight;
-		CArray<CFloatVector3>			dynamicColor;
-		CArray<uint8_t>					bGotDynColor;
-		uint8_t								bGotGlobalDynColor;
-		uint8_t								bStartDynColoring;
-		uint8_t								bInitDynColoring;
-		CFloatVector3						globalDynColor;
-		CArray<int16_t>					vertices;
+		CArray<CFloatVector3>		dynamicColor;
+		CArray<uint8_t>				bGotDynColor;
+		uint8_t							bGotGlobalDynColor;
+		uint8_t							bStartDynColoring;
+		uint8_t							bInitDynColoring;
+		CFloatVector3					globalDynColor;
+		CArray<int16_t>				vertices;
 		CArray<int8_t>					vertexFlags;
 		CArray<int8_t>					newObjects;
 		CArray<int8_t>					objects;
@@ -1584,15 +1578,15 @@ inline int32_t operator- (CLightDelta* o, CArray<CLightDelta>& a) { return a.Ind
 
 class CShadowData {
 	public:
-		int16_t					nLight;
-		int16_t					nLights;
-		int16_t					nShadowMaps;
+		int16_t				nLight;
+		int16_t				nLights;
+		int16_t				nShadowMaps;
 		CDynLight*			pLight;
 		CObject				lightSource;
 		CFloatVector		vLightPos;
 		CFixVector			vLightDir [MAX_SHADOW_LIGHTS];
-		CArray<int16_t>		objLights;
-		uint8_t					nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
+		CArray<int16_t>	objLights;
+		uint8_t				nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
 	public:
 		CShadowData ();
 		void Init (void);
@@ -1620,17 +1614,17 @@ class CMorphData {
 
 class CTerrainRenderData {
 	public:
-		CArray<uint8_t>			heightmap;
+		CArray<uint8_t>		heightmap;
 		CArray<fix>				lightmap;
 		CArray<CFixVector>	points;
 		CBitmap*					pBm;
 		CStaticArray< CRenderPoint, TERRAIN_GRID_MAX_SIZE >		saveRow; // [TERRAIN_GRID_MAX_SIZE];
 		CFixVector				vStartPoint;
 		tUVL						uvlList [2][3];
-		int32_t						bOutline;
-		int32_t						nGridW, nGridH;
-		int32_t						orgI, orgJ;
-		int32_t						nMineTilesDrawn;    //flags to tell if all 4 tiles under mine have drawn
+		int32_t					bOutline;
+		int32_t					nGridW, nGridH;
+		int32_t					orgI, orgJ;
+		int32_t					nMineTilesDrawn;    //flags to tell if all 4 tiles under mine have drawn
 	public:
 		CTerrainRenderData ();
 };
@@ -1643,7 +1637,7 @@ class CThrusterData {
 	public:
 		CFpLightath		path;
 		float				fSpeed;
-		int16_t				nPulse;
+		int16_t			nPulse;
 		time_t			tPulse;
 	public:
 		CThrusterData ();
@@ -1756,12 +1750,12 @@ class CMineRenderData {
 
 class CVertColorData {
 	public:
-		int32_t				bExclusive;
-		int32_t				bNoShadow;
-		int32_t				bDarkness;
-		int32_t				bMatEmissive;
-		int32_t				bMatSpecular;
-		int32_t				nMatLight;
+		int32_t			bExclusive;
+		int32_t			bNoShadow;
+		int32_t			bDarkness;
+		int32_t			bMatEmissive;
+		int32_t			bMatSpecular;
+		int32_t			nMatLight;
 		CFloatVector	matAmbient;
 		CFloatVector	matDiffuse;
 		CFloatVector	matSpecular;
@@ -1785,7 +1779,7 @@ class CFaceListIndex {
 		CIntArray				tails; // [MAX_WALL_TEXTURES * 3];
 		CIntArray				usedKeys; // [MAX_WALL_TEXTURES * 3];
 		//int32_t						nUsedFaces;
-		int32_t						nUsedKeys;
+		int32_t					nUsedKeys;
 	public:
 		CFaceListIndex ();
 		~CFaceListIndex ();

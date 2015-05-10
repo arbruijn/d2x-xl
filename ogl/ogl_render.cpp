@@ -193,13 +193,13 @@ glPopMatrix ();
 
 void OglDrawCircle (int32_t nSides, int32_t nType)
 {
-	float	s = 2.0f * PI / float (nSides);
+	float	s = 2.0f * float (PI) / float (nSides);
 
 if (ogl.SizeVertexBuffer (nSides)) {
 	for (int32_t i = 0; i < nSides; i++) {
 		float a = s * float (i);
-		ogl.VertexBuffer () [i].v.coord.x = float (cos (ang));
-		ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
+		ogl.VertexBuffer () [i].v.coord.x = float (cos (a));
+		ogl.VertexBuffer () [i].v.coord.y = float (sin (a));
 		}
 	ogl.FlushBuffers (nType, nSides, 2);
 	}
@@ -209,7 +209,7 @@ if (ogl.SizeVertexBuffer (nSides)) {
 
 void OglDrawCircle (CFloatVector vCenter, int32_t nSides, int32_t nType)
 {
-	float	s = 2.0f * PI / float (nSides);
+	float	s = 2.0f * float (PI) / float (nSides);
 
 if (ogl.SizeVertexBuffer (nSides)) {
 	for (int32_t i = 0; i < nSides; i++) {

@@ -814,8 +814,9 @@ tObjTransformation *pPos = OBJPOS (pObj);
 transformation.Begin (vPos, pPos->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 if (!bEffect && gameStates.render.CartoonStyle ()) {
-	glLineWidt
+	glLineWidth (gameStates.render.OutlineWidth (0, 0.0f, CMeshEdge::DistToScale (X2F (vPos.Mag ()))));
 	OglDrawCircle (CFloatVector::ZERO, 32, GL_LINE_LOOP);
+	}
 transformation.End ();
 //ogl.ResetTransform (0);
 ogl.SetTransform (0);

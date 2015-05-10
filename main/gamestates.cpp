@@ -392,3 +392,14 @@ return Clamp (w + 0.5f, ogl.m_data.lineWidthRange [0], Min (ogl.m_data.lineWidth
 }
 
 // ----------------------------------------------------------------------------
+
+int32_t CRenderStates::EnableCartoonStyle (int32_t bBlur, int32_t bPosterize, int32_t bOutline) 
+{
+bBlurTextures = bBlur;
+bPosterizeTextures = bPosterize;
+bOutlineTextures = bOutline;
+SetOutlineColor ();
+return SetCartoonStyle (gameOpts->render.bCartoonize);
+}
+
+// ----------------------------------------------------------------------------
