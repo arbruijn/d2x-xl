@@ -141,9 +141,7 @@ const char *blurVS =
 
 bool CGlowRenderer::LoadShader (int32_t const direction, float const radius)
 {
-	//float fScale [2] = {ogl.m_data.windowScale.dim.y * (radius * 0.5f + 1.0f), ogl.m_data.windowScale.dim.x * (radius * 0.5f + 1.0f)};
-	float fScale [2] = {ogl.m_data.windowScale.dim.y /** 2.0f*/, ogl.m_data.windowScale.dim.x /** 2.0f*/};
-	//float fScale [2] = {1.0f / float (gameData.render.scene.Height ()) * radius, 1.0f / float (gameData.render.scene.Width ()) * radius};
+	float fScale [2] = {ogl.m_data.windowScale.dim.y, ogl.m_data.windowScale.dim.x};
 
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hBlurShader /*[direction]*/));
 if (!m_shaderProg)
