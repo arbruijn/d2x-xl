@@ -1719,11 +1719,11 @@ if (nEdge >= 0) {
 		int32_t nEdges = gameData.segData.nEdges;
 		do {
 			pEdge = &edges [nEdge];
-			CMeshEdge *pNewEdge = &gameData.segData.edges [nEdges++];
+			CMeshEdge *pNewEdge = &edges [nEdges++];
 			memcpy (pNewEdge, pEdge, sizeof (CMeshEdge));
 			pNewEdge->m_faces [0].Setup (nSegment, nSide);
 			SortEdgeFaces (pNewEdge->m_faces);
-			pNewEdge = &gameData.segData.edges [nEdges++];
+			pNewEdge = &edges [nEdges++];
 			memcpy (pNewEdge, pEdge, sizeof (CMeshEdge));
 			pNewEdge->m_faces [1].Setup (nSegment, nSide);
 			SortEdgeFaces (pNewEdge->m_faces);

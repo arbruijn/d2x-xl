@@ -313,6 +313,7 @@ FORALL_OBJS (pObj) {
 PrintLog (-1);
 
 gameStates.render.DisableCartoonStyle ();
+gameStates.render.EnableCartoonStyle (0, 0, 1);
 
 PrintLog (1, "caching hostage sprites\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 3);
@@ -338,6 +339,8 @@ CacheObjectEffects ();
 for (i = 0; i < gameData.effects.nClips [0]; i++)
 	OglCacheAnimationTextures (i, 1);
 PrintLog (-1);
+
+gameStates.render.DisableCartoonStyle ();
 
 PrintLog (1, "caching cockpit textures\n");
 for (i = 0; i < 2; i++)

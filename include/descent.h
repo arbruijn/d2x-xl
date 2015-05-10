@@ -1071,6 +1071,8 @@ class CRenderStates {
 		int32_t bRenderIndirect;
 		int32_t bCartoonize;
 		int32_t bOutlineTextures;
+		int32_t bBlurTextures;
+		int32_t bPosterizeTextures;
 		int32_t bClampBlur;
 		int32_t bBuildModels;
 		int32_t bShowFrameRate;
@@ -1132,7 +1134,9 @@ class CRenderStates {
 
 		inline int32_t ToggleCartoonStyle (void) { return SetCartoonStyle (-bCartoonize); }
 
-		inline int32_t CRenderStates::EnableCartoonStyle (int32_t bOutline = 0) {
+		inline int32_t CRenderStates::EnableCartoonStyle (int32_t bBlur = 1, int32_t bPosterize = 1, int32_t bOutline = 0) {
+			bBlurTextures = bBlur;
+			bPosterizeTextures = bPosterize;
 			bOutlineTextures = bOutline;
 			return ToggleCartoonStyle ();
 			}

@@ -688,7 +688,7 @@ GLubyte *Cartoonize (CBitmap *pBm, GLubyte *pBuffer, int32_t dxo, int32_t dyo, i
 {
 if (pBm->m_info.bCartoonizable && (gameStates.render.bCartoonize < 0)) {
 	static int32_t blurRads [4][4] = {
-		{ 15, 13, 11, 9 },
+		{ 15, 11,  7, 3 },
 		{ 13, 11,  9, 7 },
 		{ 11,  9,  7, 5 },
 		{  9,  7,  5, 3 }
@@ -698,13 +698,15 @@ if (pBm->m_info.bCartoonizable && (gameStates.render.bCartoonize < 0)) {
 	int32_t h = pBm->Height () - dxo;
 	int32_t tw = pBm->m_info.pTexture->TW ();
 	int32_t s = (w >= 512) ? 3 : (w >= 256) ? 2 : (w >= 128) ? 1 : 0;
+	if (gameStates.render.bBlurTextures)
 #if 0
-	pBuffer = GaussianBlur (ogl.m_data.buffer [1], pBuffer, w, h, tw, m_info.pTexture->TH (), blurRads [0][s], nColors, !gameStates.render.bClampBlur, 1);
+		pBuffer = GaussianBlur (ogl.m_data.buffer [1], pBuffer, w, h, tw, m_info.pTexture->TH (), blurRads [0][s], nColors, !gameStates.render.bClampBlur, 1);
 #elif 1
-	pBuffer = GaussianBlur (ogl.m_data.buffer [1], pBuffer, w, h, tw, pBm->m_info.pTexture->TH (), blurRads [-gameStates.render.bCartoonize - 1][s], 
-									nColors, !gameStates.render.bClampBlur, -gameStates.render.bCartoonize);
+		pBuffer = GaussianBlur (ogl.m_data.buffer [1], pBuffer, w, h, tw, pBm->m_info.pTexture->TH (), blurRads [-gameStates.render.bCartoonize - 1][s], 
+										nColors, !gameStates.render.bClampBlur, -gameStates.render.bCartoonize);
 #endif
-	Posterize (pBuffer, w, h, tw, nColors);
+	if (gameStates.render.bPosterizeTextures)
+		Posterize (pBuffer, w, h, tw, nColors);
 	if (gameStates.render.bOutlineTextures && (nColors == 4) && !strstr (pBm->Name (), "lava") && !strstr (pBm->Name (), "water"))
 		Outline (pBuffer, w, h, tw, 1 << s);
 	}
