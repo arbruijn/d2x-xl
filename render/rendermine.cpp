@@ -1294,12 +1294,11 @@ RenderSegmentList (RENDER_TYPE_ZCULL);	// render depth only
 RenderCockpitModel ();
 #endif
 #if 1
-gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
 gameStates.render.EnableCartoonStyle (1, 1, 1);
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
 #if 1
-if (gameStates.render.bCartoonize) {
+if (gameStates.render.CartoonStyle ()) {
 	ogl.CopyDepthTexture (0);
 	RenderSegmentEdges ();
 	}

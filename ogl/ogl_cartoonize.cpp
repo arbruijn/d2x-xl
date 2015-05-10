@@ -138,14 +138,14 @@ for (int32_t y = nStart; y < h; y += nStep) {
  
 		if (x >= r) {
 			tRGBA& color = dest [i + x - r];
-			if (n) {
+			color.a = src [i + x - r].a;
+			if (n && color.a) {
 				color.r = uint8_t (a [0] / n);
 				color.g = uint8_t (a [1] / n);
 				color.b = uint8_t (a [2] / n);
 				}
 			else
 				color.r = color.g = color.b = 0;
-			color.a = src [i + x - r].a;
 			}
 		}
 	i += nStep * tw;
@@ -183,14 +183,14 @@ for (int32_t x = nStart; x < w; x += nStep) {
  
 		if (y >= r) {
 			tRGBA& color = dest [(y - r) * tw + x];
-			if (n) {
+			color.a = src [(y - r) * tw + x].a;
+			if (n && color.a) {
 				color.r = uint8_t (a [0] / n);
 				color.g = uint8_t (a [1] / n);
 				color.b = uint8_t (a [2] / n);
 				}
 			else
 				color.r = color.g = color.b = 0;
-			color.a = src [(y - r) * tw + x].a;
 			}
 		}
 	}
@@ -295,14 +295,14 @@ for (int32_t y = nStart; y < h; y += nStep) {
  
 		if (x >= 0) {
 			tRGBA& color = dest [i + x];
-			if (n) {
+			color.a = src [i + x].a;
+			if (n && color.a) {
 				color.r = uint8_t (a [0] / n);
 				color.g = uint8_t (a [1] / n);
 				color.b = uint8_t (a [2] / n);
 				}
 			else
 				color.r = color.g = color.b = 0;
-			color.a = src [i + x].a;
 			}
 		}
 	i += nStep * tw;
@@ -345,14 +345,14 @@ for (int32_t x = nStart; x < w; x += nStep) {
  
 		if (y >= 0) {
 			tRGBA& color = dest [y * tw + x];
-			if (n) {
+			color.a = src [y * tw + x].a;
+			if (n && color.a) {
 				color.r = uint8_t (a [0] / n);
 				color.g = uint8_t (a [1] / n);
 				color.b = uint8_t (a [2] / n);
 				}	
 			else
 				color.r = color.g = color.b = 0;
-			color.a = src [y * tw + x].a;
 			}
 		i += tw;
 		}
@@ -564,9 +564,11 @@ void PosterizeRGB (tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t nStart =
 for (int32_t y = nStart; y < h; y += nStep) {
 	tRGB *dest = src + y * tw;
 	for (int32_t x = 0; x < w; x++) {
-		dest->r = Posterize ((int32_t) dest->r);
-		dest->g = Posterize ((int32_t) dest->g);
-		dest->b = Posterize ((int32_t) dest->b);
+		if ((dest->r != 120) || (dest->g != 88) || (dest->b != 128)) {
+			dest->r = Posterize ((int32_t) dest->r);
+			dest->g = Posterize ((int32_t) dest->g);
+			dest->b = Posterize ((int32_t) dest->b);
+			}
 		dest++;
 		}
 	}
@@ -620,9 +622,9 @@ for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
 				int32_t j = Clamp (y + offsets [o][1], 0, h) * tw + Clamp (x + offsets [o][0], 0, w);
 				if (ogl.m_data.outlineFilter [j] > nTag) {
 					ogl.m_data.outlineFilter [i] = nTag;
-					pTexture [i].r = 
-					pTexture [i].g = 
-					pTexture [i].b = 2;
+					pTexture [i].r = gameStates.render.outlineColor.g;
+					pTexture [i].g = gameStates.render.outlineColor.b;
+					pTexture [i].b = gameStates.render.outlineColor.r;
 					pTexture [i].a = a;
 					n++;
 					break;
@@ -691,26 +693,52 @@ if (pBm->m_info.bCartoonizable && gameStates.render.CartoonStyle ()) {
 		{  9,  7,  5, 3 }
 	};
 
-#if DBG
-	if (strstr (pBm->Name (), "shield"))
-		BRP;
-#endif
-
 	int32_t w = pBm->Width () - dxo;
 	int32_t h = pBm->Height () - dxo;
 	int32_t tw = pBm->m_info.pTexture->TW ();
 	int32_t s = (w >= 512) ? 3 : (w >= 256) ? 2 : (w >= 128) ? 1 : 0;
-	if (gameStates.render.bBlurTextures)
-#if 0
-		pBuffer = GaussianBlur (ogl.m_data.buffer [1], pBuffer, w, h, tw, m_info.pTexture->TH (), blurRads [0][s], nColors, !gameStates.render.bClampBlur, 1);
-#elif 1
-		pBuffer = GaussianBlur (ogl.m_data.buffer [1], pBuffer, w, h, tw, pBm->m_info.pTexture->TH (), blurRads [-gameStates.render.bCartoonize - 1][s], 
-										nColors, !gameStates.render.bClampBlur, gameStates.render.bBlurTextures);
+
+#if DBG
+	if (strstr (pBm->Name (), "door35"))
+		BRP;
 #endif
+#if 1
+	if (gameStates.render.bBlurTextures)
+#	if 0
+		pBuffer = GaussianBlur (ogl.m_data.buffer [1], pBuffer, w, h, tw, m_info.pTexture->TH (), blurRads [0][s], nColors, !gameStates.render.bClampBlur, 1);
+#	elif 1
+		pBuffer = GaussianBlur (ogl.m_data.buffer [1], pBuffer, w, h, tw, pBm->m_info.pTexture->TH (), blurRads [gameStates.render.bBlurTextures][s], 
+										nColors, !gameStates.render.bClampBlur, gameStates.render.bBlurTextures);
+#	endif
+#endif
+#if 0
 	if (gameStates.render.bPosterizeTextures)
 		Posterize (pBuffer, w, h, tw, nColors);
-	if (gameStates.render.bOutlineTextures && (nColors == 4) && !strstr (pBm->Name (), "lava") && !strstr (pBm->Name (), "water"))
+#endif
+#if 1
+	if (gameStates.render.bOutlineTextures && (nColors == 4) /*&& !strstr (pBm->Name (), "lava") && !strstr (pBm->Name (), "water")*/) {
+#if 1 //DBG
+		int32_t bResetOutlineColor = 1;
+		if (strstr (pBm->Name (), "shield"))
+			gameStates.render.SetOutlineColor (64, 64, 64);
+		else if (strstr (pBm->Name (), "lava"))
+			gameStates.render.SetOutlineColor (64, 0, 0);
+		else if (strstr (pBm->Name (), "water"))
+			gameStates.render.SetOutlineColor (0, 0, 64);
+		else if (strstr (pBm->Name (), "force"))
+			gameStates.render.SetOutlineColor (0, 0, 64);
+		else {
+			gameStates.render.SetOutlineColor (2, 2, 2);
+			bResetOutlineColor = 0;
+			}
+#endif
 		Outline (pBuffer, w, h, tw, /*1 << s*/s + 1);
+#if 1
+		if (bResetOutlineColor)
+			gameStates.render.ResetOutlineColor ();
+#endif
+		}
+#endif
 	}
 return pBuffer;
 }

@@ -1100,7 +1100,7 @@ if (gameOpts->render.debug.bWireFrame)
 	glLineWidth (3.0f);
 #endif
 
-if (gameStates.render.bCartoonize && !bRenderTransparency && (!pObj->IsWeapon () || pObj->IsMissile ()))
+if (gameStates.render.CartoonStyle () && !bRenderTransparency && (!pObj->IsWeapon () || pObj->IsMissile ()))
 	G3DrawModel (pObj, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 1);
 
 #if 1 //!DBG

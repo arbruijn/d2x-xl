@@ -219,12 +219,12 @@ return (nFrame >= m_nFrames) ? NULL : m_frames [nFrame].Bitmap ();
 
 int32_t LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int32_t *bHaveP, bool bBind)
 {
-gameStates.render.EnableCartoonStyle ();
 if (!*bHaveP) {
 	char	szFilename [FILENAME_LEN];
 	CFile	cf;
 	CTGA	tga;
 
+	gameStates.render.EnableCartoonStyle ();
 	sprintf (szFilename, "%sd2x-xl/%s", gameFolders.mods.szTextures [0], pszName);
 	if (!cf.Exist (szFilename, "", 0))
 		sprintf (szFilename, "%sd2x-xl/%s", gameFolders.game.szTextures [0], pszName);
@@ -239,8 +239,8 @@ if (!*bHaveP) {
 			pBm->Bind (1);
 		}
 	*bmPP = pBm;
+	gameStates.render.DisableCartoonStyle ();
 	}
-gameStates.render.DisableCartoonStyle ();
 return *bHaveP > 0;
 }
 

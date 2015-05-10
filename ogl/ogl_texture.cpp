@@ -520,7 +520,7 @@ if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer [0]))//sho
 
 	uint16_t		r, g, b, a;
 	int32_t		x, y, c;
-	int32_t		bPosterize = gameStates.render.bCartoonize && gameStates.render.bPosterizeTextures;
+	int32_t		bPosterize = 0; //gameStates.render.CartoonStyle () && gameStates.render.bPosterizeTextures;
 
 
 //pBm->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
@@ -611,20 +611,10 @@ for (y = 0; y < m_info.h; y++) {
 				case GL_RGBA:
 				case GL_RGBA4: {
 					if (bSuperTransp && (c == SUPER_TRANSP_COLOR)) {
-						//pBm->Flags () |= BM_FLAG_SUPER_TRANSPARENT;
-#if 0
-						if (bShaderMerge) {
-							r = g = b = 0;
-							vec = 1;
-							}
-						else
-#endif
-							{
-							r = 120;
-							g = 88;
-							b = 128;
-							a = 0;
-							}
+						r = 120;
+						g = 88;
+						b = 128;
+						a = 0;
 						}
 					else {
 						r = pColor [c].Red () * 4;
@@ -694,18 +684,23 @@ return ogl.m_data.buffer [0];
 
 uint8_t *CTexture::Copy (int32_t dxo, int32_t dyo, uint8_t *data)
 {
-if ((gameStates.render.bCartoonize >= 0) && !dxo && !dyo && (m_info.w == m_info.tw) && (m_info.h == m_info.th))
-	return data;	//can use data 1:1
+int32_t bpp = m_info.lw / m_info.w;
+if (!dxo && !dyo && (m_info.w == m_info.tw) && (m_info.h == m_info.th)) {
+	if (!gameStates.render.CartoonStyle () || (bpp < 3))
+		return data;	//can use data 1:1
+	memcpy (ogl.m_data.buffer [0], data, m_info.w * m_info.h * bpp);
+	return ogl.m_data.buffer [0];
+	}
 else {	//need to reformat
-	int32_t	h, w, tw;
-	GLubyte	*pBuffer;
-
-	h = m_info.lw / m_info.w;
-	w = (m_info.w - dxo) * h;
-	data += m_info.lw * dyo + h * dxo;
-	pBuffer = ogl.m_data.buffer [0];
-	tw = m_info.tw * h;
-	h = tw - w;
+#if DBG
+	if (m_info.pBm && (m_info.pBm->BPP () != bpp))
+		BRP;
+#endif
+	int32_t tw = m_info.tw * bpp;
+	int32_t w = (m_info.w - dxo) * bpp;
+	data += m_info.lw * dyo + bpp * dxo;
+	GLubyte *pBuffer = ogl.m_data.buffer [0];
+	int32_t h = tw - w;
 	for (; dyo < m_info.h; dyo++, data += m_info.lw) {
 		memcpy (pBuffer, data, w);
 		pBuffer += w;
@@ -1206,7 +1201,7 @@ m_info.pTexture->Prepare ();
 #if DBG
 if (strstr (m_info.szName, "ship"))
 	BRP;
-if (strstr (m_info.szName, "shield.tga"))
+if (strstr (m_info.szName, "door35"))
 	BRP;
 #endif
 //	if (width!=twidth || height!=theight)
@@ -1222,7 +1217,10 @@ if (!m_info.pTexture->IsRenderBuffer ())
 #endif
 		int32_t nColors;
 		if (m_info.nTranspType < 0) {
+			CBitmap* pBm = m_info.pTexture->Bitmap ();
+			m_info.pTexture->SetBitmap (this);
 			pBuffer = m_info.pTexture->Copy (dxo, dyo, data);
+			m_info.pTexture->SetBitmap (pBm);
 			nColors = BPP ();
 			}
 		else {
@@ -1501,12 +1499,12 @@ if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 		}
 	}
 else if (!Frames ()) {
-	CreateFrames (bMipMaps, bLoad);
+	CreateFrames (bMipMaps, 0);
 	CreateMasks ();
 	if (bLoad) {
 		CBitmap*	pBmf = Frames ();
 		for (int32_t i = nFrames; i; i--, pBmf++) {
-			if (pBmf->PrepareTexture (bMipMaps, 1))
+			if (pBmf->PrepareTexture (bMipMaps, 0, NULL))
 				return false;
 			if (pBmf->Mask () && (pBmf->Mask ()->PrepareTexture (0, 1, NULL)))
 				return false;
@@ -1527,7 +1525,7 @@ if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
 	BRP;
 if (bMipMaps < 0)
 	BRP;
-if (strstr (m_info.szName, "shield.tga"))
+if (strstr (m_info.szName, "door35"))
 	BRP;
 #endif
 

@@ -483,7 +483,6 @@ int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, C
 {
 	int32_t	bTextured = pBm != NULL;
 
-gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
 gameStates.render.EnableCartoonStyle ();
 fScale = m_pPulse ? m_pPulse->fScale : 1.0f;
 ogl.ResetClientStates (0);

@@ -1290,7 +1290,7 @@ if (!gameData.render.mine.Create (1)) {
 	return 4;
 	}
 PrintLog (-1);
-if (gameStates.render.bCartoonize)
+if (gameStates.render.CartoonStyle ())
 	gameData.segData.BuildEdgeList ();
 //lightManager.Setup (nLevel); 
 SetAmbientSoundFlags ();
