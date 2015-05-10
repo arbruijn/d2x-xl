@@ -112,7 +112,7 @@ return i % l;
 
 static inline int32_t Visible (tRGB& color)
 {
-return Visible (color);
+return (color.r != 120) || (color.g != 88) || (color.b != 128);
 }
 
 //------------------------------------------------------------------------------
