@@ -137,15 +137,16 @@ for (int32_t y = nStart; y < h; y += nStep) {
 			}
  
 		if (x >= r) {
-			tRGBA& color = dest [i + x - r];
-			color.a = src [i + x - r].a;
-			if (n && color.a) {
-				color.r = uint8_t (a [0] / n);
-				color.g = uint8_t (a [1] / n);
-				color.b = uint8_t (a [2] / n);
+			tRGBA& srcColor = src [(y - r) * tw + x];
+			tRGBA& destColor = dest [(y - r) * tw + x];
+			destColor.a = srcColor.a;
+			if (n && destColor.a) {
+				destColor.r = uint8_t (a [0] / n);
+				destColor.g = uint8_t (a [1] / n);
+				destColor.b = uint8_t (a [2] / n);
 				}
 			else
-				color.r = color.g = color.b = 0;
+				destColor = srcColor;
 			}
 		}
 	i += nStep * tw;
@@ -182,15 +183,16 @@ for (int32_t x = nStart; x < w; x += nStep) {
 			}
  
 		if (y >= r) {
-			tRGBA& color = dest [(y - r) * tw + x];
-			color.a = src [(y - r) * tw + x].a;
+			tRGBA& srcColor = src [(y - r) * tw + x];
+			tRGBA& destColor = dest [(y - r) * tw + x];
+			destColor.a = srcColor.a;
 			if (n && color.a) {
-				color.r = uint8_t (a [0] / n);
-				color.g = uint8_t (a [1] / n);
-				color.b = uint8_t (a [2] / n);
+				destColor.r = uint8_t (a [0] / n);
+				destColor.g = uint8_t (a [1] / n);
+				destColor.b = uint8_t (a [2] / n);
 				}
 			else
-				color.r = color.g = color.b = 0;
+				destColor = srcColor;
 			}
 		}
 	}
@@ -219,10 +221,16 @@ for (int32_t y = nStart; y < h; y += nStep) {
 		a [2] += (int32_t) color.b;
  
 		if (x >= r) {
-			tRGB& color = dest [i + x - r];
-			color.r = uint8_t (a [0] / l);
-			color.g = uint8_t (a [1] / l);
-			color.b = uint8_t (a [2] / l);
+			int32_t h = i + x - r;
+			tRGB& color = src [h];
+			if ((color.r != 120) || (color.g != 88) || (color.b != 128)) {
+				color = dest [h];
+				color.r = uint8_t (a [0] / l);
+				color.g = uint8_t (a [1] / l);
+				color.b = uint8_t (a [2] / l);
+				}
+			else
+				dest [h] = color;
 			}
 		}
 	i += nStep * tw;
@@ -252,10 +260,16 @@ for (int32_t x = nStart; x < w; x += nStep) {
 		a [2] += (int32_t) color.b;
  
 		if (y >= r) {
-			tRGB& color = dest [(y - r) * tw + x];
-			color.r = uint8_t (a [0] / l);
-			color.g = uint8_t (a [1] / l);
-			color.b = uint8_t (a [2] / l);
+			int32_t h = (y - r) * tw + x;
+			color = src [h];
+			if ((color.r != 120) || (color.g != 88) || (color.b != 128)) {
+				color = dest [h];
+				color.r = uint8_t (a [0] / l);
+				color.g = uint8_t (a [1] / l);
+				color.b = uint8_t (a [2] / l);
+				}
+			else
+				dest [h] = color;
 			}
 		}
 	}
@@ -294,15 +308,16 @@ for (int32_t y = nStart; y < h; y += nStep) {
 			}
  
 		if (x >= 0) {
-			tRGBA& color = dest [i + x];
-			color.a = src [i + x].a;
-			if (n && color.a) {
-				color.r = uint8_t (a [0] / n);
-				color.g = uint8_t (a [1] / n);
-				color.b = uint8_t (a [2] / n);
+			tRGBA& srcColor = src [i + x];
+			tRGBA& destColor = dest [i + x];
+			if (n && srcColor.a) {
+				destColor.a = srcColor.a;
+				destColor.r = uint8_t (a [0] / n);
+				destColor.g = uint8_t (a [1] / n);
+				destColor.b = uint8_t (a [2] / n);
 				}
 			else
-				color.r = color.g = color.b = 0;
+				destColor = srcColor;
 			}
 		}
 	i += nStep * tw;
@@ -344,15 +359,16 @@ for (int32_t x = nStart; x < w; x += nStep) {
 			}
  
 		if (y >= 0) {
-			tRGBA& color = dest [y * tw + x];
-			color.a = src [y * tw + x].a;
-			if (n && color.a) {
-				color.r = uint8_t (a [0] / n);
-				color.g = uint8_t (a [1] / n);
-				color.b = uint8_t (a [2] / n);
+			tRGBA& srcColor = dest [y * tw + x];
+			tRGBA& destColor = dest [y * tw + x];
+			if (n && destColor.a) {
+				destColor.a = srcColor.a;
+				destColor.r = uint8_t (a [0] / n);
+				destColor.g = uint8_t (a [1] / n);
+				destColor.b = uint8_t (a [2] / n);
 				}	
 			else
-				color.r = color.g = color.b = 0;
+				destColor = srcColor;
 			}
 		i += tw;
 		}
@@ -390,10 +406,16 @@ for (int32_t x = nStart; x < w; x += nStep) {
 			}
  
 		if (y >= 0) {
-			tRGB& color = dest [y * tw + x];
-			color.r = uint8_t (a [0] / n);
-			color.g = uint8_t (a [1] / n);
-			color.b = uint8_t (a [2] / n);
+			int32_t h = y * tw + x;
+			tRGB& color = src [h];
+			if ((color.r != 120) || (color.g != 88) || (color.b != 128)) {
+				color = dest [h];
+				color.r = uint8_t (a [0] / n);
+				color.g = uint8_t (a [1] / n);
+				color.b = uint8_t (a [2] / n);
+				}
+			else
+				dest [h] = color;
 			}
 		i += tw;
 		}
@@ -428,10 +450,16 @@ for (int32_t y = nStart; y < h; y += nStep) {
 			}
  
 		if (x >= 0) {
-			tRGB& color = dest [i + x];
-			color.r = uint8_t (a [0] / n);
-			color.g = uint8_t (a [1] / n);
-			color.b = uint8_t (a [2] / n);
+			int32_t h = i + x;
+			tRGB& color = src [h];
+			if ((color.r != 120) || (color.g != 88) || (color.b != 128)) {
+				color = dest [h];
+				color.r = uint8_t (a [0] / n);
+				color.g = uint8_t (a [1] / n);
+				color.b = uint8_t (a [2] / n);
+				}
+			else
+				dest [h] = color;
 			}
 		}
 	i += nStep * tw;
@@ -546,21 +574,26 @@ inline uint8_t Posterize (int32_t nColor, int32_t nSteps = 15) {
 
 void PosterizeRGBA (tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t nStart = 0, int32_t nStep = 1) 
 {
+#if 0
 for (int32_t y = nStart; y < h; y += nStep) {
 	tRGBA *dest = src + y * tw;
 	for (int32_t x = 0; x < w; x++) {
-		dest->r = Posterize ((int32_t) dest->r);
-		dest->g = Posterize ((int32_t) dest->g);
-		dest->b = Posterize ((int32_t) dest->b);
+		if (dest->a && ((dest->r != 120) || (dest->g != 88) || (dest->b != 128))) {
+			dest->r = Posterize ((int32_t) dest->r);
+			dest->g = Posterize ((int32_t) dest->g);
+			dest->b = Posterize ((int32_t) dest->b);
+			}
 		dest++;
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void PosterizeRGB (tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t nStart = 0, int32_t nStep = 1) 
 {
+#if 1
 for (int32_t y = nStart; y < h; y += nStep) {
 	tRGB *dest = src + y * tw;
 	for (int32_t x = 0; x < w; x++) {
@@ -572,6 +605,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 		dest++;
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -711,7 +745,7 @@ if (pBm->m_info.bCartoonizable && gameStates.render.CartoonStyle ()) {
 										nColors, !gameStates.render.bClampBlur, gameStates.render.bBlurTextures);
 #	endif
 #endif
-#if 0
+#if 1
 	if (gameStates.render.bPosterizeTextures)
 		Posterize (pBuffer, w, h, tw, nColors);
 #endif
