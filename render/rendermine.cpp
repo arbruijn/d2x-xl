@@ -1318,7 +1318,7 @@ RenderCockpitModel ();
 #endif
 #if 1
 gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
-gameStates.render.EnableCartoonStyle (1);
+gameStates.render.EnableCartoonStyle (1, 1, 1);
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
 #if 1

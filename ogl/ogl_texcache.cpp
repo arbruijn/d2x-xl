@@ -260,7 +260,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 PrintLog (-1);
 
 gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
-gameStates.render.EnableCartoonStyle (1);
+gameStates.render.EnableCartoonStyle (1, 1, 1);
 
 PrintLog (1, "caching geometry textures\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 0);
@@ -293,9 +293,9 @@ for (pSeg = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segData.nSegme
 PrintLog (-1);
 
 PrintLog (1, "caching addon textures\n");
-gameStates.render.DisableCartoonStyle ();
+//gameStates.render.DisableCartoonStyle ();
 CacheAddonTextures ();
-gameStates.render.EnableCartoonStyle ();
+//gameStates.render.EnableCartoonStyle ();
 PrintLog (-1);
 
 PrintLog (1, "caching model textures\n");

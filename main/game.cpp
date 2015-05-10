@@ -1101,14 +1101,14 @@ if (m_bRunning) { // game states are updated in separate thread
 else {
 	CalcFrameTime (fps);
 	HandleControls (bControls);
-	gameStates.render.EnableCartoonStyle ();
+	gameStates.render.EnableCartoonStyle (1, 1, 1);
 	m_nResult = Preprocess ();
 	gameStates.render.DisableCartoonStyle ();
 	if (0 > m_nResult)
 		return m_nResult;
 	if (bRender)
 		Render ();
-	gameStates.render.EnableCartoonStyle ();
+	gameStates.render.EnableCartoonStyle (1, 1, 1);
 	m_nResult = Postprocess ();
 	gameStates.render.DisableCartoonStyle ();
 	if (0 > m_nResult)

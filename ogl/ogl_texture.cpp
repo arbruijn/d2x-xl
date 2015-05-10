@@ -520,7 +520,7 @@ if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer [0]))//sho
 
 	uint16_t		r, g, b, a;
 	int32_t		x, y, c;
-	int32_t		bPosterize = gameStates.render.bCartoonize;
+	int32_t		bPosterize = gameStates.render.bCartoonize && gameStates.render.bPosterizeTextures;
 
 
 //pBm->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);

@@ -145,7 +145,7 @@ int32_t CAddonBitmap::Bind (int32_t bMipMaps)
 {
 if (!m_pBm)
 	return -1;
-gameStates.render.EnableCartoonStyle ();
+gameStates.render.EnableCartoonStyle (3, 1, 0);
 int32_t h = m_pBm->Bind (bMipMaps);
 gameStates.render.DisableCartoonStyle ();
 return h;
