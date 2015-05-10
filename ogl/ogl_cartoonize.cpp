@@ -630,7 +630,7 @@ for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
 				}
 			}
 		}
-	a -= 128 / nPasses;
+	a -= 128 >> nPasses;
 	}
 }
 
@@ -644,7 +644,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 	for (int32_t x = 0; x < w; x++)
 #if DBG
 		{
-		if (pSrc->a > 128)
+		if (pSrc->a > 127)
 			*pDest = 255;
 		else
 			*pDest = 0;
@@ -652,7 +652,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 		pDest++;
 		}
 #else
-		*(pDest++) = ((pSrc++)->a > 128) ? 255 : 0;
+		*(pDest++) = ((pSrc++)->a > 127) ? 255 : 0;
 #endif
 	}
 }
