@@ -102,7 +102,7 @@ class COglData {
 		CFBO*				pDrawBuffer;
 		int32_t			nPerPixelLights [9];
 		float				lightRads [8];
-		CFloatVector	pLightos [8];
+		CFloatVector	lightPos [8];
 		int32_t			bLightmaps;
 		int32_t			nHeadlights;
 		fix				xStereoSeparation;
@@ -111,6 +111,7 @@ class COglData {
 		GLenum			nDestBlendMode;
 		GLenum			nDepthMode;
 		GLenum			nCullMode;
+		GLfloat			lineWidthRange [2];
 		GLuint			nDepthFunc;
 		bool				bUseTextures [4];
 		bool				bAlphaTest;

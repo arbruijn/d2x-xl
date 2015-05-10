@@ -362,7 +362,7 @@ int32_t ComputeVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex, CF
 							bTransform = (gameStates.render.nState > 0) && !ogl.m_states.bUseTransform;
 	int32_t				bDiffuse, bSpecular = gameStates.render.bSpecularColor && (colorData.fMatShininess > 0.0f);
 	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
-	CFloatVector3		lightDir, lightRayDir, pLightos, vertPos, vReflect;
+	CFloatVector3		lightDir, lightRayDir, lightPos, vertPos, vReflect;
 	CFloatVector3		lightColor, colorSum [2], vertColor;
 	
 #if DBG
@@ -440,16 +440,16 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 		lightDir = *pLight->info.vDirf.XYZ ();
 
 	if (bSelf || (gameStates.render.bBuildLightmaps && (pLight->Segment () == nSegment) && (pLight->Side () == nSide))) {
-		pLightos = *colorData.vertPosP;
+		lightPos = *colorData.vertPosP;
 		fLightDist = 0.0f;
 		lightRayDir.SetZero ();
 		}
 	else {
 		if (nType < 2)
-			DistToFace (*colorData.vertPosP, pLight->info.nSegment, uint8_t (pLight->info.nSide), &pLightos); // returns 0 if a plane normal through the vertex position goes through the face
+			DistToFace (*colorData.vertPosP, pLight->info.nSegment, uint8_t (pLight->info.nSide), &lightPos); // returns 0 if a plane normal through the vertex position goes through the face
 		else 
-			pLightos = *pLight->render.vPosf [bTransform].XYZ ();
-		lightRayDir = pLightos - *colorData.vertPosP;
+			lightPos = *pLight->render.vPosf [bTransform].XYZ ();
+		lightRayDir = lightPos - *colorData.vertPosP;
 		fLightDist = lightRayDir.Mag ();
 		}
 

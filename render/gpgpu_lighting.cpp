@@ -85,7 +85,7 @@ return hBuffer;
 
 void CGPGPULighting::ComputeFragLight (float lightRange)
 {
-	CFloatVector	*vertPos, *vertNorm, *pLightos, lightColor, lightDir;
+	CFloatVector	*vertPos, *vertNorm, *lightPos, lightColor, lightDir;
 	CFloatVector	vReflect, vertColor = CFloatVector::ZERO;
 	float		nType, radius, brightness, specular;
 	float		attenuation, lightDist, NdotL, RdotE;
@@ -99,12 +99,12 @@ void CGPGPULighting::ComputeFragLight (float lightRange)
 for (i = 0; i < m_vld.nLights; i++) {
 	vertPos = m_vld.buffers [0] + i;
 	vertNorm = m_vld.buffers [1] + i;
-	pLightos = m_vld.buffers [2] + i;
+	lightPos = m_vld.buffers [2] + i;
 	lightColor = m_vld.buffers [3][i];
 	nType = vertNorm->v.coord.w;
-	radius = pLightos->v.coord.w;
+	radius = lightPos->v.coord.w;
 	brightness = lightColor.v.coord.w;
-	lightDir = *pLightos - *vertPos;
+	lightDir = *lightPos - *vertPos;
 	lightDist = lightDir.Mag() / lightRange;
 	CFloatVector::Normalize (lightDir);
 	if (nType)
@@ -128,9 +128,9 @@ for (i = 0; i < m_vld.nLights; i++) {
 	if (NdotL > 0.0f) {
 		vReflect = CFloatVector::Reflect (lightDir.Neg (), *vertNorm);
 		CFloatVector::Normalize (vReflect);
-		pLightos->Neg ();
-		CFloatVector::Normalize (*pLightos);
-		RdotE = CFloatVector::Dot (vReflect, *pLightos);
+		lightPos->Neg ();
+		CFloatVector::Normalize (*lightPos);
+		RdotE = CFloatVector::Dot (vReflect, *lightPos);
 		if (RdotE < 0.0f)
 			RdotE = 0.0f;
 		specular = (float) pow (RdotE, shininess);
@@ -380,9 +380,9 @@ const char *gpgpuLightFS =
 	"void main (void) {\r\n" \
 	"	vec3 vertPos = texture2D (vertPosTex, gl_TexCoord [0].xy).xyz;\r\n" \
 	"	vec3 vertNorm = texture2D (vertNormTex, gl_TexCoord [0].xy).xyz;\r\n" \
-	"	vec3 pLightos = texture2D (pLightosTex, gl_TexCoord [0].xy).xyz;\r\n" \
+	"	vec3 lightPos = texture2D (pLightosTex, gl_TexCoord [0].xy).xyz;\r\n" \
 	"	vec3 lightColor = texture2D (lightColorTex, gl_TexCoord [0].xy).xyz;\r\n" \
-	"	vec3 lightDir = pLightos - vertPos;\r\n" \
+	"	vec3 lightDir = lightPos - vertPos;\r\n" \
 	"	float type = texture2D (vertNormTex, gl_TexCoord [0].xy).a;\r\n" \
 	"	float radius = texture2D (pLightosTex, gl_TexCoord [0].xy).a;\r\n" \
 	"	float brightness = texture2D (lightColorTex, gl_TexCoord [0].xy).a;\r\n" \
@@ -403,7 +403,7 @@ const char *gpgpuLightFS =
 	"	attenuation = lightDist / brightness;\r\n" \
 	"	vertColor = (matAmbient + vec3 (NdotL, NdotL, NdotL)) * lightColor;\r\n" \
 	"	if (NdotL > 0.0) {\r\n" \
-	"		RdotE = max (dot (Normalize (Reflect (-lightDir, vertNorm)), Normalize (-pLightos)), 0.0);\r\n" \
+	"		RdotE = max (dot (Normalize (Reflect (-lightDir, vertNorm)), Normalize (-lightPos)), 0.0);\r\n" \
 	"		vertColor += lightColor * pow (RdotE, shininess);\r\n" \
 	"		}\r\n" \
 	"  gl_FragColor = vec4 (vertColor / attenuation, 1.0);\r\n" \

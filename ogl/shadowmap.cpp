@@ -121,7 +121,7 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 			glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
 			shaderManager.Set (szShadowMap [i], i + 2);
 			CDynLight* pLight = cameraManager.ShadowLightSource (i);
-			if (!shaderManager.Set ("pLightos", pLight->render.vPosf [0]))
+			if (!shaderManager.Set ("lightPos", pLight->render.vPosf [0]))
 				return;
 			if (!shaderManager.Set ("lightRange", fabs (pLight->info.fRange) * 400.0f))
 				return;
@@ -165,7 +165,7 @@ const char* shadowMapFS =
 	"uniform sampler2D sceneDepth;\r\n" \
 	"uniform sampler2DShadow shadowMap;\r\n" \
 	"uniform mat4 modelpViewrojInverse;\r\n" \
-	"uniform vec3 pLightos;\r\n" \
+	"uniform vec3 lightPos;\r\n" \
 	"uniform float lightRange;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
@@ -188,7 +188,7 @@ const char* shadowMapFS =
 	"   light = 1.0;\r\n" \
 	"else {\r\n" \
 	"   vec4 worldPos = modelpViewrojInverse * cameraClipPos;\r\n" \
-	"   float lightDist = length (pLightos - worldPos.xyz);\r\n" \
+	"   float lightDist = length (lightPos - worldPos.xyz);\r\n" \
 	"   light = 0.25 + 0.75 * sqrt ((lightRange - min (lightRange, lightDist)) / lightRange);\r\n" \
 	"   }\r\n" \
 	"gl_FragColor = vec4 (texture2D (sceneColor, gl_TexCoord [0].xy).rgb * light, 1.0);\r\n" \
@@ -201,7 +201,7 @@ const char* shadowMapFS =
 	"uniform sampler2DShadow shadowMap;\r\n" \
 	"uniform mat4 modelpViewrojInverse;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
-	"uniform vec3 pLightos;\r\n" \
+	"uniform vec3 lightPos;\r\n" \
 	"uniform float lightRange;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
@@ -231,7 +231,7 @@ const char* shadowMapFS =
 	"    }\r\n" \
 	"  }\r\n" \
 	"vec4 worldPos = modelpViewrojInverse * cameraClipPos;\r\n" \
-	"float lightDist = length (pLightos - worldPos.xyz);\r\n" \
+	"float lightDist = length (lightPos - worldPos.xyz);\r\n" \
 	"light = 1.0 - 0.75 * sqrt ((lightRange - min (lightRange, lightDist)) / lightRange) * (1.0 - light / SAMPLE_COUNT);\r\n" \
 	"gl_FragColor = vec4 (texture2D (sceneColor, gl_TexCoord [0].xy).rgb * light, 1.0);\r\n" \
 	"}\r\n";

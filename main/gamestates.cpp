@@ -232,6 +232,10 @@ gameStates.render.bUsePerPixelLighting = 1;
 gameStates.render.nMaxLightsPerPass = 8;
 gameStates.render.nMaxLightsPerFace = 16;
 gameStates.render.xPlaneDistTolerance = DEFAULT_PLANE_DIST_TOLERANCE;
+gameStates.render.outlineWidth [0][0] = 3.0f;
+gameStates.render.outlineWidth [0][1] = 2.0f;
+gameStates.render.outlineWidth [1][0] = 2.0f;
+gameStates.render.outlineWidth [1][1] = 1.0f;
 }
 
 // ----------------------------------------------------------------------------
@@ -368,6 +372,23 @@ InitGfxStates ();
 InitRenderStates ();
 InitSoundStates ();
 InitVideoStates ();
+}
+
+// ----------------------------------------------------------------------------
+
+#include "ogl_lib.h"
+#include "automap.h"
+
+float CRenderStates::OutlineWidth (int32_t bPartial, float fScale, int32_t nScale)
+{
+if (fScale == 0.0f)
+	fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
+float w = fScale * outlineWidth [bPartial][automap.Active ()];
+if (bPartial)
+	w *= 2.0f / 3.0f;
+if (nScale)
+	w /= float (nScale * 2);
+return Clamp (w + 0.5f, ogl.m_data.lineWidthRange [0], Min (ogl.m_data.lineWidthRange [1], 10.f));
 }
 
 // ----------------------------------------------------------------------------

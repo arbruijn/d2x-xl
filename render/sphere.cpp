@@ -19,6 +19,7 @@
 #include "ogl_shader.h"
 #include "objeffects.h"
 #include "objrender.h"
+#include "ogl_render.h"
 #include "transprender.h"
 #include "oof.h"
 #include "addon_bitmaps.h"
@@ -812,6 +813,9 @@ bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, pBm, fScale);
 tObjTransformation *pPos = OBJPOS (pObj);
 transformation.Begin (vPos, pPos->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
+if (!bEffect && gameStates.render.CartoonStyle ()) {
+	glLineWidt
+	OglDrawCircle (CFloatVector::ZERO, 32, GL_LINE_LOOP);
 transformation.End ();
 //ogl.ResetTransform (0);
 ogl.SetTransform (0);

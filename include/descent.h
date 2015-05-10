@@ -1074,6 +1074,8 @@ class CRenderStates {
 		int32_t bBlurTextures;
 		int32_t bPosterizeTextures;
 		int32_t bClampBlur;
+		tRGB	  outlineColor;
+		float	  outlineWidth [2][2];
 		int32_t bBuildModels;
 		int32_t bShowFrameRate;
 		int32_t bShowTime;
@@ -1132,20 +1134,35 @@ class CRenderStates {
 			return bOldStyle;
 			}
 
-		inline int32_t ToggleCartoonStyle (void) { return SetCartoonStyle (-bCartoonize); }
+		inline void SetOutlineColor (uint8_t r = 2, uint8_t g = 2, uint8_t b = 2) {
+			outlineColor.r = r;
+			outlineColor.r = g;
+			outlineColor.r = b;
+			}
+
+		inline void ResetOutlineColor (void) {
+			SetOutlineColor ();
+			}
 
 		inline int32_t EnableCartoonStyle (int32_t bBlur = 1, int32_t bPosterize = 1, int32_t bOutline = 0) {
 			bBlurTextures = bBlur;
 			bPosterizeTextures = bPosterize;
 			bOutlineTextures = bOutline;
-			return ToggleCartoonStyle ();
+			SetOutlineColor ();
+			return SetCartoonStyle (gameOpts->render.bCartoonize);
 			}
 
 		inline int32_t DisableCartoonStyle (void) {
 			bOutlineTextures = 0;
-			return ToggleCartoonStyle ();
+			ResetOutlineColor ();
+			return SetCartoonStyle (0);
 			}
 
+		inline int32_t CartoonStyle (void) {
+			return bCartoonize;
+			}
+
+		float OutlineWidth (int32_t bPartial, float fScale = 1.0f, int32_t nScale = 0);
 	};
 
 //------------------------------------------------------------------------------
@@ -2129,6 +2146,13 @@ class CMeshEdge {
 		void Setup (void);
 		void Transform (void);
 		int32_t Prepare (CFloatVector vViewer, int32_t nFilter = 2, float fDistance = -1.0f);
+
+		static inline int32_t DistToScale (float fDistance) { 
+			if (fDistance <= 0.0f)
+				return 0;
+			fDistance = log10f (fDistance / Max (1.0f, logf (fDistance)));
+			return Clamp (int32_t (fDistance * fDistance + 0.5f), int32_t (0), int32_t (31));
+			}
 
 	protected:
 		virtual int32_t Visibility (void);

@@ -193,14 +193,30 @@ glPopMatrix ();
 
 void OglDrawCircle (int32_t nSides, int32_t nType)
 {
-	int32_t		i;
-	double	ang;
+	float	s = 2.0f * PI / float (nSides);
 
 if (ogl.SizeVertexBuffer (nSides)) {
-	for (i = 0; i < nSides; i++) {
-		ang = 2.0 * PI * i / nSides;
+	for (int32_t i = 0; i < nSides; i++) {
+		float a = s * float (i);
 		ogl.VertexBuffer () [i].v.coord.x = float (cos (ang));
 		ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
+		}
+	ogl.FlushBuffers (nType, nSides, 2);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void OglDrawCircle (CFloatVector vCenter, int32_t nSides, int32_t nType)
+{
+	float	s = 2.0f * PI / float (nSides);
+
+if (ogl.SizeVertexBuffer (nSides)) {
+	for (int32_t i = 0; i < nSides; i++) {
+		float a = s * float (i);
+		ogl.VertexBuffer () [i].v.coord.x = float (cos (a));
+		ogl.VertexBuffer () [i].v.coord.y = float (sin (a));
+		ogl.VertexBuffer () [i].v.coord.z = vCenter.v.coord.z;
 		}
 	ogl.FlushBuffers (nType, nSides, 2);
 	}
@@ -245,8 +261,8 @@ return 0;
 int32_t G3DrawSphere3D (CRenderPoint *p0, int32_t nSides, int32_t rad)
 {
 	CCanvasColor	c = CCanvas::Current ()->Color ();
-	CRenderPoint			p = *p0;
-	int32_t				i;
+	CRenderPoint	p = *p0;
+	int32_t			i;
 	CFloatVector	v;
 	float				x, y, z, r;
 	float				ang;
@@ -276,11 +292,11 @@ return 1;
 
 int32_t G3DrawCircle3D (CRenderPoint *p0, int32_t nSides, int32_t rad)
 {
-	CRenderPoint			p = *p0;
+	CRenderPoint		p = *p0;
 	int32_t				i, j;
-	CFloatVector	v;
-	float				x, y, r;
-	float				ang;
+	CFloatVector		v;
+	float					x, y, r;
+	float					ang;
 
 if (ogl.SizeVertexBuffer (2 * (nSides + 1))) {
 	ogl.SetTexturing (false);

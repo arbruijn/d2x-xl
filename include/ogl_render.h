@@ -13,19 +13,20 @@
 
 void OglDrawEllipse (int32_t nSides, int32_t nType, float xsc, float xo, float ysc, float yo, tSinCosf *pSinCos);
 void OglDrawCircle (int32_t nSides, int32_t nType);
+void OglDrawCircle (CFloatVector vCenter, int32_t nSides, int32_t nType);
 int32_t G3DrawWhitePoly (int32_t nv, CRenderPoint **pointList);
 int32_t G3DrawPolyAlpha (int32_t nv, CRenderPoint **pointlist, CFloatVector *color, char bDepthMask, int16_t nSegment);
 void G3FlushFaceBuffer (int32_t bForce);
 
 int32_t G3DrawTexPolyMulti (
 	int32_t			nVerts, 
-	CRenderPoint		**pointList, 
-	tUVL			*uvlList, 
-	tUVL			*uvlLMap, 
-	CBitmap		*bmBot, 
-	CBitmap		*bmTop, 
-	tLightmap	*lightmap, 
-	CFixVector	*pvNormal,
+	CRenderPoint	**pointList, 
+	tUVL				*uvlList, 
+	tUVL				*uvlLMap, 
+	CBitmap			*bmBot, 
+	CBitmap			*bmTop, 
+	tLightmap		*lightmap, 
+	CFixVector		*pvNormal,
 	int32_t			orient, 
 	int32_t			bBlend,
 	int32_t			bAdditive,
@@ -33,26 +34,26 @@ int32_t G3DrawTexPolyMulti (
 
 int32_t G3DrawTexPolyLightmap (
 	int32_t			nVerts, 
-	CRenderPoint		**pointList, 
-	tUVL			*uvlList, 
-	tUVL			*uvlLMap, 
-	CBitmap		*bmBot, 
-	CBitmap		*bmTop, 
-	tLightmap	*lightmap, 
-	CFixVector	*pvNormal,
+	CRenderPoint	**pointList, 
+	tUVL				*uvlList, 
+	tUVL				*uvlLMap, 
+	CBitmap			*bmBot, 
+	CBitmap			*bmTop, 
+	tLightmap		*lightmap, 
+	CFixVector		*pvNormal,
 	int32_t			orient, 
 	int32_t			bBlend,
 	int16_t			nSegment);
 
 int32_t G3DrawTexPolyFlat (
 	int32_t			nVerts, 
-	CRenderPoint		**pointList, 
-	tUVL			*uvlList, 
-	tUVL			*uvlLMap, 
-	CBitmap		*bmBot, 
-	CBitmap		*bmTop, 
-	tLightmap	*lightmap, 
-	CFixVector	*pvNormal,
+	CRenderPoint	**pointList, 
+	tUVL				*uvlList, 
+	tUVL				*uvlLMap, 
+	CBitmap			*bmBot, 
+	CBitmap			*bmTop, 
+	tLightmap		*lightmap, 
+	CFixVector		*pvNormal,
 	int32_t			orient, 
 	int32_t			bBlend,
 	int32_t			bAdditive,

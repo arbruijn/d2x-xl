@@ -947,15 +947,6 @@ if (!m_bValid) {
 
 //------------------------------------------------------------------------------
 
-static inline int32_t DistToScale (float fDistance) 
-{ 
-if (fDistance <= 0.0f)
-	return 0;
-fDistance = log10f (fDistance / Max (1.0f, logf (fDistance)));
-return Clamp (int32_t (fDistance * fDistance + 0.5f), int32_t (0), int32_t (31));
-}
-
-
 int32_t CMeshEdge::Prepare (CFloatVector vViewer, int32_t nFilter, float fDistance)
 {
 #if DBG
@@ -1217,8 +1208,6 @@ if (!bPolygonalOutline)
 
 void RenderMeshOutline (int32_t nScale)
 {
-float	fLineWidths [2] = { automap.Active () ? 2.0f : 3.0f, automap.Active () ? 1.0f : 2.0f };
-
 ogl.SetBlendMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
 ogl.SetDepthMode (GL_LEQUAL);
@@ -1235,8 +1224,6 @@ bool bBlur = (gameOpts->render.effects.bGlow == 2) && glowRenderer.Begin (BLUR_O
 float fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
 //if (!bBlur)
 //	fScale *= 2.0f;
-float lineWidthRange [2];
-glGetFloatv (GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
 
 for (int32_t j = 0; j < 2; j++) {
 #if 0
@@ -1252,12 +1239,7 @@ for (int32_t j = 0; j < 2; j++) {
 	if (nScale >= 0) {
 		int32_t n = gameData.segData.edgeVertexData [j].VertexCount ();
 		if (n) {
-			float w = fScale * fLineWidths [0];
-			if (j)
-				w *= 2.0f / 3.0f;
-			if (nScale)
-				w /= float (nScale * 2);
-			w = Clamp (w + 0.5f, lineWidthRange [0], Min (lineWidthRange [1], 10.f));
+			float w = gameStates.render.OutlineWidth (j, fScale, nScale);
 			glLineWidth (w);
 			OglDrawArrays (GL_LINES, 0, n);
 			glPointSize (w);
@@ -1277,12 +1259,7 @@ for (int32_t j = 0; j < 2; j++) {
 				for (int32_t d = 0; d < 32; d++) {
 					int32_t n = gameData.segData.edgeVertexData [j].VertexCountPerDist (d) * 2;
 					if (n) {
-						float w = fScale * fLineWidths [0];
-						if (j)
-							w *= 2.0f / 3.0f;
-						if (d)
-							w /= float (d * 2);
-						w = Clamp (w + 0.5f, lineWidthRange [0], Min (lineWidthRange [1], 10.f));
+						float w = gameStates.render.OutlineWidth (j, fScale, nScale);
 						glLineWidth (w);
 						OglDrawArrays (GL_LINES, i, n);
 						glPointSize (w);

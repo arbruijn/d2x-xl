@@ -386,9 +386,10 @@ windowScale.dim.x =
 windowScale.dim.y = 0;
 CLEAR (nPerPixelLights);
 CLEAR (lightRads);
-CLEAR (pLightos);
+CLEAR (lightPos);
 bLightmaps = 0;
 nHeadlights = 0;
+glGetFloatv (GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
 pDrawBuffer = &drawBuffers [0];
 #if DBG_OGL
 memset (clientBuffers, sizeof (clientBuffers), 0);
