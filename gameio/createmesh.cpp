@@ -292,20 +292,20 @@ if (gameStates.render.nMeshQuality) {
 		return 0;
 	}
 #endif
-for (i = FACES.nTriangles, pFaceTriangle = TRIANGLES.Buffer (); i; i--, pTriangle++) {
+for (i = FACES.nTriangles, pFaceTriangle = TRIANGLES.Buffer (); i; i--, pFaceTriangle++) {
 	if (!(pTriangle = AddTriangle (NULL, pFaceTriangle->index, pFaceTriangle))) {
 		FreeData ();
 		PrintLog (-1);
 		return 0;
 		}
-	if (nFace == pTriangle->nFace)
+	if (nFace == pFaceTriangle->nFace)
 		nId++;
 	else {
-		nFace = pTriangle->nFace;
+		nFace = pFaceTriangle->nFace;
 		nId = 0;
 		}
 	pTriangle->nId = nId;
-	pFace = FACES.faces + pTriangle->nFace;
+	pFace = FACES.faces + pFaceTriangle->nFace;
 #if DBG
 	if ((pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 		BRP;

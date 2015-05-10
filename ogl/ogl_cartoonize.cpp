@@ -683,7 +683,7 @@ else
 
 GLubyte *Cartoonize (CBitmap *pBm, GLubyte *pBuffer, int32_t dxo, int32_t dyo, int32_t nColors)
 {
-if (pBm->m_info.bCartoonizable && (gameStates.render.bCartoonize < 0)) {
+if (pBm->m_info.bCartoonizable && gameStates.render.CartoonStyle ()) {
 	static int32_t blurRads [4][4] = {
 		{ 15, 13, 11, 9 },
 		{ 13, 11,  9, 7 },
