@@ -503,7 +503,7 @@ void CTesselatedSphere::Transform (float fScale)
 	CSphereVertex	*v = m_worldVerts.Buffer (),
 						*r = m_viewVerts.Buffer ();
 
-for (int32_t i = m_nFaces * (FaceNodes () + 1); i; i--) {
+for (int32_t i = 0; i < m_nVertices; i++) {
 	transformation.Transform (r [i].m_v, v [i].m_v);
 	r [i].m_v *= fScale;
 	}
@@ -726,7 +726,7 @@ return !j;
 
 int32_t CTriangleSphere::CreateBuffers (void)
 {
-m_nFaces = 8 * int32_t (pow (4.0f, float (Quality ()))) + 1;
+m_nFaces = 8 * int32_t (pow (4.0f, float (Quality ())));
 if (m_faces [0].Create (m_nFaces)) {
 	if (m_faces [1].Create (m_nFaces))
 		return 1;
