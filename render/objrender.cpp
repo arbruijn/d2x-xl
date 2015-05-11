@@ -380,12 +380,13 @@ if (pColor /*&& (bmi >= 0)*/)
 
 xSize = pObj->info.xSize;
 
-if (nType == OBJ_POWERUP) {
-	if (/*!b3DShield &&**/ ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
+if (b3DShield && DrawShield3D (pObj, color)) {
+	if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
 		RenderPowerupCorona (pObj, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
-	}
-
-if (!b3DShield || !DrawShield3D (pObj, color)) {
+		}
+else {
+	if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
+		RenderPowerupCorona (pObj, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 	if (fAlpha < 1) {
 		if (bAdditive) {
 			color.Red () =
@@ -411,6 +412,7 @@ if (!b3DShield || !DrawShield3D (pObj, color)) {
 		}
 	gameData.render.nTotalSprites++;
 	}
+
 }
 
 //------------------------------------------------------------------------------

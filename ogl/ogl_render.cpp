@@ -1074,8 +1074,6 @@ if (!pBm)
 else if (pTexCoord)
 	RenderArrays (GL_QUADS, pVertex, 4, nDimensions, pTexCoord, pColor, nColors, pBm, 0, nWrap);
 else {
-	if (!strcmp ("door13#0", pBm->m_info.szName))
-		pBm = pBm;
 	if (!(pBm->Texture () || BindBitmap (pBm, 0, nWrap, true)))
 		return 0;
 	pBm = pBm->Override (-1);
@@ -1122,7 +1120,7 @@ return RenderQuad (pBm, verts, nDimensions, pBm ?  pBm->GetTexCoord () : NULL, p
 int32_t COGL::RenderBitmap (CBitmap* pBm, const CFixVector& vPos, fix xWidth, fix xHeight, CFloatVector* pColor, float alpha, int32_t bAdditive)
 {
 	CFloatVector	vPosf;
-	CFloatVector		color = {{{1, 1, 1, alpha}}};
+	CFloatVector	color = {{{1, 1, 1, alpha}}};
 
 SelectTMU (GL_TEXTURE0);
 SetBlendMode (bAdditive);

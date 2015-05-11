@@ -29,7 +29,7 @@
 
 // TODO: Create a c-tor for the two tables
 
-float CSphereVertex::m_fNormRadScale = 0.5f; //(float) sqrt (2.0f) / 2.0f;
+float CSphereVertex::m_fNormRadScale = 1.0f; //(float) sqrt (2.0f) / 2.0f;
 
 // -----------------------------------------------------------------------------
 
@@ -270,24 +270,24 @@ return (i < 0) ? i + l : i % l;
 
 CSphereQuad *CSphereQuad::Split (CSphereQuad *pDest)
 {
-	static int32_t o [4][4] = {{0, 4, 8, 7}, {4, 1, 5, 8}, {7, 8, 6, 3}, {8, 5, 2, 6}};
+	static int32_t o [4][4] = {{0, 4, 8, 7}, {4, 1, 5, 8}, {8, 5, 2, 6}, {7, 8, 6, 3}};
 
 	int32_t			i, j;
 	CSphereVertex	h [9];
 
+ComputeCenter ();
 for (i = 0; i < 4; i++)
 	h [i] = m_v [i];
 for (i = 0; i < 4; i++)
 	h [i + 4] = (m_v [i] + m_v [(i + 1) % 4]) * 0.5f;
 h [8] = m_vCenter;
-for (i = 0; i < 8; i++)
+for (i = 0; i < 9; i++)
 	h [i].Normalize ();
 
 for (i = 0; i < 4; i++, pDest++) {
 	for (j = 0; j < 4; j++)
 		pDest->m_v [j] = h [o [i][j]];
 	}
-pDest->ComputeCenter ();
 return pDest;
 }
 
@@ -320,11 +320,9 @@ void CSphere::Animate (CBitmap* pBm)
 {
 #if 1
 if (pBm && (pBm == shield.Bitmap ())) {
-	static time_t t0 = 0;
-	if ((gameStates.app.nSDLTicks [0] - t0 > 40) && pBm->CurFrame ()) {
-		t0 = gameStates.app.nSDLTicks [0];
+	static CTimeout to (100);
+	if (to.Expired () && pBm->CurFrame ()) 
 		pBm->NextFrame ();
-		}
 	}
 #endif
 }
@@ -384,12 +382,13 @@ ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 if (bTextured && !m_pBm->Bind (1))
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_tc));
 OglVertexPointer (3, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_v));
-#if DBG
+#if 0 //DBG
 glColor3f (1.0f, 0.5f, 0.0f);
 #else
 glColor4fv ((GLfloat*) m_color.v.vec);
 #endif
 OglDrawArrays (nPrimitive, 0, nVertices);
+ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 }
 
 // -----------------------------------------------------------------------------
@@ -402,6 +401,7 @@ if (bTextured && !m_pBm->Bind (1))
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), pVertex);
 glColor4fv ((GLfloat*) m_color.v.vec);
 OglDrawArrays (nPrimitive, 0, nFaces * FaceNodes ());
+ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 }
 
 // -----------------------------------------------------------------------------
@@ -438,7 +438,7 @@ if (bGlow) {
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 	}
 else {
-	ogl.SetBlendMode (bAdditive);
+	ogl.SetBlendMode (bAdditive > 0);
 	}
 ogl.SetDepthMode (GL_LEQUAL);
 
@@ -464,11 +464,10 @@ else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
 	}
 
 #if DBG
-bTextured = 0; //InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
+bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
 #else
 bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
 #endif
-
 //ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 transformation.Begin (vPos, posP->mOrient);
@@ -514,7 +513,7 @@ for (int32_t i = m_nFaces * (FaceNodes () + 1); i; i--) {
 
 int32_t CTesselatedSphere::Quality (void)
 {
-#if DBG
+#if 0 //DBG
 return 0;
 #else
 return m_nQuality ? m_nQuality : gameOpts->render.textures.nQuality + 1;
@@ -702,7 +701,7 @@ for (int32_t i = 0; i < 8; i++) {
 	for (int32_t j = 0; j < 3; j++) {
 		for (int32_t k = 0; k < 3; k++) {
 			m_faces [0][i].m_v [j].m_v.v.vec [k] = baseOctagon [i][j][k];
-			m_faces [0][i].m_v [j].m_tc = baseTC [i & 1][k];
+			m_faces [0][i].m_v [j].m_tc = baseTC [i & 1][j];
 			}
 		m_faces [0][i].m_v [j].Normalize ();
 		}
@@ -773,8 +772,8 @@ void CTriangleSphere::RenderFaces (float fRadius, float red, float green, float 
 if (!m_worldVerts.Buffer () || !m_viewVerts.Buffer ())
 	return;
 Transform (fRadius);
-#if 1
 glScalef (fRadius, fRadius, fRadius);
+#if 1
 for (int32_t nCull = 0; nCull < 2; nCull++) {
 	ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
 	DrawFaces (0, m_nFaces, bTextured, GL_TRIANGLES);
@@ -825,12 +824,22 @@ return 1;
 void CQuadSphere::SetupFaces (void)
 {
 static float baseCube [6][4][3] = {
+#if 0
 	{{-1,-1,1},{1,-1,1},{1,1,1},{-1,1,1}},
 	{{1,-1,1},{1,-1,-1},{1,1,-1},{1,1,1}},
 	{{1,-1,-1},{-1,-1,-1},{-1,1,-1},{1,1,-1}},
 	{{-1,-1,1},{-1,1,1},{-1,1,-1},{-1,-1,-1}},
 	{{-1,1,1},{1,1,1},{1,1,-1},{-1,1,-1}},
 	{{-1,-1,-1},{1,-1,-1},{1,-1,1},{-1,-1,1}}
+#else
+	{{-1,-1,-1},{+1,-1,-1},{+1,+1,-1},{-1,+1,-1}},
+	{{+1,-1,-1},{+1,-1,+1},{+1,+1,+1},{+1,+1,-1}},
+	{{+1,-1,+1},{-1,-1,+1},{-1,+1,+1},{+1,+1,+1}},
+	{{-1,-1,+1},{-1,-1,-1},{-1,+1,-1},{-1,+1,+1}},
+	{{-1,+1,-1},{+1,+1,-1},{+1,+1,+1},{-1,+1,+1}},
+	{{+1,-1,-1},{-1,-1,-1},{-1,-1,+1},{+1,-1,+1}}
+
+#endif
 	};
 
 static tTexCoord2f baseTC [4] = {{0,0}, {1,0}, {1,1}, {0,1}};
@@ -839,7 +848,7 @@ for (int32_t i = 0; i < 6; i++) {
 	for (int32_t j = 0; j < 4; j++) {
 		for (int32_t k = 0; k < 3; k++) {
 			m_faces [0][i].m_v [j].m_v.v.vec [k] = baseCube [i][j][k];
-			m_faces [0][i].m_v [j].m_tc = baseTC [k];
+			m_faces [0][i].m_v [j].m_tc = baseTC [j];
 			}
 		m_faces [0][i].m_v [j].Normalize ();
 		}
@@ -867,11 +876,7 @@ return !j;
 
 int32_t CQuadSphere::CreateBuffers (void)
 {
-#if 1 //DBG
-m_nFaces = 6;
-#else
 m_nFaces = 6 * int32_t (pow (4.0f, float (Quality ()))) + 1;
-#endif
 if (m_faces [0].Create (m_nFaces)) {
 	if (m_faces [1].Create (m_nFaces))
 		return 1;
@@ -920,10 +925,20 @@ if (!m_worldVerts.Buffer () || !m_viewVerts.Buffer ())
 //Transform (fRadius);
 #if 1
 glScalef (fRadius, fRadius, fRadius);
+#	if 0
+glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+glLineWidth (3);
 for (int32_t nCull = 0; nCull < 2; nCull++) {
 	ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
 	DrawFaces (0, m_nFaces, bTextured, GL_QUADS);
 	}
+glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+#	else
+for (int32_t nCull = 0; nCull < 2; nCull++) {
+	ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
+	DrawFaces (0, m_nFaces, bTextured, GL_QUADS);
+	}
+#	endif
 #else
 glBegin (GL_LINES);
 CSphereVertex *ps = m_worldVerts.Buffer ();

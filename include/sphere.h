@@ -48,9 +48,9 @@ class CSphereVertex {
 			}
 
 		inline CSphereVertex& operator+= (CSphereVertex& other) {
-			m_v -= other.m_v;
-			m_tc.v.u -= other.m_tc.v.u;
-			m_tc.v.v -= other.m_tc.v.v;
+			m_v += other.m_v;
+			m_tc.v.u += other.m_tc.v.u;
+			m_tc.v.v += other.m_tc.v.v;
 			return *this;
 			}
 

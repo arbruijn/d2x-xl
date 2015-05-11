@@ -56,8 +56,9 @@ if ((IsEnergyPowerup (pObj->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 	 {{{0.9f, 0.8f, 0.2f, 0.2f}}}
 		};
 
-	CFloatVector color;
-	fix			xSize;
+	CFloatVector	color;
+	fix				xSize;
+	float				fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity] * 0.5f;
 
 	if ((pObj->info.nId >= POW_KEY_BLUE) && (pObj->info.nId <= POW_KEY_GOLD)) {
 		int32_t i = pObj->info.nId - POW_KEY_BLUE;
@@ -66,12 +67,11 @@ if ((IsEnergyPowerup (pObj->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 		xSize = I2X (12);
 		}
 	else {
-		float b = float (sqrt ((red + green + blue) / 3.0f));
+		float b = (pObj->info.nId >= POW_SHIELD_BOOST) ? Max (red, Max (green, blue)) * 0.5f : float (sqrt ((red + green + blue) / 3.0f));
 		color.Set (red, green, blue);
 		color /= b;
 		xSize = 2 * pObj->info.xSize; //I2X (8);
 		}
-	float fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2.0f;
 	color *= fScale;
 	color.Alpha () = alpha;
 	glare.Bitmap ()->SetColor (&color);

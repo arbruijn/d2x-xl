@@ -34,7 +34,7 @@ CAddonBitmap corona (const_cast<char*>("corona.tga"));
 CAddonBitmap glare (const_cast<char*>("glare.tga"));
 CAddonBitmap halo (const_cast<char*>("halo.tga"));
 CAddonBitmap thruster (const_cast<char*>("thruster.tga"));
-CAddonBitmap shield (const_cast<char*>("shield.tga"), 1);
+CAddonBitmap shield (const_cast<char*>("forcefield.tga"), 1);
 CAddonBitmap deadzone (const_cast<char*>("deadzone.tga"));
 CAddonBitmap damageIcon [3];
 CAddonBitmap scope (const_cast<char*>("scope.tga"));
