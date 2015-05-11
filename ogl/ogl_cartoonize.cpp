@@ -124,7 +124,7 @@ return color.a && Visible ((tRGB&) color);
 
 //------------------------------------------------------------------------------
 
-#if 1 
+#if 0
 
 static void HBoxBlurRGBAWrapped (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
@@ -221,7 +221,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 
 //------------------------------------------------------------------------------
 
-#if 1
+#if 0
 
 static void VBoxBlurRGBAWrapped (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
@@ -846,7 +846,7 @@ else if (nColors == 4)
 
 //------------------------------------------------------------------------------
 
-void CreateOutline (tRGBA *pTexture, int32_t w, int32_t h, int32_t tw, int32_t nPasses, int32_t nStart = 0, int32_t nStep = 1)
+void CreateOutlineRGBA (tRGBA *pTexture, int32_t w, int32_t h, int32_t tw, int32_t nPasses, int32_t nStart = 0, int32_t nStep = 1)
 {
 #if 0
 	int32_t offsets [9] = { -tw - 1, -tw, -tw + 1, -1, 0, 1, tw - 1, tw, tw + 1};
@@ -881,30 +881,125 @@ for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
 
 //------------------------------------------------------------------------------
 
-void PrepareOutline (tRGBA *pTexture, int32_t w, int32_t h, int32_t tw, int32_t nStart = 0, int32_t nStep = 1)
+void CreateOutlineRGB (tRGB *pTexture, int32_t w, int32_t h, int32_t tw, int32_t nPasses, int32_t nStart = 0, int32_t nStep = 1)
+{
+#if 0
+	int32_t offsets [9] = { -tw - 1, -tw, -tw + 1, -1, 0, 1, tw - 1, tw, tw + 1};
+#else
+	int32_t offsets [8][2] = { {-1, -1}, {0, -1}, {1, -1}, {-1, 0}, /*{0, 0}, */{1, 0}, {-1, 1,}, {0, 1}, {1, 1} };
+#endif
+	int32_t nTag = 254, n = 0;
+
+for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
+	for (int32_t y = nStart; y < h; y += nStep) {
+		int32_t i = y * tw;
+		for (int32_t x = 0; x < w; x++, i++) {
+			if (ogl.m_data.outlineFilter [i])
+				continue;
+			for (int32_t o = 0; o < 8; o++) {
+				int32_t j = Clamp (y + offsets [o][1], 0, h) * tw + Clamp (x + offsets [o][0], 0, w);
+				if (ogl.m_data.outlineFilter [j] > nTag) {
+					ogl.m_data.outlineFilter [i] = nTag;
+					pTexture [i].r = gameStates.render.outlineColor.g;
+					pTexture [i].g = gameStates.render.outlineColor.b;
+					pTexture [i].b = gameStates.render.outlineColor.r;
+					n++;
+					break;
+					}
+				}
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CreateOutlineMask (uint8_t *pTexture, int32_t w, int32_t h, int32_t tw, int32_t nPasses, int32_t nStart = 0, int32_t nStep = 1)
+{
+#if 0
+	int32_t offsets [9] = { -tw - 1, -tw, -tw + 1, -1, 0, 1, tw - 1, tw, tw + 1};
+#else
+	int32_t offsets [8][2] = { {-1, -1}, {0, -1}, {1, -1}, {-1, 0}, /*{0, 0}, */{1, 0}, {-1, 1,}, {0, 1}, {1, 1} };
+#endif
+	int32_t nTag = 254, n = 0;
+
+for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
+	for (int32_t y = nStart; y < h; y += nStep) {
+		int32_t i = y * tw;
+		for (int32_t x = 0; x < w; x++, i++) {
+			if (ogl.m_data.outlineFilter [i])
+				continue;
+			for (int32_t o = 0; o < 8; o++) {
+				int32_t j = Clamp (y + offsets [o][1], 0, h) * tw + Clamp (x + offsets [o][0], 0, w);
+				if (ogl.m_data.outlineFilter [j] > nTag) {
+					ogl.m_data.outlineFilter [i] = nTag;
+					pTexture [i] = 0;
+					n++;
+					break;
+					}
+				}
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void PrepareOutlineRGBA (tRGBA *pTexture, int32_t w, int32_t h, int32_t tw, int32_t nStart = 0, int32_t nStep = 1)
 {
 for (int32_t y = nStart; y < h; y += nStep) {
 	tRGBA *pSrc = pTexture + y * tw;
 	uint8_t *pDest = ogl.m_data.outlineFilter + y * tw;
-	for (int32_t x = 0; x < w; x++)
-#if DBG
-		{
-		if (pSrc->a > 127)
+	for (int32_t x = 0; x < w; x++) {
+		if (Visible (*pSrc) && (pSrc->a > 127))
 			*pDest = 255;
 		else
 			*pDest = 0;
 		pSrc++;
 		pDest++;
 		}
-#else
-		*(pDest++) = ((pSrc++)->a > 127) ? 255 : 0;
-#endif
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void Outline (GLubyte *src, int32_t w, int32_t h, int32_t tw, int32_t nPasses)
+void PrepareOutlineRGB (tRGB *pTexture, int32_t w, int32_t h, int32_t tw, int32_t nStart = 0, int32_t nStep = 1)
+{
+for (int32_t y = nStart; y < h; y += nStep) {
+	tRGB *pSrc = pTexture + y * tw;
+	uint8_t *pDest = ogl.m_data.outlineFilter + y * tw;
+	for (int32_t x = 0; x < w; x++) {
+		if (Visible (*pSrc))
+			*pDest = 255;
+		else
+			*pDest = 0;
+		pSrc++;
+		pDest++;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void PrepareOutlineMask (uint8_t *pTexture, int32_t w, int32_t h, int32_t tw, int32_t nStart = 0, int32_t nStep = 1)
+{
+for (int32_t y = nStart; y < h; y += nStep) {
+	uint8_t *pSrc = pTexture + y * tw;
+	uint8_t *pDest = ogl.m_data.outlineFilter + y * tw;
+	for (int32_t x = 0; x < w; x++) {
+		if (*pSrc)
+			*pDest = 255;
+		else
+			*pDest = 0;
+		pSrc++;
+		pDest++;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void Outline (GLubyte *src, int32_t w, int32_t h, int32_t tw, int32_t nColors, int32_t nPasses)
 {
 #if 0 //USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
@@ -918,9 +1013,17 @@ if (gameStates.app.bMultiThreaded) {
 	}
 else
 #endif
-	{
-	PrepareOutline ((tRGBA*) src, w, h, tw);
-	CreateOutline ((tRGBA*) src, w, h, tw, nPasses);
+if (nColors == 4) {
+	PrepareOutlineRGBA ((tRGBA*) src, w, h, tw);
+	CreateOutlineRGBA ((tRGBA*) src, w, h, tw, nPasses);
+	}
+else if (nColors == 3) {
+	PrepareOutlineRGB ((tRGB*) src, w, h, tw);
+	CreateOutlineRGB ((tRGB*) src, w, h, tw, nPasses);
+	}
+else if (nColors == 1) {
+	PrepareOutlineMask ((uint8_t*) src, w, h, tw);
+	CreateOutlineMask ((uint8_t*) src, w, h, tw, nPasses);
 	}
 }
 
@@ -954,7 +1057,7 @@ if (pBm->m_info.bCartoonizable && gameStates.render.CartoonStyle ()) {
 										nColors, !gameStates.render.bClampBlur, gameStates.render.bBlurTextures);
 #	endif
 #endif
-#if 1
+#if 0
 	if (gameStates.render.bPosterizeTextures)
 		Posterize (pBuffer, w, h, tw, nColors);
 #endif
@@ -975,7 +1078,7 @@ if (pBm->m_info.bCartoonizable && gameStates.render.CartoonStyle ()) {
 			bResetOutlineColor = 0;
 			}
 #endif
-		Outline (pBuffer, w, h, tw, /*1 << s*/s + 1);
+		Outline (pBuffer, w, h, tw, nColors, /*1 << s*/s + 1);
 #if 1
 		if (bResetOutlineColor)
 			gameStates.render.ResetOutlineColor ();

@@ -455,6 +455,13 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
+
+inline uint8_t Posterize (int32_t nColor, int32_t nSteps = 15) {
+	return Max (0, ((nColor + nSteps / 2) / nSteps) * nSteps - nSteps);
+	}
+
+//------------------------------------------------------------------------------
+
 // Create an image buffer for the renderer from a palettized bitmap.
 // The image buffer has power of two dimensions; the image will be stored
 // in its upper left area and u and v coordinates of lower right image corner
@@ -520,7 +527,7 @@ if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer [0]))//sho
 
 	uint16_t		r, g, b, a;
 	int32_t		x, y, c;
-	int32_t		bPosterize = 0; //gameStates.render.CartoonStyle () && gameStates.render.bPosterizeTextures;
+	int32_t		bPosterize = gameStates.render.CartoonStyle () && gameStates.render.bPosterizeTextures;
 
 
 //pBm->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
@@ -621,9 +628,9 @@ for (y = 0; y < m_info.h; y++) {
 						g = pColor [c].Green () * 4;
 						b = pColor [c].Blue () * 4;
 						if (bPosterize) {
-							r = (r / 16) * 16;
-							g = (g / 16) * 16;
-							b = (b / 16) * 16;
+							r = Posterize (r);
+							g = Posterize (g);
+							b = Posterize (b);
 							}
 						if ((r < ogl.m_states.nTransparencyLimit) &&
 							 (g < ogl.m_states.nTransparencyLimit) &&
@@ -1216,7 +1223,7 @@ if (!m_info.pTexture->IsRenderBuffer ())
 		else
 #endif
 		int32_t nColors;
-		if (m_info.nTranspType < 0) {
+		if ((m_info.nTranspType < 0) || (Flags () & BM_FLAG_TGA)) {
 			CBitmap* pBm = m_info.pTexture->Bitmap ();
 			m_info.pTexture->SetBitmap (this);
 			pBuffer = m_info.pTexture->Copy (dxo, dyo, data);
@@ -1366,14 +1373,15 @@ if (m_info.maskP)
 	return m_info.maskP;
 //int32_t nTranspType = m_info.nTranspType;
 //SetBPP (4);
-if (!(m_info.maskP = CBitmap::Create (0, (Width ()  + 1) / 2, (Height () + 1) / 2, 4)))
+if (!(m_info.maskP = CBitmap::Create (0, Width (), Height (), 1)))
 	return NULL;
 #if DBG
 sprintf (m_info.maskP->m_info.szName, "{%s}", Name ());
 #endif
 m_info.maskP->SetWidth (m_info.props.w);
 m_info.maskP->SetHeight (m_info.props.w);
-m_info.maskP->SetBPP (1);
+m_info.maskP->AddFlags (BM_FLAG_TGA);
+m_info.maskP->SetTranspType (-1);
 //m_info.nTranspType = nTranspType;
 UseBitmapCache (m_info.maskP, (int32_t) m_info.maskP->Width () * (int32_t) m_info.maskP->RowSize ());
 if (m_info.props.flags & BM_FLAG_TGA) {
@@ -1499,15 +1507,21 @@ if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 		}
 	}
 else if (!Frames ()) {
-	CreateFrames (bMipMaps, 0);
-	CreateMasks ();
+#if DBG
+	if (strstr (Name (), "door35"))
+		BRP;
+#endif
+	CreateFrames (bMipMaps, bLoad);
+	int32_t nMasks = CreateMasks ();
 	if (bLoad) {
 		CBitmap*	pBmf = Frames ();
 		for (int32_t i = nFrames; i; i--, pBmf++) {
 			if (pBmf->PrepareTexture (bMipMaps, 0, NULL))
 				return false;
-			if (pBmf->Mask () && (pBmf->Mask ()->PrepareTexture (0, 1, NULL)))
-				return false;
+			if (nMasks) {
+				if (pBmf->Mask () && (pBmf->Mask ()->PrepareTexture (0, 1, NULL)))
+					return false;
+				}
 			}
 		}
 	}

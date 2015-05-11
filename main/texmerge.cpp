@@ -426,7 +426,7 @@ const char *texMergeFS [6] = {
 	"vec4 decalColor, texColor;\r\n" \
 	"float fMask;\r\n" \
 	"void main(void){" \
-	"fMask = bMask ? texture2D(maskTex,gl_TexCoord [2].xy).r : 1.0;\r\n" \
+	"fMask = bMask ? texture2D(maskTex,gl_TexCoord [2].xy).r /*< 0.1 ? 0.0 : 1.0*/ : 1.0;\r\n" \
 	"decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
 	"texColor=texture2D(baseTex,gl_TexCoord [0].xy);\r\n" \
 	"vec4 color = vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a)))*gl_Color;\r\n" \
@@ -461,7 +461,7 @@ const char *texMergeFS [6] = {
 	"vec4 decalColor, texColor;\r\n" \
 	"float fMask;\r\n" \
 	"void main(void){" \
-	"fMask = bMask ? texture2D(maskTex,gl_TexCoord [2].xy).r : 1.0;\r\n" \
+	"fMask = bMask ? texture2D(maskTex,gl_TexCoord [2].xy).r /*< 0.1 ? 0.0 : 1.0*/ : 1.0;\r\n" \
 	"decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
 	"texColor=texture2D(baseTex,gl_TexCoord [0].xy);\r\n" \
 	"gl_FragColor = fMask * vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a)))*gl_Color;\r\n" \
