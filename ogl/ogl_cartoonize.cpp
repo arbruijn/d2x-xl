@@ -1023,7 +1023,7 @@ else if (nColors == 3) {
 	}
 else if (nColors == 1) {
 	PrepareOutlineMask ((uint8_t*) src, w, h, tw);
-	CreateOutlineMask ((uint8_t*) src, w, h, tw, nPasses);
+	CreateOutlineMask ((uint8_t*) src, w, h, tw, Max (1, nPasses - 1));
 	}
 }
 
