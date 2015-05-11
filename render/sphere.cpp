@@ -295,6 +295,45 @@ return pDest;
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
+int16_t CSphere::FindVertex (CSphereVertex& v)
+{
+for (int16_t i = 0; i < m_nVertices; i++)
+	if (CFloatVector::Dist (m_worldVerts [i].m_v, v.m_v) < 1e-6f)
+		return i;
+return -1;
+}
+
+// -----------------------------------------------------------------------------
+
+int16_t CSphere::AddVertex (CSphereVertex& v)
+{
+int16_t i = FindVertex (v);
+if (i < 0) {
+	i = m_nVertices++;
+	m_worldVerts [i] = v;
+	}
+return i;
+}
+
+// -----------------------------------------------------------------------------
+
+void CSphere::SetPulse (CPulseData* pPulse)
+{
+m_pPulse = pPulse;
+}
+
+// -----------------------------------------------------------------------------
+
+void CSphere::SetupPulse (float fSpeed, float fMin)
+{
+m_pulse.fScale =
+m_pulse.fMin = fMin;
+m_pulse.fSpeed =
+m_pulse.fDir = fSpeed;
+}
+
+// -----------------------------------------------------------------------------
+
 void CSphere::Pulsate (void)
 {
 if (m_pPulse) {
@@ -962,23 +1001,6 @@ glEnd ();
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-
-void CSphere::SetPulse (CPulseData* pPulse)
-{
-m_pPulse = pPulse;
-}
-
-// -----------------------------------------------------------------------------
-
-void CSphere::SetupPulse (float fSpeed, float fMin)
-{
-m_pulse.fScale =
-m_pulse.fMin = fMin;
-m_pulse.fSpeed =
-m_pulse.fDir = fSpeed;
-}
-
 // -----------------------------------------------------------------------------
 
 void SetupSpherePulse (CPulseData *pPulse, float fSpeed, float fMin)

@@ -159,11 +159,13 @@ class CSphere : protected CSphereData {
 	protected:
 		void DrawFaces (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nFaces, int32_t bTextured, int32_t nPrimitive);
 		void DrawFaces (int32_t nOffset, int32_t nFaces, int32_t bTextured, int32_t nPrimitive);
+		int16_t AddVertex (CSphereVertex& v);
 
 	private:
 		void Pulsate (void);
 		void Animate (CBitmap* pBm);
 		int32_t InitSurface (float red, float green, float blue, float alpha, CBitmap *pBm, float fScale);
+		int16_t FindVertex (CSphereVertex& v);
 };
 
 // -----------------------------------------------------------------------------
