@@ -2182,7 +2182,7 @@ class CEdgeVertexData {
 
 		void Sort (int32_t left, int32_t right);
 
-		inline uint16_t CEdgeVertexData::Sort (void) { 
+		inline uint16_t Sort (void) { 
 			if (m_nVertices > 2)
 				Sort (0, m_nVertices / 2 - 1); 
 			return m_nVertices;
@@ -2721,16 +2721,16 @@ typedef struct tFiringData {
 
 class CWeaponData {
 	public:
-		int8_t					nPrimary;
-		int8_t					nSecondary;
-		int8_t					nOverridden;
-		int8_t					bTripleFusion;
-		tFiringData				firing [2];
-		int32_t					nTypes [2];
+		int8_t				nPrimary;
+		int8_t				nSecondary;
+		int8_t				nOverridden;
+		int8_t				bTripleFusion;
+		tFiringData			firing [2];
+		int32_t				nTypes [2];
 		CStaticArray< CWeaponInfo, MAX_WEAPON_TYPES >	info; // [MAX_WEAPON_TYPES];
 		CStaticArray< CD1WeaponInfo, D1_MAX_WEAPON_TYPES >	infoD1; // [D1_MAX_WEAPON_TYPES];
 		CArray<CFloatVector>	color;
-		uint8_t					bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
+		uint8_t				bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
 
 	public:
 		CWeaponData ();
@@ -2780,19 +2780,19 @@ class CModelThrusters {
 		CFixVector	vPos [MAX_THRUSTERS];
 		CFixVector	vDir [MAX_THRUSTERS];
 		float			fSize [MAX_THRUSTERS];
-		uint8_t			nType [MAX_THRUSTERS];
-		int16_t			nCount;
+		uint8_t		nType [MAX_THRUSTERS];
+		int16_t		nCount;
 	};
 
 typedef struct tGunInfo {
-	int32_t					nGuns;
+	int32_t				nGuns;
 	CFixVector			vGunPoints [MAX_GUNS];
 	} tGunInfo;
 
 typedef struct tModelSphere {
-	int16_t					nSubModels;
-	int16_t					nFaces;
-	int16_t					nFaceVerts;
+	int16_t				nSubModels;
+	int16_t				nFaces;
+	int16_t				nFaceVerts;
 	fix					xRads [3];
 	CFixVector			vOffsets [3];
 } tModelSphere;
@@ -2801,25 +2801,25 @@ typedef struct tModelSphere {
 
 class CModelData {
 	public:
-		int32_t									nLoresModels;
-		int32_t									nHiresModels;
-		int32_t									nPolyModels;
-		int32_t									nDefPolyModels;
-		int32_t									nSimpleModelThresholdScale;
-		int32_t									nMarkerModel;
-		int32_t									nCockpits;
-		int32_t									nLightScale;
-		CArray<int32_t>							nDyingModels ; //[MAX_POLYGON_MODELS];
-		CArray<int32_t>							nDeadModels ; //[MAX_POLYGON_MODELS];
+		int32_t								nLoresModels;
+		int32_t								nHiresModels;
+		int32_t								nPolyModels;
+		int32_t								nDefPolyModels;
+		int32_t								nSimpleModelThresholdScale;
+		int32_t								nMarkerModel;
+		int32_t								nCockpits;
+		int32_t								nLightScale;
+		CArray<int32_t>					nDyingModels ; //[MAX_POLYGON_MODELS];
+		CArray<int32_t>					nDeadModels ; //[MAX_POLYGON_MODELS];
 		CArray<ASE::CModel>				aseModels [2]; //[MAX_POLYGON_MODELS];
 		CArray<OOF::CModel>				oofModels [2]; //[MAX_POLYGON_MODELS];
 		CArray<POF::CModel>				pofData [2][2]; //[MAX_POLYGON_MODELS];
-		CArray<uint8_t>						bHaveHiresModel ; //[MAX_POLYGON_MODELS];
+		CArray<uint8_t>					bHaveHiresModel ; //[MAX_POLYGON_MODELS];
 		CArray<CPolyModel>				polyModels [3] ; //[MAX_POLYGON_MODELS];
 		CArray<OOF::CModel*>				modelToOOF [2]; //[MAX_POLYGON_MODELS];
 		CArray<ASE::CModel*>				modelToASE [2]; //[MAX_POLYGON_MODELS];
 		CArray<CPolyModel*>				modelToPOL ; //[MAX_POLYGON_MODELS];
-		CArray<CRenderPoint>					polyModelPoints ; //[MAX_POLYGON_VERTS];
+		CArray<CRenderPoint>				polyModelPoints ; //[MAX_POLYGON_VERTS];
 		CArray<CFloatVector>				fPolyModelVerts ; //[MAX_POLYGON_VERTS];
 		CArray<CBitmap*>					textures ; //[MAX_POLYOBJ_TEXTURES];
 		CArray<tBitmapIndex>				textureIndex ; //[MAX_POLYOBJ_TEXTURES];
@@ -2847,14 +2847,14 @@ class CAutoNetGame {
 		char					szFile [FILENAME_LEN];
 		char					szMission [13];
 		char					szName [81];		//game name
-		int32_t					nLevel;
-		uint8_t					ipAddr [4];
-		int32_t					nPort;
-		uint8_t					uConnect;
-		uint8_t					uType;
-		uint8_t					bHost;
-		uint8_t					bTeam;				// team game?
-		uint8_t					bValid;
+		int32_t				nLevel;
+		uint8_t				ipAddr [4];
+		int32_t				nPort;
+		uint8_t				uConnect;
+		uint8_t				uType;
+		uint8_t				bHost;
+		uint8_t				bTeam;				// team game?
+		uint8_t				bValid;
 
 	public:
 		CAutoNetGame () { memset (this, 0, sizeof (*this)); }
@@ -2862,26 +2862,26 @@ class CAutoNetGame {
 
 typedef struct tLeftoverPowerup {
 	CObject				*pSpitter;
-	uint8_t					nCount;
-	uint8_t					nType;
+	uint8_t				nCount;
+	uint8_t				nType;
 } tLeftoverPowerup;
 
 class CWeaponState {
 	public:
-		tFiringData				firing [2];
-		fix						xMslFireTime;
-		fix						xFusionCharge;
-		int16_t					nAmmoUsed;
-		char						nMissiles;
-		char						nPrimary;
-		char						nSecondary;
-		char						bQuadLasers;
-		char						nLaserLevel;
-		char						bTripleFusion;
-		char						nMslLaunchPos;
-		uint8_t					nBuiltinMissiles;
-		uint8_t					nThrusters [5];
-		uint8_t					nShip;
+		tFiringData			firing [2];
+		fix					xMslFireTime;
+		fix					xFusionCharge;
+		int16_t				nAmmoUsed;
+		char					nMissiles;
+		char					nPrimary;
+		char					nSecondary;
+		char					bQuadLasers;
+		char					nLaserLevel;
+		char					bTripleFusion;
+		char					nMslLaunchPos;
+		uint8_t				nBuiltinMissiles;
+		uint8_t				nThrusters [5];
+		uint8_t				nShip;
 
 	public:
 		CWeaponState () { memset (this, 0, sizeof (*this)); }
@@ -2987,13 +2987,13 @@ class CMultiCreateData {
 
 class CMultiWeaponData {
 	public:
-		int32_t					bFired;
-		uint8_t					nFired [2];
-		int16_t					nObjects [2][MAX_FIRED_OBJECTS];
-		int32_t					nGun;
-		int32_t					nFlags;
-		int32_t					nLevel;
-		int16_t					nTrack;
+		int32_t				bFired;
+		uint8_t				nFired [2];
+		int16_t				nObjects [2][MAX_FIRED_OBJECTS];
+		int32_t				nGun;
+		int32_t				nFlags;
+		int32_t				nLevel;
+		int16_t				nTrack;
 
 	public:
 		CMultiWeaponData () { memset (this, 0, sizeof (*this)); }
@@ -3126,14 +3126,14 @@ class CTimeData {
 		fix					xGameTotal;
 		fix					xMaxOnline;
 		fix					xLast;
-		int32_t					tLast;
+		int32_t				tLast;
 		fix					xSlack;
 		fix					xStarted;
 		fix					xStopped;
 		fix					xLastThiefHitTime;
-		int32_t					nPaused;
-		int32_t					nStarts;
-		int32_t					nStops;
+		int32_t				nPaused;
+		int32_t				nStarts;
+		int32_t				nStops;
 
 	public:
 		CTimeData ();
@@ -3161,15 +3161,15 @@ typedef enum {
 
 class CApplicationData {
 	public:
-		int32_t					nFrameCount;
-		int32_t					nMineRenderCount;
-		int32_t					nGameMode;
-		int32_t					bGamePaused;
-		uint32_t					nStateGameId;
-		uint32_t					semaphores [4];
-		int32_t					nLifetimeChecksum;
-		int32_t					bUseMultiThreading [rtTaskCount];
-		int32_t					argC;
+		int32_t				nFrameCount;
+		int32_t				nMineRenderCount;
+		int32_t				nGameMode;
+		int32_t				bGamePaused;
+		uint32_t				nStateGameId;
+		uint32_t				semaphores [4];
+		int32_t				nLifetimeChecksum;
+		int32_t				bUseMultiThreading [rtTaskCount];
+		int32_t				argC;
 		char**				argV;
 
 	public:
@@ -3249,9 +3249,9 @@ typedef struct tProfilerData {
 
 class CBossInfo {
 	public:
-		int16_t					m_nTeleportSegs;
+		int16_t				m_nTeleportSegs;
 		CShortArray			m_teleportSegs; // [MAX_BOSS_TELEPORT_SEGS];
-		int16_t					m_nGateSegs;
+		int16_t				m_nGateSegs;
 		CShortArray			m_gateSegs; // [MAX_BOSS_TELEPORT_SEGS];
 		fix					m_nDyingStartTime;
 		fix					m_nHitTime;
@@ -3266,11 +3266,11 @@ class CBossInfo {
 	#if DBG
 		fix					m_xPrevShield;
 	#endif
-		int32_t					m_bHitThisFrame;
-		int32_t					m_bHasBeenHit;
-		int32_t					m_nObject;
-		int16_t					m_nDying;
-		int8_t					m_bDyingSoundPlaying;
+		int32_t				m_bHitThisFrame;
+		int32_t				m_bHasBeenHit;
+		int32_t				m_nObject;
+		int16_t				m_nDying;
+		int8_t				m_bDyingSoundPlaying;
 
 	public:
 		CBossInfo () { Init (); }
@@ -3334,12 +3334,12 @@ class CBossData {
 #include "reactor.h"
 
 typedef struct tReactorStates {
-	int32_t					nObject;
-	int32_t					bHit;
-	int32_t					bSeenPlayer;
-	int32_t					nNextFireTime;
-	int32_t					nDeadObj;
-	int32_t					nStrength;
+	int32_t				nObject;
+	int32_t				bHit;
+	int32_t				bSeenPlayer;
+	int32_t				nNextFireTime;
+	int32_t				nDeadObj;
+	int32_t				nStrength;
 	fix					xLastVisCheckTime;
 	CFixVector			vGunPos [MAX_CONTROLCEN_GUNS];
 	CFixVector			vGunDir [MAX_CONTROLCEN_GUNS];
@@ -3351,11 +3351,11 @@ class CReactorData {
 		CTriggerTargets	triggers;
 		CStaticArray< tReactorStates, MAX_BOSS_COUNT >	states; // [MAX_BOSS_COUNT];
 		tCountdownData		countdown;
-		int32_t					nReactors;
-		int32_t					nStrength;
-		int32_t					bPresent;
-		int32_t					bDisabled;
-		int32_t					bDestroyed;
+		int32_t				nReactors;
+		int32_t				nStrength;
+		int32_t				bPresent;
+		int32_t				bDisabled;
+		int32_t				bDestroyed;
 
 	public:
 		CReactorData ();
@@ -3367,7 +3367,7 @@ class CReactorData {
 
 class CAITarget {
 	public:
-		int16_t							nBelievedSeg;
+		int16_t						nBelievedSeg;
 		CFixVector					vBelievedPos;
 		CFixVector					vLastPosFiredAt;
 		fix							nDistToLastPosFiredAt;
@@ -3380,26 +3380,26 @@ class CAITarget {
 
 class CAIData {
 	public:
-		int32_t							bInitialized;
-		int32_t							nOverallAgitation;
-		int32_t							bEvaded;
-		int32_t							bEnableAnimation;
-		int32_t							bInfoEnabled;
+		int32_t						bInitialized;
+		int32_t						nOverallAgitation;
+		int32_t						bEvaded;
+		int32_t						bEnableAnimation;
+		int32_t						bInfoEnabled;
 		CFixVector					vHitPos;
-		int32_t							nHitType;
-		int32_t							nHitSeg;
+		int32_t						nHitType;
+		int32_t						nHitSeg;
 		CHitResult					hitResult;
 		CAITarget					target;
 		CArray<tAILocalInfo>		localInfo;
 		CArray<tAICloakInfo>		cloakInfo; // [MAX_AI_CLOAK_INFO];
 		CArray<tPointSeg>			routeSegs; // [MAX_POINT_SEGS];
 		tPointSeg*					freePointSegs;
-		int32_t							nAwarenessEvents;
-		int32_t							nMaxAwareness;
+		int32_t						nAwarenessEvents;
+		int32_t						nMaxAwareness;
 		CFixVector					vGunPoint;
-		int32_t							nTargetVisibility;
-		int32_t							bObjAnimates;
-		int32_t							nLastMissileCamera;
+		int32_t						nTargetVisibility;
+		int32_t						bObjAnimates;
+		int32_t						nLastMissileCamera;
 		CArray<tAwarenessEvent>	awarenessEvents; //[MAX_AWARENESS_EVENTS];
 
 	public:
