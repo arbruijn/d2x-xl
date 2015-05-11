@@ -1851,8 +1851,8 @@ class CRenderData {
 		int32_t						transpColor;
 		CFaceListIndex				faceIndex;
 		CVertColorData				vertColor;
-		CSphere						shield;
-		CSphere						monsterball;
+		CSphere						*shield;
+		CSphere						*monsterball;
 		CArray<tFaceListItem>	faceList;
 		fix							xFlashEffect;
 		fix							xTimeFlashLastPlayed;

@@ -209,7 +209,7 @@ if (bAppearing || EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShiel
 		scale *= scale;
 		}
 	bStencil = ogl.StencilOff ();
-	gameData.render.shield.SetPulse (gameData.multiplayer.spherePulse + i);
+	gameData.render.shield->SetPulse (gameData.multiplayer.spherePulse + i);
 	if (gameData.multiplayer.bWasHit [i]) {
 		if (gameData.multiplayer.bWasHit [i] < 0) {
 			gameData.multiplayer.bWasHit [i] = 1;

@@ -76,7 +76,7 @@ class CQuad {
 class CChunkHeader {
 	public:
 		tChunkType		m_nType;
-		int32_t				m_nLength;
+		int32_t			m_nLength;
 	};
 
 class CFaceVert {

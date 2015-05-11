@@ -632,8 +632,16 @@ PrintLog (1, "unloading particle data\n");
 particleManager.Shutdown ();
 PrintLog (-1);
 PrintLog (1, "unloading shield sphere data\n");
-gameData.render.shield.Destroy ();
-gameData.render.monsterball.Destroy ();
+if (gameData.render.shield) {
+	gameData.render.shield->Destroy ();
+	delete gameData.render.shield;
+	gameData.render.shield = NULL;
+	}
+if (gameData.render.monsterball) {
+	gameData.render.monsterball->Destroy ();
+	delete gameData.render.monsterball;
+	gameData.render.monsterball = NULL;
+	}	
 PrintLog (-1);
 PrintLog (1, "unloading HUD icons\n");
 hudIcons.Destroy ();

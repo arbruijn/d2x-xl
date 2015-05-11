@@ -27,31 +27,9 @@
 #define ADDITIVE_SPHERE_BLENDING 1
 #define MAX_SPHERE_RINGS 256
 
-#if !RINGED_SPHERE
-
 // TODO: Create a c-tor for the two tables
 
-OOF::CTriangle baseSphereOcta [8] = {
- {{{-1,0,1},{1,0,1},{0,1,0}},{0,0,0}},
- {{{1,0,1},{1,0,-1},{0,1,0}},{0,0,0}},
- {{{1,0,-1},{-1,0,-1},{0,1,0}},{0,0,0}},
- {{{-1,0,-1},{-1,0,1},{0,1,0}},{0,0,0}},
- {{{1,0,1},{-1,0,1},{0,-1,0}},{0,0,0}},
- {{{1,0,-1},{1,0,1},{0,-1,0}},{0,0,0}},
- {{{-1,0,-1},{1,0,-1},{0,-1,0}},{0,0,0}},
- {{{-1,0,1},{-1,0,-1},{0,-1,0}},{0,0,0}}
-};
-
-OOF::CQuad baseSphereCube [6] = {
- {{{-1,-1,1},{1,-1,1},{1,1,1},{-1,1,1}},{0,0,0}},
- {{{1,-1,1},{1,-1,-1},{1,1,-1},{1,1,1}},{0,0,0}},
- {{{1,-1,-1},{-1,-1,-1},{-1,1,-1},{1,1,-1}},{0,0,0}},
- {{{-1,-1,1},{-1,1,1},{-1,1,-1},{-1,-1,-1}},{0,0,0}},
- {{{-1,1,1},{1,1,1},{1,1,-1},{-1,1,-1}},{0,0,0}},
- {{{-1,-1,-1},{1,-1,-1},{1,-1,1},{-1,-1,1}},{0,0,0}}
-};
-
-#endif
+float CSphereVertex::m_fNormRadScale = 0.5f; //(float) sqrt (2.0f) / 2.0f;
 
 // -----------------------------------------------------------------------------
 
@@ -137,13 +115,13 @@ if (CreateSphereShader () < 1) {
 
 	tObjTransformation *pPos = OBJPOS (pObj);
 	CFixMatrix m;
-	CFixVector vPos;
+	CFixVector m_v;
 
 if (!ogl.UseTransform ()) {
 	fSize *= X2F (pObj->Size ());
 	ogl.SetupTransform (0);
 	m = CFixMatrix::IDENTITY;
-	transformation.Begin (*PolyObjPos (pObj, &vPos), m); 
+	transformation.Begin (*PolyObjPos (pObj, &m_v), m); 
 	}
 else {
 	m = pPos->mOrient;
@@ -189,7 +167,7 @@ GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (sphereShaderProg));
 if (shaderProg) {
 	if (shaderManager.Rebuild (shaderProg))
 		/*nothing*/;
-		glUniform1i (glGetUniformLocation (shaderProg, "sphereTex"), 0);
+	glUniform1i (glGetUniformLocation (shaderProg, "sphereTex"), 0);
 	//if (shaderProg) 
 		{
 		glUniform4fv (glGetUniformLocation (shaderProg, "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
@@ -202,245 +180,119 @@ return shaderManager.Current ();
 }
 
 // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void CSphereData::Init (void)
 {
-#if !RINGED_SPHERE
-m_nTessDepth = 0;
-m_nFaces = 0;
-m_nFaceNodes = 4; //tesselate using quads
-#endif
 m_pPulse = NULL;
 m_nFrame = 0;
 }
 
 // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
-#if !RINGED_SPHERE
-
-CFloatVector *OOF_TriangleCenter (OOF::CTriangle *pt)
+void CSphereVertex::Normalize (void)
 {
-pt->coord = (pt->p [0] + pt->p [1] + pt->p [2]) / 3.0f;
-return &pt->coord;
+m_v /= m_v.Mag () * m_fNormRadScale;
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+void CSphereFace::Normalize (CFloatVector& v)
+{
+v /= v.Mag () * CSphereVertex::m_fNormRadScale;
 }
 
 // -----------------------------------------------------------------------------
 
-static int32_t SplitTriangle (OOF::CTriangle *pDest, OOF::CTriangle *pSrc)
+void CSphereFace::ComputeNormal (void)
 {
-	int32_t	i, j;
-	CFloatVector	coord = pSrc->coord;
-	CFloatVector	h [6];
+m_vNormal.m_v = CFloatVector::Normal (Vertex (0), Vertex (1), Vertex (2));
+}
+
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+CSphereVertex *CSphereTriangle::ComputeCenter (void)
+{
+m_vCenter = (m_v [0] + m_v [1] + m_v [2]) * (1.0f / 3.0f);
+return &m_vCenter;
+}
+
+// -----------------------------------------------------------------------------
+
+CSphereTriangle *CSphereTriangle::Split (CSphereTriangle *pDest)
+{
+	static int32_t o [4][3] = {{0, 3, 5}, {3, 4, 5}, {3, 1, 4}, {4, 2, 5}};
+
+	int32_t			i, j;
+	CSphereVertex	h [6];
 
 for (i = 0; i < 3; i++)
-	h [2 * i] = pSrc->p [i];
-for (i = 1; i < 6; i += 2)
-	h [i] = h [i - 1] + h [(i + 1) % 6];
-for (i = 0; i < 6; i++, pDest++) {
-	pDest->p [0] = h [i];
-	pDest->p [1] = h [(i + 1) % 6];
-	pDest->p [2] = coord;
+	h [i] = m_v [i];
+for (i = 0; i < 3; i++)
+	h [i + 3] = (h [i] + h [(i + 1) % 3]) * 0.5f;
+for (i = 0; i < 6; i++)
+	h [i].Normalize ();
+
+for (i = 0; i < 4; i++, pDest++) {
 	for (j = 0; j < 3; j++)
-		CFloatVector::Normalize (pDest->p [j]);
-	OOF_TriangleCenter (pDest);
+		pDest->m_v [i] = h [o [i][j]];
+	pDest->ComputeCenter ();
 	}
-return 1;
+return pDest;
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+CSphereVertex *CSphereQuad::ComputeCenter (void)
+{
+m_vCenter = (m_v [0] + m_v [1] + m_v [2] + m_v [3]) * 0.25f;
+return &m_vCenter;
 }
 
 // -----------------------------------------------------------------------------
 
-static int32_t TesselateSphereTri (OOF::CTriangle *pDest, OOF::CTriangle *pSrc, int32_t nFaces)
+inline int32_t Wrap (int32_t i, int32_t l)
 {
-	int32_t	i;
-
-for (i = 0; i < nFaces; i++, pDest += 6, pSrc++)
-	SplitTriangle (pDest, pSrc);
-return 1;
+return (i < 0) ? i + l : i % l;
 }
 
 // -----------------------------------------------------------------------------
 
-static int32_t BuildSphereTri (OOF::CTriangle **buf, int32_t *pnFaces, int32_t nTessDepth)
+CSphereQuad *CSphereQuad::Split (CSphereQuad *pDest)
 {
-    int32_t		i, j, nFaces = 0;
-	 float	l;
+	static int32_t o [4][4] = {{0, 4, 8, 7}, {4, 1, 5, 8}, {7, 8, 6, 3}, {8, 5, 2, 6}};
 
-l = (float) sqrt (2.0f) / 2.0f;
-for (i = 0; i < 8; i++) {
-	for (j = 0; j < 3; j++) {
-		buf [0][i].p [j] = baseSphereOcta [i].p [j];
-		buf [0][i].p [j] *= l;
-		}
-	OOF_TriangleCenter (buf [0] + i);
-	}
-nFaces = 8;
-for (i = 0, j = 1; i < nTessDepth; i++, nFaces *= 6, j = !j) {
-	TesselateSphereTri (buf [j], buf [!j], nFaces);
-	}
-*pnFaces = nFaces;
-return !j;
-}
-
-// -----------------------------------------------------------------------------
-
-static CFloatVector *OOF_QuadCenter (OOF::CQuad *pt)
-{
-pt->coord = (pt->p [0] + pt->p [1] + pt->p [2] + pt->p [3]) / 4.0f;
-return &pt->coord;
-}
-
-// -----------------------------------------------------------------------------
-
-static int32_t SplitQuad (OOF::CQuad *pDest, OOF::CQuad *pSrc)
-{
-	int32_t	i, j;
-	CFloatVector	coord = pSrc->coord;
-	CFloatVector	h [8];
+	int32_t			i, j;
+	CSphereVertex	h [9];
 
 for (i = 0; i < 4; i++)
-	h [2 * i] = pSrc->p [i];
-for (i = 1; i < 8; i += 2)
-	h [i] = h [i - 1] + h [(i + 1) % 8];
-for (i = 0; i < 8; i += 2, pDest++) {
-	pDest->p [0] = h [i ? i - 1 : 7];
-	pDest->p [1] = h [i];
-	pDest->p [2] = h [(i + 1) % 8];
-	pDest->p [3] = coord;
+	h [i] = m_v [i];
+for (i = 0; i < 4; i++)
+	h [i + 4] = (m_v [i] + m_v [(i + 1) % 4]) * 0.5f;
+h [8] = m_vCenter;
+for (i = 0; i < 8; i++)
+	h [i].Normalize ();
+
+for (i = 0; i < 4; i++, pDest++) {
 	for (j = 0; j < 4; j++)
-		CFloatVector::Normalize (pDest->p [j]);
-	OOF_QuadCenter (pDest);
+		pDest->m_v [j] = h [o [i][j]];
 	}
-return 1;
+pDest->ComputeCenter ();
+return pDest;
 }
 
 // -----------------------------------------------------------------------------
-
-static int32_t TesselateSphereQuad (OOF::CQuad *pDest, OOF::CQuad *pSrc, int32_t nFaces)
-{
-	int32_t	i;
-
-for (i = 0; i < nFaces; i++, pDest += 4, pSrc++)
-	SplitQuad (pDest, pSrc);
-return 1;
-}
-
 // -----------------------------------------------------------------------------
-
-static int32_t BuildSphereQuad (OOF::CQuad **buf, int32_t *pnFaces, int32_t nTessDepth)
-{
-    int32_t		i, j, nFaces;
-	 float	l;
-
-l = (float) sqrt (2.0f) / 2.0f;
-for (i = 0; i < 6; i++) {
-	for (j = 0; j < 4; j++) {
-		buf [0][i].p [j] = baseSphereCube [i].p [j];
-		buf [0][i].p [j] *= l;
-		}
-	OOF_QuadCenter (buf [0] + i);
-	}
-nFaces = 6;
-for (i = 0, j = 1; i < nTessDepth; i++, nFaces *= 4, j = !j) {
-	TesselateSphereQuad (buf [j], buf [!j], nFaces);
-	}
-*pnFaces = nFaces;
-return !j;
-}
-
-// -----------------------------------------------------------------------------
-
-int32_t TesselateSphere (void)
-{
-	int32_t			nFaces, i, j;
-	CFloatVector	*buf [2];
-
-PrintLog (1, "Creating shield sphere\n");
-if (m_nFaceNodes == 3) {
-	nFaces = 8;
-	j = 6;
-	}
-else {
-	nFaces = 6;
-	j = 4;
-	}
-for (i = 0; i < m_nTessDepth; i++)
-	nFaces *= j;
-for (i = 0; i < 2; i++) {
-	if (!(buf [i] = new CFloatVector [nFaces * (m_nFaceNodes + 1)])) {
-		if (i)
-			delete[] buf [i - 1];
-		PrintLog (-1);
-		return -1;
-		}
-	}
-j = (m_nFaceNodes == 3) ?
-	 BuildSphereTri (reinterpret_cast<OOF::CTriangle **> (buf), &nFaces, m_nTessDepth) :
-	 BuildSphereQuad (reinterpret_cast<OOF::CQuad **> (buf), &nFaces, m_nTessDepth);
-delete[] buf [!j];
-if (!m_texCoord.Create (nFaces * m_nFaceNodes)) {
-	delete[] buf [j];
-	PrintLog (-1);
-	return -1;
-	}
-m_vertices.SetBuffer (buf [j]);
-PrintLog (-1);
-return nFaces;
-}
-
-// -----------------------------------------------------------------------------
-
-OOF::CTriangle *RotateSphere (CFloatVector *rotSphereP, CFloatVector *vPosP, float xScale, float yScale, float zScale)
-{
-	CFloatMatrix	mat;
-	CFloatVector	h, dir, p,
-					*pVertex = m_vertices.Buffer (),
-					*s = rotSphereP;
-	int32_t			nFaces;
-
-OOF_MatVms2Oof (&mat, transformation.m_info.view[0]);
-OOF_VecVms2Oof (&p, transformation.m_info.coord);
-for (nFaces = m_nFaces * (m_nFaceNodes + 1); nFaces; nFaces--, pVertex++, rotSphereP++) {
-	dir = *pVertex;
-	dir.x *= xScale;
-	dir.y *= yScale;
-	dir.z *= zScale;
-	rotSphereP = mat * (h = dir - p);
-	}
-return (OOF::CTriangle *) s;
-}
-
-// -----------------------------------------------------------------------------
-
-OOF::CTriangle *SortSphere (OOF::CTriangle *sphereP, int32_t left, int32_t right)
-{
-	int32_t	l = left,
-			r = right;
-	float	mat = sphereP [(l + r) / 2].coord.z;
-
-do {
-	while (sphereP [l].coord.z < mat)
-		l++;
-	while (sphereP [r].coord.z > mat)
-		r--;
-	if (l <= r) {
-		if (l < r) {
-			OOF::CTriangle h = sphereP [l];
-			sphereP [l] = sphereP [r];
-			sphereP [r] = h;
-			}
-		}
-	++l;
-	--r;
-	} while (l <= r);
-if (right > l)
-   Sort (sphereP, l, right);
-if (r > left)
-   Sort (sphereP, left, r);
-return sphereP;
-}
-
-#endif //!RINGED_SPHERE
-
 // -----------------------------------------------------------------------------
 
 void CSphere::Pulsate (void)
@@ -525,34 +377,188 @@ return bTextured;
 
 // -----------------------------------------------------------------------------
 
-#if RINGED_SPHERE
+void CSphere::DrawFaces (int32_t nOffset, int32_t nFaces, int32_t bTextured, int32_t nPrimitive)
+{
+int32_t nVertices = nFaces * FaceNodes ();
+ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+if (bTextured && !m_pBm->Bind (1))
+	OglTexCoordPointer (2, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_tc));
+OglVertexPointer (3, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_v));
+#if DBG
+glColor3f (1.0f, 0.5f, 0.0f);
+#else
+glColor4fv ((GLfloat*) m_color.v.vec);
+#endif
+OglDrawArrays (nPrimitive, 0, nVertices);
+}
+
+// -----------------------------------------------------------------------------
+
+void CSphere::DrawFaces (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nFaces, int32_t bTextured, int32_t nPrimitive)
+{
+ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+if (bTextured && !m_pBm->Bind (1))
+	OglTexCoordPointer (2, GL_FLOAT, 0, pTexCoord);
+OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), pVertex);
+glColor4fv ((GLfloat*) m_color.v.vec);
+OglDrawArrays (nPrimitive, 0, nFaces * FaceNodes ());
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float yScale, float zScale,
+								 float red, float green, float blue, float alpha, CBitmap *bmP, int32_t nFaces, char bAdditive)
+{
+	float	fScale = 1.0f;
+	int32_t	bTextured = 0;
+#if 0 //DBG
+	int32_t	bEffect = 0;
+#else
+	int32_t	bAppearing = objP->Appearing ();
+	int32_t	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
+	int32_t	bGlow = /*!bAppearing &&*/ (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
+#endif
+
+CFixVector vPos;
+PolyObjPos (objP, &vPos);
+if (bAppearing) {
+	float scale = objP->AppearanceScale ();
+	red *= scale;
+	green *= scale;
+	blue *= scale;
+	}
+Pulsate ();
+if (bGlow) {
+	glowRenderer.Begin (GLOW_SHIELDS, 2, false, 0.85f);
+	if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, 4 * xScale / 3)) {
+		glowRenderer.Done (GLOW_SHIELDS);
+		ogl.SetDepthMode (GL_LEQUAL);
+		return 0;
+		}
+	ogl.SetBlendMode (OGL_BLEND_REPLACE);
+	}
+else {
+	ogl.SetBlendMode (bAdditive);
+	}
+ogl.SetDepthMode (GL_LEQUAL);
+
+ogl.SetTransform (1);
+if (bAppearing) {
+	UnloadSphereShader ();
+	float scale = objP->AppearanceScale ();
+	scale = Min (1.0f, (float) pow (1.0f - scale, 0.25f));
+#if 1
+	xScale *= scale;
+	yScale *= scale;
+	zScale *= scale;
+#endif
+	}
+else if (!bEffect)
+	UnloadSphereShader ();
+else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
+	if (!SetupSphereShader (objP, alpha)) {
+		if (bGlow)
+			glowRenderer.Done (GLOW_SHIELDS);
+		return 0;
+		}
+	}
+
+#if DBG
+bTextured = 0; //InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
+#else
+bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
+#endif
+
+//ogl.SetupTransform (0);
+tObjTransformation *posP = OBJPOS (objP);
+transformation.Begin (vPos, posP->mOrient);
+RenderFaces (xScale, red, green, blue, alpha, bTextured, nFaces);
+transformation.End ();
+//ogl.ResetTransform (0);
+ogl.SetTransform (0);
+if (bGlow) 
+#if 0
+	glowRenderer.Done (GLOW_SHIELDS);
+#else
+	glowRenderer.End ();
+#endif
+ogl.SetDepthWrite (true);
+//ogl.SetDepthMode (GL_LEQUAL);
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+void CSphere::Destroy (void)
+{
+m_worldVerts.Destroy ();
+Init ();
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+void CTesselatedSphere::Transform (float fScale)
+{
+	CSphereVertex	*v = m_worldVerts.Buffer (),
+						*r = m_viewVerts.Buffer ();
+
+for (int32_t i = m_nFaces * (FaceNodes () + 1); i; i--) {
+	transformation.Transform (r [i].m_v, v [i].m_v);
+	r [i].m_v *= fScale;
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t CTesselatedSphere::Quality (void)
+{
+#if DBG
+return 0;
+#else
+return m_nQuality ? m_nQuality : gameOpts->render.textures.nQuality + 1;
+#endif
+}
+
+// -----------------------------------------------------------------------------
+
+void CTesselatedSphere::Destroy (void)
+{
+m_viewVerts.Destroy ();
+CSphere::Destroy ();
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 #define UV_SCALE	3.0f
 
-int32_t CSphere::Create (int32_t nRings, int32_t nTiles)
+int32_t CRingedSphere::CreateVertices (int32_t nRings, int32_t nFaces)
 {
 	int32_t			h, i, j;
 	float				t1, t2, t3, a, sint1, cost1, sint2, cost2, sint3, cost3;
-	tSphereVertex	*pVertex;
+	CSphereVertex	*pVertex;
 
 if (nRings > MAX_SPHERE_RINGS)
 	nRings = MAX_SPHERE_RINGS;
-if ((m_nRings == nRings) && (m_nTiles == nTiles) && (m_vertices.Buffer () != NULL))
+if ((m_nRings == nRings) && (m_nFaces == nFaces) && (m_worldVerts.Buffer () != NULL))
 	return 1;
 
 m_nRings =
-m_nTiles = 
+m_nFaces = 
 m_nVertices = 0;
-m_vertices.Destroy ();
+m_worldVerts.Destroy ();
 h = nRings * (nRings + 1);
-if (!m_vertices.Create (h))
+if (!m_worldVerts.Create (h))
 	return 0;
 m_nRings = nRings;
-m_nTiles = nTiles;
+m_nFaces = nFaces;
 m_nVertices = h;
 h = nRings / 2;
 a = float (2 * PI / nRings);
-pVertex = m_vertices.Buffer ();
+pVertex = m_worldVerts.Buffer ();
 for (j = 0; j < h; j++) {
 	t1 = float (j * a - PI / 2);
 	t2 = t1 + a;
@@ -564,17 +570,17 @@ for (j = 0; j < h; j++) {
 		t3 = i * a;
 		sint3 = float (sin (t3));
 		cost3 = float (cos (t3));
-		pVertex->vPos.v.coord.x = cost2 * cost3;
-		pVertex->vPos.v.coord.y = sint2;
-		pVertex->vPos.v.coord.z = cost2 * sint3;
-		pVertex->uv.v.u =(1.0f - float (i) / nRings) * nTiles * UV_SCALE;
-		pVertex->uv.v.v = (float (2 * j + 2) / nRings) * nTiles * UV_SCALE;
+		pVertex->m_v.v.coord.x = cost2 * cost3;
+		pVertex->m_v.v.coord.y = sint2;
+		pVertex->m_v.v.coord.z = cost2 * sint3;
+		pVertex->m_tc.v.u =(1.0f - float (i) / nRings) * nFaces * UV_SCALE;
+		pVertex->m_tc.v.v = (float (2 * j + 2) / nRings) * nFaces * UV_SCALE;
 		pVertex++;
-		pVertex->vPos.v.coord.x = cost1 * cost3;
-		pVertex->vPos.v.coord.y = sint1;
-		pVertex->vPos.v.coord.z = cost1 * sint3;
-		pVertex->uv.v.u = (1.0f - float (i) / nRings) * nTiles * UV_SCALE;
-		pVertex->uv.v.v = (float (2 * j) / nRings) * nTiles * UV_SCALE;
+		pVertex->m_v.v.coord.x = cost1 * cost3;
+		pVertex->m_v.v.coord.y = sint1;
+		pVertex->m_v.v.coord.z = cost1 * sint3;
+		pVertex->m_tc.v.u = (1.0f - float (i) / nRings) * nFaces * UV_SCALE;
+		pVertex->m_tc.v.v = (float (2 * j) / nRings) * nFaces * UV_SCALE;
 		pVertex++;
 		}
 	}
@@ -583,40 +589,23 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-void CSphere::RenderRing (int32_t nOffset, int32_t nItems, int32_t bTextured, int32_t nPrimitive)
+int32_t CRingedSphere::Create (void)
 {
-ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-if (bTextured && !m_pBm->Bind (1))
-	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].uv));
-OglVertexPointer (3, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].vPos));
-glColor4fv ((GLfloat*) m_color.v.vec);
-OglDrawArrays (nPrimitive, 0, nItems);
+return CreateVertices ();
 }
 
 // -----------------------------------------------------------------------------
 
-void CSphere::RenderRing (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nItems, int32_t bTextured, int32_t nPrimitive)
+void CRingedSphere::RenderFaces (float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nFaces)
 {
-ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-if (bTextured && !m_pBm->Bind (1))
-	OglTexCoordPointer (2, GL_FLOAT, 0, pTexCoord);
-OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), pVertex);
-glColor4fv ((GLfloat*) m_color.v.vec);
-OglDrawArrays (nPrimitive, 0, nItems);
-}
-
-// -----------------------------------------------------------------------------
-
-void CSphere::RenderRings (float fRadius, int32_t nRings, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nTiles)
-{
-	int32_t			nCull, h, i, j, nQuads;
+	int32_t			nCull, h, i, j, nQuads, nRings = Quality ();
 	CFloatVector	p [2 * MAX_SPHERE_RINGS + 2];
 	tTexCoord2f		tc [2 * MAX_SPHERE_RINGS + 2];
-	tSphereVertex*	svP [2];
+	CSphereVertex*	svP [2];
 
 if (nRings > MAX_SPHERE_RINGS)
 	nRings = MAX_SPHERE_RINGS;
-if (!Create (nRings, nTiles))
+if (!CreateVertices (nRings, nFaces))
 	return;
 h = nRings / 2;
 nQuads = 2 * nRings + 2;
@@ -625,17 +614,17 @@ ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 if (ogl.UseTransform ()) {
 	glScalef (fRadius, fRadius, fRadius);
 	for (nCull = 0; nCull < 2; nCull++) {
-		svP [0] = svP [1] = m_vertices.Buffer ();
+		svP [0] = svP [1] = m_worldVerts.Buffer ();
 		ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
 		for (i = 0; i < h; i++) {
-			RenderRing (i, nQuads, bTextured, GL_QUAD_STRIP);
+			DrawFaces (i, nQuads, bTextured, GL_QUAD_STRIP);
 #if 0
 			if (!bTextured) {
 				for (i = 0; i < nQuads; i++, svP [1]++) {
-					p [i] = svP [1]->vPos;
+					p [i] = svP [1]->m_v;
 					if (bTextured) {
-						tc [i].dir.u = svP [1]->uv.dir.u * nTiles;
-						tc [i].dir.dir = svP [1]->uv.dir.dir * nTiles;
+						tc [i].dir.u = svP [1]->m_tc.dir.u * nFaces;
+						tc [i].dir.dir = svP [1]->m_tc.dir.dir * nFaces;
 						}
 					}
 				glLineWidth (2);
@@ -649,24 +638,24 @@ if (ogl.UseTransform ()) {
 else {
 	for (nCull = 0; nCull < 2; nCull++) {
 		ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
-		svP [0] = svP [1] = &m_vertices [0];
+		svP [0] = svP [1] = m_worldVerts.Buffer ();
 		for (j = 0; j < h; j++) {
 			for (i = 0; i < nQuads; i++, svP [0]++) {
-				p [i] = svP [0]->vPos * fRadius;
+				p [i] = svP [0]->m_v * fRadius;
 				transformation.Transform (p [i], p [i], 0);
 				if (bTextured)
-					tc [i] = svP [0]->uv;
+					tc [i] = svP [0]->m_tc;
 				}
-			RenderRing (p, tc, nQuads, bTextured, GL_QUAD_STRIP);
+			DrawFaces (p, tc, nQuads, bTextured, GL_QUAD_STRIP);
 #if 0
 			if (!bTextured) {
 				for (i = 0; i < nQuads; i++, svP [1]++) {
-					p [i] = svP [1]->vPos;
+					p [i] = svP [1]->m_v;
 					VmVecScale (p + i, p + i, fRadius);
 					transformation.Transform (p + i, p + i, 0);
 					if (bTextured) {
-						tc [i].dir.u = svP [1]->uv.dir.u * nTiles;
-						tc [i].dir.dir = svP [1]->uv.dir.dir * nTiles;
+						tc [i].dir.u = svP [1]->m_tc.dir.u * nFaces;
+						tc [i].dir.dir = svP [1]->m_tc.dir.dir * nFaces;
 						}
 					}
 				glLineWidth (2);
@@ -682,179 +671,282 @@ OglCullFace (0);
 }
 
 // -----------------------------------------------------------------------------
-
-#else //!RINGED_SPHERE
-
-int32_t CSphere::RenderTesselated (CFloatVector *vPosP, float xScale, float yScale, float zScale,
-										 float red, float green, float blue, float alpha, CBitmap *pBm)
-{
-	int32_t			i, j, nFaces = m_nFaces;
-	CFloatVector *ps,
-					*sphereP = m_sphere,
-					*rotSphereP = new CFloatVector [nFaces * (m_nFaceNodes + 1)];
-
-if (!rotSphereP)
-	return -1;
-#	if 1
-sphereP = reinterpret_cast<CFloatVector*> (Rotate (rotSphereP, vPosP, xScale, yScale, zScale));
-#	else
-sphereP = reinterpret_cast<CFloatVector*> (Sort (Rotate (rotSphereP, vPosP, nFaces, xScale, yScale, zScale), 0, nFaces - 1));
-#	endif
-if (m_nFaceNodes == 3) {
-	glBegin (GL_LINES);
-	for (j = nFaces, ps = sphereP; j; j--, ps++)
-		for (i = 0; i < 3; i++, ps++)
-			glVertex3fv (reinterpret_cast<GLfloat*> (ps));
-	glEnd ();
-	if (pBm)
-		glColor4f (red, green, blue, 1.0f);
-	else
-		glColor4f (red, green, blue, alpha);
-	glBegin (GL_TRIANGLES);
-	for (j = nFaces, ps = sphereP; j; j--, ps++)
-		for (i = 0; i < 3; i++, ps++) {
-			glVertex3fv (reinterpret_cast<GLfloat*> (ps));
-			}
-	glEnd ();
-	}
-else {
-	glBegin (GL_LINES);
-	for (j = nFaces, ps = sphereP; j; j--, ps++)
-		for (i = 0; i < 4; i++, ps++) {
-			glVertex3fv (reinterpret_cast<GLfloat*> (ps));
-			}
-	glEnd ();
-	if (bTextured)
-		glColor4f (fScale, fScale, fScale, 1.0f);
-	else
-		glColor4f (red, green, blue, alpha);
-	glBegin (GL_QUADS);
-	for (j = nFaces, ps = sphereP; j; j--, ps++)
-		for (i = 0; i < 4; i++, ps++) {
-			if (bTextured)
-				glTexCoord2f (fTexCoord [i][0], fTexCoord [i][1]);
-			glVertex3fv (reinterpret_cast<GLfloat*> (ps));
-			}
-	glEnd ();
-	}
-delete[] rotSphereP;
-}
-
-#endif
-
+// -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-int32_t CSphere::Render (CObject* pObj, CFloatVector *vPosP, float xScale, float yScale, float zScale,
-								 float red, float green, float blue, float alpha, CBitmap *pBm, int32_t nTiles, char bAdditive)
+int32_t CTriangleSphere::Tesselate (CSphereTriangle *pSrc, CSphereTriangle *pDest, int32_t nFaces)
 {
-	float	fScale = 1.0f;
-	int32_t	bTextured = 0;
-#if 0 //DBG
-	int32_t	bEffect = 0;
-#else
-	int32_t	bAppearing = pObj->Appearing ();
-	int32_t	bEffect = (pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_ROBOT);
-	int32_t	bGlow = /*!bAppearing &&*/ (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
-#endif
-
-CFixVector vPos;
-PolyObjPos (pObj, &vPos);
-if (bAppearing) {
-	float scale = pObj->AppearanceScale ();
-	red *= scale;
-	green *= scale;
-	blue *= scale;
-	}
-#if !RINGED_SPHERE
-if (m_nFaceNodes == 3)
-	pBm = NULL;
-else
-#endif
-Pulsate ();
-if (bGlow) {
-	glowRenderer.Begin (GLOW_SHIELDS, 2, false, 0.85f);
-	if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, 4 * xScale / 3)) {
-		glowRenderer.Done (GLOW_SHIELDS);
-		ogl.SetDepthMode (GL_LEQUAL);
-		return 0;
-		}
-	ogl.SetBlendMode (OGL_BLEND_REPLACE);
-	}
-else {
-	ogl.SetBlendMode (bAdditive);
-	}
-ogl.SetDepthMode (GL_LEQUAL);
-#if RINGED_SPHERE
-ogl.SetTransform (1);
-if (bAppearing) {
-	UnloadSphereShader ();
-	float scale = pObj->AppearanceScale ();
-	scale = Min (1.0f, (float) pow (1.0f - scale, 0.25f));
-#if 1
-	xScale *= scale;
-	yScale *= scale;
-	zScale *= scale;
-#endif
-	}
-else if (!bEffect)
-	UnloadSphereShader ();
-else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
-	if (!SetupSphereShader (pObj, alpha)) {
-		if (bGlow)
-			glowRenderer.Done (GLOW_SHIELDS);
-		return 0;
-		}
-	}
-
-bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, pBm, fScale);
-
-//ogl.SetupTransform (0);
-tObjTransformation *pPos = OBJPOS (pObj);
-transformation.Begin (vPos, pPos->mOrient);
-RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
-transformation.End ();
-#if 0
-if (!bEffect) {
-	int32_t bCartoonStyle = gameStates.render.EnableCartoonStyle (1, 1, 1);
-	if (gameStates.render.CartoonStyle ()) {
-		CFloatVector vPosf;
-		vPosf.Assign (vPos);
-		glLineWidth (1.5f * gameStates.render.OutlineWidth (0, 0.0f, CMeshEdge::DistToScale (vPosf.Mag ())));
-		CFixMatrix m = pPos->mOrient; //CFixMatrix::IDENTITY; //transformation.m_info.view [0];
-		m.Inverse ();
-		transformation.Begin (vPos, m);
-		glScalef (xScale, xScale, 1.0f);
-		glColor3f (float (gameStates.render.outlineColor.r) / 255.0f, float (gameStates.render.outlineColor.g) / 255.0f, float (gameStates.render.outlineColor.b) / 255.0f);
-		OglDrawCircle (CFloatVector::ZERO, 32, GL_LINE_LOOP);
-		transformation.End ();
-		gameStates.render.SetCartoonStyle (bCartoonStyle);
-		}
-	}
-#endif
-//ogl.ResetTransform (0);
-ogl.SetTransform (0);
-if (bGlow) 
-#if 0
-	glowRenderer.Done (GLOW_SHIELDS);
-#else
-	glowRenderer.End ();
-#endif
-#else
-RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, pBm);
-#endif //RINGED_SPHERE
-ogl.SetDepthWrite (true);
-//ogl.SetDepthMode (GL_LEQUAL);
+for (int32_t i = 0; i < nFaces; i++)
+	pDest = (pSrc++)->Split (pDest);
 return 1;
 }
 
 // -----------------------------------------------------------------------------
 
-void CSphere::Destroy (void)
+void CTriangleSphere::SetupFaces (void)
 {
-m_vertices.Destroy ();
-Init ();
+static float baseOctagon [8][3][3] = {
+	{{-1,0,1},{1,0,1},{0,1,0}},
+	{{1,0,1},{1,0,-1},{0,1,0}},
+	{{1,0,-1},{-1,0,-1},{0,1,0}},
+	{{-1,0,-1},{-1,0,1},{0,1,0}},
+	{{1,0,1},{-1,0,1},{0,-1,0}},
+	{{1,0,-1},{1,0,1},{0,-1,0}},
+	{{-1,0,-1},{1,0,-1},{0,-1,0}},
+	{{-1,0,1},{-1,0,-1},{0,-1,0}}
+	};
+
+static tTexCoord2f baseTC [2][3] = {{{0,0}, {1,0}, {0.5f,0.5f}}, {{0.5f,0.5f}, {1,1}, {0,1}}};
+
+for (int32_t i = 0; i < 8; i++) {
+	for (int32_t j = 0; j < 3; j++) {
+		for (int32_t k = 0; k < 3; k++) {
+			m_faces [0][i].m_v [j].m_v.v.vec [k] = baseOctagon [i][j][k];
+			m_faces [0][i].m_v [j].m_tc = baseTC [i & 1][k];
+			}
+		m_faces [0][i].m_v [j].Normalize ();
+		}
+	m_faces [0][i].ComputeCenter ();
+	}
 }
 
+// -----------------------------------------------------------------------------
+
+int32_t CTriangleSphere::CreateFaces (void)
+{
+SetupFaces ();
+int32_t i, j, nFaces = 8, q = Quality ();
+for (i = 0, j = 1; i < q; i++, nFaces *= 4, j = !j) {
+	Tesselate (m_faces [j].Buffer (), m_faces [!j].Buffer (), nFaces);
+	}
+m_nFaces = nFaces;
+return !j;
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t CTriangleSphere::CreateBuffers (void)
+{
+m_nFaces = 8 * int32_t (pow (4.0f, float (Quality ()))) + 1;
+if (m_faces [0].Create (m_nFaces)) {
+	if (m_faces [1].Create (m_nFaces))
+		return 1;
+	m_faces [0].Destroy ();
+	}
+PrintLog (-1);
+return 0;
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t CTriangleSphere::Create (void)
+{
+if (!CreateBuffers ())
+	return 0;
+
+int32_t nBuffer = CreateFaces ();
+if (!m_worldVerts.Create (m_nFaces * 3) || !m_viewVerts.Create (m_nFaces * 3)) {
+	m_worldVerts.Destroy ();
+	m_faces [0].Destroy ();
+	m_faces [1].Destroy ();
+	return 0;
+	}
+
+CSphereTriangle *pFace = m_faces [nBuffer].Buffer ();
+CSphereVertex *pVertex = m_worldVerts.Buffer ();
+
+for (int32_t i = 0; i < m_nFaces; i++, pFace++) {
+	for (int32_t j = 0; j < 3; j++, pVertex++) {
+		pVertex->m_v = pFace->m_v [j].m_v;
+		pVertex->m_tc = pFace->m_v [j].m_tc;
+		}
+	}
+m_faces [0].Destroy ();
+m_faces [1].Destroy ();
+return m_nFaces;
+}
+
+// -----------------------------------------------------------------------------
+
+void CTriangleSphere::RenderFaces (float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nFaces)
+{
+if (!m_worldVerts.Buffer () || !m_viewVerts.Buffer ())
+	return;
+Transform (fRadius);
+#if 1
+glScalef (fRadius, fRadius, fRadius);
+for (int32_t nCull = 0; nCull < 2; nCull++) {
+	ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
+	DrawFaces (0, m_nFaces, bTextured, GL_TRIANGLES);
+	}
+#else
+glBegin (GL_LINES);
+CSphereVertex *ps = m_worldVerts.Buffer ();
+for (int32_t j = m_nFaces; j; j--, ps++)
+	for (int32_t i = 0; i < 3; i++, ps++) {
+		if (bTextured)
+			glTexCoord2f (ps->m_tc.v.u, ps->m_tc.v.v);
+		glVertex3fv (reinterpret_cast<GLfloat*> (&ps->m_v));
+		}
+glEnd ();
+glColor4f (red, green, blue, bTextured ? 1.0f : alpha);
+glBegin (GL_TRIANGLES);
+ps = m_worldVerts.Buffer ();
+for (int32_t j = nFaces; j; j--, ps++)
+	for (int32_t i = 0; i < 3; i++, ps++) {
+		glVertex3fv (reinterpret_cast<GLfloat*> (ps));
+		}
+glEnd ();
+#endif
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+#if DBG
+int32_t nDestBuffer = 1;
+#endif
+
+int32_t CQuadSphere::Tesselate (CSphereQuad *pDest, CSphereQuad *pSrc, int32_t nFaces)
+{
+for (int32_t i = 0; i < nFaces; i++) {
+	pDest = (pSrc++)->Split (pDest);
+#if DBG
+	if (pDest - m_faces [nDestBuffer].Buffer () > m_nFaces)
+		BRP;
+#endif
+	}
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+void CQuadSphere::SetupFaces (void)
+{
+static float baseCube [6][4][3] = {
+	{{-1,-1,1},{1,-1,1},{1,1,1},{-1,1,1}},
+	{{1,-1,1},{1,-1,-1},{1,1,-1},{1,1,1}},
+	{{1,-1,-1},{-1,-1,-1},{-1,1,-1},{1,1,-1}},
+	{{-1,-1,1},{-1,1,1},{-1,1,-1},{-1,-1,-1}},
+	{{-1,1,1},{1,1,1},{1,1,-1},{-1,1,-1}},
+	{{-1,-1,-1},{1,-1,-1},{1,-1,1},{-1,-1,1}}
+	};
+
+static tTexCoord2f baseTC [4] = {{0,0}, {1,0}, {1,1}, {0,1}};
+
+for (int32_t i = 0; i < 6; i++) {
+	for (int32_t j = 0; j < 4; j++) {
+		for (int32_t k = 0; k < 3; k++) {
+			m_faces [0][i].m_v [j].m_v.v.vec [k] = baseCube [i][j][k];
+			m_faces [0][i].m_v [j].m_tc = baseTC [k];
+			}
+		m_faces [0][i].m_v [j].Normalize ();
+		}
+	m_faces [0][i].ComputeCenter ();
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t CQuadSphere::CreateFaces (void)
+{
+SetupFaces ();
+int32_t i, j, nFaces = 6, q = Quality ();
+for (i = 0, j = 1; i < q; i++, nFaces *= 4, j = !j) {
+#if DBG
+	nDestBuffer = j;
+#endif
+	Tesselate (m_faces [j].Buffer (), m_faces [!j].Buffer (), nFaces);
+	}
+m_nFaces = nFaces;
+return !j;
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t CQuadSphere::CreateBuffers (void)
+{
+#if 1 //DBG
+m_nFaces = 6;
+#else
+m_nFaces = 6 * int32_t (pow (4.0f, float (Quality ()))) + 1;
+#endif
+if (m_faces [0].Create (m_nFaces)) {
+	if (m_faces [1].Create (m_nFaces))
+		return 1;
+	m_faces [0].Destroy ();
+	}	
+PrintLog (-1);
+return 0;
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t CQuadSphere::Create (void)
+{
+if (!CreateBuffers ())
+	return 0;
+
+int32_t nBuffer = CreateFaces ();
+if (!m_worldVerts.Create (m_nFaces * 4) || !m_viewVerts.Create (m_nFaces * 4)) {
+	m_worldVerts.Destroy ();
+	m_faces [0].Destroy ();
+	m_faces [1].Destroy ();
+	return 0;
+	}
+
+CSphereQuad *pFace = m_faces [nBuffer].Buffer ();
+CSphereVertex *pVertex = m_worldVerts.Buffer ();
+
+for (int32_t i = 0; i < m_nFaces; i++, pFace++) {
+	for (int32_t j = 0; j < 4; j++, pVertex++) {
+		pVertex->m_v = pFace->m_v [j].m_v;
+		pVertex->m_tc = pFace->m_v [j].m_tc;
+		}
+	}
+
+m_faces [0].Destroy ();
+m_faces [1].Destroy ();
+return m_nFaces;
+}
+
+// -----------------------------------------------------------------------------
+
+void CQuadSphere::RenderFaces (float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nFaces)
+{
+if (!m_worldVerts.Buffer () || !m_viewVerts.Buffer ())
+	return;
+//Transform (fRadius);
+#if 1
+glScalef (fRadius, fRadius, fRadius);
+for (int32_t nCull = 0; nCull < 2; nCull++) {
+	ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
+	DrawFaces (0, m_nFaces, bTextured, GL_QUADS);
+	}
+#else
+glBegin (GL_LINES);
+CSphereVertex *ps = m_worldVerts.Buffer ();
+for (int32_t j = m_nFaces; j; j--, ps++)
+	for (int32_t i = 0; i < 3; i++, ps++) {
+		if (bTextured)
+			glTexCoord2f (ps->m_tc.v.u, ps->m_tc.v.v);
+		glVertex3fv (reinterpret_cast<GLfloat*> (&ps->m_v));
+		}
+glEnd ();
+glColor4f (red, green, blue, bTextured ? 1.0f : alpha);
+glBegin (GL_QUADS);
+ps = m_worldVerts.Buffer ();
+for (int32_t j = nFaces; j; j--, ps++)
+	for (int32_t i = 0; i < 3; i++, ps++) {
+		glVertex3fv (reinterpret_cast<GLfloat*> (ps));
+		}
+glEnd ();
+#endif
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
 void CSphere::SetPulse (CPulseData* pPulse)
@@ -884,23 +976,33 @@ pPulse->fDir = fSpeed;
 
 // -----------------------------------------------------------------------------
 
+CSphere *CreateSphere (void)
+{
+#if SPHERE_TYPE == SPHERE_TYPE_RINGS
+return new CRingedSphere ();
+#elif SPHERE_TYPE == SPHERE_TYPE_TRIANGLES
+return new CTriangleSphere ();
+#elif SPHERE_TYPE == SPHERE_TYPE_QUADS
+return new CQuadSphere ();
+#endif
+}
+
+// -----------------------------------------------------------------------------
+
 int32_t CreateShieldSphere (void)
 {
 if (!shield.Load ())
 	return 0;
-#if RINGED_SPHERE
-//gameData.render.shield.Destroy ();
-gameData.render.shield.Create (32, 1);
-#else
-if (gameData.render.shield.nTessDepth != gameOpts->render.textures.nQuality + 2) {
-	gameData.render.shield.Destroy ();
-	gameData.render.shield.nTessDepth = gameOpts->render.textures.nQuality + 2;
+if (gameData.render.shield) {
+	if (gameData.render.shield->HasQuality (gameOpts->render.textures.nQuality + 1))
+		return 1;
+	delete gameData.render.shield;
 	}
-if (!gameData.render.shield.sphereP)
-	gameData.render.shield.nFaces = gameData.render.shield.Create ();
-#endif
-gameData.render.shield.SetupPulse (0.02f, 0.5f);
-gameData.render.shield.SetPulse (gameData.render.shield.Pulse ());
+if (!(gameData.render.shield = CreateSphere ()))
+	return 0;
+gameData.render.shield->Create ();
+gameData.render.shield->SetupPulse (0.02f, 0.5f);
+gameData.render.shield->SetPulse (gameData.render.shield->Pulse ());
 return 1;
 }
 
@@ -911,7 +1013,7 @@ int32_t DrawShieldSphere (CObject *pObj, float red, float green, float blue, flo
 if (!CreateShieldSphere ())
 	return 0;
 #if !RINGED_SPHERE
-if (gameData.render.shield.nFaces > 0)
+if (gameData.render.shield->m_nFaces > 0)
 #endif
  {
 	if (!nSize) {
@@ -928,7 +1030,7 @@ if (gameData.render.shield.nFaces > 0)
 		}
 	float r = X2F (nSize);
 	if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
-		gameData.render.shield.Render (pObj, NULL, r, r, r, red, green, blue, alpha, shield.Bitmap (), 1, bAdditive);
+		gameData.render.shield->Render (pObj, NULL, r, r, r, red, green, blue, alpha, shield.Bitmap (), 1, bAdditive);
 	else
 		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, pObj, bAdditive, nSize);
 	}
@@ -940,11 +1042,14 @@ return 1;
 void DrawMonsterball (CObject *pObj, float red, float green, float blue, float alpha)
 {
 #if !RINGED_SPHERE
-if (!gameData.render.monsterball.sphereP) {
-	gameData.render.monsterball.nTessDepth = 3;
-	gameData.render.monsterball.nFaces = gameData.render.monsterball.Create ();
+if (!gameData.render.monsterball) {
+	gameData.render.monsterball = CreateSphere ();
+	if (!gameData.render.monsterball)
+		return;
+	gameData.render.monsterball->SetQuality (3);
+	gameData.render.monsterball->Create ();
 	}
-if (gameData.render.monsterball.nFaces > 0)
+if (gameData.render.monsterball->m_nFaces > 0)
 #endif
 	{
 	if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY)
@@ -953,8 +1058,8 @@ if (gameData.render.monsterball.nFaces > 0)
 		float r = X2F (pObj->info.xSize);
 		CFloatVector p;
 		p.SetZero ();
-		gameData.render.monsterball.Render (pObj, &p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha,
-														&gameData.hoard.monsterball.bm, 4, 0);
+		gameData.render.monsterball->Render (pObj, &p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha,
+														 &gameData.hoard.monsterball.bm, 4, 0);
 		ogl.ResetTransform (1);
 		ogl.SetTransform (0);
 		}
@@ -965,14 +1070,16 @@ if (gameData.render.monsterball.nFaces > 0)
 
 void DestroyShieldSphere (void)
 {
-gameData.render.shield.Destroy ();
+if (gameData.render.shield)
+	gameData.render.shield->Destroy ();
 }
 
 // -----------------------------------------------------------------------------
 
 void DestroyMonsterball (void)
 {
-gameData.render.monsterball.Destroy ();
+if (gameData.render.monsterball)
+	gameData.render.monsterball->Destroy ();
 }
 
 // -----------------------------------------------------------------------------
