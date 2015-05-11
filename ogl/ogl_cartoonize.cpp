@@ -933,7 +933,7 @@ for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
 				int32_t j = Clamp (y + offsets [o][1], 0, h) * tw + Clamp (x + offsets [o][0], 0, w);
 				if (ogl.m_data.outlineFilter [j] > nTag) {
 					ogl.m_data.outlineFilter [i] = nTag;
-					pTexture [i] = 0;
+					pTexture [i] = 255;
 					n++;
 					break;
 					}
@@ -1057,12 +1057,12 @@ if (pBm->m_info.bCartoonizable && gameStates.render.CartoonStyle ()) {
 										nColors, !gameStates.render.bClampBlur, gameStates.render.bBlurTextures);
 #	endif
 #endif
-#if 0
-	if (gameStates.render.bPosterizeTextures)
+#if 1
+	if (gameStates.render.bPosterizeTextures && (nColors >= 3))
 		Posterize (pBuffer, w, h, tw, nColors);
 #endif
 #if 1
-	if (gameStates.render.bOutlineTextures && (nColors == 4) /*&& !strstr (pBm->Name (), "lava") && !strstr (pBm->Name (), "water")*/) {
+	if (gameStates.render.bOutlineTextures /*&& (nColors == 4) && !strstr (pBm->Name (), "lava") && !strstr (pBm->Name (), "water")*/) {
 #if 1 //DBG
 		int32_t bResetOutlineColor = 1;
 		if (strstr (pBm->Name (), "shield"))

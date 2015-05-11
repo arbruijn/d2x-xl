@@ -1229,6 +1229,10 @@ if (!m_info.pTexture->IsRenderBuffer ())
 			pBuffer = m_info.pTexture->Copy (dxo, dyo, data);
 			m_info.pTexture->SetBitmap (pBm);
 			nColors = BPP ();
+#if DBG
+			if (nColors == 1)
+				BRP;
+#endif
 			}
 		else {
 			pBuffer = m_info.pTexture->Convert (dxo = 0, dyo = 0, this, m_info.nTranspType, superTransp, nColors);
