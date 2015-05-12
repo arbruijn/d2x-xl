@@ -555,7 +555,7 @@ for (int32_t i = 0; i < m_nVertices; i++) {
 
 int32_t CTesselatedSphere::Quality (void)
 {
-#if 1 //DBG
+#if 0 //DBG
 return 0;
 #else
 return m_nQuality ? m_nQuality : gameOpts->render.textures.nQuality + 1;
@@ -568,6 +568,25 @@ void CTesselatedSphere::Destroy (void)
 {
 m_viewVerts.Destroy ();
 CSphere::Destroy ();
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t CTesselatedSphere::FindEdge (CFloatVector v1, CFloatVector v2)
+{
+CSphereEdge e;
+e.m_vertices [0][0] = v1;
+e.m_vertices [1][0] = v2;
+for (int32_t i = 0; i < m_nEdges; i++)
+	if (m_edges [i] == e)
+		return i;
+return -1;
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t CTesselatedSphere::AddEdge (CFloatVector v1, CFloatVector v2, CFloatVector v3)
+{
 }
 
 // -----------------------------------------------------------------------------
@@ -765,14 +784,26 @@ return !j;
 
 // -----------------------------------------------------------------------------
 
+int32_t CTriangleSphere::CreateEdges (void)
+{
+m_nEdges = m_nFaces * 2;
+if (!m_edges.Create (m_nEdges))
+	return -1;
+}
+
+// -----------------------------------------------------------------------------
+
 int32_t CTriangleSphere::CreateBuffers (void)
 {
 m_nFaces = 8 * int32_t (pow (4.0f, float (Quality ())));
-if (m_faces [0].Create (m_nFaces)) {
-	if (m_faces [1].Create (m_nFaces))
-		return 1;
-	m_faces [0].Destroy ();
-	}
+m_nVertices = m_nFaces * 3;
+
+if (m_faces [0].Create (m_nFaces) && m_faces [1].Create (m_nFaces) && m_worldVerts.Create (m_nVertices) && m_viewVerts.Create (m_nVertices)) 
+	return 1;
+m_viewVerts.Destroy ();
+m_worldVerts.Destroy ();
+m_faces [1].Destroy ();
+m_faces [0].Destroy ();
 PrintLog (-1);
 return 0;
 }
@@ -784,8 +815,9 @@ int32_t CTriangleSphere::Create (void)
 if (!CreateBuffers ())
 	return 0;
 
-int32_t nBuffer = CreateFaces ();
-if (!m_worldVerts.Create (m_nFaces * 3) || !m_viewVerts.Create (m_nFaces * 3)) {
+m_nFaceBuffer = CreateFaces ();
+m_nVertices = m_nFaces * 3;
+if (!m_worldVerts.Create (m_nVertices) || !m_viewVerts.Create (m_nVertices)) {
 	m_worldVerts.Destroy ();
 	m_viewVerts.Destroy ();
 	m_faces [0].Destroy ();
@@ -793,7 +825,7 @@ if (!m_worldVerts.Create (m_nFaces * 3) || !m_viewVerts.Create (m_nFaces * 3)) {
 	return 0;
 	}
 
-CSphereTriangle *pFace = m_faces [nBuffer].Buffer ();
+CSphereTriangle *pFace = m_faces [m_nFaceBuffer].Buffer ();
 CSphereVertex *pVertex = m_worldVerts.Buffer ();
 
 for (int32_t i = 0; i < m_nFaces; i++, pFace++) {
@@ -903,19 +935,26 @@ return !j;
 
 // -----------------------------------------------------------------------------
 
+int32_t CQuadSphere::CreateEdges (void)
+{
+m_nEdges = m_nFaces * 2;
+if (!m_edges.Create (m_nEdges))
+	return -1;
+}
+
+// -----------------------------------------------------------------------------
+
 int32_t CQuadSphere::CreateBuffers (void)
 {
 m_nFaces = 6 * int32_t (pow (4.0f, float (Quality ())));
+m_nVertices = m_nFaces * 4;
 
-if (m_faces [0].Create (m_nFaces) && m_faces [1].Create (m_nFaces) && m_worldVerts.Create (m_nFaces * 4) && m_viewVerts.Create (m_nFaces * 4)) {
+if (m_faces [0].Create (m_nFaces) && m_faces [1].Create (m_nFaces) && m_worldVerts.Create (m_nVertices) && m_viewVerts.Create (m_nVertices)) 
 	return 1;
-	m_viewVerts.Destroy ();
-	m_worldVerts.Destroy ();
-	m_faces [1].Destroy ();
-	m_faces [0].Destroy ();
-	return 0;
-	}
-
+m_viewVerts.Destroy ();
+m_worldVerts.Destroy ();
+m_faces [1].Destroy ();
+m_faces [0].Destroy ();
 PrintLog (-1);
 return 0;
 }
@@ -927,10 +966,9 @@ int32_t CQuadSphere::Create (void)
 if (!CreateBuffers ())
 	return 0;
 
-m_nVertices = 0;
-int32_t nBuffer = CreateFaces ();
+m_nFaceBuffer = CreateFaces ();
 
-CSphereQuad *pFace = m_faces [nBuffer].Buffer ();
+CSphereQuad *pFace = m_faces [m_nFaceBuffer].Buffer ();
 CSphereVertex *pVertex = m_worldVerts.Buffer ();
 
 for (int32_t i = 0; i < m_nFaces; i++, pFace++) {

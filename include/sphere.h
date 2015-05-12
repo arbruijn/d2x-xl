@@ -190,10 +190,23 @@ class CRingedSphere : public CSphere {
 
 // -----------------------------------------------------------------------------
 
+class CSphereEdge : public CMeshEdge {
+	public:
+		inline bool operator== (CSphereEdge& other) {
+			return ((CFloatVector::Dist (m_vertices [0][0], other.m_vertices [0][0]) < 1e-6f) && (CFloatVector::Dist (m_vertices [1][0], other.m_vertices [1][0]) < 1e-6f)) ||
+					 ((CFloatVector::Dist (m_vertices [0][0], other.m_vertices [1][0]) < 1e-6f) && (CFloatVector::Dist (m_vertices [1][0], other.m_vertices [0][0]) < 1e-6f));
+			}
+	};
+
+// -----------------------------------------------------------------------------
+
 class CTesselatedSphere : public CSphere {
 	public:
 		CArray<CSphereVertex>	m_viewVerts;
+		CArray<CSphereEdge>		m_edges;
+		int32_t						m_nEdges;
 		int32_t						m_nQuality;
+		int32_t						m_nFaceBuffer;
 
 		CTesselatedSphere () : m_nQuality (0) {}
 		virtual ~CTesselatedSphere () { Destroy (); }
@@ -203,9 +216,14 @@ class CTesselatedSphere : public CSphere {
 		virtual void SetQuality (int32_t nQuality) { m_nQuality = nQuality; }
 		virtual int32_t HasQuality (int32_t nDesiredQuality) { return m_nQuality = nDesiredQuality; }
 		virtual int32_t FaceNodes (void) = 0;
+		virtual CSphereVertex& FaceVertex (int32_t nFace, int32_t nVertex) = 0;
 
 	protected:
 		int32_t Quality (void);
+
+	private:
+		int32_t FindEdge (CFloatVector v1, CFloatVector v2);
+		int32_t AddEdge (CFloatVector v1, CFloatVector v2, CFloatVector v3);
 	};
 
 // -----------------------------------------------------------------------------
@@ -223,6 +241,8 @@ class CTriangleSphere : public CTesselatedSphere {
 		void SetupFaces (void);
 		int32_t CreateBuffers (void);
 		int32_t CreateFaces (void);
+		int32_t CreateEdges (void);
+		virtual CSphereVertex& FaceVertex (int32_t nFace, int32_t nVertex) { return m_faces [m_nFaceBuffer][nFace].m_v [nVertex]; }
 	};
 
 // -----------------------------------------------------------------------------
@@ -240,6 +260,8 @@ class CQuadSphere : public CTesselatedSphere {
 		void SetupFaces (void);
 		int32_t CreateBuffers (void);
 		int32_t CreateFaces (void);
+		int32_t CreateEdges (void);
+		virtual CSphereVertex& FaceVertex (int32_t nFace, int32_t nVertex) { return m_faces [m_nFaceBuffer][nFace].m_v [nVertex]; }
 	};
 
 // -----------------------------------------------------------------------------

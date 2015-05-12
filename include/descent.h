@@ -1768,6 +1768,8 @@ class CVertColorData {
 		CVertColorData () { memset (this, 0, sizeof (*this)); }
 	};
 
+//------------------------------------------------------------------------------
+
 typedef struct tFaceListItem {
 	CSegFace*			pFace;
 	int32_t					nNextItem;
@@ -1788,7 +1790,63 @@ class CFaceListIndex {
 		void Init (void);
 	};
 
-#include "sphere.h"
+//------------------------------------------------------------------------------
+
+class CEdgeFaceInfo {
+	public:
+		int16_t			m_bValid;
+		int16_t			m_nItem;		// segment / (sub) model id
+		int16_t			m_nFace;
+		int16_t			m_nTexture;
+		int16_t			m_nWall;
+		CFloatVector	m_vNormal [2];
+		CFloatVector	m_vCenter [2];
+
+		CEdgeFaceInfo () : m_bValid (0), m_nItem (-1), m_nFace (-1), m_nTexture (0), m_nWall (-1) {}
+		void Setup (int16_t nSegment, int16_t nSide);
+		void Setup (void);
+		int32_t Visible (void);
+	};
+
+class CMeshEdge {
+	public:
+		int16_t			m_bValid;
+		int16_t			m_nFaces;
+		CEdgeFaceInfo	m_faces [2];
+		int32_t			m_nVertices [2];
+		float				m_fDot;
+		float				m_fScale;
+		float				m_fSplit;
+		float				m_fOffset;
+		CFloatVector	m_vOffset;
+		CFloatVector	m_vertices [2][2];
+
+		CMeshEdge () : m_bValid (0), m_nFaces (0), m_fDot (0.0f), m_fScale (-1.0f), m_fSplit (0.0f), m_fOffset (0.0f) {
+			m_nVertices [0] = m_nVertices [1] = -1;
+			}
+		void Setup (void);
+		void Transform (void);
+		int32_t Prepare (CFloatVector vViewer, int32_t nFilter = 2, float fDistance = -1.0f);
+
+		static inline int32_t DistToScale (float fDistance) { 
+			if (fDistance <= 0.0f)
+				return 0;
+			fDistance = log10f (fDistance / Max (1.0f, logf (fDistance)));
+			return Clamp (int32_t (fDistance * fDistance + 0.5f), int32_t (0), int32_t (31));
+			}
+
+	protected:
+		virtual int32_t Visibility (void);
+		virtual int32_t Type (void);
+		virtual float PartialAngle (void);
+		virtual float PlanarAngle (void);
+		virtual CFloatVector& Normal (int32_t i);
+		virtual CFloatVector& Vertex (int32_t i, int32_t bTransformed = 0);
+		int32_t Planar (void);
+		int32_t Partial (void);
+	};
+
+//------------------------------------------------------------------------------
 
 #if OCULUS_RIFT
 #	include "OVR.h"
@@ -1815,10 +1873,10 @@ class CRiftData {
 		float				m_renderScale;
 		float				m_fov;
 		float				m_projectionCenterOffset;
-		int32_t				m_ipd;
-		int32_t				m_nResolution;
-		int32_t				m_bUse;
-		int32_t				m_bAvailable;
+		int32_t			m_ipd;
+		int32_t			m_nResolution;
+		int32_t			m_bUse;
+		int32_t			m_bAvailable;
 		CFloatVector	m_center;
 
 		CRiftData () : m_renderScale (1.0f), m_fov (125.0f), m_projectionCenterOffset (0.0f), m_ipd (0), m_nResolution (0), m_bUse (0), m_bAvailable (false) {}
@@ -1843,6 +1901,8 @@ class CRiftData {
 #define STEREO_OFFSET_NONE			0
 #define STEREO_OFFSET_FIXED		1
 #define STEREO_OFFSET_FLOATING	2
+
+#include "sphere.h"
 
 class CRenderData {
 	public:
@@ -2103,61 +2163,6 @@ typedef struct tVertexOwner {
 
 #define POLYGONAL_OUTLINE	0
 #define TEXTURE_ID_MASK		0x3FFF // mask off the part of a texture number containing the actual id. The upper 2 bits contain the orientation (0 / 90 / 180 / 270 deg)
-
-
-class CEdgeFaceInfo {
-	public:
-		int16_t			m_bValid;
-		int16_t			m_nItem;		// segment / (sub) model id
-		int16_t			m_nFace;
-		int16_t			m_nTexture;
-		int16_t			m_nWall;
-		CFloatVector	m_vNormal [2];
-		CFloatVector	m_vCenter [2];
-
-		CEdgeFaceInfo () : m_bValid (0), m_nItem (-1), m_nFace (-1), m_nTexture (0), m_nWall (-1) {}
-		void Setup (int16_t nSegment, int16_t nSide);
-		void Setup (void);
-		int32_t Visible (void);
-	};
-
-class CMeshEdge {
-	public:
-		int16_t			m_bValid;
-		int16_t			m_nFaces;
-		CEdgeFaceInfo	m_faces [2];
-		int32_t			m_nVertices [2];
-		float				m_fDot;
-		float				m_fScale;
-		float				m_fSplit;
-		float				m_fOffset;
-		CFloatVector	m_vOffset;
-		CFloatVector	m_vertices [2][2];
-
-		CMeshEdge () : m_bValid (0), m_nFaces (0), m_fDot (0.0f), m_fScale (-1.0f), m_fSplit (0.0f), m_fOffset (0.0f) {
-			m_nVertices [0] = m_nVertices [1] = -1;
-			}
-		void Setup (void);
-		void Transform (void);
-		int32_t Prepare (CFloatVector vViewer, int32_t nFilter = 2, float fDistance = -1.0f);
-
-		static inline int32_t DistToScale (float fDistance) { 
-			if (fDistance <= 0.0f)
-				return 0;
-			fDistance = log10f (fDistance / Max (1.0f, logf (fDistance)));
-			return Clamp (int32_t (fDistance * fDistance + 0.5f), int32_t (0), int32_t (31));
-			}
-
-	protected:
-		virtual int32_t Visibility (void);
-		virtual int32_t Type (void);
-		virtual float PartialAngle (void);
-		virtual float PlanarAngle (void);
-		virtual CFloatVector& Normal (int32_t i);
-		virtual CFloatVector& Vertex (int32_t i, int32_t bTransformed = 0);
-		int32_t Planar (void);
-		int32_t Partial (void);
-	};
 
 //------------------------------------------------------------------------------
 
