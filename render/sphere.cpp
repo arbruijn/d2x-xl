@@ -448,7 +448,7 @@ ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 
 // -----------------------------------------------------------------------------
 
-int32_t CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float yScale, float zScale,
+int32_t CSphere::Render (CObject *pObj, CFloatVector *pvPos, float xScale, float yScale, float zScale,
 								 float red, float green, float blue, float alpha, CBitmap *bmP, int32_t nFaces, char bAdditive)
 {
 	float	fScale = 1.0f;
@@ -456,15 +456,15 @@ int32_t CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float
 #if 0 //DBG
 	int32_t	bEffect = 0;
 #else
-	int32_t	bAppearing = objP->Appearing ();
-	int32_t	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
+	int32_t	bAppearing = pObj->Appearing ();
+	int32_t	bEffect = (pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_ROBOT);
 	int32_t	bGlow = /*!bAppearing &&*/ (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
 #endif
 
 CFixVector vPos;
-PolyObjPos (objP, &vPos);
+PolyObjPos (pObj, &vPos);
 if (bAppearing) {
-	float scale = objP->AppearanceScale ();
+	float scale = pObj->AppearanceScale ();
 	red *= scale;
 	green *= scale;
 	blue *= scale;
@@ -487,7 +487,7 @@ ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetTransform (1);
 if (bAppearing) {
 	UnloadSphereShader ();
-	float scale = objP->AppearanceScale ();
+	float scale = pObj->AppearanceScale ();
 	scale = Min (1.0f, (float) pow (1.0f - scale, 0.25f));
 #if 1
 	xScale *= scale;
@@ -498,7 +498,7 @@ if (bAppearing) {
 else if (!bEffect)
 	UnloadSphereShader ();
 else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
-	if (!SetupSphereShader (objP, alpha)) {
+	if (!SetupSphereShader (pObj, alpha)) {
 		if (bGlow)
 			glowRenderer.Done (GLOW_SHIELDS);
 		return 0;
@@ -511,9 +511,10 @@ bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
 bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
 #endif
 //ogl.SetupTransform (0);
-tObjTransformation *posP = OBJPOS (objP);
+tObjTransformation *posP = OBJPOS (pObj);
 transformation.Begin (vPos, posP->mOrient);
 RenderFaces (xScale, red, green, blue, alpha, bTextured, nFaces);
+RenderOutline (pObj);
 transformation.End ();
 //ogl.ResetTransform (0);
 ogl.SetTransform (0);
