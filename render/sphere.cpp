@@ -576,8 +576,10 @@ for (int32_t i = 0; i < 2; i++) {
 	transformation.Rotate (m_faces [i].m_vNormal [1], m_faces [i].m_vNormal [0]);
 	CFloatVector v = m_faces [i].m_vCenter [0] * fScale;
 	transformation.Transform (m_faces [i].m_vCenter [1], v);
-	v = m_vertices [i][0] * fScale;
-	transformation.Transform (m_vertices [i][1], v);
+	if (!ogl.m_states.bUseTransform) {
+		v = m_vertices [i][0] * fScale;
+		transformation.Transform (m_vertices [i][1], v);
+		}
 	}
 }
 
@@ -590,7 +592,7 @@ Transform (fScale);
 CFloatVector v = (m_vertices [0][1] + m_vertices [1][1]) * 0.5f;
 if ((CFloatVector::Dot (v, m_faces [0].m_vNormal [1]) > 0.0f) == (CFloatVector::Dot (v, m_faces [1].m_vNormal [1]) > 0.0f))
 	return 0;
-#elif 0
+#elif 1
 if ((CFloatVector::Dot (m_faces [0].m_vCenter [1], m_faces [0].m_vNormal [1]) > 0.0f) == (CFloatVector::Dot (m_faces [1].m_vCenter [1], m_faces [1].m_vNormal [1]) > 0.0f))
 	return 0;
 #endif
