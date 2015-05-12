@@ -586,7 +586,7 @@ for (int32_t i = 0; i < m_nVertices; i++) {
 
 int32_t CTesselatedSphere::Quality (void)
 {
-#if 0 //DBG
+#if 1 //DBG
 return 0;
 #else
 return m_nQuality ? m_nQuality : gameOpts->render.textures.nQuality + 1;
@@ -619,22 +619,42 @@ return -1;
 
 int32_t CTesselatedSphere::AddEdge (CFloatVector& v1, CFloatVector& v2, CFloatVector& vCenter)
 {
-int32_t i = FindEdge (v1, v2);
+#if DBG
+if (m_nEdges >= gameData.segData.nEdges)
+	return -1;
+CSphereEdge *pEdge = m_edges + m_nEdges++;
+pEdge->m_faces [0].m_vNormal [0] = CFloatVector::Normal (v1, v2, vCenter);
+pEdge->m_faces [0].m_vCenter [0] = vCenter;
+pEdge->m_vertices [0][0] = pEdge->m_faces [0].m_vCenter [0];
+pEdge->m_vertices [1][0] = pEdge->m_faces [0].m_vCenter [0] + pEdge->m_faces [0].m_vNormal [0];
+pEdge->m_nFaces = 1;
+#else
+int32_t nFace, i = FindEdge (v1, v2);
 if (i < 0) {
 #if DBG
 	if (m_nEdges >= gameData.segData.nEdges)
 		return -1;
 #endif
 	i = m_nEdges++;
+	nFace = 0;
 	}
+else
+	nFace = 1;
+#if DBG
+if (v1.IsZero ())
+	BRP;
+if (v2.IsZero ())
+	BRP;
+#endif
 CSphereEdge *pEdge = m_edges + i;
-int32_t nFace = pEdge->m_nFaces++;
+pEdge->m_nFaces = nFace + 1;
 if (!nFace) {
 	pEdge->m_vertices [0][0] = v1;
 	pEdge->m_vertices [1][0] = v2;
 	}
 pEdge->m_faces [nFace].m_vNormal [0] = CFloatVector::Normal (v1, v2, vCenter);
 pEdge->m_faces [nFace].m_vCenter [nFace] = vCenter;
+#endif
 return 1;
 }
 
