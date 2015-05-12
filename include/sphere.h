@@ -164,7 +164,7 @@ class CSphere : protected CSphereData {
 		virtual void SetQuality (int32_t nQuality) = 0;
 		virtual int32_t HasQuality (int32_t nDesiredQuality) = 0;
 		virtual int32_t FaceNodes (void) = 0;
-		virtual void RenderOutline (CObject *pObj) = 0;
+		virtual void RenderOutline (CObject *pObj, float fScale = 1.0f) = 0;
 
 	protected:
 		void DrawFaces (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nFaces, int32_t bTextured, int32_t nPrimitive);
@@ -187,7 +187,7 @@ class CRingedSphere : public CSphere {
 		virtual void SetQuality (int32_t nQuality) {}
 		virtual int32_t HasQuality (int32_t nDesiredQuality) { return 1; }
 		virtual int32_t FaceNodes (void) { return 3; }
-		virtual void RenderOutline (CObject *pObj) {}
+		virtual void RenderOutline (CObject *pObj, float fScale = 1.0f) {}
 
 	private:
 		int32_t CreateVertices (int32_t nRings = 32, int32_t nTiles = 1);
@@ -202,8 +202,8 @@ class CSphereEdge : public CMeshEdge {
 			return ((CFloatVector::Dist (m_vertices [0][0], other.m_vertices [0][0]) < 1e-6f) && (CFloatVector::Dist (m_vertices [1][0], other.m_vertices [1][0]) < 1e-6f)) ||
 					 ((CFloatVector::Dist (m_vertices [0][0], other.m_vertices [1][0]) < 1e-6f) && (CFloatVector::Dist (m_vertices [1][0], other.m_vertices [0][0]) < 1e-6f));
 			}
-		virtual void Transform (CFloatVector vPos);
-		int32_t Prepare (CFloatVector vViewer, int32_t nFilter = 2, float fDistance = -1.0f);
+		virtual void Transform (float fScale);
+		int32_t Prepare (CFloatVector vViewer, int32_t nFilter = 2, float fScale = -1.0f);
 	};
 
 // -----------------------------------------------------------------------------
@@ -224,7 +224,7 @@ class CTesselatedSphere : public CSphere {
 		virtual int32_t HasQuality (int32_t nDesiredQuality) { return m_nQuality = nDesiredQuality; }
 		virtual int32_t FaceNodes (void) = 0;
 		virtual CSphereFace *Face (int32_t nFace) = 0;
-		virtual void RenderOutline (CObject *pObj);
+		virtual void RenderOutline (CObject *pObj, float fScale = 1.0f);
 
 		void Transform (float fScale);
 

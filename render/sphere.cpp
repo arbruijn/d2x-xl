@@ -211,7 +211,7 @@ v /= v.Mag () * CSphereVertex::m_fNormRadScale;
 
 void CSphereFace::ComputeNormal (void)
 {
-m_vNormal.m_v = CFloatVector::Normal (Vertex (0), Vertex (1), Vertex (2));
+m_vNormal.m_v = -CFloatVector::Normal (Vertex (0), Vertex (1), Vertex (2));
 }
 
 // -----------------------------------------------------------------------------
@@ -517,10 +517,9 @@ RenderFaces (xScale, red, green, blue, alpha, bTextured, nFaces);
 #if !DBG
 if (gameStates.render.CartoonStyle ())
 #endif
-	RenderOutline (pObj);
-transformation.End ();
+	RenderOutline (pObj, xScale);
 //ogl.ResetTransform (0);
-ogl.SetTransform (0);
+transformation.End ();
 if (bGlow) 
 #if 0
 	glowRenderer.Done (GLOW_SHIELDS);
@@ -544,23 +543,21 @@ Init ();
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CSphereEdge::Transform (CFloatVector vPos)
+void CSphereEdge::Transform (float fScale)
 {
 for (int32_t i = 0; i < 2; i++) {
 	transformation.Rotate (m_faces [i].m_vNormal [1], m_faces [i].m_vNormal [0]);
-	vPos += m_faces [i].m_vCenter [0];
-	transformation.Transform (m_faces [i].m_vCenter [1], vPos);
+	CFloatVector v = m_faces [i].m_vCenter [0] * fScale;
+	transformation.Transform (m_faces [i].m_vCenter [1], v);
 	}
-CMeshEdge::Transform ();
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CSphereEdge::Prepare (CFloatVector vPos, int32_t nFilter, float fDistance)
+int32_t CSphereEdge::Prepare (CFloatVector vViewer, int32_t nFilter, float fScale)
 {
-Transform (vPos);
-int32_t nVisibility = Visibility ();
-if ((nVisibility & 1) == (nVisibility >> 1))
+Transform (fScale);
+if ((CFloatVector::Dot (m_faces [0].m_vCenter [1], m_faces [0].m_vNormal [1]) > 0.0f) == (CFloatVector::Dot (m_faces [1].m_vCenter [1], m_faces [1].m_vNormal [1]) > 0.0f))
 	return 0;
 gameData.segData.edgeVertexData [0].Add (m_vertices [0][0]);
 gameData.segData.edgeVertexData [0].Add (m_vertices [1][0]);
@@ -619,14 +616,18 @@ return -1;
 
 int32_t CTesselatedSphere::AddEdge (CFloatVector& v1, CFloatVector& v2, CFloatVector& vCenter)
 {
-#if DBG
+#if 0 //DBG
 if (m_nEdges >= gameData.segData.nEdges)
 	return -1;
+if (m_nEdges >= m_nFaces * 2)
+	return -1;
 CSphereEdge *pEdge = m_edges + m_nEdges++;
-pEdge->m_faces [0].m_vNormal [0] = CFloatVector::Normal (v1, v2, vCenter);
+pEdge->m_faces [0].m_vNormal [0] = -CFloatVector::Normal (v1, v2, vCenter);
+if (pEdge->m_faces [0].m_vNormal [0].IsZero ())
+	BRP;
 pEdge->m_faces [0].m_vCenter [0] = vCenter;
-pEdge->m_vertices [0][0] = pEdge->m_faces [0].m_vCenter [0];
-pEdge->m_vertices [1][0] = pEdge->m_faces [0].m_vCenter [0] + pEdge->m_faces [0].m_vNormal [0];
+pEdge->m_vertices [1][0] = pEdge->m_faces [0].m_vCenter [0];
+pEdge->m_vertices [0][0].SetZero (); // = pEdge->m_faces [0].m_vCenter [0] * 0.5f; // = pEdge->m_faces [0].m_vCenter [0] + pEdge->m_faces [0].m_vNormal [0];
 pEdge->m_nFaces = 1;
 #else
 int32_t nFace, i = FindEdge (v1, v2);
@@ -653,7 +654,7 @@ if (!nFace) {
 	pEdge->m_vertices [1][0] = v2;
 	}
 pEdge->m_faces [nFace].m_vNormal [0] = CFloatVector::Normal (v1, v2, vCenter);
-pEdge->m_faces [nFace].m_vCenter [nFace] = vCenter;
+pEdge->m_faces [nFace].m_vCenter [0] = vCenter;
 #endif
 return 1;
 }
@@ -678,24 +679,26 @@ m_nEdges = 0;
 for (int32_t i = 0; i < m_nFaces; i++) {
 	CSphereFace *pFace = Face (i);
 	CSphereVertex *pVertex = pFace->Vertices ();
-	pFace->ComputeNormal ();
+	//pFace->ComputeNormal ();
 	pFace->ComputeCenter ();
+#if 0 //DBG
+		AddEdge (pVertex [0].m_v, pVertex [1].m_v, pFace->Center ());
+#else
 	for (int32_t j = 0; j < nFaceNodes; j++)
 		AddEdge (pVertex [j].m_v, pVertex [(j + 1) % nFaceNodes].m_v, pFace->Center ());
+#endif
 	}
 return m_nEdges;
 }
 
 // -----------------------------------------------------------------------------
 
-void CTesselatedSphere::RenderOutline (CObject *pObj)
+void CTesselatedSphere::RenderOutline (CObject *pObj, float fScale)
 {
 if (m_edges.Buffer ()) {
-	CFloatVector vPos;
-	vPos.Assign (pObj->Position ());
-
+	gameData.segData.edgeVertexData [0].m_nVertices = 0;
 	for (int32_t i = 0; i < m_nEdges; i++)
-		m_edges [i].Prepare (vPos);
+		m_edges [i].Prepare (CFloatVector::ZERO, 2, fScale);
 	RenderMeshOutline (CMeshEdge::DistToScale (X2F (Max (0, CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ()) - pObj->Size ()))));
 	}
 }

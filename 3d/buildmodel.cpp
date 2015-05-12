@@ -113,8 +113,7 @@ int32_t CModelEdge::IsFacingViewer (int16_t nFace)
 {
 #if 1
 //return CFloatVector::Dot (m_vertices [1][nFace]/*m_faces [nFace].m_vCenter [1]*/, m_faces [nFace].m_vNormal [1]) < 0.0f;
-float dot = CFloatVector::Dot (m_faces [nFace].m_vCenter [1], m_faces [nFace].m_vNormal [1]);
-return dot < 0.0f;
+return CFloatVector::Dot (m_faces [nFace].m_vCenter [1], m_faces [nFace].m_vNormal [1]) < 0.0f;
 #else
 CFloatVector v = m_faces [nFace].m_vCenter [1];
 CFloatVector::Normalize (v);
