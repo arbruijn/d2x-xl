@@ -718,7 +718,7 @@ OglCullFace (0);
 int32_t CTriangleSphere::Tesselate (CSphereTriangle *pSrc, CSphereTriangle *pDest, int32_t nFaces)
 {
 for (int32_t i = 0; i < nFaces; i++)
-	pDest = (pSrc++)->Split (this, pDest);
+	pDest = (pSrc++)->Split (pDest);
 return 1;
 }
 
@@ -745,7 +745,7 @@ for (int32_t i = 0; i < 8; i++) {
 		for (int32_t k = 0; k < 3; k++) 
 			v.m_v.v.vec [k] = baseOctagon [i][j][k];
 		v.m_tc = baseTC [i & 1][j];
-		m_faces [0][i].m_v [j] = AddVertex (v);
+		m_faces [0][i].m_v [j] = v;
 		}
 	}
 }
@@ -850,7 +850,7 @@ int32_t nDestBuffer = 1;
 int32_t CQuadSphere::Tesselate (CSphereQuad *pDest, CSphereQuad *pSrc, int32_t nFaces)
 {
 for (int32_t i = 0; i < nFaces; i++) {
-	pDest = (pSrc++)->Split (this, pDest);
+	pDest = (pSrc++)->Split (pDest);
 #if DBG
 	if (pDest - m_faces [nDestBuffer].Buffer () > m_nFaces)
 		BRP;
