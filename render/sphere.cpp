@@ -558,7 +558,7 @@ CMeshEdge::Transform ();
 
 int32_t CSphereEdge::Prepare (CFloatVector vPos, int32_t nFilter, float fDistance)
 {
-Transform ();
+Transform (vPos);
 int32_t nVisibility = Visibility ();
 if ((nVisibility & 1) == (nVisibility >> 1))
 	return 0;
