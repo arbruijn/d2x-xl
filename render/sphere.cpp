@@ -925,6 +925,7 @@ int32_t CQuadSphere::Create (void)
 if (!CreateBuffers ())
 	return 0;
 
+m_nVertices = 0;
 int32_t nBuffer = CreateFaces ();
 if (!m_worldVerts.Create (m_nFaces * 4) || !m_viewVerts.Create (m_nFaces * 4) || !m_vertexIndex.Create (m_nFaces * 4)) {
 	m_worldVerts.Destroy ();

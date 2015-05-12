@@ -138,11 +138,10 @@ class CSphere : protected CSphereData {
 		CArray<CSphereVertex>	m_worldVerts;
 		CArray<int16_t>			m_vertexIndex;
 		int32_t						m_nVertices;
-		int32_t						m_nIndices;
 		int32_t						m_nFaces;
 
 	public:
-		CSphere () {}
+		CSphere () : m_nVertices (0), m_nFaces (0) {}
 		~CSphere () {}
 		void Init () { CSphereData::Init (); }
 		virtual void Destroy ();
