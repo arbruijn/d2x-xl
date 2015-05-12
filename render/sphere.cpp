@@ -26,7 +26,15 @@
 
 #define ADDITIVE_SPHERE_BLENDING 1
 #define MAX_SPHERE_RINGS 256
-#define WIREFRAME 0
+#if DBG
+#	define WIREFRAME 0
+#	define DEFAULT_QUALITY 0
+#	define DRAW_NORMALS 0
+#else
+#	define WIREFRAME 0
+#	define DEFAULT_QUALITY -1
+#	define DRAW_NORMALS 0
+#endif
 
 // TODO: Create a c-tor for the two tables
 
@@ -222,7 +230,6 @@ m_vNormal.m_v = -CFloatVector::Normal (Vertex (0), Vertex (1), Vertex (2));
 CSphereVertex *CSphereTriangle::ComputeCenter (void)
 {
 m_vCenter = (m_v [0] + m_v [1] + m_v [2]) * (1.0f / 3.0f);
-m_vCenter.Normalize ();
 return &m_vCenter;
 }
 
@@ -282,7 +289,7 @@ for (i = 0; i < 4; i++)
 for (i = 0; i < 4; i++)
 	h [i + 4] = (m_v [i] + m_v [(i + 1) % 4]) * 0.5f;;
 h [8] = m_vCenter;
-for (i = 0; i < 8; i++)
+for (i = 0; i < 9; i++)
 	h [i].Normalize ();
 
 for (i = 0; i < 4; i++, pDest++) {
@@ -584,8 +591,8 @@ for (int32_t i = 0; i < m_nVertices; i++) {
 
 int32_t CTesselatedSphere::Quality (void)
 {
-#if 1 //DBG
-return 1;
+#if DEFAULT_QUALITY > -1
+return DEFAULT_QUALITY;
 #else
 return m_nQuality ? m_nQuality : gameOpts->render.textures.nQuality + 1;
 #endif
@@ -617,7 +624,7 @@ return -1;
 
 int32_t CTesselatedSphere::AddEdge (CFloatVector& v1, CFloatVector& v2, CFloatVector& vCenter)
 {
-#if 0 //DBG
+#if DRAW_NORMALS
 if (m_nEdges >= gameData.segData.nEdges)
 	return -1;
 if (m_nEdges >= m_nFaces * 2)
@@ -628,7 +635,7 @@ if (pEdge->m_faces [0].m_vNormal [0].IsZero ())
 	BRP;
 pEdge->m_faces [0].m_vCenter [0] = vCenter;
 pEdge->m_vertices [1][0] = pEdge->m_faces [0].m_vCenter [0];
-pEdge->m_vertices [0][0].SetZero (); // = pEdge->m_faces [0].m_vCenter [0] * 0.5f; // = pEdge->m_faces [0].m_vCenter [0] + pEdge->m_faces [0].m_vNormal [0];
+pEdge->m_vertices [0][0] = pEdge->m_faces [0].m_vCenter [0] + pEdge->m_faces [0].m_vNormal [0];
 pEdge->m_nFaces = 1;
 #else
 int32_t nFace, i = FindEdge (v1, v2);
@@ -656,6 +663,8 @@ if (!nFace) {
 	}
 pEdge->m_faces [nFace].m_vNormal [0] = CFloatVector::Normal (v1, v2, vCenter);
 pEdge->m_faces [nFace].m_vCenter [0] = vCenter;
+if (CFloatVector::Dot (pEdge->m_faces [nFace].m_vNormal [0], v1) < 0.0f)
+	pEdge->m_faces [nFace].m_vNormal [0].Neg ();
 #endif
 return 1;
 }
@@ -682,7 +691,7 @@ for (int32_t i = 0; i < m_nFaces; i++) {
 	CSphereVertex *pVertex = pFace->Vertices ();
 	//pFace->ComputeNormal ();
 	pFace->ComputeCenter ();
-#if 0 //DBG
+#if DRAW_NORMALS
 		AddEdge (pVertex [0].m_v, pVertex [1].m_v, pFace->Center ());
 #else
 	for (int32_t j = 0; j < nFaceNodes; j++)
