@@ -717,8 +717,11 @@ void CTesselatedSphere::RenderOutline (CObject *pObj, float fScale)
 {
 if (m_edges.Buffer ()) {
 	gameData.segData.edgeVertexData [0].m_nVertices = 0;
+	gameData.segData.edgeVertexData [1].m_nVertices = 0;
 	for (int32_t i = 0; i < m_nEdges; i++)
 		m_edges [i].Prepare (CFloatVector::ZERO, 2, fScale);
+	if ((pObj->Type () == OBJ_POWERUP) && (pObj->Id () == POW_SHIELD_BOOST)) // draw thinner lines
+		Swap (gameData.segData.edgeVertexData [0], gameData.segData.edgeVertexData [1]);
 	RenderMeshOutline (CMeshEdge::DistToScale (X2F (Max (0, CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ())/* - pObj->Size ()*/))));
 	}
 }

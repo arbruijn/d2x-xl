@@ -1240,7 +1240,7 @@ if (!m_info.pTexture->IsRenderBuffer ())
 #if DBG
 		if (strstr (m_info.szName, "String Bitmap"))
 			BRP;
-		if (strstr (m_info.szName, "rbot"))
+		if (strstr (m_info.szName, "door52"))
 			BRP;
 #endif
 		pBuffer = Cartoonize (this, pBuffer, dxo, dyo, nColors);

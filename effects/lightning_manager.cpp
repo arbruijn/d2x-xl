@@ -912,7 +912,7 @@ int32_t CLightningManager::RenderForDamage (CObject* pObj, CRenderPoint **pointL
 
 	static int16_t	nLastObject = -1;
 	static float	fDamage;
-	static int32_t		nFrameFlipFlop = -1;
+	static int32_t	nFrameFlipFlop = -1;
 
 	static CFloatVector color = {{{0.2f, 0.2f, 1.0f, 1.0f}}};
 

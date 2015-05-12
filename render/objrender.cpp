@@ -269,22 +269,16 @@ if ((pObj->info.nType == nDbgObjType) && ((nDbgObjId < 0) || (pObj->info.nId == 
 	BRP;
 #endif
 if (bMaxOut) {
-	float h = pColor->Red ();
-	if (h < pColor->Green ())
-		h = pColor->Green ();
-	if (h < pColor->Blue ())
-		h = pColor->Blue ();
-	if ((h > 0.0f) && (h < 1.0f)) {
-		pColor->Red () /= h;
-		pColor->Green () /= h;
-		pColor->Blue () /= h;
-		}
+	float h = 1.0f / Max (pColor->Red (), Max (pColor->Green (), pColor->Blue ()));
+	pColor->Red () /= h;
+	pColor->Green () /= h;
+	pColor->Blue () /= h;
 	}
 fScale = pColor->Red () + pColor->Green () + pColor->Blue ();
-if (fScale == 0) {
+if (fScale == 0.0f) {
 	pColor->Red () =
 	pColor->Green () =
-	pColor->Blue () = 1;
+	pColor->Blue () = 1.0f;
 	}
 return fScale;
 }
