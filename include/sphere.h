@@ -13,6 +13,8 @@
 
 #define SPHERE_TYPE				SPHERE_TYPE_QUADS
 
+class CSphere;
+
 // -----------------------------------------------------------------------------
 
 class CSphereData {
@@ -97,36 +99,36 @@ class CSphereFace {
 		CSphereVertex	m_vNormal;
 
 		void Normalize (CFloatVector& v);
-		void ComputeNormal (void);
+		void ComputeNormal (CSphere *pSphere);
 
 		CFloatVector& Center (void) { return m_vCenter.m_v; }
 		CFloatVector& Normal (void) { return m_vNormal.m_v; }
 
-		virtual CFloatVector& Vertex (int32_t i) = 0;
+		//virtual CFloatVector& Vertex (int32_t i) = 0;
 	};
 
 // -----------------------------------------------------------------------------
 
 class CSphereTriangle : public CSphereFace {
 	public:
-		CSphereVertex			m_v [3];
+		int16_t			m_v [3];
 
-		CSphereVertex *ComputeCenter (void);
-		CSphereTriangle *Split (CSphereTriangle *pDest);
+		CSphereVertex *ComputeCenter (CSphere *pSphere);
+		CSphereTriangle *Split (CSphere *pSphere, CSphereTriangle *pDest);
 		void Transform (CSphereTriangle *pDest);
-		virtual CFloatVector& Vertex (int32_t i) { return m_v [i].m_v; }
+		//virtual CFloatVector& Vertex (int32_t i) { return m_v [i].m_v; }
 	};
 
 // -----------------------------------------------------------------------------
 
 class CSphereQuad : public CSphereFace {
 	public:
-		CSphereVertex			m_v [4];
+		int16_t			m_v [4];
 
-		CSphereVertex *ComputeCenter (void);
-		CSphereQuad *Split (CSphereQuad *pDest);
+		CSphereVertex *ComputeCenter (CSphere *pSphere);
+		CSphereQuad *Split (CSphere *pSphere, CSphereQuad *pDest);
 		void Transform (CSphereQuad *pDest);
-		virtual CFloatVector& Vertex (int32_t i) { return m_v [i].m_v; }
+		//virtual CFloatVector& Vertex (int32_t i) { return m_v [i].m_v; }
 	};
 
 // -----------------------------------------------------------------------------
@@ -134,7 +136,9 @@ class CSphereQuad : public CSphereFace {
 class CSphere : protected CSphereData {
 	public:
 		CArray<CSphereVertex>	m_worldVerts;
+		CArray<int16_t>			m_vertexIndex;
 		int32_t						m_nVertices;
+		int32_t						m_nIndices;
 		int32_t						m_nFaces;
 
 	public:
@@ -151,6 +155,9 @@ class CSphere : protected CSphereData {
 		virtual int32_t Create (void) = 0;
 		virtual void RenderFaces (float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nFaces) = 0;
 
+		inline CSphereVertex& Vertex (int16_t i) { return m_worldVerts [i]; }
+		int16_t AddVertex (CSphereVertex& v);
+
 		virtual int32_t Quality (void) = 0;
 		virtual void SetQuality (int32_t nQuality) = 0;
 		virtual int32_t HasQuality (int32_t nDesiredQuality) = 0;
@@ -159,7 +166,6 @@ class CSphere : protected CSphereData {
 	protected:
 		void DrawFaces (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nFaces, int32_t bTextured, int32_t nPrimitive);
 		void DrawFaces (int32_t nOffset, int32_t nFaces, int32_t bTextured, int32_t nPrimitive);
-		int16_t AddVertex (CSphereVertex& v);
 
 	private:
 		void Pulsate (void);
