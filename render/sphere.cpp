@@ -29,7 +29,7 @@
 #if DBG
 #	define WIREFRAME 1
 #	define DEFAULT_QUALITY 1
-#	define DRAW_NORMALS 0
+#	define DRAW_NORMALS 1
 #else
 #	define WIREFRAME 0
 #	define DEFAULT_QUALITY -1
@@ -529,7 +529,11 @@ RenderFaces (xScale, red, green, blue, alpha, bTextured, nFaces);
 if (gameStates.render.CartoonStyle ())
 #endif
 #if WIREFRAME < 2
+	{
+	gameStates.render.SetOutlineColor (0, 128, 255);
 	RenderOutline (pObj, xScale);
+	gameStates.render.ResetOutlineColor ();
+	}
 #endif
 //ogl.ResetTransform (0);
 transformation.End ();

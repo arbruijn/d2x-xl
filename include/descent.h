@@ -1136,8 +1136,8 @@ class CRenderStates {
 
 		inline void SetOutlineColor (uint8_t r = 2, uint8_t g = 2, uint8_t b = 2) {
 			outlineColor.r = r;
-			outlineColor.r = g;
-			outlineColor.r = b;
+			outlineColor.g = g;
+			outlineColor.b = b;
 			}
 
 		inline void ResetOutlineColor (void) {
