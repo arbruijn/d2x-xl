@@ -26,6 +26,7 @@
 
 #define ADDITIVE_SPHERE_BLENDING 1
 #define MAX_SPHERE_RINGS 256
+#define WIREFRAME 0
 
 // TODO: Create a c-tor for the two tables
 
@@ -236,11 +237,10 @@ CSphereTriangle *CSphereTriangle::Split (CSphereTriangle *pDest)
 
 for (i = 0; i < 3; i++)
 	h [i] = m_v [i];
-for (i = 0; i < 3; i++) {
-	CSphereVertex v = (h [i] + h [(i + 1) % 3]) * 0.5f;
-	v.Normalize ();
-	h [i + 3] = v;
-	}
+for (i = 0; i < 3; i++) 
+	h [i + 3] = (h [i] + h [(i + 1) % 3]) * 0.5f;
+for (i = 0; i < 6; i++)
+	h [i].Normalize ();
 
 for (i = 0; i < 4; i++, pDest++) {
 	for (j = 0; j < 3; j++)
@@ -279,12 +279,11 @@ CSphereQuad *CSphereQuad::Split (CSphereQuad *pDest)
 ComputeCenter ();
 for (i = 0; i < 4; i++)
 	h [i] = m_v [i];
-for (i = 0; i < 4; i++) {
-	CSphereVertex v = (m_v [i] + m_v [(i + 1) % 4]) * 0.5f;
-	v.Normalize ();
-	h [i + 4] = v;
-	}
+for (i = 0; i < 4; i++)
+	h [i + 4] = (m_v [i] + m_v [(i + 1) % 4]) * 0.5f;;
 h [8] = m_vCenter;
+for (i = 0; i < 8; i++)
+	h [i].Normalize ();
 
 for (i = 0; i < 4; i++, pDest++) {
 	for (j = 0; j < 4; j++)
@@ -517,7 +516,9 @@ RenderFaces (xScale, red, green, blue, alpha, bTextured, nFaces);
 #if !DBG
 if (gameStates.render.CartoonStyle ())
 #endif
+#if WIREFRAME < 2
 	RenderOutline (pObj, xScale);
+#endif
 //ogl.ResetTransform (0);
 transformation.End ();
 if (bGlow) 
@@ -584,7 +585,7 @@ for (int32_t i = 0; i < m_nVertices; i++) {
 int32_t CTesselatedSphere::Quality (void)
 {
 #if 1 //DBG
-return 0;
+return 1;
 #else
 return m_nQuality ? m_nQuality : gameOpts->render.textures.nQuality + 1;
 #endif
@@ -1080,7 +1081,7 @@ if (!m_worldVerts.Buffer () || !m_viewVerts.Buffer ())
 //Transform (fRadius);
 #if 1
 glScalef (fRadius, fRadius, fRadius);
-#	if 0
+#	if WIREFRAME
 glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 glLineWidth (3);
 for (int32_t nCull = 0; nCull < 2; nCull++) {
