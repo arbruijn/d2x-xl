@@ -846,7 +846,7 @@ if (!pRobotInfo)
 
 //	Trying to move towards pPlayer.  If forward vector much different than velocity vector,
 //	bash velocity vector twice as much towards pPlayer as usual.
-tPhysicsInfo& pi = &pObj->mType.physInfo;
+tPhysicsInfo& pi = pObj->mType.physInfo;
 CFixVector vel = pi.velocity;
 CFixVector::Normalize (vel);
 fix dot = CFixVector::Dot (vel, pObj->info.position.mOrient.m.dir.f);
