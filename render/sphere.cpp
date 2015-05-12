@@ -209,35 +209,37 @@ v /= v.Mag () * CSphereVertex::m_fNormRadScale;
 
 // -----------------------------------------------------------------------------
 
-void CSphereFace::ComputeNormal (CSphere *pSphere)
+void CSphereFace::ComputeNormal (void)
 {
-m_vNormal.m_v = CFloatVector::Normal (pSphere->Vertex (0).m_v, pSphere->Vertex (1).m_v, pSphere->Vertex (2).m_v);
+m_vNormal.m_v = CFloatVector::Normal (Vertex (0), Vertex (1), Vertex (2));
 }
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-CSphereVertex *CSphereTriangle::ComputeCenter (CSphere *pSphere)
+CSphereVertex *CSphereTriangle::ComputeCenter (void)
 {
-m_vCenter = (pSphere->Vertex (m_v [0]) + pSphere->Vertex (m_v [1]) + pSphere->Vertex (m_v [2])) * (1.0f / 3.0f);
+m_vCenter = (m_v [0] + m_v [1] + m_v [2]) * (1.0f / 3.0f);
+m_vCenter.Normalize ();
 return &m_vCenter;
 }
 
 // -----------------------------------------------------------------------------
 
-CSphereTriangle *CSphereTriangle::Split (CSphere *pSphere, CSphereTriangle *pDest)
+CSphereTriangle *CSphereTriangle::Split (CSphereTriangle *pDest)
 {
 	static int32_t o [4][3] = {{0, 3, 5}, {3, 4, 5}, {3, 1, 4}, {4, 2, 5}};
 
-	int32_t	i, j;
-	int16_t	h [6];
+	int32_t			i, j;
+	CSphereVertex	h [6];
 
 for (i = 0; i < 3; i++)
 	h [i] = m_v [i];
 for (i = 0; i < 3; i++) {
-	CSphereVertex v = (pSphere->Vertex (h [i]) + pSphere->Vertex (h [(i + 1) % 3])) * 0.5f;
-	h [i + 3] = pSphere->AddVertex (v);
+	CSphereVertex v = (h [i] + h [(i + 1) % 3]) * 0.5f;
+	v.Normalize ();
+	h [i + 3] = v;
 	}
 
 for (i = 0; i < 4; i++, pDest++) {
@@ -251,9 +253,10 @@ return pDest;
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-CSphereVertex *CSphereQuad::ComputeCenter (CSphere *pSphere)
+CSphereVertex *CSphereQuad::ComputeCenter (void)
 {
-m_vCenter = (pSphere->Vertex (m_v [0]) + pSphere->Vertex (m_v [1]) + pSphere->Vertex (m_v [2]) + pSphere->Vertex (m_v [3])) * 0.25f;
+m_vCenter = (m_v [0] + m_v [1] + m_v [2] + m_v [3]) * 0.25f;
+m_vCenter.Normalize ();
 return &m_vCenter;
 }
 
@@ -266,21 +269,22 @@ return (i < 0) ? i + l : i % l;
 
 // -----------------------------------------------------------------------------
 
-CSphereQuad *CSphereQuad::Split (CSphere *pSphere, CSphereQuad *pDest)
+CSphereQuad *CSphereQuad::Split (CSphereQuad *pDest)
 {
 	static int32_t o [4][4] = {{0, 4, 8, 7}, {4, 1, 5, 8}, {8, 5, 2, 6}, {7, 8, 6, 3}};
 
-	int32_t	i, j;
-	int16_t	h [9];
+	int32_t			i, j;
+	CSphereVertex	h [9];
 
-ComputeCenter (pSphere);
+ComputeCenter ();
 for (i = 0; i < 4; i++)
 	h [i] = m_v [i];
 for (i = 0; i < 4; i++) {
-	CSphereVertex v = (pSphere->Vertex (m_v [i]) + pSphere->Vertex (m_v [(i + 1) % 4])) * 0.5f;
-	h [i + 4] = pSphere->AddVertex (v);
+	CSphereVertex v = (m_v [i] + m_v [(i + 1) % 4]) * 0.5f;
+	v.Normalize ();
+	h [i + 4] = v;
 	}
-h [8] = pSphere->AddVertex (m_vCenter);
+h [8] = m_vCenter;
 
 for (i = 0; i < 4; i++, pDest++) {
 	for (j = 0; j < 4; j++)
@@ -425,11 +429,7 @@ glColor3f (1.0f, 0.5f, 0.0f);
 #else
 glColor4fv ((GLfloat*) m_color.v.vec);
 #endif
-#if 1
-glDrawElements (nPrimitive, nVertices, GL_UNSIGNED_SHORT, (GLvoid*) m_vertexIndex.Buffer ());
-#else
 OglDrawArrays (nPrimitive, 0, nVertices);
-#endif
 ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 }
 
@@ -442,11 +442,7 @@ if (bTextured && !m_pBm->Bind (1))
 	OglTexCoordPointer (2, GL_FLOAT, 0, pTexCoord);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), pVertex);
 glColor4fv ((GLfloat*) m_color.v.vec);
-#if 1
-glDrawElements (nPrimitive, nFaces * FaceNodes (), GL_UNSIGNED_SHORT, (GLvoid*) m_vertexIndex.Buffer ());
-#else
 OglDrawArrays (nPrimitive, 0, nFaces * FaceNodes ());
-#endif
 ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 }
 
@@ -571,7 +567,6 @@ return m_nQuality ? m_nQuality : gameOpts->render.textures.nQuality + 1;
 void CTesselatedSphere::Destroy (void)
 {
 m_viewVerts.Destroy ();
-m_vertexIndex.Destroy ();
 CSphere::Destroy ();
 }
 
@@ -790,7 +785,7 @@ if (!CreateBuffers ())
 	return 0;
 
 int32_t nBuffer = CreateFaces ();
-if (!m_worldVerts.Create (m_nFaces * 3) || !m_viewVerts.Create (m_nFaces * 3) ||!m_vertexIndex.Create (m_nFaces * 3)) {
+if (!m_worldVerts.Create (m_nFaces * 3) || !m_viewVerts.Create (m_nFaces * 3)) {
 	m_worldVerts.Destroy ();
 	m_viewVerts.Destroy ();
 	m_faces [0].Destroy ();
@@ -799,10 +794,11 @@ if (!m_worldVerts.Create (m_nFaces * 3) || !m_viewVerts.Create (m_nFaces * 3) ||
 	}
 
 CSphereTriangle *pFace = m_faces [nBuffer].Buffer ();
+CSphereVertex *pVertex = m_worldVerts.Buffer ();
 
 for (int32_t i = 0; i < m_nFaces; i++, pFace++) {
 	for (int32_t j = 0; j < 3; j++)
-		m_vertexIndex [j] = pFace->m_v [j];
+		*(pVertex++) = pFace->m_v [j];
 	}
 m_faces [0].Destroy ();
 m_faces [1].Destroy ();
@@ -884,7 +880,7 @@ for (int32_t i = 0; i < 6; i++) {
 		for (int32_t k = 0; k < 3; k++)
 			v.m_v.v.vec [k] = baseCube [i][j][k];
 		v.m_tc = baseTC [j];
-		m_faces [0][i].m_v [j] = AddVertex (v);
+		m_faces [0][i].m_v [j] = v;
 		}
 	}
 }
@@ -911,7 +907,7 @@ int32_t CQuadSphere::CreateBuffers (void)
 {
 m_nFaces = 6 * int32_t (pow (4.0f, float (Quality ())));
 
-if (m_faces [0].Create (m_nFaces) && m_faces [1].Create (m_nFaces) && m_worldVerts.Create (m_nFaces * 4) && m_viewVerts.Create (m_nFaces * 4) && m_vertexIndex.Create (m_nFaces * 4)) {
+if (m_faces [0].Create (m_nFaces) && m_faces [1].Create (m_nFaces) && m_worldVerts.Create (m_nFaces * 4) && m_viewVerts.Create (m_nFaces * 4)) {
 	return 1;
 	m_viewVerts.Destroy ();
 	m_worldVerts.Destroy ();
@@ -935,11 +931,11 @@ m_nVertices = 0;
 int32_t nBuffer = CreateFaces ();
 
 CSphereQuad *pFace = m_faces [nBuffer].Buffer ();
-int16_t *pIndex = m_vertexIndex.Buffer ();
+CSphereVertex *pVertex = m_worldVerts.Buffer ();
 
 for (int32_t i = 0; i < m_nFaces; i++, pFace++) {
 	for (int32_t j = 0; j < 4; j++)
-		*(pIndex++) = pFace->m_v [j];
+		*(pVertex++) = pFace->m_v [j];
 	}
 
 m_faces [0].Destroy ();

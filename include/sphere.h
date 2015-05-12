@@ -99,36 +99,36 @@ class CSphereFace {
 		CSphereVertex	m_vNormal;
 
 		void Normalize (CFloatVector& v);
-		void ComputeNormal (CSphere *pSphere);
+		void ComputeNormal (void);
 
 		CFloatVector& Center (void) { return m_vCenter.m_v; }
 		CFloatVector& Normal (void) { return m_vNormal.m_v; }
 
-		//virtual CFloatVector& Vertex (int32_t i) = 0;
+		virtual CFloatVector& Vertex (int32_t i) = 0;
 	};
 
 // -----------------------------------------------------------------------------
 
 class CSphereTriangle : public CSphereFace {
 	public:
-		int16_t			m_v [3];
+		CSphereVertex			m_v [3];
 
-		CSphereVertex *ComputeCenter (CSphere *pSphere);
-		CSphereTriangle *Split (CSphere *pSphere, CSphereTriangle *pDest);
+		CSphereVertex *ComputeCenter (void);
+		CSphereTriangle *Split (CSphereTriangle *pDest);
 		void Transform (CSphereTriangle *pDest);
-		//virtual CFloatVector& Vertex (int32_t i) { return m_v [i].m_v; }
+		virtual CFloatVector& Vertex (int32_t i) { return m_v [i].m_v; }
 	};
 
 // -----------------------------------------------------------------------------
 
 class CSphereQuad : public CSphereFace {
 	public:
-		int16_t			m_v [4];
+		CSphereVertex			m_v [4];
 
-		CSphereVertex *ComputeCenter (CSphere *pSphere);
-		CSphereQuad *Split (CSphere *pSphere, CSphereQuad *pDest);
+		CSphereVertex *ComputeCenter (void);
+		CSphereQuad *Split (CSphereQuad *pDest);
 		void Transform (CSphereQuad *pDest);
-		//virtual CFloatVector& Vertex (int32_t i) { return m_v [i].m_v; }
+		virtual CFloatVector& Vertex (int32_t i) { return m_v [i].m_v; }
 	};
 
 // -----------------------------------------------------------------------------
@@ -136,7 +136,6 @@ class CSphereQuad : public CSphereFace {
 class CSphere : protected CSphereData {
 	public:
 		CArray<CSphereVertex>	m_worldVerts;
-		CArray<int16_t>			m_vertexIndex;
 		int32_t						m_nVertices;
 		int32_t						m_nFaces;
 
