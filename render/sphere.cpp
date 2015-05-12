@@ -522,7 +522,7 @@ bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
 #endif
 //ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (pObj);
-#if DBG
+#if 0// DBG
 CFixMatrix m = CFixMatrix::IDENTITY;
 transformation.Begin (vPos, m);
 #else
@@ -538,7 +538,7 @@ if (!bEffect && gameStates.render.CartoonStyle ())
 	transformation.End ();
 	ogl.ResetTransform (1);
 	ogl.SetTransform (0);
-#	if DBG
+#	if 0 //DBG
 	CFixMatrix m = CFixMatrix::IDENTITY;
 	transformation.Begin (vPos, m);
 #	else
