@@ -632,6 +632,9 @@ return 1;
 
 int32_t CTesselatedSphere::CreateEdgeList (void)
 {
+if (!m_edges.Create (m_nFaces * 2))
+	return -1;
+
 	int32_t nFaceNodes = FaceNodes ();
 
 for (int32_t i = 0; i < m_nFaces; i++) {
@@ -648,11 +651,13 @@ return m_nEdges;
 
 void CTesselatedSphere::RenderOutline (CObject *pObj)
 {
+if (m_edges.Buffer ()) {
 	float d = X2F (Max (0, CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ()) - pObj->Size ()));
 
-for (int32_t i = 0; i < m_nEdges; i++)
-	m_edges [i].Prepare (CFloatVector::ZERO);
-RenderMeshOutline (CMeshEdge::DistToScale (d));
+	for (int32_t i = 0; i < m_nEdges; i++)
+		m_edges [i].Prepare (CFloatVector::ZERO);
+	RenderMeshOutline (CMeshEdge::DistToScale (d));
+	}
 }
 
 // -----------------------------------------------------------------------------
