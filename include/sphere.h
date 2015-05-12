@@ -202,7 +202,7 @@ class CSphereEdge : public CMeshEdge {
 			return ((CFloatVector::Dist (m_vertices [0][0], other.m_vertices [0][0]) < 1e-6f) && (CFloatVector::Dist (m_vertices [1][0], other.m_vertices [1][0]) < 1e-6f)) ||
 					 ((CFloatVector::Dist (m_vertices [0][0], other.m_vertices [1][0]) < 1e-6f) && (CFloatVector::Dist (m_vertices [1][0], other.m_vertices [0][0]) < 1e-6f));
 			}
-		virtual void Transform (void);
+		virtual void Transform (CFloatVector vPos);
 		int32_t Prepare (CFloatVector vViewer, int32_t nFilter = 2, float fDistance = -1.0f);
 	};
 

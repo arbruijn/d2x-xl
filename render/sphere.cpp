@@ -544,18 +544,19 @@ Init ();
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CSphereEdge::Transform (void)
+void CSphereEdge::Transform (CFloatVector vPos)
 {
 for (int32_t i = 0; i < 2; i++) {
 	transformation.Rotate (m_faces [i].m_vNormal [1], m_faces [i].m_vNormal [0]);
-	transformation.Transform (m_faces [i].m_vCenter [1], m_faces [i].m_vCenter [0]);
+	vPos += m_faces [i].m_vCenter [0];
+	transformation.Transform (m_faces [i].m_vCenter [1], vPos);
 	}
 CMeshEdge::Transform ();
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CSphereEdge::Prepare (CFloatVector vViewer, int32_t nFilter, float fDistance)
+int32_t CSphereEdge::Prepare (CFloatVector vPos, int32_t nFilter, float fDistance)
 {
 Transform ();
 int32_t nVisibility = Visibility ();
@@ -656,11 +657,12 @@ return m_nEdges;
 void CTesselatedSphere::RenderOutline (CObject *pObj)
 {
 if (m_edges.Buffer ()) {
-	float d = X2F (Max (0, CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ()) - pObj->Size ()));
+	CFloatVector vPos;
+	vPos.Assign (pObj->Position ());
 
 	for (int32_t i = 0; i < m_nEdges; i++)
-		m_edges [i].Prepare (CFloatVector::ZERO);
-	RenderMeshOutline (CMeshEdge::DistToScale (d));
+		m_edges [i].Prepare (vPos);
+	RenderMeshOutline (CMeshEdge::DistToScale (X2F (Max (0, CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ()) - pObj->Size ()))));
 	}
 }
 
