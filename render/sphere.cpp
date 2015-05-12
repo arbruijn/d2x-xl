@@ -29,7 +29,7 @@
 #if DBG
 #	define WIREFRAME 1
 #	define DEFAULT_SPHERE_QUALITY 1
-#	define DRAW_NORMALS 1
+#	define DRAW_NORMALS 0
 #else
 #	define WIREFRAME 0
 #	define DEFAULT_SPHERE_QUALITY -1
@@ -1087,7 +1087,7 @@ return 0;
 
 int32_t CQuadSphere::CreateEdgeList (void)
 {
-m_nEdges = m_nFaces * 3;
+m_nEdges = m_nFaces * 4;
 if (m_nEdges > gameData.segData.nEdges) {
 	if (!gameData.segData.edges.Resize (m_nEdges)) 
 		return -1;
@@ -1098,18 +1098,22 @@ if (!m_edges.Create (m_nEdges))
 
 m_nEdges = 0;
 
-	static int32_t o [4][5] = {{0,1,2,0,1},{0,2,3,0,2},{0,1,3,0,1},{1,2,3,1,2}};
+	static int32_t o [4][5] = {{0,1,4,0,1},{1,2,4,1,2},{2,3,4,2,3},{3,0,4,3,0}};
+	CFloatVector	v [5];
 
 for (int32_t i = 0; i < m_nFaces; i++) {
 	CSphereFace *pFace = Face (i);
 	CSphereVertex *pVertex = pFace->Vertices ();
-	//pFace->ComputeNormal ();
+	for (int32_t j = 0; j < 4; j++)
+		v [j] = pVertex [j].m_v;
+	pFace->ComputeCenter ();
+	v [4] = pFace->m_vCenter.m_v;
 	for (int32_t h = 0; h < 4; h++) {
 #if DRAW_NORMALS
-		AddEdge (pVertex [o [h][0]].m_v, pVertex [o [h][1]].m_v, pVertex [o [h][2]].m_v);
+		AddEdge (h [o [h][0]].m_v, h [o [h][1]].m_v, h [o [h][2]].m_v);
 #else
-		for (int32_t j = 0; j < nFaceNodes; j++)
-			AddEdge (pVertex [o [h][j]].m_v, pVertex [o [h][j + 1]].m_v, pVertex [o [h][j + 2]].m_v);
+		for (int32_t j = 0; j < 3; j++)
+			AddEdge (v [o [h][j]], v [o [h][j + 1]], v [o [h][j + 2]]);
 #endif
 		}
 	}
