@@ -514,7 +514,10 @@ bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
 tObjTransformation *posP = OBJPOS (pObj);
 transformation.Begin (vPos, posP->mOrient);
 RenderFaces (xScale, red, green, blue, alpha, bTextured, nFaces);
-RenderOutline (pObj);
+#if !DBG
+if (gameStates.render.CartoonStyle ())
+#endif
+	RenderOutline (pObj);
 transformation.End ();
 //ogl.ResetTransform (0);
 ogl.SetTransform (0);
@@ -634,6 +637,7 @@ int32_t CTesselatedSphere::CreateEdgeList (void)
 {
 if (!m_edges.Create (m_nFaces * 2))
 	return -1;
+m_nEdges = 0;
 
 	int32_t nFaceNodes = FaceNodes ();
 
