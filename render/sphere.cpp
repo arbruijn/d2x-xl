@@ -25,7 +25,7 @@
 #include "addon_bitmaps.h"
 
 #define SPHERE_ADDITIVE_BLENDING 1
-#define SPHERE_MAX_RINGS 256
+#define SPHERE_MAX_RINGS			256
 #if DBG
 #	define SPHERE_DEFAULT_QUALITY 3
 #	define SPHERE_DRAW_OUTLINE		1
@@ -530,7 +530,8 @@ transformation.Begin (vPos, posP->mOrient);
 #endif
 RenderFaces (xScale, red, green, blue, alpha, bTextured, nFaces);
 #if 1 // !DBG
-if (!bEffect && gameStates.render.CartoonStyle ())
+int32_t bCartoonStyle = gameStates.render.EnableCartoonStyle ();
+if (/*!bEffect &&*/ gameStates.render.CartoonStyle ())
 #endif
 #if SPHERE_DRAW_OUTLINE && (SPHERE_WIREFRAME < 2)
 	{
@@ -555,6 +556,7 @@ if (!bEffect && gameStates.render.CartoonStyle ())
 #endif
 //ogl.ResetTransform (0);
 transformation.End ();
+gameStates.render.SetCartoonStyle (bCartoonStyle);
 if (bGlow) 
 #if 0
 	glowRenderer.Done (GLOW_SHIELDS);
