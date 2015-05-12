@@ -24,16 +24,20 @@
 #include "oof.h"
 #include "addon_bitmaps.h"
 
-#define ADDITIVE_SPHERE_BLENDING 1
-#define MAX_SPHERE_RINGS 256
+#define SPHERE_ADDITIVE_BLENDING 1
+#define SPHERE_MAX_RINGS 256
 #if DBG
-#	define WIREFRAME 1
-#	define DEFAULT_SPHERE_QUALITY 1
-#	define DRAW_NORMALS 0
+#	define SPHERE_DEFAULT_QUALITY 3
+#	define SPHERE_DRAW_OUTLINE		1
+#	define SPHERE_SW_TRANSFORM		0
+#	define SPHERE_WIREFRAME			0
+#	define SPHERE_DRAW_NORMALS		0
 #else
-#	define WIREFRAME 0
-#	define DEFAULT_SPHERE_QUALITY -1
-#	define DRAW_NORMALS 0
+#	define SPHERE_DEFAULT_QUALITY	3
+#	define SPHERE_DRAW_OUTLINE		1
+#	define SPHERE_SW_TRANSFORM		0
+#	define SPHERE_WIREFRAME			0
+#	define SPHERE_DRAW_NORMALS		0
 #endif
 
 // TODO: Create a c-tor for the two tables
@@ -405,7 +409,7 @@ if (!pBm) {
 if (alpha < 0)
 	alpha = (float) (1.0f - gameStates.render.grAlpha / (float) FADE_LEVELS);
 if (alpha < 1.0f) {
-#if ADDITIVE_SPHERE_BLENDING
+#if SPHERE_ADDITIVE_BLENDING
 	fScale *= coronaIntensities [gameOpts->render.coronas.nObjIntensity];
 #endif
 	if (m_pPulse && m_pPulse->fScale) {
@@ -528,21 +532,25 @@ RenderFaces (xScale, red, green, blue, alpha, bTextured, nFaces);
 #if !DBG
 if (gameStates.render.CartoonStyle ())
 #endif
-#if WIREFRAME < 2
+#if SPHERE_DRAW_OUTLINE && (SPHERE_WIREFRAME < 2)
 	{
+#if SPHERE_SW_TRANSFORM
 	transformation.End ();
 	ogl.ResetTransform (1);
 	ogl.SetTransform (0);
-#if DBG
+#	if DBG
 	CFixMatrix m = CFixMatrix::IDENTITY;
 	transformation.Begin (vPos, m);
-	#else
+#	else
 	transformation.Begin (vPos, posP->mOrient);
+#	endif
 #endif
-	gameStates.render.SetOutlineColor (0, 128, 255);
+	//gameStates.render.SetOutlineColor (0, 128, 255);
 	RenderOutline (pObj, xScale);
 	gameStates.render.ResetOutlineColor ();
+#if SPHERE_SW_TRANSFORM
 	ogl.SetTransform (1);
+#endif
 	}
 #endif
 //ogl.ResetTransform (0);
@@ -576,10 +584,10 @@ for (int32_t i = 0; i < 2; i++) {
 	transformation.Rotate (m_faces [i].m_vNormal [1], m_faces [i].m_vNormal [0]);
 	CFloatVector v = m_faces [i].m_vCenter [0] * fScale;
 	transformation.Transform (m_faces [i].m_vCenter [1], v);
-	if (!ogl.m_states.bUseTransform) {
-		v = m_vertices [i][0] * fScale;
-		transformation.Transform (m_vertices [i][1], v);
-		}
+#if SPHERE_SW_TRANSFORM
+	v = m_vertices [i][0] * fScale;
+	transformation.Transform (m_vertices [i][1], v);
+#endif
 	}
 }
 
@@ -596,8 +604,8 @@ if ((CFloatVector::Dot (v, m_faces [0].m_vNormal [1]) > 0.0f) == (CFloatVector::
 if ((CFloatVector::Dot (m_faces [0].m_vCenter [1], m_faces [0].m_vNormal [1]) > 0.0f) == (CFloatVector::Dot (m_faces [1].m_vCenter [1], m_faces [1].m_vNormal [1]) > 0.0f))
 	return 0;
 #endif
-gameData.segData.edgeVertexData [0].Add (m_vertices [0][!ogl.m_states.bUseTransform]);
-gameData.segData.edgeVertexData [0].Add (m_vertices [1][!ogl.m_states.bUseTransform]);
+gameData.segData.edgeVertexData [0].Add (m_vertices [0][SPHERE_SW_TRANSFORM]);
+gameData.segData.edgeVertexData [0].Add (m_vertices [1][SPHERE_SW_TRANSFORM]);
 return 1;
 }
 
@@ -620,8 +628,8 @@ for (int32_t i = 0; i < m_nVertices; i++) {
 
 int32_t CTesselatedSphere::Quality (void)
 {
-#if DEFAULT_SPHERE_QUALITY > -1
-return DEFAULT_SPHERE_QUALITY;
+#if SPHERE_DEFAULT_QUALITY > -1
+return SPHERE_DEFAULT_QUALITY;
 #else
 return m_nQuality ? m_nQuality : gameOpts->render.textures.nQuality + 1;
 #endif
@@ -653,7 +661,7 @@ return -1;
 
 int32_t CTesselatedSphere::AddEdge (CFloatVector& v1, CFloatVector& v2, CFloatVector& v3)
 {
-#if DRAW_NORMALS
+#if SPHERE_DRAW_NORMALS
 CSphereEdge *pEdge = m_edges + m_nEdges++;
 pEdge->m_faces [0].m_vNormal [0] = -CFloatVector::Normal (v1, v2, v3);
 if (pEdge->m_faces [0].m_vNormal [0].IsZero ())
@@ -702,7 +710,7 @@ if (m_edges.Buffer ()) {
 	gameData.segData.edgeVertexData [0].m_nVertices = 0;
 	for (int32_t i = 0; i < m_nEdges; i++)
 		m_edges [i].Prepare (CFloatVector::ZERO, 2, fScale);
-	RenderMeshOutline (CMeshEdge::DistToScale (X2F (Max (0, CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ()) - pObj->Size ()))));
+	RenderMeshOutline (CMeshEdge::DistToScale (X2F (Max (0, CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ())/* - pObj->Size ()*/))));
 	}
 }
 
@@ -718,8 +726,8 @@ int32_t CRingedSphere::CreateVertices (int32_t nRings, int32_t nFaces)
 	float				t1, t2, t3, a, sint1, cost1, sint2, cost2, sint3, cost3;
 	CSphereVertex	*pVertex;
 
-if (nRings > MAX_SPHERE_RINGS)
-	nRings = MAX_SPHERE_RINGS;
+if (nRings > SPHERE_MAX_RINGS)
+	nRings = SPHERE_MAX_RINGS;
 if ((m_nRings == nRings) && (m_nFaces == nFaces) && (m_worldVerts.Buffer () != NULL))
 	return 1;
 
@@ -776,12 +784,12 @@ return CreateVertices ();
 void CRingedSphere::RenderFaces (float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nFaces)
 {
 	int32_t			nCull, h, i, j, nQuads, nRings = Quality ();
-	CFloatVector	p [2 * MAX_SPHERE_RINGS + 2];
-	tTexCoord2f		tc [2 * MAX_SPHERE_RINGS + 2];
+	CFloatVector	p [2 * SPHERE_MAX_RINGS + 2];
+	tTexCoord2f		tc [2 * SPHERE_MAX_RINGS + 2];
 	CSphereVertex*	svP [2];
 
-if (nRings > MAX_SPHERE_RINGS)
-	nRings = MAX_SPHERE_RINGS;
+if (nRings > SPHERE_MAX_RINGS)
+	nRings = SPHERE_MAX_RINGS;
 if (!CreateVertices (nRings, nFaces))
 	return;
 h = nRings / 2;
@@ -938,7 +946,7 @@ for (int32_t i = 0; i < m_nFaces; i++) {
 	CSphereVertex *pVertex = pFace->Vertices ();
 	//pFace->ComputeNormal ();
 	pFace->ComputeCenter ();
-#if DRAW_NORMALS
+#if SPHERE_DRAW_NORMALS
 		AddEdge (pVertex [0].m_v, pVertex [1].m_v, pFace->Center ());
 #else
 	for (int32_t j = 0; j < nFaceNodes; j++)
@@ -1087,7 +1095,7 @@ return 0;
 
 int32_t CQuadSphere::CreateEdgeList (void)
 {
-m_nEdges = m_nFaces * 4;
+m_nEdges = m_nFaces * 6;
 if (m_nEdges > gameData.segData.nEdges) {
 	if (!gameData.segData.edges.Resize (m_nEdges)) 
 		return -1;
@@ -1109,7 +1117,7 @@ for (int32_t i = 0; i < m_nFaces; i++) {
 	pFace->ComputeCenter ();
 	v [4] = pFace->m_vCenter.m_v;
 	for (int32_t h = 0; h < 4; h++) {
-#if DRAW_NORMALS
+#if SPHERE_DRAW_NORMALS
 		AddEdge (h [o [h][0]].m_v, h [o [h][1]].m_v, h [o [h][2]].m_v);
 #else
 		for (int32_t j = 0; j < 3; j++)
@@ -1152,7 +1160,7 @@ if (!m_worldVerts.Buffer () || !m_viewVerts.Buffer ())
 //Transform (fRadius);
 #if 1
 glScalef (fRadius, fRadius, fRadius);
-#	if WIREFRAME
+#	if SPHERE_WIREFRAME
 glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 glLineWidth (3);
 for (int32_t nCull = 0; nCull < 2; nCull++) {
