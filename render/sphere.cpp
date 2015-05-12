@@ -914,6 +914,17 @@ if (m_faces [0].Create (m_nFaces)) {
 		return 1;
 	m_faces [0].Destroy ();
 	}	
+
+if (!m_worldVerts.Create (m_nFaces * 4) || !m_viewVerts.Create (m_nFaces * 4) || !m_vertexIndex.Create (m_nFaces * 4)) {
+	m_faces [0].Destroy ();
+	m_faces [1].Destroy ();
+	m_worldVerts.Destroy ();
+	m_viewVerts.Destroy ();
+	m_faces [0].Destroy ();
+	m_faces [1].Destroy ();
+	return 0;
+	}
+
 PrintLog (-1);
 return 0;
 }
@@ -927,13 +938,6 @@ if (!CreateBuffers ())
 
 m_nVertices = 0;
 int32_t nBuffer = CreateFaces ();
-if (!m_worldVerts.Create (m_nFaces * 4) || !m_viewVerts.Create (m_nFaces * 4) || !m_vertexIndex.Create (m_nFaces * 4)) {
-	m_worldVerts.Destroy ();
-	m_viewVerts.Destroy ();
-	m_faces [0].Destroy ();
-	m_faces [1].Destroy ();
-	return 0;
-	}
 
 CSphereQuad *pFace = m_faces [nBuffer].Buffer ();
 
