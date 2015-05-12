@@ -106,7 +106,7 @@ class CSphereFace {
 
 		virtual CSphereVertex* Vertices (void) = 0;
 		virtual CFloatVector& Vertex (int32_t i) = 0;
-		virtual CSphereVertex *ComputeCenter (void);
+		virtual CSphereVertex *ComputeCenter (void) = 0;
 	};
 
 // -----------------------------------------------------------------------------
