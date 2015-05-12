@@ -427,33 +427,35 @@ return bTextured;
 
 // -----------------------------------------------------------------------------
 
-void CSphere::DrawFaces (int32_t nOffset, int32_t nFaces, int32_t bTextured, int32_t nPrimitive)
+void CSphere::DrawFaces (int32_t nOffset, int32_t nFaces, int32_t bTextured, int32_t nPrimitive, int32_t nState)
 {
 int32_t nVertices = nFaces * FaceNodes ();
-ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-if (bTextured && !m_pBm->Bind (1))
-	OglTexCoordPointer (2, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_tc));
-OglVertexPointer (3, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_v));
-#if 0 //DBG
-glColor3f (1.0f, 0.5f, 0.0f);
-#else
+if (nState & 1) {
+	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+	if (bTextured && !m_pBm->Bind (1))
+		OglTexCoordPointer (2, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_tc));
+	OglVertexPointer (3, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_v));
+	}
 glColor4fv ((GLfloat*) m_color.v.vec);
-#endif
 OglDrawArrays (nPrimitive, 0, nVertices);
-ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+if (nState & 2)
+	ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 }
 
 // -----------------------------------------------------------------------------
 
-void CSphere::DrawFaces (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nFaces, int32_t bTextured, int32_t nPrimitive)
+void CSphere::DrawFaces (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nFaces, int32_t bTextured, int32_t nPrimitive, int32_t nState)
 {
-ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-if (bTextured && !m_pBm->Bind (1))
-	OglTexCoordPointer (2, GL_FLOAT, 0, pTexCoord);
-OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), pVertex);
+if (nState & 1) {
+	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+	if (bTextured && !m_pBm->Bind (1))
+		OglTexCoordPointer (2, GL_FLOAT, 0, pTexCoord);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), pVertex);
+	}
 glColor4fv ((GLfloat*) m_color.v.vec);
 OglDrawArrays (nPrimitive, 0, nFaces * FaceNodes ());
-ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+if (nState & 2)
+	ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 }
 
 // -----------------------------------------------------------------------------
@@ -554,8 +556,9 @@ if (/*!bEffect &&*/ gameStates.render.CartoonStyle ())
 #endif
 	}
 #endif
-//ogl.ResetTransform (0);
 transformation.End ();
+ogl.ResetTransform (0);
+ogl.ResetClientStates (0);
 gameStates.render.SetCartoonStyle (bCartoonStyle);
 if (bGlow) 
 #if 0
@@ -804,7 +807,7 @@ if (ogl.UseTransform ()) {
 		svP [0] = svP [1] = m_worldVerts.Buffer ();
 		ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
 		for (i = 0; i < h; i++) {
-			DrawFaces (i, nQuads, bTextured, GL_QUAD_STRIP);
+			DrawFaces (i, nQuads, bTextured, GL_QUAD_STRIP, nCull ? 2 : 1);
 #if 0
 			if (!bTextured) {
 				for (i = 0; i < nQuads; i++, svP [1]++) {
@@ -833,7 +836,7 @@ else {
 				if (bTextured)
 					tc [i] = svP [0]->m_tc;
 				}
-			DrawFaces (p, tc, nQuads, bTextured, GL_QUAD_STRIP);
+			DrawFaces (p, tc, nQuads, bTextured, GL_QUAD_STRIP, 3);
 #if 0
 			if (!bTextured) {
 				for (i = 0; i < nQuads; i++, svP [1]++) {
@@ -991,7 +994,7 @@ glScalef (fRadius, fRadius, fRadius);
 #if 1
 for (int32_t nCull = 0; nCull < 2; nCull++) {
 	ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
-	DrawFaces (0, m_nFaces, bTextured, GL_TRIANGLES);
+	DrawFaces (0, m_nFaces, bTextured, GL_TRIANGLES, nCull ? 2 : 1);
 	}
 #else
 glBegin (GL_LINES);
@@ -1167,13 +1170,13 @@ glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 glLineWidth (3);
 for (int32_t nCull = 0; nCull < 2; nCull++) {
 	ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
-	DrawFaces (0, m_nFaces, bTextured, GL_QUADS);
+	DrawFaces (0, m_nFaces, bTextured, GL_QUADS, nCull ? 2 : 1);
 	}
 glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 #	else
 for (int32_t nCull = 0; nCull < 2; nCull++) {
 	ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
-	DrawFaces (0, m_nFaces, bTextured, GL_QUADS);
+	DrawFaces (0, m_nFaces, bTextured, GL_QUADS, nCull ? 2 : 1);
 	}
 #	endif
 #else

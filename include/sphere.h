@@ -167,8 +167,8 @@ class CSphere : protected CSphereData {
 		virtual void RenderOutline (CObject *pObj, float fScale = 1.0f) = 0;
 
 	protected:
-		void DrawFaces (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nFaces, int32_t bTextured, int32_t nPrimitive);
-		void DrawFaces (int32_t nOffset, int32_t nFaces, int32_t bTextured, int32_t nPrimitive);
+		void DrawFaces (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nFaces, int32_t bTextured, int32_t nPrimitive, int32_t nState);
+		void DrawFaces (int32_t nOffset, int32_t nFaces, int32_t bTextured, int32_t nPrimitive, int32_t nState);
 
 	private:
 		void Pulsate (void);

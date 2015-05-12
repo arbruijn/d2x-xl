@@ -1208,7 +1208,7 @@ m_info.pTexture->Prepare ();
 #if DBG
 if (strstr (m_info.szName, "ship"))
 	BRP;
-if (strstr (m_info.szName, "door35"))
+if (strstr (m_info.szName, "door52"))
 	BRP;
 #endif
 //	if (width!=twidth || height!=theight)
@@ -1224,10 +1224,10 @@ if (!m_info.pTexture->IsRenderBuffer ())
 #endif
 		int32_t nColors;
 		if ((m_info.nTranspType < 0) || (Flags () & BM_FLAG_TGA)) {
-			CBitmap* pBm = m_info.pTexture->Bitmap ();
-			m_info.pTexture->SetBitmap (this);
+			//CBitmap* pBm = m_info.pTexture->Bitmap ();
+			//m_info.pTexture->SetBitmap (this);
 			pBuffer = m_info.pTexture->Copy (dxo, dyo, data);
-			m_info.pTexture->SetBitmap (pBm);
+			//m_info.pTexture->SetBitmap (pBm);
 			nColors = BPP ();
 #if DBG
 			if (nColors == 1)
@@ -1512,7 +1512,7 @@ if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	}
 else if (!Frames ()) {
 #if DBG
-	if (strstr (Name (), "door35"))
+	if (strstr (Name (), "door52"))
 		BRP;
 #endif
 	CreateFrames (bMipMaps, bLoad);
