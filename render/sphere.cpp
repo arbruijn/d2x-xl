@@ -27,8 +27,8 @@
 #define ADDITIVE_SPHERE_BLENDING 1
 #define MAX_SPHERE_RINGS 256
 #if DBG
-#	define WIREFRAME 0
-#	define DEFAULT_QUALITY 0
+#	define WIREFRAME 1
+#	define DEFAULT_QUALITY 1
 #	define DRAW_NORMALS 0
 #else
 #	define WIREFRAME 0
@@ -518,7 +518,12 @@ bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
 #endif
 //ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (pObj);
+#if DBG
+CFixMatrix m = CFixMatrix::IDENTITY;
+transformation.Begin (vPos, m);
+#else
 transformation.Begin (vPos, posP->mOrient);
+#endif
 RenderFaces (xScale, red, green, blue, alpha, bTextured, nFaces);
 #if !DBG
 if (gameStates.render.CartoonStyle ())
@@ -557,6 +562,8 @@ for (int32_t i = 0; i < 2; i++) {
 	transformation.Rotate (m_faces [i].m_vNormal [1], m_faces [i].m_vNormal [0]);
 	CFloatVector v = m_faces [i].m_vCenter [0] * fScale;
 	transformation.Transform (m_faces [i].m_vCenter [1], v);
+	v = m_vertices [i][0] * fScale;
+	transformation.Transform (m_vertices [i][1], v);
 	}
 }
 
@@ -565,8 +572,14 @@ for (int32_t i = 0; i < 2; i++) {
 int32_t CSphereEdge::Prepare (CFloatVector vViewer, int32_t nFilter, float fScale)
 {
 Transform (fScale);
+#if 1
+CFloatVector v = (m_vertices [0][1] + m_vertices [1][1]) * 0.5f;
+if ((CFloatVector::Dot (v, m_faces [0].m_vNormal [1]) > 0.0f) == (CFloatVector::Dot (v, m_faces [1].m_vNormal [1]) > 0.0f))
+	return 0;
+#else
 if ((CFloatVector::Dot (m_faces [0].m_vCenter [1], m_faces [0].m_vNormal [1]) > 0.0f) == (CFloatVector::Dot (m_faces [1].m_vCenter [1], m_faces [1].m_vNormal [1]) > 0.0f))
 	return 0;
+#endif
 gameData.segData.edgeVertexData [0].Add (m_vertices [0][0]);
 gameData.segData.edgeVertexData [0].Add (m_vertices [1][0]);
 return 1;
