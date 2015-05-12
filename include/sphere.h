@@ -142,7 +142,7 @@ class CSphere : protected CSphereData {
 
 	public:
 		CSphere () : m_nVertices (0), m_nFaces (0) {}
-		~CSphere () {}
+		virtual ~CSphere () { Destroy (); }
 		void Init () { CSphereData::Init (); }
 		virtual void Destroy ();
 		int32_t Render (CObject* pObj, CFloatVector *pPos, float xScale, float yScale, float zScale,
@@ -197,6 +197,7 @@ class CTesselatedSphere : public CSphere {
 		int32_t						m_nQuality;
 
 		CTesselatedSphere () : m_nQuality (0) {}
+		virtual ~CTesselatedSphere () { Destroy (); }
 		virtual void Destroy ();
 		virtual int32_t Create (void) = 0;
 		void Transform (float fScale);
