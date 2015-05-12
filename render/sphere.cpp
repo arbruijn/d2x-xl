@@ -28,11 +28,11 @@
 #define MAX_SPHERE_RINGS 256
 #if DBG
 #	define WIREFRAME 1
-#	define DEFAULT_QUALITY 1
+#	define DEFAULT_SPHERE_QUALITY 1
 #	define DRAW_NORMALS 1
 #else
 #	define WIREFRAME 0
-#	define DEFAULT_QUALITY -1
+#	define DEFAULT_SPHERE_QUALITY -1
 #	define DRAW_NORMALS 0
 #endif
 
@@ -530,9 +530,19 @@ if (gameStates.render.CartoonStyle ())
 #endif
 #if WIREFRAME < 2
 	{
+	transformation.End ();
+	ogl.ResetTransform (1);
+	ogl.SetTransform (0);
+#if DBG
+	CFixMatrix m = CFixMatrix::IDENTITY;
+	transformation.Begin (vPos, m);
+	#else
+	transformation.Begin (vPos, posP->mOrient);
+#endif
 	gameStates.render.SetOutlineColor (0, 128, 255);
 	RenderOutline (pObj, xScale);
 	gameStates.render.ResetOutlineColor ();
+	ogl.SetTransform (1);
 	}
 #endif
 //ogl.ResetTransform (0);
@@ -576,16 +586,16 @@ for (int32_t i = 0; i < 2; i++) {
 int32_t CSphereEdge::Prepare (CFloatVector vViewer, int32_t nFilter, float fScale)
 {
 Transform (fScale);
-#if 1
+#if 0
 CFloatVector v = (m_vertices [0][1] + m_vertices [1][1]) * 0.5f;
 if ((CFloatVector::Dot (v, m_faces [0].m_vNormal [1]) > 0.0f) == (CFloatVector::Dot (v, m_faces [1].m_vNormal [1]) > 0.0f))
 	return 0;
-#else
+#elif 0
 if ((CFloatVector::Dot (m_faces [0].m_vCenter [1], m_faces [0].m_vNormal [1]) > 0.0f) == (CFloatVector::Dot (m_faces [1].m_vCenter [1], m_faces [1].m_vNormal [1]) > 0.0f))
 	return 0;
 #endif
-gameData.segData.edgeVertexData [0].Add (m_vertices [0][0]);
-gameData.segData.edgeVertexData [0].Add (m_vertices [1][0]);
+gameData.segData.edgeVertexData [0].Add (m_vertices [0][!ogl.m_states.bUseTransform]);
+gameData.segData.edgeVertexData [0].Add (m_vertices [1][!ogl.m_states.bUseTransform]);
 return 1;
 }
 
@@ -608,8 +618,8 @@ for (int32_t i = 0; i < m_nVertices; i++) {
 
 int32_t CTesselatedSphere::Quality (void)
 {
-#if DEFAULT_QUALITY > -1
-return DEFAULT_QUALITY;
+#if DEFAULT_SPHERE_QUALITY > -1
+return DEFAULT_SPHERE_QUALITY;
 #else
 return m_nQuality ? m_nQuality : gameOpts->render.textures.nQuality + 1;
 #endif
@@ -639,18 +649,14 @@ return -1;
 
 // -----------------------------------------------------------------------------
 
-int32_t CTesselatedSphere::AddEdge (CFloatVector& v1, CFloatVector& v2, CFloatVector& vCenter)
+int32_t CTesselatedSphere::AddEdge (CFloatVector& v1, CFloatVector& v2, CFloatVector& v3)
 {
 #if DRAW_NORMALS
-if (m_nEdges >= gameData.segData.nEdges)
-	return -1;
-if (m_nEdges >= m_nFaces * 2)
-	return -1;
 CSphereEdge *pEdge = m_edges + m_nEdges++;
-pEdge->m_faces [0].m_vNormal [0] = -CFloatVector::Normal (v1, v2, vCenter);
+pEdge->m_faces [0].m_vNormal [0] = -CFloatVector::Normal (v1, v2, v3);
 if (pEdge->m_faces [0].m_vNormal [0].IsZero ())
 	BRP;
-pEdge->m_faces [0].m_vCenter [0] = vCenter;
+pEdge->m_faces [0].m_vCenter [0] = (v1 + v2 + v3) / 3.0f;
 pEdge->m_vertices [1][0] = pEdge->m_faces [0].m_vCenter [0];
 pEdge->m_vertices [0][0] = pEdge->m_faces [0].m_vCenter [0] + pEdge->m_faces [0].m_vNormal [0];
 pEdge->m_nFaces = 1;
@@ -678,44 +684,12 @@ if (!nFace) {
 	pEdge->m_vertices [0][0] = v1;
 	pEdge->m_vertices [1][0] = v2;
 	}
-pEdge->m_faces [nFace].m_vNormal [0] = CFloatVector::Normal (v1, v2, vCenter);
-pEdge->m_faces [nFace].m_vCenter [0] = vCenter;
+pEdge->m_faces [nFace].m_vNormal [0] = CFloatVector::Normal (v1, v2, v3);
+pEdge->m_faces [nFace].m_vCenter [0] = (v1 + v2 + v3) / 3.0f;;
 if (CFloatVector::Dot (pEdge->m_faces [nFace].m_vNormal [0], v1) < 0.0f)
 	pEdge->m_faces [nFace].m_vNormal [0].Neg ();
 #endif
 return 1;
-}
-
-// -----------------------------------------------------------------------------
-
-int32_t CTesselatedSphere::CreateEdgeList (void)
-{
-m_nEdges = m_nFaces * 2;
-if (m_nEdges > gameData.segData.nEdges) {
-	if (!gameData.segData.edges.Resize (m_nEdges)) 
-		return -1;
-	gameData.segData.nEdges = m_nEdges;
-	}
-if (!m_edges.Create (m_nEdges))
-	return -1;
-
-m_nEdges = 0;
-
-	int32_t nFaceNodes = FaceNodes ();
-
-for (int32_t i = 0; i < m_nFaces; i++) {
-	CSphereFace *pFace = Face (i);
-	CSphereVertex *pVertex = pFace->Vertices ();
-	//pFace->ComputeNormal ();
-	pFace->ComputeCenter ();
-#if DRAW_NORMALS
-		AddEdge (pVertex [0].m_v, pVertex [1].m_v, pFace->Center ());
-#else
-	for (int32_t j = 0; j < nFaceNodes; j++)
-		AddEdge (pVertex [j].m_v, pVertex [(j + 1) % nFaceNodes].m_v, pFace->Center ());
-#endif
-	}
-return m_nEdges;
 }
 
 // -----------------------------------------------------------------------------
@@ -942,6 +916,38 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
+int32_t CTriangleSphere::CreateEdgeList (void)
+{
+m_nEdges = m_nFaces * 2;
+if (m_nEdges > gameData.segData.nEdges) {
+	if (!gameData.segData.edges.Resize (m_nEdges)) 
+		return -1;
+	gameData.segData.nEdges = m_nEdges;
+	}
+if (!m_edges.Create (m_nEdges))
+	return -1;
+
+m_nEdges = 0;
+
+	int32_t nFaceNodes = FaceNodes ();
+
+for (int32_t i = 0; i < m_nFaces; i++) {
+	CSphereFace *pFace = Face (i);
+	CSphereVertex *pVertex = pFace->Vertices ();
+	//pFace->ComputeNormal ();
+	pFace->ComputeCenter ();
+#if DRAW_NORMALS
+		AddEdge (pVertex [0].m_v, pVertex [1].m_v, pFace->Center ());
+#else
+	for (int32_t j = 0; j < nFaceNodes; j++)
+		AddEdge (pVertex [j].m_v, pVertex [(j + 1) % nFaceNodes].m_v, pFace->Center ());
+#endif
+	}
+return m_nEdges;
+}
+
+// -----------------------------------------------------------------------------
+
 int32_t CTriangleSphere::Create (void)
 {
 if (!CreateBuffers ())
@@ -1073,6 +1079,39 @@ m_faces [1].Destroy ();
 m_faces [0].Destroy ();
 PrintLog (-1);
 return 0;
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t CQuadSphere::CreateEdgeList (void)
+{
+m_nEdges = m_nFaces * 3;
+if (m_nEdges > gameData.segData.nEdges) {
+	if (!gameData.segData.edges.Resize (m_nEdges)) 
+		return -1;
+	gameData.segData.nEdges = m_nEdges;
+	}
+if (!m_edges.Create (m_nEdges))
+	return -1;
+
+m_nEdges = 0;
+
+	static int32_t o [4][5] = {{0,1,2,0,1},{0,2,3,0,2},{0,1,3,0,1},{1,2,3,1,2}};
+
+for (int32_t i = 0; i < m_nFaces; i++) {
+	CSphereFace *pFace = Face (i);
+	CSphereVertex *pVertex = pFace->Vertices ();
+	//pFace->ComputeNormal ();
+	for (int32_t h = 0; h < 4; h++) {
+#if DRAW_NORMALS
+		AddEdge (pVertex [o [h][0]].m_v, pVertex [o [h][1]].m_v, pVertex [o [h][2]].m_v);
+#else
+		for (int32_t j = 0; j < nFaceNodes; j++)
+			AddEdge (pVertex [o [h][j]].m_v, pVertex [o [h][j + 1]].m_v, pVertex [o [h][j + 2]].m_v);
+		}
+#endif
+	}
+return m_nEdges;
 }
 
 // -----------------------------------------------------------------------------

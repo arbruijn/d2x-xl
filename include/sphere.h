@@ -230,9 +230,7 @@ class CTesselatedSphere : public CSphere {
 
 	protected:
 		int32_t Quality (void);
-		int32_t CreateEdgeList (void);
-
-	private:
+		virtual int32_t CreateEdgeList (void) = 0;
 		int32_t FindEdge (CFloatVector& v1, CFloatVector& v2);
 		int32_t AddEdge (CFloatVector& v1, CFloatVector& v2, CFloatVector& vCenter);
 	};
@@ -252,6 +250,7 @@ class CTriangleSphere : public CTesselatedSphere {
 		void SetupFaces (void);
 		int32_t CreateBuffers (void);
 		int32_t CreateFaces (void);
+		virtual int32_t CreateEdgeList (void);
 		virtual CSphereFace *Face (int32_t nFace) { return m_faces [m_nFaceBuffer] + nFace; }
 	};
 
@@ -270,6 +269,7 @@ class CQuadSphere : public CTesselatedSphere {
 		void SetupFaces (void);
 		int32_t CreateBuffers (void);
 		int32_t CreateFaces (void);
+		virtual int32_t CreateEdgeList (void);
 		virtual CSphereFace *Face (int32_t nFace) { return m_faces [m_nFaceBuffer] + nFace; }
 	};
 
