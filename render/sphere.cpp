@@ -597,6 +597,7 @@ return m_nQuality ? m_nQuality : gameOpts->render.textures.nQuality + 1;
 
 void CTesselatedSphere::Destroy (void)
 {
+m_edges.Destroy ();
 m_viewVerts.Destroy ();
 CSphere::Destroy ();
 }
@@ -636,8 +637,12 @@ return 1;
 
 int32_t CTesselatedSphere::CreateEdgeList (void)
 {
-if (!m_edges.Create (m_nFaces * 2))
+m_nEdges = m_nFaces * 2;
+if ((m_nEdges > gameData.segData.nEdges) && !gameData.segData.edges.Resize (m_nEdges))
 	return -1;
+if (!m_edges.Create (m_nEdges))
+	return -1;
+
 m_nEdges = 0;
 
 	int32_t nFaceNodes = FaceNodes ();
@@ -645,6 +650,7 @@ m_nEdges = 0;
 for (int32_t i = 0; i < m_nFaces; i++) {
 	CSphereFace *pFace = Face (i);
 	CSphereVertex *pVertex = pFace->Vertices ();
+	pFace->ComputeNormal ();
 	pFace->ComputeCenter ();
 	for (int32_t j = 0; j < nFaceNodes; j++)
 		AddEdge (pVertex [j].m_v, pVertex [(j + 1) % nFaceNodes].m_v, pFace->Center ());
