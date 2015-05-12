@@ -620,8 +620,13 @@ return -1;
 int32_t CTesselatedSphere::AddEdge (CFloatVector& v1, CFloatVector& v2, CFloatVector& vCenter)
 {
 int32_t i = FindEdge (v1, v2);
-if (i < 0)
+if (i < 0) {
+#if DBG
+	if (m_nEdges >= gameData.segData.nEdges)
+		return -1;
+#endif
 	i = m_nEdges++;
+	}
 CSphereEdge *pEdge = m_edges + i;
 int32_t nFace = pEdge->m_nFaces++;
 if (!nFace) {
@@ -638,8 +643,11 @@ return 1;
 int32_t CTesselatedSphere::CreateEdgeList (void)
 {
 m_nEdges = m_nFaces * 2;
-if ((m_nEdges > gameData.segData.nEdges) && !gameData.segData.edges.Resize (m_nEdges))
-	return -1;
+if (m_nEdges > gameData.segData.nEdges) {
+	if (!gameData.segData.edges.Resize (m_nEdges)) 
+		return -1;
+	gameData.segData.nEdges = m_nEdges;
+	}
 if (!m_edges.Create (m_nEdges))
 	return -1;
 
