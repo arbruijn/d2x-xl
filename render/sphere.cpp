@@ -527,12 +527,12 @@ bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
 bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
 #endif
 //ogl.SetupTransform (0);
-tObjTransformation *posP = OBJPOS (pObj);
+tObjTransformation *pPos = OBJPOS (pObj);
 #if 0// DBG
 CFixMatrix m = CFixMatrix::IDENTITY;
 transformation.Begin (vPos, m);
 #else
-transformation.Begin (vPos, posP->mOrient);
+transformation.Begin (vPos, pPos->mOrient);
 #endif
 RenderFaces (xScale, red, green, blue, alpha, bTextured, nFaces);
 #if 1 // !DBG
@@ -549,7 +549,7 @@ if (/*!bEffect &&*/ gameStates.render.CartoonStyle ())
 	CFixMatrix m = CFixMatrix::IDENTITY;
 	transformation.Begin (vPos, m);
 #	else
-	transformation.Begin (vPos, posP->mOrient);
+	transformation.Begin (vPos, pPos->mOrient);
 #	endif
 #endif
 	//gameStates.render.SetOutlineColor (0, 128, 255);

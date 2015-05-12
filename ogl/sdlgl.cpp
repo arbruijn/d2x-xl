@@ -168,11 +168,11 @@ if (!SdlGlVideoModeOK (w, h) ||
 	}
 PrintLog (-1);
 #endif
-const SDL_VideoInfo* viP = SDL_GetVideoInfo ();
-if (viP->video_mem) {
-	if (viP->video_mem < 256 * 1024 * 1024)
+const SDL_VideoInfo* pVideoInfo = SDL_GetVideoInfo ();
+if (pVideoInfo->video_mem) {
+	if (pVideoInfo->video_mem < 256 * 1024 * 1024)
 		gameStates.render.nMaxTextureQuality = 1;
-	else if (viP->video_mem < 512 * 1024 * 1024)
+	else if (pVideoInfo->video_mem < 512 * 1024 * 1024)
 		gameStates.render.nMaxTextureQuality = 2;
 	}
 ogl.m_states.nColorBits = 0;

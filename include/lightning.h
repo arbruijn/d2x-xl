@@ -310,8 +310,8 @@ class COmegaLightning {
 			m_nHandles = 0; 
 			memset (m_handles, 0xFF, sizeof (m_handles));
 			};
-		int32_t Create (CFixVector *vTargetPos, CObject *pParentObj, CObject *targetObjP);
-		int32_t Update (CObject *pParentObj, CObject *targetObjP, CFixVector* vTargetPos = NULL);
+		int32_t Create (CFixVector *vTargetPos, CObject *pParentObj, CObject *pTargetObj);
+		int32_t Update (CObject *pParentObj, CObject *pTargetObj, CFixVector* vTargetPos = NULL);
 		void Destroy (int16_t nObject);
 		inline bool Exist (void) { return m_nHandles > 0; }
 

@@ -494,11 +494,11 @@ return true;
 
 void CStatusBar::SetupWindow (int32_t nWindow)
 {
-tGaugeBox* hudAreaP = hudWindowAreas + SB_PRIMARY_BOX + nWindow;
+tGaugeBox* pHudArea = hudWindowAreas + SB_PRIMARY_BOX + nWindow;
 gameData.render.window.Setup (&gameData.render.frame, 
-										gameData.render.frame.Left (false) + ScaleX (hudAreaP->left),
-										gameData.render.frame.Top (false) + ScaleY (hudAreaP->top),
-										ScaleX (hudAreaP->right - hudAreaP->left + 1), ScaleY (hudAreaP->bot - hudAreaP->top + 1));
+										gameData.render.frame.Left (false) + ScaleX (pHudArea->left),
+										gameData.render.frame.Top (false) + ScaleY (pHudArea->top),
+										ScaleX (pHudArea->right - pHudArea->left + 1), ScaleY (pHudArea->bot - pHudArea->top + 1));
 gameData.render.window.Activate ("CStatusBar::SetupWindow (window)", &gameData.render.frame);
 }
 

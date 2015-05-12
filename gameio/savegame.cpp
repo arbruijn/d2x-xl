@@ -767,13 +767,13 @@ pTrigger->SaveState (m_cf);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameManager::SaveReactorState (tReactorStates *stateP)
+void CSaveGameManager::SaveReactorState (tReactorStates *pState)
 {
-m_cf.WriteInt (stateP->nObject);
-m_cf.WriteInt (stateP->bHit);
-m_cf.WriteInt (stateP->bSeenPlayer);
-m_cf.WriteInt (stateP->nNextFireTime);
-m_cf.WriteInt (stateP->nDeadObj);
+m_cf.WriteInt (pState->nObject);
+m_cf.WriteInt (pState->bHit);
+m_cf.WriteInt (pState->bSeenPlayer);
+m_cf.WriteInt (pState->nNextFireTime);
+m_cf.WriteInt (pState->nDeadObj);
 }
 
 //------------------------------------------------------------------------------
@@ -839,14 +839,14 @@ if (!m_bBetweenLevels) {
 		if (pObj->info.nType == OBJ_CAMERA)
 			pObj->info.position.mOrient = cameraManager.Camera (pObj)->Orient ();
 		else if (pObj->info.renderType == RT_MORPH) {
-			tMorphInfo *md = MorphFindData (pObj);
-			if (md) {
-				CObject *mdObjP = md->pObj;
-				mdObjP->info.controlType = md->saveControlType;
-				mdObjP->info.movementType = md->saveMovementType;
-				mdObjP->info.renderType = RT_POLYOBJ;
-				mdObjP->mType.physInfo = md->savePhysInfo;
-				md->pObj = NULL;
+			tMorphInfo *pMorphInfo = MorphFindData (pObj);
+			if (pMorphInfo) {
+				CObject *pMorphObj = pMorphInfo->pObj;
+				pMorphObj->info.controlType = pMorphInfo->saveControlType;
+				pMorphObj->info.movementType = pMorphInfo->saveMovementType;
+				pMorphObj->info.renderType = RT_POLYOBJ;
+				pMorphObj->mType.physInfo = pMorphInfo->savePhysInfo;
+				pMorphInfo->pObj = NULL;
 				} 
 			else {						//maybe loaded half-morphed from disk
 				pObj->Die ();
@@ -1392,24 +1392,24 @@ for (i = 0; i <= gameData.objData.nLastObject [0]; i++, pObj++) {
 
 //------------------------------------------------------------------------------
 
-void CSaveGameManager::AwardReturningPlayer (CPlayerData *retPlayerP, fix xOldGameTime)
+void CSaveGameManager::AwardReturningPlayer (CPlayerData *pRetPlayer, fix xOldGameTime)
 {
 CPlayerData *pPlayer = gameData.multiplayer.players + N_LOCALPLAYER;
-pPlayer->level = retPlayerP->level;
-pPlayer->lastScore = retPlayerP->lastScore;
-pPlayer->timeLevel = retPlayerP->timeLevel;
-pPlayer->flags |= (retPlayerP->flags & PLAYER_FLAGS_ALL_KEYS);
-pPlayer->numRobotsLevel = retPlayerP->numRobotsLevel;
-pPlayer->numRobotsTotal = retPlayerP->numRobotsTotal;
-pPlayer->hostages.nRescued = retPlayerP->hostages.nRescued;
-pPlayer->hostages.nTotal = retPlayerP->hostages.nTotal;
-pPlayer->hostages.nOnBoard = retPlayerP->hostages.nOnBoard;
-pPlayer->hostages.nLevel = retPlayerP->hostages.nLevel;
-pPlayer->homingObjectDist = retPlayerP->homingObjectDist;
-pPlayer->hoursLevel = retPlayerP->hoursLevel;
-pPlayer->hoursTotal = retPlayerP->hoursTotal;
-//pPlayer->nCloaks = retPlayerP->nCloaks;
-//pPlayer->nInvuls = retPlayerP->nInvuls;
+pPlayer->level = pRetPlayer->level;
+pPlayer->lastScore = pRetPlayer->lastScore;
+pPlayer->timeLevel = pRetPlayer->timeLevel;
+pPlayer->flags |= (pRetPlayer->flags & PLAYER_FLAGS_ALL_KEYS);
+pPlayer->numRobotsLevel = pRetPlayer->numRobotsLevel;
+pPlayer->numRobotsTotal = pRetPlayer->numRobotsTotal;
+pPlayer->hostages.nRescued = pRetPlayer->hostages.nRescued;
+pPlayer->hostages.nTotal = pRetPlayer->hostages.nTotal;
+pPlayer->hostages.nOnBoard = pRetPlayer->hostages.nOnBoard;
+pPlayer->hostages.nLevel = pRetPlayer->hostages.nLevel;
+pPlayer->homingObjectDist = pRetPlayer->homingObjectDist;
+pPlayer->hoursLevel = pRetPlayer->hoursLevel;
+pPlayer->hoursTotal = pRetPlayer->hoursTotal;
+//pPlayer->nCloaks = pRetPlayer->nCloaks;
+//pPlayer->nInvuls = pRetPlayer->nInvuls;
 DoCloakInvulSecretStuff (xOldGameTime);
 }
 
@@ -1626,13 +1626,13 @@ pTrigger->LoadState (m_cf);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameManager::LoadReactorState (tReactorStates *stateP)
+void CSaveGameManager::LoadReactorState (tReactorStates *pState)
 {
-stateP->nObject = m_cf.ReadInt ();
-stateP->bHit = m_cf.ReadInt ();
-stateP->bSeenPlayer = m_cf.ReadInt ();
-stateP->nNextFireTime = m_cf.ReadInt ();
-stateP->nDeadObj = m_cf.ReadInt ();
+pState->nObject = m_cf.ReadInt ();
+pState->bHit = m_cf.ReadInt ();
+pState->bSeenPlayer = m_cf.ReadInt ();
+pState->nNextFireTime = m_cf.ReadInt ();
+pState->nDeadObj = m_cf.ReadInt ();
 }
 
 //------------------------------------------------------------------------------

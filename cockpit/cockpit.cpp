@@ -553,11 +553,11 @@ CGenericCockpit::DrawCockpit (m_info.nCockpit, 0, bAlphaTest);
 
 void CCockpit::SetupWindow (int32_t nWindow)
 {
-tGaugeBox* hudAreaP = hudWindowAreas + COCKPIT_PRIMARY_BOX + nWindow;
+tGaugeBox* pHudArea = hudWindowAreas + COCKPIT_PRIMARY_BOX + nWindow;
 gameData.render.window.Setup (&gameData.render.frame, 
-										gameData.render.frame.Left (false) + ScaleX (hudAreaP->left),
-										gameData.render.frame.Top (false) + ScaleY (hudAreaP->top),
-										ScaleX (hudAreaP->right - hudAreaP->left + 1), ScaleY (hudAreaP->bot - hudAreaP->top + 1));
+										gameData.render.frame.Left (false) + ScaleX (pHudArea->left),
+										gameData.render.frame.Top (false) + ScaleY (pHudArea->top),
+										ScaleX (pHudArea->right - pHudArea->left + 1), ScaleY (pHudArea->bot - pHudArea->top + 1));
 gameData.render.window.Activate ("HUD Window (window)", &gameData.render.frame);
 }
 

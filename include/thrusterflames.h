@@ -16,10 +16,10 @@ typedef struct tThrusterInfo {
 	CFixMatrix			mRot [MAX_THRUSTERS];
 	float					fSize [MAX_THRUSTERS];
 	float					fLength [MAX_THRUSTERS];
-	uint8_t					nType [MAX_THRUSTERS];
+	uint8_t				nType [MAX_THRUSTERS];
 	float					fScale;
 	tPathPoint*			pp;
-	CModelThrusters*	mtP;
+	CModelThrusters*	pThrusters;
 	CFixMatrix			mOrient;
 }  tThrusterInfo;
 
@@ -29,11 +29,11 @@ class CThrusterFlames {
 		CFloatVector	m_vFlame [THRUSTER_SEGS][RING_SEGS];
 		CFloatVector	m_flameVerts [FLAME_VERT_COUNT];
 		tTexCoord2f		m_flameTexCoord [2][FLAME_VERT_COUNT];
-		CThrusterData*	m_pt;
+		CThrusterData*	m_pData;
 		tThrusterInfo	m_ti;
-		int32_t				m_nVerts;
-		int32_t				m_nThrusters;
-		int32_t				m_nStyle;
+		int32_t			m_nVerts;
+		int32_t			m_nThrusters;
+		int32_t			m_nStyle;
 		bool				m_bHaveFlame [2];
 		bool				m_bPlayer;
 		bool				m_bSpectate;

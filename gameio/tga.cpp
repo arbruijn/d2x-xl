@@ -720,7 +720,7 @@ int32_t CTGA::Shrink (int32_t xFactor, int32_t yFactor, int32_t bRealloc)
 {
 	int32_t		bpp = m_pBm->BPP ();
 	int32_t		xSrc, ySrc, xMax, yMax, xDest, yDest, x, y, w, h, i, nFactor2, nSuperTransp, bSuperTransp;
-	uint8_t		*dataP, *pSrc, *pDest;
+	uint8_t		*pData, *pSrc, *pDest;
 	int32_t		cSum [4];
 
 	static uint8_t superTranspKeys [3] = {120,88,128};
@@ -737,12 +737,12 @@ xMax = w / xFactor;
 yMax = h / yFactor;
 nFactor2 = xFactor * yFactor;
 if (!bRealloc)
-	pDest = dataP = m_pBm->Buffer ();
+	pDest = pData = m_pBm->Buffer ();
 else {
-	if (!(dataP = new uint8_t [xMax * yMax * bpp]))
+	if (!(pData = new uint8_t [xMax * yMax * bpp]))
 		return 0;
 	UseBitmapCache (m_pBm, (int32_t) -m_pBm->Height () * int32_t (m_pBm->RowSize ()));
-	pDest = dataP;
+	pDest = pData;
 	}
 if (bpp == 3) {
 	for (yDest = 0; yDest < yMax; yDest++) {
@@ -809,7 +809,7 @@ else {
 	}
 if (bRealloc) {
 	m_pBm->DestroyBuffer ();
-	m_pBm->SetBuffer (dataP);
+	m_pBm->SetBuffer (pData);
 	}
 m_pBm->SetWidth (xMax);
 m_pBm->SetHeight (yMax);
@@ -827,19 +827,19 @@ if (!m_pBm)
 	return 0;
 else {
 		int32_t		bAlpha = m_pBm->BPP () == 4, i, j;
-		uint8_t		*dataP;
+		uint8_t		*pData;
 		double	pixelBright, totalBright, nPixels, alpha;
 
-	if (!(dataP = m_pBm->Buffer ()))
+	if (!(pData = m_pBm->Buffer ()))
 		return 0;
 	totalBright = 0;
 	nPixels = 0;
 	for (i = m_pBm->Width () * m_pBm->Height (); i; i--) {
 		for (pixelBright = 0, j = 0; j < 3; j++)
-			pixelBright += ((double) (*dataP++)) / 255.0;
+			pixelBright += ((double) (*pData++)) / 255.0;
 		pixelBright /= 3;
 		if (bAlpha) {
-			alpha = ((double) (*dataP++)) / 255.0;
+			alpha = ((double) (*pData++)) / 255.0;
 			pixelBright *= alpha;
 			nPixels += alpha;
 			}
@@ -855,59 +855,59 @@ void CTGA::ChangeBrightness (double dScale, int32_t bInverse, int32_t nOffset, i
 {
 if (m_pBm) {
 		int32_t		bpp = m_pBm->BPP (), h, i, j, c, bAlpha = (bpp == 4);
-		uint8_t		*dataP;
+		uint8_t		*pData;
 
-	if ((dataP = m_pBm->Buffer ())) {
+	if ((pData = m_pBm->Buffer ())) {
 	if (!bAlpha)
 		bSkipAlpha = 1;
 	else if (bSkipAlpha)
 		bpp = 3;
 		if (nOffset) {
 			for (i = m_pBm->Width () * m_pBm->Height (); i; i--) {
-				for (h = 0, j = 3; j; j--, dataP++) {
-					c = (int32_t) *dataP + nOffset;
+				for (h = 0, j = 3; j; j--, pData++) {
+					c = (int32_t) *pData + nOffset;
 					h += c;
-					*dataP = (uint8_t) ((c < 0) ? 0 : (c > 255) ? 255 : c);
+					*pData = (uint8_t) ((c < 0) ? 0 : (c > 255) ? 255 : c);
 					}
 				if (bSkipAlpha)
-					dataP++;
+					pData++;
 				else if (bAlpha) {
-					if ((c = *dataP)) {
+					if ((c = *pData)) {
 						c += nOffset;
-						*dataP = (uint8_t) ((c < 0) ? 0 : (c > 255) ? 255 : c);
+						*pData = (uint8_t) ((c < 0) ? 0 : (c > 255) ? 255 : c);
 						}
-					dataP++;
+					pData++;
 					}
 				}
 			}
 		else if (dScale && (dScale != 1.0)) {
 			if (dScale < 0) {
 				for (i = m_pBm->Width () * m_pBm->Height (); i; i--) {
-					for (j = bpp; j; j--, dataP++)
-						*dataP = (uint8_t) (*dataP * dScale);
+					for (j = bpp; j; j--, pData++)
+						*pData = (uint8_t) (*pData * dScale);
 					if (bSkipAlpha)
-						dataP++;
+						pData++;
 					}
 				}
 			else if (bInverse) {
 				dScale = 1.0 / dScale;
 				for (i = m_pBm->Width () * m_pBm->Height (); i; i--) {
-					for (j = bpp; j; j--, dataP++)
-						if ((c = 255 - *dataP))
-							*dataP = 255 - (uint8_t) (c * dScale);
+					for (j = bpp; j; j--, pData++)
+						if ((c = 255 - *pData))
+							*pData = 255 - (uint8_t) (c * dScale);
 					if (bSkipAlpha)
-						dataP++;
+						pData++;
 					}
 				}
 			else {
 				for (i = m_pBm->Width () * m_pBm->Height (); i; i--) {
-					for (j = bpp; j; j--, dataP++)
-						if ((c = 255 - *dataP)) {
-							c = (int32_t) (*dataP * dScale);
-							*dataP = (uint8_t) ((c > 255) ? 255 : c);
+					for (j = bpp; j; j--, pData++)
+						if ((c = 255 - *pData)) {
+							c = (int32_t) (*pData * dScale);
+							*pData = (uint8_t) ((c > 255) ? 255 : c);
 							}
 					if (bSkipAlpha)
-						dataP++;
+						pData++;
 					}
 				}
 			}
@@ -919,7 +919,7 @@ if (m_pBm) {
 
 int32_t CTGA::Interpolate (int32_t nScale)
 {
-	uint8_t	*pBuffer, *destP, *srcP1, *srcP2;
+	uint8_t	*pBuffer, *pDest, *srcP1, *srcP2;
 	int32_t	nSize, nFrameSize, nStride, nFrames, i, j;
 
 if (nScale < 1)
@@ -934,9 +934,9 @@ if (!(pBuffer = new uint8_t [nSize]))
 	return 0;
 m_pBm->SetHeight (m_pBm->Height () * nScale);
 memset (pBuffer, 0, nSize);
-for (destP = pBuffer, srcP1 = m_pBm->Buffer (), i = 0; i < nFrames; i++) {
-	memcpy (destP, srcP1, nFrameSize);
-	destP += nFrameSize * nScale;
+for (pDest = pBuffer, srcP1 = m_pBm->Buffer (), i = 0; i < nFrames; i++) {
+	memcpy (pDest, srcP1, nFrameSize);
+	pDest += nFrameSize * nScale;
 	srcP1 += nFrameSize;
 	}
 #if 1
@@ -945,11 +945,11 @@ while (nScale > 1) {
 	for (i = 0; i < nFrames; i++) {
 		srcP1 = pBuffer + nStride * i;
 		srcP2 = pBuffer + nStride * ((i + 1) % nFrames);
-		destP = srcP1 + nStride / 2;
+		pDest = srcP1 + nStride / 2;
 		for (j = nFrameSize; j; j--) {
-			*destP++ = (uint8_t) (((int16_t) *srcP1++ + (int16_t) *srcP2++) / 2);
-			if (destP - pBuffer > nSize)
-				destP = destP;
+			*pDest++ = (uint8_t) (((int16_t) *srcP1++ + (int16_t) *srcP2++) / 2);
+			if (pDest - pBuffer > nSize)
+				pDest = pDest;
 			}
 		}
 	nScale >>= 1;
@@ -965,7 +965,7 @@ return nFrames;
 
 int32_t CTGA::MakeSquare (void)
 {
-	uint8_t	*pBuffer, *destP, *srcP;
+	uint8_t	*pBuffer, *pDest, *srcP;
 	int32_t	nSize, nFrameSize, nRowSize, nFrames, i, j, w, q;
 
 nFrames = m_pBm->Height () / m_pBm->Width ();
@@ -982,10 +982,10 @@ if (!(pBuffer = new uint8_t [nSize]))
 	return 0;
 srcP = m_pBm->Buffer ();
 nRowSize = w * m_pBm->BPP ();
-for (destP = pBuffer, i = 0; i < nFrames; i++) {
+for (pDest = pBuffer, i = 0; i < nFrames; i++) {
 	for (j = 0; j < w; j++) {
-		destP = pBuffer + (i / q) * q * nFrameSize + j * q * nRowSize + (i % q) * nRowSize;
-		memcpy (destP, srcP, nRowSize);
+		pDest = pBuffer + (i / q) * q * nFrameSize + j * q * nRowSize + (i % q) * nRowSize;
+		memcpy (pDest, srcP, nRowSize);
 		srcP += nRowSize;
 		}
 	}

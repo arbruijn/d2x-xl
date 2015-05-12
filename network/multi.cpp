@@ -5337,15 +5337,15 @@ void MultiQuickSoundHack (int32_t nSound)
 {
 	int32_t			l, i;
 	CSoundSample*	pSound = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound;
-	uint8_t*			dataP;
+	uint8_t*			pData;
 
 nSound = audio.XlatSound ((int16_t) nSound);
 l = pSound->nLength [pSound->bCustom];
 if (reversedSound.data [0].Create (l)) {
 	reversedSound.nLength [0] = l;
-	dataP = pSound->data [pSound->bCustom] + l;
+	pData = pSound->data [pSound->bCustom] + l;
 	for (i = 0; i < l; i++)
-		reversedSound.data [0][i] = *(--dataP);
+		reversedSound.data [0][i] = *(--pData);
 	bSoundHacked = 1;
 	}
 }

@@ -156,92 +156,92 @@ PROF_END(ptTransform)
 
 //------------------------------------------------------------------------------
 
-void G3SwapPolyModelData (uint8_t *dataP)
+void G3SwapPolyModelData (uint8_t *pData)
 {
 	int32_t	i;
 	int16_t n;
 	tUVL*	uvl_val;
 
 for (;;) {
-	UShortSwap (WORDPTR (dataP));
-	switch (WORDVAL (dataP)) {
+	UShortSwap (WORDPTR (pData));
+	switch (WORDVAL (pData)) {
 		case OP_EOF:
 			return;
 
 		case OP_DEFPOINTS:
-			UShortSwap (WORDPTR (dataP + 2));
-			n = WORDVAL (dataP + 2);
+			UShortSwap (WORDPTR (pData + 2));
+			n = WORDVAL (pData + 2);
 			for (i = 0; i < n; i++)
-				VmsVectorSwap (*VECPTR ((dataP + 4) + (i * sizeof (CFixVector))));
-			dataP += n * sizeof (CFixVector) + 4;
+				VmsVectorSwap (*VECPTR ((pData + 4) + (i * sizeof (CFixVector))));
+			pData += n * sizeof (CFixVector) + 4;
 			break;
 
 		case OP_DEFP_START:
-			UShortSwap (WORDPTR (dataP + 2));
-			UShortSwap (WORDPTR (dataP + 4));
-			n = WORDVAL (dataP + 2);
+			UShortSwap (WORDPTR (pData + 2));
+			UShortSwap (WORDPTR (pData + 4));
+			n = WORDVAL (pData + 2);
 			for (i = 0; i < n; i++)
-				VmsVectorSwap (*VECPTR ((dataP + 8) + (i * sizeof (CFixVector))));
-			dataP += n * sizeof (CFixVector) + 8;
+				VmsVectorSwap (*VECPTR ((pData + 8) + (i * sizeof (CFixVector))));
+			pData += n * sizeof (CFixVector) + 8;
 			break;
 
 		case OP_FLATPOLY:
-			UShortSwap (WORDPTR (dataP + 2));
-			n = WORDVAL (dataP + 2);
-			VmsVectorSwap (*VECPTR (dataP + 4));
-			VmsVectorSwap (*VECPTR (dataP + 16));
-			UShortSwap (WORDPTR (dataP + 28));
+			UShortSwap (WORDPTR (pData + 2));
+			n = WORDVAL (pData + 2);
+			VmsVectorSwap (*VECPTR (pData + 4));
+			VmsVectorSwap (*VECPTR (pData + 16));
+			UShortSwap (WORDPTR (pData + 28));
 			for (i=0; i < n; i++)
-				UShortSwap (WORDPTR (dataP + 30 + (i * 2)));
-			dataP += 30 + ((n & ~1) + 1) * 2;
+				UShortSwap (WORDPTR (pData + 30 + (i * 2)));
+			pData += 30 + ((n & ~1) + 1) * 2;
 			break;
 
 		case OP_TMAPPOLY:
-			UShortSwap (WORDPTR (dataP + 2));
-			n = WORDVAL (dataP + 2);
-			VmsVectorSwap (*VECPTR (dataP + 4));
-			VmsVectorSwap (*VECPTR (dataP + 16));
+			UShortSwap (WORDPTR (pData + 2));
+			n = WORDVAL (pData + 2);
+			VmsVectorSwap (*VECPTR (pData + 4));
+			VmsVectorSwap (*VECPTR (pData + 16));
 			for (i = 0; i < n; i++) {
-				uvl_val = reinterpret_cast<tUVL*> (((dataP + 30 + (n | 1) * 2))) + i;
+				uvl_val = reinterpret_cast<tUVL*> (((pData + 30 + (n | 1) * 2))) + i;
 				FixSwap (&uvl_val->u);
 				FixSwap (&uvl_val->v);
 			}
-			UShortSwap (WORDPTR (dataP + 28));
+			UShortSwap (WORDPTR (pData + 28));
 			for (i = 0; i < n; i++)
-				UShortSwap (WORDPTR (dataP + 30 + (i * 2)));
-			dataP += 30 + (n | 1) * 2 + n * 12;
+				UShortSwap (WORDPTR (pData + 30 + (i * 2)));
+			pData += 30 + (n | 1) * 2 + n * 12;
 			break;
 
 		case OP_SORTNORM:
-			VmsVectorSwap (*VECPTR (dataP + 4));
-			VmsVectorSwap (*VECPTR (dataP + 16));
-			UShortSwap (WORDPTR (dataP + 28));
-			UShortSwap (WORDPTR (dataP + 30));
-			G3SwapPolyModelData (dataP + WORDVAL (dataP + 28));
-			G3SwapPolyModelData (dataP + WORDVAL (dataP + 30));
-			dataP += 32;
+			VmsVectorSwap (*VECPTR (pData + 4));
+			VmsVectorSwap (*VECPTR (pData + 16));
+			UShortSwap (WORDPTR (pData + 28));
+			UShortSwap (WORDPTR (pData + 30));
+			G3SwapPolyModelData (pData + WORDVAL (pData + 28));
+			G3SwapPolyModelData (pData + WORDVAL (pData + 30));
+			pData += 32;
 			break;
 
 		case OP_RODBM:
-			VmsVectorSwap (*VECPTR (dataP + 20));
-			VmsVectorSwap (*VECPTR (dataP + 4));
-			UShortSwap (WORDPTR (dataP + 2));
-			FixSwap (FIXPTR (dataP + 16));
-			FixSwap (FIXPTR (dataP + 32));
-			dataP += 36;
+			VmsVectorSwap (*VECPTR (pData + 20));
+			VmsVectorSwap (*VECPTR (pData + 4));
+			UShortSwap (WORDPTR (pData + 2));
+			FixSwap (FIXPTR (pData + 16));
+			FixSwap (FIXPTR (pData + 32));
+			pData += 36;
 			break;
 
 		case OP_SUBCALL:
-			UShortSwap (WORDPTR (dataP + 2));
-			VmsVectorSwap (*VECPTR (dataP + 4));
-			UShortSwap (WORDPTR (dataP + 16));
-			G3SwapPolyModelData (dataP + WORDVAL (dataP + 16));
-			dataP += 20;
+			UShortSwap (WORDPTR (pData + 2));
+			VmsVectorSwap (*VECPTR (pData + 4));
+			UShortSwap (WORDPTR (pData + 16));
+			G3SwapPolyModelData (pData + WORDVAL (pData + 16));
+			pData += 20;
 			break;
 
 		case OP_GLOW:
-			UShortSwap (WORDPTR (dataP + 2));
-			dataP += 4;
+			UShortSwap (WORDPTR (pData + 2));
+			pData += 4;
 			break;
 
 		default:
@@ -266,44 +266,44 @@ chunk_list [*no_chunks].correction = 0;
 
 //------------------------------------------------------------------------------
 
-void G3PolyModelVerify (uint8_t *dataP)
+void G3PolyModelVerify (uint8_t *pData)
 {
 	int16_t n;
 
 for (;;) {
-	switch (WORDVAL (dataP)) {
+	switch (WORDVAL (pData)) {
 		case OP_EOF:
 			return;
 		case OP_DEFPOINTS:
-			n = (WORDVAL (dataP + 2));
-			dataP += n * sizeof (CFixVector) + 4;
+			n = (WORDVAL (pData + 2));
+			pData += n * sizeof (CFixVector) + 4;
 			break;
 		case OP_DEFP_START:
-			n = (WORDVAL (dataP + 2));
-			dataP += n * sizeof (CFixVector) + 8;
+			n = (WORDVAL (pData + 2));
+			pData += n * sizeof (CFixVector) + 8;
 			break;
 		case OP_FLATPOLY:
-			n = (WORDVAL (dataP + 2));
-			dataP += 30 + (n | 1) * 2;
+			n = (WORDVAL (pData + 2));
+			pData += 30 + (n | 1) * 2;
 			break;
 		case OP_TMAPPOLY:
-			n = (WORDVAL (dataP + 2));
-			dataP += 30 + (n | 1) * 2 + n * 12;
+			n = (WORDVAL (pData + 2));
+			pData += 30 + (n | 1) * 2 + n * 12;
 			break;
 		case OP_SORTNORM:
-			G3PolyModelVerify (dataP + WORDVAL (dataP + 28));
-			G3PolyModelVerify (dataP + WORDVAL (dataP + 30));
-			dataP += 32;
+			G3PolyModelVerify (pData + WORDVAL (pData + 28));
+			G3PolyModelVerify (pData + WORDVAL (pData + 30));
+			pData += 32;
 			break;
 		case OP_RODBM:
-			dataP += 36;
+			pData += 36;
 			break;
 		case OP_SUBCALL:
-			G3PolyModelVerify (dataP + WORDVAL (dataP + 16));
-			dataP += 20;
+			G3PolyModelVerify (pData + WORDVAL (pData + 16));
+			pData += 20;
 			break;
 		case OP_GLOW:
-			dataP += 4;
+			pData += 4;
 			break;
 		default:
 			Error ("invalid polygon model\n");
@@ -313,16 +313,16 @@ for (;;) {
 
 //------------------------------------------------------------------------------
 
-int32_t G3CheckAndSwap (void *dataP)
+int32_t G3CheckAndSwap (void *pData)
 {
-	int16_t	h = WORDVAL (dataP);
+	int16_t	h = WORDVAL (pData);
 
 if ((h >= 0) && (h <= OP_GLOW))
 	return 1;
 ShortSwap (&h);
 if ((h < 0) || (h > OP_GLOW))
 	return 0;
-G3SwapPolyModelData (reinterpret_cast<uint8_t*> (dataP));
+G3SwapPolyModelData (reinterpret_cast<uint8_t*> (pData));
 return 1;
 }
 
@@ -330,11 +330,11 @@ return 1;
 
 void GetThrusterPos (int32_t nModel, CFixVector *vNormal, CFixVector *vOffset, CBitmap *pBm, int32_t nPoints)
 {
-	int32_t					h, i, nSize;
+	int32_t				h, i, nSize;
 	CFixVector			v, vForward = CFixVector::Create(0,0,I2X (1));
-	CModelThrusters	*mtP = gameData.models.thrusters + nModel;
+	CModelThrusters	*pThruster = gameData.models.thrusters + nModel;
 
-if (mtP->nCount >= 2)
+if (pThruster->nCount >= 2)
 	return;
 if (pBm) {
 	if (!gameData.pig.tex.bitmaps [0].IsElement (pBm))
@@ -357,18 +357,18 @@ v.v.coord.z /= nPoints;
 v.v.coord.z -= I2X (1) / 8;
 if (vOffset)
 	v += *vOffset;
-if (mtP->nCount && (v.v.coord.x == mtP->vPos [0].v.coord.x) && (v.v.coord.y == mtP->vPos [0].v.coord.y) && (v.v.coord.z == mtP->vPos [0].v.coord.z))
+if (pThruster->nCount && (v.v.coord.x == pThruster->vPos [0].v.coord.x) && (v.v.coord.y == pThruster->vPos [0].v.coord.y) && (v.v.coord.z == pThruster->vPos [0].v.coord.z))
 	return;
-mtP->vPos [mtP->nCount] = v;
+pThruster->vPos [pThruster->nCount] = v;
 if (vOffset)
 	v -= *vOffset;
-mtP->vDir [mtP->nCount] = *vNormal;
-mtP->vDir [mtP->nCount] = -mtP->vDir [mtP->nCount];
-if (!mtP->nCount++) {
+pThruster->vDir [pThruster->nCount] = *vNormal;
+pThruster->vDir [pThruster->nCount] = -pThruster->vDir [pThruster->nCount];
+if (!pThruster->nCount++) {
 	for (i = 0, nSize = 0x7fffffff; i < nPoints; i++)
 		if (nSize > (h = CFixVector::Dist(v, pointList [i]->WorldPos ())))
 			nSize = h;
-	mtP->fSize [i] = X2F (nSize);// * 1.25f;
+	pThruster->fSize [i] = X2F (nSize);// * 1.25f;
 	}
 }
 

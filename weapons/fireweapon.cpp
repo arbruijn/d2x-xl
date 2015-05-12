@@ -201,9 +201,9 @@ CFixVector *GetGunPoints (CObject *pObj, int32_t nGun)
 if (!pObj)
 	return NULL;
 
-	tGunInfo*	giP = gameData.models.gunInfo + pObj->ModelId ();
+	tGunInfo*	pGunInfo = gameData.models.gunInfo + pObj->ModelId ();
 	CFixVector*	vDefaultGunPoints, *vGunPoints;
-	int32_t			nDefaultGuns, nGuns;
+	int32_t		nDefaultGuns, nGuns;
 
 if (pObj->info.nType == OBJ_PLAYER) {
 	vDefaultGunPoints = gameData.pig.ship.player->gunPoints;
@@ -215,8 +215,8 @@ else if (pObj->info.nType == OBJ_ROBOT) {
 	}
 else
 	return NULL;
-if (0 < (nGuns = giP->nGuns))
-	vGunPoints = giP->vGunPoints;
+if (0 < (nGuns = pGunInfo->nGuns))
+	vGunPoints = pGunInfo->vGunPoints;
 else {
 	if (!(nGuns = nDefaultGuns))
 		return NULL;
@@ -229,8 +229,7 @@ return vGunPoints;
 
 //-------------- Initializes a laser after Fire is pressed -----------------
 
-CFixVector *TransformGunPoint (CObject *pObj, CFixVector *vGunPoints, int32_t nGun,
-										 fix xDelay, uint8_t nLaserType, CFixVector *vMuzzle, CFixMatrix *mP)
+CFixVector *TransformGunPoint (CObject *pObj, CFixVector *vGunPoints, int32_t nGun, fix xDelay, uint8_t nLaserType, CFixVector *vMuzzle, CFixMatrix *pMatrix)
 {
 	int32_t					bSpectate = SPECTATOR (pObj);
 	tObjTransformation*	pPos = bSpectate ? &gameStates.app.playerPos : &pObj->info.position;
@@ -253,22 +252,22 @@ else {
 	if (bLaserOffs)
 		v [0] += pPos->mOrient.m.dir.u * LASER_OFFS;
 	}
-if (!mP)
-	mP = &m;
+if (!pMatrix)
+	pMatrix = &m;
 if (bSpectate) {
-   pView = mP;
+   pView = pMatrix;
 	*pView = pPos->mOrient.Transpose ();
 }
 else
    pView = pObj->View (0);
 v[1] = *pView * v [0];
-memcpy (mP, &pPos->mOrient, sizeof (CFixMatrix));
+memcpy (pMatrix, &pPos->mOrient, sizeof (CFixMatrix));
 if (nGun < 0)
-	v[1] += (*mP).m.dir.u * (-2 * v->Mag ());
+	v[1] += (*pMatrix).m.dir.u * (-2 * v->Mag ());
 (*vMuzzle) = pPos->vPos + v [1];
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
-	*vMuzzle += mP->m.dir.f * (-FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
+	*vMuzzle += pMatrix->m.dir.f * (-FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
 return vMuzzle;
 }
 
@@ -790,35 +789,35 @@ if (nObjType == OBJ_WEAPON) {
 else if (nObjType != OBJ_ROBOT) // && ((nObjType != OBJ_WEAPON) || (gameData.weapons.info [nObjId].children < 1)))
 	return;
 
-CObject	*curObjP;
+CObject	*pCurObj;
 int32_t	i, nObject;
 
 if (IsMultiGame)
 	gameStates.app.SRand (8321L);
-FORALL_OBJS (curObjP) {
-	nObject = OBJ_IDX (curObjP);
-	if (curObjP->info.nType == OBJ_PLAYER) {
+FORALL_OBJS (pCurObj) {
+	nObject = OBJ_IDX (pCurObj);
+	if (pCurObj->info.nType == OBJ_PLAYER) {
 		if (nObject == parent.nObject)
 			continue;
 		if ((parent.nType == OBJ_PLAYER) && (IsCoopGame))
 			continue;
-		if (IsTeamGame && (GetTeam (curObjP->info.nId) == GetTeam (OBJECT (parent.nObject)->info.nId)))
+		if (IsTeamGame && (GetTeam (pCurObj->info.nId) == GetTeam (OBJECT (parent.nObject)->info.nId)))
 			continue;
-		if (PLAYER (curObjP->info.nId).flags & PLAYER_FLAGS_CLOAKED)
+		if (PLAYER (pCurObj->info.nId).flags & PLAYER_FLAGS_CLOAKED)
 			continue;
 		}
-	else if (curObjP->info.nType == OBJ_ROBOT) {
-		if (curObjP->cType.aiInfo.CLOAKED)
+	else if (pCurObj->info.nType == OBJ_ROBOT) {
+		if (pCurObj->cType.aiInfo.CLOAKED)
 			continue;
 		if (parent.nType == OBJ_ROBOT)	//	Robot blobs can't track robots.
 			continue;
-		if ((parent.nType == OBJ_PLAYER) &&	curObjP->IsGuideBot ())	// Your shots won't track the buddy.
+		if ((parent.nType == OBJ_PLAYER) &&	pCurObj->IsGuideBot ())	// Your shots won't track the buddy.
 			continue;
 		}
 	else
 		continue;
-	fix dist = CFixVector::Dist (pObj->info.position.vPos, curObjP->info.position.vPos);
-	if ((dist < MAX_SMART_DISTANCE) && ObjectToObjectVisibility (pObj, curObjP, FQ_TRANSWALL)) {
+	fix dist = CFixVector::Dist (pObj->info.position.vPos, pCurObj->info.position.vPos);
+	if ((dist < MAX_SMART_DISTANCE) && ObjectToObjectVisibility (pObj, pCurObj, FQ_TRANSWALL)) {
 		targetList [nObjects++] = nObject;
 		if (nObjects >= MAX_TARGET_OBJS)
 			break;

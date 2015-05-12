@@ -36,7 +36,7 @@ class CConfigManager {
 		char* Filename (int32_t bDebug = 0);
 		void Load (int32_t argC, char** argV);
 		void Load (char* filename);
-		int32_t Parse (CFile* cfP = NULL);
+		int32_t Parse (CFile* pFile = NULL);
 		void PrintLog (void);
 		int32_t Find (const char* s);
 		int32_t Int (int32_t t, int32_t nDefault);

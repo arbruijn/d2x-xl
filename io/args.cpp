@@ -81,14 +81,14 @@ return m_filename;
 
 char* Trim (char* s);
 
-int32_t CConfigManager::Parse (CFile* cfP)
+int32_t CConfigManager::Parse (CFile* pFile)
 {
 	char 		lineBuf [1024], *token;
 
-if (cfP == NULL)
-	cfP = &m_cf;
-while (!cfP->EoF ()) {
-	cfP->GetS (lineBuf, sizeof (lineBuf));
+if (pFile == NULL)
+	pFile = &m_cf;
+while (!pFile->EoF ()) {
+	pFile->GetS (lineBuf, sizeof (lineBuf));
 	if (*lineBuf && (*lineBuf != ';')) {
 		token = strtok (lineBuf, " ");
 		if (!m_properties.Push (StrDup (Trim (token))))

@@ -57,7 +57,7 @@ class CCamera : public CCanvas {
 		int32_t Ready (time_t t);
 		void Reset (void);
 		void Rotate (void);
-		void Align (CSegFace *pFace, tUVL *uvlP, tTexCoord2f *pTexCoord, CFloatVector3 *pVertex);
+		void Align (CSegFace *pFace, tUVL *pUVL, tTexCoord2f *pTexCoord, CFloatVector3 *pVertex);
 		int32_t Create (int16_t nId, int16_t srcSeg, int16_t srcSide, int16_t tgtSeg, int16_t tgtSide, 
 						CObject *pObj, int32_t bShadowMap, int32_t bTeleport);
 		void Setup (int32_t nId, int16_t srcSeg, int16_t srcSide, int16_t tgtSeg, int16_t tgtSide, CObject *pObj, int32_t bTeleport);

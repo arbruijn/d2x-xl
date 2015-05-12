@@ -1373,37 +1373,37 @@ if (!gameStates.render.textures.bHaveMaskShader)
 	return NULL;
 if (!Buffer ())
 	return NULL;
-if (m_info.maskP)
-	return m_info.maskP;
+if (m_info.pMask)
+	return m_info.pMask;
 //int32_t nTranspType = m_info.nTranspType;
 //SetBPP (4);
-if (!(m_info.maskP = CBitmap::Create (0, Width (), Height (), 1)))
+if (!(m_info.pMask = CBitmap::Create (0, Width (), Height (), 1)))
 	return NULL;
 #if DBG
-sprintf (m_info.maskP->m_info.szName, "{%s}", Name ());
+sprintf (m_info.pMask->m_info.szName, "{%s}", Name ());
 #endif
-m_info.maskP->SetWidth (m_info.props.w);
-m_info.maskP->SetHeight (m_info.props.w);
-m_info.maskP->AddFlags (BM_FLAG_TGA);
-m_info.maskP->SetTranspType (-1);
+m_info.pMask->SetWidth (m_info.props.w);
+m_info.pMask->SetHeight (m_info.props.w);
+m_info.pMask->AddFlags (BM_FLAG_TGA);
+m_info.pMask->SetTranspType (-1);
 //m_info.nTranspType = nTranspType;
-UseBitmapCache (m_info.maskP, (int32_t) m_info.maskP->Width () * (int32_t) m_info.maskP->RowSize ());
+UseBitmapCache (m_info.pMask, (int32_t) m_info.pMask->Width () * (int32_t) m_info.pMask->RowSize ());
 if (m_info.props.flags & BM_FLAG_TGA) {
-	for (pi = Buffer (), pm = m_info.maskP->Buffer (); i; i--, pi += 4, pm++)
+	for (pi = Buffer (), pm = m_info.pMask->Buffer (); i; i--, pi += 4, pm++)
 		if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128))
 			*pm = 0;
 		else
 			*pm = 0xff;
 	}
 else {
-	for (pi = Buffer (), pm = m_info.maskP->Buffer (); i; i--, pi++, pm++)
+	for (pi = Buffer (), pm = m_info.pMask->Buffer (); i; i--, pi++, pm++)
 		if (*pi == SUPER_TRANSP_COLOR)
 			*pm = 0;
 		else
 			*pm = 0xff;
 	}
 m_info.nMasks = 1;
-return m_info.maskP;
+return m_info.pMask;
 }
 
 //------------------------------------------------------------------------------
@@ -1479,9 +1479,9 @@ if (!(m_info.pTexture && m_info.pTexture->IsRenderBuffer ()))
 			return 1;
 			}
 		}
-	CBitmap* maskP = Mask ();
-	if (maskP && !maskP->Prepared ())
-		maskP->SetupTexture (0, 1);
+	CBitmap* pMask = Mask ();
+	if (pMask && !pMask->Prepared ())
+		pMask->SetupTexture (0, 1);
 	}
 if (!m_info.pTexture)
 	return -1;

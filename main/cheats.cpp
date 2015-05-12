@@ -876,31 +876,31 @@ static char *pszCheat;
 
 //------------------------------------------------------------------------------
 
-inline int32_t Cheat (tCheat *cheatP)
+inline int32_t Cheat (tCheat *pCheat)
 {
-if (strcmp (cheatP->bEncrypted ? pszCheat : szCheatBuf + CHEATEND - strlen (cheatP->pszCheat), cheatP->pszCheat))
+if (strcmp (pCheat->bEncrypted ? pszCheat : szCheatBuf + CHEATEND - strlen (pCheat->pszCheat), pCheat->pszCheat))
 	return 0;	// not this cheatcode
 memset (szCheatBuf, 0, sizeof (szCheatBuf));
 #if !DBG
-if (cheatP->bPunish && IsMultiGame &&
+if (pCheat->bPunish && IsMultiGame &&
 	 !(gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnableCheats)) {	//trying forbidden cheatcode in multiplayer
 	MultiDoCheatPenalty ();
 	return 1;
 	}
-if ((cheatP->bD1Cheat != -1) && (cheatP->bD1Cheat != gameStates.app.bD1Mission)) {	//trying cheat code from other game version
+if ((pCheat->bD1Cheat != -1) && (pCheat->bD1Cheat != gameStates.app.bD1Mission)) {	//trying cheat code from other game version
 	MultiDoCheatPenalty ();
 	return 1;
 	}
-if ((cheatP->bD1Cheat > 0) && !gameStates.app.cheats.bD1CheatsEnabled)	//D1 cheats not enabled
+if ((pCheat->bD1Cheat > 0) && !gameStates.app.cheats.bD1CheatsEnabled)	//D1 cheats not enabled
 	return 1;
 #endif
-if (cheatP->bPunish > 0) {
+if (pCheat->bPunish > 0) {
 	DoCheatPenalty ();
 	if (IsMultiGame)
 		MultiSendCheating ();
 	}
-if (cheatP->cheatFunc) {
-	cheatP->cheatFunc (1);
+if (pCheat->cheatFunc) {
+	pCheat->cheatFunc (1);
 	}
 return 1;
 }
@@ -1020,7 +1020,7 @@ key = KeyToASCII (key);
 memcpy (szCheatBuf, szCheatBuf + 1, sizeof (szCheatBuf) - 1);
 szCheatBuf [CHEATSPOT] = key;
 pszCheat = jcrypt (szCheatBuf + 7);
-for (tCheat *cheatP = cheats; cheatP->pszCheat && !Cheat (cheatP); cheatP++)
+for (tCheat *pCheat = cheats; pCheat->pszCheat && !Cheat (pCheat); pCheat++)
 	;
 }
 

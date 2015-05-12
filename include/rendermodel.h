@@ -65,7 +65,7 @@ class CFace : public CContourInfo {
 		CFixVector				m_vNormal;
 		uint16_t					m_nVerts;
 		int16_t					m_nBitmap;
-		CBitmap*					m_textureP;
+		CBitmap*					m_pTexture;
 		uint16_t					m_nIndex;
 		uint16_t					m_nId;
 		uint8_t					m_nSubModel;
@@ -74,7 +74,7 @@ class CFace : public CContourInfo {
 		uint8_t					m_bBillboard;
 
 	public:
-		void SetTexture (CBitmap* textureP);
+		void SetTexture (CBitmap* pTexture);
 		int32_t GatherVertices (CArray<CVertex>&, CArray<CVertex>&, int32_t nIndex);
 		
 		static int32_t Compare (const CFace* pf, const CFace* pm);
@@ -150,7 +150,7 @@ class CSubModel {
 		void Destroy (void) { Init (); }
 		void InitMinMax (void);
 		void SetMinMax (CFloatVector3 *pVertex);
-		void SortFaces (CBitmap* textureP);
+		void SortFaces (CBitmap* pTexture);
 		void GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest);
 		void Size (CModel* pm, CObject* pObj, CFixVector* vOffset);
 

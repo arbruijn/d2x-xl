@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	 (Unless you are a programmer, in which case, do it yourself!)
 
 void DoOmegaStuff (CObject *pParentObj, CFixVector *vFiringPos, CObject *pWeaponObj);
-int32_t UpdateOmegaLightnings (CObject *pParentObj, CObject *targetObjP);
+int32_t UpdateOmegaLightnings (CObject *pParentObj, CObject *pTargetObj);
 void DestroyOmegaLightnings (int16_t nObject);
 void SetMaxOmegaCharge (void);
 

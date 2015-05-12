@@ -133,7 +133,7 @@ if (!palette)
 #endif
 n = m_nComputedColors;
 //if (!n)
-//	InitComputedColors (plP);
+//	InitComputedColors (pList);
 
 //	If we've already computed this color, return it!
 pci = m_computedColors;
@@ -189,26 +189,26 @@ return m_data.game ? m_data.game->ClosestColor (((rgb >> 10) & 31) * 2, ((rgb >>
 
 CPalette* CPaletteManager::Find (CPalette& palette)
 {
-	tPaletteList	*plP;
+	tPaletteList	*pList;
 #if DBG
 	int32_t				i;
 #endif
 
-for (plP = m_data.list; plP; plP = plP->next)
+for (pList = m_data.list; pList; pList = pList->next)
 #if DBG
 	{
-	if ((plP->palette.TransparentColor () != palette.TransparentColor ()) || 
-		 (plP->palette.SuperTranspColor () != palette.SuperTranspColor ()))
+	if ((pList->palette.TransparentColor () != palette.TransparentColor ()) || 
+		 (pList->palette.SuperTranspColor () != palette.SuperTranspColor ()))
 		continue;
 	for (i = 0; i < PALETTE_SIZE * 3; i++)
-		if (palette.Data ().raw [i] != plP->palette.Data ().raw [i])
+		if (palette.Data ().raw [i] != pList->palette.Data ().raw [i])
 			break;
 	if (i == 768)
-		return Activate (&plP->palette);
+		return Activate (&pList->palette);
 	}
 #else
-	if (palette == plP->palette)
-		return Activate (&plP->palette);
+	if (palette == pList->palette)
+		return Activate (&pList->palette);
 #endif
 return NULL;
 }
@@ -221,16 +221,16 @@ palette.InitTransparency (nTransparentColor, nSuperTranspColor);
 if (Find (palette))
 	return m_data.current;
 
-	tPaletteList* plP;
+	tPaletteList* pList;
 
-if (!(plP = new tPaletteList))
+if (!(pList = new tPaletteList))
 	return NULL;
-plP->next = m_data.list;
-m_data.list = plP;
-plP->palette = palette;
-plP->palette.Init (nTransparentColor, nSuperTranspColor);
+pList->next = m_data.list;
+m_data.list = pList;
+pList->palette = palette;
+pList->palette.Init (nTransparentColor, nSuperTranspColor);
 m_data.nPalettes++;
-return Activate (&plP->palette);
+return Activate (&pList->palette);
 }
 
 //	-----------------------------------------------------------------------------

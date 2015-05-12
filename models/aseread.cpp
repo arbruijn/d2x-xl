@@ -922,10 +922,9 @@ for (i = 0; i < m_textures.m_nBitmaps; i++) {
 	}
 cf.Write (m_textures.m_nTeam.Buffer (), 1, m_textures.m_nBitmaps);
 
-CSubModel*	smP = m_subModels;
-
-for (i = 0; i < m_nSubModels; i++, smP = smP->m_next)
-	smP->SaveBinary (cf);
+CSubModel *pSubModel = m_subModels;
+for (i = 0; i < m_nSubModels; i++, pSubModel = pSubModel->m_next)
+	pSubModel->SaveBinary (cf);
 cf.Close ();
 return 1;
 }
@@ -1053,22 +1052,22 @@ m_textures.m_nTeam.Read (cf);
 for (i = 0; i < m_textures.m_nBitmaps; i++)
 	m_textures.m_bitmaps [i].SetTeam (m_textures.m_nTeam [i]);
 
-CSubModel*	smP, * tailP = NULL;
+CSubModel*	pSubModel, * pTail = NULL;
 
 m_subModels = NULL;
 for (i = 0; i < m_nSubModels; i++) {
-	if (!(smP = new CSubModel)) {
+	if (!(pSubModel = new CSubModel)) {
 		cf.Close ();
 		Destroy ();
 		return 0;
 		}
 	if (m_subModels)
-		tailP->m_next = smP;
+		pTail->m_next = pSubModel;
 	else
-		m_subModels = smP;
-	tailP = smP;
+		m_subModels = pSubModel;
+	pTail = pSubModel;
 	try {
-		if (!smP->ReadBinary (cf)) {
+		if (!pSubModel->ReadBinary (cf)) {
 			cf.Close ();
 			Destroy ();
 			return 0;

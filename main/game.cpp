@@ -1337,7 +1337,7 @@ void SlideTextures (void)
 	uint8_t			sides;
 	CSegment*	pSeg;
 	CSide*		pSide;
-	tUVL*			uvlP;
+	tUVL*			pUVL;
 	fix			slideU, slideV, xDelta;
 
 if (!gameData.segData.bHaveSlideSegs)
@@ -1361,28 +1361,28 @@ for (h = 0; h < gameData.segData.nSlideSegs; h++) {
 		i = (pSeg->m_function == SEGMENT_FUNC_SKYBOX) ? 3 : 8;
 		slideU = FixMul (gameData.time.xFrame, slideU << i);
 		slideV = FixMul (gameData.time.xFrame, slideV << i);
-		for (i = 0, uvlP = pSide->m_uvls; i < 4; i++) {
-			uvlP [i].u += slideU;
-			if (uvlP [i].u > I2X (2)) {
-				xDelta = I2X (uvlP [i].u / I2X (1) - 1);
+		for (i = 0, pUVL = pSide->m_uvls; i < 4; i++) {
+			pUVL [i].u += slideU;
+			if (pUVL [i].u > I2X (2)) {
+				xDelta = I2X (pUVL [i].u / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
-					uvlP [j].u -= xDelta;
+					pUVL [j].u -= xDelta;
 				}
-			else if (uvlP [i].u < -I2X (2)) {
-				xDelta = I2X (-uvlP [i].u / I2X (1) - 1);
+			else if (pUVL [i].u < -I2X (2)) {
+				xDelta = I2X (-pUVL [i].u / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
-					uvlP [j].u += xDelta;
+					pUVL [j].u += xDelta;
 				}
-			uvlP [i].v += slideV;
-			if (uvlP [i].v > I2X (2)) {
-				xDelta = I2X (uvlP [i].v / I2X (1) - 1);
+			pUVL [i].v += slideV;
+			if (pUVL [i].v > I2X (2)) {
+				xDelta = I2X (pUVL [i].v / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
-					uvlP [j].v -= xDelta;
+					pUVL [j].v -= xDelta;
 				}
-			else if (uvlP [i].v < -I2X (2)) {
-				xDelta = I2X (-uvlP [i].v / I2X (1) - 1);
+			else if (pUVL [i].v < -I2X (2)) {
+				xDelta = I2X (-pUVL [i].v / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
-					uvlP [j].v += xDelta;
+					pUVL [j].v += xDelta;
 				}
 			}
 		}
@@ -1397,18 +1397,18 @@ void PowerupGrabCheat (CObject *pPlayer, int32_t nObject)
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return;
 
-	CObject*					powerupP = OBJECT (nObject);
+	CObject*					pPowerup = OBJECT (nObject);
 	tObjTransformation*	pPos = OBJPOS (pPlayer);
 	CFixVector				vCollision;
 
-Assert (powerupP->info.nType == OBJ_POWERUP);
-if (powerupP->info.nFlags & OF_SHOULD_BE_DEAD)
+Assert (pPowerup->info.nType == OBJ_POWERUP);
+if (pPowerup->info.nFlags & OF_SHOULD_BE_DEAD)
 	return;
-if (CFixVector::Dist (powerupP->info.position.vPos, pPos->vPos) >=
-	 2 * (pPlayer->info.xSize + powerupP->info.xSize) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
+if (CFixVector::Dist (pPowerup->info.position.vPos, pPos->vPos) >=
+	 2 * (pPlayer->info.xSize + pPowerup->info.xSize) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
 	return;
-vCollision = CFixVector::Avg (powerupP->info.position.vPos, pPos->vPos);
-pPlayer->CollidePlayerAndPowerup (powerupP, vCollision);
+vCollision = CFixVector::Avg (pPowerup->info.position.vPos, pPos->vPos);
+pPlayer->CollidePlayerAndPowerup (pPowerup, vCollision);
 }
 
 //	-------------------------------------------------------------------------------------------------------

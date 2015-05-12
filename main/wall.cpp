@@ -747,9 +747,9 @@ else {		//fading out
 			SEGMENT (pBackWall->nSegment)->m_sides [pBackWall->nSide].m_uvls [i].l = FixMul (pCloakWall->back_ls [i], xLightScale);
 		}
 	if (gameData.demo.nState == ND_STATE_RECORDING) {
-		tUVL *uvlP = SEGMENT (pFrontWall->nSegment)->m_sides [pFrontWall->nSide].m_uvls;
+		tUVL *pUVL = SEGMENT (pFrontWall->nSegment)->m_sides [pFrontWall->nSide].m_uvls;
 		NDRecordCloakingWall (pCloakWall->nFrontWall, pCloakWall->nBackWall, pFrontWall->nType, pFrontWall->state, pFrontWall->cloakValue,
-									 uvlP [0].l, uvlP [1].l, uvlP [2].l, uvlP [3].l);
+									 pUVL [0].l, pUVL [1].l, pUVL [2].l, pUVL [3].l);
 		}
 	}
 return bDeleted;
@@ -803,9 +803,9 @@ else {		//cloaking in
 		}
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
-	tUVL *uvlP = SEGMENT (pFrontWall->nSegment)->m_sides [pFrontWall->nSide].m_uvls;
+	tUVL *pUVL = SEGMENT (pFrontWall->nSegment)->m_sides [pFrontWall->nSide].m_uvls;
 	NDRecordCloakingWall (pCloakWall->nFrontWall, pCloakWall->nBackWall, pFrontWall->nType, pFrontWall->state, pFrontWall->cloakValue,
-								 uvlP [0].l, uvlP [1].l, uvlP [2].l, uvlP [3].l);
+								 pUVL [0].l, pUVL [1].l, pUVL [2].l, pUVL [3].l);
 	}
 }
 

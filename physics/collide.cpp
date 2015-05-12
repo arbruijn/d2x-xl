@@ -1239,16 +1239,16 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int32_t CObject::CollideWeaponAndClutter (CObject* clutterP, CFixVector& vHitPt, CFixVector* vNormal)
+int32_t CObject::CollideWeaponAndClutter (CObject* pClutter, CFixVector& vHitPt, CFixVector* vNormal)
 {
 uint8_t exp_vclip = ANIM_SMALL_EXPLOSION;
-if (clutterP->info.xShield >= 0)
-	clutterP->info.xShield -= info.xShield;
+if (pClutter->info.xShield >= 0)
+	pClutter->info.xShield -= info.xShield;
 audio.CreateSegmentSound (SOUND_LASER_HIT_CLUTTER, (int16_t) info.nSegment, 0, vHitPt);
-CreateExplosion ((int16_t) clutterP->info.nSegment, vHitPt, ((clutterP->info.xSize / 3) * 3) / 4, exp_vclip);
-if ((clutterP->info.xShield < 0) && !(clutterP->info.nFlags & (OF_EXPLODING | OF_DESTROYED)))
-	clutterP->Explode (STANDARD_EXPL_DELAY);
-MaybeKillWeapon (clutterP);
+CreateExplosion ((int16_t) pClutter->info.nSegment, vHitPt, ((pClutter->info.xSize / 3) * 3) / 4, exp_vclip);
+if ((pClutter->info.xShield < 0) && !(pClutter->info.nFlags & (OF_EXPLODING | OF_DESTROYED)))
+	pClutter->Explode (STANDARD_EXPL_DELAY);
+MaybeKillWeapon (pClutter);
 return 1;
 }
 
@@ -1313,7 +1313,7 @@ int32_t CObject::ApplyDamageToRobot (fix xDamage, int32_t nKillerObj)
 {
 	char		bIsThief, bIsBoss;
 	char		tempStolen [MAX_STOLEN_ITEMS];
-	CObject	*killerObjP = (nKillerObj < 0) ? NULL : OBJECT (nKillerObj);
+	CObject	*pKillerObj = (nKillerObj < 0) ? NULL : OBJECT (nKillerObj);
 
 tRobotInfo* pRobotInfo = ROBOTINFO (info.nId);
 if (!pRobotInfo)
@@ -1329,7 +1329,7 @@ if (gameData.time.xGame - CreationTime () < I2X (1))
 	return 0;
 if (!AttacksRobots ()) {
 	// guidebot may kill other bots
-	if (killerObjP && (killerObjP->info.nType == OBJ_ROBOT) && !killerObjP->IsGuideBot ())
+	if (pKillerObj && (pKillerObj->info.nType == OBJ_ROBOT) && !pKillerObj->IsGuideBot ())
 		return 0;
 	}
 if ((bIsBoss = IsBoss ())) {
@@ -1372,7 +1372,7 @@ if (bIsBoss) {
 	}
 
 if (info.xShield >= 0) {
-	if (killerObjP == gameData.objData.pConsole)
+	if (pKillerObj == gameData.objData.pConsole)
 		ExecObjTriggers (OBJ_IDX (this), 1);
 	return 0;
 	}
@@ -1576,7 +1576,7 @@ if (!pRobotInfo && (pRobot->Type () != OBJ_CAMBOT)) {
 	int32_t		bInvulBoss = 0;
 	fix			nStrength = WI_strength (info.nId, gameStates.app.nDifficultyLevel);
 	CObject		*pParent = (cType.laserInfo.parent.nType != OBJ_ROBOT) ? NULL : OBJECT (cType.laserInfo.parent.nObject);
-	CWeaponInfo *wInfoP = gameData.weapons.info + info.nId;
+	CWeaponInfo *pWeaponInfo = gameData.weapons.info + info.nId;
 	bool			bAttackRobots = pParent ? pParent->AttacksRobots () || (EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && gameStates.app.cheats.bRobotsKillRobots) : false;
 
 #if DBG
@@ -1636,8 +1636,8 @@ if (pRobotInfo && pRobotInfo->energyBlobs && (cType.laserInfo.parent.nType == OB
 	if (WI_damage_radius (info.nId)) {
 		if (bInvulBoss) {			//don't make badass sound
 			//this code copied from ExplodeSplashDamageWeapon ()
-			CreateSplashDamageExplosion (this, info.nSegment, vHitPt, vHitPt, wInfoP->xImpactSize, wInfoP->nRobotHitAnimation, 
-												  nStrength, wInfoP->xDamageRadius, nStrength, cType.laserInfo.parent.nObject);
+			CreateSplashDamageExplosion (this, info.nSegment, vHitPt, vHitPt, pWeaponInfo->xImpactSize, pWeaponInfo->nRobotHitAnimation, 
+												  nStrength, pWeaponInfo->xDamageRadius, nStrength, cType.laserInfo.parent.nObject);
 
 			}
 		else		//Normal splash damage explosion
@@ -1657,7 +1657,7 @@ if (pRobotInfo && pRobotInfo->energyBlobs && (cType.laserInfo.parent.nType == OB
 		if (pRobotInfo && (pRobotInfo->nExp1VClip > -1))
 			pExplObj = CreateExplosion (info.nSegment, vHitPt, (3 * pRobot->info.xSize) / 8, (uint8_t) pRobotInfo->nExp1VClip);
 		else if (gameData.weapons.info [info.nId].nRobotHitAnimation > -1)
-			pExplObj = CreateExplosion (info.nSegment, vHitPt, wInfoP->xImpactSize, (uint8_t) wInfoP->nRobotHitAnimation);
+			pExplObj = CreateExplosion (info.nSegment, vHitPt, pWeaponInfo->xImpactSize, (uint8_t) pWeaponInfo->nRobotHitAnimation);
 		if (pExplObj)
 			AttachObject (pRobot, pExplObj);
 		if (bDamage && pRobotInfo && (pRobotInfo->nExp1Sound > -1))
@@ -1702,17 +1702,17 @@ return 1;
 }
 //	-----------------------------------------------------------------------------
 
-int32_t CObject::CollidePlayerAndHostage (CObject* hostageP, CFixVector& vHitPt, CFixVector* vNormal)
+int32_t CObject::CollidePlayerAndHostage (CObject* pHostage, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (this == gameData.objData.pConsole) {
-	DetectEscortGoalAccomplished (OBJ_IDX (hostageP));
+	DetectEscortGoalAccomplished (OBJ_IDX (pHostage));
 	cockpit->AddPointsToScore (HOSTAGE_SCORE);
 	// Do effect
-	RescueHostage (hostageP->info.nId);
+	RescueHostage (pHostage->info.nId);
 	// Remove the hostage CObject.
-	hostageP->Die ();
+	pHostage->Die ();
 	if (IsMultiGame)
-		MultiSendRemoveObject (OBJ_IDX (hostageP));
+		MultiSendRemoveObject (OBJ_IDX (pHostage));
 	}
 return 1;
 }
@@ -1731,7 +1731,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-void CObject::ApplyDamageToPlayer (CObject* attackerObjP, fix xDamage)
+void CObject::ApplyDamageToPlayer (CObject* pAttackerObj, fix xDamage)
 {
 if (gameStates.app.bPlayerIsDead) {
 	// PrintLog (0, "ApplyDamageToPlayer: Player is already dead\n");
@@ -1748,24 +1748,24 @@ if ((info.nId == N_LOCALPLAYER) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABL
 
 CPlayerData *pAttacker; 
 
-if (!attackerObjP) 
+if (!pAttackerObj) 
 	pAttacker = NULL;
 else {
-	if (attackerObjP->IsGuideBot ()) {
+	if (pAttackerObj->IsGuideBot ()) {
 		// PrintLog (0, "ApplyDamageToPlayer: Player was hit by Guidebot\n");
 		return;
 		}
-	pAttacker = (attackerObjP->info.nType == OBJ_PLAYER) ? gameData.multiplayer.players + attackerObjP->info.nId : NULL;
+	pAttacker = (pAttackerObj->info.nType == OBJ_PLAYER) ? gameData.multiplayer.players + pAttackerObj->info.nId : NULL;
 	if (pAttacker)
 		// PrintLog (0, "ApplyDamageToPlayer: Damage was inflicted by %s\n", pAttacker->callsign);
 	if (gameStates.app.bHaveExtraGameInfo [1]) {
-		if ((attackerObjP == this) && !COMPETITION && extraGameInfo [1].bInhibitSuicide) {
+		if ((pAttackerObj == this) && !COMPETITION && extraGameInfo [1].bInhibitSuicide) {
 			// PrintLog (0, "ApplyDamageToPlayer: Suicide inhibited\n");
 			return;
 			}
 		else if (pAttacker && !(COMPETITION || extraGameInfo [1].bFriendlyFire)) {
 			if (IsTeamGame) {
-				if (GetTeam (info.nId) == GetTeam (attackerObjP->info.nId)) {
+				if (GetTeam (info.nId) == GetTeam (pAttackerObj->info.nId)) {
 					// PrintLog (0, "ApplyDamageToPlayer: Friendly fire suppressed (team game)\n");
 					return;
 					}
@@ -1798,10 +1798,10 @@ if (info.nId == N_LOCALPLAYER) {		//is this the local player?
 	pPlayer->UpdateShield (-xDamage);
 	paletteManager.BumpEffect (X2I (xDamage) * 4, -X2I (xDamage / 2), -X2I (xDamage / 2));	//flash red
 	if (pPlayer->Shield () < 0) {
-  		pPlayer->nKillerObj = OBJ_IDX (attackerObjP);
+  		pPlayer->nKillerObj = OBJ_IDX (pAttackerObj);
 		Die ();
 		if (gameData.escort.nObjNum != -1)
-			if (attackerObjP && attackerObjP->IsGuideBot ())
+			if (pAttackerObj && pAttackerObj->IsGuideBot ())
 				gameData.escort.xSorryTime = gameData.time.xGame;
 		}
 	}
@@ -1947,20 +1947,20 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int32_t CObject::CollidePlayerAndPowerup (CObject* powerupP, CFixVector& vHitPt, CFixVector* vNormal)
+int32_t CObject::CollidePlayerAndPowerup (CObject* pPowerup, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return 1;
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead && (info.nId == N_LOCALPLAYER)) {
-	int32_t bPowerupUsed = DoPowerup (powerupP, info.nId);
+	int32_t bPowerupUsed = DoPowerup (pPowerup, info.nId);
 	if (bPowerupUsed) {
-		powerupP->Die ();
+		pPowerup->Die ();
 		if (IsMultiGame)
-			MultiSendRemoveObject (OBJ_IDX (powerupP));
+			MultiSendRemoveObject (OBJ_IDX (pPowerup));
 		}
 	}
 else if (IsCoopGame && (info.nId != N_LOCALPLAYER)) {
-	switch (powerupP->info.nId) {
+	switch (pPowerup->info.nId) {
 		case POW_KEY_BLUE:
 			PLAYER (info.nId).flags |= PLAYER_FLAGS_BLUE_KEY;
 			break;
@@ -1974,7 +1974,7 @@ else if (IsCoopGame && (info.nId != N_LOCALPLAYER)) {
 			break;
 		}
 	}
-DetectEscortGoalAccomplished (OBJ_IDX (powerupP));
+DetectEscortGoalAccomplished (OBJ_IDX (pPowerup));
 return 1;
 }
 
@@ -2078,21 +2078,21 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int32_t CObject::CollideWeaponAndMonsterball (CObject* mBallP, CFixVector& vHitPt, CFixVector* vNormal)
+int32_t CObject::CollideWeaponAndMonsterball (CObject* pMonsterball, CFixVector& vHitPt, CFixVector* vNormal)
 {
 if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT, info.nSegment, 0, vHitPt);
 	if (info.nId == EARTHSHAKER_ID)
 		ShakerRockStuff (&Position ());
 	if (mType.physInfo.flags & PF_PERSISTENT) {
-		if (AddHitObject (this, OBJ_IDX (mBallP)) < 0)
+		if (AddHitObject (this, OBJ_IDX (pMonsterball)) < 0)
 			return 1;
 		}
-	CreateExplosion (mBallP->info.nSegment, vHitPt, I2X (5), ANIM_PLAYER_HIT);
+	CreateExplosion (pMonsterball->info.nSegment, vHitPt, I2X (5), ANIM_PLAYER_HIT);
 	if (WI_damage_radius (info.nId))
-		ExplodeSplashDamageWeapon (vHitPt, mBallP);
-	MaybeKillWeapon (mBallP);
-	BumpTwoObjects (this, mBallP, 1, vHitPt);
+		ExplodeSplashDamageWeapon (vHitPt, pMonsterball);
+	MaybeKillWeapon (pMonsterball);
+	BumpTwoObjects (this, pMonsterball, 1, vHitPt);
 	}
 return 1;
 }
@@ -2104,19 +2104,19 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int32_t CObject::CollideWeaponAndDebris (CObject* debrisP, CFixVector& vHitPt, CFixVector* vNormal)
+int32_t CObject::CollideWeaponAndDebris (CObject* pDebris, CFixVector& vHitPt, CFixVector* vNormal)
 {
-//	Hack! Prevent debrisP from causing bombs spewed at player death to detonate!
+//	Hack! Prevent pDebris from causing bombs spewed at player death to detonate!
 if (IsMine ()) {
 	if (cType.laserInfo.xCreationTime + I2X (1)/2 > gameData.time.xGame)
 		return 1;
 	}
-if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && !(debrisP->info.nFlags & OF_EXPLODING)) {
+if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && !(pDebris->info.nFlags & OF_EXPLODING)) {
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT, info.nSegment, 0, vHitPt);
-	debrisP->Explode (0);
+	pDebris->Explode (0);
 	if (WI_damage_radius (info.nId))
-		ExplodeSplashDamageWeapon (vHitPt, debrisP);
-	MaybeKillWeapon (debrisP);
+		ExplodeSplashDamageWeapon (vHitPt, pDebris);
+	MaybeKillWeapon (pDebris);
 	Die ();
 	}
 return 1;

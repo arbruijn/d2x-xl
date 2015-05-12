@@ -400,89 +400,89 @@ else
 
 void BMReadWeaponInfoD1N (CFile& cf, int32_t i)
 {
-	CD1WeaponInfo* wiP = gameData.weapons.infoD1 + i;
+	CD1WeaponInfo& wi = gameData.weapons.infoD1 [i];
 
-wiP->renderType = cf.ReadByte ();
-wiP->nModel = cf.ReadByte ();
-wiP->nInnerModel = cf.ReadByte ();
-wiP->persistent = cf.ReadByte ();
-wiP->nFlashAnimation = cf.ReadByte ();
-wiP->flashSound = cf.ReadShort ();
-wiP->nRobotHitAnimation = cf.ReadByte ();
-wiP->nRobotHitSound = cf.ReadShort ();
-wiP->nWallHitAnimation = cf.ReadByte ();
-wiP->nWallHitSound = cf.ReadShort ();
-wiP->fireCount = cf.ReadByte ();
-wiP->nAmmoUsage = cf.ReadByte ();
-wiP->nAnimationIndex = cf.ReadByte ();
-wiP->destructible = cf.ReadByte ();
-wiP->matter = cf.ReadByte ();
-wiP->bounce = cf.ReadByte ();
-wiP->homingFlag = cf.ReadByte ();
-wiP->dum1 = cf.ReadByte (); 
-wiP->dum2 = cf.ReadByte ();
-wiP->dum3 = cf.ReadByte ();
-wiP->xEnergyUsage = cf.ReadFix ();
-wiP->xFireWait = cf.ReadFix ();
-wiP->bitmap.index = cf.ReadShort ();
-wiP->blob_size = cf.ReadFix ();
-wiP->xFlashSize = cf.ReadFix ();
-wiP->xImpactSize = cf.ReadFix ();
+wi.renderType = cf.ReadByte ();
+wi.nModel = cf.ReadByte ();
+wi.nInnerModel = cf.ReadByte ();
+wi.persistent = cf.ReadByte ();
+wi.nFlashAnimation = cf.ReadByte ();
+wi.flashSound = cf.ReadShort ();
+wi.nRobotHitAnimation = cf.ReadByte ();
+wi.nRobotHitSound = cf.ReadShort ();
+wi.nWallHitAnimation = cf.ReadByte ();
+wi.nWallHitSound = cf.ReadShort ();
+wi.fireCount = cf.ReadByte ();
+wi.nAmmoUsage = cf.ReadByte ();
+wi.nAnimationIndex = cf.ReadByte ();
+wi.destructible = cf.ReadByte ();
+wi.matter = cf.ReadByte ();
+wi.bounce = cf.ReadByte ();
+wi.homingFlag = cf.ReadByte ();
+wi.dum1 = cf.ReadByte (); 
+wi.dum2 = cf.ReadByte ();
+wi.dum3 = cf.ReadByte ();
+wi.xEnergyUsage = cf.ReadFix ();
+wi.xFireWait = cf.ReadFix ();
+wi.bitmap.index = cf.ReadShort ();
+wi.blob_size = cf.ReadFix ();
+wi.xFlashSize = cf.ReadFix ();
+wi.xImpactSize = cf.ReadFix ();
 for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
-	wiP->strength [i] = cf.ReadFix ();
+	wi.strength [i] = cf.ReadFix ();
 for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
-	wiP->speed [i] = cf.ReadFix ();
-wiP->mass = cf.ReadFix ();
-wiP->drag = cf.ReadFix ();
-wiP->thrust = cf.ReadFix ();
-wiP->poLenToWidthRatio = cf.ReadFix ();
-wiP->light = cf.ReadFix ();
-wiP->lifetime = cf.ReadFix ();
-wiP->xDamageRadius = cf.ReadFix ();
-wiP->picture.index = cf.ReadShort ();
+	wi.speed [i] = cf.ReadFix ();
+wi.mass = cf.ReadFix ();
+wi.drag = cf.ReadFix ();
+wi.thrust = cf.ReadFix ();
+wi.poLenToWidthRatio = cf.ReadFix ();
+wi.light = cf.ReadFix ();
+wi.lifetime = cf.ReadFix ();
+wi.xDamageRadius = cf.ReadFix ();
+wi.picture.index = cf.ReadShort ();
 
 #if PRINT_WEAPON_INFO
 PrintLog (0, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,{",
-	wiP->renderType,
-	wiP->nModel,
-	wiP->nInnerModel,
-	wiP->persistent,
-	wiP->nFlashAnimation,
-	wiP->flashSound,
-	wiP->nRobotHitAnimation,
-	wiP->nRobotHitSound,
-	wiP->nWallHitAnimation,
-	wiP->nWallHitSound,
-	wiP->fireCount,
-	wiP->nAmmoUsage,
-	wiP->nAnimationIndex,
-	wiP->destructible,
-	wiP->matter,
-	wiP->bounce,
-	wiP->homingFlag,
-	wiP->dum1, 
-	wiP->dum2,
-	wiP->dum3,
-	wiP->xEnergyUsage,
-	wiP->xFireWait,
-	wiP->bitmap.index,
-	wiP->blob_size,
-	wiP->xFlashSize,
-	wiP->xImpactSize);
+	wi.renderType,
+	wi.nModel,
+	wi.nInnerModel,
+	wi.persistent,
+	wi.nFlashAnimation,
+	wi.flashSound,
+	wi.nRobotHitAnimation,
+	wi.nRobotHitSound,
+	wi.nWallHitAnimation,
+	wi.nWallHitSound,
+	wi.fireCount,
+	wi.nAmmoUsage,
+	wi.nAnimationIndex,
+	wi.destructible,
+	wi.matter,
+	wi.bounce,
+	wi.homingFlag,
+	wi.dum1, 
+	wi.dum2,
+	wi.dum3,
+	wi.xEnergyUsage,
+	wi.xFireWait,
+	wi.bitmap.index,
+	wi.blob_size,
+	wi.xFlashSize,
+	wi.xImpactSize);
 for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
-	PrintLog (0, "%s%d", i ? "," : "", wiP->strength [i]);
+	PrintLog (0, "%s%d", i ? "," : "", wi.strength [i]);
 PrintLog (1, "},{");
 for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
-	PrintLog (0, "%s%d", i ? "," : "", wiP->speed [i]);
+	PrintLog (0, "%s%d", i ? "," : "", wi.speed [i]);
 PrintLog (0, "},%d,%d,%d,%d,%d,%d,%d,{%d}},\n",
-	wiP->mass,
-	wiP->drag,
-	wiP->thrust,
-	wiP->poLenToWidthRatio,
-	wiP->light,
-	wiP->lifetime,
-	wiP->xDamageRadius,
-	wiP->picture.index);
+	wi.mass,
+	wi.drag,
+	wi.thrust,
+	wi.poLenToWidthRatio,
+	wi.light,
+	wi.lifetime,
+	wi.xDamageRadius,
+	wi.picture.index);
 #endif
 }
 

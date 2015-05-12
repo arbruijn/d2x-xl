@@ -63,7 +63,7 @@ class CSaveGameManager {
 		void SaveGameData (void);
 		void SaveSpawnPoint (int32_t i);
 		void SaveReactorTrigger (CTriggerTargets *pTrigger);
-		void SaveReactorState (tReactorStates *stateP);
+		void SaveReactorState (tReactorStates *pState);
 		void SaveProducer (tProducerInfo *pProducer);
 		void SaveObjectProducer (tObjectProducerInfo *pObjProducer);
 #if 0
@@ -80,7 +80,7 @@ class CSaveGameManager {
 		void GetConnectedPlayers (CPlayerData *restoredPlayers, int32_t nPlayers);
 		void FixNetworkObjects (int32_t nServerPlayer, int32_t nOtherObjNum, int32_t nServerObjNum);
 		void FixObjects (void);
-		void AwardReturningPlayer (CPlayerData *retPlayerP, fix xOldGameTime);;
+		void AwardReturningPlayer (CPlayerData *pRetPlayer, fix xOldGameTime);;
 		void LoadNetGame (void);
 		void LoadNetPlayers (void);
 		void LoadPlayer (CPlayerData *pPlayer);
@@ -88,7 +88,7 @@ class CSaveGameManager {
 		void LoadObjectProducer (tObjectProducerInfo *pObjProducer);
 		void LoadProducer (tProducerInfo *pProducer);
 		void LoadReactorTrigger (CTriggerTargets *pTrigger);
-		void LoadReactorState (tReactorStates *stateP);
+		void LoadReactorState (tReactorStates *pState);
 		int32_t LoadSpawnPoint (int32_t i);
 		int32_t LoadUniFormat (int32_t bMulti, fix xOldGameTime, int32_t *nLevel);
 		int32_t LoadBinFormat (int32_t bMulti, fix xOldGameTime, int32_t *nLevel);

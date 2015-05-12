@@ -71,7 +71,7 @@ FORALL_WEAPON_OBJS (pObj)
 
 // ---------------------------------------------------------------------------------
 
-void CreateOmegaBlobs (int16_t nFiringSeg, CFixVector *vMuzzle, CFixVector *vTargetPos, CObject *pParentObj, CObject *targetObjP)
+void CreateOmegaBlobs (int16_t nFiringSeg, CFixVector *vMuzzle, CFixVector *vTargetPos, CObject *pParentObj, CObject *pTargetObj)
 {
 	int16_t		nLastSeg, nLastCreatedObj = -1;
 	CFixVector	vGoal;
@@ -85,7 +85,7 @@ void CreateOmegaBlobs (int16_t nFiringSeg, CFixVector *vMuzzle, CFixVector *vTar
 
 if (IsMultiGame)
 	DeleteOldOmegaBlobs (pParentObj);
-omegaLightning.Create (vTargetPos, pParentObj, targetObjP);
+omegaLightning.Create (vTargetPos, pParentObj, pTargetObj);
 vGoal = *vTargetPos - *vMuzzle;
 xGoalDist = CFixVector::Normalize (vGoal);
 if (xGoalDist < MIN_OMEGA_BLOBS * MIN_OMEGA_DIST) {

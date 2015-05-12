@@ -447,12 +447,12 @@ inside:
 
 //------------------------------------------------------------------------------
 
-void CBitmap::BlitScaled (CBitmap* destP)
+void CBitmap::BlitScaled (CBitmap* pDest)
 {
 	uint8_t *s = Buffer ();
-	uint8_t *d = destP->Buffer ();
+	uint8_t *d = pDest->Buffer ();
 	int32_t h = Height ();
-	int32_t a = destP->Height () / h, b = destP->Height () % h;
+	int32_t a = pDest->Height () / h, b = pDest->Height () % h;
 	int32_t c = 0, i, y;
 
 for (y = 0; y < h; y++) {
@@ -464,8 +464,8 @@ for (y = 0; y < h; y++) {
 		}
 	while(--i >= 0) {
 inside:
-		ScaleLine (s, d, Width (), destP->Width ());
-		d += destP->RowSize ();
+		ScaleLine (s, d, Width (), pDest->Width ());
+		d += pDest->RowSize ();
 		}
 	s += RowSize ();
 	}
@@ -473,33 +473,33 @@ inside:
 
 //------------------------------------------------------------------------------
 
-void CBitmap::Blit (CBitmap* destP, int32_t xDest, int32_t yDest, int32_t w, int32_t h, int32_t xSrc, int32_t ySrc, int32_t bTransp)
+void CBitmap::Blit (CBitmap* pDest, int32_t xDest, int32_t yDest, int32_t w, int32_t h, int32_t xSrc, int32_t ySrc, int32_t bTransp)
 {
 if (Mode () == BM_LINEAR) {
-	if (destP->Mode () == BM_LINEAR) {
+	if (pDest->Mode () == BM_LINEAR) {
 		if (Flags () & BM_FLAG_RLE)
-			BlitToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, destP);
+			BlitToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, pDest);
 		else
-			SWBlitToBitmap (w, h, xDest, yDest, xSrc, ySrc, this, destP);
+			SWBlitToBitmap (w, h, xDest, yDest, xSrc, ySrc, this, pDest);
 		}
-	else if (destP->Mode () == BM_OGL) {
+	else if (pDest->Mode () == BM_OGL) {
 		CRectangle rc;
-		if (destP)
-			rc = (CRectangle) (*destP);
-		Render (destP ? &rc : NULL, xDest, yDest, w, h, xSrc, ySrc, w, h, bTransp);
+		if (pDest)
+			rc = (CRectangle) (*pDest);
+		Render (pDest ? &rc : NULL, xDest, yDest, w, h, xSrc, ySrc, w, h, bTransp);
 		}
 	else if (Flags () & BM_FLAG_RLE) {
-		StretchToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, destP);
+		StretchToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, pDest);
 		}
 	else {
 		for (int32_t y1 = 0; y1 < h; y1++)  
 			for (int32_t x1 = 0; x1 < w; x1++)  
-				destP->DrawPixel (xDest + x1, yDest + y1, GetPixel (xSrc + x1, ySrc + y1));
+				pDest->DrawPixel (xDest + x1, yDest + y1, GetPixel (xSrc + x1, ySrc + y1));
 		}
 	}
 else if (Mode () == BM_OGL) {
-	if (destP->Mode () == BM_LINEAR)
-		ScreenCopy (destP, xDest, yDest, w, h, xSrc, ySrc);
+	if (pDest->Mode () == BM_LINEAR)
+		ScreenCopy (pDest, xDest, yDest, w, h, xSrc, ySrc);
 	}
 }
 

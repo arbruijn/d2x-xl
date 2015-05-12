@@ -71,20 +71,20 @@ else
 
 //------------------------------------------------------------------------------
 
-void CBitmap::OglVertices (int32_t x, int32_t y, int32_t w, int32_t h, int32_t scale, int32_t orient, CRectangle* destP)
+void CBitmap::OglVertices (int32_t x, int32_t y, int32_t w, int32_t h, int32_t scale, int32_t orient, CRectangle* pDest)
 {
 if (!w)
 	w = Width ();
 else if (w < 0)
-	w = destP ? destP->Width () : CCanvas::Current ()->Width ();
+	w = pDest ? pDest->Width () : CCanvas::Current ()->Width ();
 
 if (!h)
 	h = Height ();
 else if (h < 0)
-	h = destP ? destP->Height () : CCanvas::Current ()->Height ();
+	h = pDest ? pDest->Height () : CCanvas::Current ()->Height ();
 
-float dx = destP ? float (destP->Left ()) / float (ogl.m_states.viewport [0].m_w) : 0.0f;
-float dy = destP ? float (destP->Top ()) / float (ogl.m_states.viewport [0].m_h) : 0.0f;
+float dx = pDest ? float (pDest->Left ()) / float (ogl.m_states.viewport [0].m_w) : 0.0f;
+float dy = pDest ? float (pDest->Top ()) / float (ogl.m_states.viewport [0].m_h) : 0.0f;
 
 if (orient & 1) {
 	::Swap (w, h);
@@ -185,7 +185,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t CBitmap::Render (CRectangle* destP,
+int32_t CBitmap::Render (CRectangle* pDest,
 								 int32_t xDest, int32_t yDest, int32_t wDest, int32_t hDest,
 								 int32_t xSrc, int32_t ySrc, int32_t wSrc, int32_t hSrc,
 								 int32_t bTransp, int32_t bMipMaps, int32_t bSmoothe,
@@ -194,7 +194,7 @@ int32_t CBitmap::Render (CRectangle* destP,
 	CBitmap*		pBmo;
 
 if ((pBmo = HasOverride ()))
-	return pBmo->Render (destP, xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, bTransp, bMipMaps, bSmoothe, fAlpha, pColor);
+	return pBmo->Render (pDest, xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, bTransp, bMipMaps, bSmoothe, fAlpha, pColor);
 
 	int32_t		nTransp = (Flags () & BM_FLAG_TGA) ? -1 : HasTransparency () ? 2 : 0;
 	bool			bLocal = Texture () == NULL;
@@ -207,7 +207,7 @@ bool bBlend = bTransp && nTransp;
 if (!OglBeginRender (bBlend, bMipMaps, nTransp))
 	return 1; // fail
 
-OglVertices (xDest, yDest, wDest, hDest, I2X (1), 0, destP);
+OglVertices (xDest, yDest, wDest, hDest, I2X (1), 0, pDest);
 
 if (!pColor) {
 	color.Red () = color.Green () = color.Blue () = 1.0f;
@@ -220,7 +220,7 @@ else
 
 m_render.u1 = m_render.v1 = 0;
 if (wSrc < 0)
-	m_render.u2 = float (destP->Width ()) / float (-wSrc);
+	m_render.u2 = float (pDest->Width ()) / float (-wSrc);
 else {
 	m_render.u2 = float (wSrc) / float (Width ());
 	if (m_render.u2 < 1.0f)
@@ -229,7 +229,7 @@ else {
 		m_render.u2 = m_info.pTexture->U ();
 	}
 if (hSrc < 0)
-	m_render.v2 = float (destP->Height ()) / float (-hSrc);
+	m_render.v2 = float (pDest->Height ()) / float (-hSrc);
 else {
 	m_render.v2 = float (hSrc) / float (Height ());
 	if (m_render.v2 < 1.0f)

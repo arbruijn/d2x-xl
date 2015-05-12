@@ -240,7 +240,7 @@ int32_t IsAnimatedTexture (int16_t nTexture);
 
 int32_t SetupSounds (CFile& fpSound, int32_t nSoundNum, int32_t nSoundStart, bool bCustom = false, bool bUseLowRes = true);
 
-int32_t IsMacDataFile (CFile* cfP, int32_t bD1);
+int32_t IsMacDataFile (CFile* pFile, int32_t bD1);
 
 void PiggyCriticalError (void);
 

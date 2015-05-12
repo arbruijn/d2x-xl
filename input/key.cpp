@@ -505,7 +505,7 @@ void KeyHandler (SDL_KeyboardEvent *event)
 #if UNICODE_KEYS
 	wchar_t		unicode = event->keysym.unicode;
 #endif
-	tKeyInfo*	keyP;
+	tKeyInfo*	pKey;
 	uint8_t			temp;
 
 //=====================================================
@@ -529,19 +529,19 @@ for (int32_t i = 0, j = sizeofa (keyProperties); i < j; i++) {
 	else
 #endif
 		keyCode = i;
-	keyP = keyData.keys + keyCode;
+	pKey = keyData.keys + keyCode;
 
 #if UNICODE_KEYS
 	if (unicode && (keyProperties [i].asciiValue != wchar_t (255))) {
 		if ((keyProperties [i].asciiValue == unicode) || (keyProperties [i].shiftedAsciiValue == unicode))
 #	if DBG
-			if (keyP->lastState)
+			if (pKey->lastState)
 				state = keyState;
 			else
 #	endif
 			state = keyState;
 		else
-			state = keyP->lastState;
+			state = pKey->lastState;
 		}
    else if (keyProperties [i].sym == keySym)
 #else
@@ -549,50 +549,50 @@ for (int32_t i = 0, j = sizeofa (keyProperties); i < j; i++) {
 #endif
 		state = keyState;
 	else
-		state = keyP->lastState;
+		state = pKey->lastState;
 	
-	if (keyP->lastState == state) {
+	if (pKey->lastState == state) {
 		if (state) {
-			keyP->counter++;
+			pKey->counter++;
 			gameStates.input.keys.nLastPressed = keyCode;
 			gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds ();
-			keyP->flags = 0;
+			pKey->flags = 0;
 			if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT])
-				keyP->flags |= uint8_t (KEY_SHIFTED / 256);
+				pKey->flags |= uint8_t (KEY_SHIFTED / 256);
 			if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
-				keyP->flags |= uint8_t (KEY_ALTED / 256);
+				pKey->flags |= uint8_t (KEY_ALTED / 256);
 			if ((/*(nKeyboard != 1) &&*/ gameStates.input.keys.pressed [KEY_LCTRL]) || gameStates.input.keys.pressed [KEY_RCTRL])
-				keyP->flags |= uint8_t (KEY_CTRLED / 256);
+				pKey->flags |= uint8_t (KEY_CTRLED / 256);
 			}
 		}
 	else {
 		if (state) {
 			gameStates.input.keys.nLastPressed = keyCode;
-			keyP->timeWentDown = gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
+			pKey->timeWentDown = gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
 			keyData.keys [keyCode].timeHeldDown = 0;
 			gameStates.input.keys.pressed [keyCode] = 1;
-			keyP->downCount += state;
-			keyP->counter++;
-			keyP->state = 1;
-			keyP->flags = 0;
+			pKey->downCount += state;
+			pKey->counter++;
+			pKey->state = 1;
+			pKey->flags = 0;
 			if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT])
-				keyP->flags |= uint8_t (KEY_SHIFTED / 256);
+				pKey->flags |= uint8_t (KEY_SHIFTED / 256);
 			if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
-				keyP->flags |= uint8_t (KEY_ALTED / 256);
+				pKey->flags |= uint8_t (KEY_ALTED / 256);
 			if ((/*(nKeyboard != 1) &&*/ gameStates.input.keys.pressed [KEY_LCTRL]) || gameStates.input.keys.pressed [KEY_RCTRL])
-				keyP->flags |= uint8_t (KEY_CTRLED / 256);
-//				keyP->timeWentDown = gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
+				pKey->flags |= uint8_t (KEY_CTRLED / 256);
+//				pKey->timeWentDown = gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
 			}
 		else {
 			gameStates.input.keys.pressed [keyCode] = 0;
 			gameStates.input.keys.nLastReleased = keyCode;
-			keyP->upCount += keyP->state;
-			keyP->state = 0;
-			keyP->counter = 0;
-			keyP->timeHeldDown += TimerGetFixedSeconds () - keyP->timeWentDown;
+			pKey->upCount += pKey->state;
+			pKey->state = 0;
+			pKey->counter = 0;
+			pKey->timeHeldDown += TimerGetFixedSeconds () - pKey->timeWentDown;
 			}
 		}
-	if (state && (!keyP->lastState || ((keyP->counter > 30) && (keyP->counter & 1)))) {
+	if (state && (!pKey->lastState || ((pKey->counter > 30) && (pKey->counter & 1)))) {
 		if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT])
 			keyCode |= KEY_SHIFTED;
 		if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
@@ -621,7 +621,7 @@ for (int32_t i = 0, j = sizeofa (keyProperties); i < j; i++) {
 			keyData.nKeyTail = temp;
 			}
 		}
-	keyP->lastState = state;
+	pKey->lastState = state;
 	}
 }
 

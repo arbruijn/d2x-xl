@@ -284,30 +284,30 @@ pInfo->data.chunkSize = nLength;
 
 //------------------------------------------------------------------------------
 
-static int32_t ResampleFormat (uint16_t *destP, uint8_t* srcP, int32_t nSrcLen)
+static int32_t ResampleFormat (uint16_t *pDest, uint8_t* srcP, int32_t nSrcLen)
 {
 for (int32_t i = nSrcLen; i; i--)
 #if 1 
-	*destP++ = uint16_t (*srcP++) * 128;
+	*pDest++ = uint16_t (*srcP++) * 128;
 #else
-	*destP++ = uint16_t (float (*srcP++) * (32767.0f / 255.0f));
+	*pDest++ = uint16_t (float (*srcP++) * (32767.0f / 255.0f));
 #endif
 return nSrcLen;
 }
 
 //------------------------------------------------------------------------------
 
-static int32_t ResampleRate (uint16_t* destP, uint16_t* srcP, int32_t nSrcLen)
+static int32_t ResampleRate (uint16_t* pDest, uint16_t* srcP, int32_t nSrcLen)
 {
 	uint16_t	nSound, nPrevSound;
 
 srcP += nSrcLen;
-destP += nSrcLen * 2;
+pDest += nSrcLen * 2;
 
 for (int32_t i = 0; i < nSrcLen; i++) {
 	nSound = *(--srcP);
-	*(--destP) = i ? (nSound + nPrevSound) / 2 : nSound;
-	*(--destP) = nSound;
+	*(--pDest) = i ? (nSound + nPrevSound) / 2 : nSound;
+	*(--pDest) = nSound;
 	nPrevSound = nSound;
 	}
 return nSrcLen * 2;
@@ -315,17 +315,17 @@ return nSrcLen * 2;
 
 //------------------------------------------------------------------------------
 
-static int32_t ResampleRate (uint8_t* destP, uint8_t* srcP, int32_t nSrcLen)
+static int32_t ResampleRate (uint8_t* pDest, uint8_t* srcP, int32_t nSrcLen)
 {
 	uint8_t	nSound, nPrevSound;
 
 srcP += nSrcLen;
-destP += nSrcLen * 2;
+pDest += nSrcLen * 2;
 
 for (int32_t i = 0; i < nSrcLen; i++) {
 	nSound = *(--srcP);
-	*(--destP) = i ? (nSound + nPrevSound) / 2 : nSound;
-	*(--destP) = nSound;
+	*(--pDest) = i ? (nSound + nPrevSound) / 2 : nSound;
+	*(--pDest) = nSound;
 	nPrevSound = nSound;
 	}
 return nSrcLen * 2;
@@ -334,13 +334,13 @@ return nSrcLen * 2;
 //------------------------------------------------------------------------------
 
 template<typename _T> 
-int32_t ResampleChannels (_T* destP, _T* srcP, int32_t nSrcLen)
+int32_t ResampleChannels (_T* pDest, _T* srcP, int32_t nSrcLen)
 {
 	_T			nSound;
 	float		fFade;
 
 srcP += nSrcLen;
-destP += nSrcLen * 2;
+pDest += nSrcLen * 2;
 
 for (int32_t i = nSrcLen; i; i--) {
 	nSound = *(--srcP);
@@ -349,8 +349,8 @@ for (int32_t i = nSrcLen; i; i--) {
 		fFade = float (nSrcLen - i) / 500.0f;
 	if (fFade < 1.0f)
 		nSound = _T (float (nSound) * fFade);
-	*(--destP) = nSound;
-	*(--destP) = nSound;
+	*(--pDest) = nSound;
+	*(--pDest) = nSound;
 	}
 return nSrcLen * 2;
 }
@@ -385,12 +385,12 @@ if (audio.Format () == AUDIO_S16SYS) {
 	}
 else {
 	uint8_t* srcP = pSound->data [pSound->bCustom].Buffer ();
-	uint8_t* destP = reinterpret_cast<uint8_t*> (m_info.sample.Buffer () + WAVINFO_SIZE);
+	uint8_t* pDest = reinterpret_cast<uint8_t*> (m_info.sample.Buffer () + WAVINFO_SIZE);
 	for (; i > 1; i >>= 1) {
-		l = ResampleRate (destP, srcP, l);
-		srcP = destP;
+		l = ResampleRate (pDest, srcP, l);
+		srcP = pDest;
 		}
-	l = ResampleChannels (destP, srcP, l);
+	l = ResampleChannels (pDest, srcP, l);
 	}
 
 #if MAKE_WAV

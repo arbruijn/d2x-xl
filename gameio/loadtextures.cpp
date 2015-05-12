@@ -301,7 +301,7 @@ return -1;
 tEffectInfo *FindEffect (tEffectInfo *pEffectInfo, int32_t nTexture)
 {
 	int32_t			h, i, j;
-	tBitmapIndex*	frameP;
+	tBitmapIndex*	pFrame;
 
 if (pEffectInfo)
 	i = (int32_t) (++pEffectInfo - gameData.effects.pEffect);
@@ -310,8 +310,8 @@ else {
 	i = 0;
 	}
 for (h = gameData.effects.nEffects [gameStates.app.bD1Data]; i < h; i++, pEffectInfo++) {
-	for (j = pEffectInfo->animationInfo.nFrameCount, frameP = pEffectInfo->animationInfo.frames; j > 0; j--, frameP++)
-		if (frameP->index == nTexture) {
+	for (j = pEffectInfo->animationInfo.nFrameCount, pFrame = pEffectInfo->animationInfo.frames; j > 0; j--, pFrame++)
+		if (pFrame->index == nTexture) {
 #if 0
 			int32_t t = FindTextureByIndex (nTexture);
 			if (t >= 0)
@@ -472,11 +472,11 @@ return nShrinkFactor / 2;
 
 //------------------------------------------------------------------------------
 
-int32_t ReadBitmap (CFile* cfP, CBitmap* pBm, int32_t nSize, bool bD1)
+int32_t ReadBitmap (CFile* pFile, CBitmap* pBm, int32_t nSize, bool bD1)
 {
 nDescentCriticalError = 0;
 if (pBm->Flags () & BM_FLAG_RLE) {
-	int32_t nSize = cfP->ReadInt () - 4;
+	int32_t nSize = pFile->ReadInt () - 4;
 	if (nDescentCriticalError) {
 		PiggyCriticalError ();
 		return -1;
@@ -486,14 +486,14 @@ if (pBm->Flags () & BM_FLAG_RLE) {
 	if (nSize > int32_t (pBm->Size ()))
 		pBm->Resize (nSize);
 #endif
-	if (pBm->Read (*cfP, nSize, 0) != uint32_t (nSize))
+	if (pBm->Read (*pFile, nSize, 0) != uint32_t (nSize))
 		return -2;
-	nSize = pBm->RLEExpand (NULL, IsMacDataFile (cfP, bD1));
+	nSize = pBm->RLEExpand (NULL, IsMacDataFile (pFile, bD1));
 	}
 else {
-	if (pBm->Read (*cfP, pBm->FrameSize ()) != (size_t) pBm->FrameSize ())
+	if (pBm->Read (*pFile, pBm->FrameSize ()) != (size_t) pBm->FrameSize ())
 		return -2;
-	if (IsMacDataFile (cfP, bD1))
+	if (IsMacDataFile (pFile, bD1))
 		pBm->SwapTransparencyColor ();
 	}
 
@@ -518,17 +518,17 @@ if (gameStates.app.nLogLevel > 1)
 if (strstr (pBm->Name (), "ship"))
 	BRP;
 #endif
-CFile* cfP = cfPiggy + bD1;
-if (!cfP->File ())
+CFile* pFile = cfPiggy + bD1;
+if (!pFile->File ())
 	PiggyInitPigFile (NULL);
 int32_t nOffset = bitmapOffsets [bD1][nIndex];
-if (cfP->Seek (nOffset, SEEK_SET))
+if (pFile->Seek (nOffset, SEEK_SET))
 	throw (EX_IO_ERROR);
 pBm->CreateBuffer ();
 if (!pBm->Buffer () || (bitmapCacheUsed > bitmapCacheSize))
 	throw (EX_OUT_OF_MEMORY);
 pBm->SetFlags (gameData.pig.tex.bitmapFlags [bD1][nIndex]);
-if (0 > ReadBitmap (cfP, pBm, pBm->FrameSize (), bD1 != 0)) 
+if (0 > ReadBitmap (pFile, pBm, pBm->FrameSize (), bD1 != 0)) 
 	throw (EX_IO_ERROR);
 UseBitmapCache (pBm, int32_t (pBm->FrameSize ()));
 return 1;

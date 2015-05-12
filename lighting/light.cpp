@@ -164,7 +164,7 @@ gameData.render.lights.bStartDynColoring = 0;
 
 // ----------------------------------------------------------------------------------------------
 
-void SetDynColor (CFloatVector *color, CFloatVector3 *dynColorP, int32_t nVertex, uint8_t *bGotDynColorP, int32_t bForce)
+void SetDynColor (CFloatVector *color, CFloatVector3 *pDynColor, int32_t nVertex, uint8_t *bGotDynColorP, int32_t bForce)
 {
 if (!color)
 	return;
@@ -175,18 +175,18 @@ if (!bForce && (color->Red () == 1.0) && (color->Green () == 1.0) && (color->Blu
 if (gameData.render.lights.bStartDynColoring) {
 	InitDynColoring ();
 	}
-if (!dynColorP) {
+if (!pDynColor) {
 	SetDynColor (color, &gameData.render.lights.globalDynColor, 0, &gameData.render.lights.bGotGlobalDynColor, bForce);
-	dynColorP = gameData.render.lights.dynamicColor + nVertex;
+	pDynColor = gameData.render.lights.dynamicColor + nVertex;
 	bGotDynColorP = gameData.render.lights.bGotDynColor + nVertex;
 	}
 if (*bGotDynColorP) {
-	dynColorP->Red () = (dynColorP->Red () + color->Red ()) / 2;
-	dynColorP->Green () = (dynColorP->Green () + color->Green ()) / 2;
-	dynColorP->Blue () = (dynColorP->Blue () + color->Blue ()) / 2;
+	pDynColor->Red () = (pDynColor->Red () + color->Red ()) / 2;
+	pDynColor->Green () = (pDynColor->Green () + color->Green ()) / 2;
+	pDynColor->Blue () = (pDynColor->Blue () + color->Blue ()) / 2;
 	}
 else {
-	memcpy (dynColorP, color, sizeof (CFloatVector3));
+	memcpy (pDynColor, color, sizeof (CFloatVector3));
 	*bGotDynColorP = 1;
 	}
 }
@@ -795,40 +795,40 @@ if (pObj->info.nType == OBJ_PLAYER) {
 
 void FlickerLights (void)
 {
-	CVariableLight	*flP;
+	CVariableLight	*pLight;
 
-if (!(flP = gameData.render.lights.flicker.Buffer ()))
+if (!(pLight = gameData.render.lights.flicker.Buffer ()))
 	return;
 
-	int32_t				l;
+	int32_t			l;
 	CSide				*pSide;
-	int16_t				nSegment, nSide;
+	int16_t			nSegment, nSide;
 
-for (l = gameData.render.lights.flicker.Length (); l; l--, flP++) {
-	if (flP->m_timer == (fix) 0x80000000)		//disabled
+for (l = gameData.render.lights.flicker.Length (); l; l--, pLight++) {
+	if (pLight->m_timer == (fix) 0x80000000)		//disabled
 		continue;
 	//make sure this is actually a light
-	nSegment = flP->m_nSegment;
-	nSide = flP->m_nSide;
+	nSegment = pLight->m_nSegment;
+	nSide = pLight->m_nSide;
 	if (!(SEGMENT (nSegment)->IsPassable (nSide, NULL) & WID_VISIBLE_FLAG)) {
-		flP->m_timer = (fix) 0x80000000;		//disabled
+		pLight->m_timer = (fix) 0x80000000;		//disabled
 		continue;
 		}
 	pSide = SEGMENT (nSegment)->m_sides + nSide;
 	if (!(gameData.pig.tex.brightness [pSide->m_nBaseTex] ||
 			gameData.pig.tex.brightness [pSide->m_nOvlTex])) {
-		flP->m_timer = (fix) 0x80000000;		//disabled
+		pLight->m_timer = (fix) 0x80000000;		//disabled
 		continue;
 		}
-	if (!flP->m_delay) {
-		flP->m_timer = (fix) 0x80000000;		//disabled
+	if (!pLight->m_delay) {
+		pLight->m_timer = (fix) 0x80000000;		//disabled
 		continue;
 		}
-	if ((flP->m_timer -= gameData.time.xFrame) < 0) {
-		while (flP->m_timer < 0)
-			flP->m_timer += flP->m_delay;
-		flP->m_mask = ((flP->m_mask & 1) ? 0x80000000 : 0) | (flP->m_mask >> 1);
-		if (flP->m_mask & 1)
+	if ((pLight->m_timer -= gameData.time.xFrame) < 0) {
+		while (pLight->m_timer < 0)
+			pLight->m_timer += pLight->m_delay;
+		pLight->m_mask = ((pLight->m_mask & 1) ? 0x80000000 : 0) | (pLight->m_mask >> 1);
+		if (pLight->m_mask & 1)
 			AddLight (nSegment, nSide);
 		else if (!gameOpts->app.bEpilepticFriendly /*EGI_FLAG (bFlickerLights, 1, 0, 1)*/)
 			SubtractLight (nSegment, nSide);
@@ -839,32 +839,32 @@ for (l = gameData.render.lights.flicker.Length (); l; l--, flP++) {
 //returns ptr to flickering light structure, or NULL if can't find
 CVariableLight *FindVariableLight (int32_t nSegment,int32_t nSide)
 {
-	CVariableLight	*flP;
+	CVariableLight	*pLight;
 
-if ((flP = gameData.render.lights.flicker.Buffer ()))
-	for (int32_t l = gameData.render.lights.flicker.Length (); l; l--, flP++)
-		if ((flP->m_nSegment == nSegment) && (flP->m_nSide == nSide))	//found it!
-			return flP;
+if ((pLight = gameData.render.lights.flicker.Buffer ()))
+	for (int32_t l = gameData.render.lights.flicker.Length (); l; l--, pLight++)
+		if ((pLight->m_nSegment == nSegment) && (pLight->m_nSide == nSide))	//found it!
+			return pLight;
 return NULL;
 }
 //-----------------------------------------------------------------------------
 //turn flickering off (because light has been turned off)
 void DisableVariableLight (int32_t nSegment,int32_t nSide)
 {
-CVariableLight *flP = FindVariableLight (nSegment, nSide);
+CVariableLight *pLight = FindVariableLight (nSegment, nSide);
 
-if (flP)
-	flP->m_timer = 0x80000000;
+if (pLight)
+	pLight->m_timer = 0x80000000;
 }
 
 //-----------------------------------------------------------------------------
 //turn flickering off (because light has been turned on)
 void EnableVariableLight (int32_t nSegment,int32_t nSide)
 {
-	CVariableLight *flP = FindVariableLight (nSegment, nSide);
+	CVariableLight *pLight = FindVariableLight (nSegment, nSide);
 
-if (flP)
-	flP->m_timer = 0;
+if (pLight)
+	pLight->m_timer = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -990,12 +990,12 @@ return 0;
 //	dir =  0 -> you are dumb
 void ChangeLight (int16_t nSegment, int16_t nSide, int32_t dir)
 {
-	int32_t					i, j, k;
-	fix					dl, * segLightDeltaP;
-	tUVL*					uvlP;
-	CLightDeltaIndex*	dliP;
-	CLightDelta*		dlP;
-	int16_t					iSeg, iSide;
+	int32_t				i, j, k;
+	fix					dl, * pSegLightDelta;
+	tUVL*					pUVL;
+	CLightDeltaIndex*	pDeltaIndex;
+	CLightDelta*		pLightDelta;
+	int16_t				iSeg, iSide;
 
 if ((!gameStates.render.nLightingMethod || gameStates.app.bNostalgia) && gameData.render.lights.deltaIndices.Buffer ()) {
 	if (0 > (i = FindDLIndex (nSegment, nSide))) {
@@ -1004,35 +1004,35 @@ if ((!gameStates.render.nLightingMethod || gameStates.app.bNostalgia) && gameDat
 #endif
 		return;
 		}
-	if (!(dliP = gameData.render.lights.deltaIndices + i))
+	if (!(pDeltaIndex = gameData.render.lights.deltaIndices + i))
 		return;
-	for (; i < gameData.render.lights.nStatic; i++, dliP++) {
-		iSeg = dliP->nSegment;
-		iSide = dliP->nSide;
+	for (; i < gameData.render.lights.nStatic; i++, pDeltaIndex++) {
+		iSeg = pDeltaIndex->nSegment;
+		iSide = pDeltaIndex->nSide;
 #if !DBG
 		if ((iSeg > nSegment) || ((iSeg == nSegment) && (iSide > nSide)))
 			return;
 #endif
 		if ((iSeg == nSegment) && (iSide == nSide)) {
-			if (dliP->index >= gameData.render.lights.deltas.Length ())
+			if (pDeltaIndex->index >= gameData.render.lights.deltas.Length ())
 				continue;	//ouch - bogus data!
-			dlP = gameData.render.lights.deltas + dliP->index;
-			for (j = dliP->count; j; j--, dlP++) {
-				if (!dlP->bValid)
+			pLightDelta = gameData.render.lights.deltas + pDeltaIndex->index;
+			for (j = pDeltaIndex->count; j; j--, pLightDelta++) {
+				if (!pLightDelta->bValid)
 					continue;	//bogus data!
 #if DBG
-				if (dlP->nSegment == nDbgSeg)
+				if (pLightDelta->nSegment == nDbgSeg)
 					BRP;
 #endif
-				CSide* pSide = SEGMENT (dlP->nSegment)->Side (dlP->nSide);
-				uvlP = pSide->m_uvls;
-				segLightDeltaP = gameData.render.lights.segDeltas + dlP->nSegment * 6 + dlP->nSide;
-				for (k = 0; k < pSide->CornerCount (); k++, uvlP++) {
-					dl = dir * dlP->vertLight [k] * DL_SCALE;
-					uvlP->l += dl;
-					if (uvlP->l < 0)
-						uvlP->l = 0;
-					*segLightDeltaP += dl;
+				CSide* pSide = SEGMENT (pLightDelta->nSegment)->Side (pLightDelta->nSide);
+				pUVL = pSide->m_uvls;
+				pSegLightDelta = gameData.render.lights.segDeltas + pLightDelta->nSegment * 6 + pLightDelta->nSide;
+				for (k = 0; k < pSide->CornerCount (); k++, pUVL++) {
+					dl = dir * pLightDelta->vertLight [k] * DL_SCALE;
+					pUVL->l += dl;
+					if (pUVL->l < 0)
+						pUVL->l = 0;
+					*pSegLightDelta += dl;
 					}
 				}
 			}

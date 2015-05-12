@@ -387,7 +387,7 @@ void CPolyModel::FindMinMax (void)
 {
 	uint16_t		nVerts;
 	CFixVector*	vp;
-	uint16_t*		dataP, nType;
+	uint16_t*		pData, nType;
 
 CFixVector& big_mn = m_info.mins;
 CFixVector& big_mx = m_info.maxs;
@@ -396,13 +396,13 @@ for (int32_t i = 0; i < m_info.nModels; i++) {
 	CFixVector& mn = m_info.subModels.mins [i];
 	CFixVector& mx = m_info.subModels.maxs [i];
 	CFixVector& ofs = m_info.subModels.offsets [i];
-	dataP = reinterpret_cast<uint16_t*> (Buffer () + m_info.subModels.ptrs [i]);
-	nType = *dataP++;
+	pData = reinterpret_cast<uint16_t*> (Buffer () + m_info.subModels.ptrs [i]);
+	nType = *pData++;
 	Assert (nType == 7 || nType == 1);
-	nVerts = *dataP++;
+	nVerts = *pData++;
 	if (nType == 7)
-		dataP += 2;		//skip start & pad
-	vp = reinterpret_cast<CFixVector*> (dataP);
+		pData += 2;		//skip start & pad
+	vp = reinterpret_cast<CFixVector*> (pData);
 	mn = mx = *vp++;
 	nVerts--;
 	if (i == 0)
@@ -495,59 +495,59 @@ return (fix) (sqrt (dx * dx + dy * dy + dz + dz) /** 1.33*/);
 
 //------------------------------------------------------------------------------
 
-void CPolyModel::Check (uint8_t *dataP)
+void CPolyModel::Check (uint8_t *pData)
 {
 for (;;) {
-	switch (WORDVAL (dataP)) {
+	switch (WORDVAL (pData)) {
 		case OP_EOF:
 			return;
 
 		case OP_DEFPOINTS: {
-			int32_t n = WORDVAL (dataP + 2);
-			dataP += n * sizeof (CFixVector) + 4;
+			int32_t n = WORDVAL (pData + 2);
+			pData += n * sizeof (CFixVector) + 4;
 			break;
 			}
 
 		case OP_DEFP_START: {
-			int32_t n = WORDVAL (dataP + 2);
-			dataP += n * sizeof (CFixVector) + 8;
+			int32_t n = WORDVAL (pData + 2);
+			pData += n * sizeof (CFixVector) + 8;
 			break;
 			}
 
 		case OP_FLATPOLY: {
-			int32_t nVerts = WORDVAL (dataP + 2);
+			int32_t nVerts = WORDVAL (pData + 2);
 			Assert (nVerts > 2);		//must have 3 or more points
-			dataP += 30 + ((nVerts & ~1) + 1) * 2;
+			pData += 30 + ((nVerts & ~1) + 1) * 2;
 			break;
 			}
 
 		case OP_TMAPPOLY: {
-			int32_t nVerts = WORDVAL (dataP + 2);
+			int32_t nVerts = WORDVAL (pData + 2);
 			Assert (nVerts > 2);		//must have 3 or more points
-			if (WORDVAL (dataP + 28) > nHighestTexture)
-				nHighestTexture = WORDVAL (dataP + 28);
-			dataP += 30 + ((nVerts & ~1) + 1) * 2 + nVerts * 12;
+			if (WORDVAL (pData + 28) > nHighestTexture)
+				nHighestTexture = WORDVAL (pData + 28);
+			pData += 30 + ((nVerts & ~1) + 1) * 2 + nVerts * 12;
 			break;
 			}
 
 		case OP_SORTNORM:
-			Check (dataP + WORDVAL (dataP + 28));
-			Check (dataP + WORDVAL (dataP + 30));
-			dataP += 32;
+			Check (pData + WORDVAL (pData + 28));
+			Check (pData + WORDVAL (pData + 30));
+			pData += 32;
 			break;
 
 		case OP_RODBM:
-			dataP += 36;
+			pData += 36;
 			break;
 
 		case OP_SUBCALL: {
-			Check (dataP + WORDVAL (dataP + 16));
-			dataP += 20;
+			Check (pData + WORDVAL (pData + 16));
+			pData += 20;
 			break;
 			}
 
 		case OP_GLOW:
-			dataP += 4;
+			pData += 4;
 			break;
 
 		default:
@@ -568,7 +568,7 @@ Size ();
 
 //------------------------------------------------------------------------------
 
-void CPolyModel::ReadData (CPolyModel* defModelP, CFile& cf)
+void CPolyModel::ReadData (CPolyModel* pDefModel, CFile& cf)
 {
 #if DBG
 if (m_info.nId == nDbgModel)
@@ -577,10 +577,10 @@ if (m_info.nId == nDbgModel)
 if (!Create (m_info.nDataSize))
 	Error ("Not enough memory for game models.");
 CByteArray::Read (cf, m_info.nDataSize);
-if (defModelP) {
-	defModelP->Destroy ();
-	*defModelP = *this;
-	if (!defModelP->Data ())
+if (pDefModel) {
+	pDefModel->Destroy ();
+	*pDefModel = *this;
+	if (!pDefModel->Data ())
 		Error ("Not enough memory for game models.");
 	}
 #ifdef WORDS_NEED_ALIGNMENT
@@ -807,20 +807,20 @@ j = ReplacementModelCount ();
 for (i = 0; i < j; i++)
 	if ((pszHires = replacementModels [i].pszHires) && (strstr (pszHires, "laser") == pszHires))
 		break;
-for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
+for (tReplacementModel *pReplModel = replacementModels + i; i < j; i++, pReplModel++) {
 #endif
-	if ((pszHires = rmP->pszHires)) {
+	if ((pszHires = pReplModel->pszHires)) {
 		if (strstr (pszHires, "pminepack") == pszHires)
 			o.info.nType = OBJ_POWERUP;
 		else if (strstr (pszHires, "hostage") == pszHires)
 			o.info.nType = OBJ_HOSTAGE;
 		}
-	o.info.nId = (uint8_t) rmP->nId;
+	o.info.nId = (uint8_t) pReplModel->nId;
 #if DBG
 	if (o.info.nId == nDbgObjId)
 		BRP;
 #endif
-	o.rType.polyObjInfo.nModel = rmP->nModel;
+	o.rType.polyObjInfo.nModel = pReplModel->nModel;
 	if (!G3HaveModel (o.ModelId ())) {
 #if DBG
 		if (o.ModelId () == nDbgModel)

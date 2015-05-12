@@ -476,24 +476,24 @@ if ((objType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	
 if (nObject != -1) {
 	while (nObject != -1) {
-		CObject	*curObjP = OBJECT (nObject);
+		CObject	*pCurObj = OBJECT (nObject);
 
-		if ((special == ESCORT_GOAL_PLAYER_SPEW) && (curObjP->info.nFlags & OF_PLAYER_DROPPED))
+		if ((special == ESCORT_GOAL_PLAYER_SPEW) && (pCurObj->info.nFlags & OF_PLAYER_DROPPED))
 			return nObject;
-		if (curObjP->info.nType == objType) {
+		if (pCurObj->info.nType == objType) {
 			//	Don't find escort robots if looking for robot!
-			if (curObjP->IsGuideBot ())
+			if (pCurObj->IsGuideBot ())
 				;
 			else if (objId == -1)
 				return nObject;
-			else if (curObjP->info.nId == objId)
+			else if (pCurObj->info.nId == objId)
 				return nObject;
 			}
 		if (objType == OBJ_POWERUP) {
-			if (curObjP->info.contains.nCount && (curObjP->info.contains.nType == OBJ_POWERUP) && (curObjP->info.contains.nId == objId))
+			if (pCurObj->info.contains.nCount && (pCurObj->info.contains.nType == OBJ_POWERUP) && (pCurObj->info.contains.nId == objId))
 				return nObject;
 			}
-		nObject = curObjP->info.nNextInSeg;
+		nObject = pCurObj->info.nNextInSeg;
 		}
 	}
 return -1;
@@ -875,19 +875,19 @@ pObj->cType.laserInfo.parent.nSignature = gameData.objData.pConsole->info.nSigna
 int32_t MaybeBuddyFireMega (int16_t nObject)
 {
 	CObject		*pObj = OBJECT (nObject);
-	CObject		*buddyObjP = OBJECT (gameData.escort.nObjNum);
+	CObject		*pBuddyObj = OBJECT (gameData.escort.nObjNum);
 	fix			dist, dot;
 	CFixVector	vVecToRobot;
-	int32_t			nWeaponObj;
+	int32_t		nWeaponObj;
 
-vVecToRobot = buddyObjP->info.position.vPos - pObj->info.position.vPos;
+vVecToRobot = pBuddyObj->info.position.vPos - pObj->info.position.vPos;
 dist = CFixVector::Normalize (vVecToRobot);
 if (dist > I2X (100))
 	return 0;
-dot = CFixVector::Dot (vVecToRobot, buddyObjP->info.position.mOrient.m.dir.f);
+dot = CFixVector::Dot (vVecToRobot, pBuddyObj->info.position.mOrient.m.dir.f);
 if (dot < I2X (1)/2)
 	return 0;
-if (!ObjectToObjectVisibility (buddyObjP, pObj, FQ_TRANSWALL))
+if (!ObjectToObjectVisibility (pBuddyObj, pObj, FQ_TRANSWALL))
 	return 0;
 if (gameData.weapons.info [MEGAMSL_ID].renderType == 0) {
 #if TRACE
@@ -900,7 +900,7 @@ if (gameData.weapons.info [MEGAMSL_ID].renderType == 0) {
 console.printf (CON_DBG, "Buddy firing mega in frame %i\n", gameData.app.nFrameCount);
 #endif
 BuddyMessage (TXT_BUDDY_GAHOOGA);
-nWeaponObj = CreateNewWeaponSimple (&buddyObjP->info.position.mOrient.m.dir.f, &buddyObjP->info.position.vPos, nObject, MEGAMSL_ID, 1);
+nWeaponObj = CreateNewWeaponSimple (&pBuddyObj->info.position.mOrient.m.dir.f, &pBuddyObj->info.position.vPos, nObject, MEGAMSL_ID, 1);
 if (nWeaponObj != -1)
 	BashBuddyWeaponInfo (nWeaponObj);
 return 1;
@@ -911,20 +911,20 @@ return 1;
 int32_t MaybeBuddyFireSmart (int16_t nObject)
 {
 	CObject*	pObj = OBJECT (nObject);
-	CObject*	buddyObjP = OBJECT (gameData.escort.nObjNum);
+	CObject*	pBuddyObj = OBJECT (gameData.escort.nObjNum);
 	fix		dist;
 	int16_t	nWeaponObj;
 
-dist = CFixVector::Dist(buddyObjP->info.position.vPos, pObj->info.position.vPos);
+dist = CFixVector::Dist(pBuddyObj->info.position.vPos, pObj->info.position.vPos);
 if (dist > I2X (80))
 	return 0;
-if (!ObjectToObjectVisibility (buddyObjP, pObj, FQ_TRANSWALL))
+if (!ObjectToObjectVisibility (pBuddyObj, pObj, FQ_TRANSWALL))
 	return 0;
 #if TRACE
 console.printf (CON_DBG, "Buddy firing smart missile in frame %i\n", gameData.app.nFrameCount);
 #endif
 BuddyMessage (TXT_BUDDY_WHAMMO);
-nWeaponObj = CreateNewWeaponSimple (&buddyObjP->info.position.mOrient.m.dir.f, &buddyObjP->info.position.vPos, nObject, SMARTMSL_ID, 1);
+nWeaponObj = CreateNewWeaponSimple (&pBuddyObj->info.position.mOrient.m.dir.f, &pBuddyObj->info.position.vPos, nObject, SMARTMSL_ID, 1);
 if (nWeaponObj != -1)
 	BashBuddyWeaponInfo (nWeaponObj);
 return 1;

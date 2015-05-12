@@ -547,7 +547,7 @@ return 1;
 int32_t CTrigger::DoChangeWalls (void)
 {
 	CSegment*	pSeg, * pConnSeg;
-	CWall*		pWall, * connWallP;
+	CWall*		pWall, * pConnWall;
 	int32_t 			nNewWallType, bChanged = 0;
 	int16_t 		nSide, nConnSide;
 	bool			bForceField;
@@ -596,8 +596,8 @@ for (int32_t i = 0; i < m_nLinks; i++) {
 #endif
 		continue;
 		}
-	connWallP = pConnSeg->Wall (nConnSide);
-	if ((pWall->nType == nNewWallType) && (!connWallP || !bForceField || (connWallP->nType == nNewWallType)))
+	pConnWall = pConnSeg->Wall (nConnSide);
+	if ((pWall->nType == nNewWallType) && (!pConnWall || !bForceField || (pConnWall->nType == nNewWallType)))
 		continue;		//already in correct state, so skip
 
 	bChanged = 1;
@@ -611,13 +611,13 @@ for (int32_t i = 0; i < m_nLinks; i++) {
 					audio.CreateSegmentSound (SOUND_FORCEFIELD_OFF, pSeg->Index (), nSide, vPos, 0, I2X (1));
 				pWall->nType = nNewWallType;
 				audio.DestroySegmentSound (pSeg->Index (), nSide, SOUND_FORCEFIELD_HUM);
-				if (connWallP) {
-					connWallP->nType = nNewWallType;
+				if (pConnWall) {
+					pConnWall->nType = nNewWallType;
 					audio.DestroySegmentSound (SEG_IDX (pConnSeg), nConnSide, SOUND_FORCEFIELD_HUM);
 					}
 				if (SHOW_DYN_LIGHT) {
 					lightManager.Toggle (pSeg->Index (), nSide, -1, 0);
-					if (connWallP)
+					if (pConnWall)
 						lightManager.Toggle (SEG_IDX (pConnSeg), nConnSide, -1, 0);
 					}
 				}
@@ -630,11 +630,11 @@ for (int32_t i = 0; i < m_nLinks; i++) {
 				CFixVector vPos = pSeg->SideCenter (nSide);
 				audio.CreateSegmentSound (SOUND_FORCEFIELD_HUM, pSeg->Index (), nSide, vPos, 1, I2X (1) / 2);
 				pWall->nType = nNewWallType;
-				if (connWallP)
-					connWallP->nType = nNewWallType;
+				if (pConnWall)
+					pConnWall->nType = nNewWallType;
 				if (SHOW_DYN_LIGHT) {
 					lightManager.Toggle (pSeg->Index (), nSide, -1, 1);
-					if (connWallP)
+					if (pConnWall)
 						lightManager.Toggle (SEG_IDX (pConnSeg), nConnSide, -1, 1);
 					}
 				}
@@ -642,13 +642,13 @@ for (int32_t i = 0; i < m_nLinks; i++) {
 
 		case TT_ILLUSORY_WALL:
 			pWall->nType = nNewWallType;
-			if (connWallP)
-				connWallP->nType = nNewWallType;
+			if (pConnWall)
+				pConnWall->nType = nNewWallType;
 			break;
 		}
 	KillStuckObjects (pWall - WALLS);
-	if (connWallP)
-		KillStuckObjects (connWallP - WALLS);
+	if (pConnWall)
+		KillStuckObjects (pConnWall - WALLS);
   	}
 return bChanged;
 }

@@ -469,7 +469,7 @@ if (nSubObj == 0)
 #endif
 mType.physInfo.mass =
 #if 0
-	(fix) ((double) mType.physInfo.mass * ObjectVolume (debrisP) / ObjectVolume (this));
+	(fix) ((double) mType.physInfo.mass * ObjectVolume (pDebris) / ObjectVolume (this));
 #else
 	FixMulDiv (mType.physInfo.mass, info.xSize, info.xSize);
 #endif

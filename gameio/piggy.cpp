@@ -350,7 +350,7 @@ return bMemInited = 1;
 //returns the size of all the bitmap data
 void PiggyInitPigFile (char *filename)
 {
-	CFile					*cfP = cfPiggy;
+	CFile					*pFile = cfPiggy;
 	char					szName [20];
 	char					szNameRead [16];
 	int32_t				nHeaderSize, nBitmapNum, nDataStart, i;
@@ -365,12 +365,12 @@ void PiggyInitPigFile (char *filename)
 if (filename) {
 	if (stricmp (szPigName, filename))
 		strcpy (szPigName, filename);
-	else if (cfP->File ())
+	else if (pFile->File ())
 		return;
 	else
 		bReload = false;
 	}
-else if (!*szPigName || cfP->File ())
+else if (!*szPigName || pFile->File ())
 	return;
 if (bRegister)
 	PiggyCloseFile ();             //close old pig if still open
@@ -378,28 +378,28 @@ if (bRegister)
 strlwr (szPigName);
 if (stricmp (szPigName, DefaultPigFile (1)) && !CFile::Exist (szPigName, gameFolders.game.szData [0], 0))
 	strcpy (szPigName, DefaultPigFile (1));
-if (!cfP->Open (szPigName, gameFolders.game.szData [0], "rb", 0)) {
-	if (!CopyPigFileFromCD (*cfP, szPigName))
+if (!pFile->Open (szPigName, gameFolders.game.szData [0], "rb", 0)) {
+	if (!CopyPigFileFromCD (*pFile, szPigName))
 		return;
 	}
 if (!bReload)
 	return;
 
-int32_t pig_id = cfP->ReadInt ();
-int32_t pigVersion = cfP->ReadInt ();
+int32_t pig_id = pFile->ReadInt ();
+int32_t pigVersion = pFile->ReadInt ();
 if (pig_id != PIGFILE_ID || pigVersion != PIGFILE_VERSION) {
-	cfP->Close ();              //out of date pig
+	pFile->Close ();              //out of date pig
 	return;
 	}
 strncpy (szCurrentPigFile [0], szPigName, sizeof (szCurrentPigFile [0]));
-nBitmapNum = cfP->ReadInt ();
+nBitmapNum = pFile->ReadInt ();
 nHeaderSize = nBitmapNum * sizeof (tPIGBitmapHeader);
-nDataStart = nHeaderSize + (int32_t) cfP->Tell ();
+nDataStart = nHeaderSize + (int32_t) pFile->Tell ();
 if (bRegister)
 	gameData.pig.tex.nBitmaps [0] = 1;
 SetDataVersion (0);
 for (i = 0; i < nBitmapNum; i++) {
-	PIGBitmapHeaderRead (&bmh, *cfP);
+	PIGBitmapHeaderRead (&bmh, *pFile);
 	memcpy (szNameRead, bmh.name, 8);
 	szNameRead [8] = 0;
 	if (bmh.dflags & DBM_FLAG_ABM)
@@ -587,10 +587,10 @@ if (i == 1)
 
 //------------------------------------------------------------------------------
 
-int32_t IsMacDataFile (CFile *cfP, int32_t bD1)
+int32_t IsMacDataFile (CFile *pFile, int32_t bD1)
 {
-if (cfP == cfPiggy + bD1) {
-	switch (cfP->Length ()) {
+if (pFile == cfPiggy + bD1) {
+	switch (pFile->Length ()) {
 		case MAC_ALIEN1_PIGSIZE:
 		case MAC_ALIEN2_PIGSIZE:
 		case MAC_FIRE_PIGSIZE:
@@ -612,7 +612,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t ReadBitmap (CFile* cfP, CBitmap* pBm, int32_t nSize, bool bD1);
+int32_t ReadBitmap (CFile* pFile, CBitmap* pBm, int32_t nSize, bool bD1);
 
 int32_t PiggyBitmapReadD1 (
 	CFile					&cf,

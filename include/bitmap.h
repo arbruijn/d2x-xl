@@ -34,7 +34,7 @@
 #define BM_FRAMES(_bmP)			((_bmP)->m_info.frames)
 #define BM_CURFRAME(_bmP)		((_bmP)->m_info.frames.pCurrent)
 #define BM_OVERRIDE(_bmP)		((_bmP)->m_info.pOverride)
-#define BM_MASK(_bmP)			((_bmP)->m_info.override.maskP)
+#define BM_MASK(_bmP)			((_bmP)->m_info.override.pMask)
 #define BM_PARENT(_bmP)			((_bmP)->m_info.override.pParent)
 
 #define MAX_BMP_SIZE(width, height) (4 + ((width) + 2) * (height))
@@ -116,7 +116,7 @@ class CBitmapInfo {
 		int32_t				supertranspFrames [4];
 		CBitmap*				pParent;
 		CBitmap*				pOverride;
-		CBitmap*				maskP;
+		CBitmap*				pMask;
 		CBitmapFrameInfo	frames;
 		CPalette*			palette;
 		CTexture				texture;
@@ -214,7 +214,7 @@ class CBitmap : public CArray< uint8_t > {
 		int32_t RLERemap (uint8_t *colorMap, int32_t maxLen);
 		int32_t RLEExpand (uint8_t *colorMap, int32_t bSwapTranspColor);
 		int32_t RLECompress (void);
-		void ExpandTo (CBitmap *destP);
+		void ExpandTo (CBitmap *pDest);
 
 		inline uint8_t FrameCount (void) { return ((m_info.nType != BM_TYPE_ALT) && Parent ()) ? m_info.pParent->FrameCount () : m_info.frames.nCount; }
 		inline uint8_t FrameIndex (void) { return m_info.frames.nCurrent; }
@@ -222,7 +222,7 @@ class CBitmap : public CArray< uint8_t > {
 
 		inline CBitmap *CurFrame (void) { return m_info.frames.pCurrent; }
 		inline CBitmap *Override (void) { return m_info.pOverride; }
-		inline CBitmap *Mask (void) { return m_info.maskP; }
+		inline CBitmap *Mask (void) { return m_info.pMask; }
 		inline CBitmap *Parent (void) { return m_info.pParent; }
 
 		inline tBmProps* Props (void) { return &m_info.props; }
@@ -232,10 +232,10 @@ class CBitmap : public CArray< uint8_t > {
 		inline void SetFrameCount (uint8_t nFrameCount) { m_info.frames.nCount = nFrameCount; }
 		inline void SetFrameCount (void) {  m_info.frames.nCount = m_info.props.h / m_info.props.w; }
 		void SetParent (CBitmap *pParent) { m_info.pParent = pParent; }
-		void SetMask (CBitmap *maskP) { m_info.maskP = maskP; }
+		void SetMask (CBitmap *pMask) { m_info.pMask = pMask; }
 		CBitmap* SetOverride (CBitmap *pOverride);
-		CBitmap* SetCurFrame (CBitmap *frameP) {
-			m_info.frames.nCurrent = int32_t ((m_info.frames.pCurrent = frameP) - m_info.frames.pBm);
+		CBitmap* SetCurFrame (CBitmap *pFrame) {
+			m_info.frames.nCurrent = int32_t ((m_info.frames.pCurrent = pFrame) - m_info.frames.pBm);
 			return m_info.frames.pCurrent;
 			}
 		CBitmap* SetCurFrame (int32_t nFrame) {
@@ -346,18 +346,18 @@ class CBitmap : public CArray< uint8_t > {
 						int32_t xSrc, int32_t ySrc, int32_t wSrc, int32_t hSrc,
 						int32_t bTransp = 0, int32_t bMipMaps = 0, int32_t bSmoothe = 0,
 						float fAlpha = 1.0f, CFloatVector* pColor = NULL);
-		inline void Render (CRectangle* destP, int32_t bTransp = 0, int32_t bMipMaps = 0, int32_t bSmoothe = 0, float fAlpha = 1.0f)
-			{ Render (destP, 0, 0, destP->Width (), destP->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, bSmoothe, fAlpha); }
+		inline void Render (CRectangle* pDest, int32_t bTransp = 0, int32_t bMipMaps = 0, int32_t bSmoothe = 0, float fAlpha = 1.0f)
+			{ Render (pDest, 0, 0, pDest->Width (), pDest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, bSmoothe, fAlpha); }
 		void RenderStretched (CRectangle* dest = NULL, int32_t x = 0, int32_t y = 0);
 		void RenderFixed (CRectangle* dest = NULL, int32_t x = 0, int32_t y = 0, int32_t w = 0, int32_t h = 0);
 
 		void Blit (CBitmap* dest, int32_t dx, int32_t dy, int32_t w, int32_t h, int32_t sx, int32_t sy, int32_t bTransp);
 		void BlitClipped (CBitmap* dest = NULL, int32_t dx = 0, int32_t dy = 0, int32_t w = -1, int32_t h = -1, int32_t sx = 0, int32_t sy = 0);
 		void BlitClipped (int32_t xSrc, int32_t ySrc);
-		void BlitScaled (CBitmap* destP);
+		void BlitScaled (CBitmap* pDest);
 		void ScreenCopy (CBitmap* dest, int32_t dx, int32_t dy, int32_t w, int32_t h, int32_t sx, int32_t sy);
 
-		void OglVertices (int32_t x, int32_t y, int32_t w = 0, int32_t h = 0, int32_t scale = I2X (1), int32_t orient = 0, CRectangle* destP = NULL);
+		void OglVertices (int32_t x, int32_t y, int32_t w = 0, int32_t h = 0, int32_t scale = I2X (1), int32_t orient = 0, CRectangle* pDest = NULL);
 		void OglTexCoord (void);
 		void SetTexCoord (GLfloat u, GLfloat v, int32_t orient);
 		void SetTexCoord (GLfloat u, GLfloat v, int32_t orient, tTexCoord2f& texCoord);

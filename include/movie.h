@@ -99,7 +99,7 @@ class CMovieManager {
 		int32_t					m_nLib;
 		int32_t					m_nMovies;
 		int32_t					m_nMovie;
-		CMovie*				m_robotP;
+		CMovie*				m_pRobot;
 
 	public:
 		CMovieManager () { Init (); }

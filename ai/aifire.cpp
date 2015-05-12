@@ -126,7 +126,7 @@ int32_t LeadTarget (CObject *pObj, CFixVector *vFirePoint, CFixVector *vBelieved
 	fix			dot, xTargetSpeed, xDistToTarget, xMaxWeaponSpeed, xProjectedTime;
 	CFixVector	vTargetMovementDir, vVecToTarget;
 	int32_t		nWeaponType;
-	CWeaponInfo	*wiP;
+	CWeaponInfo	*pWeaponInfo;
 	tRobotInfo	*pRobotInfo = ROBOTINFO (pObj);
 
 if (!pRobotInfo)
@@ -150,14 +150,14 @@ if ((nGuns == 0) && (pRobotInfo->nSecWeaponType != -1))
 	nWeaponType = pRobotInfo->nSecWeaponType;
 if (nWeaponType < 0)
 	return 0;
-wiP = gameData.weapons.info + nWeaponType;
-xMaxWeaponSpeed = wiP->speed [gameStates.app.nDifficultyLevel];
+pWeaponInfo = gameData.weapons.info + nWeaponType;
+xMaxWeaponSpeed = pWeaponInfo->speed [gameStates.app.nDifficultyLevel];
 if (xMaxWeaponSpeed < I2X (1))
 	return 0;
 //	Matter weapons:
 //	At Rookie or Trainee, don't lead at all.
 //	At higher skill levels, don't lead as well.  Accomplish this by screwing up xMaxWeaponSpeed.
-if (wiP->matter) {
+if (pWeaponInfo->matter) {
 	if (gameStates.app.nDifficultyLevel <= 1)
 		return 0;
 	else

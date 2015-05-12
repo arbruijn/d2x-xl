@@ -846,25 +846,25 @@ if (!pRobotInfo)
 
 //	Trying to move towards pPlayer.  If forward vector much different than velocity vector,
 //	bash velocity vector twice as much towards pPlayer as usual.
-tPhysicsInfo *piP = &pObj->mType.physInfo;
-CFixVector vel = piP->velocity;
+tPhysicsInfo& pi = &pObj->mType.physInfo;
+CFixVector vel = pi.velocity;
 CFixVector::Normalize (vel);
 fix dot = CFixVector::Dot (vel, pObj->info.position.mOrient.m.dir.f);
 
 if (dot < I2X (3) / 4) {
 	//	This funny code is supposed to slow down the pRobot and move his velocity towards his direction
 	//	more quickly than the general code
-	piP->velocity.v.coord.x = piP->velocity.v.coord.x/2 + FixMul((*vec_goal).v.coord.x, gameData.time.xFrame * 32);
-	piP->velocity.v.coord.y = piP->velocity.v.coord.y/2 + FixMul((*vec_goal).v.coord.y, gameData.time.xFrame * 32);
-	piP->velocity.v.coord.z = piP->velocity.v.coord.z/2 + FixMul((*vec_goal).v.coord.z, gameData.time.xFrame * 32);
+	pi.velocity.v.coord.x = pi.velocity.v.coord.x/2 + FixMul((*vec_goal).v.coord.x, gameData.time.xFrame * 32);
+	pi.velocity.v.coord.y = pi.velocity.v.coord.y/2 + FixMul((*vec_goal).v.coord.y, gameData.time.xFrame * 32);
+	pi.velocity.v.coord.z = pi.velocity.v.coord.z/2 + FixMul((*vec_goal).v.coord.z, gameData.time.xFrame * 32);
 	} 
 else {
-	piP->velocity.v.coord.x += FixMul((*vec_goal).v.coord.x, gameData.time.xFrame * 64) * (gameStates.app.nDifficultyLevel + 5) / 4;
-	piP->velocity.v.coord.y += FixMul((*vec_goal).v.coord.y, gameData.time.xFrame * 64) * (gameStates.app.nDifficultyLevel + 5) / 4;
-	piP->velocity.v.coord.z += FixMul((*vec_goal).v.coord.z, gameData.time.xFrame * 64) * (gameStates.app.nDifficultyLevel + 5) / 4;
+	pi.velocity.v.coord.x += FixMul((*vec_goal).v.coord.x, gameData.time.xFrame * 64) * (gameStates.app.nDifficultyLevel + 5) / 4;
+	pi.velocity.v.coord.y += FixMul((*vec_goal).v.coord.y, gameData.time.xFrame * 64) * (gameStates.app.nDifficultyLevel + 5) / 4;
+	pi.velocity.v.coord.z += FixMul((*vec_goal).v.coord.z, gameData.time.xFrame * 64) * (gameStates.app.nDifficultyLevel + 5) / 4;
 	}
 
-fix speed = piP->velocity.Mag ();
+fix speed = pi.velocity.Mag ();
 fix xMaxSpeed = pObj->MaxSpeed ();
 
 //	Green guy attacks twice as fast as he moves away.
@@ -872,9 +872,9 @@ if (pRobotInfo->attackType == 1)
 	xMaxSpeed *= 2;
 
 if (speed > xMaxSpeed) {
-	piP->velocity.v.coord.x = (piP->velocity.v.coord.x * 3) / 4;
-	piP->velocity.v.coord.y = (piP->velocity.v.coord.y * 3) / 4;
-	piP->velocity.v.coord.z = (piP->velocity.v.coord.z * 3) / 4;
+	pi.velocity.v.coord.x = (pi.velocity.v.coord.x * 3) / 4;
+	pi.velocity.v.coord.y = (pi.velocity.v.coord.y * 3) / 4;
+	pi.velocity.v.coord.z = (pi.velocity.v.coord.z * 3) / 4;
 	}
 }
 
@@ -889,7 +889,7 @@ void move_towards_player(CObject *pObj, CFixVector *vec_to_player)
 //	I am ashamed of this: fast_flag == -1 means Normal slide about.  fast_flag = 0 means no evasion.
 void move_around_player(CObject *pObj, CFixVector *vec_to_player, int32_t fast_flag)
 {
-	tPhysicsInfo	*piP = &pObj->mType.physInfo;
+	tPhysicsInfo&	pi = pObj->mType.physInfo;
 	fix				speed;
 	tRobotInfo		*pRobotInfo = &gameData.botData.info [1][pObj->info.nId];
 	int32_t			nObject = pObj->Index ();
@@ -960,13 +960,13 @@ if (fast_flag > 0) {
 		}
 	}
 
-piP->velocity += vEvade;
+pi.velocity += vEvade;
 
-speed = piP->velocity.Mag ();
+speed = pi.velocity.Mag ();
 if (speed > pObj->MaxSpeed ()) {
-	piP->velocity.v.coord.x = (piP->velocity.v.coord.x*3)/4;
-	piP->velocity.v.coord.y = (piP->velocity.v.coord.y*3)/4;
-	piP->velocity.v.coord.z = (piP->velocity.v.coord.z*3)/4;
+	pi.velocity.v.coord.x = (pi.velocity.v.coord.x*3)/4;
+	pi.velocity.v.coord.y = (pi.velocity.v.coord.y*3)/4;
+	pi.velocity.v.coord.z = (pi.velocity.v.coord.z*3)/4;
 	}
 }
 
@@ -974,38 +974,38 @@ if (speed > pObj->MaxSpeed ()) {
 void move_away_from_player(CObject *pObj, CFixVector *vec_to_player, int32_t attackType)
 {
 	fix				speed;
-	tPhysicsInfo	*piP = &pObj->mType.physInfo;
+	tPhysicsInfo&	pi = pObj->mType.physInfo;
 	tRobotInfo		*pRobotInfo = &gameData.botData.info [1][pObj->info.nId];
 	int32_t			objref;
 
-	piP->velocity -= *vec_to_player * (gameData.time.xFrame * 16);
+	pi.velocity -= *vec_to_player * (gameData.time.xFrame * 16);
 
 if (attackType) {
 	//	Get value in 0..3 to choose evasion direction.
 	objref = (pObj->Index () ^ ((gameData.app.nFrameCount + 3 * pObj->Index ()) >> 5)) & 3;
 	switch (objref) {
 		case 0:	
-			piP->velocity += pObj->info.position.mOrient.m.dir.u * ( gameData.time.xFrame << 5);	
+			pi.velocity += pObj->info.position.mOrient.m.dir.u * ( gameData.time.xFrame << 5);	
 			break;
 		case 1:	
-			piP->velocity += pObj->info.position.mOrient.m.dir.u * (-gameData.time.xFrame << 5);	
+			pi.velocity += pObj->info.position.mOrient.m.dir.u * (-gameData.time.xFrame << 5);	
 			break;
 		case 2:	
-			piP->velocity += pObj->info.position.mOrient.m.dir.r * ( gameData.time.xFrame << 5);	
+			pi.velocity += pObj->info.position.mOrient.m.dir.r * ( gameData.time.xFrame << 5);	
 			break;
 		case 3:	
-			piP->velocity += pObj->info.position.mOrient.m.dir.r * (-gameData.time.xFrame << 5);	
+			pi.velocity += pObj->info.position.mOrient.m.dir.r * (-gameData.time.xFrame << 5);	
 			break;
 		default:	
 			BRP;	//	Impossible, bogus value on objref, must be in 0..3
 		}
 	}
 
-speed = piP->velocity.Mag();
+speed = pi.velocity.Mag();
 if (speed > pObj->MaxSpeed ()) {
-	piP->velocity.v.coord.x = (piP->velocity.v.coord.x*3)/4;
-	piP->velocity.v.coord.y = (piP->velocity.v.coord.y*3)/4;
-	piP->velocity.v.coord.z = (piP->velocity.v.coord.z*3)/4;
+	pi.velocity.v.coord.x = (pi.velocity.v.coord.x*3)/4;
+	pi.velocity.v.coord.y = (pi.velocity.v.coord.y*3)/4;
+	pi.velocity.v.coord.z = (pi.velocity.v.coord.z*3)/4;
 	}
 }
 
@@ -1015,22 +1015,22 @@ if (speed > pObj->MaxSpeed ()) {
 //	If the flag evade_only is set, then only allowed to evade, not allowed to move otherwise (must have mode == D1_AIM_STILL).
 void ai_move_relative_to_player(CObject *pObj, tAILocalInfo *pLocalInfo, fix dist_to_player, CFixVector *vec_to_player, fix circle_distance, int32_t evade_only)
 {
-	CObject		*dangerObjP;
+	CObject		*pDangerObj;
 	tRobotInfo	*pRobotInfo = &gameData.botData.info [1][pObj->info.nId];
 
 	//	See if should take avoidance.
 
 // New way, green guys don't evade:	if ((pRobotInfo->attackType == 0) && (pObj->cType.aiInfo.nDangerLaser != -1)) {
 	if (pObj->cType.aiInfo.nDangerLaser != -1) {
-		dangerObjP = OBJECT (pObj->cType.aiInfo.nDangerLaser);
+		pDangerObj = OBJECT (pObj->cType.aiInfo.nDangerLaser);
 
-		if ((dangerObjP->info.nType == OBJ_WEAPON) && (dangerObjP->info.nSignature == pObj->cType.aiInfo.nDangerLaserSig)) {
+		if ((pDangerObj->info.nType == OBJ_WEAPON) && (pDangerObj->info.nSignature == pObj->cType.aiInfo.nDangerLaserSig)) {
 			fix			dot, dist_to_laser, fieldOfView;
 			CFixVector	vec_to_laser, laser_fVec;
 
 			fieldOfView = gameData.botData.info [1][pObj->info.nId].fieldOfView [gameStates.app.nDifficultyLevel];
 
-			vec_to_laser = dangerObjP->info.position.vPos - pObj->info.position.vPos;
+			vec_to_laser = pDangerObj->info.position.vPos - pObj->info.position.vPos;
 			dist_to_laser = CFixVector::Normalize (vec_to_laser);
 			dot = CFixVector::Dot (vec_to_laser, pObj->info.position.mOrient.m.dir.f);
 
@@ -1040,13 +1040,13 @@ void ai_move_relative_to_player(CObject *pObj, tAILocalInfo *pLocalInfo, fix dis
 
 				//	The laser is seen by the pRobot, see if it might hit the pRobot.
 				//	Get the laser's direction.  If it's a polyobj, it can be gotten cheaply from the orientation matrix.
-				if (dangerObjP->info.renderType == RT_POLYOBJ)
-					laser_fVec = dangerObjP->info.position.mOrient.m.dir.f;
+				if (pDangerObj->info.renderType == RT_POLYOBJ)
+					laser_fVec = pDangerObj->info.position.mOrient.m.dir.f;
 				else {		//	Not a polyobj, get velocity and Normalize.
-					laser_fVec = dangerObjP->mType.physInfo.velocity;	//dangerObjP->info.position.mOrient.m.v.f;
+					laser_fVec = pDangerObj->mType.physInfo.velocity;	//pDangerObj->info.position.mOrient.m.v.f;
 					CFixVector::Normalize (laser_fVec);
 				}
-				laser_vec_to_robot = pObj->info.position.vPos - dangerObjP->info.position.vPos;
+				laser_vec_to_robot = pObj->info.position.vPos - pDangerObj->info.position.vPos;
 				CFixVector::Normalize (laser_vec_to_robot);
 				laser_robot_dot = CFixVector::Dot (laser_fVec, laser_vec_to_robot);
 

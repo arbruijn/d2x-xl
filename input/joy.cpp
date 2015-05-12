@@ -113,8 +113,8 @@ if (jae->which)
 
 int32_t JoyInit (void)
 {
-	int32_t				i, j, n;
-	tSdlJoystick	*joyP = sdlJoysticks;
+	int32_t			i, j, n;
+	tSdlJoystick	*pJoystick = sdlJoysticks;
 
 if (SDL_Init (SDL_INIT_JOYSTICK) < 0) {
 #if TRACE
@@ -132,41 +132,41 @@ for (i = 0; (i < n) && (gameStates.input.nJoysticks < MAX_JOYSTICKS); i++) {
 #if TRACE
 	console.printf(CON_VERBOSE, "sdl-joystick %d: %s\n", i, SDL_JoystickName (i));
 #endif
-	joyP->handle = SDL_JoystickOpen (i);
-	if (joyP->handle) {
+	pJoystick->handle = SDL_JoystickOpen (i);
+	if (pJoystick->handle) {
 		bJoyPresent = 1;
-		if((joyP->nAxes = SDL_JoystickNumAxes (joyP->handle)) > MAX_AXES_PER_JOYSTICK) {
-			Warning (TXT_JOY_AXESNO, joyP->nAxes, MAX_AXES_PER_JOYSTICK);
-			joyP->nAxes = MAX_AXES_PER_JOYSTICK;
+		if((pJoystick->nAxes = SDL_JoystickNumAxes (pJoystick->handle)) > MAX_AXES_PER_JOYSTICK) {
+			Warning (TXT_JOY_AXESNO, pJoystick->nAxes, MAX_AXES_PER_JOYSTICK);
+			pJoystick->nAxes = MAX_AXES_PER_JOYSTICK;
 			}
 
-		if((joyP->nButtons = SDL_JoystickNumButtons (joyP->handle)) > MAX_BUTTONS_PER_JOYSTICK) {
-			Warning (TXT_JOY_BUTTONNO, joyP->nButtons, MAX_BUTTONS_PER_JOYSTICK);
-			joyP->nButtons = MAX_BUTTONS_PER_JOYSTICK;
+		if((pJoystick->nButtons = SDL_JoystickNumButtons (pJoystick->handle)) > MAX_BUTTONS_PER_JOYSTICK) {
+			Warning (TXT_JOY_BUTTONNO, pJoystick->nButtons, MAX_BUTTONS_PER_JOYSTICK);
+			pJoystick->nButtons = MAX_BUTTONS_PER_JOYSTICK;
 			}
-		if((joyP->nHats = SDL_JoystickNumHats (joyP->handle)) > MAX_HATS_PER_JOYSTICK) {
-			Warning (TXT_JOY_HATNO, joyP->nHats, MAX_HATS_PER_JOYSTICK);
-			joyP->nHats = MAX_HATS_PER_JOYSTICK;
+		if((pJoystick->nHats = SDL_JoystickNumHats (pJoystick->handle)) > MAX_HATS_PER_JOYSTICK) {
+			Warning (TXT_JOY_HATNO, pJoystick->nHats, MAX_HATS_PER_JOYSTICK);
+			pJoystick->nHats = MAX_HATS_PER_JOYSTICK;
 			}
 #if TRACE
-		console.printf(CON_VERBOSE, "sdl-joystick: %d axes\n", joyP->nAxes);
-		console.printf(CON_VERBOSE, "sdl-joystick: %d buttons\n", joyP->nButtons);
-		console.printf(CON_VERBOSE, "sdl-joystick: %d hats\n", joyP->nHats);
+		console.printf(CON_VERBOSE, "sdl-joystick: %d axes\n", pJoystick->nAxes);
+		console.printf(CON_VERBOSE, "sdl-joystick: %d buttons\n", pJoystick->nButtons);
+		console.printf(CON_VERBOSE, "sdl-joystick: %d hats\n", pJoystick->nHats);
 #endif
 		memset (&joyInfo, 0, sizeof (joyInfo));
-		for (j = 0; j < joyP->nAxes; j++)
-			joyP->axisMap [j] = joyInfo.nAxes++;
-		for (j = 0; j < joyP->nButtons; j++)
-			joyP->buttonMap [j] = joyInfo.nButtons++;
-		for (j = 0; j < joyP->nHats; j++) {
-			joyP->hatMap [j] = joyInfo.nButtons;
+		for (j = 0; j < pJoystick->nAxes; j++)
+			pJoystick->axisMap [j] = joyInfo.nAxes++;
+		for (j = 0; j < pJoystick->nButtons; j++)
+			pJoystick->buttonMap [j] = joyInfo.nButtons++;
+		for (j = 0; j < pJoystick->nHats; j++) {
+			pJoystick->hatMap [j] = joyInfo.nButtons;
 			//a hat counts as four buttons
 			joybutton_text [joyInfo.nButtons++] = i ? TNUM_HAT2_U : TNUM_HAT_U;
 			joybutton_text [joyInfo.nButtons++] = i ? TNUM_HAT2_R : TNUM_HAT_R;
 			joybutton_text [joyInfo.nButtons++] = i ? TNUM_HAT2_D : TNUM_HAT_D;
 			joybutton_text [joyInfo.nButtons++] = i ? TNUM_HAT2_L : TNUM_HAT_L;
 			}
-		joyP++;
+		pJoystick++;
 		gameStates.input.nJoysticks++;
 		}
 	else {

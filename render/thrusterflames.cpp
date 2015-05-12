@@ -132,16 +132,16 @@ if (!tiP)
 	tiP = &m_ti;
 
 	tThrusterInfo	ti = *tiP;
-	int32_t				i, bMissile = pObj->IsMissile ();
+	int32_t			i, bMissile = pObj->IsMissile ();
 
-m_pt = NULL;
+m_pData = NULL;
 ti.pp = NULL;
-ti.mtP = gameData.models.thrusters + pObj->ModelId ();
-m_nThrusters = ti.mtP->nCount;
+ti.pThrusters = gameData.models.thrusters + pObj->ModelId ();
+m_nThrusters = ti.pThrusters->nCount;
 if (gameOpts->render.bHiresModels [0] && (pObj->info.nType == OBJ_PLAYER) && !GetASEModel (pObj->ModelId ())) {
 	if (!m_bSpectate) {
-		m_pt = gameData.render.thrusters + pObj->info.nId;
-		ti.pp = m_pt->path.GetPoint ();
+		m_pData = gameData.render.thrusters + pObj->info.nId;
+		ti.pp = m_pData->path.GetPoint ();
 		}
 	ti.fLength [0] =
 	ti.fLength [1] = ti.fScale;
@@ -151,11 +151,11 @@ if (gameOpts->render.bHiresModels [0] && (pObj->info.nType == OBJ_PLAYER) && !Ge
 	ti.nType [1] = 1;
 	m_nThrusters = 2;
 	CalcPosOnShip (pObj, ti.vPos);
-	ti.mtP = NULL;
+	ti.pThrusters = NULL;
 	}
 else if (bAfterburnerBlob || (bMissile && !m_nThrusters)) {
-		tHitbox	*phb = &gameData.models.hitboxes [pObj->ModelId ()].hitboxes [0];
-		fix		nObjRad = (phb->vMax.v.coord.z - phb->vMin.v.coord.z) / 2;
+		tHitbox	*pHitbox = &gameData.models.hitboxes [pObj->ModelId ()].hitboxes [0];
+		fix		nObjRad = (pHitbox->vMax.v.coord.z - pHitbox->vMin.v.coord.z) / 2;
 
 	if (bAfterburnerBlob)
 		nObjRad *= 2;
@@ -176,22 +176,22 @@ else if (bAfterburnerBlob || (bMissile && !m_nThrusters)) {
 	*ti.vPos = pObj->info.position.vPos + pObj->info.position.mOrient.m.dir.f * (-nObjRad);
 	ti.nType [0] = 
 	ti.nType [1] = 1;
-	ti.mtP = NULL;
+	ti.pThrusters = NULL;
 	}
 else if ((pObj->info.nType == OBJ_PLAYER) ||
 			((pObj->info.nType == OBJ_ROBOT) && !pObj->cType.aiInfo.CLOAKED) ||
 			bMissile) {
 	CFixMatrix	mView, *pView;
 	if (!m_bSpectate && (pObj->info.nType == OBJ_PLAYER)) {
-		m_pt = gameData.render.thrusters + pObj->info.nId;
-		ti.pp = m_pt->path.GetPoint ();
+		m_pData = gameData.render.thrusters + pObj->info.nId;
+		ti.pp = m_pData->path.GetPoint ();
 		}
 	if (!m_nThrusters) {
 		if (pObj->info.nType != OBJ_PLAYER)
 			return 0;
 		if (!m_bSpectate) {
-			m_pt = gameData.render.thrusters + pObj->info.nId;
-			ti.pp = m_pt->path.GetPoint ();
+			m_pData = gameData.render.thrusters + pObj->info.nId;
+			ti.pp = m_pData->path.GetPoint ();
 			}
 		ti.fLength [0] =
 		ti.fLength [1] = ti.fScale;
@@ -211,28 +211,28 @@ else if ((pObj->info.nType == OBJ_PLAYER) ||
 		else
 			pView = pObj->View (0);
 		for (i = 0; i < m_nThrusters; i++) {
-			ti.fSize [i] = ti.mtP->fSize [i];
-			ti.nType [i] = ti.mtP->nType [i];
+			ti.fSize [i] = ti.pThrusters->fSize [i];
+			ti.nType [i] = ti.pThrusters->nType [i];
 			float h = ((ti.nType [i] & (REAR_THRUSTER | FRONTAL_THRUSTER)) == (REAR_THRUSTER | FRONTAL_THRUSTER)) ? ti.fScale : 1.5f;
 			if (m_nStyle == 1)
 				h *= 4.0f;
 			else
 				h *= 0.75f;
 			ti.fLength [i] = ti.fSize [i] * h;
-			ti.vPos [i] = *pView * ti.mtP->vPos [i];
+			ti.vPos [i] = *pView * ti.pThrusters->vPos [i];
 			if (!gameData.models.vScale.IsZero ())
 				ti.vPos [i] *= gameData.models.vScale;
 			ti.vPos [i] += pPos->vPos;
-			ti.vDir [i] = *pView * ti.mtP->vDir [i];
+			ti.vDir [i] = *pView * ti.pThrusters->vDir [i];
 			//CAngleVector a1 = pObj->info.position.mOrient.m.v.f.ToAnglesVec ();
-			CFixVector v = ti.mtP->vDir [i];
+			CFixVector v = ti.pThrusters->vDir [i];
 			CAngleVector a = v.ToAnglesVec ();
 			//CAngleVector a;
 			//a [PA] = a1 [PA] - a2 [PA];
 			//a [BA] = a1 [BA] - a2 [BA];
 			//a [HA] = a1 [HA] - a2 [HA];
 			ti.mRot [i] = CFixMatrix::Create (a);
-			ti.nType [i] = ti.mtP->nType [i];
+			ti.nType [i] = ti.pThrusters->nType [i];
 			}
 		if (bMissile)
 			m_nThrusters = 1;
@@ -378,8 +378,8 @@ if (nStages & 2) {
 
 if (nStages & 1) {
 	float fSpeed = X2F (pObj->mType.physInfo.velocity.Mag ());
-	if (m_pt)
-		m_pt->fSpeed = fSpeed;
+	if (m_pData)
+		m_pData->fSpeed = fSpeed;
 
 	m_ti.pp = NULL;
 	m_ti.fScale = fSpeed / float (pObj->MaxSpeedScaled ()) + 0.5f;

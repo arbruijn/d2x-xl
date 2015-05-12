@@ -128,24 +128,24 @@ return N_LOCALPLAYER = ((nLocalPlayer < 0) ? nDefault : nLocalPlayer);
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessSyncPacket (CNetGameInfo * netGameInfoP, int32_t rsinit)
+void NetworkProcessSyncPacket (CNetGameInfo * pNetGameInfo, int32_t rsinit)
 {
 	int32_t					i, j;
 	tNetPlayerInfo*	pPlayer;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CNetGameInfo		tmp_info;
 
-if ((gameStates.multi.nGameType >= IPX_GAME) && (netGameInfoP != &netGameInfo)) { // for macintosh -- get the values unpacked to our structure format
-	ReceiveFullNetGamePacket (reinterpret_cast<uint8_t*> (netGameInfoP), &tmp_info);
-	netGameInfoP = &tmp_info;
+if ((gameStates.multi.nGameType >= IPX_GAME) && (pNetGameInfo != &netGameInfo)) { // for macintosh -- get the values unpacked to our structure format
+	ReceiveFullNetGamePacket (reinterpret_cast<uint8_t*> (pNetGameInfo), &tmp_info);
+	pNetGameInfo = &tmp_info;
 	}
 #endif
 
 if (rsinit)
 	pPlayerInfo = &netPlayers [0];
 	// This function is now called by all people entering the netgame.
-if (netGameInfoP != &netGameInfo) {
-	char *p = reinterpret_cast<char*> (netGameInfoP);
+if (pNetGameInfo != &netGameInfo) {
+	char *p = reinterpret_cast<char*> (pNetGameInfo);
 	int32_t i, j = (int32_t) netGameInfo.Size () - 1, s;
 	for (i = 0; i < j; i++, p++) {
 		s = *reinterpret_cast<uint16_t*> (p);
@@ -156,12 +156,12 @@ if (netGameInfoP != &netGameInfo) {
 			break;
 			}
 		}
-	netGameInfo = *netGameInfoP;
+	netGameInfo = *pNetGameInfo;
 	netPlayers [0] = *pPlayerInfo;
 	}
-N_PLAYERS = netGameInfoP->m_info.nNumPlayers;
-gameStates.app.nDifficultyLevel = netGameInfoP->m_info.difficulty;
-networkData.nStatus = netGameInfoP->m_info.gameStatus;
+N_PLAYERS = pNetGameInfo->m_info.nNumPlayers;
+gameStates.app.nDifficultyLevel = pNetGameInfo->m_info.difficulty;
+networkData.nStatus = pNetGameInfo->m_info.gameStatus;
 //Assert (gameStates.app.nFunctionMode != FMODE_GAME);
 // New code, 11/27
 #if 1
@@ -213,12 +213,12 @@ for (i = 0, pPlayer = pPlayerInfo->m_info.players; i < N_PLAYERS; i++, pPlayer++
 	PLAYER (i).nPacketsGot = -1;                            // How many packets we got from them
 	PLAYER (i).nPacketsSent = 0;                            // How many packets we sent to them
 	CONNECT (i, pPlayer->connected);
-	PLAYER (i).netKillsTotal = *netGameInfoP->PlayerKills (i);
-	PLAYER (i).netKilledTotal = *netGameInfoP->Killed (i);
+	PLAYER (i).netKillsTotal = *pNetGameInfo->PlayerKills (i);
+	PLAYER (i).netKilledTotal = *pNetGameInfo->Killed (i);
 	if (networkData.nJoinState || (i != N_LOCALPLAYER))
-		PLAYER (i).score = *netGameInfoP->PlayerScore (i);
+		PLAYER (i).score = *pNetGameInfo->PlayerScore (i);
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
-		gameData.multigame.score.matrix [i][j] = *netGameInfoP->Kills (i, j);
+		gameData.multigame.score.matrix [i][j] = *pNetGameInfo->Kills (i, j);
 	}
 
 if (N_LOCALPLAYER < 0) {
@@ -228,12 +228,12 @@ if (N_LOCALPLAYER < 0) {
 	}
 if (networkData.nJoinState) {
 	for (i = 0; i < N_PLAYERS; i++)
-		PLAYER (i).netKilledTotal = *netGameInfoP->Killed (i);
-	NetworkProcessMonitorVector (netGameInfoP->GetMonitorVector ());
-	LOCALPLAYER.timeLevel = netGameInfoP->GetLevelTime ();
+		PLAYER (i).netKilledTotal = *pNetGameInfo->Killed (i);
+	NetworkProcessMonitorVector (pNetGameInfo->GetMonitorVector ());
+	LOCALPLAYER.timeLevel = pNetGameInfo->GetLevelTime ();
 	}
-gameData.multigame.score.nTeam [0] = *netGameInfoP->TeamKills (0);
-gameData.multigame.score.nTeam [1] = *netGameInfoP->TeamKills (1);
+gameData.multigame.score.nTeam [0] = *pNetGameInfo->TeamKills (0);
+gameData.multigame.score.nTeam [1] = *pNetGameInfo->TeamKills (1);
 CONNECT (N_LOCALPLAYER, CONNECT_PLAYING);
 NETPLAYER (N_LOCALPLAYER).connected = CONNECT_PLAYING;
 NETPLAYER (N_LOCALPLAYER).rank = GetMyNetRanking ();

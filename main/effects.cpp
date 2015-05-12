@@ -115,15 +115,15 @@ for (int32_t bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 								  gameData.pig.tex.pBmIndex [((_fP) [_i])].index : \
 								  ((_fP) [_i]))
 
-CBitmap *FindAnimBaseTex (int16_t *frameP, int32_t nFrames, int32_t bIndirect, int32_t bObject, int32_t *piBaseFrame)
+CBitmap *FindAnimBaseTex (int16_t *pFrame, int32_t nFrames, int32_t bIndirect, int32_t bObject, int32_t *piBaseFrame)
 {
 	CBitmap*	pBm;
 
 for (int32_t i = 0; i < nFrames; i++) {
 	if (bObject)
-		pBm = gameData.pig.tex.bitmaps [0] + BM_INDEX (frameP, i, bIndirect, bObject);
+		pBm = gameData.pig.tex.bitmaps [0] + BM_INDEX (pFrame, i, bIndirect, bObject);
 	else
-		pBm = gameData.pig.tex.pBitmap + BM_INDEX (frameP, i, bIndirect, bObject);
+		pBm = gameData.pig.tex.pBitmap + BM_INDEX (pFrame, i, bIndirect, bObject);
 	if ((pBm = pBm->Override ()) && (pBm->Type () != BM_TYPE_FRAME)) {
 		*piBaseFrame = i;
 		return pBm;
@@ -135,12 +135,12 @@ return NULL;
 
 // ----------------------------------------------------------------------------
 
-CBitmap *SetupHiresAnim (int16_t *frameP, int32_t nFrames, int32_t nBaseTex, int32_t bIndirect, int32_t bObject, int32_t *pnFrames, CBitmap* pBm)
+CBitmap *SetupHiresAnim (int16_t *pFrame, int32_t nFrames, int32_t nBaseTex, int32_t bIndirect, int32_t bObject, int32_t *pnFrames, CBitmap* pBm)
 {
 	CBitmap*	pBmh, * pBitmap;
 	int32_t	h, i, j, iBaseFrame, nBmFrames, nFrameStep;
 
-if (!(pBm || (pBm = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBaseFrame))))
+if (!(pBm || (pBm = FindAnimBaseTex (pFrame, nFrames, bIndirect, bObject, &iBaseFrame))))
 	return NULL;
 #if DBG
 if (strstr (pBm->Name (), "misc068"))
@@ -153,7 +153,7 @@ pBm->SetupTexture (1, bObject >= 0);
 if (gameOpts->ogl.bGlTexMerge) {
 	pBitmap = bObject ? gameData.pig.tex.bitmaps [0].Buffer () : gameData.pig.tex.pBitmap.Buffer ();
 	for (i = 0; i < nFrames; i++) {
-		j = BM_INDEX (frameP, i, bIndirect, bObject > 0);
+		j = BM_INDEX (pFrame, i, bIndirect, bObject > 0);
 		pBmh = pBitmap + j;
 		if (pBmh->Override () != pBm) {
 			pBmh->FreeHiresAnimation (gameStates.app.bD1Data && !bObject);
@@ -178,7 +178,7 @@ else {
 		nFrameStep = (nBmFrames > nFrames) ? nBmFrames / nFrames : 1;
 		h = Min (nFrames, nBmFrames);
 		for (i = 0; i < h; i++) {
-			j = BM_INDEX (frameP, i, bIndirect, bObject);
+			j = BM_INDEX (pFrame, i, bIndirect, bObject);
 			pBmh = (bObject ? gameData.pig.tex.bitmaps [0] : gameData.pig.tex.pBitmap) + j;
 			if (pBmh->Override () == pBm)
 				pBmh->SetOverride (NULL);	//prevent the root texture from being deleted
@@ -190,7 +190,7 @@ else {
 		}
 	else {
 		for (i = 0; i < nFrames; i++) {
-			j = BM_INDEX (frameP, i, bIndirect, bObject);
+			j = BM_INDEX (pFrame, i, bIndirect, bObject);
 			gameData.pig.tex.pBitmap [j].SetOverride (pBm);
 			}
 		}

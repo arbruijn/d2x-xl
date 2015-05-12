@@ -225,7 +225,7 @@ if (ogl.m_features.bRenderToTexture)
 
 #define EPS 0.01f
 
-void CCamera::Align (CSegFace *pFace, tUVL *uvlP, tTexCoord2f *pTexCoord, CFloatVector3 *pVertex)
+void CCamera::Align (CSegFace *pFace, tUVL *pUVL, tTexCoord2f *pTexCoord, CFloatVector3 *pVertex)
 {
 	int32_t	i2, i3, nType = 0, nScale = 2 - gameOpts->render.cameras.bHires;
 
@@ -245,8 +245,8 @@ else {
 
 #if !DBG
 if (m_data.bAligned) {
-	if (uvlP)
-		memcpy (uvlP, m_data.uvlList, sizeof (m_data.uvlList));
+	if (pUVL)
+		memcpy (pUVL, m_data.uvlList, sizeof (m_data.uvlList));
 	}
 else 
 #endif
@@ -260,24 +260,24 @@ else
 	if ((pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 		BRP;
 #endif
-	if (uvlP) {
-		fix delta = uvlP [1].u - uvlP [0].u;
+	if (pUVL) {
+		fix delta = pUVL [1].u - pUVL [0].u;
 		rotLeft = (delta > F2X (EPS));
 		rotRight = (delta < -F2X (EPS));
 		if (rotLeft) {
-			yFlip = (uvlP [1].u - uvlP [2].u < -F2X (EPS));
-			xFlip = (uvlP [3].v - uvlP [1].v > F2X (EPS));
+			yFlip = (pUVL [1].u - pUVL [2].u < -F2X (EPS));
+			xFlip = (pUVL [3].v - pUVL [1].v > F2X (EPS));
 			}
 		else if (rotRight) {
-			yFlip = (uvlP [3].u - uvlP [0].u < -F2X (EPS));
-			xFlip = (uvlP [1].v - uvlP [3].v > F2X (EPS));
+			yFlip = (pUVL [3].u - pUVL [0].u < -F2X (EPS));
+			xFlip = (pUVL [1].v - pUVL [3].v > F2X (EPS));
 			}
 		else {
-			xFlip = (uvlP [2].u - uvlP [0].u < -F2X (EPS));
-			yFlip = (uvlP [1].v - uvlP [0].v > F2X (EPS));
+			xFlip = (pUVL [2].u - pUVL [0].u < -F2X (EPS));
+			yFlip = (pUVL [1].v - pUVL [0].v > F2X (EPS));
 			}
-		dvFace = X2F (uvlP [1].v - uvlP [0].v);
-		duFace = X2F (uvlP [2].u - uvlP [0].u);
+		dvFace = X2F (pUVL [1].v - pUVL [0].v);
+		duFace = X2F (pUVL [2].u - pUVL [0].u);
 		}
 	else {
 		float delta = pTexCoord [1].v.u - pTexCoord [0].v.u;
@@ -324,29 +324,29 @@ else
 		}
 	if (m_data.bMirror)
 		xFlip = !xFlip;
-	if (uvlP) {
-		uvlP [0].v = 
-		uvlP [3].v = F2X (yFlip ? dvImage : dv / nScale);
-		uvlP [1].v = 
-		uvlP [2].v = F2X (yFlip ? dv / nScale : dvImage);
-		uvlP [0].u = 
-		uvlP [1].u = F2X (xFlip ? duImage : du / nScale);
-		uvlP [2].u = 
-		uvlP [3].u = F2X (xFlip ? du / nScale : duImage);
+	if (pUVL) {
+		pUVL [0].v = 
+		pUVL [3].v = F2X (yFlip ? dvImage : dv / nScale);
+		pUVL [1].v = 
+		pUVL [2].v = F2X (yFlip ? dv / nScale : dvImage);
+		pUVL [0].u = 
+		pUVL [1].u = F2X (xFlip ? duImage : du / nScale);
+		pUVL [2].u = 
+		pUVL [3].u = F2X (xFlip ? du / nScale : duImage);
 		for (i = 0; i < 4; i++)
-			uvlP [i].l = I2X (1);
+			pUVL [i].l = I2X (1);
 		if (rotRight) {
 			for (i = 1; i < 5; i++) {
-				m_data.uvlList [i - 1] = uvlP [i % 4];
+				m_data.uvlList [i - 1] = pUVL [i % 4];
 				}
 			}
 		else if (rotRight) {
 			for (i = 0; i < 4; i++) {
-				m_data.uvlList [i] = uvlP [(i + 1) % 4];
+				m_data.uvlList [i] = pUVL [(i + 1) % 4];
 				}
 			}
 		else
-			memcpy (m_data.uvlList, uvlP, sizeof (m_data.uvlList));
+			memcpy (m_data.uvlList, pUVL, sizeof (m_data.uvlList));
 		}
 	else {
 		tTexCoord2f texCoord [6];

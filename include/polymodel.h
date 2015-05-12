@@ -62,7 +62,7 @@ class __pack__ CSubModelData {
 	public:
 		CSubModelData () { Create (); }
 		void Create (void);
-		void Setup (uint8_t* dataP);
+		void Setup (uint8_t* pData);
 		void Destroy (void);
 	};
 
@@ -91,7 +91,7 @@ class CPolyModel : public CByteArray {
 		CPolyModel () { Init (); }
 		void Init (void);
 		int32_t Read (int32_t bHMEL, int32_t bCustom, CFile& cf);
-		void ReadData (CPolyModel* defModelP, CFile& cf);
+		void ReadData (CPolyModel* pDefModel, CFile& cf);
 		void Load (const char *filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo *pRobotInfo);
 		int32_t LoadTextures (tBitmapIndex*	altTextures);
 		void FindMinMax (void);
@@ -143,7 +143,7 @@ class CPolyModel : public CByteArray {
 		void POF_ReadAngs (CAngleVector *angs, int32_t n, uint8_t *pBuffer);
 
 		void Parse (const char *filename, tRobotInfo *pRobotInfo);
-		void Check (uint8_t* dataP);
+		void Check (uint8_t* pData);
 		void Setup (void);
 	};
 

@@ -45,7 +45,7 @@ void ConquerRoom (int32_t newOwner, int32_t oldOwner, int32_t roomId)
 	int32_t			f, h, i, j, jj, k, kk, nObject;
 	CSegment*		pSeg;
 	CObject*			pObj;
-	tProducerInfo*	fuelP;
+	tProducerInfo*	pFuel;
 	int16_t			virusGens [MAX_FUEL_CENTERS];
 
 // this loop with
@@ -95,11 +95,11 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 		memcpy (virusGens + jj, virusGens + kk, (MAX_FUEL_CENTERS - kk) * sizeof (int16_t));
 		jj += (MAX_FUEL_CENTERS - kk);
 		for (j = 0; j < jj; j++) {
-			fuelP = gameData.producers.producers + virusGens [j];
-			CSegment* fuelSegP = SEGMENT (fuelP->nSegment);
-			fuelSegP->m_function = gameData.producers.origProducerTypes [uint32_t (fuelP - gameData.producers.producers.Buffer ())];
-			fuelSegP->CreateProducer (fuelSegP->m_function);
-			fuelSegP->ChangeTexture (newOwner);
+			pFuel = gameData.producers.producers + virusGens [j];
+			CSegment* pFuelSeg = SEGMENT (pFuel->nSegment);
+			pFuelSeg->m_function = gameData.producers.origProducerTypes [uint32_t (pFuel - gameData.producers.producers.Buffer ())];
+			pFuelSeg->CreateProducer (pFuelSeg->m_function);
+			pFuelSeg->ChangeTexture (newOwner);
 			}
 		}
 	}

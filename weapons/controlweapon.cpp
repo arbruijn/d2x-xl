@@ -735,42 +735,42 @@ void ProcessSmartMinesFrame (void)
 	int32_t			i, j;
 	int32_t			nParentObj;
 	fix			dist;
-	CObject		*bombP, *actorP;
+	CObject		*pBomb, *pActor;
 	CFixVector	*vBombPos;
 
 	//	If we don't know of there being any super mines in the level, just
 	//	check every 8th CObject each frame.
 gameStates.gameplay.bHaveSmartMines = 0;
 
-FORALL_WEAPON_OBJS (bombP) {
-	if (bombP->info.nId != SMARTMINE_ID)
+FORALL_WEAPON_OBJS (pBomb) {
+	if (pBomb->info.nId != SMARTMINE_ID)
 		continue;
-	nParentObj = bombP->cType.laserInfo.parent.nObject;
+	nParentObj = pBomb->cType.laserInfo.parent.nObject;
 	gameStates.gameplay.bHaveSmartMines = 1;
-	if (bombP->info.xLifeLeft + I2X (2) >= gameData.weapons.info [SMARTMINE_ID].lifetime)
+	if (pBomb->info.xLifeLeft + I2X (2) >= gameData.weapons.info [SMARTMINE_ID].lifetime)
 		continue;
-	vBombPos = &bombP->info.position.vPos;
-	i = bombP->Index ();
-	FORALL_ACTOR_OBJS (actorP) {
-		if ((actorP->Type () != OBJ_PLAYER) && (actorP->Type () != OBJ_ROBOT))
+	vBombPos = &pBomb->info.position.vPos;
+	i = pBomb->Index ();
+	FORALL_ACTOR_OBJS (pActor) {
+		if ((pActor->Type () != OBJ_PLAYER) && (pActor->Type () != OBJ_ROBOT))
 			continue;
-		j = actorP->Index ();
+		j = pActor->Index ();
 		if (j == nParentObj) 
 			continue;
-		dist = CFixVector::Dist (*vBombPos, actorP->info.position.vPos);
-		if (dist - actorP->info.xSize >= I2X (20))
+		dist = CFixVector::Dist (*vBombPos, pActor->info.position.vPos);
+		if (dist - pActor->info.xSize >= I2X (20))
 			continue;
-		if (bombP->info.nSegment == actorP->info.nSegment)
-			bombP->UpdateLife (1);
+		if (pBomb->info.nSegment == pActor->info.nSegment)
+			pBomb->UpdateLife (1);
 		else {
 			//	Object which is close enough to detonate smart mine is not in same CSegment as smart mine.
 			//	Need to do a more expensive check to make sure there isn't an obstruction.
 			if (((gameData.app.nFrameCount ^ (i+j)) % 4) == 0) {
-				CHitQuery	hitQuery (0, &bombP->Position (), &actorP->Position (), bombP->Segment (), i);
+				CHitQuery	hitQuery (0, &pBomb->Position (), &pActor->Position (), pBomb->Segment (), i);
 				CHitResult	hitResult;
 				int32_t fate = FindHitpoint (hitQuery, hitResult);
 				if (fate != HIT_WALL)
-					bombP->UpdateLife (1);
+					pBomb->UpdateLife (1);
 				}
 			}
 		}

@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //variables for slew system
 
-CObject *slewObjP=NULL;	//what CObject is slewing, or NULL if none
+CObject *pSlewObj=NULL;	//what CObject is slewing, or NULL if none
 
 #define JOY_NULL 15
 #define ROT_SPEED 8		//rate of rotation while key held down
@@ -43,10 +43,10 @@ int32_t slew_stop(void);
 //say start slewing with this CObject
 void slew_init(CObject *pObj)
 {
-	slewObjP = pObj;
+	pSlewObj = pObj;
 
-	slewObjP->info.controlType = CT_SLEW;
-	slewObjP->info.movementType = MT_NONE;
+	pSlewObj->info.controlType = CT_SLEW;
+	pSlewObj->info.movementType = MT_NONE;
 
 	slew_stop();		//make sure not moving
 }
@@ -54,25 +54,25 @@ void slew_init(CObject *pObj)
 
 int32_t slew_stop()
 {
-	if (!slewObjP || slewObjP->info.controlType!=CT_SLEW) return 0;
+	if (!pSlewObj || pSlewObj->info.controlType!=CT_SLEW) return 0;
 
-	slewObjP->mType.physInfo.velocity.SetZero ();
+	pSlewObj->mType.physInfo.velocity.SetZero ();
 	return 1;
 }
 
 void slew_reset_orient()
 {
-if (!slewObjP || slewObjP->info.controlType!=CT_SLEW) 
+if (!pSlewObj || pSlewObj->info.controlType!=CT_SLEW) 
 	return;
-slewObjP->info.position.mOrient.m.dir.r.v.coord.x = 
-slewObjP->info.position.mOrient.m.dir.u.v.coord.y = 
-slewObjP->info.position.mOrient.m.dir.f.v.coord.z = I2X (1);
-slewObjP->info.position.mOrient.m.dir.r.v.coord.y = 
-slewObjP->info.position.mOrient.m.dir.r.v.coord.z = 
-slewObjP->info.position.mOrient.m.dir.u.v.coord.x =
-slewObjP->info.position.mOrient.m.dir.u.v.coord.z = 
-slewObjP->info.position.mOrient.m.dir.f.v.coord.x = 
-slewObjP->info.position.mOrient.m.dir.f.v.coord.y = 0;
+pSlewObj->info.position.mOrient.m.dir.r.v.coord.x = 
+pSlewObj->info.position.mOrient.m.dir.u.v.coord.y = 
+pSlewObj->info.position.mOrient.m.dir.f.v.coord.z = I2X (1);
+pSlewObj->info.position.mOrient.m.dir.r.v.coord.y = 
+pSlewObj->info.position.mOrient.m.dir.r.v.coord.z = 
+pSlewObj->info.position.mOrient.m.dir.u.v.coord.x =
+pSlewObj->info.position.mOrient.m.dir.u.v.coord.z = 
+pSlewObj->info.position.mOrient.m.dir.f.v.coord.x = 
+pSlewObj->info.position.mOrient.m.dir.f.v.coord.y = 0;
 }
 
 int32_t do_slew_movement(CObject *pObj, int32_t check_keys, int32_t check_joy )
@@ -84,7 +84,7 @@ int32_t do_slew_movement(CObject *pObj, int32_t check_keys, int32_t check_joy )
 	int32_t joyx_moved,joyy_moved;
 	CAngleVector rotang;
 
-	if (!slewObjP || slewObjP->info.controlType!=CT_SLEW) return 0;
+	if (!pSlewObj || pSlewObj->info.controlType!=CT_SLEW) return 0;
 
 	if (check_keys) {
 		if (gameStates.app.nFunctionMode == FMODE_EDITOR) {
@@ -169,7 +169,7 @@ int32_t do_slew_movement(CObject *pObj, int32_t check_keys, int32_t check_joy )
 //do slew for this frame
 int32_t slew_frame(int32_t check_keys)
 {
-	return do_slew_movement( slewObjP, !check_keys, 1 );
+	return do_slew_movement( pSlewObj, !check_keys, 1 );
 
 }
 

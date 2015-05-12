@@ -215,8 +215,8 @@ if (m_info.frames.pBm) {
 
 void CBitmap::DestroyMask (void)
 {
-delete m_info.maskP;
-m_info.maskP = NULL;
+delete m_info.pMask;
+m_info.pMask = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -278,7 +278,7 @@ bool CBitmap::InitChild (CBitmap *parent, int32_t x, int32_t y, int32_t w, int32
 memcpy (this, parent, sizeof (*this));
 m_info.pParent =
 m_info.pOverride =
-m_info.maskP = NULL;
+m_info.pMask = NULL;
 memset (&m_info.texture, 0, sizeof (m_info.texture));
 m_info.pTexture = &m_info.texture;
 memset (&m_info.frames, 0, sizeof (m_info.frames));
@@ -577,9 +577,9 @@ for (int32_t i = m_info.props.h * m_info.props.w; i; i--, p++) {
 
 //------------------------------------------------------------------------------
 
-void CBitmap::RenderStretched (CRectangle* destP, int32_t x, int32_t y)
+void CBitmap::RenderStretched (CRectangle* pDest, int32_t x, int32_t y)
 { 
-Render (destP, x, y, destP ? destP->Width () : -1, destP ? destP->Height () : -1, 0, 0, Width (), Height ()); 
+Render (pDest, x, y, pDest ? pDest->Width () : -1, pDest ? pDest->Height () : -1, 0, 0, Width (), Height ()); 
 }
 
 //------------------------------------------------------------------------------

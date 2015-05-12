@@ -64,8 +64,8 @@ public:
 		int32_t ReplaceBitmap (const char *cfname, CBitmap *pBm);
 		int32_t ReadAnimBrush (const char *cfname, CBitmap **bm_list, int32_t max_bitmaps, int32_t *n_bitmaps);
 
-		int32_t ParseBitmap (CBitmap *pBm, int32_t bitmapType, CBitmap *prevBmP);
-		int32_t Parse (int32_t formType, tIFFBitmapHeader *bmheader, int32_t form_len, CBitmap *prevBmP);
+		int32_t ParseBitmap (CBitmap *pBm, int32_t bitmapType, CBitmap *pPrevBm);
+		int32_t Parse (int32_t formType, tIFFBitmapHeader *bmheader, int32_t form_len, CBitmap *pPrevBm);
 		int32_t ParseHeader (int32_t len, tIFFBitmapHeader *bmheader);
 		int32_t ParseBody (int32_t len, tIFFBitmapHeader *bmheader);
 		int32_t ParseDelta (int32_t len, tIFFBitmapHeader *bmheader);

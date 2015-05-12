@@ -155,9 +155,9 @@ for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	if (nSuccSeg < 0)
 		continue;
 	if (m_nDir) {
-		CSegment* otherSegP = SEGMENT (nSuccSeg);
-		int16_t nOtherSide = SEGMENT (nPredSeg)->ConnectedSide (otherSegP);
-		if ((nOtherSide == -1) || !(otherSegP->IsPassable (nOtherSide, NULL) & scanInfo.m_widFlag))
+		CSegment* pOtherSeg = SEGMENT (nSuccSeg);
+		int16_t nOtherSide = SEGMENT (nPredSeg)->ConnectedSide (pOtherSeg);
+		if ((nOtherSide == -1) || !(pOtherSeg->IsPassable (nOtherSide, NULL) & scanInfo.m_widFlag))
 			continue;
 		}
 	else {

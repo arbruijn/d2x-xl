@@ -393,7 +393,7 @@ if (Pos() >= Len())
 //------------------------------------------------------------------------------
 //read an ILBM or PBM file
 // Pass pointer to opened file, and to empty bitmap_header structure, and form length
-int32_t CIFF::Parse (int32_t formType, tIFFBitmapHeader *bmHeader, int32_t formLen, CBitmap *prevBmP)
+int32_t CIFF::Parse (int32_t formType, tIFFBitmapHeader *bmHeader, int32_t formLen, CBitmap *pPrevBm)
 {
 	int32_t sig, len;
 	//char ignore=0;
@@ -428,13 +428,13 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 			}
 
 		case anhd_sig:
-			if (!prevBmP) 
+			if (!pPrevBm) 
 				return IFF_CORRUPT;
-			bmHeader->w = prevBmP->Width ();
-			bmHeader->h = prevBmP->Height ();
-			bmHeader->nType = prevBmP->Mode ();
+			bmHeader->w = pPrevBm->Width ();
+			bmHeader->h = pPrevBm->Height ();
+			bmHeader->nType = pPrevBm->Mode ();
 			bmHeader->raw_data = new uint8_t [bmHeader->w * bmHeader->h];
-			memcpy (bmHeader->raw_data, prevBmP->Buffer (), bmHeader->w * bmHeader->h);
+			memcpy (bmHeader->raw_data, pPrevBm->Buffer (), bmHeader->w * bmHeader->h);
 			SkipChunk (len);
 			break;
 
@@ -585,7 +585,7 @@ bmHeader->raw_data = NULL;
 //------------------------------------------------------------------------------
 //if pBm->Buffer () is set, use it (making sure w & h are correct), else
 //allocate the memory
-int32_t CIFF::ParseBitmap (CBitmap *pBm, int32_t bitmapType, CBitmap *prevBmP)
+int32_t CIFF::ParseBitmap (CBitmap *pBm, int32_t bitmapType, CBitmap *pPrevBm)
 {
 	tIFFBitmapHeader	bmHeader;
 	int32_t					ret, sig, formLen;
@@ -604,7 +604,7 @@ formType = GetSig ();
 if (formType == anim_sig)
 	ret = IFF_FORM_ANIM;
 else if ((formType == pbm_sig) || (formType == ilbm_sig))
-	ret = Parse (formType, &bmHeader, formLen, prevBmP);
+	ret = Parse (formType, &bmHeader, formLen, pPrevBm);
 else
 	ret = IFF_UNKNOWN_FORM;
 if (ret != IFF_NO_ERROR) {		//got an error parsing
@@ -905,11 +905,11 @@ if ((formType == pbm_sig) || (formType == ilbm_sig))
 else if (formType == anim_sig) {
 	int32_t anim_end = Pos() + formLen - 4;
 		while (Pos() < anim_end && *n_bitmaps < max_bitmaps) {
-			CBitmap *prevBmP;
-			prevBmP = *n_bitmaps>0?bm_list[*n_bitmaps-1]:NULL;
+			CBitmap *pPrevBm;
+			pPrevBm = *n_bitmaps>0?bm_list[*n_bitmaps-1]:NULL;
 			bm_list [*n_bitmaps] = new CBitmap;
 			bm_list [*n_bitmaps]->SetBuffer (NULL);
-			ret = ParseBitmap (bm_list[*n_bitmaps], formType, prevBmP);
+			ret = ParseBitmap (bm_list[*n_bitmaps], formType, pPrevBm);
 			if (ret != IFF_NO_ERROR)
 				goto done;
 			(*n_bitmaps)++;

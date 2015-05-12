@@ -643,7 +643,7 @@ void ComputeStaticFaceLight (int32_t nStart, int32_t nEnd, int32_t nThread)
 	int32_t			nVertex, nSegment, nSide;
 	fix			xLight;
 	float			fAlpha;
-	tUVL			*uvlP;
+	tUVL			*pUVL;
 	int32_t			h, i, j, uvi, nColor;
 
 	static		CStaticFaceColor<255,255,255,255> brightColor1;
@@ -678,7 +678,7 @@ for (i = nStart; i < nEnd; i++) {
 		pFace->m_info.color.Assign (faceColor [nColor]);
 		pColor = FACES.color + pFace->m_info.nIndex;
 		pSide = pSeg->Side (nSide);
-		uvlP = pSide->m_uvls;
+		pUVL = pSide->m_uvls;
 		for (h = 0, uvi = 0 /*(pSeg->m_sides [nSide].m_nType == SIDE_IS_TRI_13)*/; h < pSide->CornerCount (); h++, pColor++, uvi++) {
 			if (gameStates.render.bFullBright)
 				*pColor = nColor ? faceColor [nColor] : *brightColors [gameStates.render.bFullBright - 1];
@@ -690,7 +690,7 @@ for (i = nStart; i < nEnd; i++) {
 					BRP;
 #endif
 				SetVertexColor (nVertex, &c, nColor ? pFace->m_info.bTextured ? 2 : 1 : 0);
-				xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % pSide->CornerCount ()].l);
+				xLight = SetVertexLight (nSegment, nSide, nVertex, &c, pUVL [uvi % pSide->CornerCount ()].l);
 				AdjustVertexColor (NULL, &c, xLight);
 				}
 			*pColor = c;

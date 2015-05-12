@@ -644,11 +644,11 @@ InitLib (filename, EXTRA_ROBOT_LIB, 1, 0);
 //returns file handle
 CMovie* CMovieManager::Open (char* filename, int32_t bRequired)
 {
-	CMovie*	movieP;
+	CMovie*	pMovie;
 
 for (int32_t i = 0; i < m_nLibs; i++)
-	if ((movieP = m_libs [i].Open (filename, bRequired)))
-		return movieP;
+	if ((pMovie = m_libs [i].Open (filename, bRequired)))
+		return pMovie;
 return NULL;    //couldn't find it
 }
 
@@ -690,16 +690,16 @@ return ret;
 int32_t CMovieManager::Run (char* filename, int32_t bHires, int32_t bRequired, int32_t dx, int32_t dy)
 {
 	CFile			cf;
-	CMovie*		movieP = NULL;
+	CMovie*		pMovie = NULL;
 	int32_t			result = 1, aborted = 0;
 	int32_t			track = 0;
 	int32_t			nFrame;
 	int32_t			key;
-	CMovieLib*	libP = Find (filename);
+	CMovieLib*	pLib = Find (filename);
 
 result = 1;
 // Open Movie file.  If it doesn't exist, no movie, just return.
-if (!(cf.Open (filename, gameFolders.game.szData [0], "rb", 0) || (movieP = Open (filename, bRequired)))) {
+if (!(cf.Open (filename, gameFolders.game.szData [0], "rb", 0) || (pMovie = Open (filename, bRequired)))) {
 	if (bRequired) {
 #if TRACE
 		console.printf (CON_NORMAL, "movie: RunMovie: Cannot open movie <%s>\n", filename);
@@ -713,7 +713,7 @@ MVE_memCallbacks (CMovie::Alloc, CMovie::Free);
 MVE_ioCallbacks (CMovie::Read);
 MVE_sfCallbacks (CMovie::ShowFrame);
 MVE_palCallbacks (CMovie::SetPalette);
-if (MVE_rmPrepMovie (reinterpret_cast<void*> (movieP ? &movieP->m_cf: &cf), dx, dy, track, libP ? libP->m_bLittleEndian : 1)) {
+if (MVE_rmPrepMovie (reinterpret_cast<void*> (pMovie ? &pMovie->m_cf: &cf), dx, dy, track, pLib ? pLib->m_bLittleEndian : 1)) {
 	Int3 ();
 	return MOVIE_NOT_PLAYED;
 	}
@@ -744,8 +744,8 @@ while ((result = MVE_rmStepMovie ()) == 0) {
 	}
 Assert (aborted || result == MVE_ERR_EOF);	 ///movie should be over
 MVE_rmEndMovie ();
-if (movieP)
-	movieP->Close ();
+if (pMovie)
+	pMovie->Close ();
 else
 	cf.Close ();                           // Close Movie File
 // Restore old graphic state
@@ -834,7 +834,7 @@ if (m_bHaveIntro) {
 
 int32_t CMovieManager::StartRobot (char* filename)
 {
-	CMovieLib*	libP = movieManager.Find (filename);
+	CMovieLib*	pLib = movieManager.Find (filename);
 
 if (gameOpts->movies.nLevel < 1)
 	return 0;
@@ -843,7 +843,7 @@ if (gameOpts->movies.nLevel < 1)
 console.printf (DEBUG_LEVEL, "movies.robot.cf=%s\n", filename);
 #endif
 MVE_sndInit (-1);        //tell movies to play no sound for robots
-if (!(m_robotP = movieManager.Open (filename, 1))) {
+if (!(m_pRobot = movieManager.Open (filename, 1))) {
 #if DBG
 	Warning (TXT_MOVIE_ROBOT, filename);
 #endif
@@ -851,15 +851,15 @@ if (!(m_robotP = movieManager.Open (filename, 1))) {
 	}
 int32_t bFullScreen = gameOpts->movies.bFullScreen;
 gameOpts->movies.bFullScreen = -1;
-m_robotP->m_bLittleEndian = libP ? libP->m_bLittleEndian : 1;
+m_pRobot->m_bLittleEndian = pLib ? pLib->m_bLittleEndian : 1;
 MVE_memCallbacks (CMovie::Alloc, CMovie::Free);
 MVE_ioCallbacks (CMovie::Read);
 MVE_sfCallbacks (CMovie::ShowFrame);
 MVE_palCallbacks (CMovie::SetPalette);
-int32_t res = MVE_rmPrepMovie (reinterpret_cast<void*> (&m_robotP->m_cf), 
+int32_t res = MVE_rmPrepMovie (reinterpret_cast<void*> (&m_pRobot->m_cf), 
 							      gameStates.menus.bHires ? 280 : 140, 
 									gameStates.menus.bHires ? 200 : 80, 0,
-									m_robotP->m_bLittleEndian);
+									m_pRobot->m_bLittleEndian);
 gameOpts->movies.bFullScreen = bFullScreen;
 return res ? 0 : 1;
 }
@@ -868,7 +868,7 @@ return res ? 0 : 1;
 //returns 1 if frame updated ok
 int32_t CMovieManager::RotateRobot (void)
 {
-if (!m_robotP)
+if (!m_pRobot)
 	return 0;
 
 int32_t bFullScreen = gameOpts->movies.bFullScreen;
@@ -879,11 +879,11 @@ gameOpts->movies.bFullScreen = bFullScreen;
 if (!res)
 	return 1;
 if (res == MVE_ERR_EOF) {   //end of movie, so reset
-	m_robotP->Rewind ();
-	if (!MVE_rmPrepMovie (reinterpret_cast<void*> (&m_robotP->m_cf), 
+	m_pRobot->Rewind ();
+	if (!MVE_rmPrepMovie (reinterpret_cast<void*> (&m_pRobot->m_cf), 
 								 gameStates.menus.bHires ? 280 : 140, 
 								 gameStates.menus.bHires ? 200 : 80, 0,
-								 m_robotP->m_bLittleEndian)) 
+								 m_pRobot->m_bLittleEndian)) 
 		return 1;
 	}
 return 0;
@@ -893,10 +893,10 @@ return 0;
 
 void CMovieManager::StopRobot (void)
 {
-if (m_robotP) {
+if (m_pRobot) {
 	MVE_rmEndMovie ();
-	m_robotP->Close ();                           // Close Movie File
-	m_robotP = NULL;
+	m_pRobot->Close ();                           // Close Movie File
+	m_pRobot = NULL;
 	}
 }
 

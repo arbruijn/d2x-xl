@@ -193,18 +193,18 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int32_t CHogFile::Use (tHogFileList *hogP, const char *name, const char *folder)
+int32_t CHogFile::Use (tHogFileList *pHogFiles, const char *name, const char *folder)
 {
-if (hogP->bInitialized)
+if (pHogFiles->bInitialized)
 	return 1;
 if (name) {
-	strcpy (hogP->szName, name);
-	strcpy (hogP->szFolder, folder ? folder : "");
-	hogP->bInitialized = *name && Setup (hogP->szName, folder, hogP->files, &hogP->nFiles);
-	if (*(hogP->szName))
-		PrintLog (0, "found hog file '%s'\n", hogP->szName);
-	if (hogP->bInitialized && (hogP->nFiles > 0)) {
-		QuickSort (hogP->files, 0, hogP->nFiles - 1);
+	strcpy (pHogFiles->szName, name);
+	strcpy (pHogFiles->szFolder, folder ? folder : "");
+	pHogFiles->bInitialized = *name && Setup (pHogFiles->szName, folder, pHogFiles->files, &pHogFiles->nFiles);
+	if (*(pHogFiles->szName))
+		PrintLog (0, "found hog file '%s'\n", pHogFiles->szName);
+	if (pHogFiles->bInitialized && (pHogFiles->nFiles > 0)) {
+		QuickSort (pHogFiles->files, 0, pHogFiles->nFiles - 1);
 		return 1;
 		}
 	} 
@@ -213,15 +213,15 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int32_t CHogFile::Reload (tHogFileList *hogP)
+int32_t CHogFile::Reload (tHogFileList *pHogFiles)
 {
-if (!*hogP->szName)
+if (!*pHogFiles->szName)
 	return 0;
-hogP->bInitialized = Setup (hogP->szName, hogP->szFolder, hogP->files, &hogP->nFiles);
-if (*(hogP->szName))
-	PrintLog (0, "found hog file '%s'\n", hogP->szName);
-if (hogP->bInitialized && (hogP->nFiles > 0)) {
-	QuickSort (hogP->files, 0, hogP->nFiles - 1);
+pHogFiles->bInitialized = Setup (pHogFiles->szName, pHogFiles->szFolder, pHogFiles->files, &pHogFiles->nFiles);
+if (*(pHogFiles->szName))
+	PrintLog (0, "found hog file '%s'\n", pHogFiles->szName);
+if (pHogFiles->bInitialized && (pHogFiles->nFiles > 0)) {
+	QuickSort (pHogFiles->files, 0, pHogFiles->nFiles - 1);
 	return 1;
 	} 
 return 0;
@@ -291,21 +291,21 @@ return Use (&m_files.D1HogFiles, name, gameFolders.game.szData [0]);
 // ----------------------------------------------------------------------------
 // return handle for file called "name", embedded in one of the hogfiles
 
-FILE *CHogFile::Find (tHogFileList *hogP, const char *folder, const char *name, int32_t *length)
+FILE *CHogFile::Find (tHogFileList *pHogFiles, const char *folder, const char *name, int32_t *length)
 {
 	FILE		*fp;
 	tHogFile	*phf;
-	char		*hogFilename = hogP->szName;
+	char		*hogFilename = pHogFiles->szName;
   
-if (! (hogP->bInitialized && *hogFilename))
+if (! (pHogFiles->bInitialized && *hogFilename))
 	return NULL;
 if (*folder) {
 	char fn [FILENAME_LEN];
 
-	sprintf (fn, "%s%s", folder, hogP->szName);
+	sprintf (fn, "%s%s", folder, pHogFiles->szName);
 	hogFilename = fn;
 	}
-if ((phf = BinSearch (hogP->files, hogP->nFiles, name))) {
+if ((phf = BinSearch (pHogFiles->files, pHogFiles->nFiles, name))) {
 	if (!(fp = CFile::GetFileHandle (hogFilename, "", "rb")))
 		return NULL;
 	fseek (fp, phf->offset, SEEK_SET);

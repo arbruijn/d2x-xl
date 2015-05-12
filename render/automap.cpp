@@ -1461,9 +1461,9 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, pSide++) {
 					int16_t	nConnSeg = pSeg->m_children [nSide];
 					if (nConnSeg != -1) {
 						int16_t nConnSide = pSeg->ConnectedSide (SEGMENT (nConnSeg));
-						CWall* connWallP = SEGMENT (nConnSeg)->Wall (nConnSide);
-						if (connWallP) {
-							switch (connWallP->keys) {
+						CWall* pConnWall = SEGMENT (nConnSeg)->Wall (nConnSide);
+						if (pConnWall) {
+							switch (pConnWall->keys) {
 								case KEY_BLUE:
 									color = m_colors.walls.nDoorBlue;
 									bNoFade = 1;

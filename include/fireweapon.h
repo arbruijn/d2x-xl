@@ -145,7 +145,7 @@ int32_t CreateWeaponObject (uint8_t weaponType, int16_t nSegment,CFixVector *pos
 void ReleaseGuidedMissile(int32_t player_num);
 
 void CreateSmartChildren (CObject *objp, int32_t count);
-int32_t UpdateOmegaLightnings (CObject *pParentObj, CObject *targetObjP);
+int32_t UpdateOmegaLightnings (CObject *pParentObj, CObject *pTargetObj);
 void StopPrimaryFire (void);
 void StopSecondaryFire (void);
 float MissileSpeedScale (CObject *pObj);

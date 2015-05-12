@@ -49,8 +49,8 @@ typedef struct tExitFlightData {
 	CFixVector		aStep;			//rotation per second
 	fix				speed;			//how fast CObject is moving
 	CFixVector 		vHeading;		//where we want to be pointing
-	int16_t				entrySide;		//side at which the current exit segment was entered
-	int16_t				exitSide;		//side at which to leave the current exit segment
+	int16_t			entrySide;		//side at which the current exit segment was entered
+	int16_t			exitSide;		//side at which to leave the current exit segment
 	fix				lateralOffset;	//how far off-center as portion of way
 	fix				offsetDist;		//how far currently off-center
 	fix				destDist;
@@ -572,7 +572,7 @@ switch (gameStates.app.bEndLevelSequence) {
 			fix bankRate = (-exitAngles.v.coord.b - camAngles.v.coord.b) / 2;
 			gameData.objData.pConsole->info.controlType = gameData.objData.endLevelCamera->info.controlType = CT_NONE;
 #ifdef SLEW_ON
-			slewObjP = gameData.objData.endLevelCamera;
+			pSlewObj = gameData.objData.endLevelCamera;
 #endif
 			}
 		break;
@@ -611,7 +611,7 @@ switch (gameStates.app.bEndLevelSequence) {
 		timer -= gameData.time.xFrame;
 		if (timer < 0) {
 #ifdef SLEW_ON
-			slewObjP = gameData.objData.endLevelCamera;
+			pSlewObj = gameData.objData.endLevelCamera;
 			DoSlewMovement (gameData.objData.endLevelCamera, 1, 1);
 			timer += gameData.time.xFrame;		//make time stop
 			break;
@@ -1871,7 +1871,7 @@ switch (gameStates.app.bEndLevelSequence) {
 			bank_rate = (-exit_seg_angles.v.coord.b - cam_angles.v.coord.b)/2;
 			gameData.objData.pConsole->info.controlType = gameData.objData.endLevelCamera->info.controlType = CT_NONE;
 #ifdef SLEW_ON
-			slewObjP = gameData.objData.endLevelCamera;
+			pSlewObj = gameData.objData.endLevelCamera;
 #endif
 			}
 		break;
@@ -1910,7 +1910,7 @@ switch (gameStates.app.bEndLevelSequence) {
 		timer -= gameData.time.xFrame;
 		if (timer < 0) {
 #ifdef SLEW_ON
-			slewObjP = gameData.objData.endLevelCamera;
+			pSlewObj = gameData.objData.endLevelCamera;
 			DoSlewMovement (gameData.objData.endLevelCamera, 1, 1);
 			timer += gameData.time.xFrame;		//make time stop
 			break;
