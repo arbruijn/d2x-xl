@@ -908,7 +908,7 @@ return !j;
 
 int32_t CQuadSphere::CreateBuffers (void)
 {
-m_nFaces = 6 * int32_t (pow (4.0f, float (Quality ()))) + 1;
+m_nFaces = 6 * int32_t (pow (4.0f, float (Quality ())));
 if (m_faces [0].Create (m_nFaces)) {
 	if (m_faces [1].Create (m_nFaces))
 		return 1;
