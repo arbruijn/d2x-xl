@@ -104,7 +104,9 @@ class CSphereFace {
 		CFloatVector& Center (void) { return m_vCenter.m_v; }
 		CFloatVector& Normal (void) { return m_vNormal.m_v; }
 
+		virtual CSphereVertex* Vertices (void) = 0;
 		virtual CFloatVector& Vertex (int32_t i) = 0;
+		virtual CSphereVertex *ComputeCenter (void);
 	};
 
 // -----------------------------------------------------------------------------
@@ -113,9 +115,10 @@ class CSphereTriangle : public CSphereFace {
 	public:
 		CSphereVertex			m_v [3];
 
-		CSphereVertex *ComputeCenter (void);
+		virtual CSphereVertex *ComputeCenter (void);
 		CSphereTriangle *Split (CSphereTriangle *pDest);
 		void Transform (CSphereTriangle *pDest);
+		virtual CSphereVertex* Vertices (void) { return m_v; }
 		virtual CFloatVector& Vertex (int32_t i) { return m_v [i].m_v; }
 	};
 
@@ -125,9 +128,10 @@ class CSphereQuad : public CSphereFace {
 	public:
 		CSphereVertex			m_v [4];
 
-		CSphereVertex *ComputeCenter (void);
+		virtual CSphereVertex *ComputeCenter (void);
 		CSphereQuad *Split (CSphereQuad *pDest);
 		void Transform (CSphereQuad *pDest);
+		virtual CSphereVertex* Vertices (void) { return m_v; }
 		virtual CFloatVector& Vertex (int32_t i) { return m_v [i].m_v; }
 	};
 
@@ -160,6 +164,7 @@ class CSphere : protected CSphereData {
 		virtual void SetQuality (int32_t nQuality) = 0;
 		virtual int32_t HasQuality (int32_t nDesiredQuality) = 0;
 		virtual int32_t FaceNodes (void) = 0;
+		virtual void RenderOutline (CObject *pObj) = 0;
 
 	protected:
 		void DrawFaces (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nFaces, int32_t bTextured, int32_t nPrimitive);
@@ -182,6 +187,7 @@ class CRingedSphere : public CSphere {
 		virtual void SetQuality (int32_t nQuality) {}
 		virtual int32_t HasQuality (int32_t nDesiredQuality) { return 1; }
 		virtual int32_t FaceNodes (void) { return 3; }
+		virtual void RenderOutline (CObject *pObj) {}
 
 	private:
 		int32_t CreateVertices (int32_t nRings = 32, int32_t nTiles = 1);
@@ -196,6 +202,8 @@ class CSphereEdge : public CMeshEdge {
 			return ((CFloatVector::Dist (m_vertices [0][0], other.m_vertices [0][0]) < 1e-6f) && (CFloatVector::Dist (m_vertices [1][0], other.m_vertices [1][0]) < 1e-6f)) ||
 					 ((CFloatVector::Dist (m_vertices [0][0], other.m_vertices [1][0]) < 1e-6f) && (CFloatVector::Dist (m_vertices [1][0], other.m_vertices [0][0]) < 1e-6f));
 			}
+		virtual void Transform (void);
+		int32_t Prepare (CFloatVector vViewer, int32_t nFilter = 2, float fDistance = -1.0f);
 	};
 
 // -----------------------------------------------------------------------------
@@ -212,18 +220,21 @@ class CTesselatedSphere : public CSphere {
 		virtual ~CTesselatedSphere () { Destroy (); }
 		virtual void Destroy ();
 		virtual int32_t Create (void) = 0;
-		void Transform (float fScale);
 		virtual void SetQuality (int32_t nQuality) { m_nQuality = nQuality; }
 		virtual int32_t HasQuality (int32_t nDesiredQuality) { return m_nQuality = nDesiredQuality; }
 		virtual int32_t FaceNodes (void) = 0;
-		virtual CSphereVertex& FaceVertex (int32_t nFace, int32_t nVertex) = 0;
+		virtual CSphereFace *Face (int32_t nFace) = 0;
+		virtual void RenderOutline (CObject *pObj);
+
+		void Transform (float fScale);
 
 	protected:
 		int32_t Quality (void);
 
 	private:
-		int32_t FindEdge (CFloatVector v1, CFloatVector v2);
-		int32_t AddEdge (CFloatVector v1, CFloatVector v2, CFloatVector v3);
+		int32_t FindEdge (CFloatVector& v1, CFloatVector& v2);
+		int32_t AddEdge (CFloatVector& v1, CFloatVector& v2, CFloatVector& vCenter);
+		int32_t CreateEdgeList (void);
 	};
 
 // -----------------------------------------------------------------------------
@@ -241,8 +252,7 @@ class CTriangleSphere : public CTesselatedSphere {
 		void SetupFaces (void);
 		int32_t CreateBuffers (void);
 		int32_t CreateFaces (void);
-		int32_t CreateEdges (void);
-		virtual CSphereVertex& FaceVertex (int32_t nFace, int32_t nVertex) { return m_faces [m_nFaceBuffer][nFace].m_v [nVertex]; }
+		virtual CSphereFace *Face (int32_t nFace) { return m_faces [m_nFaceBuffer] + nFace; }
 	};
 
 // -----------------------------------------------------------------------------
@@ -260,8 +270,7 @@ class CQuadSphere : public CTesselatedSphere {
 		void SetupFaces (void);
 		int32_t CreateBuffers (void);
 		int32_t CreateFaces (void);
-		int32_t CreateEdges (void);
-		virtual CSphereVertex& FaceVertex (int32_t nFace, int32_t nVertex) { return m_faces [m_nFaceBuffer][nFace].m_v [nVertex]; }
+		virtual CSphereFace *Face (int32_t nFace) { return m_faces [m_nFaceBuffer] + nFace; }
 	};
 
 // -----------------------------------------------------------------------------

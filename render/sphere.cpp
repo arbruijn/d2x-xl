@@ -536,6 +536,32 @@ m_worldVerts.Destroy ();
 Init ();
 }
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CSphereEdge::Transform (void)
+{
+for (int32_t i = 0; i < 2; i++) {
+	transformation.Rotate (m_faces [i].m_vNormal [1], m_faces [i].m_vNormal [0]);
+	transformation.Transform (m_faces [i].m_vCenter [1], m_faces [i].m_vCenter [0]);
+	}
+CMeshEdge::Transform ();
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CSphereEdge::Prepare (CFloatVector vViewer, int32_t nFilter, float fDistance)
+{
+Transform ();
+int32_t nVisibility = Visibility ();
+if ((nVisibility & 1) == (nVisibility >> 1))
+	return 0;
+gameData.segData.edgeVertexData [0].Add (m_vertices [0][0]);
+gameData.segData.edgeVertexData [0].Add (m_vertices [1][0]);
+return 1;
+}
+
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -572,7 +598,7 @@ CSphere::Destroy ();
 
 // -----------------------------------------------------------------------------
 
-int32_t CTesselatedSphere::FindEdge (CFloatVector v1, CFloatVector v2)
+int32_t CTesselatedSphere::FindEdge (CFloatVector& v1, CFloatVector& v2)
 {
 CSphereEdge e;
 e.m_vertices [0][0] = v1;
@@ -585,8 +611,47 @@ return -1;
 
 // -----------------------------------------------------------------------------
 
-int32_t CTesselatedSphere::AddEdge (CFloatVector v1, CFloatVector v2, CFloatVector v3)
+int32_t CTesselatedSphere::AddEdge (CFloatVector& v1, CFloatVector& v2, CFloatVector& vCenter)
 {
+int32_t i = FindEdge (v1, v2);
+if (i < 0)
+	i = m_nEdges++;
+CSphereEdge *pEdge = m_edges + i;
+int32_t nFace = pEdge->m_nFaces++;
+if (!nFace) {
+	pEdge->m_vertices [0][0] = v1;
+	pEdge->m_vertices [1][0] = v2;
+	}
+pEdge->m_faces [nFace].m_vNormal [0] = CFloatVector::Normal (v1, v2, vCenter);
+pEdge->m_faces [nFace].m_vCenter [nFace] = vCenter;
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t CTesselatedSphere::CreateEdgeList (void)
+{
+	int32_t nFaceNodes = FaceNodes ();
+
+for (int32_t i = 0; i < m_nFaces; i++) {
+	CSphereFace *pFace = Face (i);
+	CSphereVertex *pVertex = pFace->Vertices ();
+	pFace->ComputeCenter ();
+	for (int32_t j = 0; j < nFaceNodes; j++)
+		AddEdge (pVertex [j].m_v, pVertex [(j + 1) % nFaceNodes].m_v, pFace->Center ());
+	}
+return m_nEdges;
+}
+
+// -----------------------------------------------------------------------------
+
+void CTesselatedSphere::RenderOutline (CObject *pObj)
+{
+	float d = X2F (Max (0, CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ()) - pObj->Size ()));
+
+for (int32_t i = 0; i < m_nEdges; i++)
+	m_edges [i].Prepare (CFloatVector::ZERO);
+RenderMeshOutline (CMeshEdge::DistToScale (d));
 }
 
 // -----------------------------------------------------------------------------
@@ -784,15 +849,6 @@ return !j;
 
 // -----------------------------------------------------------------------------
 
-int32_t CTriangleSphere::CreateEdges (void)
-{
-m_nEdges = m_nFaces * 2;
-if (!m_edges.Create (m_nEdges))
-	return -1;
-}
-
-// -----------------------------------------------------------------------------
-
 int32_t CTriangleSphere::CreateBuffers (void)
 {
 m_nFaces = 8 * int32_t (pow (4.0f, float (Quality ())));
@@ -931,15 +987,6 @@ for (i = 0, j = 1; i < q; i++, nFaces *= 4, j = !j) {
 	}
 m_nFaces = nFaces;
 return !j;
-}
-
-// -----------------------------------------------------------------------------
-
-int32_t CQuadSphere::CreateEdges (void)
-{
-m_nEdges = m_nFaces * 2;
-if (!m_edges.Create (m_nEdges))
-	return -1;
 }
 
 // -----------------------------------------------------------------------------

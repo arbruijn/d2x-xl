@@ -924,10 +924,6 @@ void CMeshEdge::Setup (void)
 {
 if (!m_bValid) {
 	m_bValid = 1;
-#if DBG
-	if ((m_nVertices [0] == 110) && (m_nVertices [1] == 111))
-		BRP;
-#endif
 	for (int32_t i = 0; i < m_nFaces; i++)
 		m_faces [i].Setup ();
 

@@ -1772,7 +1772,7 @@ class CVertColorData {
 
 typedef struct tFaceListItem {
 	CSegFace*			pFace;
-	int32_t					nNextItem;
+	int32_t				nNextItem;
 } tFaceListItem;
 
 class CFaceListIndex {
@@ -1825,7 +1825,8 @@ class CMeshEdge {
 			m_nVertices [0] = m_nVertices [1] = -1;
 			}
 		void Setup (void);
-		void Transform (void);
+		virtual void Transform (void);
+		virtual int32_t Visibility (void);
 		int32_t Prepare (CFloatVector vViewer, int32_t nFilter = 2, float fDistance = -1.0f);
 
 		static inline int32_t DistToScale (float fDistance) { 
@@ -1836,7 +1837,6 @@ class CMeshEdge {
 			}
 
 	protected:
-		virtual int32_t Visibility (void);
 		virtual int32_t Type (void);
 		virtual float PartialAngle (void);
 		virtual float PlanarAngle (void);
