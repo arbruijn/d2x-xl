@@ -230,11 +230,11 @@ class CTesselatedSphere : public CSphere {
 
 	protected:
 		int32_t Quality (void);
+		int32_t CreateEdgeList (void);
 
 	private:
 		int32_t FindEdge (CFloatVector& v1, CFloatVector& v2);
 		int32_t AddEdge (CFloatVector& v1, CFloatVector& v2, CFloatVector& vCenter);
-		int32_t CreateEdgeList (void);
 	};
 
 // -----------------------------------------------------------------------------

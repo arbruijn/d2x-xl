@@ -873,14 +873,7 @@ if (!CreateBuffers ())
 	return 0;
 
 m_nFaceBuffer = CreateFaces ();
-m_nVertices = m_nFaces * 3;
-if (!m_worldVerts.Create (m_nVertices) || !m_viewVerts.Create (m_nVertices)) {
-	m_worldVerts.Destroy ();
-	m_viewVerts.Destroy ();
-	m_faces [0].Destroy ();
-	m_faces [1].Destroy ();
-	return 0;
-	}
+CreateEdgeList ();
 
 CSphereTriangle *pFace = m_faces [m_nFaceBuffer].Buffer ();
 CSphereVertex *pVertex = m_worldVerts.Buffer ();
@@ -1015,6 +1008,7 @@ if (!CreateBuffers ())
 	return 0;
 
 m_nFaceBuffer = CreateFaces ();
+CreateEdgeList ();
 
 CSphereQuad *pFace = m_faces [m_nFaceBuffer].Buffer ();
 CSphereVertex *pVertex = m_worldVerts.Buffer ();
