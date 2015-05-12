@@ -657,7 +657,22 @@ if (gameStates.render.nShadowMap == 0)
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
 #endif
 	gameData.render.mine.visibility [0].BumpVisitedFlag ();
+
+#if DBG
+if (gameOpts->render.debug.bWireFrame) {
+	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+	glLineWidth (3.0f);
+	}
+if (gameOpts->render.debug.bTextures)
+#endif
 	RenderFaceList (nType);
+#if DBG
+if (gameOpts->render.debug.bWireFrame) {
+	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+	glLineWidth (1.0f);
+	}
+#endif
+
 	ogl.ClearError (0);
 	}
 #if MAX_SHADOWMAPS >= 0

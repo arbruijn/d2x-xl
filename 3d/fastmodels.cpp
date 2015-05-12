@@ -676,16 +676,16 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #if 0 //DBG
 				if (bUseVBO)
 #	if 1
-					glDrawRangeElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+					glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 												0, pModel->m_nFaceVerts - 1, nVerts, GL_UNSIGNED_SHORT,
 												G3_BUFFER_OFFSET (nIndex * sizeof (int16_t)));
 #	else
-					glDrawElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+					glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 										 nVerts, GL_UNSIGNED_SHORT,
 										 G3_BUFFER_OFFSET (nIndex * sizeof (int16_t)));
 #	endif
 				else
-					glDrawRangeElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+					glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 												nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
 												pModel->m_index [0] + nIndex);
 #else // DBG
@@ -1096,8 +1096,10 @@ if (gameStates.render.bCloaked)
 else
 	ogl.DisableClientStates (1, 1, gameOpts->ogl.bObjLighting, -1);
 #if DBG
-if (gameOpts->render.debug.bWireFrame)
+if (gameOpts->render.debug.bWireFrame) {
+	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth (3.0f);
+	}
 #endif
 
 if (gameStates.render.CartoonStyle () && !bRenderTransparency && (!pObj->IsWeapon () || pObj->IsMissile ()))
@@ -1131,8 +1133,10 @@ if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) {
 	}
 #endif
 #if DBG
-if (gameOpts->render.debug.bWireFrame)
+if (gameOpts->render.debug.bWireFrame) {
+	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 	glLineWidth (1.0f);
+	}
 #endif
 ogl.ClearError (0);
 PROF_END(ptRenderObjectMeshes)

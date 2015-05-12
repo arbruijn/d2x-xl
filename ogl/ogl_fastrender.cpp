@@ -446,11 +446,6 @@ if (gameStates.render.nType == RENDER_TYPE_ZCULL) {
 	}
 #endif
 
-#if DBG
-RenderWireFrame (pFace, bTextured);
-if (!gameOpts->render.debug.bTextures)
-	return 0;
-#endif
 G3SetBlendMode (pFace);
 if (bMonitor)
 	SetupMonitor (pFace, bmTop, bTextured, bLightmaps);
