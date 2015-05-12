@@ -438,8 +438,10 @@ if (nState & 1) {
 	}
 glColor4fv ((GLfloat*) m_color.v.vec);
 OglDrawArrays (nPrimitive, 0, nVertices);
-if (nState & 2)
+if (nState & 2) {
 	ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+	OglCullFace (0);
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -454,8 +456,10 @@ if (nState & 1) {
 	}
 glColor4fv ((GLfloat*) m_color.v.vec);
 OglDrawArrays (nPrimitive, 0, nFaces * FaceNodes ());
-if (nState & 2)
+if (nState & 2) {
 	ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+	OglCullFace (0);
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -857,7 +861,6 @@ else {
 		}
 	}
 ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-OglCullFace (0);
 }
 
 // -----------------------------------------------------------------------------
