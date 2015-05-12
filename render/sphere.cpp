@@ -1108,8 +1108,8 @@ for (int32_t i = 0; i < m_nFaces; i++) {
 #else
 		for (int32_t j = 0; j < nFaceNodes; j++)
 			AddEdge (pVertex [o [h][j]].m_v, pVertex [o [h][j + 1]].m_v, pVertex [o [h][j + 2]].m_v);
-		}
 #endif
+		}
 	}
 return m_nEdges;
 }
