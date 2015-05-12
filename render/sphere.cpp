@@ -529,8 +529,8 @@ transformation.Begin (vPos, m);
 transformation.Begin (vPos, posP->mOrient);
 #endif
 RenderFaces (xScale, red, green, blue, alpha, bTextured, nFaces);
-#if !DBG
-if (gameStates.render.CartoonStyle ())
+#if 1 // !DBG
+if (!bEffect && gameStates.render.CartoonStyle ())
 #endif
 #if SPHERE_DRAW_OUTLINE && (SPHERE_WIREFRAME < 2)
 	{
