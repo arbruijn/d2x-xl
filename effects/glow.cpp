@@ -796,7 +796,7 @@ else
 	ClearDrawBuffer (m_nType);
 	Render (0, 1, radius, true); // Blur 0 -> Blur 1
 #	if BLUR > 1
-	if (m_nType != BLUR_SHADOW)
+	if (m_nType < BLUR_OUTLINE)
 		ogl.SetBlendMode (OGL_BLEND_ADD);
 	for (int32_t i = 1; i < m_nStrength; i++) {
 		radius += RAD_INCR;
@@ -816,7 +816,7 @@ else
 
 #if BLUR
 	ogl.SetBlending (true);
-	ogl.SetBlendMode ((m_nType == BLUR_OUTLINE) ? OGL_BLEND_MULTIPLY : (m_nType == BLUR_SHADOW) ? OGL_BLEND_MULTIPLY : OGL_BLEND_ADD);
+	ogl.SetBlendMode ((m_nType >= BLUR_OUTLINE) ? OGL_BLEND_MULTIPLY : OGL_BLEND_ADD);
 	Render (1, -1, radius); // Glow -> back buffer
 #	if 1
 	if (!m_bReplace)

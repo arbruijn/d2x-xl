@@ -95,6 +95,7 @@ typedef struct tLightning {
 	char							m_nDepth;
 	char							m_bClamp;
 	char							m_bGlow;
+	char							m_bBlur;
 	char							m_bRandom;
 	char							m_bLight;
 	char							m_bInPlane;
@@ -117,7 +118,7 @@ class CLightning : public tLightning {
 		void Init (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 					  int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude,
 					  char nAngle, int32_t nOffset, int16_t nNodes, int16_t nChildren, int16_t nSteps,
-					  int16_t nSmoothe, char bClamp, char bGlow, char bLight,
+					  int16_t nSmoothe, char bClamp, char bGlow, char bBlur, char bLight,
 					  char nStyle, float nWidth, CFloatVector *pColor, CLightning *pParent, int16_t nNode);
 		void Setup (bool bInit);
 		void Destroy (void);
@@ -181,7 +182,7 @@ class CLightningEmitter : public tLightningSystem {
 		bool Create (int32_t nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 						 int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude, char nAngle, int32_t nOffset,
 						 int16_t nNodeC, int16_t nChildC, char nDepth, int16_t nSteps, int16_t nSmoothe, 
-						 char bClamp, char bGlow, char bSound, char bLight, char nStyle, float nWidth, CFloatVector *pColor);
+						 char bClamp, char bGlow, char bBlur, char bSound, char bLight, char nStyle, float nWidth, CFloatVector *pColor);
 		void Destroy (void);
 		void Animate (int32_t nStart, int32_t nBolts, int32_t nThread);
 		void Render (int32_t nStart, int32_t nBolts, int32_t nThread);
@@ -207,12 +208,12 @@ class CLightningEmitter : public tLightningSystem {
 typedef struct tLightningLight {
 	CFixVector		vPos;
 	CFloatVector	color;
-	int32_t				nNext;
-	int32_t				nLights;
-	int32_t				nBrightness;
-	int32_t				nDynLight;
-	int16_t				nSegment;
-	int32_t				nFrame;
+	int32_t			nNext;
+	int32_t			nLights;
+	int32_t			nBrightness;
+	int32_t			nDynLight;
+	int16_t			nSegment;
+	int32_t			nFrame;
 } tLightningLight;
 
 
@@ -234,9 +235,9 @@ class CLightningManager : public tLightningData {
 		~CLightningManager ();
 		void Init (void);
 		int32_t Create (int32_t nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
-						int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude, char nAngle, int32_t nOffset,
-						int16_t nNodeC, int16_t nChildC, char nDepth, int16_t nSteps, int16_t nSmoothe, 
-						char bClamp, char bGlow, char bSound, char bLight, char nStyle, float nWidth, CFloatVector *pColor);
+							 int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude, char nAngle, int32_t nOffset,
+							 int16_t nNodeC, int16_t nChildC, char nDepth, int16_t nSteps, int16_t nSmoothe, 
+							 char bClamp, char bGlow, char bBlur, char bSound, char bLight, char nStyle, float nWidth, CFloatVector *pColor);
 		int32_t Create (tLightningInfo& li, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta, int16_t nObject = -1);
 		void Destroy (CLightningEmitter* pSystem, CLightning *pLightning);
 		void Cleanup (void);

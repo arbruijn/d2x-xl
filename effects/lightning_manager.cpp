@@ -87,7 +87,7 @@ class CLightningSettings {
 int32_t CLightningManager::Create (int32_t nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 											  int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude,
 											  char nAngle, int32_t nOffset, int16_t nNodes, int16_t nChildren, char nDepth, int16_t nFrames,
-											  int16_t nSmoothe, char bClamp, char bGlow, char bSound, char bLight,
+											  int16_t nSmoothe, char bClamp, char bGlow, char bBlur, char bSound, char bLight,
 											  char nStyle, float nWidth, CFloatVector *pColor)
 {
 if (!(SHOW_LIGHTNING (1) && pColor))
@@ -101,7 +101,7 @@ if (!pEmitter)
 // for random lightning, add a few extra nodes. These won't get rendered, but will cause the end of the lightning bolts to dance around a bit,
 // making them look more natural
 if (!(pEmitter->Create (nBolts, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
-							   nAngle, nOffset, nNodes, nChildren, nDepth, nFrames, nSmoothe, bClamp, bGlow, bSound, bLight,
+							   nAngle, nOffset, nNodes, nChildren, nDepth, nFrames, nSmoothe, bClamp, bGlow, bBlur, bSound, bLight,
 							   nStyle, nWidth, pColor))) {
 	m_emitters.Push (pEmitter->Id ());
 	pEmitter->Destroy ();
@@ -140,6 +140,7 @@ return Create (li.nBolts,
 				   li.nSmoothe, 
 					li.bClamp, 
 					li.bGlow, 
+					li.bBlur,
 					li.bSound, 
 					1, 
 					li.nStyle, 
@@ -241,7 +242,7 @@ if (pObj->Type () == OBJ_ROBOT) {
 		}
 	}
 if ((pObj->Type () == OBJ_POWERUP) && (pObj->Id () == POW_SHIELD_BOOST)) {
-		static CFloatVector color = {{{0.1f, 0.1f, 0.8f, 0.2f}}};
+		static CFloatVector color = {{{0.1f, 0.1f, 0.5f, 0.2f}}};
 		return &color;
 		}
 else if ((pObj->Type () == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
@@ -696,7 +697,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
 	//m_objects [pObj->Index ()] =
 		Create (
 			nRods, &pObj->Position (), NULL, NULL, -pObj->Segment () - 1/*pObj->Index ()*/, nTTL, 0,
-			nRad, I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 0, 0, 1, -1, 3.0f, pColor);
+			nRad, I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 0, 1, 0, 1, -1, 3.0f, pColor);
 	}
 }
 
@@ -766,7 +767,7 @@ if (SHOW_LIGHTNING (0) /*&& gameOpts->render.lightning.bExplosions*/) {
 
 	Create (
 		(int32_t) FRound ((h + Rand (h)) * fRodScale), &pObj->info.position.vPos, NULL, NULL, -pObj->info.nSegment - 1, 1000, 0,
-		I2X (8), I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, -1, 0, 1, -1, 3.0f, pColor);
+		I2X (8), I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, -1, 1, 0, 1, -1, 3.0f, pColor);
 	}
 }
 
@@ -820,6 +821,7 @@ static tLightningInfo robotLightningInfo = {
 	1, // nSmoothe
 	1, // bClamp
 	-1, // bGlow
+	1, // bBlur
 	1, // bSound
 	0, // bRandom
 	0, // bInPlane
@@ -856,8 +858,8 @@ if (SHOW_LIGHTNING (2) && OBJECT_EXISTS (pObj)) {
 	else {
 		int32_t s = pObj->info.xSize;
 		int32_t i = X2I (s);
-		int32_t h = Create (5 * i, &OBJPOS (pObj)->vPos, NULL, NULL, pObj->Index (), -250, 150,
-								  s, s / 4, 0, 0, i * 10, 0, 1, 3, 1, 1, -1, 1, 1, -1, 3.0f, pColor);
+		int32_t h = Create (10 * i, &OBJPOS (pObj)->vPos, NULL, NULL, pObj->Index (), -2500, 0,
+								  3 * s / 5, s / 4, 0, 0, i * 10, 0, 1, 3, 1, 1, -1, 0, 1, 1, -1, 1.0f, pColor);
 		if (h >= 0)
 			m_objects [nObject] = h;
 		}
@@ -877,7 +879,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (
 		int32_t s = pObj->info.xSize;
 		int32_t i = X2I (s);
 		int32_t h = Create (5 * i, &OBJPOS (pObj)->vPos, NULL, NULL, pObj->Index (), -250, 150,
-								  4 * s, s, 0, 2 * s, i * 20, (i + 1) / 2, 1, 3, 1, 1, -1, 1, 1, -1, 3.0f, pColor);
+								  4 * s, s, 0, 2 * s, i * 20, (i + 1) / 2, 1, 3, 1, 1, -1, 1, 1, 1, -1, 3.0f, pColor);
 		if (h >= 0)
 			m_objects [nObject] = h;
 		}
@@ -905,7 +907,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage && OBJECT_EXISTS (p
 		Destroy (m_emitters + h, NULL);
 		}
 	h = Create (n, &pObj->info.position.vPos, NULL, NULL, pObj->Index (), -1000, 4000,
-					pObj->info.xSize, pObj->info.xSize / 8, 0, 0, 20, 0, 1, 10, 1, 1, 0, 0, 0, -1, 3.0f, pColor);
+					pObj->info.xSize, pObj->info.xSize / 8, 0, 0, 20, 0, 1, 10, 1, 1, 0, 1, 0, 0, -1, 3.0f, pColor);
 	if (h >= 0)
 		m_objects [i] = h;
 	}
@@ -1002,7 +1004,7 @@ if (i < 0) {
 		return -1;
 	nLife = 1000 + Rand (2000);
 	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, nLife, 0,
-					h, I2X (1) / 2, 0, 0, 20, 0, 1, 5, 0, 1, /*-1*/0, 0, 0, 1, 3.0f, &color);
+					h, I2X (1) / 2, 0, 0, 20, 0, 1, 5, 0, 1, /*-1*/0, 1, 0, 0, 1, 3.0f, &color);
 	bUpdate = 1;
 	}
 if (i >= 0) {

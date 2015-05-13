@@ -231,7 +231,7 @@ m_nFrames = -abs (m_nFrames);
 void CLightning::Init (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 							  int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude,
 							  char nAngle, int32_t nOffset, int16_t nNodes, int16_t nChildren, int16_t nFrames,
-							  int16_t nSmoothe, char bClamp, char bGlow, char bLight,
+							  int16_t nSmoothe, char bClamp, char bGlow, char bBlur, char bLight,
 							  char nStyle, float nWidth, CFloatVector *pColor, CLightning *pParent, int16_t nNode)
 {
 	int32_t	bRandom = (vEnd == NULL) || (nAngle > 0);
@@ -971,7 +971,7 @@ ogl.ClearError (0);
 int32_t CLightning::SetupGlow (void)
 {
 if (/*m_bGlow &&*/ gameOpts->render.lightning.bGlow) {
-	glowRenderer.Begin (GLOW_LIGHTNING, 2, false, 1.05f);
+	glowRenderer.Begin (GLOW_LIGHTNING, 2, false, /*1.05f*/0.8f);
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
@@ -980,7 +980,7 @@ if (/*m_bGlow &&*/ gameOpts->render.lightning.bGlow) {
 		return 1;
 		}
 	}
-glowRenderer.Begin (GLOW_LIGHTNING, 3, false, 1.1f);
+glowRenderer.Begin (GLOW_LIGHTNING, 3, false, /*1.1f*/0.8f);
 ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 return 0;
 }

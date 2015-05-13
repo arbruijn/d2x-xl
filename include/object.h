@@ -478,6 +478,7 @@ public:
 	char			nSmoothe;
 	char			bClamp;
 	char			bGlow;
+	char			bBlur;
 	char			bSound;
 	char			bRandom;
 	char			bInPlane;
@@ -507,6 +508,7 @@ class CLightningInfo {
 		inline char GetSmoothe (void) { return m_info.nSmoothe; }
 		inline char GetClamp (void) { return m_info.bClamp; }
 		inline char GetGlow (void) { return m_info.bGlow; }
+		inline char GetBlur (void) { return m_info.bBlur; }
 		inline char GetSound (void) { return m_info.bSound; }
 		inline char GetRandom (void) { return m_info.bRandom; }
 		inline char GetInPlane (void) { return m_info.bInPlane; }
@@ -555,11 +557,11 @@ class CWayPointInfo {
 
 typedef struct tPolyObjInfo {
 public:
-	int32_t     			nModel;          // which polygon model
+	int32_t     	nModel;          // which polygon model
 	CAngleVector 	animAngles [MAX_SUBMODELS]; // angles for each subobject
-	int32_t     			nSubObjFlags;       // specify which subobjs to draw
-	int32_t     			nTexOverride;      // if this is not -1, map all face to this
-	int32_t     			nAltTextures;       // if not -1, use these textures instead
+	int32_t     	nSubObjFlags;       // specify which subobjs to draw
+	int32_t     	nTexOverride;      // if this is not -1, map all face to this
+	int32_t     	nAltTextures;       // if not -1, use these textures instead
 } __pack__ tPolyObjInfo;
 
 class CPolyObjInfo {

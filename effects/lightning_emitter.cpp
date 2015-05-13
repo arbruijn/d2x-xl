@@ -37,7 +37,7 @@ m_nId = nId;
 bool CLightningEmitter::Create (int32_t nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 										 int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude,
 										 char nAngle, int32_t nOffset, int16_t nNodes, int16_t nChildren, char nDepth, int16_t nSteps,
-										 int16_t nSmoothe, char bClamp, char bGlow, char bSound, char bLight,
+										 int16_t nSmoothe, char bClamp, char bGlow, char bBlur, char bSound, char bLight,
 										 char nStyle, float nWidth, CFloatVector *pColor)
 {
 m_nObject = nObject;
@@ -58,7 +58,7 @@ m_lightning.Clear ();
 CLightning l;
 l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 		  nAngle, nOffset, nNodes, nChildren, nSteps,
-		  nSmoothe, bClamp, bGlow, bLight, nStyle, nWidth, pColor, NULL, -1);
+		  nSmoothe, bClamp, bGlow, bBlur, bLight, nStyle, nWidth, pColor, NULL, -1);
 
 int32_t bChildren = (gameOpts->render.lightning.nStyle > 1);
 
