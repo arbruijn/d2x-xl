@@ -496,7 +496,7 @@ plh = m_nodes.Buffer ();
 plh->m_vNewPos = plh->m_vPos;
 plh->m_vOffs.SetZero ();
 if ((nDepth > 1) || m_bRandom) {
-	if (nStyle == 2) {
+	if (nStyle >= 2) {
 		noiseX [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		noiseY [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		for (i = 0; i < m_nNodes; i++)

@@ -603,7 +603,8 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				else {
 					if (gameStates.render.bCloaked) {
 						pBm = shield.Bitmap ();
-						float c = bBlur ? 1.0f - gameStates.render.grAlpha * gameStates.render.grAlpha : pBm ? 1.0f - gameStates.render.grAlpha : 0.0f;
+						float c = 1.0f - gameStates.render.grAlpha * gameStates.render.grAlpha; //bBlur ? 1.0f - gameStates.render.grAlpha * gameStates.render.grAlpha : pBm ? 1.0f - gameStates.render.grAlpha : 0.0f;
+						//ogl.SetBlendMode (bBlur ? OGL_BLEND_REPLACE : OGL_BLEND_MULTIPLY);
 						glColor4f (c, c, c, gameStates.render.grAlpha);
 						}
 					else if (!bHires)
@@ -769,7 +770,7 @@ ogl.SetDepthWrite (false);
 if (bEmissive || (bTranspFilter == 2))
 	ogl.SetBlendMode (OGL_BLEND_ADD);
 else if (gameStates.render.bCloaked) {
-	ogl.SetBlendMode (bBlur ? OGL_BLEND_REPLACE : OGL_BLEND_ALPHA);
+	ogl.SetBlendMode (bBlur ? OGL_BLEND_REPLACE : OGL_BLEND_MULTIPLY);
 	//ogl.SetBlendMode ();
 	//ogl.SetDepthWrite (true);
 	}
