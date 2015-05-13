@@ -34,7 +34,7 @@ class CLightningNode : public tLightningNode {
 		bool CreateChild (CFixVector *vEnd, CFixVector *vDelta,
 							   int32_t nLife, int32_t nLength, int32_t nAmplitude,
 							   char nAngle, int16_t nNodes, int16_t nChildren, char nDepth, int16_t nSteps,
-							   int16_t nSmoothe, char bClamp, char bGlow, char bLight,
+							   int16_t nSmoothe, char bClamp, char bGlow, char bBlur, char bLight,
 							   char nStyle, float nWidth, CFloatVector *pColor, CLightning *pParent, int16_t nNode,
 								int32_t nThread);
 		void ComputeOffset (int32_t nSteps);

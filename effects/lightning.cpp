@@ -333,7 +333,7 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 				if (n == 0)
 					n = (m_nFrames < 0) ? -1 : 1;
 				if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, (int32_t) DRound (m_nAmplitude * scale), m_nAngle,
-															 nChildNodes, m_nChildren / 5, nDepth - 1, n, m_nSmoothe, m_bClamp, m_bGlow, m_bLight,
+															 nChildNodes, m_nChildren / 5, nDepth - 1, n, m_nSmoothe, m_bClamp, m_bGlow, m_bBlur, m_bLight,
 															 m_nStyle, m_width, &m_color, this, nNode, nThread))
 					return false;
 				}
