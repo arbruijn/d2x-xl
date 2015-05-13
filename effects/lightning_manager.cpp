@@ -837,7 +837,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (p
 		MoveForObject (pObj);
 	else {
 		robotLightningInfo.color.Set (uint8_t (255 * pColor->v.color.r), uint8_t (255 * pColor->v.color.g), uint8_t (255 * pColor->v.color.b));
-		int32_t h = lightningManager.Create (robotLightningInfo, &pObj->Position (), &OBJPOS (OBJECT (LOCALPLAYER.nObject))->vPos, NULL, nObject);
+		int32_t h = Create (robotLightningInfo, &pObj->Position (), &OBJPOS (OBJECT (LOCALPLAYER.nObject))->vPos, NULL, nObject);
 		if (h >= 0)
 			m_objects [nObject] = h;
 		}
@@ -845,33 +845,6 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (p
 }
 
 //------------------------------------------------------------------------------
-
-static tLightningInfo shieldOrbInfo = {
-	-5000, // nLife
-	0, // nDelay
-	0, // nLength
-	-4, // nAmplitude
-	0, // nOffset
-	-1, // nWayPoint
-	5, // nBolts
-	-1, // nId
-	-1, // nTarget
-	10, // nNodes
-	0, // nChildren
-	3, // nFrames
-	3, // nWidth
-	0, // nAngle
-	-1, // nStyle
-	1, // nSmoothe
-	1, // bClamp
-	-1, // bGlow
-	1, // bSound
-	0, // bRandom
-	0, // bInPlane
-	1, // bEnabled
-	0, // bDirection
-	{(uint8_t) (255 * 0.1f), (uint8_t) (255 * 0.1f), (uint8_t) (255 * 0.8f), (uint8_t) (255 * 0.3f)} // color;
-	};
 
 void CLightningManager::CreateForShieldOrb (CObject* pObj, CFloatVector *pColor)
 {
@@ -881,8 +854,10 @@ if (SHOW_LIGHTNING (2) && OBJECT_EXISTS (pObj)) {
 	if (0 <= m_objects [nObject])
 		MoveForObject (pObj);
 	else {
-		robotLightningInfo.color.Set (uint8_t (255 * pColor->v.color.r), uint8_t (255 * pColor->v.color.g), uint8_t (255 * pColor->v.color.b));
-		int32_t h = lightningManager.Create (shieldOrbInfo, &pObj->Position (), &OBJPOS (OBJECT (LOCALPLAYER.nObject))->vPos, NULL, nObject);
+		int32_t s = pObj->info.xSize;
+		int32_t i = X2I (s);
+		int32_t h = Create (5 * i, &OBJPOS (pObj)->vPos, NULL, NULL, pObj->Index (), -250, 150,
+								  s, s / 4, 0, 0, i * 10, 0, 1, 3, 1, 1, -1, 1, 1, -1, 3.0f, pColor);
 		if (h >= 0)
 			m_objects [nObject] = h;
 		}
@@ -894,15 +869,15 @@ if (SHOW_LIGHTNING (2) && OBJECT_EXISTS (pObj)) {
 void CLightningManager::CreateForPlayer (CObject* pObj, CFloatVector *pColor)
 {
 if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (pObj)) {
-	int32_t h, nObject = pObj->Index ();
+	int32_t nObject = pObj->Index ();
 
 	if (0 <= m_objects [nObject])
 		MoveForObject (pObj);
 	else {
 		int32_t s = pObj->info.xSize;
 		int32_t i = X2I (s);
-		h = Create (5 * i, &OBJPOS (pObj)->vPos, NULL, NULL, pObj->Index (), -250, 150,
-						4 * s, s, 0, 2 * s, i * 20, (i + 1) / 2, 1, 3, 1, 1, -1, 1, 1, -1, 3.0f, pColor);
+		int32_t h = Create (5 * i, &OBJPOS (pObj)->vPos, NULL, NULL, pObj->Index (), -250, 150,
+								  4 * s, s, 0, 2 * s, i * 20, (i + 1) / 2, 1, 3, 1, 1, -1, 1, 1, -1, 3.0f, pColor);
 		if (h >= 0)
 			m_objects [nObject] = h;
 		}
