@@ -279,6 +279,7 @@ m_nFrames = -nFrames;
 m_nSmoothe = nSmoothe;
 m_bClamp = bClamp;
 m_bGlow = bGlow;
+m_bBlur = bBlur;
 m_iStep = 0;
 m_color = *pColor;
 m_vBase = *vPos;
@@ -972,7 +973,9 @@ int32_t CLightning::SetupGlow (void)
 {
 if (gameOpts->render.lightning.bGlow) {
 	if (m_bBlur)
-		glowRenderer.Begin (GLOW_LIGHTNING, 2, false, /*1.05f*/0.8f);
+		glowRenderer.Begin (GLOW_LIGHTNING, 2, false, 1.05f);
+	else
+		glowRenderer.End ();
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
@@ -982,7 +985,9 @@ if (gameOpts->render.lightning.bGlow) {
 		}
 	}
 if (m_bBlur)
-	glowRenderer.Begin (GLOW_LIGHTNING, 3, false, /*1.1f*/0.8f);
+	glowRenderer.Begin (GLOW_LIGHTNING, 3, false, 1.1f);
+else
+	glowRenderer.End ();
 ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 return 0;
 }
@@ -1026,7 +1031,7 @@ color.Red () *= (float) (0.9 + RandDouble () / 5);
 color.Green () *= (float) (0.9 + RandDouble () / 5);
 color.Blue () *= (float) (0.9 + RandDouble () / 5);
 ComputeDistScale (100.0f);
-if ((bGlow = (m_fDistScale > 0.0f) && SetupGlow ()) && glowRenderer.Available (GLOW_LIGHTNING))
+if ((bGlow = (m_fDistScale > 0.0f) && SetupGlow ()) && m_bBlur && glowRenderer.Available (GLOW_LIGHTNING))
 	glBlendEquation (GL_MAX);
 else
 	color.Alpha () *= 1.5f;
@@ -1046,7 +1051,7 @@ if ((GlowType () == 1) && bGlow && m_bGlow && m_plasmaVerts.Buffer ()) {
 		}
 	}
 else {
-	if (!bGlow || glowRenderer.SetViewport (GLOW_LIGHTNING, m_coreVerts.Buffer (), m_nNodes))
+	if (!bGlow || !m_bBlur || glowRenderer.SetViewport (GLOW_LIGHTNING, m_coreVerts.Buffer (), m_nNodes))
 		RenderCore (&color, nDepth, nThread);
 	}
 if (bGlow)
