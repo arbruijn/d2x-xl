@@ -186,6 +186,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	1, // nSmoothe
 	1, // bClamp
 	-1, // bGlow
+	1, // bBlur
 	1, // bSound
 	0, // bRandom
 	0, // bInPlane
@@ -212,6 +213,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	1, // nSmoothe
 	1, // bClamp
 	-1, // bGlow
+	1, // bBlur
 	1, // bSound
 	0, // bRandom
 	0, // bInPlane
