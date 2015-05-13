@@ -970,8 +970,9 @@ ogl.ClearError (0);
 
 int32_t CLightning::SetupGlow (void)
 {
-if (m_bBlur && gameOpts->render.lightning.bGlow) {
-	glowRenderer.Begin (GLOW_LIGHTNING, 2, false, /*1.05f*/0.8f);
+if (gameOpts->render.lightning.bGlow) {
+	if (m_bBlur)
+		glowRenderer.Begin (GLOW_LIGHTNING, 2, false, /*1.05f*/0.8f);
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
@@ -980,7 +981,8 @@ if (m_bBlur && gameOpts->render.lightning.bGlow) {
 		return 1;
 		}
 	}
-glowRenderer.Begin (GLOW_LIGHTNING, 3, false, /*1.1f*/0.8f);
+if (m_bBlur)
+	glowRenderer.Begin (GLOW_LIGHTNING, 3, false, /*1.1f*/0.8f);
 ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 return 0;
 }
