@@ -1206,7 +1206,7 @@ m_info.pTexture->Prepare ();
 #endif
 
 #if DBG
-if (strstr (m_info.szName, "ship"))
+if (strstr (m_info.szName, "targ"))
 	BRP;
 if (strstr (m_info.szName, "door52"))
 	BRP;

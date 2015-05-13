@@ -96,7 +96,7 @@ extern CAddonBitmap glare;
 extern CAddonBitmap halo;
 extern CAddonBitmap thruster;
 extern CAddonBitmap shield;
-extern CAddonBitmap caustic;
+//extern CAddonBitmap caustic;
 extern CAddonBitmap deadzone;
 extern CAddonBitmap damageIcon [3];
 extern CAddonBitmap scope;

@@ -215,8 +215,12 @@ static void CacheAddonTextures (void)
 {
 for (int32_t i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
 	PageInAddonBitmap (-i - 1);
-	BM_ADDON (i)->SetTranspType (0);
-	BM_ADDON (i)->SetupTexture (1, 1); 
+	CBitmap *pBm = BM_ADDON (i);
+	if (pBm) {
+		pBm->SetCartoonizable (i < 2);
+		pBm->SetTranspType (0);
+		pBm->SetupTexture (1, 1); 
+		}
 	}
 CAddonBitmap::Prepare ();
 }
