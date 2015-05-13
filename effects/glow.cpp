@@ -708,13 +708,14 @@ else
 	}
 #if 0 && DBG
 ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
+ogl.SetDepthTest (false);
 ogl.SetTexturing (false);
 glColor4f (0.0f, 0.5f, 1.0f, 0.25f);
 #else
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer (source < 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
-glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
+//glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 #endif
 OglVertexPointer (2, GL_FLOAT, 0, verts [bEnableViewport && UseViewport ()]);
 OglDrawArrays (GL_QUADS, 0, 4);
@@ -744,7 +745,7 @@ if (Available (nType)) {
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::End (void)
+bool CGlowRenderer::End (float fAlpha)
 {
 if (m_nStrength < 0)
 	return false;
@@ -782,6 +783,8 @@ else
 		m_renderMax.y = CCanvas::Current ()->Bottom ();
 		}
 
+	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
+
 #if BLUR
 	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
@@ -816,14 +819,16 @@ else
 
 #if BLUR
 	ogl.SetBlending (true);
-	ogl.SetBlendMode ((m_nType >= BLUR_OUTLINE) ? OGL_BLEND_MULTIPLY : OGL_BLEND_ADD);
+	ogl.SetBlendMode ((m_nType >= BLUR_OUTLINE) ? OGL_BLEND_MULTIPLY : (fAlpha < 1.0f) ? OGL_BLEND_ALPHA : OGL_BLEND_ADD);
+	glColor4f (1.0f, 1.0f, 1.0f, fAlpha);
 	Render (1, -1, radius); // Glow -> back buffer
 #	if 1
 	if (!m_bReplace)
 		Render (-1, -1, radius); // render the unblurred stuff on top of the blur
 #	endif
 #else
-	ogl.SetBlendMode ((m_nType == BLUR_SHADOW) ? OGL_BLEND_MULTIPLY : OGL_BLEND_ADD);
+	ogl.SetBlendMode ((m_nType >= BLUR_OUTLINE) ? OGL_BLEND_MULTIPLY : (fAlpha < 1.0f) ? OGL_BLEND_ALPHA : OGL_BLEND_ADD);
+	glColor4f (1.0f, 1.0f, 1.0f, fAlpha);
 	Render (-1, -1, radius); // render the unblurred stuff on top of the blur
 #endif
 

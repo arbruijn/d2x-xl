@@ -65,6 +65,7 @@ static int32_t nShadows, nCoronas, nLightTrails;
 
 static const char* pszExplShrapnels [5];
 static const char* pszNoneBasicFull [3];
+static const char* pszNoneBasicStdFull [4];
 static const char* pszSmokeQuality [MAX_PARTICLE_QUALITY + 1];
 static const char* pszNoneBasicAdv [3];
 static const char* pszOffFastFull [3];
@@ -161,7 +162,7 @@ if ((m = menu ["lightning"])) {
 	v = m->Value ();
 	if (extraGameInfo [0].bUseLightning != v) {
 		extraGameInfo [0].bUseLightning = v;
-		sprintf (m->m_text, TXT_LIGHTNING, pszNoneBasicFull [int32_t (extraGameInfo [0].bUseLightning)]);
+		sprintf (m->m_text, TXT_LIGHTNING, pszNoneBasicStdFull [int32_t (extraGameInfo [0].bUseLightning)]);
 		m->m_bRebuild = -1;
 		}
 	}
@@ -206,6 +207,11 @@ pszExplShrapnels [4] = TXT_EXTREME;
 pszNoneBasicFull [0] = TXT_NONE;
 pszNoneBasicFull [1] = TXT_BASIC;
 pszNoneBasicFull [2] = TXT_FULL;
+
+pszNoneBasicStdFull [0] = TXT_NONE;
+pszNoneBasicStdFull [1] = TXT_BASIC;
+pszNoneBasicStdFull [2] = TXT_HIGH;
+pszNoneBasicStdFull [3] = TXT_MAXIMAL;
 
 pszSmokeQuality [0] = TXT_NONE;
 pszSmokeQuality [1] = TXT_BASIC;
@@ -276,9 +282,9 @@ do {
 		m.AddSlider ("coronas", szSlider + 1, nCoronas, 0, 1, KEY_O, HTX_CORONAS);
 		}
 
-	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [int32_t (extraGameInfo [0].bUseLightning)]);
+	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicStdFull [int32_t (extraGameInfo [0].bUseLightning)]);
 	*szSlider = *(TXT_LIGHTNING - 1);
-	m.AddSlider ("lightning", szSlider + 1, extraGameInfo [0].bUseLightning, 0, 2, KEY_L, HTX_LIGHTNING);
+	m.AddSlider ("lightning", szSlider + 1, extraGameInfo [0].bUseLightning, 0, 3, KEY_L, HTX_LIGHTNING);
 	sprintf (szSlider + 1, TXT_EFFECTS_GLOW, pszOffFastFull [gameOpts->render.effects.bGlow]);
 	*szSlider = *(TXT_EFFECTS_GLOW - 1);
 	m.AddSlider ("glow", szSlider + 1, gameOpts->render.effects.bGlow, 0, 2, KEY_W, HTX_EFFECTS_GLOW);

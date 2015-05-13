@@ -35,6 +35,7 @@ CAddonBitmap glare (const_cast<char*>("glare.tga"));
 CAddonBitmap halo (const_cast<char*>("halo.tga"));
 CAddonBitmap thruster (const_cast<char*>("thruster.tga"));
 CAddonBitmap shield (const_cast<char*>("forcefield.tga"));
+CAddonBitmap caustic (const_cast<char*>("caustic.tga"));
 CAddonBitmap deadzone (const_cast<char*>("deadzone.tga"));
 CAddonBitmap damageIcon [3];
 CAddonBitmap scope (const_cast<char*>("scope.tga"));
@@ -78,12 +79,12 @@ for (uint32_t i = 0; i < m_list.ToS (); i++)
 //------------------------------------------------------------------------------
 
 CAddonBitmap::CAddonBitmap (char *pszName, int32_t bCartoonize) 
+	: m_bAvailable (0), m_bCartoonize (0), m_fps (0)
 {
 if (pszName)
 	strncpy (m_szName, pszName, sizeof (m_szName));
 else
 	m_szName [0] = '\0';
-m_bAvailable = 0;
 m_bCartoonize = bCartoonize;
 m_pBm = NULL;
 }
@@ -259,6 +260,8 @@ PrintLog (0, "Loading thruster image\n");
 thruster.Load ();
 PrintLog (0, "Loading shield image\n");
 shield.Load ();
+PrintLog (0, "Loading caustic image\n");
+caustic.Load ();
 PrintLog (0, "Loading explosion blast image\n");
 explBlast.Load ();
 PrintLog (0, "Loading spark image\n");

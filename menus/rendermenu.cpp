@@ -76,7 +76,7 @@ static int32_t fpsTable [] = {0, 60};
 static const char *pszRendQual [4];
 static const char *pszRendStyle [2];
 static const char *pszMeshQual [5];
-static const char *pszImgQual [5];
+static const char *pszImgQual [6];
 static const char *pszColorLevel [3];
 static const char *pszStereoDevice [5];
 static const char *pszAnaglyphColors [3];

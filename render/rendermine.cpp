@@ -659,17 +659,19 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.
 	gameData.render.mine.visibility [0].BumpVisitedFlag ();
 
 #if DBG
-if (gameOpts->render.debug.bWireFrame) {
+if ((nType == RENDER_TYPE_GEOMETRY) && (gameOpts->render.debug.bWireFrame & 1)) {
+	nType = RENDER_TYPE_OUTLINE;
 	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
-	glLineWidth (3.0f);
+	glLineWidth (4.0f);
 	}
 if (gameOpts->render.debug.bTextures)
 #endif
 	RenderFaceList (nType);
 #if DBG
-if (gameOpts->render.debug.bWireFrame) {
+if (nType == RENDER_TYPE_OUTLINE) {
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 	glLineWidth (1.0f);
+	nType = RENDER_TYPE_GEOMETRY;
 	}
 #endif
 

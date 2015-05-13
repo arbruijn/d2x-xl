@@ -850,7 +850,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (p
 
 void CLightningManager::CreateForShieldOrb (CObject* pObj, CFloatVector *pColor)
 {
-if (SHOW_LIGHTNING (2) && OBJECT_EXISTS (pObj)) {
+if (SHOW_LIGHTNING (3) && OBJECT_EXISTS (pObj)) {
 		int32_t nObject = pObj->Index ();
 
 	if (0 <= m_objects [nObject])
@@ -858,7 +858,7 @@ if (SHOW_LIGHTNING (2) && OBJECT_EXISTS (pObj)) {
 	else {
 		int32_t s = pObj->info.xSize;
 		int32_t i = X2I (s);
-		int32_t h = Create (10 * i, &OBJPOS (pObj)->vPos, NULL, NULL, pObj->Index (), -2500, 0,
+		int32_t h = Create (10 * i, &OBJPOS (pObj)->vPos, NULL, NULL, pObj->Index (), -1500, 0,
 								  3 * s / 5, s / 4, 0, 0, i * 10, 0, 1, 3, 1, 1, -1, 0, 1, 1, -1, 1.0f, pColor);
 		if (h >= 0)
 			m_objects [nObject] = h;

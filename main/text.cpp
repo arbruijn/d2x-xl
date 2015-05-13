@@ -771,7 +771,7 @@ const char *defaultGameTexts [][2] = {
  {"min", "low"},
  {"mittel", "medium"},
  {"hoch", "high"},
- {"max", "highest"},
+ {"max", "max"},
  {"b~Ildqualitaet", "~Image quality: %s"},
  {"~Darstellungsqualitaet", "~Render quality: %s"},
  {"~Bildwiederholrate: %d fps", "Framecap: %d fps"},

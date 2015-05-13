@@ -148,7 +148,7 @@ else {
 
 bool RenderGeometryFace (CSegment *pSeg, CSegFace *pFace)
 {
-faceRenderFunc (pFace, pFace->bmBot, pFace->bmTop, pFace->m_info.bTextured, (gameStates.render.bPerPixelLighting != 0) && !gameStates.render.bFullBright);
+faceRenderFunc (pFace, pFace->bmBot, pFace->bmTop, pFace->m_info.bTextured, (gameStates.render.bPerPixelLighting != 0) && !gameStates.render.bFullBright && !(gameOpts->render.debug.bWireFrame & 1));
 return true;
 }
 
@@ -400,6 +400,7 @@ else
 	if (nType == RENDER_TYPE_OUTLINE) {
 		ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
+		glColor3f (1,1,1);
 		}
 	else {
 	if (bLightmaps) {

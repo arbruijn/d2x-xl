@@ -1013,6 +1013,8 @@ if (pObj->info.nType == 255)
 	return 0;
 item.pObj = pObj;
 item.vScale = gameData.models.vScale;
+if (pObj->Cloaked ())
+	m_data.bRenderGlow = 1;
 //transformation.Transform (vPos, OBJPOS (pObj)->vPos, 0);
 return Add (&item, OBJPOS (pObj)->vPos, 0, 0, -1);
 }

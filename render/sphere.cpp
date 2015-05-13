@@ -111,6 +111,31 @@ shaderManager.Deploy (-1);
 
 // -----------------------------------------------------------------------------
 
+int32_t WantEffect (CObject* pObj)
+{
+return (pObj->Type () == OBJ_PLAYER) || (pObj->Type () == OBJ_ROBOT);
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t NeedEffect (CObject* pObj)
+{
+	CObjHitInfo	hitInfo = pObj->HitInfo ();
+	float fSize = 1.0f + 2.0f / X2F (pObj->Size ());
+
+for (int32_t i = 0; i < 3; i++) {
+	int32_t dt = gameStates.app.nSDLTicks [0] - int32_t (hitInfo.t [i]);
+	if (dt < SHIELD_EFFECT_TIME) {
+		float h = (fSize * float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * PI / 2)));
+		if (h > 1.0f / 1e6f)
+			return 1;
+		}
+	}
+return 0;
+}
+
+// -----------------------------------------------------------------------------
+
 int32_t SetupSphereShader (CObject* pObj, float alpha)
 {
 	int32_t	nHits = 0;
@@ -371,11 +396,8 @@ if (m_pPulse) {
 void CSphere::Animate (CBitmap* pBm)
 {
 #if 1
-if (pBm && (pBm == shield.Bitmap ())) {
-	static CTimeout to (100);
-	if (to.Expired () && pBm->CurFrame ()) 
-		pBm->NextFrame ();
-	}
+if (shield.IsMe (pBm))
+	shield.Animate (10);
 #endif
 }
 
@@ -469,13 +491,16 @@ int32_t CSphere::Render (CObject *pObj, CFloatVector *pvPos, float xScale, float
 {
 	float	fScale = 1.0f;
 	int32_t	bTextured = 0;
-#if 0 //DBG
-	int32_t	bEffect = 0;
-#else
 	int32_t	bAppearing = pObj->Appearing ();
-	int32_t	bEffect = (pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_ROBOT);
-	int32_t	bGlow = /*!bAppearing &&*/ (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
-#endif
+	int32_t	bEffect = 0;
+	
+if (WantEffect (pObj)) {
+	if (!NeedEffect (pObj))
+		return 0;
+	bEffect = 1;
+	}
+
+	int32_t	bGlow = (bAppearing || bEffect) && (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
 
 CFixVector vPos;
 PolyObjPos (pObj, &vPos);

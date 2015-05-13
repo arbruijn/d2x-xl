@@ -216,7 +216,7 @@ return nShader;
 
 void RenderWireFrame (CSegFace *pFace, int32_t bTextured)
 {
-if (gameOpts->render.debug.bWireFrame) {
+if (gameOpts->render.debug.bWireFrame & 1) {
 	if ((nDbgFace < 0) || (pFace - FACES.faces == nDbgFace)) {
 		tFaceTriangle	*pTriangle = FACES.tris + pFace->m_info.nTriIndex;
 		ogl.DisableClientState (GL_COLOR_ARRAY);
@@ -451,6 +451,8 @@ if (bMonitor)
 	SetupMonitor (pFace, bmTop, bTextured, bLightmaps);
 gameData.render.nTotalFaces++;
 
+if (gameOpts->render.debug.bWireFrame & 1)
+	glColor3f (1,1,1);
 if (!bLightmaps)
 	DrawFace (pFace);
 else {
