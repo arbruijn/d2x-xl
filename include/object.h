@@ -1084,7 +1084,7 @@ class CObject : public CObjectInfo {
 		int32_t CollideRobotAndObjProducer (void);
 		int32_t CollidePlayerAndObjProducer (void);
 
-		inline void RequestEffects (uint8_t nEffects);
+		inline void RequestEffects (uint16_t nEffects);
 		CObject* CreateExplBlast (bool bForce = false);
 		CObject* CreateShockwave (void);
 		int32_t CreateWeaponEffects (int32_t bExplBlast);

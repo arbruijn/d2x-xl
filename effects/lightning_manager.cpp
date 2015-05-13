@@ -269,7 +269,7 @@ void CLightningManager::Update (void)
 if (SHOW_LIGHTNING (1)) {
 
 		CObject	*pObj;
-		uint8_t		h;
+		uint16_t		h;
 		int32_t		i;
 
 #if LIMIT_LIGHTNING_FPS

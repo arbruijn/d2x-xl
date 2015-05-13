@@ -2490,7 +2490,7 @@ class CObjectData {
 		uint8_t						collisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
 		CArray<tObjectViewData>	viewData;
 		CStaticArray< int16_t, MAX_WEAPONS >	idToOOF; //[MAX_WEAPONS];
-		CByteArray				bWantEffect; //[MAX_OBJECTS_D2X];
+		CArray<uint16_t>			bWantEffect; //[MAX_OBJECTS_D2X];
 
 	public:
 		CObjectData ();
@@ -4156,7 +4156,7 @@ return vPosP;
 
 //	-----------------------------------------------------------------------------
 
-inline void CObject::RequestEffects (uint8_t nEffects)
+inline void CObject::RequestEffects (uint16_t nEffects)
 {
 gameData.objData.bWantEffect [OBJ_IDX (this)] |= nEffects;
 }
