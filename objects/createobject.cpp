@@ -591,7 +591,7 @@ if (!bIgnoreLimits && TooManyPowerups ((int32_t) nId)) {
 if (gameStates.gameplay.bMineMineCheat && !bForce && (CObject::IsEquipment (nId) < 2))
 	return -1;
 int16_t nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objData.pwrUp.info [nId].size, CT_POWERUP, MT_PHYSICS, RT_POWERUP);
-if ((nObject >= 0) && IsMultiGame && PowerupClass (nId)) 
+if ((nObject >= 0) && IsMultiGame && PowerupClass (nId))
 	AddPowerupInMine ((int32_t) nId);
 return nObject;
 }

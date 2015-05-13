@@ -2506,14 +2506,15 @@ class CObjectData {
 		int32_t RebuildEffects (void);
 };
 
-#define PLAYER_LIGHTNING	1
-#define ROBOT_LIGHTNING		2
-#define MISSILE_LIGHTNING	4
-#define EXPL_LIGHTNING		8
-#define MOVE_LIGHTNING		16
-#define DESTROY_LIGHTNING	32
-#define SHRAPNEL_SMOKE		64
-#define DESTROY_SMOKE		128
+#define PLAYER_LIGHTNING		1
+#define ROBOT_LIGHTNING			2
+#define MISSILE_LIGHTNING		4
+#define EXPL_LIGHTNING			8
+#define SHIELDORB_LIGHTNING	16
+#define MOVE_LIGHTNING			32
+#define DESTROY_LIGHTNING		64
+#define SHRAPNEL_SMOKE			128
+#define DESTROY_SMOKE			256
 
 //------------------------------------------------------------------------------
 

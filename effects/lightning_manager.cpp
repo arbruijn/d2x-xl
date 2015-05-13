@@ -234,14 +234,18 @@ if (m_objects [i] >= 0)
 
 CFloatVector *CLightningManager::LightningColor (CObject* pObj)
 {
-if (pObj->info.nType == OBJ_ROBOT) {
+if (pObj->Type () == OBJ_ROBOT) {
 	if (ROBOTINFO (pObj) && ROBOTINFO (pObj)->energyDrain) {
 		static CFloatVector color = {{{1.0f, 0.8f, 0.3f, 0.2f}}};
 		return &color;
 		}
 	}
-else if ((pObj->info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
-	if (gameData.FusionCharge (pObj->info.nId) > I2X (2)) {
+if ((pObj->Type () == OBJ_POWERUP) && (pObj->Id () == POW_SHIELD_BOOST)) {
+		static CFloatVector color = {{{0.1f, 0.1f, 0.8f, 0.2f}}};
+		return &color;
+		}
+else if ((pObj->Type () == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
+	if (gameData.FusionCharge (pObj->Id ()) > I2X (2)) {
 		static CFloatVector color = {{{0.666f, 0.0f, 0.75f, 0.2f}}};
 		return &color;
 		}
@@ -322,10 +326,10 @@ if (SHOW_LIGHTNING (1)) {
 		i = pObj->Index ();
 		h = gameData.objData.bWantEffect [i];
 		if (h & EXPL_LIGHTNING) {
-			if ((pObj->info.nType == OBJ_ROBOT) || (pObj->info.nType == OBJ_DEBRIS) || (pObj->info.nType == OBJ_REACTOR))
+			if ((pObj->Type () == OBJ_ROBOT) || (pObj->Type () == OBJ_DEBRIS) || (pObj->Type () == OBJ_REACTOR))
 				CreateForBlowup (pObj);
 #if DBG
-			else if (pObj->info.nType != 255)
+			else if (pObj->Type () != 255)
 				PrintLog (1, "invalid effect requested\n");
 #endif
 			}
@@ -333,28 +337,32 @@ if (SHOW_LIGHTNING (1)) {
 			if (pObj->IsMissile ())
 				CreateForMissile (pObj);
 #if DBG
-			else if (pObj->info.nType != 255)
+			else if (pObj->Type () != 255)
 				PrintLog (1, "invalid effect requested\n");
 #endif
 			}
 		else if (h & ROBOT_LIGHTNING) {
-			if (pObj->info.nType == OBJ_ROBOT)
+			if (pObj->Type () == OBJ_ROBOT)
 				CreateForRobot (pObj, LightningColor (pObj));
 #if DBG
-			else if (pObj->info.nType != 255)
+			else if (pObj->Type () != 255)
 				PrintLog (1, "invalid effect requested\n");
 #endif
 			}
+		else if (h & SHIELDORB_LIGHTNING) {
+			if ((pObj->Type () == OBJ_POWERUP) && (pObj->Id () == POW_SHIELD_BOOST))
+				CreateForShieldOrb (pObj, LightningColor (pObj));
+			}
 		else if (h & PLAYER_LIGHTNING) {
-			if (pObj->info.nType == OBJ_PLAYER)
+			if (pObj->Type () == OBJ_PLAYER)
 				CreateForPlayer (pObj, LightningColor (pObj));
 #if DBG
-			else if (pObj->info.nType != 255)
+			else if (pObj->Type () != 255)
 				PrintLog (1, "invalid effect requested\n");
 #endif
 			}
 		else if (h & MOVE_LIGHTNING) {
-			if ((pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_ROBOT))
+			if ((pObj->Type () == OBJ_PLAYER) || (pObj->Type () == OBJ_ROBOT))
 				MoveForObject (pObj);
 			}
 		gameData.objData.bWantEffect [i] &= ~(PLAYER_LIGHTNING | ROBOT_LIGHTNING | MISSILE_LIGHTNING | EXPL_LIGHTNING | MOVE_LIGHTNING);
@@ -394,7 +402,7 @@ void CLightningManager::DestroyForAllObjects (int32_t nType, int32_t nId)
 	CObject* pObj;
 
 FORALL_OBJS (pObj) {
-	if ((pObj->info.nType == nType) && ((nId < 0) || (pObj->info.nId == nId)))
+	if ((pObj->Type () == nType) && ((nId < 0) || (pObj->Id () == nId)))
 #if 1
 		pObj->RequestEffects (DESTROY_LIGHTNING);
 #else
@@ -485,7 +493,7 @@ CFixVector *CLightningManager::FindTargetPos (CObject* pEmitter, int16_t nTarget
 if (!nTarget)
 	return 0;
 FORALL_EFFECT_OBJS (pObj) {
-	if ((pObj != pEmitter) && (pObj->info.nId == LIGHTNING_ID) && (pObj->rType.lightningInfo.nId == nTarget))
+	if ((pObj != pEmitter) && (pObj->Id () == LIGHTNING_ID) && (pObj->rType.lightningInfo.nId == nTarget))
 		return &pObj->info.position.vPos;
 	}
 return NULL;
@@ -515,7 +523,7 @@ if (!SHOW_LIGHTNING (1))
 if (!gameOpts->render.lightning.bStatic)
 	return;
 FORALL_EFFECT_OBJS (pObj) {
-	if (pObj->info.nId != LIGHTNING_ID)
+	if (pObj->Id () != LIGHTNING_ID)
 		continue;
 	int16_t nObject = pObj->Index ();
 	if (m_objects [nObject] >= 0)
@@ -724,11 +732,11 @@ CreateForExplosion (pObj, &color, 30, I2X (15), 750);
 int32_t CLightningManager::CreateForMissile (CObject* pObj)
 {
 if (pObj->IsMissile ()) {
-	if ((pObj->info.nId == EARTHSHAKER_ID) || (pObj->info.nId == EARTHSHAKER_ID))
+	if ((pObj->Id () == EARTHSHAKER_ID) || (pObj->Id () == EARTHSHAKER_ID))
 		CreateForShaker (pObj);
-	else if ((pObj->info.nId == EARTHSHAKER_MEGA_ID) || (pObj->info.nId == ROBOT_SHAKER_MEGA_ID))
+	else if ((pObj->Id () == EARTHSHAKER_MEGA_ID) || (pObj->Id () == ROBOT_SHAKER_MEGA_ID))
 		CreateForShakerMega (pObj);
-	else if ((pObj->info.nId == MEGAMSL_ID) || (pObj->info.nId == ROBOT_MEGAMSL_ID))
+	else if ((pObj->Id () == MEGAMSL_ID) || (pObj->Id () == ROBOT_MEGAMSL_ID))
 		CreateForMega (pObj);
 	else
 		return 0;
@@ -838,6 +846,51 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (p
 
 //------------------------------------------------------------------------------
 
+static tLightningInfo shieldOrbInfo = {
+	-5000, // nLife
+	0, // nDelay
+	0, // nLength
+	-4, // nAmplitude
+	0, // nOffset
+	-1, // nWayPoint
+	5, // nBolts
+	-1, // nId
+	-1, // nTarget
+	10, // nNodes
+	0, // nChildren
+	3, // nFrames
+	3, // nWidth
+	0, // nAngle
+	-1, // nStyle
+	1, // nSmoothe
+	1, // bClamp
+	-1, // bGlow
+	1, // bSound
+	0, // bRandom
+	0, // bInPlane
+	1, // bEnabled
+	0, // bDirection
+	{(uint8_t) (255 * 0.1f), (uint8_t) (255 * 0.1f), (uint8_t) (255 * 0.8f), (uint8_t) (255 * 0.3f)} // color;
+	};
+
+void CLightningManager::CreateForShieldOrb (CObject* pObj, CFloatVector *pColor)
+{
+if (SHOW_LIGHTNING (2) && OBJECT_EXISTS (pObj)) {
+		int32_t nObject = pObj->Index ();
+
+	if (0 <= m_objects [nObject])
+		MoveForObject (pObj);
+	else {
+		robotLightningInfo.color.Set (uint8_t (255 * pColor->v.color.r), uint8_t (255 * pColor->v.color.g), uint8_t (255 * pColor->v.color.b));
+		int32_t h = lightningManager.Create (shieldOrbInfo, &pObj->Position (), &OBJPOS (OBJECT (LOCALPLAYER.nObject))->vPos, NULL, nObject);
+		if (h >= 0)
+			m_objects [nObject] = h;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void CLightningManager::CreateForPlayer (CObject* pObj, CFloatVector *pColor)
 {
 if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (pObj)) {
@@ -918,7 +971,7 @@ int32_t CLightningManager::RenderForDamage (CObject* pObj, CRenderPoint **pointL
 
 if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage))
 	return -1;
-if ((pObj->info.nType != OBJ_ROBOT) && (pObj->info.nType != OBJ_PLAYER))
+if ((pObj->Type () != OBJ_ROBOT) && (pObj->Type () != OBJ_PLAYER))
 	return -1;
 if (nVertices < 3)
 	return -1;

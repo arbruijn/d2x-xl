@@ -261,6 +261,7 @@ class CLightningManager : public tLightningData {
 		void CreateForDamage (CObject *pObj, CFloatVector *pColor);
 		void CreateForRobot (CObject *pObj, CFloatVector *pColor);
 		void CreateForPlayer (CObject *pObj, CFloatVector *pColor);
+		void CreateForShieldOrb (CObject* pObj, CFloatVector *pColor);
 		void CreateForExplosion (CObject *pObj, CFloatVector *pColor, int32_t nRods, int32_t nRad, int32_t nTTL);
 		void CreateForTeleport (CObject* pObj, CFloatVector *pColor, float fRodScale = 1.0f);
 		void CreateForPlayerTeleport (CObject *pObj);

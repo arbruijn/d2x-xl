@@ -531,6 +531,10 @@ if ((info.nType == OBJ_ROBOT) && gameOpts->render.lightning.bRobots) {
 		nEffect = ROBOT_LIGHTNING;
 		}
 	}
+else if (info.nType == OBJ_POWERUP) {
+	bNeedEffect = SHOW_LIGHTNING (2) && (info.nId == POW_SHIELD_BOOST);
+	nEffect = SHIELDORB_LIGHTNING;
+	}
 else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	nEffect = PLAYER_LIGHTNING;
 	int32_t nType = SEGMENT (OBJSEG (this))->m_function;
@@ -551,7 +555,7 @@ else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	else
 		bNeedEffect = false;
 	}
-else
+else 
 	return;
 if (bHaveEffect != bNeedEffect)
 	RequestEffects (bNeedEffect ? nEffect : DESTROY_LIGHTNING);
