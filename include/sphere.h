@@ -42,34 +42,34 @@ class CSphereVertex {
 		CFloatVector	m_v;
 		tTexCoord2f		m_tc;
 
-		inline CSphereVertex& operator= (CSphereVertex& other) {
+		inline CSphereVertex& operator= (const CSphereVertex& other) {
 			m_v = other.m_v;
 			m_tc.v.u = other.m_tc.v.u;
 			m_tc.v.v = other.m_tc.v.v;
 			return *this;
 			}
 
-		inline CSphereVertex& operator+= (CSphereVertex& other) {
+		inline CSphereVertex& operator+= (const CSphereVertex& other) {
 			m_v += other.m_v;
 			m_tc.v.u += other.m_tc.v.u;
 			m_tc.v.v += other.m_tc.v.v;
 			return *this;
 			}
 
-		inline CSphereVertex& operator-= (CSphereVertex& other) {
+		inline CSphereVertex& operator-= (const CSphereVertex& other) {
 			m_v -= other.m_v;
 			m_tc.v.u -= other.m_tc.v.u;
 			m_tc.v.v -= other.m_tc.v.v;
 			return *this;
 			}
 
-		inline CSphereVertex operator+ (CSphereVertex& other) {
+		inline const CSphereVertex operator+ (const CSphereVertex& other) const {
 			CSphereVertex v = *this;
 			v += other;
 			return v;
 			}
 
-		inline CSphereVertex operator- (CSphereVertex& other) {
+		inline const CSphereVertex operator- (const CSphereVertex& other) const {
 			CSphereVertex v = *this;
 			v -= other;
 			return v;
@@ -89,14 +89,14 @@ class CSphereVertex {
 			}
 #endif
 
-		inline CSphereVertex& operator*= (float s) {
+		inline CSphereVertex& operator*= (const float s) {
 			m_v *= s;
 			m_tc.v.u *= s;
 			m_tc.v.v *= s;
 			return *this;
 			}
 
-		inline CSphereVertex operator* (float s) {
+		inline const CSphereVertex operator* (const float s) const {
 			CSphereVertex v = *this;
 			v *= s;
 			return v;

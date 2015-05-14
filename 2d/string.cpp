@@ -1000,7 +1000,7 @@ if (n > 0) {
 		}
 	}
 fontManager.Current ()->StringSize (s, w, h, aw);
-if (n)
+if (n > 0)
 	s [n] = p;
 return w;
 }
