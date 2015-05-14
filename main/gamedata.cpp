@@ -2410,7 +2410,6 @@ void DefaultEffectSettings (bool bSetup)
 gameOptions [0].render.effects.bAutoTransparency = 1;
 gameOptions [0].render.effects.bTransparent = 1;
 //gameOptions [0].render.effects.nShockwaves = 1;
-gameOptions [0].render.effects.bEnergySparks = (gameOptions [0].render.nQuality > 0);
 gameOptions [0].render.effects.bMovingSparks = 1;
 #if 0
 if (gameOptions [0].render.nQuality < 2)
@@ -2421,8 +2420,10 @@ gameOptions [0].render.effects.bOnlyShieldHits = 1;
 extraGameInfo [0].bTracers = 1;
 extraGameInfo [0].bShockwaves = 0; 
 extraGameInfo [0].bDamageExplosions = 0;
-if (bSetup || !gameOpts->app.bExpertMode)
+if (bSetup || !gameOpts->app.bExpertMode) {
+	gameOptions [0].render.effects.bEnergySparks = (gameOptions [0].render.nQuality > 1);
 	gameOptions [0].render.effects.bSoftParticles = (gameOptions [0].render.nQuality == 3) ? 7 : 0;
+	}
 else if (gameOptions [0].render.nQuality < 3)
 	gameOptions [0].render.effects.bSoftParticles = 0;
 #if 1

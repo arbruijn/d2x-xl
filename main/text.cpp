@@ -1776,7 +1776,7 @@ const char *defaultGameTexts [][2] = {
  {"zu Boje teleportieren?", "Teleport to marker?"},
  {"Kann nicht teleportieren: Zuwenig Energie", "Cannot teleport: Not enough energy"},
  {"Prozent erkundet", "percent explored"},
- {"Energiefunken zeichnen", "render energy s~Parks"},
+ {"3d-energie~Funken: %s", "3d energy s~Parks: %s"},
  {"aktuelle ~Waffen zeigen", "show equipped ~Weapons"},
  {"~Patronenhuelsen zeigen", "show ~Bullet casings"},
  {"l~Aaser an den Tragflaechenenden", "l~Asers on wingtips"},

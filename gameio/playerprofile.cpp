@@ -475,7 +475,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.effects.bShields, i, 1);
 		RP (gameOptions [i].render.coronas.bUse, i, 0);
 		RP (gameOptions [i].render.coronas.nStyle, i, 0);
-		RP (gameOptions [i].render.effects.bEnergySparks, i, 0);
+		RP (gameOptions [i].render.effects.bEnergySparks, i, 1);
 		RP (gameOptions [i].render.effects.nShockwaves, i, 0);
 		RP (gameOptions [i].render.automap.bTextured, i, 0);
 		RP (gameOptions [i].render.automap.bBright, i, 0);
