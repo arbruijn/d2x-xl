@@ -69,15 +69,16 @@ class CSphereVertex {
 			return v;
 			}
 
-		inline CSphereVertex operator+ (CSphereVertex other) {
-			CSphereVertex v = *this;
-			v += other;
-			return v;
-			}
-
 		inline CSphereVertex operator- (CSphereVertex& other) {
 			CSphereVertex v = *this;
 			v -= other;
+			return v;
+			}
+
+#ifndef _WIN32
+		inline CSphereVertex operator+ (CSphereVertex other) {
+			CSphereVertex v = *this;
+			v += other;
 			return v;
 			}
 
@@ -86,6 +87,7 @@ class CSphereVertex {
 			v -= other;
 			return v;
 			}
+#endif
 
 		inline CSphereVertex& operator*= (float s) {
 			m_v *= s;
