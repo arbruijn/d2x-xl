@@ -75,14 +75,14 @@ class CSphereVertex {
 			return v;
 			}
 
-#ifndef _WIN32
-		inline CSphereVertex operator+ (CSphereVertex other) {
+#if 0 //ndef _WIN32
+		inline const CSphereVertex operator+ (const CSphereVertex other) const {
 			CSphereVertex v = *this;
 			v += other;
 			return v;
 			}
 
-		inline CSphereVertex operator- (CSphereVertex other) {
+		inline const CSphereVertex operator- (const CSphereVertex other) const {
 			CSphereVertex v = *this;
 			v -= other;
 			return v;
