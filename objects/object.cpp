@@ -249,7 +249,7 @@ void ObjectGotoNextViewer (void)
 
 FORALL_OBJS (pObj) {
 	if (pObj->info.nType != OBJ_NONE) {
-		gameData.objData.pViewer = pObj;
+		gameData.SetViewer (pObj);
 		return;
 		}
 	}
@@ -268,7 +268,7 @@ FORALL_OBJS (pObj) {
 	if (--nStartObj < 0)
 		nStartObj = gameData.objData.nLastObject [0];
 	if (OBJECT (nStartObj)->info.nType != OBJ_NONE) {
-		gameData.objData.pViewer = OBJECT (nStartObj);
+		gameData.SetViewer (OBJECT (nStartObj));
 		return;
 		}
 	}
@@ -446,8 +446,7 @@ CollideInit ();
 ResetSegObjLists ();
 gameData.objData.lists.Init ();
 gameData.objData.InitFreeList ();
-gameData.objData.pConsole =
-gameData.objData.pViewer = OBJECTS.Buffer ();
+gameData.SetViewer (gameData.objData.pConsole = OBJECTS.Buffer ());
 if (bInitPlayer) {
 	ClaimObjectSlot (0);
 	gameData.objData.nObjects = 1;				//just the player
@@ -1263,7 +1262,7 @@ if (pObj->info.nType == OBJ_WEAPON) {
 		}
 	}
 if (pObj == gameData.objData.pViewer)		//deleting the pViewer?
-	gameData.objData.pViewer = gameData.objData.pConsole;						//..make the player the pViewer
+	gameData.SetViewer (gameData.objData.pConsole);						//..make the player the pViewer
 //if (pObj->info.nFlags & OF_ATTACHED)		//detach this from CObject
 DetachFromParent (pObj);
 lightClusterManager.Delete (nObject);

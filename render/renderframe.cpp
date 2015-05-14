@@ -516,7 +516,6 @@ if (xStereoSeparation <= 0) {
 if (gameOpts->render.cockpit.bGuidedInMainView && gameData.objData.GetGuidedMissile (N_LOCALPLAYER)) {
 	int32_t w, h, aw;
 	const char *msg = "Guided Missile View";
-	CObject *viewerSave = gameData.objData.pViewer;
 
    if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
 		gameStates.render.cockpit.bBigWindowSwitch = 1;
@@ -524,14 +523,14 @@ if (gameOpts->render.cockpit.bGuidedInMainView && gameData.objData.GetGuidedMiss
 		cockpit->Activate (CM_STATUS_BAR);
 		return;
 		}
-  	gameData.objData.pViewer = gameData.objData.GetGuidedMissile (N_LOCALPLAYER);
+  	CObject *pViewerSave = gameData.SetViewer (gameData.objData.GetGuidedMissile (N_LOCALPLAYER));
 	UpdateRenderedData (0, gameData.objData.pViewer, 0, 0);
 	if ((xStereoSeparation <= 0) && cameraManager.Render ())
 		CCanvas::Current ()->SetViewport ();
 	RenderFrame (xStereoSeparation, 0);
 	if (xStereoSeparation <= 0)
   		WakeupRenderedObjects (gameData.objData.pViewer, 0);
-	gameData.objData.pViewer = viewerSave;
+	gameData.SetViewer (pViewerSave);
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 	fontManager.Current ()->StringSize (msg, w, h, aw);

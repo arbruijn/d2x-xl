@@ -443,7 +443,7 @@ static void ComputeSingleSegmentVisibility (int32_t nThread, int16_t nStartSeg, 
 {
 	CSegment*			pStartSeg;
 	CSide*				pSide;
-	int16_t					nSegment, nSide, nLight = -1, i;
+	int16_t				nSegment, nSide, nLight = -1, i;
 	CFixVector			fVec, uVec, rVec;
 	CObject				viewer;
 	CTransformation	transformation = projection;
@@ -465,7 +465,7 @@ pStartSeg = SEGMENT (nStartSeg);
 pSide = pStartSeg->m_sides + nFirstSide;
 	
 viewer.info.nSegment = nStartSeg;
-gameData.objData.pViewer = &viewer;
+gameData.SetViewer (&viewer);
 
 transformation.ComputeAspect (1024, 1024);
 

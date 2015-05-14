@@ -2006,7 +2006,7 @@ while (!bDone) {
 					}
 				}
 			else {
-				gameData.objData.pViewer = OBJECTS.Buffer ();
+				gameData.SetViewer (OBJECTS.Buffer ());
 				NDReadObject (gameData.objData.pViewer);
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					CATCH_BAD_READ
@@ -3524,7 +3524,7 @@ else
 bNDBadRead = 0;
 ChangePlayerNumTo (0);                 // force playernum to 0
 strncpy (gameData.demo.callSignSave, LOCALPLAYER.callsign, CALLSIGN_LEN);
-gameData.objData.pViewer = gameData.objData.pConsole = OBJECTS.Buffer ();   // play properly as if console player
+gameData.SetViewer (gameData.objData.pConsole = OBJECTS.Buffer ());   // play properly as if console player
 if (NDReadDemoStart (bRandom)) {
 	ndInFile.Close ();
 	ndOutFile.Close ();

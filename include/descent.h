@@ -3906,6 +3906,12 @@ class CGameData {
 				render.nStereoOffsetType = nType; 
 			return nOldType;
 			}
+
+		inline CObject* SetViewer (CObject *pNewViewer) {
+			CObject* pOldViewer = objData.pViewer;
+			objData.pViewer = pNewViewer;
+			return pOldViewer;
+			}
 #if DBG
 
 		CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);

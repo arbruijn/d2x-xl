@@ -2408,8 +2408,7 @@ else {
 	      }
 		}
 	}
-gameData.objData.pViewer = 
-gameData.objData.pConsole = OBJECT (LOCALPLAYER.nObject);
+gameData.SetViewer (gameData.objData.pConsole = OBJECT (LOCALPLAYER.nObject));
 StartTriggeredSounds ();
 StartTime (1);
 if (!extraGameInfo [0].nBossCount [0] && (!IsMultiGame || IsCoopGame) && OpenExits ())

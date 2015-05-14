@@ -299,7 +299,7 @@ for (i = 0; i < nPlayers; i++) {
 		break;
 		}
 	}
-gameData.objData.pViewer = gameData.objData.pConsole = OBJECTS.Buffer (); // + LOCALPLAYER.nObject;
+gameData.SetViewer (gameData.objData.pConsole = OBJECTS.Buffer ()); // + LOCALPLAYER.nObject;
 gameData.multiplayer.nPlayerPositions = nPlayers;
 
 #if DBG
@@ -1386,7 +1386,7 @@ GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players a
 HUDClearMessages ();
 automap.ClearVisited ();
 ResetPlayerData (false, true, false);
-gameData.objData.pViewer = OBJECT (LOCALPLAYER.nObject);
+gameData.SetViewer (OBJECT (LOCALPLAYER.nObject));
 GameStartRemoveUnusedPlayers ();
 if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
 	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);

@@ -164,7 +164,6 @@ if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFac
 
 	static CCanvas overlapCanv;
 
-	CObject*	viewerSave = gameData.objData.pViewer;
 	int32_t	bRearViewSave = gameStates.render.bRearView;
 	int32_t	nWindowSave = gameStates.render.nWindow [0];
 	fix		xStereoSeparation = ogl.StereoSeparation ();
@@ -185,7 +184,7 @@ if (!pViewer) {								//this nUser is done
 	}
 UpdateRenderedData (nWindow + 1, pViewer, bRearView, nUser);
 m_info.weaponBoxUser [nWindow] = nUser;						//say who's using window
-gameData.objData.pViewer = pViewer;
+CObject* pViewerSave = gameData.SetViewer (pViewer);
 gameStates.render.bRearView = -bRearView;
 transformation.Push ();
 SetupWindow (nWindow);
@@ -256,7 +255,7 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 //force redraw when done
 m_history [0].weapon [nWindow] = m_history [0].ammo [nWindow] = -1;
 
-gameData.objData.pViewer = viewerSave;
+gameData.SetViewer (pViewerSave);
 ogl.SetDepthTest (true);
 gameData.render.window.Deactivate ();
 gameStates.render.bRearView = bRearViewSave;

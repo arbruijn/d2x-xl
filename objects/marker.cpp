@@ -333,7 +333,7 @@ if ((m_data.nHighlight > -1) && ((nObject = m_data.objects [m_data.nHighlight]) 
 void CMarkerManager::Delete (int32_t bForce)
 {
 if ((m_data.nHighlight > -1) && (m_data.objects [m_data.nHighlight] != -1)) {
-	gameData.objData.pViewer = OBJECT (m_data.objects [m_data.nHighlight]);
+	gameData.SetViewer (OBJECT (m_data.objects [m_data.nHighlight]));
 	if (bForce || !InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_DELETE_MARKER)) {
 		int32_t	h, i;
 		ReleaseObject (m_data.objects [m_data.nHighlight]);
@@ -355,7 +355,7 @@ if ((m_data.nHighlight > -1) && (m_data.objects [m_data.nHighlight] != -1)) {
 			m_data.szMessage [i][0] = '\0';
 			}
 		}
-	gameData.objData.pViewer = gameData.objData.pConsole;
+	gameData.SetViewer (gameData.objData.pConsole);
 	}
 }
 
@@ -370,7 +370,7 @@ if (!IsMultiGame || IsCoopGame) {
 	else
 #endif
 	if ((m_data.nHighlight > -1) && (m_data.objects [m_data.nHighlight] != -1)) {
-		gameData.objData.pViewer = OBJECT (m_data.objects [m_data.nHighlight]);
+		gameData.SetViewer (OBJECT (m_data.objects [m_data.nHighlight]));
 		if (!InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_JUMP_TO_MARKER)) {
 			CObject	*pMarker = OBJECT (m_data.objects [m_data.nHighlight]);
 
@@ -382,7 +382,7 @@ if (!IsMultiGame || IsCoopGame) {
 			LOCALOBJECT->RelinkToSeg (pMarker->info.nSegment);
 			gameStates.render.bDoAppearanceEffect = 1;
 			}
-		gameData.objData.pViewer = gameData.objData.pConsole;
+		gameData.SetViewer (gameData.objData.pConsole);
 		}
 	}
 }

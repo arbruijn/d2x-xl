@@ -3187,7 +3187,7 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 	gameData.multigame.robots.agitation [i] = 0;
 	gameData.multigame.robots.fired [i] = 0;
 	}
-gameData.objData.pViewer = gameData.objData.pConsole = OBJECT (LOCALPLAYER.nObject);
+gameData.SetViewer (gameData.objData.pConsole = OBJECT (LOCALPLAYER.nObject));
 if (!IsCoopGame)
 	MultiDeleteExtraObjects (); // Removes monsters from level
 if (gameData.app.GameMode (GM_MULTI_ROBOTS))

@@ -534,7 +534,7 @@ switch (gameStates.app.bEndLevelSequence) {
 					StopEndLevelSequence ();
 					return;
 					}
-				gameData.objData.pViewer = gameData.objData.endLevelCamera = OBJECT (nObject);
+				gameData.SetViewer (gameData.objData.endLevelCamera = OBJECT (nObject));
 				cockpit->Activate (CM_LETTERBOX);
 				exitFlightObjects [1] = exitFlightObjects [0];
 				exitFlightObjects [1].pObj = gameData.objData.endLevelCamera;
@@ -1839,7 +1839,7 @@ switch (gameStates.app.bEndLevelSequence) {
 					StopEndLevelSequence ();
 					return;
 					}
-				gameData.objData.pViewer = gameData.objData.endLevelCamera = OBJECT (nObject);
+				gameData.SetViewer (gameData.objData.endLevelCamera = OBJECT (nObject));
 				cockpit->Activate (CM_LETTERBOX);
 				exitFlightObjects [1] = exitFlightObjects [0];
 				exitFlightObjects [1].pObj = gameData.objData.endLevelCamera;

@@ -388,7 +388,7 @@ if (bPartial)
 	w *= 2.0f / 3.0f;
 if (nScale)
 	w /= float (nScale * 2);
-return Clamp (w + 0.5f, ogl.m_data.lineWidthRange [0], Min (ogl.m_data.lineWidthRange [1], 10.f));
+return Clamp (w, ogl.m_data.lineWidthRange [0], Min (ogl.m_data.lineWidthRange [1], 10.f));
 }
 
 // ----------------------------------------------------------------------------

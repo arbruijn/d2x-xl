@@ -65,7 +65,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define	DEATH_SEQUENCE_EXPLODE_TIME	 (I2X (2))
 
-CObject*	viewerSaveP;
+CObject*	pViewerSave;
 int32_t	nPlayerFlagsSave;
 fix		xCameraToPlayerDistGoal=I2X (4);
 uint8_t	nControlTypeSave, nRenderTypeSave;
@@ -131,7 +131,7 @@ if (gameData.objData.deadPlayerCamera) {
 CGenericCockpit::Rewind ();
 gameStates.app.bPlayerIsDead = 0;
 LOCALPLAYER.m_bExploded = 0;
-gameData.objData.pViewer = viewerSaveP;
+gameData.SetViewer (pViewerSave);
 gameData.objData.pConsole->SetType (OBJ_PLAYER);
 gameData.objData.pConsole->info.nFlags = nPlayerFlagsSave;
 Assert ((nControlTypeSave == CT_FLYING) || (nControlTypeSave == CT_SLEW));
@@ -193,7 +193,7 @@ if (gameStates.app.bPlayerIsDead) {
 		CObject *pPlayer = OBJECT (LOCALPLAYER.nObject);
 		int32_t nObject = CreateCamera (pPlayer);
 		if (nObject != -1)
-			gameData.objData.pViewer = gameData.objData.deadPlayerCamera = OBJECT (nObject);
+			gameData.SetViewer (gameData.objData.deadPlayerCamera = OBJECT (nObject));
 		else
 			Int3 ();
 		}
@@ -282,9 +282,9 @@ pPlayerObj->mType.physInfo.thrust.SetZero ();
 pPlayerObj->ResetDamage ();
 gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
 int32_t nObject = CreateCamera (pPlayerObj);
-viewerSaveP = gameData.objData.pViewer;
+pViewerSave = gameData.objData.pViewer;
 if (nObject != -1)
-	gameData.objData.pViewer = gameData.objData.deadPlayerCamera = OBJECT (nObject);
+	gameData.SetViewer (gameData.objData.deadPlayerCamera = OBJECT (nObject));
 else {
 	Int3 ();
 	gameData.objData.deadPlayerCamera = NULL;

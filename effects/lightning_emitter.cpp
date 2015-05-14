@@ -275,7 +275,8 @@ if (!m_bValid)
 
 	CObject* pObj = OBJECT (m_nObject);
 
-Move (OBJPOS (pObj)->vPos, pObj->info.nSegment);
+if (pObj)
+	Move (OBJPOS (pObj)->vPos, pObj->info.nSegment);
 }
 
 //------------------------------------------------------------------------------
