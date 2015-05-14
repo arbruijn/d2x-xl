@@ -413,7 +413,6 @@ int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, C
 {
 	int32_t	bTextured = pBm != NULL;
 
-gameStates.render.EnableCartoonStyle ();
 fScale = /*m_pPulse ? m_pPulse->fScale :*/ 1.0f;
 ogl.ResetClientStates (0);
 if (pBm) {
@@ -452,7 +451,6 @@ if (alpha < 1.0f) {
 ogl.SetDepthWrite (false);
 m_pBm = pBm;
 m_color.Set (red, green, blue, alpha);
-gameStates.render.DisableCartoonStyle ();
 return bTextured;
 }
 
@@ -507,6 +505,7 @@ int32_t CSphere::Render (CObject *pObj, CFloatVector *pvPos, float xScale, float
 	int32_t	bTextured = 0;
 	int32_t	bAppearing = pObj->Appearing ();
 	int32_t	bEffect = 0;
+	int32_t	bCartoonStyle = gameStates.render.EnableCartoonStyle ();
 
 if (WantEffect (pObj)) {
 	if (!NeedEffect (pObj))
@@ -514,7 +513,7 @@ if (WantEffect (pObj)) {
 	bEffect = 1;
 	}
 
-	int32_t	bGlow = /*(bAppearing || bEffect) && (bAdditive != 0) &&*/ glowRenderer.Available (GLOW_SHIELDS);
+	int32_t	bGlow = (bAppearing || bEffect) && (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
 
 CFixVector vPos;
 PolyObjPos (pObj, &vPos);
@@ -572,7 +571,6 @@ if (bGlow) {
 	}
 
 #if SPHERE_DRAW_OUTLINE && (SPHERE_WIREFRAME < 2)
-int32_t bCartoonStyle = gameStates.render.EnableCartoonStyle ();
 if (!bEffect && gameStates.render.CartoonStyle ()) {
 #	if SPHERE_SW_TRANSFORM
 	transformation.End ();
@@ -782,9 +780,11 @@ CSphereVertex	*w = m_worldVerts.Buffer (),
 					*v = m_viewVerts.Buffer ();
 
 m_color *= 0.5f;
-float a = m_pPulse ? m_pPulse->fScale : 1.0f;
-float b = 1.0f / Max (m_color.Red (), Max (m_color.Green (), m_color.Blue ()));
-
+float a = Max (m_color.Red (), Max (m_color.Green (), m_color.Blue ()));
+float b = 1.0f / a - 0.5f;
+a *= 0.5f;
+m_color *= b;
+float p = m_pPulse ? m_pPulse->fScale : 1.0f;
 
 #if USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
@@ -807,11 +807,11 @@ else
 	for (int32_t i = 0; i < m_nVertices; i++) {
 		CFloatVector s = v [i].m_v - c;
 		float l = CFloatVector::Normalize (s);
-		float d = pow (fabs (CFloatVector::Dot (r, s)), 0.25f);
+		float d = 1.0f - pow (fabs (CFloatVector::Dot (r, s)), 0.25f);
 #if 0
 		m_color.v.color.a = a * (1.5f - d);
 #else
-		w [i].m_c = m_color * a * (b - d * (b - 1.0f));
+		w [i].m_c = m_color * (0.5f + b * d);
 #endif
 		}
 	}
