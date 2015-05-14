@@ -774,8 +774,7 @@ if (bEmissive || (bTranspFilter == 2))
 	ogl.SetBlendMode (OGL_BLEND_ADD);
 else if (gameStates.render.bCloaked) {
 	ogl.SetBlendMode (bBlur ? OGL_BLEND_REPLACE : OGL_BLEND_MULTIPLY);
-	//ogl.SetBlendMode ();
-	//ogl.SetDepthWrite (true);
+	ogl.SetDepthWrite (true);
 	}
 else if (bTranspFilter)
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);
