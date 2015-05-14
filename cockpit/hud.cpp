@@ -174,8 +174,11 @@ if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 		fontManager.Current ()->StringSize (TXT_LOCK, w, h, aw);
 		x = gameData.render.scene.Width () / 2 - w / 2;
 		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0)) + (nLayout ? LineSpacing () : 0);
-		if (nLayout == 1) 
+		if (nLayout == 1) {
 			SetFontColor (RED_RGBA);
+			if ((EGI_FLAG (nDamageModel, 0, 0, 0) != 0) && !ShowTextGauges ())
+				y -= 2 * LineSpacing ();
+			}
 		else {
 			CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);
 			OglDrawFilledRect (x - 5, y - 4, x + w + 3, y + h + 3);
@@ -188,7 +191,7 @@ if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 		fontManager.Current ()->StringSize (TXT_LOCK, w, h, aw);
 		if (nLayout < 0) {
 			x = CCanvas::Current ()->Width () / 2 - w / 2;
-			y = AdjustCockpitY ((((EGI_FLAG (nDamageModel, 0, 0, 0) != 0) && !ShowTextGauges ()) ? -6 : -4) * LineSpacing ());
+			y = AdjustCockpitY (-4 * LineSpacing ());
 			//y = CCanvas::Current ()->Height () / 2 + 4 * h;
 			nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 			}
