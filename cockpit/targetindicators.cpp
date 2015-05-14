@@ -317,7 +317,7 @@ void RenderTargetIndicator (CObject *pObj, CFloatVector3 *pc)
 	float				r, r2, r3;
 	int32_t			bStencil, nPlayer = (pObj->info.nType == OBJ_PLAYER) ? pObj->info.nId : -1;
 
-if (!SHOW_OBJ_FX)
+if (gameStates.app.bNostalgia || COMPETITION)
 	return;
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
