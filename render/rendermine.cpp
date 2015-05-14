@@ -967,7 +967,8 @@ if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
 	BRP;
 #endif
 
-int32_t nDistScale = DistToScale ((fDistance < 0.0f) ? Min (CFloatVector::Dist (vViewer, Vertex (0)), CFloatVector::Dist (vViewer, Vertex (1))) : fDistance);
+int32_t bAutoScale = (fDistance < 0.0f);
+int32_t nDistScale = DistToScale (bAutoScale ? Min (CFloatVector::Dist (vViewer, Vertex (0)), CFloatVector::Dist (vViewer, Vertex (1))) : fDistance);
 
 int32_t nType = Type (nDistScale);
 if (nType < 0)
@@ -1032,19 +1033,12 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 	for (int32_t j = 0; j < 2; j++) {
 		CFloatVector v;	// pull a bit closer to viewer to avoid z fighting with related polygon
 		float l;
-		if (bAutoScale) {
-			v = vViewer;
-			v -= vertices [j];
-			l = CFloatVector::Normalize (v);
-			}
 		if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
 			v = vertices [j];
 		else {
-			if (!bAutoScale) {
-				v = vViewer;
-				v -= vertices [j];
-				l = CFloatVector::Normalize (v);
-				}
+			v = vViewer;
+			v -= vertices [j];
+			l = CFloatVector::Normalize (v);
 #if POLYGONAL_OUTLINE
 			if (bPolygonalOutline)
 #endif
@@ -1058,18 +1052,13 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 #endif
 			v += vertices [j]; 
 			}
-		if (bAutoScale) {
-			int32_t d = DistToScale (l);
-			if (nDistance > d)
-				nDistance = d;
-			}
 #if POLYGONAL_OUTLINE
 		if (!bPolygonalOutline) 
 #endif
 		gameData.segData.edgeVertexData [bPartial].Add (v);
 		}
 	if (bAutoScale)
-		gameData.segData.edgeVertexData [bPartial].SetDistance (nDistance);
+		gameData.segData.edgeVertexData [bPartial].SetDistance (nDistScale);
 #if POLYGONAL_OUTLINE
 	if (bPolygonalOutline) {
 		CFloatVector p = vertices [0];
@@ -1099,7 +1088,7 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 		}
 #endif
 	}
-return bAutoScale ? 0 : nDistance;
+return bAutoScale ? 0 : nDistScale;
 }
 
 //------------------------------------------------------------------------------
