@@ -127,10 +127,7 @@ class CAutomap {
 		inline int32_t Visible (int32_t nSegment) { return m_bFull || m_visited [nSegment] || (OBSERVING && IsMultiGame && !IsCoopGame); }
 		int32_t Active (void);
 #if DBG
-		void SetActive (int32_t bActive) { 
-			if ((m_bActive = bActive))
-				BRP;
-			}
+		void SetActive (int32_t bActive);
 #else
 		inline void SetActive (int32_t bActive) { m_bActive = bActive; }
 #endif

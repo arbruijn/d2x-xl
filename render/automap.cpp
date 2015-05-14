@@ -149,6 +149,16 @@ InitColors ();
 
 //------------------------------------------------------------------------------
 
+#if DBG
+void CAutomap::SetActive (int32_t bActive) 
+{ 
+if ((m_bActive = bActive))
+	BRP;
+}
+#endif
+
+//------------------------------------------------------------------------------
+
 int32_t CAutomap::Active (void)
 {
 return m_bActive || OBSERVING;
