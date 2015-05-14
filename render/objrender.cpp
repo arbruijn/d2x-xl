@@ -259,7 +259,7 @@ return xLight;
 
 //------------------------------------------------------------------------------
 
-static float ObjectBlobColor (CObject *pObj, CBitmap *pBm, CFloatVector *pColor, bool bMaxOut = false)
+static float ObjectBlobColor (CObject *pObj, CBitmap *pBm, CFloatVector *pColor, float fBrightness = 0.0f)
 {
 	float	fScale;
 
@@ -268,11 +268,11 @@ pBm->GetAvgColor (pColor);
 if ((pObj->info.nType == nDbgObjType) && ((nDbgObjId < 0) || (pObj->info.nId == nDbgObjId)))
 	BRP;
 #endif
-if (bMaxOut) {
-	float h = 1.0f / Max (pColor->Red (), Max (pColor->Green (), pColor->Blue ()));
-	pColor->Red () /= h;
-	pColor->Green () /= h;
-	pColor->Blue () /= h;
+if (fBrightness > 0.0f) {
+	float h = fBrightness / Max (pColor->Red (), Max (pColor->Green (), pColor->Blue ()));
+	pColor->Red () *= h;
+	pColor->Green () *= h;
+	pColor->Blue () *= h;
 	}
 fScale = pColor->Red () + pColor->Green () + pColor->Blue ();
 if (fScale == 0.0f) {
@@ -367,20 +367,22 @@ if (!pBm || pBm->Bind (1))
 bool b3DShield = ((pObj->Type () == OBJ_POWERUP) && ((pObj->Id () == POW_SHIELD_BOOST) || (pObj->Id () == POW_HOARD_ORB)) &&
 					   gameOpts->Use3DPowerups () && gameOpts->render.powerups.b3DShields);
 
-ObjectBlobColor (pObj, pBm, &color, b3DShield);
+ObjectBlobColor (pObj, pBm, &color, b3DShield ? 0.75f : 0.0f);
 if (pColor /*&& (bmi >= 0)*/)
 	*pColor = color;
 	//memcpy (pColor, gameData.pig.tex.bitmapColors + bmi, sizeof (CFloatVector));
 
 xSize = pObj->info.xSize;
 
+if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
+	RenderPowerupCorona (pObj, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 if (b3DShield && DrawShield3D (pObj, color)) {
-	if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
-		RenderPowerupCorona (pObj, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
+	//if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
+	//	RenderPowerupCorona (pObj, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 		}
 else {
-	if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
-		RenderPowerupCorona (pObj, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
+	//if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
+	//	RenderPowerupCorona (pObj, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 	if (fAlpha < 1) {
 		if (bAdditive) {
 			color.Red () =

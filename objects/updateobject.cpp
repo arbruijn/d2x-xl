@@ -532,7 +532,7 @@ if ((info.nType == OBJ_ROBOT) && gameOpts->render.lightning.bRobots) {
 		}
 	}
 else if (info.nType == OBJ_POWERUP) {
-	bNeedEffect = SHOW_LIGHTNING (2) && (info.nId == POW_SHIELD_BOOST);
+	bNeedEffect = SHOW_LIGHTNING (3) && (info.nId == POW_SHIELD_BOOST);
 	nEffect = SHIELDORB_LIGHTNING;
 	}
 else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {

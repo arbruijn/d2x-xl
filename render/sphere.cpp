@@ -375,9 +375,8 @@ m_pulse.fDir = fSpeed;
 void CSphere::Pulsate (void)
 {
 if (m_pPulse) {
-	static time_t	t0 = 0;
-	if (gameStates.app.nSDLTicks [0] - t0 > 25) {
-		t0 = gameStates.app.nSDLTicks [0];
+	static CTimeout to (25);
+	if (to.Expired ()) {
 		m_pPulse->fScale += m_pPulse->fDir;
 		if (m_pPulse->fScale > 1.0f) {
 			m_pPulse->fScale = 1.0f;
