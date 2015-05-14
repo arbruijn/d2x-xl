@@ -146,7 +146,7 @@ return 0.97f;
 
 float CModelEdge::PartialAngle (void)
 {
-return 0.97f;
+return 0.3f;
 }
 
 //------------------------------------------------------------------------------
@@ -154,14 +154,30 @@ return 0.97f;
 // 0: contour
 // 1: both faces visible
 
-int32_t CModelEdge::Type (void)
+int32_t CModelEdge::Type (int32_t nDistScale)
 {
 #if 0
 if (m_nFaces < 2)
 	return -1;
 #endif
 int32_t h = Visibility ();
-return (h == 0) ? -1 : (h != 3) ? 0 : Planar () ? (m_fScale < 1.0f) ? 2 : 1 : -1;
+#if DBG
+if (h == 0) 
+	return -1;
+if (h != 3) 
+	return 0;
+if (Planar ())
+	return -1;
+if (nDistScale > 1)
+	return -1;
+if (!Partial ())
+	return 1;
+if (nDistScale)
+	return -1;
+return 2;
+#else
+return (h == 0) ? -1 : (h != 3) ? 0 : Planar () ? -1 : Partial () ? 2 : 1;
+#endif
 }
 
 //------------------------------------------------------------------------------

@@ -845,7 +845,7 @@ return nVisible;
 
 //------------------------------------------------------------------------------
 
-int32_t CMeshEdge::Type (void)
+int32_t CMeshEdge::Type (int32_t nDistScale)
 {
 #if DBG
 if ((m_nVertices [0] == 110) && (m_nVertices [1] == 111)) {
@@ -967,7 +967,9 @@ if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
 	BRP;
 #endif
 
-int32_t nType = Type ();
+int32_t nDistScale = DistToScale ((fDistance < 0.0f) ? Min (CFloatVector::Dist (vViewer, Vertex (0)), CFloatVector::Dist (vViewer, Vertex (1))) : fDistance);
+
+int32_t nType = Type (nDistScale);
 if (nType < 0)
 	return -1;
 if (nType > nFilter)
@@ -993,29 +995,6 @@ CFloatVector vertices [2];
 
 int32_t bPartial = nType == 2;
 int32_t bSplit = bPartial && (m_fSplit != 0.0f);
-int32_t bScale = fDistance < 0;
-int32_t nDistance;
-if (!bScale) {
-#if DBG
-	if (fDistance <= 0.0f)
-		nDistance = 0;
-	else {
-		float l = Max (1.0f, logf (fDistance));
-		fDistance /= l;
-		fDistance = log10f (fDistance);
-#if 1
-		fDistance *= fDistance;
-		fDistance += 0.5f;
-#else
-		fDistance += 0.5f;
-#endif
-		nDistance = int32_t (fDistance);
-		}
-#else
-	nDistance = DistToScale (fDistance);
-#endif
-	}
-
 #if POLYGONAL_OUTLINE
 float fLineWidths [2] = { automap.Active () ? 3.0f : 6.0f, automap.Active () ? 1.0f : 2.0f };
 float wPixel = 2.0f / float (CCanvas::Current ()->Width ());
@@ -1050,12 +1029,10 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 			}
 		}
 
-	if (bScale)
-		nDistance = 0xFFFF;
 	for (int32_t j = 0; j < 2; j++) {
 		CFloatVector v;	// pull a bit closer to viewer to avoid z fighting with related polygon
 		float l;
-		if (bScale) {
+		if (bAutoScale) {
 			v = vViewer;
 			v -= vertices [j];
 			l = CFloatVector::Normalize (v);
@@ -1063,7 +1040,7 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 		if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
 			v = vertices [j];
 		else {
-			if (!bScale) {
+			if (!bAutoScale) {
 				v = vViewer;
 				v -= vertices [j];
 				l = CFloatVector::Normalize (v);
@@ -1081,7 +1058,7 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 #endif
 			v += vertices [j]; 
 			}
-		if (bScale) {
+		if (bAutoScale) {
 			int32_t d = DistToScale (l);
 			if (nDistance > d)
 				nDistance = d;
@@ -1091,7 +1068,7 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 #endif
 		gameData.segData.edgeVertexData [bPartial].Add (v);
 		}
-	if (bScale)
+	if (bAutoScale)
 		gameData.segData.edgeVertexData [bPartial].SetDistance (nDistance);
 #if POLYGONAL_OUTLINE
 	if (bPolygonalOutline) {
@@ -1122,7 +1099,7 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 		}
 #endif
 	}
-return bScale ? 0 : nDistance;
+return bAutoScale ? 0 : nDistance;
 }
 
 //------------------------------------------------------------------------------

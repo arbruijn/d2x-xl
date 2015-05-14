@@ -1837,7 +1837,7 @@ class CMeshEdge {
 			}
 
 	protected:
-		virtual int32_t Type (void);
+		virtual int32_t Type (int32_t nDistScale);
 		virtual float PartialAngle (void);
 		virtual float PlanarAngle (void);
 		virtual CFloatVector& Normal (int32_t i);
