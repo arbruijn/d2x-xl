@@ -566,7 +566,9 @@ transformation.Begin (vPos, m);
 #else
 transformation.Begin (vPos, pPos->mOrient);
 #endif
-RenderFaces (vPos, xScale, red, green, blue, alpha, bTextured, nFaces, bEffect);
+CFloatVector vPosf;
+vPosf.Assign (vPos);
+RenderFaces (vPosf, xScale, red, green, blue, alpha, bTextured, nFaces, bEffect);
 #if 1 // !DBG
 int32_t bCartoonStyle = gameStates.render.EnableCartoonStyle ();
 if (/*!bEffect &&*/ gameStates.render.CartoonStyle ())
@@ -1207,6 +1209,7 @@ if (!m_worldVerts.Buffer () || !m_viewVerts.Buffer ())
 
 Transform (fRadius);
 transformation.Transform (vCenter, vCenter);
+CFloatVector::Normalize (vCenter);
 
 CSphereVertex	*w = m_worldVerts.Buffer (),
 					*v = m_viewVerts.Buffer ();
@@ -1217,8 +1220,9 @@ if (gameStates.app.bMultiThreaded) {
 #	pragma omp for
 	for (int32_t i = 0; i < m_nVertices; i++) {
 		CFloatVector r = v->m_v - vCenter;
+		CFloatVector::Normalize (r);
 		w->m_c = m_color;
-		w->m_c.v.color.a = 1.0f - CFloatVector::Dot (r, vCenter);
+		w->m_c.v.color.a = 1.0f - fabs (CFloatVector::Dot (r, vCenter));
 		}
 	}
 else 
