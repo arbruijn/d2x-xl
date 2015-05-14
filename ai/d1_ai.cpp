@@ -975,7 +975,6 @@ void move_away_from_player(CObject *pObj, CFixVector *vec_to_player, int32_t att
 {
 	fix				speed;
 	tPhysicsInfo&	pi = pObj->mType.physInfo;
-	tRobotInfo		*pRobotInfo = &gameData.botData.info [1][pObj->info.nId];
 	int32_t			objref;
 
 	pi.velocity -= *vec_to_player * (gameData.time.xFrame * 16);

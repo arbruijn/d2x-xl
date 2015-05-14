@@ -578,7 +578,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #endif
 			vViewer.Assign (OBJPOS (pObj)->vPos - gameData.objData.pViewer->Position ());
 			RenderModel::CModelEdge* pEdge = pSubModel->m_edges.Buffer ();
-			int32_t nScale, nEdgeFilter = pObj->IsWeapon () ? 0 : bHires; //0 : 2; //bHires;
+			int32_t nScale = 0, nEdgeFilter = pObj->IsWeapon () ? 0 : bHires; //0 : 2; //bHires;
 			gameData.segData.edgeVertexData [0].Reset ();
 			gameData.segData.edgeVertexData [1].Reset ();
 			for (i = pSubModel->m_nEdges; i; i--, pEdge++) {
