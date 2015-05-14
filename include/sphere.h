@@ -170,7 +170,7 @@ class CSphere : protected CSphereData {
 		void SetupPulse (float fSpeed, float fMin);
 
 		virtual int32_t Create (void) = 0;
-		virtual void RenderFaces (CFloatVector vCenter, float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nFaces, int32_t bEffect) = 0;
+		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect) = 0;
 
 		inline CSphereVertex& Vertex (int16_t i) { return m_worldVerts [i]; }
 		int16_t AddVertex (CSphereVertex& v);
@@ -182,7 +182,7 @@ class CSphere : protected CSphereData {
 		virtual void RenderOutline (CObject *pObj, float fScale = 1.0f) = 0;
 
 	protected:
-		void DrawFaces (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nFaces, int32_t bTextured, int32_t nPrimitive, int32_t nState);
+		void DrawFaces (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t nFaces, int32_t nClientArrays, int32_t nPrimitive, int32_t nState);
 		void DrawFaces (int32_t nOffset, int32_t nFaces, int32_t bTextured, int32_t nPrimitive, int32_t nState);
 
 	private:
@@ -196,7 +196,7 @@ class CSphere : protected CSphereData {
 
 class CRingedSphere : public CSphere {
 	public:
-		virtual void RenderFaces (CFloatVector vCenter, float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nTiles, int32_t bEffect);
+		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect);
 		virtual int32_t Create (void);
 		virtual int32_t Quality (void) { return 32; }
 		virtual void SetQuality (int32_t nQuality) {}
@@ -240,7 +240,7 @@ class CTesselatedSphere : public CSphere {
 		virtual int32_t FaceNodes (void) = 0;
 		virtual CSphereFace *Face (int32_t nFace) = 0;
 		virtual void RenderOutline (CObject *pObj, float fScale = 1.0f);
-
+		void SetupColor (float fRadius);
 		void Transform (float fScale);
 
 	protected:
@@ -254,7 +254,7 @@ class CTesselatedSphere : public CSphere {
 
 class CTriangleSphere : public CTesselatedSphere {
 	public:
-		virtual void RenderFaces (CFloatVector vCenter, float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nTiles, int32_t bEffect);
+		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect);
 		virtual int32_t Create (void);
 		virtual int32_t FaceNodes (void) { return 3; }
 
@@ -273,7 +273,7 @@ class CTriangleSphere : public CTesselatedSphere {
 
 class CQuadSphere : public CTesselatedSphere {
 	public:
-		virtual void RenderFaces (CFloatVector vCenter, float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nTiles, int32_t bEffect);
+		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect);
 		virtual int32_t Create (void);
 		virtual int32_t FaceNodes (void) { return 4; }
 
