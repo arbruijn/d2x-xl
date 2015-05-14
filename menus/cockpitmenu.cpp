@@ -234,6 +234,7 @@ if ((m = menu ["target indicators"])) {
 		nTgtInd = v;
 		sprintf (m->m_text, TXT_TARGET_INDICATORS, szTgtInd [v]);
 		m->Rebuild ();
+		key = -2;
 		}
 	}
 

@@ -154,8 +154,8 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) && (extraGameInfo [IsMultiGame].bTarge
 // -----------------------------------------------------------------------------
 
 static CFloatVector	trackGoalColor [2] = {{{{1, 0.5f, 0, 0.8f}}}, {{{1, 0.5f, 0, 0.8f}}}};
-static int32_t				nMslLockColor [2] = {0, 0};
-static int32_t				nMslLockColorIncr [2] = {-1, -1};
+static int32_t			nMslLockColor [2] = {0, 0};
+static int32_t			nMslLockColorIncr [2] = {-1, -1};
 static float			fMslLockGreen [2] = {0.65f, 0.0f};
 
 void RenderMslLockIndicator (CObject *pObj)
@@ -170,7 +170,7 @@ void RenderMslLockIndicator (CObject *pObj)
 	CFixVector			vPos;
 	CFloatVector		fPos, fVerts [3];
 	float					r, r2;
-	int32_t					nTgtInd, bHasDmg, bMarker = (pObj->info.nType == OBJ_MARKER);
+	int32_t				nTgtInd, bHasDmg, bMarker = (pObj->info.nType == OBJ_MARKER);
 
 if (bMarker) {
 	if (pObj != markerManager.SpawnObject (-1))
