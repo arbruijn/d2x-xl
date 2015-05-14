@@ -1178,7 +1178,7 @@ if (endMask) { //on the back of at least one face
 					if (gameData.collisions.nSegsVisited [nThread] >= MAX_SEGS_VISITED)
 						goto hitPointDone;	//we've looked a long time, so give up
 					gameData.collisions.segsVisited [nThread][gameData.collisions.nSegsVisited [nThread]++] = subHitQuery.nSegment;
-					subHit.nType = ComputeHitpoint (subHit, subHitQuery, subSegList, &nSubSegments, hitQuery.nSegment, nThread);
+					subHit.nType = ComputeHitpoint (subHit, subHitQuery, subSegList, &nSubSegments, hitQuery.nSegment, nCollisionModel, nThread);
 					if (subHit.nType != HIT_NONE) {
 						d = CFixVector::Dist (subHit.vPoint, *hitQuery.p0);
 						if (d < dMin) {
@@ -1308,11 +1308,11 @@ gameData.collisions.nSegsVisited [nThread] = 1;
 gameData.collisions.hitResult.nNestCount = 0;
 if (hitQuery.flags & FQ_VISIBILITY)
 	extraGameInfo [IsMultiGame].nHitboxes = 0;
-ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2, nThread);
+ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2, nCollisionModel, nThread);
 #if 1 //DBG
 if (curHit.nSegment >= gameData.segData.nSegments) {
 	PrintLog (0, "Invalid hit segment in collision detection\n");
-	ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2, nThread);
+	ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2, nCollisionModel, nThread);
 	if (curHit.nSegment > gameData.segData.nSegments) 
 		curHit.nSegment = -1;
 	}
@@ -1336,7 +1336,7 @@ if (curHit.nSegment == -1) {
 	//problems, try using zero radius and see if we hit a wall
 	if (hitQuery.flags & FQ_VISIBILITY)
 		extraGameInfo [IsMultiGame].nHitboxes = 0;
-	ComputeHitpoint (altHit, altQuery, hitResult.segList, &hitResult.nSegments, -2, nThread);
+	ComputeHitpoint (altHit, altQuery, hitResult.segList, &hitResult.nSegments, -2, nCollisionModel, nThread);
 	extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
 	if (altHit.nSegment != -1)
 		curHit = altHit;
