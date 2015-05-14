@@ -323,11 +323,15 @@ PrintLog (1, "caching hostage sprites\n");
 OglCacheAnimationTextures (33, 3);    
 PrintLog (-1);
 
+gameStates.render.DisableCartoonStyle ();
+
 PrintLog (1, "caching weapon sprites\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 5);
 for (i = 0; i < EXTRA_OBJ_IDS; i++)
 	OglCacheWeaponTextures (gameData.weapons.info + i);
 PrintLog (-1);
+
+gameStates.render.EnableCartoonStyle (0, 0, 1);
 
 PrintLog (1, "caching powerup sprites\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 4);

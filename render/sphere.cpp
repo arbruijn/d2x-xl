@@ -448,7 +448,7 @@ if (alpha < 1.0f) {
 	}
 ogl.SetDepthWrite (false);
 m_pBm = pBm;
-m_color.Set (red, green, blue, alpha);
+m_color.Set (red, green, blue, 1.0f/*alpha*/);
 gameStates.render.DisableCartoonStyle ();
 return bTextured;
 }
@@ -459,12 +459,13 @@ void CSphere::DrawFaces (int32_t nOffset, int32_t nFaces, int32_t bTextured, int
 {
 int32_t nVertices = nFaces * FaceNodes ();
 if (nState & 1) {
-	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+	ogl.EnableClientStates (bTextured, 1, 0, GL_TEXTURE0);
 	if (bTextured && !m_pBm->Bind (1))
 		OglTexCoordPointer (2, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_tc));
+	OglColorPointer (4, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_c));
 	OglVertexPointer (3, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_v));
 	}
-glColor4fv ((GLfloat*) m_color.v.vec);
+//glColor4fv ((GLfloat*) m_color.v.vec);
 OglDrawArrays (nPrimitive, 0, nVertices);
 if (nState & 2) {
 	ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
@@ -499,7 +500,7 @@ int32_t CSphere::Render (CObject *pObj, CFloatVector *pvPos, float xScale, float
 	int32_t	bTextured = 0;
 	int32_t	bAppearing = pObj->Appearing ();
 	int32_t	bEffect = 0;
-	
+
 if (WantEffect (pObj)) {
 	if (!NeedEffect (pObj))
 		return 0;
@@ -565,7 +566,7 @@ transformation.Begin (vPos, m);
 #else
 transformation.Begin (vPos, pPos->mOrient);
 #endif
-RenderFaces (xScale, red, green, blue, alpha, bTextured, nFaces);
+RenderFaces (vPos, xScale, red, green, blue, alpha, bTextured, nFaces, bEffect);
 #if 1 // !DBG
 int32_t bCartoonStyle = gameStates.render.EnableCartoonStyle ();
 if (/*!bEffect &&*/ gameStates.render.CartoonStyle ())
@@ -655,12 +656,25 @@ return 1;
 
 void CTesselatedSphere::Transform (float fScale)
 {
-	CSphereVertex	*v = m_worldVerts.Buffer (),
-						*r = m_viewVerts.Buffer ();
+	CSphereVertex	*w = m_worldVerts.Buffer (),
+						*v = m_viewVerts.Buffer ();
 
-for (int32_t i = 0; i < m_nVertices; i++) {
-	transformation.Transform (r [i].m_v, v [i].m_v);
-	r [i].m_v *= fScale;
+#if USE_OPENMP
+if (gameStates.app.bMultiThreaded) {
+#	pragma omp parallel
+#	pragma omp for
+	for (int32_t i = 0; i < m_nVertices; i++) {
+		transformation.Transform (v [i].m_v, w [i].m_v);
+		v [i].m_v *= fScale;
+		}
+	}
+else 
+#endif
+	{
+	for (int32_t i = 0; i < m_nVertices; i++) {
+		transformation.Transform (v [i].m_v, w [i].m_v);
+		v [i].m_v *= fScale;
+		}
 	}
 }
 
@@ -824,7 +838,7 @@ return CreateVertices ();
 
 // -----------------------------------------------------------------------------
 
-void CRingedSphere::RenderFaces (float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nFaces)
+void CRingedSphere::RenderFaces (CFloatVector vCenter, float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nFaces, int32_t bEffect)
 {
 	int32_t			nCull, h, i, j, nQuads, nRings = Quality ();
 	CFloatVector	p [2 * SPHERE_MAX_RINGS + 2];
@@ -1022,35 +1036,26 @@ return m_nFaces;
 
 // -----------------------------------------------------------------------------
 
-void CTriangleSphere::RenderFaces (float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nFaces)
+void CTriangleSphere::RenderFaces (CFloatVector vCenter, float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nFaces, int32_t bEffect)
 {
 if (!m_worldVerts.Buffer () || !m_viewVerts.Buffer ())
 	return;
-Transform (fRadius);
-glScalef (fRadius, fRadius, fRadius);
-#if 1
-for (int32_t nCull = 0; nCull < 2; nCull++) {
-	ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
-	DrawFaces (0, m_nFaces, bTextured, GL_TRIANGLES, nCull ? 2 : 1);
+#if SPHERE_WIREFRAME
+glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+glLineWidth (3);
+#endif
+if (bEffect) {
+	for (int32_t nCull = 0; nCull < 2; nCull++) {
+		ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
+		DrawFaces (0, m_nFaces, bTextured, GL_TRIANGLES, nCull ? 2 : 1);
+		}
 	}
-#else
-glBegin (GL_LINES);
-CSphereVertex *ps = m_worldVerts.Buffer ();
-for (int32_t j = m_nFaces; j; j--, ps++)
-	for (int32_t i = 0; i < 3; i++, ps++) {
-		if (bTextured)
-			glTexCoord2f (ps->m_tc.v.u, ps->m_tc.v.v);
-		glVertex3fv (reinterpret_cast<GLfloat*> (&ps->m_v));
-		}
-glEnd ();
-glColor4f (red, green, blue, bTextured ? 1.0f : alpha);
-glBegin (GL_TRIANGLES);
-ps = m_worldVerts.Buffer ();
-for (int32_t j = nFaces; j; j--, ps++)
-	for (int32_t i = 0; i < 3; i++, ps++) {
-		glVertex3fv (reinterpret_cast<GLfloat*> (ps));
-		}
-glEnd ();
+else {
+	ogl.SetCullMode (GL_FRONT);
+	DrawFaces (0, m_nFaces, bTextured, GL_TRIANGLES, 3);
+	}
+#if SPHERE_WIREFRAME
+glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 #endif
 }
 
@@ -1195,45 +1200,56 @@ return m_nFaces;
 
 // -----------------------------------------------------------------------------
 
-void CQuadSphere::RenderFaces (float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nFaces)
+void CQuadSphere::RenderFaces (CFloatVector vCenter, float fRadius, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nFaces, int32_t bEffect)
 {
 if (!m_worldVerts.Buffer () || !m_viewVerts.Buffer ())
 	return;
-//Transform (fRadius);
-#if 1
+
+Transform (fRadius);
+transformation.Transform (vCenter, vCenter);
+
+CSphereVertex	*w = m_worldVerts.Buffer (),
+					*v = m_viewVerts.Buffer ();
+
+#if USE_OPENMP
+if (gameStates.app.bMultiThreaded) {
+#	pragma omp parallel
+#	pragma omp for
+	for (int32_t i = 0; i < m_nVertices; i++) {
+		CFloatVector r = v->m_v - vCenter;
+		w->m_c = m_color;
+		w->m_c.v.color.a = 1.0f - CFloatVector::Dot (r, vCenter);
+		}
+	}
+else 
+#endif
+	{
+	for (int32_t i = 0; i < m_nVertices; i++) {
+		CFloatVector r = v->m_v - vCenter;
+		w->m_c = m_color;
+		w->m_c.v.color.a = 1.0f - CFloatVector::Dot (r, vCenter);
+		}
+	}
+
+
+
 glScalef (fRadius, fRadius, fRadius);
-#	if SPHERE_WIREFRAME
+#if SPHERE_WIREFRAME
 glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 glLineWidth (3);
-for (int32_t nCull = 0; nCull < 2; nCull++) {
-	ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
-	DrawFaces (0, m_nFaces, bTextured, GL_QUADS, nCull ? 2 : 1);
+#endif
+if (bEffect) {
+	for (int32_t nCull = 0; nCull < 2; nCull++) {
+		ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
+		DrawFaces (0, m_nFaces, bTextured, GL_QUADS, nCull ? 2 : 1);
+		}
 	}
+else {
+	ogl.SetCullMode (GL_FRONT);
+	DrawFaces (0, m_nFaces, bTextured, GL_QUADS, 3);
+	}
+#if SPHERE_WIREFRAME
 glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-#	else
-for (int32_t nCull = 0; nCull < 2; nCull++) {
-	ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
-	DrawFaces (0, m_nFaces, bTextured, GL_QUADS, nCull ? 2 : 1);
-	}
-#	endif
-#else
-glBegin (GL_LINES);
-CSphereVertex *ps = m_worldVerts.Buffer ();
-for (int32_t j = m_nFaces; j; j--, ps++)
-	for (int32_t i = 0; i < 3; i++, ps++) {
-		if (bTextured)
-			glTexCoord2f (ps->m_tc.v.u, ps->m_tc.v.v);
-		glVertex3fv (reinterpret_cast<GLfloat*> (&ps->m_v));
-		}
-glEnd ();
-glColor4f (red, green, blue, bTextured ? 1.0f : alpha);
-glBegin (GL_QUADS);
-ps = m_worldVerts.Buffer ();
-for (int32_t j = nFaces; j; j--, ps++)
-	for (int32_t i = 0; i < 3; i++, ps++) {
-		glVertex3fv (reinterpret_cast<GLfloat*> (ps));
-		}
-glEnd ();
 #endif
 }
 
