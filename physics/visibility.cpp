@@ -132,7 +132,7 @@ if (SPECTATOR (pObj))
 else
 	hitQuery.nSegment = pObj ? pObj->info.nSegment : nSegment;
 
-int32_t nHitType = FindHitpoint (hitQuery, hitResult, nThread);
+int32_t nHitType = FindHitpoint (hitQuery, hitResult, 0, nThread);
 return nHitType != HIT_WALL;
 }
 
@@ -151,7 +151,7 @@ int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs, int32_t nThread)
 								);
 	CHitResult		hitResult;
 
-int32_t nHitType = FindHitpoint (hitQuery, hitResult, nThread);
+int32_t nHitType = FindHitpoint (hitQuery, hitResult, 0, nThread);
 return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
@@ -182,7 +182,7 @@ do {
 		}
 	else
 		hitQuery.nSegment	= bSpectate ? gameStates.app.nPlayerSegment : objP1->info.nSegment;
-	fate = gameData.segData.SegVis (hitQuery.nSegment, objP2->Segment ()) ? FindHitpoint (hitQuery, hitResult, nThread) : HIT_WALL;
+	fate = gameData.segData.SegVis (hitQuery.nSegment, objP2->Segment ()) ? FindHitpoint (hitQuery, hitResult, 0, nThread) : HIT_WALL;
 	}
 while ((fate == HIT_BAD_P0) && (nTries < 2));
 return (fate == HIT_NONE) || (fate == HIT_BAD_P0) || ((fate == HIT_OBJECT) && (hitResult.nObject == objP2->Index ()));
@@ -195,8 +195,8 @@ int32_t TargetInLineOfFire (void)
 #if 0 //DBG
 return 0;
 #else
-	int32_t			nType;
-	CHitResult		hitResult;
+	int32_t		nType;
+	CHitResult	hitResult;
 	CObject*		pObj;
 
 	//see if we can see this CPlayerData

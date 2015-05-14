@@ -462,10 +462,10 @@ if (pObj->IsGuideBot ()) {
 		return numPoints;
 	Last_buddy_polish_path_frame = gameData.app.nFrameCount;
 	}
-CHitQuery fq (0, &pObj->Position (), NULL, pObj->info.nSegment, pObj->info.xSize, pObj->info.xSize, pObj->Index ());
+CHitQuery hitQuery (0, &pObj->Position (), NULL, pObj->info.nSegment, pObj->info.xSize, pObj->info.xSize, pObj->Index ());
 for (i = 0; i < 2; i++) {
-	fq.p1 = &pPointSeg [i].point;
-	hitType = FindHitpoint (&fq, &hitResult);
+	hitQuery.p1 = &pPointSeg [i].point;
+	hitType = FindHitpoint (hitQuery, hitResult);
 	if (hitType != HIT_NONE)
 		break;
 	nFirstPoint = i + 1;
@@ -787,22 +787,22 @@ else
 // -- too much work -- 	CObject		*kill_objp;
 // -- too much work -- 	CHitResult		hitResult;
 // -- too much work -- 	int32_t			fate;
-// -- too much work -- 	CHitQuery	fq;
+// -- too much work -- 	CHitQuery	hitQuery;
 // -- too much work --
 // -- too much work -- 	if (gameData.escort.nKillObject == -1)
 // -- too much work -- 		return 0;
 // -- too much work --
 // -- too much work -- 	kill_objp = OBJECT (gameData.escort.nKillObject);
 // -- too much work --
-// -- too much work -- 	fq.p0						= &pObj->Position ();
-// -- too much work -- 	fq.startSeg				= pObj->info.nSegment;
-// -- too much work -- 	fq.p1						= &pKillObj->Position ();
-// -- too much work -- 	fq.rad					= pObj->info.xSize;
-// -- too much work -- 	fq.thisObjNum			= pObj->Index ();
-// -- too much work -- 	fq.ignoreObjList	= NULL;
-// -- too much work -- 	fq.flags					= 0;
+// -- too much work -- 	hitQuery.p0						= &pObj->Position ();
+// -- too much work -- 	hitQuery.startSeg				= pObj->info.nSegment;
+// -- too much work -- 	hitQuery.p1						= &pKillObj->Position ();
+// -- too much work -- 	hitQuery.rad					= pObj->info.xSize;
+// -- too much work -- 	hitQuery.thisObjNum			= pObj->Index ();
+// -- too much work -- 	hitQuery.ignoreObjList	= NULL;
+// -- too much work -- 	hitQuery.flags					= 0;
 // -- too much work --
-// -- too much work -- 	fate = FindHitpoint (&fq, &hitResult);
+// -- too much work -- 	fate = FindHitpoint (&hitQuery, &hitResult);
 // -- too much work --
 // -- too much work -- 	if (fate == HIT_NONE)
 // -- too much work -- 		return 1;

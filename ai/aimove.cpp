@@ -156,7 +156,7 @@ if ((pObj->info.nType == OBJ_ROBOT) && !pObj->IsGuideBot ()) {
 
 				CHitResult hitResult;
 				CHitQuery hitQuery (0, &pObj->info.position.vPos, &vNewPos, nStartSeg, pObj->Index (), pObj->info.xSize, pObj->info.xSize);
-				int32_t hitType = FindHitpoint (hitQuery, hitResult, 0);
+				int32_t hitType = FindHitpoint (hitQuery, hitResult);
 				if (hitType != HIT_NONE)
 					continue;
 				}

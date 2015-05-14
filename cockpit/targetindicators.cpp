@@ -163,9 +163,9 @@ void RenderMslLockIndicator (CObject *pObj)
 	#define INDICATOR_POSITIONS	60
 
 	static tSinCosf	sinCosInd [INDICATOR_POSITIONS];
-	static int32_t			bInitSinCos = 1;
-	static int32_t			nMslLockIndPos [2] = {0, 0};
-	static int32_t			t0 [2] = {0, 0}, tDelay [2] = {25, 40};
+	static int32_t		bInitSinCos = 1;
+	static int32_t		nMslLockIndPos [2] = {0, 0};
+	static int32_t		t0 [2] = {0, 0}, tDelay [2] = {25, 40};
 
 	CFixVector			vPos;
 	CFloatVector		fPos, fVerts [3];
@@ -315,7 +315,7 @@ void RenderTargetIndicator (CObject *pObj, CFloatVector3 *pc)
 	CFixVector		vPos;
 	CFloatVector	fPos, fVerts [4];
 	float				r, r2, r3;
-	int32_t				bStencil, nPlayer = (pObj->info.nType == OBJ_PLAYER) ? pObj->info.nId : -1;
+	int32_t			bStencil, nPlayer = (pObj->info.nType == OBJ_PLAYER) ? pObj->info.nId : -1;
 
 if (!SHOW_OBJ_FX)
 	return;

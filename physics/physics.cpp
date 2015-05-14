@@ -52,7 +52,7 @@ static int32_t bNewPhysCode = 1;
 
 int32_t bFloorLeveling = 0;
 
-fix CheckVectorObjectCollision (CHitData& hitData, CFixVector *p0, CFixVector *p1, fix rad, CObject *pThisObj, CObject *pOtherObj, bool bCheckVisibility);
+fix CheckVectorObjectCollision (CHitData& hitData, CFixVector *p0, CFixVector *p1, fix rad, CObject *pThisObj, CObject *pOtherObj, int32_t nCollisionModel, bool bCheckVisibility);
 
 //	-----------------------------------------------------------------------------
 
@@ -382,7 +382,7 @@ else {
 	}
 CHitQuery hitQuery (0, &info.position.vPos, &info.position.vPos, info.nSegment, Index (), 0, info.xSize);
 CHitResult hitResult;
-int32_t fviResult = FindHitpoint (hitQuery, hitResult);
+int32_t fviResult = FindHitpoint (hitQuery, hitResult, -1);
 if (fviResult == HIT_WALL)
 #if 1
 #	if 0
@@ -609,13 +609,13 @@ if (info.position.vPos != simData.vOldPos)
 	BRP;
 #endif
 memset (&simData.hitResult, 0, sizeof (simData.hitResult));
-simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult, -1);
 simData.hitQuery.nSegment = FindSegByPos (simData.vNewPos, info.nSegment, 1, 0);
 if ((simData.hitQuery.nSegment < 0) || (simData.hitQuery.nSegment == info.nSegment)) {
 	info.position.vPos = simData.vOldPos;
 	return 0;
 	}
-simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult, -1);
 if (simData.hitResult.nType == HIT_BAD_P0) {
 	info.position.vPos = simData.vOldPos;
 	return 0;
@@ -779,7 +779,7 @@ for (int32_t i = 0, s = -I2X (1); (i < 8) || (s < 0); i++) {
 	vTestPos += vOffset * s;
 	if (!bMoved)
 		info.position.vPos = vTestPos;
-	s = CheckVectorObjectCollision (simData.hitResult, &info.position.vPos, &vTestPos, info.xSize, this, pHitObj, false) ? -I2X (1) : I2X (1);
+	s = CheckVectorObjectCollision (simData.hitResult, &info.position.vPos, &vTestPos, info.xSize, this, pHitObj, -1, false) ? -I2X (1) : I2X (1);
 	if (s > 0)
 		simData.vNewPos = vTestPos;
 	}
@@ -1081,7 +1081,7 @@ CFixMatrix mSaveOrient = info.position.mOrient;
 if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && CollisionModel ()) {
 	++gameData.physics.bIgnoreObjFlag;
 	SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0));
-	if (FindHitpoint (simData.hitQuery, simData.hitResult) != HIT_NONE)
+	if (FindHitpoint (simData.hitQuery, simData.hitResult, -1) != HIT_NONE)
 		info.position.mOrient = mSaveOrient;
 	}
 
@@ -1199,7 +1199,7 @@ for (;;) {	//Move the object
 		simData.vNewPos = info.position.vPos + simData.vOffset;
 
 		SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
-		simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+		simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult, -1);
 		UpdateStats (this, simData.hitResult.nType);
 
 		if (simData.hitResult.nType == HIT_BAD_P0) {
@@ -1470,7 +1470,7 @@ if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBO
 	if (Index () == nDbgObj)
 		BRP;
 #endif
-	if (FindHitpoint (simData.hitQuery, simData.hitResult) != HIT_NONE)
+	if (FindHitpoint (simData.hitQuery, simData.hitResult, -1) != HIT_NONE)
 		info.position.mOrient = mSaveOrient;
 	}
 
@@ -1635,7 +1635,7 @@ retryMove:
 		simData.vNewPos = info.position.vPos + simData.vOffset;
 
 		SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
-		simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+		simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult, -1);
 		UpdateStats (this, simData.hitResult.nType);
 		}
 	else {
@@ -1658,7 +1658,7 @@ retryMove:
 		if (info.nType == OBJ_POWERUP)
 			BRP;
 	#endif
-		simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+		simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult, -1);
 		UpdateStats (this, simData.hitResult.nType);
 		simData.vOldPos = info.position.vPos;			//save the CObject's position
 		simData.nOldSeg = info.nSegment;
@@ -1675,13 +1675,13 @@ retryMove:
 			HUDMessage (0, "BAD P0 %d", nBadP0++);
 #endif
 			memset (&simData.hitResult, 0, sizeof (simData.hitResult));
-			simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+			simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult, -1);
 			simData.hitQuery.nSegment = FindSegByPos (simData.vNewPos, info.nSegment, 1, 0);
 			if ((simData.hitQuery.nSegment < 0) || (simData.hitQuery.nSegment == info.nSegment)) {
 				info.position.vPos = simData.vOldPos;
 				break;
 				}
-			simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+			simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult, -1);
 			if (simData.hitResult.nType == HIT_BAD_P0) {
 				info.position.vPos = simData.vOldPos;
 				break;

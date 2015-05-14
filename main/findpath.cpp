@@ -454,7 +454,7 @@ if (m_nDestSeg >= 0)
 	fix xDist = 0;
 
 #if 0
-	CHitQuery	fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], route [0].nNode, -1, 1, 0);
+	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], route [0].nNode, -1, 1, 0);
 	CHitResult		hitResult;
 #endif
 	CFixVector* p0, *p1;
@@ -467,7 +467,7 @@ for (int32_t i = 0, j; i < h; i = j) {
 	nStartSeg = route [i].nNode;
 	if ((nStartSeg < 0) || (nStartSeg >= gameData.segData.nSegments))
 		return -2;
-	/*fq.*/p0 = p1 = &SEGMENT (nStartSeg)->Center ();
+	/*hitQuery.*/p0 = p1 = &SEGMENT (nStartSeg)->Center ();
 	for (j = i + 1; j < h; j++) { 
 		nDestSeg = route [j].nNode;
 #if 1
@@ -475,11 +475,11 @@ for (int32_t i = 0, j; i < h; i = j) {
 			break;
 		p1 = &SEGMENT (nDestSeg)->Center ();
 #else
-		fq.p1 = &SEGMENT (nDestSeg)->Center ();
-		int32_t nHitType = FindHitpoint (&fq, &hitResult);
+		hitQuery.p1 = &SEGMENT (nDestSeg)->Center ();
+		int32_t nHitType = FindHitpoint (&hitQuery, &hitResult);
 		if (nHitType && ((nHitType != HIT_WALL) || (hitResult.nSegment != nDestSeg)))
 			break;
-		p1 = fq.p1;
+		p1 = hitQuery.p1;
 #endif
 		}	
 	if (j < i + 2) // can only see next segment after route [i].nNode

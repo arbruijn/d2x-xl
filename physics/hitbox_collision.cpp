@@ -383,7 +383,7 @@ return (nTotalHits) ? dMin ? dMin : 1 : 0;
 
 fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector& normal, CFixVector* p0, CFixVector* p1, CFixVector* vRef, CObject *pObj, fix rad, int16_t& nModel)
 {
-	int32_t					iModel, nModels;
+	int32_t				iModel, nModels;
 	fix					dMin = 0x7fffffff;
 	CModelHitboxList*	pmhb = gameData.models.hitboxes + pObj->ModelId ();
 

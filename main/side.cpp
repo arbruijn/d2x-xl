@@ -486,7 +486,7 @@ return (m_nFaces < 2) || (Height () <= PLANE_DIST_TOLERANCE);
 // -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
 //this CSegment.  See CSegMasks structure for info on fields
-CSegMasks CSide::Masks (const CFixVector& pRefoint, fix xRad, int16_t sideBit, int16_t faceBit, bool bCheckPoke)
+CSegMasks CSide::Masks (const CFixVector& refPoint, fix xRad, int16_t sideBit, int16_t faceBit, bool bCheckPoke)
 {
 	CSegMasks	masks;
 	fix			xDist;
@@ -498,7 +498,7 @@ if (m_nFaces == 2) {
 
 	CFixVector vMin = MinVertex ();
 	for (int32_t nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
-		xDist = pRefoint.DistToPlane (Normal (nFace), vMin);
+		xDist = refPoint.DistToPlane (Normal (nFace), vMin);
 		if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
 			nCenterCount++;
 		if ((xDist - xRad < -PLANE_DIST_TOLERANCE) && (!bCheckPoke || (xDist + xRad >= -PLANE_DIST_TOLERANCE))) {
@@ -523,9 +523,9 @@ else {
 #if DBG
 	fix vDist [3];
 	for (int32_t i = 0;  i < m_nCorners; i++)
-		vDist [i] = CFixVector::Dist (pRefoint, VERTICES [m_corners [i]]);
+		vDist [i] = CFixVector::Dist (refPoint, VERTICES [m_corners [i]]);
 #endif
-	xDist = pRefoint.DistToPlane (Normal (0), MinVertex ());
+	xDist = refPoint.DistToPlane (Normal (0), MinVertex ());
 	if (xDist < -PLANE_DIST_TOLERANCE)
 		masks.m_center |= sideBit;
 	if ((xDist - xRad < -PLANE_DIST_TOLERANCE) && (!bCheckPoke || (xDist + xRad >= -PLANE_DIST_TOLERANCE))) {
@@ -539,7 +539,7 @@ return masks;
 
 // -------------------------------------------------------------------------------
 
-uint8_t CSide::Dist (const CFixVector& pRefoint, fix& xSideDist, int32_t bBehind, int16_t sideBit)
+uint8_t CSide::Dist (const CFixVector& refPoint, fix& xSideDist, int32_t bBehind, int16_t sideBit)
 {
 	fix	xDist;
 	uint8_t mask = 0;
@@ -550,7 +550,7 @@ if (m_nFaces == 2) {
 
 	CFixVector vMin = MinVertex ();
 	for (int32_t nFace = 0; nFace < 2; nFace++) {
-		xDist = pRefoint.DistToPlane (Normal (nFace), vMin);
+		xDist = refPoint.DistToPlane (Normal (nFace), vMin);
 		if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {	//in front of face
 			nCenterCount++;
 			xSideDist += xDist;
@@ -571,7 +571,7 @@ if (m_nFaces == 2) {
 		}
 	}
 else {				//only one face on this CSide
-	xDist = pRefoint.DistToPlane (Normal (0), MinVertex ());
+	xDist = refPoint.DistToPlane (Normal (0), MinVertex ());
 	if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {
 		mask |= sideBit;
 		xSideDist = xDist;
@@ -582,7 +582,7 @@ return mask;
 
 // -------------------------------------------------------------------------------
 
-uint8_t CSide::Distf (const CFloatVector& pRefoint, float& fSideDist, int32_t bBehind, int16_t sideBit)
+uint8_t CSide::Distf (const CFloatVector& refPoint, float& fSideDist, int32_t bBehind, int16_t sideBit)
 {
 	float	fDist;
 	uint8_t mask = 0;
@@ -595,7 +595,7 @@ if (m_nFaces == 2) {
 
 	for (int32_t nFace = 0; nFace < 2; nFace++) {
 		vNormal.Assign (Normal (nFace));
-		fDist = pRefoint.DistToPlane (vNormal, vMin);
+		fDist = refPoint.DistToPlane (vNormal, vMin);
 		if ((fDist < -X2F (PLANE_DIST_TOLERANCE)) == bBehind) {	//in front of face
 			nCenterCount++;
 			fSideDist += fDist;
@@ -618,9 +618,9 @@ if (m_nFaces == 2) {
 else {				//only one face on this CSide
 	vNormal.Assign (Normal (0));
 #if DBG
-	fDist = CFloatVector::Dist (pRefoint, vMin);
+	fDist = CFloatVector::Dist (refPoint, vMin);
 #endif
-	fDist = pRefoint.DistToPlane (vNormal, vMin);
+	fDist = refPoint.DistToPlane (vNormal, vMin);
 	if ((fDist < -X2F (PLANE_DIST_TOLERANCE)) == bBehind) {
 		mask |= sideBit;
 		fSideDist = fDist;

@@ -1084,29 +1084,29 @@ return G3_INFINITY;
 
 #else //slower method
 
-	CHitQuery	fq;
-	CHitResult		fi;
+	CHitQuery	hitQuery;
+	CHitResult		hitResult;
 	CFixVector	dir;
 
 if (!gameOpts->render.shadows.nClip)
 	return G3_INFINITY;
 if (0 > (nSegment = FindSegByPos (vPos, nSegment, 1, 0)))
 	return G3_INFINITY;
-fq.p0				  = vPos;
-VmVecSub (&dir, fq.p0, &vLightPos);
+hitQuery.p0				  = vPos;
+VmVecSub (&dir, hitQuery.p0, &vLightPos);
 CFixVector::Normalize (dir);
 VmVecScale (&dir, I2X (G3_INFINITY));
-fq.nSegment		  = nSegment;
-fq.p1				  = &dir;
-fq.rad			  = 0;
-fq.nObject	  = nObject;
-fq.ignoreObjList = NULL;
-fq.flags			  = FQ_TRANSWALL;
-fq.bCheckVisibility = false;
-if (FindHitpoint (&fq, &fi) != HIT_WALL)
+hitQuery.nSegment		  = nSegment;
+hitQuery.p1				  = &dir;
+hitQuery.rad			  = 0;
+hitQuery.nObject	  = nObject;
+hitQuery.ignoreObjList = NULL;
+hitQuery.flags			  = FQ_TRANSWALL;
+hitQuery.bCheckVisibility = false;
+if (FindHitpoint (hitQuery, hitResult, 0) != HIT_WALL)
 	return G3_INFINITY;
-return //fScale ? X2F (VmVecDist (fq.p0, &fi.hit.vPoint)) * fScale :
-		 X2F (VmVecDist (fq.p0, &fi.hit.vPoint)) * fClip [gameOpts->render.shadows.nReach];
+return //fScale ? X2F (VmVecDist (hitQuery.p0, &hitResult.hit.vPoint)) * fScale :
+		 X2F (VmVecDist (hitQuery.p0, &hitResult.hit.vPoint)) * fClip [gameOpts->render.shadows.nReach];
 #endif
 }
 

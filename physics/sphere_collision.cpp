@@ -800,7 +800,7 @@ return -1;
 //	-----------------------------------------------------------------------------
 //determine if a vector intersects with an CObject
 //if no intersects, returns 0, else fills in intP and returns dist
-fix CheckVectorObjectCollision (CHitData& hitData, CFixVector *p0, CFixVector *p1, fix rad, CObject *pThisObj, CObject *pOtherObj, bool bCheckVisibility)
+fix CheckVectorObjectCollision (CHitData& hitData, CFixVector *p0, CFixVector *p1, fix rad, CObject *pThisObj, CObject *pOtherObj, int32_t nCollisionModel, bool bCheckVisibility)
 {
 	fix			size, dist;
 	CFixVector	vHit, vNormal, v0, v1, vn, vPos;
@@ -833,7 +833,7 @@ if ((bThisPoly = UseHitbox (pThisObj)))
 	PolyObjPos (pThisObj, &vPos);
 else
 	vPos = pThisObj->info.position.vPos;
-if ((CollisionModel () || pThisObj->IsStatic () || pOtherObj->IsStatic ()) &&
+if ((CollisionModel (nCollisionModel) || pThisObj->IsStatic () || pOtherObj->IsStatic ()) &&
 	 !(UseSphere (pThisObj) || UseSphere (pOtherObj)) &&
 	 (bThisPoly || bOtherPoly)) {
 #if 1 //DBG
@@ -917,7 +917,7 @@ return (t == nObject);
 
 //	-----------------------------------------------------------------------------
 
-int32_t ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery, int32_t nThread)
+int32_t ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery, int32_t nCollisionModel, int32_t nThread)
 {
 	CObject		* pThisObj = (hitQuery.nObject < 0) ? NULL : OBJECT (hitQuery.nObject),
 			 		* pOtherObj;
@@ -1011,10 +1011,10 @@ restart:
 		if (nObject == nDbgObj)
 			BRP;
 #endif
-		fix d = CheckVectorObjectCollision (curHit, hitQuery.p0, hitQuery.p1, nFudgedRad, pOtherObj, pThisObj, bCheckVisibility);
+		fix d = CheckVectorObjectCollision (curHit, hitQuery.p0, hitQuery.p1, nFudgedRad, pOtherObj, pThisObj, nCollisionModel, bCheckVisibility);
 		if (d && (d < dMin)) {
 #if DBG
-			CheckVectorObjectCollision (curHit, hitQuery.p0, hitQuery.p1, nFudgedRad, pOtherObj, pThisObj, bCheckVisibility);
+			CheckVectorObjectCollision (curHit, hitQuery.p0, hitQuery.p1, nFudgedRad, pOtherObj, pThisObj, nCollisionModel, bCheckVisibility);
 #endif
 			dMin = d;
 			hitData = curHit;
@@ -1082,7 +1082,7 @@ return 0;
 
 #define FVI_NEWCODE 2
 
-int32_t ComputeHitpoint (CHitData& hitData, CHitQuery& hitQuery, int16_t* segList, int16_t* nSegments, int32_t nEntrySeg, int32_t nThread)
+int32_t ComputeHitpoint (CHitData& hitData, CHitQuery& hitQuery, int16_t* segList, int16_t* nSegments, int32_t nEntrySeg, int32_t nCollisionModel, int32_t nThread)
 {
 	CHitData		bestHit, curHit;
 	fix			d, dMin = 0x7fffffff;					//distance to hit pRef
@@ -1102,7 +1102,7 @@ gameData.collisions.hitResult.nNestCount++;
 #if 1
 if (hitQuery.flags & FQ_CHECK_OBJS) {
 	//PrintLog (1, "checking objects...");
-	dMin = ComputeObjectHitpoint (bestHit, hitQuery, nThread);
+	dMin = ComputeObjectHitpoint (bestHit, hitQuery, nCollisionModel, nThread);
 	}
 #endif
 
@@ -1259,7 +1259,7 @@ return bestHit.nType;
 //  ingore_obj			ignore collisions with this CObject
 //  check_objFlag	determines whether collisions with OBJECTS are checked
 //Returns the hitResult->nHitType
-int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult, int32_t nThread)
+int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult, int32_t nCollisionModel, int32_t nThread)
 {
 	CHitData		curHit, newHit;
 	int32_t		i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes; // save value

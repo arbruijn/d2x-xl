@@ -126,7 +126,14 @@ class CAutomap {
 		inline int32_t MaxSegsAway (void) { return m_nMaxSegsAway; }
 		inline int32_t Visible (int32_t nSegment) { return m_bFull || m_visited [nSegment] || (OBSERVING && IsMultiGame && !IsCoopGame); }
 		int32_t Active (void);
+#if DBG
+		void SetActive (int32_t bActive) { 
+			if ((m_bActive = bActive))
+				BRP;
+			}
+#else
 		inline void SetActive (int32_t bActive) { m_bActive = bActive; }
+#endif
 
 	private:
 		int32_t SetSegmentDepths (int32_t nStartSeg, uint16_t *depthBufP);

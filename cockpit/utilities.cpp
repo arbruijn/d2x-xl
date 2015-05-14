@@ -192,7 +192,7 @@ if (OBJECT (nObject))
 
 	CHitResult hitResult;
 
-int32_t nHitType = FindHitpoint (hitQuery, hitResult, 0);
+int32_t nHitType = FindHitpoint (hitQuery, hitResult);
 return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) : (nHitType != HIT_WALL);
 }
 

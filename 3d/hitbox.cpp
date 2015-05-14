@@ -206,7 +206,7 @@ void TransformHitboxes (CObject *pObj, CFixVector *vPos, tBox *phb)
 	tHitbox		*pmhb = gameData.models.hitboxes [pObj->ModelId ()].hitboxes;
 	tQuad			*pf;
 	CFixVector	rotVerts [8];
-	int32_t			i, j, iModel, nModels;
+	int32_t		i, j, iModel, nModels;
 
 if (CollisionModel () == 1) {
 	iModel =

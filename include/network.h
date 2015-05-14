@@ -410,9 +410,9 @@ return (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [IsMultiGame]) &&
 #define COLLISION_MODEL_SPHERES	0
 #define COLLISION_MODEL_BOXES		2
 
-static inline int32_t CollisionModel (void)
+static inline int32_t CollisionModel (int32_t nCollisionModel = -1)
 {
-return missionConfig.m_nCollisionModel ? COLLISION_MODEL_BOXES : EGI_FLAG (nHitboxes, 0, 0, extraGameInfo [0].nHitboxes);
+return (nCollisionModel < 0) ? missionConfig.m_nCollisionModel ? COLLISION_MODEL_BOXES : EGI_FLAG (nHitboxes, 0, 0, extraGameInfo [0].nHitboxes) : nCollisionModel;
 }
 
 //	-----------------------------------------------------------------------------
