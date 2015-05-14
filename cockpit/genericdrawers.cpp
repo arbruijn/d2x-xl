@@ -1233,9 +1233,9 @@ if (gameStates.app.bPlayerIsDead)
 	int32_t				i;
 
 	static uint32_t	dmgColors [3][4] = {
-							{RGBA (64, 16, 64, 96), RGBA (192, 0, 0, 96), RGBA (255, 208, 0, 96), RGBA (0, 192, 0, 96)},
-							{RGBA (96, 32, 96, 96), RGBA (255, 0, 0, 96), RGBA (255, 255, 0, 96), RGBA (0, 255, 0, 96)},
-							{RGBA (96, 32, 96, 96), RGBA (255, 0, 0, 96), RGBA (255, 255, 0, 96), RGBA (0, 255, 0, 96)}
+							{RGBA ( 64, 16,  64, 96), RGBA (192, 0, 0, 96), RGBA (255, 208, 0, 96), RGBA (0, 192, 0, 96)},
+							{RGBA (255, 96, 255, 96), RGBA (255, 0, 0, 96), RGBA (255, 255, 0, 96), RGBA (0, 255, 0, 96)},
+							{RGBA ( 96, 32,  96, 96), RGBA (255, 0, 0, 96), RGBA (255, 255, 0, 96), RGBA (0, 255, 0, 96)}
 							};
 
 #if 1 //!DBG
@@ -1245,11 +1245,11 @@ if ((gameStates.app.nSDLTicks [0] - LOCALOBJECT->TimeLastRepaired () > 2000) && 
 	float fScale = float (CCanvas::Current ()->Width ()) / 640.0f;
 	int32_t	nRad = (int32_t) FRound (16.0f * fScale);
 	int32_t	y = CCanvas::Current ()->Height () / 2 + 3 * nRad / 2;
-	int32_t	x = CCanvas::Current ()->Width () / 2;
 	int32_t	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 
 if (ShowTextGauges ()) {
-	int32_t			nColor, nDamage [3], h [4], w [4], aw [4], tw = 0;
+	int32_t			nColor, nDamage [3], x [3];
+	int32_t			nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
 	char				szDamage [3][10];
 	CCanvasColor	dmgColor;
 
@@ -1257,7 +1257,7 @@ if (ShowTextGauges ()) {
 	dmgColor.index = -1;
 	dmgColor.rgb = 1;
 
-	fontManager.SetScale (Max (1.0f, (float) floor (FRound (fScale))));
+	ScaleUp ();
 	for (i = 0; i < 3; i++) {
 		nDamage [i] = (int32_t) FRound (X2F (m_info.nDamage [i]) * 200.0f);
 #if 1
@@ -1265,11 +1265,12 @@ if (ShowTextGauges ()) {
 #else
 		sprintf (szDamage [i], "%c:%d ", szId [i], nDamage [i]);
 #endif
-		fontManager.Current ()->StringSize (szDamage [i], w [i], h [i], aw [i]);
-		tw += w [i];
 		}
-	fontManager.Current ()->StringSize (" ", w [3], h [3], aw [3]);
-	x -= (tw - w [3]) / 2;
+	x [0] = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (0)) - StringWidth (szDamage [0]);
+	x [1] = gameData.render.scene.Width () / 2 - StringWidth (szDamage [1]) / 2;
+	x [2] = gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET (0));
+	y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0)) + ((nLayout == 1) ? 4 : 2) * LineSpacing ();
+
 	CCanvas::Current ()->SetFontColor (dmgColor, 1);	// black background
 	for (i = 0; i < 3; i++) {
 		nColor = dmgColors [1][nDamage [i] / 33];
@@ -1277,10 +1278,9 @@ if (ShowTextGauges ()) {
 		SetFontColor (nColor);
 		if (nDamage [i] < 100)
 			szDamage [i][2] = '\0'; // remove the trailing blank, it causes rendering artifacts
-		DrawHUDText (NULL, x, y, szDamage [i]);
-		x += w [i];
+		DrawHUDText (NULL, x [i], y, szDamage [i]);
 		}
-	fontManager.SetScale (1.0f);
+	ScaleDown ();
 	}
 else {
 		static tSinCosf sinCos [32];
@@ -1291,7 +1291,7 @@ else {
 		bInitSinCos = 0;
 		}
 
-	x -= nRad;
+	int32_t x = CCanvas::Current ()->Width () / 2 - nRad;
 	glLineWidth (fScale);
 
 #if 0

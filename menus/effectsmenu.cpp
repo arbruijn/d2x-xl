@@ -180,7 +180,7 @@ if ((m = menu ["energy sparks"])) {
 	v = m->Value ();
 	if (gameOpts->render.effects.bEnergySparks != v) {
 		gameOpts->render.effects.bEnergySparks = v;
-		sprintf (m->m_text, TXT_RENDER_SPARKS, pszOffOn [gameOpts->render.effects.bEnergySparks]);
+		sprintf (m->m_text, TXT_RENDER_SPARKS, pszNoneBasicFull [gameOpts->render.effects.bEnergySparks]);
 		m->m_bRebuild = -1;
 		}
 	}
@@ -297,9 +297,9 @@ do {
 	sprintf (szSlider + 1, TXT_EFFECTS_GLOW, pszOffFastFull [gameOpts->render.effects.bGlow]);
 	*szSlider = *(TXT_EFFECTS_GLOW - 1);
 	m.AddSlider ("glow", szSlider + 1, gameOpts->render.effects.bGlow, 0, 2, KEY_W, HTX_EFFECTS_GLOW);
-	sprintf (szSlider + 1, TXT_RENDER_SPARKS, pszOffOn [gameOpts->render.effects.bEnergySparks]);
+	sprintf (szSlider + 1, TXT_RENDER_SPARKS, pszNoneBasicFull [gameOpts->render.effects.bEnergySparks]);
 	*szSlider = *(TXT_RENDER_SPARKS - 1);
-	m.AddSlider ("energy sparks", szSlider + 1, gameOpts->render.effects.bEnergySparks, 0, 1, KEY_S, HTX_RENDER_SPARKS);
+	m.AddSlider ("energy sparks", szSlider + 1, gameOpts->render.effects.bEnergySparks, 0, 2, KEY_S, HTX_RENDER_SPARKS);
 	m.AddText ("", "");
 
 	sprintf (szSlider + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);

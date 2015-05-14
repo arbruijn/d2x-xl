@@ -53,12 +53,16 @@ extern uint8_t Reticle_on;
 
 //	-----------------------------------------------------------------------------
 
-#define HUD_SCALE(v, s)		(int32_t (float (v) * (s)))
-#define HUD_SCALE_X(v)		HUD_SCALE (v, m_info.xScale)
-#define HUD_SCALE_Y(v)		HUD_SCALE (v, m_info.yScale)
-#define HUD_LHX(x)			(gameStates.menus.bHires ? 2 * (x) : x)
-#define HUD_LHY(y)			(gameStates.menus.bHires? (24 * (y)) / 10 : y)
-#define HUD_ASPECT			(float (CCanvas::Current ()->Height ()) / float (CCanvas::Current ()->Width ()) / 0.75f)
+#define HUD_SCALE(v, s)			(int32_t (float (v) * (s)))
+#define HUD_SCALE_X(v)			HUD_SCALE (v, m_info.xScale)
+#define HUD_SCALE_Y(v)			HUD_SCALE (v, m_info.yScale)
+#define HUD_LHX(x)				(gameStates.menus.bHires ? 2 * (x) : x)
+#define HUD_LHY(y)				(gameStates.menus.bHires? (24 * (y)) / 10 : y)
+#define HUD_ASPECT				(float (CCanvas::Current ()->Height ()) / float (CCanvas::Current ()->Width ()) / 0.75f)
+
+#define X_GAUGE_BASE_OFFSET	20
+#define X_GAUGE_OFFSET(_pos)	(20 + (_pos) * 20)
+#define Y_GAUGE_OFFSET(_pos)	(30 + (_pos) * 60)
 
 //	-----------------------------------------------------------------------------
 
@@ -290,6 +294,9 @@ class CGenericCockpit {
 		
 		int32_t X (int32_t x, bool bForce = false);
 
+		void ScaleUp (void);
+		void ScaleDown (void);
+
 		int32_t _CDECL_ DrawHUDText (int32_t *idP, int32_t x, int32_t y, const char * format, ...);
 
 		int32_t AdjustCockpitXY (char* s, int32_t& x, int32_t& y);
@@ -347,8 +354,6 @@ class CHUD : public CGenericCockpit {
 					 : 5 * GAME_FONT->Height () / 4;
 			}
 
-		void ScaleUp (void);
-		void ScaleDown (void);
 		char* StrPrimaryWeapon (char* szLabel);
 		char* StrSecondaryWeapon (char* szLabel);
 		int32_t StrWeaponStateColor (char* pszList, int32_t l, int32_t bAvailable, int32_t bActive);

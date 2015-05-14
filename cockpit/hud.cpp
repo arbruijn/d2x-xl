@@ -45,10 +45,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"
 #include "font.h"
 
-#define X_GAUGE_BASE_OFFSET 20
-#define X_GAUGE_OFFSET(_pos) (20 + (_pos) * 20)
-#define Y_GAUGE_OFFSET(_pos) (30 + (_pos) * 60)
-
 //	-----------------------------------------------------------------------------
 
 static void DrawSeparator (int32_t l, int32_t t, int32_t r, int32_t b)
@@ -60,33 +56,6 @@ if (gameOpts->render.cockpit.bSeparators && (nLayout == 2)) {
 	OglDrawLine (l, t, r, b);
 	glLineWidth (1);
 	}
-}
-
-//	-----------------------------------------------------------------------------
-
-void CHUD::ScaleUp (void)
-{
-m_info.xScale *= float (HUD_ASPECT);
-if (ogl.IsOculusRift ()) {
-	m_info.xScale *= 0.5f;
-	m_info.yScale *= 0.5f;
-	}
-SetFontScale (sqrt (floor (float (CCanvas::Current ()->Width ()) / 640.0f)));
-fontManager.PushScale ();
-fontManager.SetScale (cockpit->FontScale ());
-}
-
-//	-----------------------------------------------------------------------------
-
-void CHUD::ScaleDown (void)
-{
-if (ogl.IsOculusRift ()) {
-	m_info.xScale *= 2.0f;
-	m_info.yScale *= 2.0f;
-	}
-m_info.xScale /= float (HUD_ASPECT);
-fontManager.PopScale ();
-SetFontScale (1.0f);
 }
 
 //	-----------------------------------------------------------------------------
@@ -219,7 +188,7 @@ if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 		fontManager.Current ()->StringSize (TXT_LOCK, w, h, aw);
 		if (nLayout < 0) {
 			x = CCanvas::Current ()->Width () / 2 - w / 2;
-			y = AdjustCockpitY (-4 * LineSpacing ());
+			y = AdjustCockpitY ((((EGI_FLAG (nDamageModel, 0, 0, 0) != 0) && !ShowTextGauges ()) ? -6 : -4) * LineSpacing ());
 			//y = CCanvas::Current ()->Height () / 2 + 4 * h;
 			nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 			}
@@ -1359,9 +1328,11 @@ SetFontColor (GREEN_RGBA);
 ScaleUp ();
 int32_t s = LineSpacing ();
 int32_t x = gameData.render.scene.Width () / 2;
-int32_t y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0)) + (((nLayout == 1) ? 4 : 2) * s);
+int32_t y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0)) + ((nLayout == 1) ? 4 : 2) * s;
 if (nLayout == 2)
 	y += s; //(gameOpts->render.cockpit.bSeparators ? s / 2 : s);
+if (EGI_FLAG (nDamageModel, 0, 0, 0))
+	y += gameOpts->render.cockpit.bSeparators ? s / 2 : s;
 int32_t w, h, aw;
 fontManager.Current ()->StringSize (szSlowMotion, w, h, aw);
 w /= 2;

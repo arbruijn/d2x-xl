@@ -144,6 +144,33 @@ if (!m_save.Buffer ())
 	m_save.Create (3);
 }
 
+//	-----------------------------------------------------------------------------
+
+void CGenericCockpit::ScaleUp (void)
+{
+m_info.xScale *= float (HUD_ASPECT);
+if (ogl.IsOculusRift ()) {
+	m_info.xScale *= 0.5f;
+	m_info.yScale *= 0.5f;
+	}
+SetFontScale (sqrt (floor (float (CCanvas::Current ()->Width ()) / 640.0f)));
+fontManager.PushScale ();
+fontManager.SetScale (cockpit->FontScale ());
+}
+
+//	-----------------------------------------------------------------------------
+
+void CGenericCockpit::ScaleDown (void)
+{
+if (ogl.IsOculusRift ()) {
+	m_info.xScale *= 2.0f;
+	m_info.yScale *= 2.0f;
+	}
+m_info.xScale /= float (HUD_ASPECT);
+fontManager.PopScale ();
+SetFontScale (1.0f);
+}
+
 //	---------------------------------------------------------------------------------------------------------
 //draws a 3d view into one of the cockpit windows.  win is 0 for left,
 //1 for right.  pViewer is CObject.  NULL CObject means give up window

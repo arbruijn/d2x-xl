@@ -124,7 +124,7 @@ for (int32_t i = 0; i < m_nMaxSparks; i++)
 
 void CSparks::Setup (int16_t nSegment, uint8_t nType)
 {
-m_nMaxSparks = (uint16_t) FRound (2 * SEGMENT (nSegment)->AvgRadf ());
+m_nMaxSparks = (uint16_t) gameOpts->render.effects.bEnergySparks * (uint16_t) FRound (SEGMENT (nSegment)->AvgRadf ());
 if (!m_sparks.Create (m_nMaxSparks))
 	m_nMaxSparks = 0;
 else {
