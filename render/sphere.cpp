@@ -258,7 +258,10 @@ m_vNormal.m_v = -CFloatVector::Normal (Vertex (0), Vertex (1), Vertex (2));
 
 CSphereVertex *CSphereTriangle::ComputeCenter (void)
 {
-m_vCenter = (m_v [0] + m_v [1] + m_v [2]) * (1.0f / 3.0f);
+m_vCenter = m_v [0];
+m_vCenter += m_v [1];
+m_vCenter += m_v [2];
+m_vCenter *= 1.0f / 3.0f;
 return &m_vCenter;
 }
 
@@ -291,7 +294,11 @@ return pDest;
 
 CSphereVertex *CSphereQuad::ComputeCenter (void)
 {
-m_vCenter = (m_v [0] + m_v [1] + m_v [2] + m_v [3]) * 0.25f;
+m_vCenter = m_v [0];
+m_vCenter += m_v [1];
+m_vCenter += m_v [2];
+m_vCenter += m_v [3];
+m_vCenter *= 0.25f;
 m_vCenter.Normalize ();
 return &m_vCenter;
 }
