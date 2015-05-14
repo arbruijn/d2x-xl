@@ -69,7 +69,19 @@ class CSphereVertex {
 			return v;
 			}
 
+		inline CSphereVertex operator+ (CSphereVertex other) {
+			CSphereVertex v = *this;
+			v += other;
+			return v;
+			}
+
 		inline CSphereVertex operator- (CSphereVertex& other) {
+			CSphereVertex v = *this;
+			v -= other;
+			return v;
+			}
+
+		inline CSphereVertex operator- (CSphereVertex other) {
 			CSphereVertex v = *this;
 			v -= other;
 			return v;
