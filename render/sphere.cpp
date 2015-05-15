@@ -767,8 +767,11 @@ if (m_edges.Buffer ()) {
 
 // -----------------------------------------------------------------------------
 
-void CTesselatedSphere::SetupColor (float fRadius)
+int32_t CTesselatedSphere::SetupColor (float fRadius)
 {
+if (!m_pPulse)
+	return 0;
+
 Transform (fRadius);
 
 CFloatVector c, r;
@@ -780,14 +783,9 @@ CFloatVector::Normalize (r);
 CSphereVertex	*w = m_worldVerts.Buffer (),
 					*v = m_viewVerts.Buffer ();
 
-m_color *= 0.5f;
-float b = 1.0f / Max (m_color.Red (), Max (m_color.Green (), m_color.Blue ()));
-m_color *= b;
-float a = b - 1.0f;
+m_color *= 1.0f / Max (m_color.Red (), Max (m_color.Green (), m_color.Blue ()));
 if (m_pPulse)
 	m_color *= m_pPulse->fScale;
-
-float sMin = 1e10f, dMax = 0.0f, dMin = 1e6;
 
 #if USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
@@ -795,13 +793,8 @@ if (gameStates.app.bMultiThreaded) {
 #	pragma omp for
 	for (int32_t i = 0; i < m_nVertices; i++) {
 		CFloatVector s = v [i].m_v - c;
-		float l = CFloatVector::Normalize (s);
-		float d = pow (fabs (CFloatVector::Dot (r, s)), 0.25f);
-#if 0
-		m_color.v.color.a = a * (1.5f - d);
-#else
-		w [i].m_c = m_color * (b - d * (b - 1.0f));
-#endif
+		CFloatVector::Normalize (s);
+		w [i].m_c = m_color * sqrt (1.0f - fabs (CFloatVector::Dot (r, s))); 
 		}
 	}
 else 
@@ -809,22 +802,11 @@ else
 	{
 	for (int32_t i = 0; i < m_nVertices; i++) {
 		CFloatVector s = v [i].m_v - c;
-		float l = CFloatVector::Normalize (s);
-		float d = fabs (CFloatVector::Dot (r, s));
-		if (dMax < d)
-			dMax = d;
-		if (dMin > d)
-			dMin = d;
-		//d = pow (d, 0.25f);
-#if 0
-		m_color.v.color.a = a * (1.5f - d);
-#else
-		w [i].m_c = m_color * (b /*- a*/ * d); 
-		if (sMin > b * d)
-			sMin = b * d;
-#endif
+		CFloatVector::Normalize (s);
+		w [i].m_c = m_color * sqrt (1.0f - fabs (CFloatVector::Dot (r, s))); 
 		}
 	}
+return 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -1107,9 +1089,8 @@ if (bEffect) {
 		}
 	}
 else {
-	SetupColor (fRadius);
 	ogl.SetCullMode (GL_FRONT);
-	DrawFaces (0, m_nFaces, bTextured ? 3 : 2, GL_TRIANGLES, 3);
+	DrawFaces (0, m_nFaces, bTextured | (SetupColor (fRadius) << 1), GL_TRIANGLES, 3);
 	}
 #if SPHERE_WIREFRAME
 glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);

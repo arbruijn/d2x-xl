@@ -240,7 +240,7 @@ class CTesselatedSphere : public CSphere {
 		virtual int32_t FaceNodes (void) = 0;
 		virtual CSphereFace *Face (int32_t nFace) = 0;
 		virtual void RenderOutline (CObject *pObj, float fScale = 1.0f);
-		void SetupColor (float fRadius);
+		int32_t SetupColor (float fRadius);
 		void Transform (float fScale);
 
 	protected:
