@@ -59,8 +59,6 @@ void SmokeDetailsMenu (void);
 
 //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-
 static int32_t nShadows, nCoronas, nLightTrails;
 
 static const char* pszExplShrapnels [5];
@@ -299,7 +297,7 @@ do {
 	m.AddSlider ("glow", szSlider + 1, gameOpts->render.effects.bGlow, 0, 2, KEY_W, HTX_EFFECTS_GLOW);
 	sprintf (szSlider + 1, TXT_RENDER_SPARKS, pszNoneBasicFull [gameOpts->render.effects.bEnergySparks]);
 	*szSlider = *(TXT_RENDER_SPARKS - 1);
-	m.AddSlider ("energy sparks", szSlider + 1, gameOpts->render.effects.bEnergySparks, 0, 2, KEY_S, HTX_RENDER_SPARKS);
+	m.AddSlider ("energy sparks", szSlider + 1, gameOpts->render.effects.bEnergySparks, 0, 2, KEY_P, HTX_RENDER_SPARKS);
 	m.AddText ("", "");
 
 	sprintf (szSlider + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);

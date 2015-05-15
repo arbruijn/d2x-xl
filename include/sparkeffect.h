@@ -3,12 +3,12 @@
 
 class CEnergySpark {
 	public:
-		int16_t				m_nProb;
+		int16_t			m_nProb;
 		char				m_nFrame;
 		char				m_nRotFrame;
-		uint8_t				m_bRendered :1;
-		uint8_t				m_nType :1;
-		uint8_t				m_nOrient :1;
+		uint8_t			m_bRendered :1;
+		uint8_t			m_nType :1;
+		uint8_t			m_nOrient :1;
 		fix				m_xSize;
 		time_t			m_tRender;
 		time_t			m_tCreate;
@@ -24,10 +24,10 @@ class CEnergySpark {
 class CSparks {
 	public:
 		CArray<CEnergySpark>	m_sparks;
-		int16_t						m_nSegment;
-		int16_t						m_nMaxSparks;
-		uint8_t						m_nType;
-		uint8_t						m_bUpdate;
+		int16_t					m_nSegment;
+		int16_t					m_nMaxSparks;
+		uint8_t					m_nType;
+		uint8_t					m_bUpdate;
 
 	public:
 		CSparks () { Init (); }
@@ -35,6 +35,7 @@ class CSparks {
 		void Init (void) {
 			m_nMaxSparks = 0;
 			m_bUpdate = 0;
+			m_nType = 0;
 			m_nSegment = -1;
 			}
 		void Destroy (void) {
@@ -45,14 +46,15 @@ class CSparks {
 		void Create (void);
 		void Render (void);
 		void Update (void);
+		int32_t MaxSparks (int32_t nSegment = -1);
 	};
 
 
 class CSparkManager {
 	private:
 		CSparks		m_sparks [2 * MAX_FUEL_CENTERS];	//0: repair, 1: fuel center
-		int16_t			m_segments [2 * MAX_FUEL_CENTERS];
-		int16_t			m_nSegments;
+		int16_t		m_segments [2 * MAX_FUEL_CENTERS];
+		int16_t		m_nSegments;
 
 	public:
 		CSparkManager () { Init (); }

@@ -255,7 +255,7 @@ return 0;
 
 static void ShuffleIntegers (int32_t* v, int32_t l)
 {
-if (!l || !v)
+if ((l < 1) || !v)
 	return;
 int32_t* index = new int32_t [l];
 if (!index)
@@ -274,7 +274,7 @@ while (l) {
 
 static void SortIntegers (int32_t* v, int32_t l)
 {
-if (!l || !v)
+if ((l < 1) || !v)
 	return;
 while (--l >= 0)
 	v [l] = l;
@@ -323,13 +323,13 @@ else
 int32_t CPlaylist::SongIndex (int32_t nLevel)
 {
 int32_t l = m_songIndex.Length ();
-if (!l)
+if (l < 1)
 	return -1;
 if (nLevel >= 0)
-	return m_nSongs [0] ? m_songIndex [(nLevel - 1) % m_nSongs [0]] : -1;
+	return m_nSongs [0] ? m_songIndex [Clamp (nLevel - 1, 0, l)] : -1;
 // nLevel < 0 denotes a secret level.
 // Secret level song indices are stored in reverse order at the end of the song index.
-return m_nSongs [1] ? m_songIndex [l - (-nLevel - 1) % m_nSongs [1] - 1] : -1;
+return m_nSongs [1] ? m_songIndex [Clamp (l - (-nLevel - 1) % m_nSongs [1] - 1, 0, l)] : -1;
 }
 
 //------------------------------------------------------------------------------
