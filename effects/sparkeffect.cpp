@@ -125,14 +125,17 @@ for (int32_t i = 0; i < m_nMaxSparks; i++)
 
 int32_t CSparks::MaxSparks (int32_t nSegment)
 {
-return (uint16_t) gameOpts->render.effects.bEnergySparks * (uint16_t) FRound (SEGMENT ((nSegment < 0) ? m_nSegment : nSegment)->AvgRadf ());
+CSegment *pSeg = SEGMENT ((nSegment < 0) ? m_nSegment : nSegment);
+if (!pSeg)
+	return 0;
+return (uint16_t) gameOpts->render.effects.bEnergySparks * (uint16_t) FRound (pSeg->AvgRadf ());
 }
 
 //-----------------------------------------------------------------------------
 
 void CSparks::Setup (int16_t nSegment, uint8_t nType)
 {
-m_nMaxSparks = MaxSparks ();
+m_nMaxSparks = MaxSparks (nSegment);
 if (!m_sparks.Create (m_nMaxSparks))
 	m_nMaxSparks = 0;
 else {
@@ -166,7 +169,7 @@ void CSparks::Update (void)
 {
 if (m_bUpdate) {
 	if ((m_nSegment >= 0) && (m_nMaxSparks != MaxSparks ())) {
-		Destroy ();
+		m_sparks.Destroy ();
 		Setup (m_nSegment, m_nType);
 		}
 #if USE_OPENMP //> 1
