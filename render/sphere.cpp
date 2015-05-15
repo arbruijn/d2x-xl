@@ -463,13 +463,14 @@ if (nState & 1) {
 	ogl.EnableClientStates ((nClientArrays & 1) != 0, (nClientArrays & 2) != 0, 0, GL_TEXTURE0);
 	if (((nClientArrays & 1) != 0) && !m_pBm->Bind (1))
 		OglTexCoordPointer (2, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_tc));
-	OglColorPointer (4, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_c));
-	OglVertexPointer (3, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_v));
-	if ((nClientArrays & 2) == 0) {
+	if ((nClientArrays & 2) != 0)
+		OglColorPointer (4, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_c));
+	else {
 		if (m_pPulse)
 			m_color *= m_pPulse->fScale;
 		glColor4fv ((GLfloat*) m_color.v.vec);
 		}
+	OglVertexPointer (3, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_v));
 	}
 OglDrawArrays (nPrimitive, 0, nVertices);
 if (nState & 2) {
@@ -780,11 +781,13 @@ CSphereVertex	*w = m_worldVerts.Buffer (),
 					*v = m_viewVerts.Buffer ();
 
 m_color *= 0.5f;
-float a = Max (m_color.Red (), Max (m_color.Green (), m_color.Blue ()));
-float b = 1.0f / a - 0.5f;
-a *= 0.5f;
+float b = 1.0f / Max (m_color.Red (), Max (m_color.Green (), m_color.Blue ()));
 m_color *= b;
-float p = m_pPulse ? m_pPulse->fScale : 1.0f;
+float a = b - 1.0f;
+if (m_pPulse)
+	m_color *= m_pPulse->fScale;
+
+float sMin = 1e10f, dMax = 0.0f, dMin = 1e6;
 
 #if USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
@@ -807,11 +810,18 @@ else
 	for (int32_t i = 0; i < m_nVertices; i++) {
 		CFloatVector s = v [i].m_v - c;
 		float l = CFloatVector::Normalize (s);
-		float d = 1.0f - pow (fabs (CFloatVector::Dot (r, s)), 0.25f);
+		float d = fabs (CFloatVector::Dot (r, s));
+		if (dMax < d)
+			dMax = d;
+		if (dMin > d)
+			dMin = d;
+		//d = pow (d, 0.25f);
 #if 0
 		m_color.v.color.a = a * (1.5f - d);
 #else
-		w [i].m_c = m_color * (0.5f + b * d);
+		w [i].m_c = m_color * (b /*- a*/ * d); 
+		if (sMin > b * d)
+			sMin = b * d;
 #endif
 		}
 	}
