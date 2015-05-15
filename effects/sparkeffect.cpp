@@ -168,9 +168,12 @@ if (gameData.render.mine.Visible (m_nSegment)) {
 void CSparks::Update (void)
 {
 if (m_bUpdate) {
-	if ((m_nSegment >= 0) && (m_nMaxSparks != MaxSparks ())) {
-		m_sparks.Destroy ();
-		Setup (m_nSegment, m_nType);
+	if (m_nSegment >= 0) {
+		int32_t nMaxSparks = MaxSparks ();
+		if (nMaxSparks && (nMaxSparks != m_nMaxSparks)) {
+			m_sparks.Destroy ();
+			Setup (m_nSegment, m_nType);
+			}
 		}
 #if USE_OPENMP //> 1
 #	pragma omp parallel for
