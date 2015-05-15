@@ -783,9 +783,7 @@ CFloatVector::Normalize (r);
 CSphereVertex	*w = m_worldVerts.Buffer (),
 					*v = m_viewVerts.Buffer ();
 
-m_color *= 1.0f / Max (m_color.Red (), Max (m_color.Green (), m_color.Blue ()));
-if (m_pPulse)
-	m_color *= m_pPulse->fScale;
+m_color *= 1.0f / Max (m_color.Red (), Max (m_color.Green (), m_color.Blue ())) * m_pPulse->fScale;
 
 #if USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
