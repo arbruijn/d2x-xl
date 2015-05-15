@@ -125,7 +125,7 @@ for (int32_t i = 0; i < m_nMaxSparks; i++)
 
 int32_t CSparks::MaxSparks (int32_t nSegment)
 {
-(uint16_t) gameOpts->render.effects.bEnergySparks * (uint16_t) FRound (SEGMENT ((nSegment < 0) ? m_nSegment : nSegment)->AvgRadf ());
+return (uint16_t) gameOpts->render.effects.bEnergySparks * (uint16_t) FRound (SEGMENT ((nSegment < 0) ? m_nSegment : nSegment)->AvgRadf ());
 }
 
 //-----------------------------------------------------------------------------
@@ -165,7 +165,7 @@ if (gameData.render.mine.Visible (m_nSegment)) {
 void CSparks::Update (void)
 {
 if (m_bUpdate) {
-	if ((m_nSegment >= 0) && (m_nMaxSparks != MaxSparks ()) {
+	if ((m_nSegment >= 0) && (m_nMaxSparks != MaxSparks ())) {
 		Destroy ();
 		Setup (m_nSegment, m_nType);
 		}
