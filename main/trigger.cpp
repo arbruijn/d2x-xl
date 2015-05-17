@@ -1604,7 +1604,7 @@ for (; j; j--, i++) {
 void TriggersFrameProcess (void)
 {
 	CTrigger	*pTrigger;
-	int32_t		i;
+	int32_t	i;
 
 pTrigger = GEOTRIGGERS.Buffer ();
 for (i = gameData.trigData.m_nTriggers [0]; i > 0; i--, pTrigger++) {

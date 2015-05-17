@@ -821,6 +821,7 @@ if (nStage == 0) {
 	gameStates.app.bCustomSounds = false;
 	if (gameStates.app.bHaveMod && (gameStates.app.bD1Mission ? LoadD1Sounds (true) : LoadD2Sounds (true))) {
 		gameStates.app.bCustomSounds = true;
+		songManager.LoadModPlaylist ();
 		if (gameOpts->UseHiresSound () != gameOpts->sound.bHires [1]) {
 			WaitForSoundThread ();
 			audio.Reset ();
@@ -1011,7 +1012,6 @@ if (!(gameStates.app.bHaveMod || missionManager.IsBuiltIn (hogFileManager.Missio
 lightManager.SetMethod ();
 
 if (!gameStates.app.bPrecomputeLightmaps) {
-	songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
 #if 1
 	if (LoadModData (NULL, 0, 0) < 0) {
 		gameStates.app.bBetweenLevels = 0;
@@ -1020,6 +1020,7 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 		return -1;
 		}
 #endif
+	songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
 	/*---*/PrintLog (1, "Initializing particle manager\n");
 	InitObjectSmoke ();
 	PrintLog (-1);
@@ -1804,7 +1805,6 @@ int32_t PrepareLevel (int32_t nLevel, bool bLoadTextures, bool bSecret, bool bRe
 	int32_t funcRes;
 
 gameStates.multi.bTryAutoDL = 1;
-songManager.LoadModPlaylist ();
 
 reloadLevel:
 

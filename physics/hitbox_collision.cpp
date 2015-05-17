@@ -323,11 +323,11 @@ return nHits;
 
 fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, int16_t& nModel)
 {
-	CFixVector		vRef = OBJPOS (objP2)->vPos;
+	CFixVector			vRef = OBJPOS (objP2)->vPos;
 	int32_t				iModel1, nModels1, iModel2, nModels2, nHits = 0, nTotalHits = 0;
 	CModelHitboxList	*pmhb1 = gameData.models.hitboxes + objP1->ModelId ();
 	CModelHitboxList	*pmhb2 = gameData.models.hitboxes + objP2->ModelId ();
-	fix				dMin = 0x7fffffff;
+	fix					dMin = 0x7fffffff;
 
 if (CollisionModel () == 1) {
 	iModel1 =

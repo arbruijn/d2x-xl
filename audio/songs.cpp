@@ -320,16 +320,21 @@ else
 
 //------------------------------------------------------------------------------
 
+static inline int32_t Wrap (int32_t i, int32_t l)
+{
+return (i < 0) ? i + l : i % l;
+}
+
 int32_t CPlaylist::SongIndex (int32_t nLevel)
 {
 int32_t l = m_songIndex.Length ();
 if (l < 1)
 	return -1;
 if (nLevel >= 0)
-	return m_nSongs [0] ? m_songIndex [Clamp (nLevel - 1, 0, l)] : -1;
+	return m_nSongs [0] ? m_songIndex [Wrap (Max (nLevel - 1, 0), l)] : -1;
 // nLevel < 0 denotes a secret level.
 // Secret level song indices are stored in reverse order at the end of the song index.
-return m_nSongs [1] ? m_songIndex [Clamp (l - (-nLevel - 1) % m_nSongs [1] - 1, 0, l)] : -1;
+return m_nSongs [1] ? m_songIndex [Wrap (l + nLevel, l)] : -1;
 }
 
 //------------------------------------------------------------------------------

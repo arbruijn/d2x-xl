@@ -312,9 +312,7 @@ m_info.bInitialized = 1;
 void CAudio::StartLoopingSound (void)
 {
 if (m_info.nLoopingSound > -1)
-	m_info.nLoopingChannel  =
-		StartSound (m_info.nLoopingSound, SOUNDCLASS_GENERIC, m_info.nLoopingVolume, DEFAULT_PAN, 1,
-						m_info.nLoopingStart, m_info.nLoopingEnd);
+	m_info.nLoopingChannel  = StartSound (m_info.nLoopingSound, SOUNDCLASS_GENERIC, m_info.nLoopingVolume, DEFAULT_PAN, 1, m_info.nLoopingStart, m_info.nLoopingEnd);
 }
 
 //------------------------------------------------------------------------------
@@ -723,13 +721,12 @@ void CAudio::SyncSounds (void)
 if (!OBJECTS.Buffer ())
 	return;
 
-	int32_t				nOldVolume, nNewVolume, nOldPan, 
+	int32_t			nOldVolume, nNewVolume, nOldPan, 
 						nAudioVolume [2] = {audio.Volume (0), audio.Volume (1)};
-	uint32_t				i;
 	CObject*			pObj = NULL;
 	CFixVector		vListenerPos = gameData.objData.pViewer->info.position.vPos;
 	CFixMatrix		mListenerOrient = gameData.objData.pViewer->info.position.mOrient;
-	int16_t				nListenerSeg = gameData.objData.pViewer->info.nSegment;
+	int16_t			nListenerSeg = gameData.objData.pViewer->info.nSegment;
 
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	if (!gameStates.sound.bWasRecording)
@@ -741,95 +738,93 @@ else
 
 soundQueue.Process ();
 
-	i = m_objects.ToS ();
-	CSoundObject*	pSoundObj = m_objects.Buffer () + i;
+uint32_t i = m_objects.ToS ();
 
 //Update ();
 while (i) {
-	i--;
-	pSoundObj--;
-	if (pSoundObj->m_flags & SOF_USED) {
-		nOldVolume = FixMulDiv (pSoundObj->m_volume, pSoundObj->m_audioVolume, I2X (1));
+	CSoundObject& soundObj = m_objects [--i];
+	if (soundObj.m_flags & SOF_USED) {
+		nOldVolume = FixMulDiv (soundObj.m_volume, soundObj.m_audioVolume, I2X (1));
 #if USE_SDL_MIXER
 		nOldVolume = (fix) FRound (X2F (2 * nOldVolume) * MIX_MAX_VOLUME);
 #endif
 #if DBG
-		if ((nOldVolume <= 0) && (pSoundObj->m_channel >= 0))
+		if ((nOldVolume <= 0) && (soundObj.m_channel >= 0))
 			BRP;
 #endif
-		nOldPan = pSoundObj->m_pan;
+		nOldPan = soundObj.m_pan;
 		// Check if its done.
-		if (!(pSoundObj->m_flags & SOF_PLAY_FOREVER) && ((pSoundObj->m_channel < 0) && !ChannelIsPlaying (pSoundObj->m_channel))) {
+		if (!(soundObj.m_flags & SOF_PLAY_FOREVER) && ((soundObj.m_channel < 0) && !ChannelIsPlaying (soundObj.m_channel))) {
 			DeleteSoundObject (i);
 			continue;		// Go on to next sound...
 			}
-		if (pSoundObj->m_flags & SOF_LINK_TO_POS) {
+		if (soundObj.m_flags & SOF_LINK_TO_POS) {
 #if DBG
-			if (pSoundObj->m_linkType.pos.nSegment == nDbgSeg)
+			if (soundObj.m_linkType.pos.nSegment == nDbgSeg)
 				BRP;
 #endif
 			GetVolPan (
 				mListenerOrient, vListenerPos, nListenerSeg,
-				pSoundObj->m_linkType.pos.position, pSoundObj->m_linkType.pos.nSegment, pSoundObj->m_maxVolume,
-				&pSoundObj->m_volume, &pSoundObj->m_pan, pSoundObj->m_maxDistance, pSoundObj->m_nDecay);
+				soundObj.m_linkType.pos.position, soundObj.m_linkType.pos.nSegment, soundObj.m_maxVolume,
+				&soundObj.m_volume, &soundObj.m_pan, soundObj.m_maxDistance, soundObj.m_nDecay);
 			}
-		else if (pSoundObj->m_flags & SOF_LINK_TO_OBJ) {
+		else if (soundObj.m_flags & SOF_LINK_TO_OBJ) {
 			if (gameData.demo.nState == ND_STATE_PLAYBACK) {
-				int32_t nObject = NDFindObject (pSoundObj->m_linkType.obj.nObjSig);
+				int32_t nObject = NDFindObject (soundObj.m_linkType.obj.nObjSig);
 				pObj = OBJECT (nObject);
 				}
 			else
-				pObj = OBJECT (pSoundObj->m_linkType.obj.nObject);
-			if (!pObj || (pObj->info.nType == OBJ_NONE) || (pObj->info.nSignature != pSoundObj->m_linkType.obj.nObjSig)) {
+				pObj = OBJECT (soundObj.m_linkType.obj.nObject);
+			if (!pObj || (pObj->info.nType == OBJ_NONE) || (pObj->info.nSignature != soundObj.m_linkType.obj.nObjSig)) {
 				DeleteSoundObject (i);	// The object that this is linked to is dead, so just end this sound if it is looping.
 				continue;
 				}
 			else if ((pObj->info.nType == OBJ_EFFECT) && 
 						(((pObj->info.nId == SOUND_ID) && !pObj->rType.soundInfo.bEnabled) || 
 						 ((pObj->info.nId == LIGHTNING_ID) && !(SHOW_LIGHTNING (1) && pObj->rType.lightningInfo.bEnabled)))) {
-				pSoundObj->Stop ();
+				soundObj.Stop ();
 				continue;
 				}
 			GetVolPan (
 				mListenerOrient, vListenerPos, nListenerSeg,
-				OBJPOS (pObj)->vPos, OBJSEG (pObj), pSoundObj->m_maxVolume,
-				&pSoundObj->m_volume, &pSoundObj->m_pan, pSoundObj->m_maxDistance, pSoundObj->m_nDecay);
+				OBJPOS (pObj)->vPos, OBJSEG (pObj), soundObj.m_maxVolume,
+				&soundObj.m_volume, &soundObj.m_pan, soundObj.m_maxDistance, soundObj.m_nDecay);
 			}
-		if (!pSoundObj->m_bCustom) {
-			nNewVolume = FixMulDiv (pSoundObj->m_volume, nAudioVolume [pSoundObj->m_bAmbient], I2X (1));
+		if (!soundObj.m_bCustom) {
+			nNewVolume = FixMulDiv (soundObj.m_volume, nAudioVolume [soundObj.m_bAmbient], I2X (1));
 #if USE_SDL_MIXER
 			nNewVolume = (fix) FRound (X2F (2 * nNewVolume) * MIX_MAX_VOLUME);
 #endif
-			if ((nOldVolume != nNewVolume) || ((nNewVolume <= 0) != (pSoundObj->m_channel < 0))) {
+			if ((nOldVolume != nNewVolume) || ((nNewVolume <= 0) != (soundObj.m_channel < 0))) {
 #if DBG
-				if (pSoundObj->m_linkType.pos.nSegment == nDbgSeg)
+				if (soundObj.m_linkType.pos.nSegment == nDbgSeg)
 					BRP;
 #endif
-				pSoundObj->m_audioVolume = nAudioVolume [pSoundObj->m_bAmbient];
+				soundObj.m_audioVolume = nAudioVolume [soundObj.m_bAmbient];
 				if (nNewVolume <= 0) {	// sound is too far away or muted, so stop it playing.
-					if (pSoundObj->m_channel > -1) {
-						if (!(pSoundObj->m_flags & SOF_PLAY_FOREVER)) {
+					if (soundObj.m_channel > -1) {
+						if (!(soundObj.m_flags & SOF_PLAY_FOREVER)) {
 							DeleteSoundObject (i);
 							continue;
 							}
-						pSoundObj->Stop ();
+						soundObj.Stop ();
 						}
 					}
 				else {
 #if 0 //DBG
-					if (*pSoundObj->m_szSound)
+					if (*soundObj.m_szSound)
 						pSoundObj = pSoundObj;
-					if (strstr (pSoundObj->m_szSound, "dripping-water"))
+					if (strstr (soundObj.m_szSound, "dripping-water"))
 						pSoundObj = pSoundObj;
 #endif
-					if (pSoundObj->m_channel < 0)
-						pSoundObj->Start ();
+					if (soundObj.m_channel < 0)
+						soundObj.Start ();
 					else
-						SetVolume (pSoundObj->m_channel, pSoundObj->m_volume);
+						SetVolume (soundObj.m_channel, soundObj.m_volume);
 					}
 				}
-			if ((nNewVolume > 0) && (nOldPan != pSoundObj->m_pan) && (pSoundObj->m_channel > -1))
-				SetPan (pSoundObj->m_channel, pSoundObj->m_pan);
+			if ((nNewVolume > 0) && (nOldPan != soundObj.m_pan) && (soundObj.m_channel > -1))
+				SetPan (soundObj.m_channel, soundObj.m_pan);
 			}
 		}
 	}
@@ -875,8 +870,11 @@ PauseSounds ();
 void CAudio::ResumeSounds (void)
 {
 //SetSoundSources ();
+PrintLog (1, "syncing sounds\n");
 SyncSounds ();	//don't think we really need to do this, but can't hurt
+PrintLog (0, "resuming looping sounds\n");
 ResumeLoopingSound ();
+PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -884,8 +882,11 @@ ResumeLoopingSound ();
 void CAudio::ResumeAll (void)
 {
 PrintLog (1, "restarting sounds\n");
+PrintLog (0, "resuming midi system\n");
 midi.Resume ();
+PrintLog (0, "resuming sounds\n");
 ResumeSounds ();
+PrintLog (0, "starting triggered sounds\n");
 StartTriggeredSounds ();
 PrintLog (-1);
 }

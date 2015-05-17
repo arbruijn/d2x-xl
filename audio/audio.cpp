@@ -489,7 +489,7 @@ int32_t CAudioChannel::Start (int16_t nSound, int32_t nSoundClass, fix nVolume, 
 								  const char *pszWAV, CFixVector* vPos)
 {
 	CSoundSample*	pSound = NULL;
-	int32_t				bPersistent = (nSoundObj > -1) || bLooping || (nVolume > I2X (1));
+	int32_t			bPersistent = (nSoundObj > -1) || bLooping || (nVolume > I2X (1));
 
 if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
 	if (nSound < 0)
@@ -994,18 +994,18 @@ return channelMinVolP [0] ? channelMinVolP [0] : channelMinVolP [1];
 
 // Volume 0-I2X (1)
 int32_t CAudio::StartSound (int16_t nSound, int32_t nSoundClass, fix nVolume, int32_t nPan, int32_t bLooping, 
-								int32_t nLoopStart, int32_t nLoopEnd, int32_t nSoundObj, int32_t nSpeed, 
-								const char *pszWAV, CFixVector* vPos)
+									 int32_t nLoopStart, int32_t nLoopEnd, int32_t nSoundObj, int32_t nSpeed, 
+									 const char *pszWAV, CFixVector* vPos)
 {
-	CAudioChannel*	pChannel;
-
 if (!gameStates.app.bUseSound)
 	return -1;
 if (!m_info.bAvailable) 
 	return -1;
 if (((nSoundObj > -1) || bLooping || (nVolume > I2X (1))) && !nSoundClass)
 	nSoundClass = -1;
-if (!(pChannel = FindFreeChannel (nSoundClass)))
+
+CAudioChannel*	pChannel = FindFreeChannel (nSoundClass);
+if (!pChannel)
 	return -1;
 if (0 > pChannel->Start (nSound, nSoundClass, nVolume, nPan, bLooping, nLoopStart, nLoopEnd, nSoundObj, nSpeed, pszWAV, vPos)) {
 	return -1;
