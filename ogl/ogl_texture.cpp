@@ -1279,6 +1279,8 @@ if (strstr (m_info.szName, "shield.tga"))
 if ((Type () == BM_TYPE_MASK) && !bMask)
 	BRP;
 #endif
+if (Type () == BM_TYPE_MASK)
+	bMask = 1;
 
 if (!m_info.pTexture)
 	m_info.pTexture = &m_info.texture;

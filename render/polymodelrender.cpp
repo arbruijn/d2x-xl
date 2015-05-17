@@ -193,7 +193,7 @@ if (!(pModel = GetPolyModel (pObj, pos, nModel, flags, &bCustomModel))) {
 	}
 #endif
 
-#if 1//DBG
+#if DBG
 if (nModel == nDbgModel)
 	BRP;
 #endif
