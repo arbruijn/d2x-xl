@@ -71,7 +71,7 @@ extern FILE *fLog;
 
 void Breakpoint (void);
 
-#if DBG
+#if 1 //DBG
 #	define BRP	Breakpoint ()
 #else
 #	define BRP

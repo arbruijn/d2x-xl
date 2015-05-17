@@ -1205,10 +1205,10 @@ if (!(m_info.compressed.bCompressed || Parent ())) {
 m_info.pTexture->Prepare ();
 #endif
 
-#if DBG
+#if 1// DBG
 if (strstr (m_info.szName, "targ"))
 	BRP;
-if (strstr (m_info.szName, "door52"))
+if (strstr (m_info.szName, "door35"))
 	BRP;
 #endif
 //	if (width!=twidth || height!=theight)
@@ -1385,6 +1385,7 @@ sprintf (m_info.pMask->m_info.szName, "{%s}", Name ());
 m_info.pMask->SetWidth (m_info.props.w);
 m_info.pMask->SetHeight (m_info.props.w);
 m_info.pMask->AddFlags (BM_FLAG_TGA);
+m_info.pMask->SetType (BM_TYPE_MASK);
 m_info.pMask->SetTranspType (-1);
 //m_info.nTranspType = nTranspType;
 UseBitmapCache (m_info.pMask, (int32_t) m_info.pMask->Width () * (int32_t) m_info.pMask->RowSize ());

@@ -491,8 +491,8 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <OmitFramePointers>true</OmitFramePointers>
-      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <OmitFramePointers>false</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\..\..\libraries\sixense\include;..\..\..\libraries\rift\LibOVR\include;..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_OPENMP=2;DBG=0;_WINNT_WIN32=0x0700;OPENMP;NDEBUG;RELEASE;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS=1;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
