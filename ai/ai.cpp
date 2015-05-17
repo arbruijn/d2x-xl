@@ -74,7 +74,7 @@ void CreateAwarenessEvent (CObject *pObj, int32_t nType)
 	// If not in multiplayer, or in multiplayer with robots, do this, else unnecessary!
 if (IsRobotGame) {
 	if (AddAwarenessEvent (pObj, nType)) {
-		if (((RandShort () * (nType+4)) >> 15) > 4)
+		if (((RandShort () * (nType + 4)) >> 15) > 4)
 			gameData.ai.nOverallAgitation++;
 		if (gameData.ai.nOverallAgitation > OVERALL_AGITATION_MAX)
 			gameData.ai.nOverallAgitation = OVERALL_AGITATION_MAX;
@@ -88,10 +88,10 @@ int8_t newAwareness [MAX_SEGMENTS_D2X];
 
 void pae_aux (int32_t nSegment, int32_t nType, int32_t level)
 {
-if ((nSegment >= 0) && (nSegment < gameData.segData.nSegments)) {
+CSegment* pSeg = SEGMENT (nSegment);
+if (pSeg) {
 	if (newAwareness [nSegment] < nType)
 		newAwareness [nSegment] = nType;
-	CSegment* pSeg = SEGMENT (nSegment);
 	for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		if (IS_CHILD (pSeg->m_children [i])) {
 			if (level <= 3) {
@@ -143,22 +143,20 @@ FORALL_OBJS (pObj)
 //  Setting player_awareness (a fix, time in seconds which CObject is aware of player)
 void DoAIFrameAll (void)
 {
-	int32_t	h, j;
-	CObject*	pObj;
-
 SetPlayerAwarenessAll ();
 if (USE_D1_AI)
 	return;
-if (gameData.ai.nLastMissileCamera != -1) {
+CObject *pObj = OBJECT (gameData.ai.nLastMissileCamera);
+if (pObj) {
 	// Clear if supposed misisle camera is not a weapon, or just every so often, just in case.
-	if (((gameData.app.nFrameCount & 0x0f) == 0) || (OBJECT (gameData.ai.nLastMissileCamera)->info.nType != OBJ_WEAPON)) {
+	if (((gameData.app.nFrameCount & 0x0f) == 0) || (pObj->Type () != OBJ_WEAPON)) {
 		gameData.ai.nLastMissileCamera = -1;
 		FORALL_ROBOT_OBJS (pObj) {
 			pObj->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 			}
 		}
 	}
-for (h = gameData.bosses.ToS (), j = 0; j < h; j++)
+for (int32_t h = gameData.bosses.ToS (), j = 0; j < h; j++)
 	if (gameData.bosses [j].m_nDying) {
 		if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 			DoBossDyingFrame (OBJECT (gameData.bosses [j].m_nDying));
