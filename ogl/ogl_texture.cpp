@@ -1276,6 +1276,8 @@ if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
 	BRP;
 if (strstr (m_info.szName, "shield.tga"))
 	BRP;
+if ((Type () == BM_TYPE_MASK) && !bMask)
+	BRP;
 #endif
 
 if (!m_info.pTexture)
@@ -1513,7 +1515,7 @@ if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	}
 else if (!Frames ()) {
 #if DBG
-	if (strstr (Name (), "door52"))
+	if (strstr (Name (), "door35"))
 		BRP;
 #endif
 	CreateFrames (bMipMaps, bLoad);
@@ -1572,6 +1574,11 @@ switch (m_info.nType) {
 	case BM_TYPE_FRAME:	// hires frame
 		if (bLoad)
 			return Prepared () || !PrepareTexture (bMipMaps, 0);
+		return true;
+
+	case BM_TYPE_MASK:	// hires frame mask
+		if (bLoad)
+			return Prepared () || !PrepareTexture (bMipMaps, 1);
 		return true;
 	}
 return false;
