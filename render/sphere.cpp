@@ -772,9 +772,6 @@ static inline float ColorBump (float f) { return f /*sqrt (f)*/ /** f*/; }
 
 int32_t CTesselatedSphere::SetupColor (float fRadius)
 {
-if (!m_pPulse)
-	return 0;
-
 Transform (fRadius);
 
 CFloatVector c, r;
@@ -786,7 +783,7 @@ CFloatVector::Normalize (r);
 CSphereVertex	*w = m_worldVerts.Buffer (),
 					*v = m_viewVerts.Buffer ();
 
-m_color *= 1.0f / Max (m_color.Red (), Max (m_color.Green (), m_color.Blue ())) * m_pPulse->fScale;
+m_color *= 1.0f / Max (m_color.Red (), Max (m_color.Green (), m_color.Blue ())) * (m_pPulse && m_pPulse->Valid () ? m_pPulse->Scale () : 1.0f);
 
 #if USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
