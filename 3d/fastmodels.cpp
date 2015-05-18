@@ -605,7 +605,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 					ogl.SetTexturing (false);
 				else {
 					if (gameStates.render.bCloaked) {
-						pBm = shield.Bitmap ();
+						pBm = shield [0].Bitmap ();
 						float c = 1.0f - gameStates.render.grAlpha * gameStates.render.grAlpha; //bBlur ? 1.0f - gameStates.render.grAlpha * gameStates.render.grAlpha : pBm ? 1.0f - gameStates.render.grAlpha : 0.0f;
 						//ogl.SetBlendMode (bBlur ? OGL_BLEND_REPLACE : OGL_BLEND_MULTIPLY);
 						glColor4f (c, c, c, gameStates.render.grAlpha);
@@ -1023,7 +1023,7 @@ pModel->m_bHasTransparency |= (bEmissive << 2);
 int32_t bRenderTransparency = bHires && !gameStates.render.bCloaked && (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) && pModel->m_bHasTransparency;
 
 if (!bRenderTransparency && gameStates.render.bCloaked) {
-	shield.Animate (10);
+	shield [0].Animate (10);
 	CFixVector vPos;
 	PolyObjPos (pObj, &vPos);
 #if 1

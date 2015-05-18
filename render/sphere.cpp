@@ -398,8 +398,9 @@ if (m_pPulse)
 void CSphere::Animate (CBitmap* pBm)
 {
 #if 1
-if (shield.IsMe (pBm))
-	shield.Animate (10);
+for (int32_t i = 0; i < 2; i++)
+	if (shield [i].IsMe (pBm))
+		shield [i].Animate (10);
 #endif
 }
 
@@ -1327,7 +1328,7 @@ return new CQuadSphere ();
 
 int32_t CreateShieldSphere (void)
 {
-if (!shield.Load ())
+if (!shield [0].Load () || !shield [1].Load () || !shield [2].Load ())
 	return 0;
 if (gameData.render.shield) {
 	if (gameData.render.shield->HasQuality (gameOpts->render.textures.nQuality + 1))
