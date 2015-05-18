@@ -214,12 +214,12 @@ if (bAppearing || EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShiel
 		if (gameData.multiplayer.bWasHit [i] < 0) {
 			gameData.multiplayer.bWasHit [i] = 1;
 			gameData.multiplayer.nLastHitTime [i] = gameStates.app.nSDLTicks [0];
-			SetupSpherePulse (gameData.multiplayer.spherePulse + i, 0.1f, 0.5f);
+			gameData.multiplayer.spherePulse [i].Setup (0.1f, 0.5f);
 			dt = 0;
 			}
 		else if ((dt = gameStates.app.nSDLTicks [0] - gameData.multiplayer.nLastHitTime [i]) >= 300) {
 			gameData.multiplayer.bWasHit [i] = 0;
-			SetupSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.4f);
+			gameData.multiplayer.spherePulse [i].Setup (0.02f, 0.4f);
 			}
 		}
 #if !RENDER_HITBOX
