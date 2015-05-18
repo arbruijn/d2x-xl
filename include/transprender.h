@@ -135,7 +135,7 @@ class CTranspSphere : public CTranspItem {
 		CObject				*pObj;
 		int32_t				nSize;
 		char					bAdditive;
-		CSpherePulse		*pPulse;
+		CPulseData			*pPulse;
 
 		virtual int32_t Size (void) { return sizeof (*this); }
 		virtual void Render (void);

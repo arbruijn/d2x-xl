@@ -245,8 +245,8 @@ if (bAppearing || EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShiel
 	else {
 		alpha = X2F (PLAYER (i).Shield ()) / X2F (PLAYER (i).MaxShield ());
 		scale *= alpha;
-		if (gameData.multiplayer.spherePulse [i].fSpeed == 0.0f)
-			SetupSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.5f);
+		if (!gameData.multiplayer.spherePulse [i].Valid ())
+			gameData.multiplayer.spherePulse [i].Setup (0.02f, 0.5f);
 		}
 #if RENDER_HITBOX
 	RenderHitbox (pObj, shieldColors [nColor].Red () * scale, shieldColors [nColor].Green () * scale, shieldColors [nColor].Blue () * scale, alpha);

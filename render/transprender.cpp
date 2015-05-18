@@ -515,6 +515,7 @@ void CTranspSphere::Render (void)
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1, true);
 if (nType == riSphereShield) {
+	gameData.render.shield->SetPulse (pPulse);
 	DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), color.Alpha (), bAdditive, nSize);
 	}
 else if (nType == riMonsterball) {
