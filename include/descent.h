@@ -1509,7 +1509,7 @@ class CColorData {
 //------------------------------------------------------------------------------
 
 class CPulseData {
-	public:
+	private:
 		float			m_fScale;
 		float			m_fMin;
 		float			m_fDir;
@@ -1524,6 +1524,7 @@ class CPulseData {
 		void Setup (float fSpeed = 0.02f, float fMin = 0.5f);
 		void Update (void);
 		inline int32_t Valid (void) { return m_bValid; }
+		inline float Scale (void) { return m_fScale; }
 };
 
 //------------------------------------------------------------------------------

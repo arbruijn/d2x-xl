@@ -364,9 +364,9 @@ return i;
 
 CPulseData *CSphere::SetPulse (CPulseData *pPulse)
 {
-CPulseData *pPulse = GetPulse ();
+CPulseData *pOldPulse = GetPulse ();
 m_pPulse = pPulse ? pPulse : &m_pulse;
-return pPulse;
+return pOldPulse;
 }
 
 // -----------------------------------------------------------------------------
@@ -454,7 +454,7 @@ if (nState & 1) {
 		OglColorPointer (4, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_c));
 	else {
 		if (m_pPulse)
-			m_color *= m_pPulse->fScale;
+			m_color *= m_pPulse->Scale ();
 		glColor4fv ((GLfloat*) m_color.v.vec);
 		}
 	OglVertexPointer (3, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_v));
