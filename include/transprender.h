@@ -133,8 +133,9 @@ class CTranspSphere : public CTranspItem {
 		tTranspSphereType	nType;
 		CFloatVector		color;
 		CObject				*pObj;
-		int32_t					nSize;
+		int32_t				nSize;
 		char					bAdditive;
+		CSpherePulse		*pPulse;
 
 		virtual int32_t Size (void) { return sizeof (*this); }
 		virtual void Render (void);
@@ -144,7 +145,7 @@ class CTranspSphere : public CTranspItem {
 class CTranspLightning : public CTranspItem {
 	public:
 		CLightning			*lightning;
-		int16_t					nDepth;
+		int16_t				nDepth;
 
 		virtual int32_t Size (void) { return sizeof (*this); }
 		virtual void Render (void);
@@ -153,11 +154,11 @@ class CTranspLightning : public CTranspItem {
 
 class CTranspLightTrail : public CTranspItem {
 	public:
-		CBitmap*					pBm;
-		CFloatVector			vertices [8];
-		tTexCoord2f				texCoord [8];
-		CFloatVector			color;
-		char						bTrail;
+		CBitmap*				pBm;
+		CFloatVector		vertices [8];
+		tTexCoord2f			texCoord [8];
+		CFloatVector		color;
+		char					bTrail;
 
 		virtual int32_t Size (void) { return sizeof (*this); }
 		virtual void Render (void);
@@ -166,9 +167,9 @@ class CTranspLightTrail : public CTranspItem {
 
 class CTranspThruster : public CTranspItem {
 	public:
-		CObject*					pObj;
-		tThrusterInfo			info;
-		int32_t						nThruster;
+		CObject*				pObj;
+		tThrusterInfo		info;
+		int32_t				nThruster;
 
 		virtual int32_t Size (void) { return sizeof (*this); }
 		virtual void Render (void);

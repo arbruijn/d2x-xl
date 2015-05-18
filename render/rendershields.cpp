@@ -209,7 +209,7 @@ if (bAppearing || EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShiel
 		scale *= scale;
 		}
 	bStencil = ogl.StencilOff ();
-	gameData.render.shield->SetPulse (gameData.multiplayer.spherePulse + i);
+	CPulseData *pPulse = gameData.render.shield->SetPulse (gameData.multiplayer.spherePulse + i);
 	if (gameData.multiplayer.bWasHit [i]) {
 		if (gameData.multiplayer.bWasHit [i] < 0) {
 			gameData.multiplayer.bWasHit [i] = 1;
@@ -253,6 +253,7 @@ if (bAppearing || EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShiel
 #else
 	DrawShieldSphere (pObj, shieldColors [nColor].Red () * scale, shieldColors [nColor].Green () * scale, shieldColors [nColor].Blue () * scale, alpha, 1);
 #endif
+	gameData.render.shield->SetPulse (pPulse);
 	ogl.StencilOn (bStencil);
 	}
 }
@@ -262,6 +263,7 @@ if (bAppearing || EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShiel
 void RenderRobotShield (CObject *pObj)
 {
 	static CFloatVector shieldColors [3] = {{{{0.75f, 0, 0.75f, 1}}}, {{{0, 0.5f, 1}}},{{{1, 0.1f, 0.25f, 1}}}};
+	static CPulseData shieldPulse;
 
 #if RENDER_HITBOX
 RenderHitbox (pObj, 0.5f, 0.0f, 0.6f, 0.4f);
@@ -280,6 +282,7 @@ if ((pObj->info.nType == OBJ_ROBOT) && pObj->cType.aiInfo.CLOAKED) {
 	scale = (float) ci.nFadeValue / (float) FADE_LEVELS;
 	scale *= scale;
 	}
+CPulseData *pPulse = gameData.render.shield->SetPulse (&shieldPulse);
 dt = gameStates.app.nSDLTicks [0] - pObj->TimeLastHit ();
 if (dt < SHIELD_EFFECT_TIME) {
 	scale *= gameOpts->render.effects.bOnlyShieldHits ? float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * PI / 2)) : 1;

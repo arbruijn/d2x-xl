@@ -1219,8 +1219,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t CTransparencyRenderer::AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, 
-														CObject *pObj, char bAdditive, fix nSize)
+int32_t CTransparencyRenderer::AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha,  CObject *pObj, char bAdditive, fix nSize)
 {
 if (gameStates.render.nShadowMap)
 	return 0;
@@ -1236,6 +1235,7 @@ item.color.Alpha () = alpha;
 item.nSize = nSize;
 item.bAdditive = bAdditive;
 item.pObj = pObj;
+item.pPulse = gameData.render.shield->GetPulse ();
 if (nType != riMonsterball)
 	m_data.bRenderGlow = 1;
 //transformation.Transform (vPos, pObj->info.position.vPos, 0);

@@ -1510,12 +1510,15 @@ class CColorData {
 
 class CPulseData {
 	public:
-		float			fScale;
-		float			fMin;
-		float			fDir;
-		float			fSpeed;
+		float			m_fScale;
+		float			m_fMin;
+		float			m_fDir;
+		float			m_fSpeed;
+
 	public:
-		CPulseData () { memset (this, 0, sizeof (*this)); }
+		CPulseData () { Setup (); }
+		void Setup (float fSpeed = 0.02f, float fMin = 0.5f);
+		void Update (void);
 };
 
 //------------------------------------------------------------------------------

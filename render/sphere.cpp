@@ -362,39 +362,26 @@ return i;
 
 // -----------------------------------------------------------------------------
 
-void CSphere::SetPulse (CPulseData* pPulse)
+CPulseData *CSphere::SetPulse (CPulseData *pPulse)
 {
-m_pPulse = pPulse;
+CPulseData *pPulse = GetPulse ();
+m_pPulse = pPulse ? pPulse : &m_pulse;
+return pPulse;
 }
 
 // -----------------------------------------------------------------------------
 
 void CSphere::SetupPulse (float fSpeed, float fMin)
 {
-m_pulse.fScale =
-m_pulse.fMin = fMin;
-m_pulse.fSpeed =
-m_pulse.fDir = fSpeed;
+m_pulse.Setup (fSpeed, fMin);
 }
 
 // -----------------------------------------------------------------------------
 
 void CSphere::Pulsate (void)
 {
-if (m_pPulse) {
-	static CTimeout to (25);
-	if (to.Expired ()) {
-		m_pPulse->fScale += m_pPulse->fDir;
-		if (m_pPulse->fScale > 1.0f) {
-			m_pPulse->fScale = 1.0f;
-			m_pPulse->fDir = -m_pPulse->fSpeed;
-			}
-		else if (m_pPulse->fScale < m_pPulse->fMin) {
-			m_pPulse->fScale = m_pPulse->fMin;
-			m_pPulse->fDir = m_pPulse->fSpeed;
-			}
-		}
-	}
+if (m_pPulse)
+	m_pPulse->Update ();
 }
 
 // -----------------------------------------------------------------------------
@@ -1282,14 +1269,34 @@ glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-void SetupSpherePulse (CPulseData *pPulse, float fSpeed, float fMin)
+void CPulseData::Setup (float fSpeed, float fMin)
 {
-pPulse->fScale =
-pPulse->fMin = fMin;
-pPulse->fSpeed =
-pPulse->fDir = fSpeed;
+m_fScale =
+m_fMin = fMin;
+m_fSpeed =
+m_fDir = fSpeed;
 }
 
+// -----------------------------------------------------------------------------
+
+void CSpherePulse::Update (void)
+{
+static CTimeout to (25);
+if (to.Expired ()) {
+	m_fScale += m_fDir;
+	if (m_fScale > 1.0f) {
+		m_fScale = 1.0f;
+		m_fDir = -m_fSpeed;
+		}
+	else if (m_fScale < m_fMin) {
+		m_fScale = m_fMin;
+		m_fDir = m_fSpeed;
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
 CSphere *CreateSphere (void)
