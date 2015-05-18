@@ -515,7 +515,7 @@ void CTranspSphere::Render (void)
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1, true);
 if (nType == riSphereShield) {
-	gameData.render.shield->SetPulse (pPulse);
+	gameData.render.shield->SetupSurface (pPulse, pBitmap);
 	DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), color.Alpha (), bAdditive, nSize);
 	}
 else if (nType == riMonsterball) {
@@ -1237,6 +1237,7 @@ item.nSize = nSize;
 item.bAdditive = bAdditive;
 item.pObj = pObj;
 item.pPulse = gameData.render.shield->GetPulse ();
+item.pBitmap = gameData.render.shield->GetBitmap ();
 if (nType != riMonsterball)
 	m_data.bRenderGlow = 1;
 //transformation.Transform (vPos, pObj->info.position.vPos, 0);

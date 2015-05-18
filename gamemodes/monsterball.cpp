@@ -48,7 +48,7 @@ if (nDropSeg >= 0) {
 	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 0, CFixVector::ZERO, gameData.hoard.vMonsterballPos, nDropSeg);
 	if ((nObject >= 0) && gameData.render.monsterball) {
 		gameData.render.monsterball->SetupPulse (0.005f, 0.9f);
-		gameData.render.monsterball->SetPulse (gameData.render.monsterball->Pulse ());
+		gameData.render.monsterball->SetupSurface (gameData.render.monsterball->Pulse (), &gameData.hoard.monsterball.bm);
 		gameData.hoard.pMonsterBall = OBJECT (nObject);
 		gameData.hoard.pMonsterBall->SetType (OBJ_MONSTERBALL);
 		gameData.hoard.pMonsterBall->SetLife (IMMORTAL_TIME);

@@ -19,17 +19,17 @@ class CSphere;
 
 class CSphereData {
 public:
-		int32_t					m_nRings;
-		int32_t					m_nFaces;
-		int32_t					m_nFrame;
+		CFloatVector			m_color;
 		tTexCoord2f				m_texCoord;
 		CPulseData				m_pulse;
 		CPulseData*				m_pPulse;
-		CBitmap*					m_pBm;
-		CFloatVector			m_color;
+		CBitmap*					m_pBitmap;
+		int32_t					m_nRings;
+		int32_t					m_nFaces;
+		int32_t					m_nFrame;
 
 	public:
-		CSphereData () { Init (); };
+		CSphereData () : m_pPulse (NULL), m_pBitmap (NULL), m_nRings (0), m_nFaces (0), m_nFrame (0) { Init (); };
 		void Init (void);
 };
 
@@ -163,12 +163,19 @@ class CSphere : protected CSphereData {
 		virtual ~CSphere () { Destroy (); }
 		void Init () { CSphereData::Init (); }
 		virtual void Destroy ();
-		int32_t Render (CObject* pObj, CFloatVector *pPos, float xScale, float yScale, float zScale,
-							 float red, float green, float blue, float alpha, CBitmap *pBm, int32_t nTiles, char bAdditive);
+		inline CBitmap *SetBitmap (CBitmap *pBitmap) {
+			CBitmap *pOldBitmap = m_pBitmap;
+			m_pBitmap = pBitmap;
+			return pOldBitmap;
+			}
+		inline CBitmap *GetBitmap (void) { return m_pBitmap; }
 		inline CPulseData* Pulse (void) { return &m_pulse; }
 		CPulseData *SetPulse (CPulseData* pPulse);
 		inline CPulseData *GetPulse (void) { return m_pPulse ? m_pPulse : &m_pulse; }
 		void SetupPulse (float fSpeed = 0.02f, float fMin = 0.5f);
+		CPulseData *SetupSurface (CPulseData *pPulse, CBitmap *pBitmap);
+		
+		int32_t Render (CObject* pObj, CFloatVector *pPos, float xScale, float yScale, float zScale, float red, float green, float blue, float alpha, int32_t nTiles, char bAdditive);
 
 		virtual int32_t Create (void) = 0;
 		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect) = 0;
@@ -189,7 +196,7 @@ class CSphere : protected CSphereData {
 	private:
 		void Pulsate (void);
 		void Animate (CBitmap* pBm);
-		int32_t InitSurface (float red, float green, float blue, float alpha, CBitmap *pBm, float fScale);
+		int32_t InitSurface (float red, float green, float blue, float alpha, float fScale);
 		int16_t FindVertex (CSphereVertex& v);
 };
 

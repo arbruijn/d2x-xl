@@ -224,6 +224,7 @@ return shaderManager.Current ();
 void CSphereData::Init (void)
 {
 m_pPulse = NULL;
+m_pBitmap = NULL;
 m_nFrame = 0;
 }
 
@@ -371,6 +372,14 @@ return pOldPulse;
 
 // -----------------------------------------------------------------------------
 
+CPulseData *CSphere::SetupSurface (CPulseData *pPulse, CBitmap *pBitmap)
+{
+SetBitmap (pBitmap);
+return SetPulse (pPulse);
+}
+
+// -----------------------------------------------------------------------------
+
 void CSphere::SetupPulse (float fSpeed, float fMin)
 {
 m_pulse.Setup (fSpeed, fMin);
@@ -396,25 +405,25 @@ if (shield.IsMe (pBm))
 
 // -----------------------------------------------------------------------------
 
-int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, CBitmap *pBm, float fScale)
+int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, float fScale)
 {
 	int32_t	bTextured = pBm != NULL;
 
 fScale = /*m_pPulse ? m_pPulse->fScale :*/ 1.0f;
 ogl.ResetClientStates (0);
-if (pBm) {
-	Animate (pBm);
+if (m_pBm) {
+	Animate (m_pBm);
 	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-	if (pBm->CurFrame ())
-		pBm = pBm->CurFrame ();
-	if (pBm->Bind (1))
-		pBm = NULL;
+	if (m_pBitmap->CurFrame ())
+		m_pBitmap = m_pBitmap->CurFrame ();
+	if (m_pBitmap->Bind (1))
+		m_pBitmap = NULL;
 	else {
 		if (!bTextured)
 			bTextured = -1;
 		}
 	}
-if (!pBm) {
+if (!m_pBitmap) {
 	ogl.SetTexturing (false);
 	bTextured = 0;
 	alpha /= 2;
@@ -436,7 +445,6 @@ if (alpha < 1.0f) {
 		}
 	}
 ogl.SetDepthWrite (false);
-m_pBm = pBm;
 m_color.Set (red, green, blue, alpha);
 return bTextured;
 }
@@ -487,7 +495,7 @@ if (nState & 2) {
 // -----------------------------------------------------------------------------
 
 int32_t CSphere::Render (CObject *pObj, CFloatVector *pvPos, float xScale, float yScale, float zScale,
-								 float red, float green, float blue, float alpha, CBitmap *bmP, int32_t nFaces, char bAdditive)
+								 float red, float green, float blue, float alpha, int32_t nFaces, char bAdditive)
 {
 	float	fScale = 1.0f;
 	int32_t	bTextured = 0;
@@ -547,7 +555,7 @@ else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
 		}
 	}
 
-bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : fabs (alpha), bmP, fScale);
+bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : fabs (alpha), fScale);
 tObjTransformation *pPos = OBJPOS (pObj);
 transformation.Begin (vPos, pPos->mOrient);
 glScalef (xScale, xScale, xScale);
@@ -586,7 +594,7 @@ if (!bEffect) {
 	}
 #endif
 
-#if 0
+#if 1
 if (alpha < 0.0f)
 	glBlendEquation (GL_MAX);
 RenderFaces (xScale, nFaces, bTextured, bEffect);
@@ -1358,7 +1366,7 @@ if (gameData.render.shield->m_nFaces > 0)
 		}
 	float r = X2F (nSize);
 	if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
-		gameData.render.shield->Render (pObj, NULL, r, r, r, red, green, blue, alpha, shield.Bitmap (), 1, bAdditive);
+		gameData.render.shield->Render (pObj, NULL, r, r, r, red, green, blue, alpha, 1, bAdditive);
 	else
 		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, pObj, bAdditive, nSize);
 	}
@@ -1386,8 +1394,7 @@ if (gameData.render.monsterball->m_nFaces > 0)
 		float r = X2F (pObj->info.xSize);
 		CFloatVector p;
 		p.SetZero ();
-		gameData.render.monsterball->Render (pObj, &p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha,
-														 &gameData.hoard.monsterball.bm, 4, 0);
+		gameData.render.monsterball->Render (pObj, &p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha, 4, 0);
 		ogl.ResetTransform (1);
 		ogl.SetTransform (0);
 		}

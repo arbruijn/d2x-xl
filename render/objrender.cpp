@@ -305,6 +305,8 @@ switch (pObj->Id ()) {
 
 //------------------------------------------------------------------------------
 
+#define ICON_IN_FRONT 0
+
 static int32_t DrawPowerupSphere (CObject* pObj, CBitmap *pBm, CFloatVector& color)
 {
 	static CPulseData powerupPulse;
@@ -314,11 +316,18 @@ if ((pObj->mType.physInfo.velocity.IsZero ()) && (pObj->info.movementType != MT_
 	pObj->mType.spinRate = pObj->info.position.mOrient.m.dir.u * (I2X (1) / 8);
 	}
 //the actual shield in the sprite texture has 3/4 of the textures size
-CPulseData *pPulse = gameData.render.shield->SetPulse (&powerupPulse);
-int32_t h = DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), -1.0f, 0, 3 * pObj->info.xSize / 4); // alpha < 0 will cause the sphere to have an outline
+gameData.render.shield->SetupSurface (&powerupPulse, ((pObj->Id () == POW_SHIELD_BOOST) && !SHOW_LIGHTNING (3)) ? shield [2].Bitmap () : shield [3].Bitmap ());
+#if ICON_IN_FRONT
+if (pBm)
+	transparencyRenderer.AddSprite (pBm, pObj->Position (), &color, 2 * pObj->info.xSize / 3, 2 * pObj->info.xSize / 3, 0, 0, 0.0f);
+#endif
+int32_t h = (pObj->Id () == POW_SHIELD_BOOST)
+				? DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), 1.0f, 0, 3 * pObj->info.xSize / 4) // alpha < 0 will cause the sphere to have an outline
+				: DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), 1.0f, 0, 3 * pObj->info.xSize / 4); // alpha < 0 will cause the sphere to have an outline
+#if !ICON_IN_FRONT
 if (h && pBm)
 	transparencyRenderer.AddSprite (pBm, pObj->Position (), &color, 2 * pObj->info.xSize / 3, 2 * pObj->info.xSize / 3, 0, 0, 0.0f);
-gameData.render.shield->SetPulse (pPulse);
+#endif
 return h;
 }
 

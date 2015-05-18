@@ -95,7 +95,7 @@ extern CAddonBitmap corona;
 extern CAddonBitmap glare;
 extern CAddonBitmap halo;
 extern CAddonBitmap thruster;
-extern CAddonBitmap shield;
+extern CAddonBitmap shield [3];
 extern CAddonBitmap pyroIcon;
 extern CAddonBitmap cloakIcon;
 extern CAddonBitmap invulIcon;
