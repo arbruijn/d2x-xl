@@ -1514,11 +1514,16 @@ class CPulseData {
 		float			m_fMin;
 		float			m_fDir;
 		float			m_fSpeed;
+		int			m_bValid;
 
 	public:
-		CPulseData () { Setup (); }
+		CPulseData () { 
+			Setup (); 
+			m_bValid = -1; // initialized to default values
+			}
 		void Setup (float fSpeed = 0.02f, float fMin = 0.5f);
 		void Update (void);
+		inline int32_t Valid (void) { return m_bValid; }
 };
 
 //------------------------------------------------------------------------------

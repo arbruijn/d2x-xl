@@ -305,8 +305,10 @@ switch (pObj->Id ()) {
 
 //------------------------------------------------------------------------------
 
-static int32_t DrawShield3D (CObject* pObj, CBitmap *pBm, CFloatVector& color)
+static int32_t DrawPowerupSphere (CObject* pObj, CBitmap *pBm, CFloatVector& color)
 {
+	static CPulseData powerupPulse;
+
 if ((pObj->mType.physInfo.velocity.IsZero ()) && (pObj->info.movementType != MT_SPINNING)) {
 	pObj->info.movementType = MT_SPINNING;
 	pObj->mType.spinRate = pObj->info.position.mOrient.m.dir.u * (I2X (1) / 8);
@@ -400,7 +402,7 @@ xSize = pObj->info.xSize;
 
 if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
 	RenderPowerupCorona (pObj, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
-if (b3DShield && DrawShield3D (pObj, PowerupIcon (pObj), color)) {
+if (b3DShield && DrawPowerupSphere (pObj, PowerupIcon (pObj), color)) {
 	//if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
 	//	RenderPowerupCorona (pObj, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 		}

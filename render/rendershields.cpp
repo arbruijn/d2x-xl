@@ -262,7 +262,7 @@ if (bAppearing || EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShiel
 
 void RenderRobotShield (CObject *pObj)
 {
-	static CFloatVector shieldColors [3] = {{{{0.75f, 0, 0.75f, 1}}}, {{{0, 0.5f, 1}}},{{{1, 0.1f, 0.25f, 1}}}};
+	static CFloatVector shieldColors [3] = {{{{0.75f, 0, 0.75f, 1}}}, {{{0, 0.5f, 1}}}, {{{1, 0.1f, 0.25f, 1}}}};
 	static CPulseData shieldPulse;
 
 #if RENDER_HITBOX

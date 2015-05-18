@@ -1275,14 +1275,16 @@ m_fScale =
 m_fMin = fMin;
 m_fSpeed =
 m_fDir = fSpeed;
+m_bValid = 1;
 }
 
 // -----------------------------------------------------------------------------
 
-void CSpherePulse::Update (void)
+void CPulseData::Update (void)
 {
 static CTimeout to (25);
-if (to.Expired ()) {
+
+if (m_bValid && to.Expired ()) {
 	m_fScale += m_fDir;
 	if (m_fScale > 1.0f) {
 		m_fScale = 1.0f;
