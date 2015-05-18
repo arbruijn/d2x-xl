@@ -564,7 +564,7 @@ if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_INVULNERABILITY, bInvul ? TXT_ON : TXT_OFF);
 LOCALPLAYER.invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + I2X (1000);
 audio.PlaySound (int16_t (gameData.objData.pwrUp.info [POW_INVUL].hitSound));
-SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
+gameData.multiplayer.spherePulse [N_LOCALPLAYER].Setup (0.02f, 0.5f);
 }
 
 //------------------------------------------------------------------------------
@@ -843,7 +843,7 @@ else {
 	LOCALPLAYER.primaryWeaponFlags |= 1 << FUSION_INDEX;
 	gameData.weapons.bTripleFusion = 1;
 	gameStates.gameplay.bMineMineCheat = 1;
-	SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
+	gameData.multiplayer.spherePulse [N_LOCALPLAYER].Setup (0.02f, 0.5f);
 	}
 }
 

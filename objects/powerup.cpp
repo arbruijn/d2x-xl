@@ -594,7 +594,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 		PowerupBasic (7, 14, 21, 0, "");
 	else
 		PowerupBasic (7, 14, 21, INVULNERABILITY_SCORE, "%s!", TXT_INVULNERABILITY);
-	SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
+	gameData.multiplayer.spherePulse [N_LOCALPLAYER].Setup (0.02f, 0.5f);
 	UsePowerup (-POW_INVUL);
 	}
 return 1;

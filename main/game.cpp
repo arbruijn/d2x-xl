@@ -1060,7 +1060,7 @@ if (gameStates.render.bDoAppearanceEffect) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 		LOCALPLAYER.invulnerableTime = gameData.time.xGame - I2X (27);
 		bFakingInvul = 1;
-		SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
+		gameData.multiplayer.spherePulse [N_LOCALPLAYER].Setup (0.02f, 0.5f);
 		}
 	}
 

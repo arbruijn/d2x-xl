@@ -317,7 +317,7 @@ if ((pObj->mType.physInfo.velocity.IsZero ()) && (pObj->info.movementType != MT_
 if (pBm)
 	transparencyRenderer.AddSprite (pBm, pObj->Position (), &color, 2 * pObj->info.xSize / 3, 2 * pObj->info.xSize / 3, 0, 0, 0.0f);
 gameData.render.shield->SetPulse (gameData.render.shield->Pulse ());
-return DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), /*-*/1.0f, 0, 3 * pObj->info.xSize / 4); // alpha < 0 will cause the sphere to have an outline
+return DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), -1.0f, 0, 3 * pObj->info.xSize / 4); // alpha < 0 will cause the sphere to have an outline
 }
 
 //------------------------------------------------------------------------------

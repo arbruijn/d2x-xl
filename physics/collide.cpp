@@ -1288,7 +1288,7 @@ if (LOCALPLAYER.Shield () <= 0)
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 	LOCALPLAYER.invulnerableTime = gameData.time.xGame;
 	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-	SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
+	gameData.multiplayer.spherePulse [N_LOCALPLAYER].Setup (0.02f, 0.5f);
 	}
 if (!IsMultiGame)
 	BuddyMessage ("Nice job, %s!", LOCALPLAYER.callsign);

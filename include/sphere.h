@@ -293,7 +293,6 @@ class CQuadSphere : public CTesselatedSphere {
 
 void InitSpheres (void);
 void ResetSphereShaders (void);
-void SetupSpherePulse (CPulseData *pPulse, float fSpeed, float fMin);
 int32_t CreateShieldSphere (void);
 int32_t DrawShieldSphere (CObject *pObj, float red, float green, float blue, float alpha, char bAdditive, fix nSize = 0);
 void DrawMonsterball (CObject *pObj, float red, float green, float blue, float alpha);
