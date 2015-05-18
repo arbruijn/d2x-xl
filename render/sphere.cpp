@@ -584,7 +584,8 @@ if (!bEffect) {
 #	endif
 		}
 	else if (alpha < 0.0f) {
-		gameStates.render.SetOutlineColor (uint8_t (red * 255.0f), uint8_t (green * 255.0f), uint8_t (blue * 255.0f));
+		float h = 1.0f / Max (red, Max (green, blue)) * 255.0f;
+		gameStates.render.SetOutlineColor (uint8_t (red * h), uint8_t (green * h), uint8_t (blue * h));
 		glowRenderer.End ();
 		glowRenderer.Begin (BLUR_OUTLINE);
 		RenderOutline (pObj, xScale);
