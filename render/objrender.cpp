@@ -46,6 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "hiresmodels.h"
 #include "thrusterflames.h"
+#include "addon_bitmaps.h"
 #include "renderthreads.h"
 
 //------------------------------------------------------------------------------
@@ -285,14 +286,35 @@ return fScale;
 
 //------------------------------------------------------------------------------
 
-static int32_t DrawShield3D (CObject* pObj, CFloatVector& color)
+static CBitmap *PowerupIcon (CObject *pObj)
+{
+switch (pObj->Id ()) {
+	case POW_SHIELD_BOOST:
+		return NULL;
+	case POW_HOARD_ORB:
+	case POW_EXTRA_LIFE:
+		return pyroIcon.Bitmap ();
+	case POW_INVUL:
+		return invulIcon.Bitmap ();
+	case POW_CLOAK:
+		return cloakIcon.Bitmap ();
+	default:
+		return NULL;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+static int32_t DrawShield3D (CObject* pObj, CBitmap *pBm, CFloatVector& color)
 {
 if ((pObj->mType.physInfo.velocity.IsZero ()) && (pObj->info.movementType != MT_SPINNING)) {
 	pObj->info.movementType = MT_SPINNING;
 	pObj->mType.spinRate = pObj->info.position.mOrient.m.dir.u * (I2X (1) / 8);
 	}
 //the actual shield in the sprite texture has 3/4 of the textures size
-return DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), 1.0f, 0, 3 * pObj->info.xSize / 4);
+if (pBm)
+	transparencyRenderer.AddSprite (pBm, pObj->Position (), &color, 2 * pObj->info.xSize / 3, 2 * pObj->info.xSize / 3, 0, 0, 0.0f);
+return DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), /*-*/1.0f, 0, 3 * pObj->info.xSize / 4); // alpha < 0 will cause the sphere to have an outline
 }
 
 //------------------------------------------------------------------------------
@@ -364,7 +386,8 @@ else {
 if (!pBm || pBm->Bind (1))
 	return;
 
-bool b3DShield = ((pObj->Type () == OBJ_POWERUP) && ((pObj->Id () == POW_SHIELD_BOOST) || (pObj->Id () == POW_HOARD_ORB)) &&
+bool b3DShield = ((pObj->Type () == OBJ_POWERUP) && 
+					   ((pObj->Id () == POW_SHIELD_BOOST) || (pObj->Id () == POW_INVUL) || (pObj->Id () == POW_CLOAK) || (pObj->Id () == POW_EXTRA_LIFE) || (pObj->Id () == POW_HOARD_ORB)) &&
 					   gameOpts->Use3DPowerups () && gameOpts->render.powerups.b3DShields);
 
 ObjectBlobColor (pObj, pBm, &color, b3DShield ? 0.75f : 0.0f);
@@ -376,7 +399,7 @@ xSize = pObj->info.xSize;
 
 if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
 	RenderPowerupCorona (pObj, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
-if (b3DShield && DrawShield3D (pObj, color)) {
+if (b3DShield && DrawShield3D (pObj, PowerupIcon (pObj), color)) {
 	//if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
 	//	RenderPowerupCorona (pObj, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 		}

@@ -1938,9 +1938,6 @@
     <CustomBuildStep Include="..\..\..\Websites\Descent\d2x.html">
       <Filter>Documents</Filter>
     </CustomBuildStep>
-    <CustomBuildStep Include="..\..\..\..\programs\d2\config\d2x.ini">
-      <Filter>Documents</Filter>
-    </CustomBuildStep>
     <CustomBuildStep Include="..\..\..\..\programs\d2\config\d2xdebug.ini">
       <Filter>Documents</Filter>
     </CustomBuildStep>
@@ -1970,6 +1967,9 @@
     </CustomBuildStep>
     <CustomBuildStep Include="..\..\..\Websites\Descent\scripts\worklog-data.js">
       <Filter>Documents</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="..\..\..\..\programs\d2\config\d2x.ini">
+      <Filter>Header Files</Filter>
     </CustomBuildStep>
   </ItemGroup>
   <ItemGroup>

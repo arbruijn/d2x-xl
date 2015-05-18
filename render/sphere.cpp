@@ -553,43 +553,57 @@ if (bAppearing) {
 else if (!bEffect)
 	UnloadSphereShader ();
 else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
-	if (!SetupSphereShader (pObj, alpha)) {
+	if (!SetupSphereShader (pObj, fabs (alpha))) {
 		if (bGlow)
 			glowRenderer.Done (GLOW_SHIELDS);
 		return 0;
 		}
 	}
 
-bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
+bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : fabs (alpha), bmP, fScale);
 tObjTransformation *pPos = OBJPOS (pObj);
 transformation.Begin (vPos, pPos->mOrient);
+if (alpha < 0.0f)
+	glBlendEquation (GL_MAX);
 RenderFaces (xScale, nFaces, bTextured, bEffect);
+if (alpha < 0.0f)
+	glBlendEquation (GL_FUNC_ADD);
 if (bGlow) {
 	if (bAdditive)
 		glowRenderer.Done (GLOW_SHIELDS);
 	else
-		glowRenderer.End (alpha);
+		glowRenderer.End (fabs (alpha));
 	}
 
 #if SPHERE_DRAW_OUTLINE && (SPHERE_WIREFRAME < 2)
-if (!bEffect && gameStates.render.CartoonStyle ()) {
+if (!bEffect) {
+	if (gameStates.render.CartoonStyle ()) {
 #	if SPHERE_SW_TRANSFORM
-	transformation.End ();
-	ogl.ResetTransform (1);
-	ogl.SetTransform (0);
-#	if 0 //DBG
-	CFixMatrix m = CFixMatrix::IDENTITY;
-	transformation.Begin (vPos, m);
-#	else
-	transformation.Begin (vPos, pPos->mOrient);
+		transformation.End ();
+		ogl.ResetTransform (1);
+		ogl.SetTransform (0);
+#		if 0 //DBG
+		CFixMatrix m = CFixMatrix::IDENTITY;
+		transformation.Begin (vPos, m);
+#		else
+		transformation.Begin (vPos, pPos->mOrient);
+#		endif
 #	endif
-#	endif
-	//gameStates.render.SetOutlineColor (0, 128, 255);
-	RenderOutline (pObj, xScale);
-	gameStates.render.ResetOutlineColor ();
+		//gameStates.render.SetOutlineColor (0, 128, 255);
+		RenderOutline (pObj, xScale);
+		//gameStates.render.ResetOutlineColor ();
 #	if SPHERE_SW_TRANSFORM
-	ogl.SetTransform (1);
+		ogl.SetTransform (1);
 #	endif
+		}
+	else if (alpha < 0.0f) {
+		gameStates.render.SetOutlineColor (uint8_t (red * 255.0f), uint8_t (green * 255.0f), uint8_t (blue * 255.0f));
+		glowRenderer.End ();
+		glowRenderer.Begin (BLUR_OUTLINE);
+		RenderOutline (pObj, xScale);
+		glowRenderer.End ();
+		gameStates.render.ResetOutlineColor ();
+		}
 	}
 #endif
 transformation.End ();
@@ -767,6 +781,8 @@ if (m_edges.Buffer ()) {
 
 // -----------------------------------------------------------------------------
 
+static inline float ColorBump (float f) { return f /*sqrt (f)*/ /** f*/; }
+
 int32_t CTesselatedSphere::SetupColor (float fRadius)
 {
 if (!m_pPulse)
@@ -792,7 +808,7 @@ if (gameStates.app.bMultiThreaded) {
 	for (int32_t i = 0; i < m_nVertices; i++) {
 		CFloatVector s = v [i].m_v - c;
 		CFloatVector::Normalize (s);
-		w [i].m_c = m_color * sqrt (1.0f - fabs (CFloatVector::Dot (r, s))); 
+		w [i].m_c = m_color * ColorBump (1.0f - fabs (CFloatVector::Dot (r, s))); 
 		}
 	}
 else 
@@ -801,7 +817,7 @@ else
 	for (int32_t i = 0; i < m_nVertices; i++) {
 		CFloatVector s = v [i].m_v - c;
 		CFloatVector::Normalize (s);
-		w [i].m_c = m_color * sqrt (1.0f - fabs (CFloatVector::Dot (r, s))); 
+		w [i].m_c = m_color * ColorBump (1.0f - fabs (CFloatVector::Dot (r, s))); 
 		}
 	}
 return 1;

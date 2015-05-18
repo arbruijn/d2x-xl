@@ -1019,8 +1019,8 @@ restart:
 			dMin = d;
 			hitData = curHit;
 			hitData.nType = HIT_OBJECT;
-			hitData.nObject = gameData.collisions.hitResult.nObject = nObject;
-			Assert (gameData.collisions.hitResult.nObject != -1);
+			hitData.nObject = (gameData.collisions.hitResult.nObject = nObject);
+			Assert (nObject != -1);
 			if (hitQuery.flags & FQ_ANY_OBJECT)
 				return dMin;
 			}

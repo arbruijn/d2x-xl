@@ -81,6 +81,7 @@ CGenericCockpit* cockpit = &fullCockpit;
 
 void DrawGuidedCrosshairs (fix xStereoSeparation);
 void DrawWindowLabel (void);
+bool GuidedMissileActive (void);
 
 extern fix staticTime [2];
 
@@ -501,7 +502,7 @@ fontManager.SetCurrent (GAME_FONT);
 DrawReticle (ogl.StereoDevice () < 0);
 //gameData.render.scene.Deactivate ();
 
-if (((gameOpts->render.cockpit.bHUD > 1) || (gameStates.render.cockpit.nType < CM_FULL_SCREEN)) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
+if (!GuidedMissileActive () && ((gameOpts->render.cockpit.bHUD > 1) || (gameStates.render.cockpit.nType < CM_FULL_SCREEN)) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
 	if (ogl.IsOculusRift () && !transformation.HaveHeadAngles ()) {
 		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 		int32_t w, h;
