@@ -165,7 +165,7 @@ class CSphere : protected CSphereData {
 		virtual void Destroy ();
 		int32_t Render (CObject* pObj, CFloatVector *pPos, float xScale, float yScale, float zScale,
 							 float red, float green, float blue, float alpha, CBitmap *pBm, int32_t nTiles, char bAdditive);
-		inline CPulseData* Pulse (void) { &m_pulse; }
+		inline CPulseData* Pulse (void) { return &m_pulse; }
 		CPulseData *SetPulse (CPulseData* pPulse);
 		inline CPulseData *GetPulse (void) { return m_pPulse ? m_pPulse : &m_pulse; }
 		void SetupPulse (float fSpeed = 0.02f, float fMin = 0.5f);

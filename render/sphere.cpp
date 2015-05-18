@@ -550,17 +550,7 @@ else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
 bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : fabs (alpha), bmP, fScale);
 tObjTransformation *pPos = OBJPOS (pObj);
 transformation.Begin (vPos, pPos->mOrient);
-if (alpha < 0.0f)
-	glBlendEquation (GL_MAX);
-RenderFaces (xScale, nFaces, bTextured, bEffect);
-if (alpha < 0.0f)
-	glBlendEquation (GL_FUNC_ADD);
-if (bGlow) {
-	if (bAdditive)
-		glowRenderer.Done (GLOW_SHIELDS);
-	else
-		glowRenderer.End (fabs (alpha));
-	}
+glScalef (xScale, xScale, xScale);
 
 #if SPHERE_DRAW_OUTLINE && (SPHERE_WIREFRAME < 2)
 if (!bEffect) {
@@ -587,13 +577,29 @@ if (!bEffect) {
 		float h = 1.0f / Max (red, Max (green, blue)) * 255.0f;
 		gameStates.render.SetOutlineColor (uint8_t (red * h), uint8_t (green * h), uint8_t (blue * h));
 		glowRenderer.End ();
-		glowRenderer.Begin (BLUR_OUTLINE);
+		if (gameOpts->render.effects.bGlow <= 2) 
+			glowRenderer.Begin (BLUR_OUTLINE);
 		RenderOutline (pObj, xScale);
 		glowRenderer.End ();
 		gameStates.render.ResetOutlineColor ();
 		}
 	}
 #endif
+
+#if 0
+if (alpha < 0.0f)
+	glBlendEquation (GL_MAX);
+RenderFaces (xScale, nFaces, bTextured, bEffect);
+if (alpha < 0.0f)
+	glBlendEquation (GL_FUNC_ADD);
+if (bGlow) {
+	if (bAdditive)
+		glowRenderer.Done (GLOW_SHIELDS);
+	else
+		glowRenderer.End (fabs (alpha));
+	}
+#endif
+
 transformation.End ();
 ogl.ResetTransform (0);
 ogl.ResetClientStates (0);
@@ -1242,7 +1248,6 @@ void CQuadSphere::RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured,
 if (!m_worldVerts.Buffer () || !m_viewVerts.Buffer ())
 	return;
 
-glScalef (fRadius, fRadius, fRadius);
 #if SPHERE_WIREFRAME
 glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 glLineWidth (3);
@@ -1325,7 +1330,7 @@ if (!(gameData.render.shield = CreateSphere ()))
 	return 0;
 gameData.render.shield->Create ();
 gameData.render.shield->SetupPulse (0.02f, 0.5f);
-gameData.render.shield->SetPulse (gameData.render.shield->Pulse ());
+gameData.render.shield->SetPulse (NULL);
 return 1;
 }
 
