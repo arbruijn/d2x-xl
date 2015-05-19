@@ -1290,7 +1290,7 @@ if (!gameData.render.mine.Create (1)) {
 	return 4;
 	}
 PrintLog (-1);
-#if !DBG
+#if 0 //!DBG
 if (gameStates.render.CartoonStyle ())
 #endif
 	gameData.segData.BuildEdgeList ();

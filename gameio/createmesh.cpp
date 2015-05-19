@@ -1718,6 +1718,10 @@ if (nEdge >= 0) {
 #endif
 		int32_t nEdges = gameData.segData.nEdges;
 		do {
+			if (nEdges >= edges.Length () - 1) {
+				if (!edges.Resize (nEdges * 2))
+					return -1;
+				}
 			pEdge = &edges [nEdge];
 			CMeshEdge *pNewEdge = &edges [nEdges++];
 			memcpy (pNewEdge, pEdge, sizeof (CMeshEdge));
@@ -1735,6 +1739,8 @@ if (nEdge >= 0) {
 	}
 else {
 	i = 0;
+	if ((nEdges >= edges.Length ()) && !edges.Resize (nEdges * 2))
+		return -1;
 	CMeshEdge *pEdge = &edges [nEdges++];
 	pEdge->m_nVertices [0] = nVertex1;
 	pEdge->m_nVertices [1] = nVertex2;
@@ -1746,6 +1752,19 @@ else {
 if (i == 0)
 	return 1;
 return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CSegmentData::CreateEdgeBuffers (int32_t nEdges)
+{
+for (int32_t i = 0; i < 2; i++) {
+	if (!gameData.segData.edgeVertexData [i].m_vertices.Resize (gameData.segData.nEdges, false))
+		return 0;
+	if (!gameData.segData.edgeVertexData [i].m_dists.Resize (gameData.segData.nEdges, false))
+		return 0;
+	}
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1786,15 +1805,10 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 	}
 #if POLYGONAL_OUTLINE
 if (!gameData.segData.edgeVertices.Create (gameData.segData.nEdges * (bPolygonalOutline ? 8 : 4)))
-	return -1;
 #else
-for (int32_t i = 0; i < 2; i++) {
-	if (!gameData.segData.edgeVertexData [i].m_vertices.Create (gameData.segData.nEdges * 2))
-	return -1;
-	if (!gameData.segData.edgeVertexData [i].m_dists.Create (gameData.segData.nEdges * 2))
-		return -1;
-	}
+if (!CreateEdgeBuffers (gameData.segData.nEdges * 2))
 #endif
+	return -1;
 return gameData.segData.nEdges;
 }
 

@@ -584,7 +584,7 @@ if (!bEffect) {
 		}
 	else if (alpha < 0.0f) {
 		float h = 1.0f / Max (red, Max (green, blue)) * 255.0f;
-		gameStates.render.SetOutlineColor (uint8_t (red * h), uint8_t (green * h), uint8_t (blue * h));
+		gameStates.render.SetOutlineColor (uint8_t (red * h), uint8_t (green * h), uint8_t (blue * h), 127);
 		glowRenderer.End ();
 		if (gameOpts->render.effects.bGlow <= 2) 
 			glowRenderer.Begin (BLUR_OUTLINE);
@@ -784,7 +784,13 @@ if (m_edges.Buffer ()) {
 
 // -----------------------------------------------------------------------------
 
-static inline float ColorBump (float f) { return f /*sqrt (f)*/ /** f*/; }
+static inline float Sqr (float f) { return f * f; }
+
+#if 1
+static inline float ColorBump (float f) { return f; }
+#else
+static inline float ColorBump (float f) { return pow (f * f, 1.0f / 3.0f); }
+#endif
 
 int32_t CTesselatedSphere::SetupColor (float fRadius)
 {
@@ -1037,11 +1043,8 @@ return 0;
 int32_t CTriangleSphere::CreateEdgeList (void)
 {
 m_nEdges = m_nFaces * 2;
-if (m_nEdges > gameData.segData.nEdges) {
-	if (!gameData.segData.edges.Resize (m_nEdges)) 
-		return -1;
-	gameData.segData.nEdges = m_nEdges;
-	}
+if (!gameData.segData.CreateEdgeBuffers (m_nEdges))
+	return -1;
 if (!m_edges.Create (m_nEdges))
 	return -1;
 
@@ -1195,11 +1198,8 @@ return 0;
 int32_t CQuadSphere::CreateEdgeList (void)
 {
 m_nEdges = m_nFaces * 6;
-if (m_nEdges > gameData.segData.nEdges) {
-	if (!gameData.segData.edges.Resize (m_nEdges)) 
-		return -1;
-	gameData.segData.nEdges = m_nEdges;
-	}
+if (!gameData.segData.CreateEdgeBuffers (m_nEdges))
+	return -1;
 if (!m_edges.Create (m_nEdges))
 	return -1;
 
@@ -1328,8 +1328,9 @@ return new CQuadSphere ();
 
 int32_t CreateShieldSphere (void)
 {
+#
 if (!shield [0].Load () || !shield [1].Load () || !shield [2].Load ())
-	return 0;
+	/*nothing*/; //return 0;
 if (gameData.render.shield) {
 	if (gameData.render.shield->HasQuality (gameOpts->render.textures.nQuality + 1))
 		return 1;

@@ -742,9 +742,11 @@ int32_t SpawnPowerup (CObject *pSpitter, uint8_t nId, int32_t nCount)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return 0;
+if (!pSpitter)
+	return 0;
 
-	int32_t			i;
-	int16_t			nObject;
+	int32_t		i;
+	int16_t		nObject;
 	CFixVector	velSave;
 	CObject		*pObj;
 
@@ -779,7 +781,7 @@ memset (&gameData.multiplayer.leftoverPowerups [nObject], 0,
 void CheckInventory (void)
 {
 	CPlayerData	*pPlayer = gameData.multiplayer.players + N_LOCALPLAYER;
-	CObject	*pObj = OBJECT (pPlayer->nObject);
+	CObject		*pObj = OBJECT (pPlayer->nObject);
 
 if (SpawnPowerup (pObj, POW_CLOAK, pPlayer->nCloaks - MAX_INV_ITEMS))
 	pPlayer->nCloaks = MAX_INV_ITEMS;
@@ -1105,7 +1107,7 @@ powerupType [POW_EARTHSHAKER] = (uint8_t) POWERUP_IS_MISSILE;
 
 #define ENABLE_FILTER(_type,_flag) if (_flag) powerupFilter [_type] = 1;
 
-void SetupPowerupFilter (tNetGameInfo* pInfo)
+void SetupPowerupFilter (tNetGameInfo *pInfo)
 {
 if (!pInfo)
 	pInfo = &netGameInfo.m_info;
@@ -1154,9 +1156,9 @@ ENABLE_FILTER (POW_REDFLAG, (gameData.app.GameMode (GM_CAPTURE)));
 
 //-----------------------------------------------------------------------------
 
-int32_t PowerupToDevice (int16_t nPowerup, int32_t *nType)
+int32_t PowerupToDevice (int16_t nPowerup, int32_t *pnType)
 {
-*nType = powerupClass [nPowerup];
+*pnType = powerupClass [nPowerup];
 return powerupToDevice [nPowerup];
 }
 
@@ -1206,9 +1208,9 @@ return weaponToModel [nWeapon];
 
 int16_t PowerupsOnShips (int32_t nPowerup)
 {
-	CPlayerData*	pPlayer = gameData.multiplayer.players;
-	int32_t			nClass, nVulcanAmmo = 0;
-	int16_t			nPowerups = 0, nIndex = PowerupToDevice (nPowerup, &nClass);
+	CPlayerData	*pPlayer = gameData.multiplayer.players;
+	int32_t		nClass, nVulcanAmmo = 0;
+	int16_t		nPowerups = 0, nIndex = PowerupToDevice (nPowerup, &nClass);
 
 if (!nClass || ((nClass < 3) && (nIndex < 0)))
 	return 0;
@@ -1262,15 +1264,13 @@ return (nClass == 4) ? (nVulcanAmmo + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CA
  */
 extern int32_t ReadPowerupTypeInfos (tPowerupTypeInfo *pti, int32_t n, CFile& cf)
 {
-	int32_t i;
-
-for (i = 0; i < n; i++) {
+for (int32_t i = 0; i < n; i++) {
 	pti [i].nClipIndex = cf.ReadInt ();
 	pti [i].hitSound = cf.ReadInt ();
 	pti [i].size = cf.ReadFix ();
 	pti [i].light = cf.ReadFix ();
 	}
-return i;
+return n;
 }
 
 //------------------------------------------------------------------------------

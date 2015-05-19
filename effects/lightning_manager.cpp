@@ -242,7 +242,7 @@ if (pObj->Type () == OBJ_ROBOT) {
 		}
 	}
 if ((pObj->Type () == OBJ_POWERUP) && (pObj->Id () == POW_SHIELD_BOOST)) {
-		static CFloatVector color = {{{0.1f, 0.1f, 0.5f, 0.2f}}};
+		static CFloatVector color = {{{0.2f, 0.2f, 1.0f, 0.2f}}};
 		return &color;
 		}
 else if ((pObj->Type () == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
@@ -859,7 +859,7 @@ if (SHOW_LIGHTNING (3) && OBJECT_EXISTS (pObj)) {
 		int32_t s = pObj->info.xSize;
 		int32_t i = X2I (s);
 		int32_t h = Create (10 * i, &OBJPOS (pObj)->vPos, NULL, NULL, pObj->Index (), -1500, 0,
-								  3 * s / 5, s / 4, 0, 0, i * 10, 0, 1, 3, 1, 1, -1, 0, 1, 1, -1, 1.0f, pColor);
+								  3 * s / 5, s / 4, 0, 0, i * 10, 0, 1, 3, 1, 1, -1, 0, 0, 1, -1, 1.0f, pColor);
 		if (h >= 0)
 			m_objects [nObject] = h;
 		}

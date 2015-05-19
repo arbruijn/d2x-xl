@@ -1193,7 +1193,7 @@ ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetLineSmooth (true);
 glEnable (GL_POINT_SMOOTH);
 #if 1
-glColor3f (float (gameStates.render.outlineColor.r) / 255.0f, float (gameStates.render.outlineColor.g) / 255.0f, float (gameStates.render.outlineColor.b) / 255.0f);
+glColor4f (float (gameStates.render.outlineColor.r) / 255.0f, float (gameStates.render.outlineColor.g) / 255.0f, float (gameStates.render.outlineColor.b) / 255.0f, float (gameStates.render.outlineColor.a) / 255.0f);
 #else
 glColor3f (1,1,1);
 #endif

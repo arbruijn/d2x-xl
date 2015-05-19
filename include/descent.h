@@ -1074,7 +1074,7 @@ class CRenderStates {
 		int32_t bBlurTextures;
 		int32_t bPosterizeTextures;
 		int32_t bClampBlur;
-		tRGB	  outlineColor;
+		tRGBA	  outlineColor;
 		float	  outlineWidth [2][2];
 		int32_t bBuildModels;
 		int32_t bShowFrameRate;
@@ -1134,10 +1134,11 @@ class CRenderStates {
 			return bOldStyle;
 			}
 
-		inline void SetOutlineColor (uint8_t r = 2, uint8_t g = 2, uint8_t b = 2) {
+		inline void SetOutlineColor (uint8_t r = 2, uint8_t g = 2, uint8_t b = 2, uint8_t a = 255) {
 			outlineColor.r = r;
 			outlineColor.g = g;
 			outlineColor.b = b;
+			outlineColor.a = a;
 			}
 
 		inline void ResetOutlineColor (void) {
@@ -2334,6 +2335,7 @@ class CSegmentData {
 		int32_t FindEdge (int16_t nVertex1, int16_t nVertex2, int32_t nStart);
 		int32_t AddEdge (int16_t nSegment, int16_t nSide, int16_t nVertex1, int16_t nVertex2);
 		int32_t BuildEdgeList (void);
+		int32_t CreateEdgeBuffers (int32_t nEdges);
 	};
 
 //------------------------------------------------------------------------------

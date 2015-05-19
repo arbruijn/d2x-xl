@@ -160,7 +160,7 @@ return 1;
 #	define OMEGA_FRAMES 30
 #	define OMEGA_LIFE -50000
 #else
-#	define OMEGA_BOLTS 10
+#	define OMEGA_BOLTS 8
 #	define OMEGA_NODES 150
 #	define OMEGA_FRAMES 3
 #	define OMEGA_LIFE -5000
@@ -192,7 +192,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	0, // bInPlane
 	1, // bEnabled
 	0, // bDirection
-	{(uint8_t) (255 * 0.9f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.3f)} // color;
+	{(uint8_t) (255 * 0.3f), (uint8_t) (255 * 0.2f), (uint8_t) (255 * 0.2f), (uint8_t) (255 * 0.3f)} // color;
 	},
 	{
 	OMEGA_LIFE, // nLife
@@ -201,7 +201,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	4, // nAmplitude
 	0, // nOffset
 	-1, // nWayPoint
-	OMEGA_BOLTS, // nBolts
+	3 * OMEGA_BOLTS / 4, // nBolts
 	-1, // nId
 	-1, // nTarget
 	OMEGA_NODES, // nNodes
@@ -219,14 +219,14 @@ static tLightningInfo omegaLightningInfo [2] = {
 	0, // bInPlane
 	1, // bEnabled
 	0, // bDirection
-	{(uint8_t) (255 * 0.9f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.3f)} // color;
+	{(uint8_t) (255 * 0.3f), (uint8_t) (255 * 0.2f), (uint8_t) (255 * 0.2f), (uint8_t) (255 * 0.3f)} // color;
 	}
 };
 
 int32_t COmegaLightning::Create (CFixVector *vTargetPos, CObject* pParentObj, CObject* pTargetObj)
 {
 	tOmegaLightningHandles*	pHandle;
-	int32_t							nObject;
+	int32_t						nObject;
 
 if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bOmega && !gameStates.render.bOmegaModded))
 	return 0;
@@ -257,7 +257,13 @@ else {
 		pHandle->nLightning [1] = -1;
 	else {
 		m_nHandles++;
+#if 0
+		pHandle->nLightning [1] = -1;
+#else
 		pHandle->nLightning [1] = (gameOpts->render.nQuality < 3) ? -1 : lightningManager.Create (omegaLightningInfo [1], &vMuzzle, vTarget, NULL, nObject);
+		if (pHandle->nLightning [1] >= 0)
+			m_nHandles++;
+#endif
 		}
 	}
 return (pHandle->nLightning [0] >= 0);

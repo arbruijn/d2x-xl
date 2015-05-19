@@ -403,7 +403,7 @@ void CLightning::Bump (void)
 {
 	CLightningNode	*pNode;
 	int32_t			h, i, nDist, nAmplitude, nMaxDist = 0;
-	CFixVector	vBase [2];
+	CFixVector		vBase [2];
 
 nAmplitude = m_nAmplitude;
 vBase [0] = m_vPos;
@@ -523,7 +523,7 @@ else {
 	plh = &m_nodes [m_nNodes - 1];
 	plh->m_vNewPos = plh->m_vPos;
 	plh->m_vOffs.SetZero ();
-	if (nStyle == 2) {
+	if (nStyle >= 2) {
 		noiseX [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		noiseY [nThread].Setup (X2D (nAmplitude) * ampScale, persistence, octaves);
 		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++)
@@ -697,9 +697,9 @@ static tTexCoord2f plasmaTexCoord [3][4] = {
 
 //------------------------------------------------------------------------------
 
-static inline int32_t GlowType (void)
+static inline int32_t GlowType (int32_t bBlur)
 {
-return (gameOpts->render.lightning.bGlow || glowRenderer.Available (GLOW_LIGHTNING)) ? 1 : 0;
+return bBlur ? (gameOpts->render.lightning.bGlow || glowRenderer.Available (GLOW_LIGHTNING)) ? 1 : 0 : 0;
 }
 
 //------------------------------------------------------------------------------
@@ -755,7 +755,7 @@ void CLightning::ComputeGlow (int32_t nDepth, int32_t nThread)
 if (!pNode)
 	return;
 
-	CFloatVector*		srcP, * dstP, vEye, vn, vd, 
+	CFloatVector*		pSrc, * pDest, vEye, vn, vd, 
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
 	tTexCoord2f*		pTexCoord;
 	int32_t				h, i, j;
@@ -771,7 +771,7 @@ if (nThread < 0)
 	vEye.SetZero ();
 else
 	vEye.Assign (gameData.render.mine.viewer.vPos);
-dstP = m_plasmaVerts.Buffer ();
+pDest = m_plasmaVerts.Buffer ();
 pTexCoord = m_plasmaTexCoord.Buffer ();
 for (h = m_nNodes - 1 - m_bRandom, i = 0; i <= h; i++, pNode++) {
 #if DBG
@@ -795,10 +795,10 @@ for (h = m_nNodes - 1 - m_bRandom, i = 0; i <= h; i++, pNode++) {
 			vd = vd * m_width / 4.0f;
 			vPos [1] += vd;
 			}
-		*dstP++ = vPos [0] + vn;
-		*dstP++ = vPos [0] - vn;
-		*dstP++ = vPos [1] - vn;
-		*dstP++ = vPos [1] + vn;
+		*pDest++ = vPos [0] + vn;
+		*pDest++ = vPos [0] - vn;
+		*pDest++ = vPos [1] - vn;
+		*pDest++ = vPos [1] + vn;
 		memcpy (pTexCoord, plasmaTexCoord [0], 4 * sizeof (tTexCoord2f));
 		pTexCoord += 4;
 		}
@@ -806,10 +806,10 @@ for (h = m_nNodes - 1 - m_bRandom, i = 0; i <= h; i++, pNode++) {
 memcpy (pTexCoord - 4, plasmaTexCoord [2], 4 * sizeof (tTexCoord2f));
 memcpy (&m_plasmaTexCoord [0], plasmaTexCoord [1], 4 * sizeof (tTexCoord2f));
 
-dstP = m_plasmaVerts.Buffer ();
+pDest = m_plasmaVerts.Buffer ();
 for (h = 4 * (m_nNodes - 2 - m_bRandom), i = 2, j = 4; i < h; i += 4, j += 4) {
-	dstP [i+1] = dstP [j] = CFloatVector::Avg (dstP [i+1], dstP [j]);
-	dstP [i] = dstP [j+1] = CFloatVector::Avg (dstP [i], dstP [j+1]);
+	pDest [i+1] = pDest [j] = CFloatVector::Avg (pDest [i+1], pDest [j]);
+	pDest [i] = pDest [j+1] = CFloatVector::Avg (pDest [i], pDest [j+1]);
 	}
 
 if (bGlow) {
@@ -818,14 +818,14 @@ if (bGlow) {
 		{
 		memcpy (pTexCoord, pTexCoord - h, h * sizeof (tTexCoord2f));
 		pTexCoord += h;
-		srcP = dstP;
-		dstP += h;
+		pSrc = pDest;
+		pDest += h;
 		for (i = 0; i < h; i += 2) {
-			vPos [0] = CFloatVector::Avg (srcP [i], srcP [i+1]);
-			vPos [1] = srcP [i] - srcP [i+1];
+			vPos [0] = CFloatVector::Avg (pSrc [i], pSrc [i+1]);
+			vPos [1] = pSrc [i] - pSrc [i+1];
 			vPos [1] /= 8;
-			dstP [i] = vPos [0] + vPos [1];
-			dstP [i+1] = vPos [0] - vPos [1];
+			pDest [i] = vPos [0] + vPos [1];
+			pDest [i+1] = vPos [0] - vPos [1];
 			}
 #if 0
 		m_plasmaVerts [j+1][0] += (m_plasmaVerts [j+1][2] - m_plasmaVerts [j+1][0]) / 4;
@@ -841,7 +841,7 @@ if (bGlow) {
 
 void CLightning::RenderSetup (int32_t nDepth, int32_t nThread)
 {
-if ((GlowType () == 1) && m_bGlow && m_plasmaVerts.Buffer ()) {
+if (m_bGlow && m_plasmaVerts.Buffer ()) {
 	if (m_coreVerts.Buffer ())
 		ComputeCore ();
 	ComputeGlow (nDepth, nThread);
@@ -908,23 +908,23 @@ ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 
 void CLightning::ComputeCore (void)
 {
-	CFloatVector3*	pVertex, * vPosf;
-	int32_t				i;
+	CFloatVector3	*pVertex, * pvPosf;
+	int32_t			i;
 
-vPosf = pVertex = &m_coreVerts [0];
+pvPosf = pVertex = &m_coreVerts [0];
 
-for (i = 0; i < m_nNodes; i++, vPosf++)
-	vPosf->Assign (m_nodes [i].m_vPos);
+for (i = 0; i < m_nNodes; i++, pvPosf++)
+	pvPosf->Assign (m_nodes [i].m_vPos);
 
-*vPosf = pVertex [0] - pVertex [1];
-*vPosf /= 100.0f * vPosf->Mag ();
-*vPosf += pVertex [0];
-*++vPosf = pVertex [0];
+*pvPosf = pVertex [0] - pVertex [1];
+*pvPosf /= 100.0f * pvPosf->Mag ();
+*pvPosf += pVertex [0];
+*++pvPosf = pVertex [0];
 i = m_nNodes - 1;
-*++vPosf = pVertex [i];
-*++vPosf = pVertex [i] - pVertex [i - 1];
-*vPosf /= 100.0f * vPosf->Mag ();
-*vPosf += pVertex [i];
+*++pvPosf = pVertex [i];
+*++pvPosf = pVertex [i] - pVertex [i - 1];
+*pvPosf /= 100.0f * pvPosf->Mag ();
+*pvPosf += pVertex [i];
 ComputeAvgDist (m_coreVerts.Buffer (), m_nNodes);
 }
 
@@ -943,11 +943,23 @@ ogl.SetLineSmooth (true);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
 	glColor4fv ((GLfloat*) pColor);
-	GLfloat w = nDepth ? m_width / 2.0f : m_width; // DEFAULT_CORE_WIDTH : DEFAULT_CORE_WIDTH * 1.5f;
-	//ComputeDistScale (100.0f);
-	if (glowRenderer.Available (GLOW_LIGHTNING) && (m_fDistScale != 0.0f)) 
-		w *= 2.0f * m_fDistScale;
-	glLineWidth ((w > 1.0f) ? w : 1.0f);
+
+	if (m_bGlow) {
+		GLfloat w = nDepth ? m_width / 2.0f : m_width; // DEFAULT_CORE_WIDTH : DEFAULT_CORE_WIDTH * 1.5f;
+		//ComputeDistScale (100.0f);
+		if (glowRenderer.Available (GLOW_LIGHTNING) && (m_fDistScale != 0.0f)) 
+			w *= 2.0f * m_fDistScale;
+		glLineWidth (Max (float (w), 1.0f));
+		}
+	else {
+		CFloatVector3 vViewer;
+		vViewer.Assign (gameData.objData.pViewer->Position ());
+		float fDist = Min (CFloatVector3::Dist (m_coreVerts [0], vViewer), CFloatVector3::Dist (m_coreVerts [m_nNodes - m_bRandom - 1], vViewer));
+		fDist -= X2F (gameData.objData.pViewer->Size ());
+		int32_t nScale = CMeshEdge::DistToScale (Max (0.0f, fDist));
+		glLineWidth (gameStates.render.OutlineWidth (0, 0.0f, nScale));
+		}
+
 	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
 	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes - m_bRandom);
 	ogl.DisableClientStates (0, 0, 0, -1);
@@ -971,24 +983,25 @@ ogl.ClearError (0);
 
 int32_t CLightning::SetupGlow (void)
 {
-if (gameOpts->render.lightning.bGlow) {
-	if (m_bBlur)
-		glowRenderer.Begin (GLOW_LIGHTNING, 2, false, 1.05f);
-	else
-		glowRenderer.End ();
+if (gameOpts->render.lightning.bGlow && m_bGlow) {
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
 	if (corona.Load () && !corona.Bitmap ()->Bind (1)) {
 		corona.Texture ()->Wrap (GL_CLAMP);
+		if (m_bBlur)
+			glowRenderer.Begin (GLOW_LIGHTNING, 2, false, 1.05f);
+		else
+			glowRenderer.End ();
 		return 1;
 		}
+	if (m_bBlur)
+		glowRenderer.Begin (GLOW_LIGHTNING, 3, false, 1.1f);
+	else
+		glowRenderer.End ();
 	}
-if (m_bBlur)
-	glowRenderer.Begin (GLOW_LIGHTNING, 3, false, 1.1f);
-else
-	glowRenderer.End ();
 ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
+ogl.SetTexturing (false);
 return 0;
 }
 
@@ -1011,18 +1024,16 @@ if (gameStates.app.bMultiThreaded && (nThread > 0)) {	//thread 1 will always ren
 
 void CLightning::Draw (int32_t nDepth, int32_t nThread)
 {
-	int32_t				i, bGlow;
-	CFloatVector		color;
-
 if (!m_nodes.Buffer () || (m_nNodes <= 0) || (m_nFrames < 0))
 	return;
 #if 0 //!USE_OPENMP
 if (gameStates.app.bMultiThreaded && (nThread > 0))
 	tiRender.ti [nThread].bBlock = 1;
 #endif
-color = m_color;
+CFloatVector color = m_color;
 if (m_nLife > 0) {
-	if ((i = m_nLife - m_nTTL) < 250)
+	int32_t i = m_nLife - m_nTTL;
+	if (i < 250)
 		color.Alpha () *= (float) i / 250.0f;
 	else if (m_nTTL < m_nLife / 4)
 		color.Alpha () *= (float) m_nTTL / (float) (m_nLife / 4);
@@ -1031,36 +1042,29 @@ color.Red () *= (float) (0.9 + RandDouble () / 5);
 color.Green () *= (float) (0.9 + RandDouble () / 5);
 color.Blue () *= (float) (0.9 + RandDouble () / 5);
 ComputeDistScale (100.0f);
-if ((bGlow = (m_fDistScale > 0.0f) && SetupGlow ()) && m_bBlur && glowRenderer.Available (GLOW_LIGHTNING))
+
+int32_t bGlow = (m_fDistScale > 0.0f) && SetupGlow ();
+int32_t bBlur = GlowType (bGlow && m_bBlur);
+if (bBlur) {
 	glBlendEquation (GL_MAX);
-else
-	color.Alpha () *= 1.5f;
-if (nDepth)
-	color.Alpha () /= 2;
-#if 0 //!USE_OPENMP
-WaitForRenderThread (nThread);
-#endif
+	glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1));
+	}
 #if DBG
-if (m_fDistScale > 1.0f)
+else
 	BRP;
 #endif
-if ((GlowType () == 1) && bGlow && m_bGlow && m_plasmaVerts.Buffer ()) {
-	if (glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1))) {
-		RenderGlow (&color, nDepth, nThread);
-		RenderCore (&color, nDepth, nThread);
-		}
-	}
-else {
-	if (!bGlow || !m_bBlur || glowRenderer.SetViewport (GLOW_LIGHTNING, m_coreVerts.Buffer (), m_nNodes))
-		RenderCore (&color, nDepth, nThread);
-	}
-if (bGlow)
-	glBlendEquation (GL_FUNC_ADD);
-#if 0 //!USE_OPENMP
-WaitForRenderThread (nThread);
+if (bGlow && m_plasmaVerts.Buffer ()) 
+	RenderGlow (&color, nDepth, nThread);
+#if DBG
+else
+	BRP;
 #endif
+RenderCore (&color, nDepth, nThread);
+if (bBlur)
+	glBlendEquation (GL_FUNC_ADD);
+
 if (extraGameInfo [0].bUseLightning > 1)
-		for (i = 0; i < m_nNodes; i++)
+		for (int32_t i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())
 				m_nodes [i].GetChild ()->Draw (nDepth + 1, nThread);
 glowRenderer.Done (GLOW_LIGHTNING);

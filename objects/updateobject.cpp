@@ -98,6 +98,7 @@ if (OBJECTS.Buffer () && !(gameData.objData.speedBoost.Buffer () && gameData.obj
 void CObject::Die (void)
 {
 info.nFlags |= OF_SHOULD_BE_DEAD;
+RequestEffects (DESTROY_SMOKE | DESTROY_LIGHTNING);
 #if DBG
 if (Index () == nDbgObj)
 	BRP;

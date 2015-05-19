@@ -1216,8 +1216,6 @@ pObj->info.nType = OBJ_NONE;		//unused!
 pObj->SetAttackMode (ROBOT_IS_HOSTILE);
 DelObjChildrenN (nObject);
 DelObjChildN (nObject);
-gameData.objData.bWantEffect [nObject] = 0;
-OBJECT (nObject)->RequestEffects (DESTROY_SMOKE | DESTROY_LIGHTNING);
 lightManager.Delete (-1, -1, nObject);
 
 if (!UpdateFreeList (nObject))
@@ -1245,6 +1243,7 @@ if (!pObj->IsInList (gameData.objData.lists.all, 0))
 	return;
 #endif
 
+pObj->RequestEffects (DESTROY_SMOKE | DESTROY_LIGHTNING);
 
 if (pObj->info.nType == OBJ_WEAPON) {
 	if (gameData.demo.nVcrState != ND_STATE_PLAYBACK)
@@ -1273,7 +1272,7 @@ pObj->cType.explInfo.attached.nPrev =
 pObj->cType.explInfo.attached.nNext = -1; 
 if (pObj->info.nType == OBJ_DEBRIS)
 	gameData.objData.nDebris--;
-OBJECT (nObject)->UnlinkFromSeg ();
+pObj->UnlinkFromSeg ();
 pObj->info.nSignature = -1;
 pObj->info.nSegment = -1;				// zero it!
 try {

@@ -124,7 +124,7 @@ return nTranspType;
 
 int32_t CanSeePoint (CObject *pObj, CFixVector *vSource, CFixVector *vDest, int16_t nSegment, fix xRad, int32_t nThread)
 {
-	CHitQuery	hitQuery (FQ_TRANSWALL, vSource, vDest, -1, pObj ? pObj->Index () : -1, 1, xRad);
+	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_VISIBILITY, vSource, vDest, -1, pObj ? pObj->Index () : -1, 1, xRad);
 	CHitResult	hitResult;
 
 if (SPECTATOR (pObj))
@@ -141,7 +141,7 @@ return nHitType != HIT_WALL;
 
 int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs, int32_t nThread)
 {
-	CHitQuery	hitQuery (bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL,
+	CHitQuery	hitQuery (bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL | FQ_VISIBILITY : FQ_TRANSWALL | FQ_VISIBILITY,
 								 &gameData.objData.pViewer->info.position.vPos,
 								 &OBJECT (nObject)->info.position.vPos,
 								 gameData.objData.pViewer->info.nSegment,
@@ -165,7 +165,7 @@ int32_t ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int32_t transT
 	int32_t		fate, nTries = 0, bSpectate = SPECTATOR (objP1);
 
 do {
-	hitQuery.flags = transType | FQ_CHECK_OBJS;
+	hitQuery.flags = transType | FQ_CHECK_OBJS | FQ_VISIBILITY;
 	hitQuery.p0 = bSpectate ? &gameStates.app.playerPos.vPos : &objP1->info.position.vPos;
 	hitQuery.p1 = SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->info.position.vPos;
 	hitQuery.radP0 =
