@@ -408,12 +408,12 @@ for (int32_t i = 0; i < 2; i++)
 
 int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, float fScale)
 {
-	int32_t	bTextured = pBm != NULL;
+	int32_t	bTextured = m_pBitmap != NULL;
 
 fScale = /*m_pPulse ? m_pPulse->fScale :*/ 1.0f;
 ogl.ResetClientStates (0);
-if (m_pBm) {
-	Animate (m_pBm);
+if (m_pBitmap) {
+	Animate (m_pBitmap);
 	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 	if (m_pBitmap->CurFrame ())
 		m_pBitmap = m_pBitmap->CurFrame ();
@@ -457,7 +457,7 @@ void CSphere::DrawFaces (int32_t nOffset, int32_t nFaces, int32_t nClientArrays,
 int32_t nVertices = nFaces * FaceNodes ();
 if (nState & 1) {
 	ogl.EnableClientStates ((nClientArrays & 1) != 0, (nClientArrays & 2) != 0, 0, GL_TEXTURE0);
-	if (((nClientArrays & 1) != 0) && !m_pBm->Bind (1))
+	if (((nClientArrays & 1) != 0) && !m_pBitmap->Bind (1))
 		OglTexCoordPointer (2, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_tc));
 	if ((nClientArrays & 2) != 0)
 		OglColorPointer (4, GL_FLOAT, sizeof (CSphereVertex), reinterpret_cast<GLfloat*> (&m_worldVerts [nOffset * nVertices].m_c));
@@ -481,7 +481,7 @@ void CSphere::DrawFaces (CFloatVector *pVertex, tTexCoord2f *pTexCoord, int32_t 
 {
 if (nState & 1) {
 	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-	if (bTextured && !m_pBm->Bind (1))
+	if (bTextured && !m_pBitmap->Bind (1))
 		OglTexCoordPointer (2, GL_FLOAT, 0, pTexCoord);
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), pVertex);
 	}
