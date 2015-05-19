@@ -316,7 +316,7 @@ if ((pObj->mType.physInfo.velocity.IsZero ()) && (pObj->info.movementType != MT_
 	pObj->mType.spinRate = pObj->info.position.mOrient.m.dir.u * (I2X (1) / 8);
 	}
 //the actual shield in the sprite texture has 3/4 of the textures size
-gameData.render.shield->SetupSurface (&powerupPulse, ((pObj->Id () == POW_SHIELD_BOOST) && !SHOW_LIGHTNING (3)) ? shield [2].Bitmap () : shield [1].Bitmap ());
+gameData.render.shield->SetupSurface (&powerupPulse, ((pObj->Id () == POW_SHIELD_BOOST) /*&& !SHOW_LIGHTNING (3)*/) ? shield [1].Bitmap () : shield [2].Bitmap ());
 #if ICON_IN_FRONT
 if (pBm)
 	transparencyRenderer.AddSprite (pBm, pObj->Position (), &color, 2 * pObj->info.xSize / 3, 2 * pObj->info.xSize / 3, 0, 0, 0.0f);

@@ -264,7 +264,11 @@ thruster.Load ();
 PrintLog (0, "Loading shield image\n");
 shield [0].Load (const_cast<char*>("forcefield.tga"));
 shield [1].Load (const_cast<char*>("forcefield2.tga"));
+#if 1
 shield [2].Load (const_cast<char*>("forcefield3.tga"));
+#else
+shield [2].Load (const_cast<char*>("forcefield-alpha6464.tga"));
+#endif
 PrintLog (0, "Loading pyro icon image\n");
 pyroIcon.Load ();
 PrintLog (0, "Loading cloak icon image\n");
