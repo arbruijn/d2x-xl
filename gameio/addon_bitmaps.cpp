@@ -34,7 +34,7 @@ CAddonBitmap corona (const_cast<char*>("corona.tga"));
 CAddonBitmap glare (const_cast<char*>("glare.tga"));
 CAddonBitmap halo (const_cast<char*>("halo.tga"));
 CAddonBitmap thruster (const_cast<char*>("thruster.tga"));
-CAddonBitmap shield [3] = { (const_cast<char*>("forcefield.tga")), (const_cast<char*>("forcefield-alpha9696.tga")), (const_cast<char*>("forcefield-alpha12732.tga")) };
+CAddonBitmap shield [3] = { (const_cast<char*>("forcefield.tga")), (const_cast<char*>("forcefield2.tga")), (const_cast<char*>("forcefield3.tga")) };
 CAddonBitmap pyroIcon (const_cast<char*>("pyro-icon-512x512.tga"));
 CAddonBitmap cloakIcon (const_cast<char*>("cloak-icon-512x512.tga"));
 CAddonBitmap invulIcon (const_cast<char*>("invul-icon-512x512.tga"));
