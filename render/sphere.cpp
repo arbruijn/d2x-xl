@@ -693,7 +693,7 @@ else
 
 int32_t CTesselatedSphere::Quality (void)
 {
-#if SPHERE_DEFAULT_QUALITY > -1
+#if 0/*DBG && SPHERE_DEFAULT_QUALITY > -1*/
 return SPHERE_DEFAULT_QUALITY;
 #else
 return m_nQuality ? m_nQuality : gameOpts->render.textures.nQuality + 1;
@@ -1105,6 +1105,8 @@ int32_t CTriangleSphere::Create (void)
 if (!CreateBuffers ())
 	return 0;
 
+SetQuality (Quality ());
+
 m_nFaceBuffer = CreateFaces ();
 CreateEdgeList ();
 
@@ -1265,6 +1267,8 @@ int32_t CQuadSphere::Create (void)
 if (!CreateBuffers ())
 	return 0;
 
+SetQuality (Quality ());
+
 m_nFaceBuffer = CreateFaces ();
 CreateEdgeList ();
 
@@ -1359,13 +1363,13 @@ return new CQuadSphere ();
 
 int32_t CreateShieldSphere (void)
 {
-#
 if (!shield [0].Load () || !shield [1].Load () || !shield [2].Load ())
 	/*nothing*/; //return 0;
 if (gameData.render.shield) {
 	if (gameData.render.shield->HasQuality (gameOpts->render.textures.nQuality + 1))
 		return 1;
 	delete gameData.render.shield;
+	gameData.render.shield->SetQuality (gameOpts->render.textures.nQuality + 1);
 	}
 if (!(gameData.render.shield = CreateSphere ()))
 	return 0;
