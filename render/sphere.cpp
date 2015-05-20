@@ -783,6 +783,9 @@ if (m_edges.Buffer ()) {
 }
 
 // -----------------------------------------------------------------------------
+// Make the sphere glow stronger at its borders and create a glowing ring moving
+// vertically over it.
+// This could, and eventually will, be done more effectively and nicer in a shader program.
 
 static inline float Sqr (float f) { return f * f; }
 
@@ -791,6 +794,11 @@ static inline float ColorBump (float f) { return f; }
 #else
 static inline float ColorBump (float f) { return pow (f * f, 1.0f / 3.0f); }
 #endif
+
+
+static inline float Sign (float v) { return (v < 0.0f) ? -1.0f : 1.0f; }
+
+static inline float Wrap (float v, float l) { return (v < 0.0f) ? v + l : (v > l) ? v - l : v; }
 
 int32_t CTesselatedSphere::SetupColor (float fRadius)
 {
@@ -801,6 +809,7 @@ r.SetZero ();
 transformation.Transform (c, r);
 r = c;
 CFloatVector::Normalize (r);
+float fRefY = 1.0f - float (SDL_GetTicks () % 3001) / 750.0f;
 
 CSphereVertex	*w = m_worldVerts.Buffer (),
 					*v = m_viewVerts.Buffer ();
@@ -821,9 +830,19 @@ else
 #endif
 	{
 	for (int32_t i = 0; i < m_nVertices; i++) {
-		CFloatVector s = v [i].m_v - c;
+		CFloatVector t, s = v [i].m_v - c;
 		CFloatVector::Normalize (s);
-		w [i].m_c = m_color * ColorBump (1.0f - fabs (CFloatVector::Dot (r, s))); 
+		w [i].m_c = m_color * ColorBump (1.0f - fabs (CFloatVector::Dot (r, s)));
+#if 1
+		// create a ring moving down the sphere
+		t.Set (s.X (), fRefY, s.Z (), 1.0f);
+		float fScale = Min (1.0f, CFloatVector::Dist (s, t) * 4.0f);
+		if (fScale < 1.0f) {
+			float fBump = 1.0f / Max (w [i].m_c.Red (), Max (w [i].m_c.Green (), w [i].m_c.Blue ()));
+			fBump -= (fBump - 1.0f) * fScale;
+			w [i].m_c *= fBump; 
+			}
+#endif
 		}
 	}
 return 1;
