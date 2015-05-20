@@ -696,7 +696,7 @@ int32_t CTesselatedSphere::Quality (void)
 #if 0/*DBG && SPHERE_DEFAULT_QUALITY > -1*/
 return SPHERE_DEFAULT_QUALITY;
 #else
-return m_nQuality ? m_nQuality : Min (SPHERE_MIN_QUALITY, gameOpts->render.textures.nQuality + 1);
+return m_nQuality ? m_nQuality : Max (SPHERE_MIN_QUALITY, gameOpts->render.textures.nQuality + 1);
 #endif
 }
 
