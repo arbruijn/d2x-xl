@@ -582,6 +582,7 @@ if (!bEffect/* && (gameOpts->render.textures.nQuality > 1)*/) {
 		ogl.SetTransform (1);
 #	endif
 		}
+#	if 0
 	else if (alpha < 0.0f) {
 		float h = 1.0f / Max (red, Max (green, blue)) * 255.0f;
 		gameStates.render.SetOutlineColor (uint8_t (red * h), uint8_t (green * h), uint8_t (blue * h), 127);
@@ -592,6 +593,7 @@ if (!bEffect/* && (gameOpts->render.textures.nQuality > 1)*/) {
 		glowRenderer.End ();
 		gameStates.render.ResetOutlineColor ();
 		}
+#	endif
 	}
 #endif
 
