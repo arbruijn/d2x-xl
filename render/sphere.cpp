@@ -824,17 +824,29 @@ if (gameStates.app.bMultiThreaded) {
 		CFloatVector s = v [i].m_v - c;
 		CFloatVector::Normalize (s);
 		w [i].m_c = m_color * ColorBump (1.0f - fabs (CFloatVector::Dot (r, s))); 
+#if 1
+		// create a ring moving down the sphere
+		CFloatVector t;
+		t.Set (s.X (), fRefY, s.Z (), 1.0f);
+		float fScale = Min (1.0f, CFloatVector::Dist (s, t) * 4.0f);
+		if (fScale < 1.0f) {
+			float fBump = 1.0f / Max (w [i].m_c.Red (), Max (w [i].m_c.Green (), w [i].m_c.Blue ()));
+			fBump -= (fBump - 1.0f) * fScale;
+			w [i].m_c *= fBump; 
+			}
+#endif
 		}
 	}
 else 
 #endif
 	{
 	for (int32_t i = 0; i < m_nVertices; i++) {
-		CFloatVector t, s = v [i].m_v - c;
+		CFloatVector s = v [i].m_v - c;
 		CFloatVector::Normalize (s);
 		w [i].m_c = m_color * ColorBump (1.0f - fabs (CFloatVector::Dot (r, s)));
 #if 1
 		// create a ring moving down the sphere
+		CFloatVector t;
 		t.Set (s.X (), fRefY, s.Z (), 1.0f);
 		float fScale = Min (1.0f, CFloatVector::Dist (s, t) * 4.0f);
 		if (fScale < 1.0f) {
