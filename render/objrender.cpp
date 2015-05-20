@@ -326,7 +326,7 @@ if (pBm)
 #endif
 int32_t h = (pObj->Id () == POW_SHIELD_BOOST)
 				? DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), 1.0f, 0, 3 * pObj->info.xSize / 4) // alpha < 0 will cause the sphere to have an outline
-				: DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), -1.0f, 0, 3 * pObj->info.xSize / 4); // alpha < 0 will cause the sphere to have an outline
+				: DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), 1.0f, 0, 3 * pObj->info.xSize / 4); // alpha < 0 will cause the sphere to have an outline
 #if !ICON_IN_FRONT
 if (h && pBm)
 	transparencyRenderer.AddSprite (pBm, pObj->Position (), &color, 2 * pObj->info.xSize / 3, 2 * pObj->info.xSize / 3, 0, 0, 0.0f);

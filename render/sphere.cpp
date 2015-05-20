@@ -562,7 +562,7 @@ transformation.Begin (vPos, pPos->mOrient);
 glScalef (xScale, xScale, xScale);
 
 #if SPHERE_DRAW_OUTLINE && (SPHERE_WIREFRAME < 2)
-if (!bEffect && (gameOpts->render.textures.nQuality > 1)) {
+if (!bEffect/* && (gameOpts->render.textures.nQuality > 1)*/) {
 	if (gameStates.render.CartoonStyle ()) {
 #	if SPHERE_SW_TRANSFORM
 		transformation.End ();
