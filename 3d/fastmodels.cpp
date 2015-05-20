@@ -571,18 +571,12 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (bEdges) {
 		if (!pSubModel->m_bThruster) {
 			CFloatVector vViewer;
-			vViewer.Assign (pObj->Position () - transformation.m_info.viewer);
-#if 0
-			float d = X2F (Max (0, vViewer.Mag () - pObj->Size ()));
-#elif DBG
-			float d = X2F (Max (0, CFixVector::Dist (pObj->Position (), transformation.m_info.viewer) - pObj->Size ()/* - gameData.objData.pViewer->Size ()*/));
-			d = X2F (vViewer.Mag () - pObj->Size ()/* - gameData.objData.pViewer->Size ()*/);
-			d = Max (d / sqrt (X2F (pObj->Size ())), 0.0f);
-#else
-			float d = X2F (Max (0, CFixVector::Dist (OBJPOS (pObj)->vPos, transformation.m_info.pos) - pObj->Size () - gameData.objData.pViewer->Size ()));
-#endif
+			vViewer.Assign (transformation.m_info.viewer);
+			float fSize = X2F (pObj->Size ());
+			float d = Max (0.0f, X2F (CFixVector::Dist (pObj->Position (), transformation.m_info.viewer)) - fSize);
+			d /= sqrt (X2F (pObj->Size ()));
 			RenderModel::CModelEdge* pEdge = pSubModel->m_edges.Buffer ();
-			int32_t nScale = 0xFFFF, nEdgeFilter = pObj->IsWeapon () ? 0 : bHires; //0 : 2; //bHires;
+			int32_t nScale = 0xFFFF, nEdgeFilter = pObj->IsWeapon () ? 0 : bHires || (fSize > 9.0f); //0 : 2; //bHires;
 			gameData.segData.edgeVertexData [0].Reset ();
 			gameData.segData.edgeVertexData [1].Reset ();
 			for (i = pSubModel->m_nEdges; i; i--, pEdge++) {
