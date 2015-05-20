@@ -13,6 +13,8 @@
 
 #define SPHERE_TYPE				SPHERE_TYPE_QUADS
 
+#define SPHERE_MIN_QUALITY		2
+
 class CSphere;
 
 // -----------------------------------------------------------------------------
@@ -244,7 +246,7 @@ class CTesselatedSphere : public CSphere {
 		virtual void Destroy ();
 		virtual int32_t Create (void) = 0;
 		virtual void SetQuality (int32_t nQuality) { m_nQuality = nQuality; }
-		virtual int32_t HasQuality (int32_t nDesiredQuality) { return m_nQuality == nDesiredQuality; }
+		virtual int32_t HasQuality (int32_t nDesiredQuality) { return m_nQuality == Min (SPHERE_MIN_QUALITY, nDesiredQuality); }
 		virtual int32_t FaceNodes (void) = 0;
 		virtual CSphereFace *Face (int32_t nFace) = 0;
 		virtual void RenderOutline (CObject *pObj, float fScale = 1.0f);

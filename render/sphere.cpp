@@ -562,7 +562,7 @@ transformation.Begin (vPos, pPos->mOrient);
 glScalef (xScale, xScale, xScale);
 
 #if SPHERE_DRAW_OUTLINE && (SPHERE_WIREFRAME < 2)
-if (!bEffect) {
+if (!bEffect && (gameOpts->render.textures.nQuality > 1)) {
 	if (gameStates.render.CartoonStyle ()) {
 #	if SPHERE_SW_TRANSFORM
 		transformation.End ();
@@ -696,7 +696,7 @@ int32_t CTesselatedSphere::Quality (void)
 #if 0/*DBG && SPHERE_DEFAULT_QUALITY > -1*/
 return SPHERE_DEFAULT_QUALITY;
 #else
-return m_nQuality ? m_nQuality : gameOpts->render.textures.nQuality + 1;
+return m_nQuality ? m_nQuality : Min (SPHERE_MIN_QUALITY, gameOpts->render.textures.nQuality + 1);
 #endif
 }
 
@@ -816,6 +816,8 @@ CSphereVertex	*w = m_worldVerts.Buffer (),
 
 m_color *= 1.0f / Max (m_color.Red (), Max (m_color.Green (), m_color.Blue ())) * (m_pPulse && m_pPulse->Valid () ? m_pPulse->Scale () : 1.0f);
 
+int32_t bMovingRing = gameOpts->render.textures.nQuality > 2;
+
 #if USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
 #	pragma omp parallel
@@ -824,17 +826,17 @@ if (gameStates.app.bMultiThreaded) {
 		CFloatVector s = v [i].m_v - c;
 		CFloatVector::Normalize (s);
 		w [i].m_c = m_color * ColorBump (1.0f - fabs (CFloatVector::Dot (r, s))); 
-#if 1
+		if (bMovingRing) {
 		// create a ring moving down the sphere
-		CFloatVector t;
-		t.Set (s.X (), fRefY, s.Z (), 1.0f);
-		float fScale = Min (1.0f, CFloatVector::Dist (s, t) * 4.0f);
-		if (fScale < 1.0f) {
-			float fBump = 1.0f / Max (w [i].m_c.Red (), Max (w [i].m_c.Green (), w [i].m_c.Blue ()));
-			fBump -= (fBump - 1.0f) * fScale;
-			w [i].m_c *= fBump; 
+			CFloatVector t;
+			t.Set (s.X (), fRefY, s.Z (), 1.0f);
+			float fScale = Min (1.0f, CFloatVector::Dist (s, t) * 4.0f);
+			if (fScale < 1.0f) {
+				float fBump = 1.0f / Max (w [i].m_c.Red (), Max (w [i].m_c.Green (), w [i].m_c.Blue ()));
+				fBump -= (fBump - 1.0f) * fScale;
+				w [i].m_c *= fBump; 
+				}
 			}
-#endif
 		}
 	}
 else 
@@ -844,17 +846,17 @@ else
 		CFloatVector s = v [i].m_v - c;
 		CFloatVector::Normalize (s);
 		w [i].m_c = m_color * ColorBump (1.0f - fabs (CFloatVector::Dot (r, s)));
-#if 1
-		// create a ring moving down the sphere
-		CFloatVector t;
-		t.Set (s.X (), fRefY, s.Z (), 1.0f);
-		float fScale = Min (1.0f, CFloatVector::Dist (s, t) * 4.0f);
-		if (fScale < 1.0f) {
-			float fBump = 1.0f / Max (w [i].m_c.Red (), Max (w [i].m_c.Green (), w [i].m_c.Blue ()));
-			fBump -= (fBump - 1.0f) * fScale;
-			w [i].m_c *= fBump; 
+		if (bMovingRing) {
+			// create a ring moving down the sphere
+			CFloatVector t;
+			t.Set (s.X (), fRefY, s.Z (), 1.0f);
+			float fScale = Min (1.0f, CFloatVector::Dist (s, t) * 4.0f);
+			if (fScale < 1.0f) {
+				float fBump = 1.0f / Max (w [i].m_c.Red (), Max (w [i].m_c.Green (), w [i].m_c.Blue ()));
+				fBump -= (fBump - 1.0f) * fScale;
+				w [i].m_c *= fBump; 
+				}
 			}
-#endif
 		}
 	}
 return 1;
@@ -1369,7 +1371,6 @@ if (gameData.render.shield) {
 	if (gameData.render.shield->HasQuality (gameOpts->render.textures.nQuality + 1))
 		return 1;
 	delete gameData.render.shield;
-	gameData.render.shield->SetQuality (gameOpts->render.textures.nQuality + 1);
 	}
 if (!(gameData.render.shield = CreateSphere ()))
 	return 0;
