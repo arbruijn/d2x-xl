@@ -45,6 +45,7 @@ void SetupTransformation (CTransformation& transformation, const CFixVector& vPo
 {
 transformation.m_info.zoom = (ogl.IsOculusRift () && !(gameStates.render.nWindow [0] || gameStates.render.bBriefing)) ? F2X (X2F (xZoom) / X2F (DEFAULT_ZOOM) * float (RIFT_DEFAULT_ZOOM)) : xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
+transformation.m_info.viewer = vPos;
 transformation.m_info.pos = vPos;
 if (ogl.IsOculusRift ())
 	transformation.m_info.view [0] = mOrient;

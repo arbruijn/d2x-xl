@@ -1185,7 +1185,7 @@ if (!bPolygonalOutline)
 
 //------------------------------------------------------------------------------
 
-void RenderMeshOutline (int32_t nScale)
+void RenderMeshOutline (int32_t nScale, float fScale)
 {
 ogl.SetBlendMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
@@ -1200,7 +1200,7 @@ glColor3f (1,1,1);
 
 bool bBlur = (gameOpts->render.effects.bGlow == 2) && glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
 
-float fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
+fScale *= Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
 //if (!bBlur)
 //	fScale *= 2.0f;
 

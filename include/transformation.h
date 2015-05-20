@@ -62,9 +62,10 @@ class CFrustum {
 	};
 
 typedef struct tTransformation {
+	CFixVector		viewer;
 	CFixVector		pos;
 	CAngleVector	playerHeadAngles;
-	int32_t				bUsePlayerHeadAngles;
+	int32_t			bUsePlayerHeadAngles;
 	CFixMatrix		view [2];
 	CFixVector		scale;
 	CFloatVector	scalef;
@@ -75,7 +76,7 @@ typedef struct tTransformation {
 	CFloatMatrix	projection;
 	COGLMatrix		oglModelview;
 	COGLMatrix		oglProjection;
-	int32_t				oglViewport [4];
+	int32_t			oglViewport [4];
 	fix				zoom;
 	float				zoomf;
 	float				aspectRatio;
