@@ -1718,7 +1718,7 @@ if (nEdge >= 0) {
 #endif
 		int32_t nEdges = gameData.segData.nEdges;
 		do {
-			if (nEdges >= edges.Length () - 1) {
+			if (nEdges >= (int32_t) edges.Length () - 1) {
 				if (!edges.Resize (nEdges * 2))
 					return -1;
 				}
@@ -1739,7 +1739,7 @@ if (nEdge >= 0) {
 	}
 else {
 	i = 0;
-	if ((nEdges >= edges.Length ()) && !edges.Resize (nEdges * 2))
+	if ((nEdges >= (int32_t) edges.Length ()) && !edges.Resize (nEdges * 2))
 		return -1;
 	CMeshEdge *pEdge = &edges [nEdges++];
 	pEdge->m_nVertices [0] = nVertex1;
