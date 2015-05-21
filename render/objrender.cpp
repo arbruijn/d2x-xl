@@ -324,9 +324,10 @@ gameData.render.shield->SetupSurface (&powerupPulse, ((pObj->Id () == POW_SHIELD
 if (pBm)
 	transparencyRenderer.AddSprite (pBm, pObj->Position (), &color, 2 * pObj->info.xSize / 3, 2 * pObj->info.xSize / 3, 0, 0, 0.0f);
 #endif
+// alpha < 0 will cause the sphere to have an outline, additive < 0 will cause the sphere to be blurred
 int32_t h = (pObj->Id () == POW_SHIELD_BOOST)
-				? DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), 1.0f, -1, 3 * pObj->info.xSize / 4) // alpha < 0 will cause the sphere to have an outline
-				: DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), -1.0f, -1, 3 * pObj->info.xSize / 4); // alpha < 0 will cause the sphere to have an outline
+				? DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), 1.0f, 0, 3 * pObj->info.xSize / 4) 
+				: DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), -1.0f, 0, 3 * pObj->info.xSize / 4); 
 #if !ICON_IN_FRONT
 if (h && pBm)
 	transparencyRenderer.AddSprite (pBm, pObj->Position (), &color, 2 * pObj->info.xSize / 3, 2 * pObj->info.xSize / 3, 0, 0, 0.0f);
