@@ -1187,7 +1187,7 @@ if (!bPolygonalOutline)
 
 void RenderMeshOutline (int32_t nScale, float fScale)
 {
-ogl.SetBlendMode (GL_LEQUAL);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetDepthWrite (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetLineSmooth (true);

@@ -641,9 +641,9 @@ void ComputeStaticFaceLight (int32_t nStart, int32_t nEnd, int32_t nThread)
 	uint8_t			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
 	int32_t			nVertex, nSegment, nSide;
-	fix			xLight;
-	float			fAlpha;
-	tUVL			*pUVL;
+	fix				xLight;
+	float				fAlpha;
+	tUVL				*pUVL;
 	int32_t			h, i, j, uvi, nColor;
 
 	static		CStaticFaceColor<255,255,255,255> brightColor1;

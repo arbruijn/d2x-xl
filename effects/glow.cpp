@@ -141,7 +141,7 @@ const char *blurVS =
 
 bool CGlowRenderer::LoadShader (int32_t const direction, float const radius)
 {
-	float fScale [2] = {ogl.m_data.windowScale.dim.y, ogl.m_data.windowScale.dim.x};
+	float fScale [2] = {ogl.m_data.windowScale.dim.x, ogl.m_data.windowScale.dim.y};
 
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hBlurShader /*[direction]*/));
 if (!m_shaderProg)
@@ -799,8 +799,13 @@ else
 	ClearDrawBuffer (m_nType);
 	Render (0, 1, radius, true); // Blur 0 -> Blur 1
 #	if BLUR > 1
+#		if 0
+	m_nStrength = (m_nStrength << 1) | 1;
+#		endif
+#		if 1
 	if (m_nType < BLUR_OUTLINE)
 		ogl.SetBlendMode (OGL_BLEND_ADD);
+#		endif
 	for (int32_t i = 1; i < m_nStrength; i++) {
 		radius += RAD_INCR;
 		if (!ogl.SelectBlurBuffer (0))

@@ -13,7 +13,11 @@
 
 #define SPHERE_TYPE				SPHERE_TYPE_QUADS
 
-#define SPHERE_MIN_QUALITY		2
+#if DBG
+#	define SPHERE_MIN_QUALITY	1
+#else
+#	define SPHERE_MIN_QUALITY	2
+#endif
 
 class CSphere;
 
@@ -44,6 +48,10 @@ class CSphereVertex {
 		CFloatVector	m_v;
 		tTexCoord2f		m_tc;
 		CFloatVector	m_c;
+
+		inline bool operator== (const CSphereVertex& other) {
+			return (m_v == other.m_v) && (m_tc.v.u == other.m_tc.v.u) && (m_tc.v.v == other.m_tc.v.v);
+			}
 
 		inline CSphereVertex& operator= (const CSphereVertex& other) {
 			m_v = other.m_v;
@@ -123,7 +131,7 @@ class CSphereFace {
 
 		virtual CSphereVertex* Vertices (void) = 0;
 		virtual CFloatVector& Vertex (int32_t i) = 0;
-		virtual CSphereVertex *ComputeCenter (void) = 0;
+		virtual CSphereVertex *ComputeCenter (int32_t bNormalize = 1) = 0;
 	};
 
 // -----------------------------------------------------------------------------
@@ -132,7 +140,7 @@ class CSphereTriangle : public CSphereFace {
 	public:
 		CSphereVertex			m_v [3];
 
-		virtual CSphereVertex *ComputeCenter (void);
+		virtual CSphereVertex *ComputeCenter (int32_t bNormalize = 1);
 		CSphereTriangle *Split (CSphereTriangle *pDest);
 		void Transform (CSphereTriangle *pDest);
 		virtual CSphereVertex* Vertices (void) { return m_v; }
@@ -145,8 +153,9 @@ class CSphereQuad : public CSphereFace {
 	public:
 		CSphereVertex			m_v [4];
 
-		virtual CSphereVertex *ComputeCenter (void);
+		virtual CSphereVertex *ComputeCenter (int32_t bNormalize = 1);
 		CSphereQuad *Split (CSphereQuad *pDest);
+		CSphereTriangle *Split (CSphereTriangle *pDest);
 		void Transform (CSphereQuad *pDest);
 		virtual CSphereVertex* Vertices (void) { return m_v; }
 		virtual CFloatVector& Vertex (int32_t i) { return m_v [i].m_v; }
@@ -271,7 +280,7 @@ class CTriangleSphere : public CTesselatedSphere {
 	protected:
 		CArray< CSphereTriangle >	m_faces [2];
 
-		int32_t Tesselate (CSphereTriangle *pSrc, CSphereTriangle *pDest, int32_t nFaces);
+		int32_t Tesselate (CSphereTriangle *pDest, CSphereTriangle *pSrc, int32_t nFaces);
 		void SetupFaces (void);
 		int32_t CreateBuffers (void);
 		int32_t CreateFaces (void);
@@ -285,17 +294,19 @@ class CQuadSphere : public CTesselatedSphere {
 	public:
 		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect, int32_t bGlow);
 		virtual int32_t Create (void);
-		virtual int32_t FaceNodes (void) { return 4; }
+		virtual int32_t FaceNodes (void) { return 3; }
 
 	protected:
-		CArray< CSphereQuad >	m_faces [2];
+		CArray< CSphereQuad >		m_quads [2];
+		CArray< CSphereTriangle >	m_faces;
 
-		int32_t Tesselate (CSphereQuad *pSrc, CSphereQuad *pDest, int32_t nFaces);
+		int32_t Tesselate (CSphereQuad *pDest, CSphereQuad *pSrc, int32_t nFaces);
+		int32_t Tesselate (CSphereTriangle *pDest, CSphereQuad *pSrc, int32_t nFaces);
 		void SetupFaces (void);
 		int32_t CreateBuffers (void);
 		int32_t CreateFaces (void);
 		virtual int32_t CreateEdgeList (void);
-		virtual CSphereFace *Face (int32_t nFace) { return m_faces [m_nFaceBuffer] + nFace; }
+		virtual CSphereFace *Face (int32_t nFace) { return m_faces + nFace; }
 	};
 
 // -----------------------------------------------------------------------------
