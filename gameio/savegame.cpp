@@ -215,10 +215,12 @@ else {
 	cf.Read (m_info.szLabel + 3, DESC_LENGTH, 1);
 	if (nVersion < 26) {
 		m_info.image = CBitmap::Create (0, THUMBNAIL_W, THUMBNAIL_H, 1);
+		m_info.image->SetCartoonizable (0);
 		m_info.image->Read (cf, THUMBNAIL_W * THUMBNAIL_H);
 		}
 	else {
 		m_info.image = CBitmap::Create (0, THUMBNAIL_LW, THUMBNAIL_LH, 1);
+		m_info.image->SetCartoonizable (0);
 		m_info.image->Read (cf, THUMBNAIL_LW * THUMBNAIL_LH);
 		}
 	if (nVersion >= 9) {

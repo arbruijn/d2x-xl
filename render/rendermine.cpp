@@ -1277,7 +1277,7 @@ gameStates.render.EnableCartoonStyle (1, 1, 1);
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
 #if 1
-if (gameStates.render.CartoonStyle ()) {
+if (gameStates.render.CartoonStyle () && (gameStates.render.nShadowPass < 2)) {
 	ogl.CopyDepthTexture (0);
 	RenderSegmentEdges ();
 	}

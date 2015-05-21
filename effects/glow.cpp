@@ -547,16 +547,16 @@ if (!Available (nType))
 	return false;
 if ((gameOptions [0].render.nQuality < 3) && automap.Active ())
 	return false;
-#if 0
-if (nType != m_nType) {
-#else
+#if DBG
+if (nType == BLUR_SHADOW)
+	BRP;
+#endif
 if (Compatible (nType, nStrength, bReplace, brightness)) {
 	if (ogl.SelectGlowBuffer () < 0)
 		gameOpts->render.effects.bGlow = 0;
 	CCanvas::Current ()->SetViewport ();
 	}
 else {
-#endif
 	End ();
 	m_nType = nType;
 	m_bReplace = bReplace;
@@ -769,6 +769,10 @@ if (!Visible ())
 else
 #endif
 	{
+#if DBG
+	if (m_nType == BLUR_SHADOW)
+		BRP;
+#endif
 	gameData.render.scene.Activate ("CGlowRenderer::End");
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
