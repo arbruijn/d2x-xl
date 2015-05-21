@@ -27,6 +27,7 @@ class CGlowRenderer {
 		bool SetViewport (int32_t const nType, CFixVector pos, float radius);
 		bool SetViewport (int32_t const nType, CFloatVector3 pos, float width, float height, bool bTransformed = false);
 		bool Visible (void);
+
 		CGlowRenderer () : m_shaderProg (0), m_nType (-1), m_nStrength (-1), m_bReplace (true), m_bViewport (0), m_brightness (1.1f) {}
 
 	private:
@@ -40,6 +41,7 @@ class CGlowRenderer {
 		void ChooseDrawBuffer (void);
 		bool Reset (int32_t bGlow, int32_t bOgl = 0);
 		bool UseViewport (void);
+		bool Compatible (int32_t const nType, int32_t const nStrength = 1, bool const bReplace = true, float const brightness = 1.0f);
 
 	};
 

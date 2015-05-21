@@ -528,6 +528,19 @@ return true;
 
 //------------------------------------------------------------------------------
 
+bool CGlowRenderer::Compatible (int32_t const nType, int32_t const nStrength, bool const bReplace, float const brightness)
+{
+if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness == brightness))
+	return false;
+if ((nType == GLOW_LIGHTNING) || (nType == BLUR_OUTLINE) || (nType == BLUR_SHADOW))
+	return m_nType == nType;
+if ((m_nType == GLOW_LIGHTNING) || (m_nType == BLUR_OUTLINE) || (m_nType == BLUR_SHADOW))
+	return m_nType == nType;
+return true;
+}
+
+//------------------------------------------------------------------------------
+
 bool CGlowRenderer::Begin (int32_t const nType, int32_t const nStrength, bool const bReplace, float const brightness)
 {
 if (!Available (nType))
@@ -537,7 +550,7 @@ if ((gameOptions [0].render.nQuality < 3) && automap.Active ())
 #if 0
 if (nType != m_nType) {
 #else
-if ((m_bReplace == bReplace) && (m_nStrength == nStrength) && (m_brightness == brightness) && ((nType == GLOW_LIGHTNING) == (m_nType == GLOW_LIGHTNING))) {
+if (Compatible (nType, nStrength, bReplace, brightness)) {
 	if (ogl.SelectGlowBuffer () < 0)
 		gameOpts->render.effects.bGlow = 0;
 	CCanvas::Current ()->SetViewport ();

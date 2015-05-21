@@ -687,9 +687,9 @@ if (bGlow) {
 		return 0;
 		}
 #if 1
-	red *= 1.0f / 4.0f;
-	green *= 1.0f / 4.0f;
-	blue *= 1.0f / 4.0f;
+	red *= 1.0f / 3.0f;
+	green *= 1.0f / 3.0f;
+	blue *= 1.0f / 3.0f;
 #endif
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 	}
