@@ -926,12 +926,12 @@ m_color *= 1.0f / Max (m_color.Red (), Max (m_color.Green (), m_color.Blue ()));
 int32_t bMovingRing = gameOpts->render.textures.nQuality > 2;
 float fColorScale = bGlow ? 1.0f / 4.0f : 1.0f;
 
+#if DBG
 static int32_t bUseColorEffectShader = 1;
-
-if (bUseColorEffectShader) {
-	if (SetupColorEffectShader (fRefY, fColorScale, bMovingRing))
-		return 0;
-	}
+if (bUseColorEffectShader)
+#endif
+if (SetupColorEffectShader (fRefY, fColorScale, bMovingRing))
+	return 0;
 
 Transform (fRadius);
 
