@@ -1044,8 +1044,7 @@ color.Blue () *= (float) (0.9 + RandDouble () / 5);
 ComputeDistScale (100.0f);
 
 int32_t bGlow = (m_fDistScale > 0.0f) && SetupGlow ();
-int32_t bBlur = GlowType (bGlow && m_bBlur);
-if (bBlur) {
+if (m_bBlur) {
 	glBlendEquation (GL_MAX);
 	glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1));
 	}
@@ -1060,7 +1059,7 @@ else
 	BRP;
 #endif
 RenderCore (&color, nDepth, nThread);
-if (bBlur)
+if (m_bBlur)
 	glBlendEquation (GL_FUNC_ADD);
 
 if (extraGameInfo [0].bUseLightning > 1)

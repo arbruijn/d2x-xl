@@ -1826,7 +1826,7 @@ if ((info.nId == OMEGA_ID) && !OkToDoOmegaDamage (this))
 //	Don't Collide own smart mines unless direct hit.
 if ((info.nId == SMARTMINE_ID) &&
 	 (OBJ_IDX (pPlayerObj) == cType.laserInfo.parent.nObject) &&
-	 (CFixVector::Dist (vHitPt, pPlayerObj->info.position.vPos) > pPlayerObj->info.xSize))
+	 (CFixVector::Dist (vHitPt, OBJPOS (pPlayerObj)->vPos) > pPlayerObj->info.xSize))
 	return 1;
 gameData.multiplayer.bWasHit [pPlayerObj->info.nId] = -1;
 CreateWeaponEffects (1);
@@ -1848,17 +1848,17 @@ if (mType.physInfo.flags & PF_PERSISTENT) {
 }
 if (pPlayerObj->info.nId == N_LOCALPLAYER) {
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
-		audio.CreateSegmentSound (SOUND_PLAYER_GOT_HIT, pPlayerObj->info.nSegment, 0, vHitPt);
+		audio.CreateSegmentSound (SOUND_PLAYER_GOT_HIT, OBJSEG (pPlayerObj), 0, vHitPt);
 		if (IsMultiGame)
 			MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, I2X (1));
 		}
 	else {
-		audio.CreateSegmentSound (SOUND_WEAPON_HIT_DOOR, pPlayerObj->info.nSegment, 0, vHitPt);
+		audio.CreateSegmentSound (SOUND_WEAPON_HIT_DOOR, OBJSEG (pPlayerObj), 0, vHitPt);
 		if (IsMultiGame)
 			MultiSendPlaySound (SOUND_WEAPON_HIT_DOOR, I2X (1));
 		}
 	}
-CreateExplosion (pPlayerObj->info.nSegment, vHitPt, I2X (10)/2, ANIM_PLAYER_HIT);
+CreateExplosion (OBJSEG (pPlayerObj), vHitPt, I2X (10)/2, ANIM_PLAYER_HIT);
 if (WI_damage_radius (info.nId))
 	ExplodeSplashDamageWeapon (vHitPt, pPlayerObj);
 MaybeKillWeapon (pPlayerObj);

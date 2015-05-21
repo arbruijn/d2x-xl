@@ -195,7 +195,7 @@ CFixVector vViewPos;
 if (gameStates.render.bChaseCam)
 	FLIGHTPATH.GetViewPoint (&vViewPos);
 else
-	vViewPos = OBJPOS (gameData.objData.pConsole)->vPos;
+	vViewPos = transformation.m_info.viewer;
 CFixVector vDir = vViewPos - vPos;
 CFixVector::Normalize (vDir);
 vDir *= (xSize - pObj->info.xSize);

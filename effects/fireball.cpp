@@ -91,7 +91,7 @@ return pObj;
 
 CObject *CObject::CreateShockwave (void)
 {
-	int16_t		nObject;
+	int16_t	nObject;
 	CObject	*pObj;
 
 if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves))

@@ -428,7 +428,7 @@ void HomingMissileTurnTowardsVelocity (CObject *pObj, CFixVector *vNormVel)
 	CFixVector	vNewDir;
 	fix 			frameTime;
 
-frameTime = gameStates.limitFPS.bHomers ? MSEC2X (gameStates.app.tick40fps.nTime) : gameData.time.xFrame;
+frameTime = gameStates.limitFPS.bHomers ? MSEC2X (HOMING_MSL_FRAMETIME) : gameData.time.xFrame;
 vNewDir = *vNormVel;
 vNewDir *= ((fix) (frameTime * 16 / gameStates.gameplay.slowmo [0].fSpeed));
 vNewDir += pObj->info.position.mOrient.m.dir.f;
@@ -492,13 +492,14 @@ for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= HOMING_MSL_FRAME
 			mType.physInfo.flags &= ~PF_BOUNCES;
 		//	Make sure the CObject we are tracking is still trackable.
 		int32_t nTarget = UpdateHomingTarget (cType.laserInfo.nHomingTarget, dot, nThread);
-		if (nTarget != -1) {
+		CObject *pTarget = OBJECT (nTarget);
+		if (pTarget) {
 			if (nTarget == LOCALPLAYER.nObject) {
-				fix xDistToTarget = CFixVector::Dist (info.position.vPos, OBJECT (nTarget)->info.position.vPos);
+				fix xDistToTarget = CFixVector::Dist (info.position.vPos, OBJPOS (pTarget)->vPos);
 				if ((xDistToTarget < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
 					LOCALPLAYER.homingObjectDist = xDistToTarget;
 				}
-			vVecToObject = OBJECT (nTarget)->info.position.vPos - info.position.vPos;
+			vVecToObject = OBJPOS (pTarget)->vPos - info.position.vPos;
 			xDist = CFixVector::Normalize (vVecToObject);
 			vNewVel = mType.physInfo.velocity;
 			speed = CFixVector::Normalize (vNewVel);
@@ -531,11 +532,10 @@ for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= HOMING_MSL_FRAME
 				mType.physInfo.velocity *= speed;
 				dot = abs (I2X (1) - dot);
 				info.xLifeLeft -= FixMul (dot * 32, I2X (1) / 40);
+				//	Only polygon OBJECTS have visible orientation, so only they should turn.
+				if (gameData.weapons.info [info.nId].renderType == WEAPON_RENDER_POLYMODEL)
+					HomingMissileTurnTowardsVelocity (this, &vNewVel);		//	vNewVel is normalized velocity.
 				}
-
-			//	Only polygon OBJECTS have visible orientation, so only they should turn.
-			if (gameData.weapons.info [info.nId].renderType == WEAPON_RENDER_POLYMODEL)
-				HomingMissileTurnTowardsVelocity (this, &vNewVel);		//	vNewVel is normalized velocity.
 			}
 		}
 	}

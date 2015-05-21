@@ -663,9 +663,9 @@ void CreateSmallFireballOnObject (CObject *pObj, fix size_scale, int32_t bSound)
 {
 	fix			size;
 	CFixVector	vPos, vRand;
-	int16_t			nSegment;
+	int16_t		nSegment;
 
-vPos = pObj->info.position.vPos;
+vPos = OBJPOS (pObj)->vPos;
 vRand = CFixVector::Random();
 vRand *= (pObj->info.xSize / 2);
 vPos += vRand;
@@ -693,7 +693,7 @@ void CreateVClipOnObject (CObject *pObj, fix xScale, uint8_t nVClip)
 	CFixVector	vPos, vRand;
 	int16_t		nSegment;
 
-vPos = pObj->info.position.vPos;
+vPos = OBJPOS (pObj)->vPos;
 vRand = CFixVector::Random();
 vRand *= (pObj->info.xSize / 2);
 vPos += vRand;
