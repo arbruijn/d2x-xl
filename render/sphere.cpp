@@ -510,7 +510,7 @@ if (WantEffect (pObj)) {
 	bEffect = 1;
 	}
 
-	int32_t	bGlow = (bAppearing || bEffect) && (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
+	int32_t	bGlow = /*(bAppearing || bEffect) &&*/ (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
 
 CFixVector vPos;
 PolyObjPos (pObj, &vPos);
@@ -522,12 +522,15 @@ if (bAppearing) {
 	}
 Pulsate ();
 if (bGlow) {
-	glowRenderer.Begin (GLOW_SHIELDS, 2, false, 0.85f);
+	glowRenderer.Begin (GLOW_SHIELDS, 2, false, 1.0f);
 	if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, 4 * xScale / 3)) {
 		glowRenderer.Done (GLOW_SHIELDS);
 		ogl.SetDepthMode (GL_LEQUAL);
 		return 0;
 		}
+	red *= 0.5f;
+	green *= 0.5f;
+	blue *= 0.5f;
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 	}
 else {
@@ -600,7 +603,7 @@ if (!bEffect/* && (gameOpts->render.textures.nQuality > 1)*/) {
 #if 1
 if (alpha < 0.0f)
 	glBlendEquation (GL_MAX);
-RenderFaces (xScale, nFaces, bTextured, bEffect);
+RenderFaces (xScale, nFaces, bTextured, bEffect, bGlow);
 if (alpha < 0.0f)
 	glBlendEquation (GL_FUNC_ADD);
 if (bGlow) {
@@ -802,7 +805,7 @@ static inline float Sign (float v) { return (v < 0.0f) ? -1.0f : 1.0f; }
 
 static inline float Wrap (float v, float l) { return (v < 0.0f) ? v + l : (v > l) ? v - l : v; }
 
-int32_t CTesselatedSphere::SetupColor (float fRadius)
+int32_t CTesselatedSphere::SetupColor (float fRadius, int32_t bGlow)
 {
 Transform (fRadius);
 
@@ -819,6 +822,7 @@ CSphereVertex	*w = m_worldVerts.Buffer (),
 m_color *= 1.0f / Max (m_color.Red (), Max (m_color.Green (), m_color.Blue ())) * (m_pPulse && m_pPulse->Valid () ? m_pPulse->Scale () : 1.0f);
 
 int32_t bMovingRing = gameOpts->render.textures.nQuality > 2;
+float fGlowScale = bGlow ? 0.5f : 1.0f;
 
 #if USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
@@ -839,6 +843,7 @@ if (gameStates.app.bMultiThreaded) {
 				w [i].m_c *= fBump; 
 				}
 			}
+		w [i].m_c *= fGlowScale;
 		}
 	}
 else 
@@ -859,6 +864,7 @@ else
 				w [i].m_c *= fBump; 
 				}
 			}
+		w [i].m_c *= fGlowScale;
 		}
 	}
 return 1;
@@ -931,7 +937,7 @@ return CreateVertices ();
 
 // -----------------------------------------------------------------------------
 
-void CRingedSphere::RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect)
+void CRingedSphere::RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect, int32_t bGlow)
 {
 	int32_t			nCull, h, i, j, nQuads, nRings = Quality ();
 	CFloatVector	p [2 * SPHERE_MAX_RINGS + 2];
@@ -1128,7 +1134,7 @@ return m_nFaces;
 
 // -----------------------------------------------------------------------------
 
-void CTriangleSphere::RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect)
+void CTriangleSphere::RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect, int32_t bGlow)
 {
 if (!m_worldVerts.Buffer () || !m_viewVerts.Buffer ())
 	return;
@@ -1144,7 +1150,7 @@ if (bEffect) {
 	}
 else {
 	ogl.SetCullMode (GL_FRONT);
-	DrawFaces (0, m_nFaces, bTextured | (SetupColor (fRadius) << 1), GL_TRIANGLES, 3);
+	DrawFaces (0, m_nFaces, bTextured | (SetupColor (fRadius, bGlow) << 1), GL_TRIANGLES, 3);
 	}
 #if SPHERE_WIREFRAME
 glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
@@ -1291,7 +1297,7 @@ return m_nFaces;
 
 // -----------------------------------------------------------------------------
 
-void CQuadSphere::RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect)
+void CQuadSphere::RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect, int32_t bGlow)
 {
 if (!m_worldVerts.Buffer () || !m_viewVerts.Buffer ())
 	return;
@@ -1307,7 +1313,7 @@ if (bEffect) {
 		}
 	}
 else {
-	SetupColor (fRadius);
+	SetupColor (fRadius, bGlow);
 	ogl.SetCullMode (GL_FRONT);
 	DrawFaces (0, m_nFaces, bTextured ? 3 : 2, GL_QUADS, 3);
 	}

@@ -180,7 +180,7 @@ class CSphere : protected CSphereData {
 		int32_t Render (CObject* pObj, CFloatVector *pPos, float xScale, float yScale, float zScale, float red, float green, float blue, float alpha, int32_t nTiles, char bAdditive);
 
 		virtual int32_t Create (void) = 0;
-		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect) = 0;
+		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect, int32_t bGlow) = 0;
 
 		inline CSphereVertex& Vertex (int16_t i) { return m_worldVerts [i]; }
 		int16_t AddVertex (CSphereVertex& v);
@@ -206,7 +206,7 @@ class CSphere : protected CSphereData {
 
 class CRingedSphere : public CSphere {
 	public:
-		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect);
+		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect, int32_t bGlow);
 		virtual int32_t Create (void);
 		virtual int32_t Quality (void) { return 32; }
 		virtual void SetQuality (int32_t nQuality) {}
@@ -250,7 +250,7 @@ class CTesselatedSphere : public CSphere {
 		virtual int32_t FaceNodes (void) = 0;
 		virtual CSphereFace *Face (int32_t nFace) = 0;
 		virtual void RenderOutline (CObject *pObj, float fScale = 1.0f);
-		int32_t SetupColor (float fRadius);
+		int32_t SetupColor (float fRadius, int32_t bGlow);
 		void Transform (float fScale);
 
 	protected:
@@ -264,7 +264,7 @@ class CTesselatedSphere : public CSphere {
 
 class CTriangleSphere : public CTesselatedSphere {
 	public:
-		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect);
+		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect, int32_t bGlow);
 		virtual int32_t Create (void);
 		virtual int32_t FaceNodes (void) { return 3; }
 
@@ -283,7 +283,7 @@ class CTriangleSphere : public CTesselatedSphere {
 
 class CQuadSphere : public CTesselatedSphere {
 	public:
-		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect);
+		virtual void RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect, int32_t bGlow);
 		virtual int32_t Create (void);
 		virtual int32_t FaceNodes (void) { return 4; }
 
