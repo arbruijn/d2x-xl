@@ -442,6 +442,8 @@ if ((GLOW_FLAGS & nType) == 0)
 #if USE_VIEWPORT
 if (!UseViewport ())
 	return true;
+if (!pVertex || !nVerts)
+	return true;
 //#pragma omp parallel for
 m_itemMin.x = m_itemMin.y = 0x7FFF;
 m_itemMax.x = m_itemMax.y = -0x7FFF;
@@ -530,7 +532,7 @@ return true;
 
 bool CGlowRenderer::Compatible (int32_t const nType, int32_t const nStrength, bool const bReplace, float const brightness)
 {
-if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness == brightness))
+if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != brightness))
 	return false;
 if ((nType == GLOW_LIGHTNING) || (nType == BLUR_OUTLINE) || (nType == BLUR_SHADOW))
 	return m_nType == nType;

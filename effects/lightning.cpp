@@ -990,13 +990,13 @@ if (gameOpts->render.lightning.bGlow && m_bGlow) {
 	if (corona.Load () && !corona.Bitmap ()->Bind (1)) {
 		corona.Texture ()->Wrap (GL_CLAMP);
 		if (m_bBlur)
-			glowRenderer.Begin (GLOW_LIGHTNING, 2, false, 1.05f);
+			glowRenderer.Begin (GLOW_LIGHTNING, 3, false, 1.0f);
 		else
 			glowRenderer.End ();
 		return 1;
 		}
 	if (m_bBlur)
-		glowRenderer.Begin (GLOW_LIGHTNING, 3, false, 1.1f);
+		glowRenderer.Begin (GLOW_LIGHTNING, 3, false, 1.0f);
 	else
 		glowRenderer.End ();
 	}
@@ -1045,8 +1045,12 @@ ComputeDistScale (100.0f);
 
 int32_t bGlow = (m_fDistScale > 0.0f) && SetupGlow ();
 if (m_bBlur) {
+	//color *= 1.0f / 3.0f;
 	glBlendEquation (GL_MAX);
-	glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1));
+	if (m_plasmaVerts.Buffer ())
+		glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1));
+	else
+		glowRenderer.SetViewport (GLOW_LIGHTNING, m_coreVerts.Buffer (), m_nNodes - m_bRandom);
 	}
 #if DBG
 else

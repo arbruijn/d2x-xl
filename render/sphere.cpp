@@ -891,7 +891,7 @@ if (m_edges.Buffer ()) {
 	transformation.End ();
 #endif
 	UnloadSphereShader ();
-	RenderMeshOutline (CMeshEdge::DistToScale (X2F (Max (0, CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ())/* - pObj->Size ()*/))));
+	RenderMeshOutline (CMeshEdge::DistToScale (X2F (Max (0, CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ()) - pObj->Size ()))));
 	}
 }
 
