@@ -313,6 +313,10 @@ if (m_bValid < 1)
 if (!m_lightning.Buffer ())
 	return 0;
 
+CObject *pObj = OBJECT (m_nObject);
+if (!pObj || (pObj->Type () == OBJ_POWERUP))
+	return 0;
+
 int32_t nLights = 0;
 for (int32_t i = 0; i < m_nBolts; i++)
 	nLights += m_lightning [i].SetLight ();
