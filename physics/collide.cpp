@@ -746,12 +746,16 @@ return 0;
 int32_t CObject::CollideWeaponAndWall (fix xHitSpeed, int16_t nHitSeg, int16_t nHitSide, CFixVector& vHitPt)
 {
 	CSegment*		pSeg = SEGMENT (nHitSeg);
+
+if (!pSeg)
+	return 1;
+
 	CSide*			pSide = (nHitSide < 0) ? NULL : pSeg->m_sides + nHitSide;
 	CWeaponInfo*	pWeaponInfo = gameData.weapons.info + info.nId;
 	CObject*			pParentObj = OBJECT (cType.laserInfo.parent.nObject);
 
-	int32_t	nPlayer;
-	fix	nStrength = WI_strength (info.nId, gameStates.app.nDifficultyLevel);
+	int32_t			nPlayer;
+	fix				nStrength = WI_strength (info.nId, gameStates.app.nDifficultyLevel);
 
 if (info.nId == OMEGA_ID)
 	if (!OkToDoOmegaDamage (this))
@@ -770,7 +774,7 @@ if (info.nId == GUIDEDMSL_ID) {
 		mType.physInfo.flags &= ~PF_BOUNCES;
 		}
 	else {
-		CFixVector vReflect = CFixVector::Reflect (info.position.mOrient.m.dir.f, pSide->m_normals[0]);
+		CFixVector vReflect = CFixVector::Reflect (info.position.mOrient.m.dir.f, pSide->m_normals [0]);
 		CAngleVector va = vReflect.ToAnglesVec ();
 		info.position.mOrient = CFixMatrix::Create (va);
 		}
