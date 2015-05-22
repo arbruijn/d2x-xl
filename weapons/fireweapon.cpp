@@ -126,32 +126,32 @@ else
 
 int32_t LasersAreRelated (int32_t o1, int32_t o2)
 {
-	CObject	*objP1, *objP2;
+	CObject	*pObj1, *pObj2;
 	int16_t		id1, id2;
 	fix		ct1, ct2;
 
 if ((o1 < 0) || (o2 < 0))
 	return 0;
-objP1 = OBJECT (o1);
-objP2 = OBJECT (o2);
-id1 = objP1->info.nId;
-ct1 = objP1->cType.laserInfo.xCreationTime;
+pObj1 = OBJECT (o1);
+pObj2 = OBJECT (o2);
+id1 = pObj1->info.nId;
+ct1 = pObj1->cType.laserInfo.xCreationTime;
 // See if o2 is the parent of o1
-if (objP1->info.nType == OBJ_WEAPON)
-	if ((objP1->cType.laserInfo.parent.nObject == o2) &&
-		 (objP1->cType.laserInfo.parent.nSignature == objP2->info.nSignature)) {
+if (pObj1->info.nType == OBJ_WEAPON)
+	if ((pObj1->cType.laserInfo.parent.nObject == o2) &&
+		 (pObj1->cType.laserInfo.parent.nSignature == pObj2->info.nSignature)) {
 		//	o1 is a weapon, o2 is the parent of 1, so if o1 is PROXIMITY_BOMB and o2 is player, they are related only if o1 < 2.0 seconds old
 		if (LaserCreationTimeout (id1, ct1))
 			return 0;
 		return 1;
 		}
 
-id2 = objP2->info.nId;
-ct2 = objP2->cType.laserInfo.xCreationTime;
+id2 = pObj2->info.nId;
+ct2 = pObj2->cType.laserInfo.xCreationTime;
 // See if o1 is the parent of o2
-if (objP2->info.nType == OBJ_WEAPON)
-	if ((objP2->cType.laserInfo.parent.nObject == o1) &&
-		 (objP2->cType.laserInfo.parent.nSignature == objP1->info.nSignature)) {
+if (pObj2->info.nType == OBJ_WEAPON)
+	if ((pObj2->cType.laserInfo.parent.nObject == o1) &&
+		 (pObj2->cType.laserInfo.parent.nSignature == pObj1->info.nSignature)) {
 		//	o2 is a weapon, o1 is the parent of 2, so if o2 is PROXIMITY_BOMB and o1 is player, they are related only if o1 < 2.0 seconds old
 		if (LaserCreationTimeout (id2, ct2))
 			return 0;
@@ -159,13 +159,13 @@ if (objP2->info.nType == OBJ_WEAPON)
 		}
 
 // They must both be weapons
-if ((objP1->info.nType != OBJ_WEAPON) || (objP2->info.nType != OBJ_WEAPON))
+if ((pObj1->info.nType != OBJ_WEAPON) || (pObj2->info.nType != OBJ_WEAPON))
 	return 0;
 
 //	Here is the 09/07/94 change -- Siblings must be identical, others can hurt each other
 // See if they're siblings...
 //	MK: 06/08/95, Don't allow prox bombs to detonate for 3/4 second.  Else too likely to get toasted by your own bomb if hit by opponent.
-if (objP1->cType.laserInfo.parent.nSignature == objP2->cType.laserInfo.parent.nSignature) {
+if (pObj1->cType.laserInfo.parent.nSignature == pObj2->cType.laserInfo.parent.nSignature) {
 	if ((id1 != PROXMINE_ID)  && (id2 != PROXMINE_ID) && (id1 != SMARTMINE_ID) && (id2 != SMARTMINE_ID))
 		return 1;
 	//	If neither is older than 1/2 second, then can't blow up!
@@ -789,35 +789,36 @@ if (nObjType == OBJ_WEAPON) {
 else if (nObjType != OBJ_ROBOT) // && ((nObjType != OBJ_WEAPON) || (gameData.weapons.info [nObjId].children < 1)))
 	return;
 
-CObject	*pCurObj;
+CObject	*pTarget;
 int32_t	i, nObject;
 
 if (IsMultiGame)
 	gameStates.app.SRand (8321L);
-FORALL_OBJS (pCurObj) {
-	nObject = OBJ_IDX (pCurObj);
-	if (pCurObj->info.nType == OBJ_PLAYER) {
+
+FORALL_OBJS (pTarget) {
+	nObject = OBJ_IDX (pTarget);
+	if (pTarget->info.nType == OBJ_PLAYER) {
 		if (nObject == parent.nObject)
 			continue;
 		if ((parent.nType == OBJ_PLAYER) && (IsCoopGame))
 			continue;
-		if (IsTeamGame && (GetTeam (pCurObj->info.nId) == GetTeam (OBJECT (parent.nObject)->info.nId)))
+		if (IsTeamGame && (GetTeam (pTarget->info.nId) == GetTeam (OBJECT (parent.nObject)->info.nId)))
 			continue;
-		if (PLAYER (pCurObj->info.nId).flags & PLAYER_FLAGS_CLOAKED)
+		if (PLAYER (pTarget->info.nId).flags & PLAYER_FLAGS_CLOAKED)
 			continue;
 		}
-	else if (pCurObj->info.nType == OBJ_ROBOT) {
-		if (pCurObj->cType.aiInfo.CLOAKED)
+	else if (pTarget->info.nType == OBJ_ROBOT) {
+		if (pTarget->cType.aiInfo.CLOAKED)
 			continue;
 		if (parent.nType == OBJ_ROBOT)	//	Robot blobs can't track robots.
 			continue;
-		if ((parent.nType == OBJ_PLAYER) &&	pCurObj->IsGuideBot ())	// Your shots won't track the buddy.
+		if ((parent.nType == OBJ_PLAYER) &&	pTarget->IsGuideBot ())	// Your shots won't track the buddy.
 			continue;
 		}
 	else
 		continue;
-	fix dist = CFixVector::Dist (pObj->info.position.vPos, pCurObj->info.position.vPos);
-	if ((dist < MAX_SMART_DISTANCE) && ObjectToObjectVisibility (pObj, pCurObj, FQ_TRANSWALL)) {
+	fix dist = CFixVector::Dist (pObj->info.position.vPos, pTarget->info.position.vPos);
+	if ((dist < MAX_SMART_DISTANCE) && ObjectToObjectVisibility (pObj, pTarget, FQ_TRANSWALL)) {
 		targetList [nObjects++] = nObject;
 		if (nObjects >= MAX_TARGET_OBJS)
 			break;
@@ -960,9 +961,9 @@ if (gameStates.app.bPlayerIsDead || OBSERVING)
 	return;
 
 	int32_t		nWeapon, nObject, nGun, h, i, j;
-	CFixVector*	vGunPoints, vGunPos;
-	CFixMatrix*	pView;
-	CObject*		pObj;
+	CFixVector	*vGunPoints, vGunPos;
+	CFixMatrix	*pView;
+	CObject		*pObj;
 
 gameData.objData.trackGoals [0] =
 gameData.objData.trackGoals [1] = NULL;

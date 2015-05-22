@@ -70,6 +70,7 @@
 #include "lightcluster.h"
 #include "multi.h"
 #include "marker.h"
+#include "trackobject.h"
 #if USE_DACS
 #	include "dialheap.h"
 #endif
@@ -1893,6 +1894,7 @@ nPrimary = 0;
 nSecondary = 0;
 nOverridden = 0;
 bTripleFusion = 0;
+gameData.weapons.xMinTrackableDot = MIN_TRACKABLE_DOT;
 CLEAR (firing);
 CLEAR (nTypes);
 }

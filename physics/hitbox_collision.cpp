@@ -321,12 +321,12 @@ return nHits;
 
 //int32_t DropMarkerObject (CFixVector& vPos, int16_t nSegment, CFixMatrix& orient, uint8_t nMarker);
 
-fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, int16_t& nModel)
+fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *pObj1, CObject *pObj2, CFixVector* p0, CFixVector* p1, int16_t& nModel)
 {
-	CFixVector			vRef = OBJPOS (objP2)->vPos;
+	CFixVector			vRef = OBJPOS (pObj2)->vPos;
 	int32_t				iModel1, nModels1, iModel2, nModels2, nHits = 0, nTotalHits = 0;
-	CModelHitboxList	*pmhb1 = gameData.models.hitboxes + objP1->ModelId ();
-	CModelHitboxList	*pmhb2 = gameData.models.hitboxes + objP2->ModelId ();
+	CModelHitboxList	*pmhb1 = gameData.models.hitboxes + pObj1->ModelId ();
+	CModelHitboxList	*pmhb2 = gameData.models.hitboxes + pObj2->ModelId ();
 	fix					dMin = 0x7fffffff;
 
 if (CollisionModel () == 1) {
@@ -342,8 +342,8 @@ else {
 	nModels2 = pmhb2->nHitboxes;
 	}
 
-tHitbox* hb1 = TransformHitboxes (objP1, p1);
-tHitbox* hb2 = TransformHitboxes (objP2, &vRef);
+tHitbox* hb1 = TransformHitboxes (pObj1, p1);
+tHitbox* hb2 = TransformHitboxes (pObj2, &vRef);
 
 int32_t i, j;
 for (i = iModel1; i <= nModels1; i++) {
@@ -370,7 +370,7 @@ if (nTotalHits) {
 	if (gameStates.app.nSDLTicks [0] - tMarker > 3000) {
 		if (nMarker >= 0)
 			OBJECT (nMarker)->Die ();
-		nMarker = DropMarkerObject (intersection, objP1->Segment (), objP1->Orientation (), 0);
+		nMarker = DropMarkerObject (intersection, pObj1->Segment (), pObj1->Orientation (), 0);
 		tMarker = gameStates.app.nSDLTicks [0];
 		}
 #	endif

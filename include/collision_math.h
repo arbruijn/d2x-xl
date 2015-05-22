@@ -235,7 +235,7 @@ float DistToFace (CFloatVector3 vRef, int16_t nSegment, uint8_t nSide, CFloatVec
 
 fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector& normal, CFixVector *p0, CFixVector *p1, CFixVector *vRef, CObject *pObj, fix rad, int16_t& nModel);
 
-fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1, int16_t& nModel);
+fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *pObj1, CObject *pObj2, CFixVector *p0, CFixVector *p1, int16_t& nModel);
 
 CSegMasks CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, int16_t nSegment, int16_t nSide, CFixVector* p0, CFixVector* p1, CObject *pObj);
 

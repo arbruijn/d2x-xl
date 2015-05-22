@@ -13,8 +13,6 @@
 #define	OMEGA_MIN_TRACKABLE_DOT			 (I2X (15) / 16)		//	Larger values mean narrower cone.  I2X (1) means damn near impossible.  0 means 180 degree field of view.
 #define	OMEGA_MAX_TRACKABLE_DIST		MAX_OMEGA_DIST	//	An CObject must be at least this close to be tracked.
 
-fix	xMinTrackableDot = MIN_TRACKABLE_DOT;
-
 #define NEW_TARGETTING 1
 
 //	-----------------------------------------------------------------------------
@@ -70,7 +68,7 @@ class CHomingTargetData {
 
 void CHomingTargetData::Add (CObject* pTarget, float dotScale)
 {
-CFixVector vTarget = (SPECTATOR (pTarget) ? gameStates.app.playerPos.vPos : pTarget->Position ()) - m_vTrackerPos;
+CFixVector vTarget = OBJPOS (pTarget)->vPos - m_vTrackerPos;
 fix dist = CFixVector::Normalize (vTarget);
 if (dist >= m_xMaxDist)
 	return;
@@ -138,16 +136,16 @@ if (pTarget->Type () == OBJ_ROBOT) {
 	if (pTarget->IsGuideBot () && (cType.laserInfo.parent.nType == OBJ_PLAYER))
 		return 0;
 	}
-CFixVector vTracker = SPECTATOR (this) ? gameStates.app.playerPos.mOrient.m.dir.f : info.position.mOrient.m.dir.f;
+CFixVector vTracker = OBJPOS (this)->mOrient.m.dir.f;
 CFixVector vTarget = pTarget->Position () - Position ();
 CFixVector::Normalize (vTarget);
 xDot = CFixVector::Dot (vTarget, vTracker);
-if ((xDot < xMinTrackableDot) && (xDot > I2X (9) / 10)) {
+if ((xDot < gameData.weapons.xMinTrackableDot) && (xDot > I2X (9) / 10)) {
 	CFixVector::Normalize (vTarget);
 	xDot = CFixVector::Dot (vTarget, vTracker);
 	}
 
-if ((xDot >= xMinTrackableDot) || 
+if ((xDot >= gameData.weapons.xMinTrackableDot) || 
 	 (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (Type () == OBJ_WEAPON) && (Id () == EARTHSHAKER_MEGA_ID) /*&& (xDot >= 0)*/)) {
 	//	xDot is in legal range, now see if CObject is visible
 	return ObjectToObjectVisibility (this, pTarget, FQ_TRANSWALL, nThread);

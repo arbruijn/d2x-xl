@@ -158,34 +158,40 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) :
 //	-----------------------------------------------------------------------------------------------------------
 //	Determine if two OBJECTS are on a line of sight.  If so, return true, else return false.
 //	Calls fvi.
-int32_t ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int32_t transType, int32_t nThread)
+int32_t ObjectToObjectVisibility (CObject *pViewer, CObject *pTarget, int32_t transType, int32_t nThread)
 {
 	CHitQuery	hitQuery;
 	CHitResult	hitResult;
-	int32_t		fate, nTries = 0, bSpectate = SPECTATOR (objP1);
+	int32_t		fate, nTries = 0, bSpectate = SPECTATOR (pViewer);
 
 do {
 	hitQuery.flags = transType | FQ_CHECK_OBJS | FQ_VISIBILITY;
-	hitQuery.p0 = bSpectate ? &gameStates.app.playerPos.vPos : &objP1->info.position.vPos;
-	hitQuery.p1 = SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->info.position.vPos;
+	hitQuery.p0 = &OBJPOS (pViewer)->vPos;
+	hitQuery.p1 = &OBJPOS (pTarget)->vPos;
+	CFixVector v = *hitQuery.p1 - *hitQuery.p0;
+	CFixVector::Normalize (v);
+	fix dot = CFixVector::Dot (v, OBJPOS (pViewer)->mOrient.m.dir.f);
+	if (dot < pViewer->FoV ())
+		return false;
+
 	hitQuery.radP0 =
 	hitQuery.radP1 = 0x10;
-	hitQuery.nObject = OBJ_IDX (objP1);
+	hitQuery.nObject = OBJ_IDX (pViewer);
 	if (nTries++) {
 		hitQuery.nSegment	= bSpectate 
 								  ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) 
-								  : FindSegByPos (objP1->info.position.vPos, objP1->info.nSegment, 1, 0);
+								  : FindSegByPos (pViewer->info.position.vPos, pViewer->info.nSegment, 1, 0);
 		if (hitQuery.nSegment < 0) {
 			fate = HIT_BAD_P0;
 			return false;
 			}
 		}
 	else
-		hitQuery.nSegment	= bSpectate ? gameStates.app.nPlayerSegment : objP1->info.nSegment;
-	fate = gameData.segData.SegVis (hitQuery.nSegment, objP2->Segment ()) ? FindHitpoint (hitQuery, hitResult, 0, nThread) : HIT_WALL;
+		hitQuery.nSegment	= bSpectate ? gameStates.app.nPlayerSegment : pViewer->info.nSegment;
+	fate = gameData.segData.SegVis (hitQuery.nSegment, pTarget->Segment ()) ? FindHitpoint (hitQuery, hitResult, 0, nThread) : HIT_WALL;
 	}
 while ((fate == HIT_BAD_P0) && (nTries < 2));
-return (fate == HIT_NONE) || (fate == HIT_BAD_P0) || ((fate == HIT_OBJECT) && (hitResult.nObject == objP2->Index ()));
+return (fate == HIT_NONE) || (fate == HIT_BAD_P0) || ((fate == HIT_OBJECT) && (hitResult.nObject == pTarget->Index ()));
 }
 
 //	-----------------------------------------------------------------------------

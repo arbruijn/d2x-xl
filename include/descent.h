@@ -2747,6 +2747,7 @@ class CWeaponData {
 		CStaticArray< CD1WeaponInfo, D1_MAX_WEAPON_TYPES >	infoD1; // [D1_MAX_WEAPON_TYPES];
 		CArray<CFloatVector>	color;
 		uint8_t				bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
+		fix					xMinTrackableDot;
 
 	public:
 		CWeaponData ();

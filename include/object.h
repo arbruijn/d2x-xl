@@ -1275,6 +1275,7 @@ class CObject : public CObjectInfo {
 	public:
 		void UpdateHomingWeapon (int32_t nThread = 0);
 		void Unstick (void);
+		fix FoV (void);
 	};
 
 inline int32_t operator- (CObject* o, CArray<CObject>& a) { return a.Index (o); }

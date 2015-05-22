@@ -2539,6 +2539,23 @@ return 1;
 #endif
 
 //------------------------------------------------------------------------------
+
+fix CObject::FoV (void)
+{
+if (IsPlayer ())
+	return F2X (0.7);
+if (IsMissile ())
+	return gameData.weapons.xMinTrackableDot;
+if (IsRobot ()) {
+	tRobotInfo *pRobotInfo = ROBOTINFO (Id ());
+	if (pRobotInfo)
+		return pRobotInfo->fieldOfView [gameStates.app.nDifficultyLevel];
+	}
+return I2X (2);
+}
+
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
