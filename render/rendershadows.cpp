@@ -394,7 +394,7 @@ int32_t GatherShadowLightSources (void)
 	CDynLight*		pLight;
 	CFixVector		vLightDir;
 	int16_t*			nearestLightP;
-	int32_t				h, i, j, k, l, n, m = gameOpts->render.shadows.nLights;
+	int32_t			h, i, j, k, l, n, m = gameOpts->render.shadows.nLights;
 
 n = lightManager.LightCount (1);
 for (h = l = 0; l < n; l++) {
