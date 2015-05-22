@@ -122,16 +122,25 @@ return nTranspType;
 
 //------------------------------------------------------------------------------
 
-int32_t CanSeePoint (CObject *pObj, CFixVector *vSource, CFixVector *vDest, int16_t nSegment, fix xRad, int32_t nThread)
+bool CHitQuery::InFoV (CObject *pObj)
 {
-	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_VISIBILITY, vSource, vDest, -1, pObj ? pObj->Index () : -1, 1, xRad);
+CFixVector v = *p1 - *p0;
+CFixVector::Normalize (v);
+fix dot = CFixVector::Dot (v, OBJPOS (pObj)->mOrient.m.dir.f);
+return dot >= pObj->FoV ();
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CanSeePoint (CObject *pObj, CFixVector *pvSource, CFixVector *pvDest, int16_t nSegment, fix xRad, int32_t nThread)
+{
+	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_VISIBILITY, pvSource, pvDest, -1, pObj ? pObj->Index () : -1, 1, xRad);
 	CHitResult	hitResult;
 
-if (SPECTATOR (pObj))
-	hitQuery.nSegment = FindSegByPos (pObj->info.position.vPos, pObj->info.nSegment, 1, 0);
-else
-	hitQuery.nSegment = pObj ? pObj->info.nSegment : nSegment;
+if (!hitQuery.InFoV (pObj))
+	return;
 
+hitQuery.nSegment = FindSegByPos (OBJPOS (pObj)->vPos, pObj->info.nSegment, 1, 0);
 int32_t nHitType = FindHitpoint (hitQuery, hitResult, 0, nThread);
 return nHitType != HIT_WALL;
 }
@@ -168,10 +177,7 @@ do {
 	hitQuery.flags = transType | FQ_CHECK_OBJS | FQ_VISIBILITY;
 	hitQuery.p0 = &OBJPOS (pViewer)->vPos;
 	hitQuery.p1 = &OBJPOS (pTarget)->vPos;
-	CFixVector v = *hitQuery.p1 - *hitQuery.p0;
-	CFixVector::Normalize (v);
-	fix dot = CFixVector::Dot (v, OBJPOS (pViewer)->mOrient.m.dir.f);
-	if (dot < pViewer->FoV ())
+	if (!hitQuery.InFoV (pViewer))
 		return false;
 
 	hitQuery.radP0 =

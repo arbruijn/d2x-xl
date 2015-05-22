@@ -147,6 +147,7 @@ class CHitQuery {
 		CHitQuery (int32_t flags, CFixVector* p0, CFixVector* p1, int16_t nSegment, int16_t nObject = -1, fix radP0 = 0, fix radP1 = 0, int32_t bIgnoreObjFlag = 0)
 			: flags (flags), p0 (p0), p1 (p1), nSegment (nSegment), nObject (nObject), radP0 (radP0), radP1 (radP1), bIgnoreObjFlag (bIgnoreObjFlag)
 			{}
+		bool InFoV (CObject *pObj);
 	};
 
 //------------------------------------------------------------------------------
