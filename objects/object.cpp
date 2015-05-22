@@ -2543,7 +2543,7 @@ return 1;
 fix CObject::FoV (void)
 {
 if (IsPlayer ())
-	return F2X (0.7);
+	return F2X (cos (gameStates.render.glFOV * 0.5f));
 if (IsMissile ())
 	return gameData.weapons.xMinTrackableDot;
 if (IsRobot ()) {

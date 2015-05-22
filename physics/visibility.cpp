@@ -138,7 +138,7 @@ int32_t CanSeePoint (CObject *pObj, CFixVector *pvSource, CFixVector *pvDest, in
 	CHitResult	hitResult;
 
 if (!hitQuery.InFoV (pObj))
-	return;
+	return 0;
 
 hitQuery.nSegment = FindSegByPos (OBJPOS (pObj)->vPos, pObj->info.nSegment, 1, 0);
 int32_t nHitType = FindHitpoint (hitQuery, hitResult, 0, nThread);
