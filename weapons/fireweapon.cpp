@@ -525,7 +525,7 @@ for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= HOMING_MSL_FRAME
 			CFixVector::Normalize (vNewVel);
 			//CFixVector vOldVel = mType.physInfo.velocity;
 			CFixVector vTest = info.position.vPos + vNewVel * xDist;
-			if (CanSeePoint (NULL, &info.position.vPos, &vTest, info.nSegment, 3 * info.xSize / 2, nThread))
+			if (CanSeePoint (this, &info.position.vPos, &vTest, info.nSegment, 3 * info.xSize / 2, nThread))
 				/*mType.physInfo.velocity = vOldVel;
 			else*/ {	//	Subtract off life proportional to amount turned. For hardest turn, it will lose 2 seconds per second.
 				mType.physInfo.velocity = vNewVel;
