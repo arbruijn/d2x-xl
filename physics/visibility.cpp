@@ -124,6 +124,8 @@ return nTranspType;
 
 bool CHitQuery::InFoV (CObject *pObj)
 {
+if (!pObj)
+	return true;
 CFixVector v = *p1 - *p0;
 CFixVector::Normalize (v);
 fix dot = CFixVector::Dot (v, OBJPOS (pObj)->mOrient.m.dir.f);
