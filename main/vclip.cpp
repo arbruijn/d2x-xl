@@ -220,13 +220,13 @@ CreateSphere (&sd);
 fAlpha = (float) sqrt (X2F (pObj->info.xLifeLeft) * 3);
 r = X2F (xSize);
 sd.pPulse = 0;
-transformation.Begin(pObj->info.position.vPos, &pObj->info.position.mOrient);
+transformation.Begin (pObj->info.position.vPos, &pObj->info.position.mOrient, __FILE__, __LINE__);
 for (i = 0; i < 3; i++) {
 	RenderSphere (&sd, reinterpret_cast<CFloatVector*> (OOF_VecVms2Oof (&p, &pObj->info.position.vPos)),
 					  r, r, r, 1, 1, 1, fAlpha, NULL, 1);
 	r *= i ? 0.5f : 0.8f;
 	}
-transformation.End ();
+transformation.End (__FILE__, __LINE__);
 #endif
 ogl.SetDepthWrite (true);
 }

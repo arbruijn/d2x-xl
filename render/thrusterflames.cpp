@@ -307,7 +307,7 @@ if (thruster.Load ()) {
 		verts [i].v.coord.y *= scale;
 		verts [i].v.coord.z = z;
 		}
-	if (glowRenderer.SetViewport (GLOW_THRUSTERS, verts, 4)) {
+	if (glowRenderer.SetViewport (GLOW_THRUSTERS, verts, 4) > 0) {
 		glColor3f (1,1,1);
 		ogl.RenderQuad (thruster.Bitmap (), verts, 3, tcCap [m_bPlayer]);
 		ogl.SetTexturing (true);
@@ -320,7 +320,7 @@ if (thruster.Load ()) {
 
 void CThrusterFlames::Render3D (int32_t i)
 {
-if (glowRenderer.SetViewport (GLOW_THRUSTERS, m_flameVerts, FLAME_VERT_COUNT)) {
+if (glowRenderer.SetViewport (GLOW_THRUSTERS, m_flameVerts, FLAME_VERT_COUNT) > 0) {
 	glColor3f (1,1,1);
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	OglTexCoordPointer (2, GL_FLOAT, 0, &m_flameTexCoord [m_bPlayer]);
@@ -453,13 +453,13 @@ else { //3D
 
 		glowRenderer.Begin (GLOW_THRUSTERS, 2, false, 0.75f);
 		m_ti = *pInfo;
-		transformation.Begin (m_ti.vPos [nThruster], (m_ti.pp && !m_bSpectate) ? m_ti.pp->mOrient : m_ti.mOrient);
-		transformation.Begin (CFixVector::ZERO, m_ti.mRot [nThruster]);
+		transformation.Begin (m_ti.vPos [nThruster], (m_ti.pp && !m_bSpectate) ? m_ti.pp->mOrient : m_ti.mOrient, __FILE__, __LINE__);
+		transformation.Begin (CFixVector::ZERO, m_ti.mRot [nThruster], __FILE__, __LINE__);
 		// render a cap for the thruster flame at its base
 		RenderCap (nThruster);
 		Render3D (nThruster);
-		transformation.End ();
-		transformation.End ();
+		transformation.End (__FILE__, __LINE__);
+		transformation.End (__FILE__, __LINE__);
 #if 1
 		glowRenderer.Done (GLOW_THRUSTERS);
 #else

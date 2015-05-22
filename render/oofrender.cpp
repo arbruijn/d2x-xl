@@ -605,7 +605,7 @@ int32_t CModel::Draw (CObject *pObj, float *fLight)
 	CFloatVector	vo;
 
 vo.SetZero ();
-transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient);
+transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient, __FILE__, __LINE__);
 if (!ogl.m_states.bUseTransform)
 	mView.Assign (transformation.m_info.view [0]);
 vPos.Assign (transformation.m_info.pos);
@@ -620,7 +620,7 @@ for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++)
 			break;
 			}
 		}
-transformation.End ();
+transformation.End (__FILE__, __LINE__);
 ogl.SetTexturing (false);
 return r;
 }

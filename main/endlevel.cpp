@@ -757,9 +757,9 @@ if (xEyeOffset)
 	gameData.render.mine.viewer.vPos += gameData.objData.pViewer->info.position.mOrient.m.dir.r * (xEyeOffset);
 SetupTransformation (transformation, gameData.objData.pViewer->info.position.vPos, gameData.objData.pViewer->info.position.mOrient, gameStates.render.xZoom, 1);
 CCanvas::Current ()->Clear (BLACK_RGBA);
-transformation.Begin (CFixVector::ZERO, mSurfaceOrient);
+transformation.Begin (CFixVector::ZERO, mSurfaceOrient, __FILE__, __LINE__);
 DrawStars ();
-transformation.End ();
+transformation.End (__FILE__, __LINE__);
 //draw satellite
 p.TransformAndEncode (gameData.endLevel.satellite.vPos);
 transformation.RotateScaled (vDelta, gameData.endLevel.satellite.vUp);
@@ -2057,9 +2057,9 @@ if (xEyeOffset)
 	gameData.render.mine.viewer.vPos += gameData.objData.pViewer->info.position.mOrient.m.dir.r * (xEyeOffset);
 SetupTransformation (transformation, gameData.objData.pViewer->info.position.vPos, gameData.objData.pViewer->info.position.mOrient, gameStates.render.xZoom, 1);
 CCanvas::Current ()->Clear (BLACK_RGBA);
-transformation.Begin (CFixVector::ZERO, mSurfaceOrient);
+transformation.Begin (CFixVector::ZERO, mSurfaceOrient, __FILE__, __LINE__);
 DrawStars ();
-transformation.End ();
+transformation.End (__FILE__, __LINE__);
 //draw satellite
 p.TransformAndEncode (gameData.endLevel.satellite.vPos);
 transformation.RotateScaled (vDelta, gameData.endLevel.satellite.vUp);

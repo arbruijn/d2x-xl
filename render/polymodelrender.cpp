@@ -222,11 +222,11 @@ if (!flags) {	//draw entire object
 		}
 	ogl.SetTransform ((gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
 							!(SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting || gameOpts->ogl.bLightObjects)));
-	transformation.Begin (*pos, *orient);
+	transformation.Begin (*pos, *orient, __FILE__, __LINE__);
 	gameStates.render.EnableCartoonStyle ();
 	G3DrawPolyModel (pObj, pModel->Data (), gameData.models.textures, animAngles, NULL, light, glowValues, pColor, NULL, nModel);
 	gameStates.render.DisableCartoonStyle ();
-	transformation.End ();
+	transformation.End (__FILE__, __LINE__);
 	}
 else {	
 	CFixVector vOffset;
@@ -245,12 +245,12 @@ else {
 #if DBG
 				G3RenderModel (pObj, nModel, i, pModel, gameData.models.textures, animAngles, &vOffset, light, glowValues, pColor);
 #endif
-				transformation.Begin (vOffset);
+				transformation.Begin (vOffset, __FILE__, __LINE__);
 				gameStates.render.EnableCartoonStyle ();
 				G3DrawPolyModel (pObj, pModel->Data () + pModel->SubModels ().ptrs [i], gameData.models.textures,
 									  animAngles, NULL, light, glowValues, pColor, NULL, nModel);
 				gameStates.render.DisableCartoonStyle ();
-				transformation.End ();
+				transformation.End (__FILE__, __LINE__);
 				}
 			}
 		}

@@ -284,7 +284,7 @@ int32_t FireWeaponDelayedWithSpread (
 	int32_t	bHarmless,
 	int16_t	nLightObj)
 {
-	uint8_t					nPlayer = pObj->Id ();
+	int32_t					nPlayer = pObj->Id ();
 	int16_t					nLaserSeg;
 	int32_t					nFate;
 	CFixVector				vLaserPos, vLaserDir, *vGunPoints;
@@ -371,11 +371,11 @@ if (bHarmless)
 
 //	If the object firing the laser is the player, then indicate the laser object so robots can dodge.
 //	New by MK on 6/8/95, don't let robots evade proximity bombs, thereby decreasing uselessness of bombs.
-if ((pObj == gameData.objData.pConsole) && !pWeapon->IsPlayerMine ())
+if ((nPlayer == N_LOCALPLAYER) && !pWeapon->IsPlayerMine ())
 	gameStates.app.bPlayerFiredLaserThisFrame = nObject;
 
 if (gameStates.app.cheats.bHomingWeapons || gameData.weapons.info [nLaserType].homingFlag) {
-	if (pObj == gameData.objData.pConsole) {
+	if (nPlayer == N_LOCALPLAYER) {
 		pWeapon->cType.laserInfo.nHomingTarget = pWeapon->FindVisibleHomingTarget (vLaserPos, MAX_THREADS);
 		gameData.multigame.weapon.nTrack = pWeapon->cType.laserInfo.nHomingTarget;
 		}

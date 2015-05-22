@@ -2590,7 +2590,6 @@ class CRobotData {
 };
 
 #define D1ROBOT(_id)		(gameStates.app.bD1Mission && ((_id) < gameData.botData.nTypes [1]))
-//#define ROBOTINFO(_id)	gameData.botData.info [D1ROBOT (_id)][_id]
 
 //------------------------------------------------------------------------------
 

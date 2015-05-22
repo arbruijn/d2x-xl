@@ -96,17 +96,17 @@ class CTransformation {
 		CTransformation () { Init (); }
 		void Init (void);
 		bool Push (void);
-		bool Pop (void);
-		void Begin (const CFixVector& vPos, CFixMatrix& mOrient);
-		_INLINE_ void Begin (const CFixVector& pos, const CAngleVector& angles) {
+		bool Pop (const char *pszFile = "", const int32_t nLine = 0);
+		void Begin (const CFixVector& vPos, CFixMatrix& mOrient, const char *pszFile, const int32_t nLine);
+		_INLINE_ void Begin (const CFixVector& pos, const CAngleVector& angles, const char *pszFile, const int32_t nLine) {
 			CFixMatrix m = CFixMatrix::Create (angles);
-			Begin (pos, m); 
+			Begin (pos, m, pszFile, nLine); 
 			}
-		_INLINE_ void Begin (const CFixVector& pos) {
+		_INLINE_ void Begin (const CFixVector& pos, const char *pszFile, const int32_t nLine) {
 			CFixMatrix m = CFixMatrix::IDENTITY;
-			Begin (pos, m); 
+			Begin (pos, m, pszFile, nLine); 
 			}
-		_INLINE_ void End (void) { Pop (); }
+		_INLINE_ void End (const char *pszFile, const int32_t nLine) { Pop (pszFile, nLine); }
 		_INLINE_ void Move (CFloatVector& v) { glTranslatef (-v.v.coord.x, -v.v.coord.y, -v.v.coord.z); }
 		_INLINE_ void Rotate (CFloatMatrix& m) { glMultMatrixf (m.m.vec); }
 

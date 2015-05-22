@@ -192,7 +192,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	0, // bInPlane
 	1, // bEnabled
 	0, // bDirection
-	{(uint8_t) (255 * 0.3f), (uint8_t) (255 * 0.2f), (uint8_t) (255 * 0.2f), (uint8_t) (255 * 0.3f)} // color;
+	{(uint8_t) (255 * 0.9f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.3f)} // color;
 	},
 	{
 	OMEGA_LIFE, // nLife
@@ -219,7 +219,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	0, // bInPlane
 	1, // bEnabled
 	0, // bDirection
-	{(uint8_t) (255 * 0.3f), (uint8_t) (255 * 0.2f), (uint8_t) (255 * 0.2f), (uint8_t) (255 * 0.3f)} // color;
+	{(uint8_t) (255 * 0.9f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.3f)} // color;
 	}
 };
 

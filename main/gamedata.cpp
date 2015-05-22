@@ -2676,15 +2676,18 @@ if ((uint32_t) nTrigger >= trigData.triggers [nType].Length ())
 return trigData.triggers [nType] + nTrigger; 
 }
 
+
 CTrigger* CGameData::GeoTrigger (int32_t nTrigger, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
 return Trigger (0, nTrigger, nChecks, pszFile, nLine);
 }
 
+
 CTrigger* CGameData::ObjTrigger (int32_t nTrigger, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
 return Trigger (1, nTrigger, nChecks, pszFile, nLine);
 }
+
 
 tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
@@ -2700,6 +2703,7 @@ if (nId >= botData.nTypes [bD1])
 	return (tRobotInfo*) GameDataError ("robot info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
 return a + nId; 
 }
+
 
 tRobotInfo* CGameData::RobotInfo (CObject* pObj, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {

@@ -70,7 +70,7 @@ if (IsTeamGame && (PLAYER (pObj->info.nId).flags & PLAYER_FLAGS_FLAG)) {
 		pBm->SetTranspType (2);
 		vPos += pObj->info.position.mOrient.m.dir.f * (-pObj->info.xSize);
 		r = X2F (pObj->info.xSize);
-		transformation.Begin (vPos, pp->mOrient);
+		transformation.Begin (vPos, pp->mOrient, __FILE__, __LINE__);
 		glColor3f (1.0f, 1.0f, 1.0f);
 		for (i = 0; i < 4; i++) {
 			vPosf.v.coord.x = 0;
@@ -88,7 +88,7 @@ if (IsTeamGame && (PLAYER (pObj->info.nId).flags & PLAYER_FLAGS_FLAG)) {
 			}
 		pBm->SetTexCoord (texCoordList [1]);
 		ogl.RenderQuad (pBm, verts, 3);
-		transformation.End ();
+		transformation.End (__FILE__, __LINE__);
 		ogl.BindTexture (0);
 		ogl.StencilOn (bStencil);
 		}

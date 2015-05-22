@@ -842,9 +842,11 @@ if (pStateInfo->pRobotInfo->companion) {
 	DoEscortFrame (pObj, gameData.ai.target.xDist, gameData.ai.nTargetVisibility);
 
 	if (pObj->cType.aiInfo.nDangerLaser != -1) {
-		CObject *pDangerObj = OBJECT (pObj->cType.aiInfo.nDangerLaser);
+		CObject *pThreat = OBJECT (pObj->cType.aiInfo.nDangerLaser);
 
-		if ((pDangerObj->info.nType == OBJ_WEAPON) && (pDangerObj->info.nSignature == pObj->cType.aiInfo.nDangerLaserSig)) {
+		if (!pThreat)
+			pObj->cType.aiInfo.nDangerLaser = -1;
+		else if ((pThreat->info.nType == OBJ_WEAPON) && (pThreat->info.nSignature == pObj->cType.aiInfo.nDangerLaserSig)) {
 			fix circleDistance = pStateInfo->pRobotInfo->circleDistance [gameStates.app.nDifficultyLevel] + TARGETOBJ->info.xSize;
 			AIMoveRelativeToTarget (pObj, pStateInfo->pLocalInfo, gameData.ai.target.xDist, &gameData.ai.target.vDir, circleDistance, 1, gameData.ai.nTargetVisibility);
 			}

@@ -22,10 +22,10 @@ class CGlowRenderer {
 		void Done (const int32_t nType);
 		bool End (float fAlpha = 1.0f);
 		bool Begin (int32_t const nType, int32_t const nStrength = 1, bool const bReplace = true, float const brightness = 1.0f);
-		bool SetViewport (int32_t const nType, CFloatVector3* pVertex, int32_t nVerts);
-		bool SetViewport (int32_t const nType, CFloatVector* pVertex, int32_t nVerts);
-		bool SetViewport (int32_t const nType, CFixVector pos, float radius);
-		bool SetViewport (int32_t const nType, CFloatVector3 pos, float width, float height, bool bTransformed = false);
+		int32_t SetViewport (int32_t const nType, CFloatVector3* pVertex, int32_t nVerts);
+		int32_t SetViewport (int32_t const nType, CFloatVector* pVertex, int32_t nVerts);
+		int32_t SetViewport (int32_t const nType, CFixVector pos, float radius);
+		int32_t SetViewport (int32_t const nType, CFloatVector3 pos, float width, float height, bool bTransformed = false);
 		bool Visible (void);
 
 		CGlowRenderer () : m_shaderProg (0), m_nType (-1), m_nStrength (-1), m_bReplace (true), m_bViewport (0), m_brightness (1.1f) {}

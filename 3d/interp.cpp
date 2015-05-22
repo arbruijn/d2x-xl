@@ -545,14 +545,14 @@ for (;;) {
 		vo = *VECPTR (p+4);
 		if (!gameData.models.vScale.IsZero ())
 			vo *= gameData.models.vScale;
-		transformation.Begin (vo, va);
+		transformation.Begin (vo, va, __FILE__, __LINE__);
 		if (vOffset)
 			vo += *vOffset;
 		if (!G3DrawPolyModel (pObj, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, pColor, po, nModel)) {
-			transformation.End ();
+			transformation.End (__FILE__, __LINE__);
 			return 0;
 			}
-		transformation.End ();
+		transformation.End (__FILE__, __LINE__);
 		p += 20;
 		}
 	else if (nTag == OP_GLOW) {
@@ -683,11 +683,11 @@ for (;;) {
 			CFixVector	vo = *VECPTR (p+4);
 			if (!gameData.models.vScale.IsZero ())
 				vo *= gameData.models.vScale;
-			transformation.Begin (vo, *va);
+			transformation.Begin (vo, *va, __FILE__, __LINE__);
 			if (vOffset)
 				vo += *vOffset;
 			G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, NULL, NULL, nModel);
-			transformation.End ();
+			transformation.End (__FILE__, __LINE__);
 			p += 20;
 			break;
 			}

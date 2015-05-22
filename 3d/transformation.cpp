@@ -28,7 +28,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "oof.h"
 #include "dynlight.h"
 
-#define MAX_INSTANCE_DEPTH	10
+#define MAX_INSTANCE_DEPTH	20
 
 //------------------------------------------------------------------------------
 
@@ -66,10 +66,18 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool CTransformation::Pop (void)
+bool CTransformation::Pop (const char *pszFile, const int32_t nLine)
 {
-if (m_save.ToS () <= 0)
+if (m_save.ToS () <= 0) {
+#if 0
+	PrintLog (0, "transformation underflow (%s.%d)!\n", pszFile, nLine);
+#endif
 	return false;
+	}
+#if 0 //DBG
+if (pszFile && *pszFile)
+	PrintLog (0, "%02d end transformation (%s.%d)\n", m_save.ToS (), pszFile, nLine);
+#endif
 m_info = m_save.Pop ();
 glMatrixMode (GL_MODELVIEW);
 glPopMatrix ();
@@ -79,14 +87,24 @@ return true;
 //------------------------------------------------------------------------------
 //instance at specified point with specified orientation
 //if matrix==NULL, don't modify matrix.  This will be like doing an offset
-void CTransformation::Begin (const CFixVector& vPos, CFixMatrix& mOrient)
+void CTransformation::Begin (const CFixVector& vPos, CFixMatrix& mOrient, const char *pszFile, const int32_t nLine)
 {
 	CFixVector	vOffs;
 	CFixMatrix	mTrans, mRot;
 
 //Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
-if (!Push ())
+if (!Push ()) {
+#if 0
+	PrintLog (0, "transformation overflow (%s.%d)!\n", pszFile, nLine);
+#endif
 	return;
+	}
+
+#if 0 //DBG
+if (pszFile && *pszFile)
+	PrintLog (0, "%02d begin transformation (%s.%d)\n", m_save.ToS (), pszFile, nLine);
+#endif
+
 if (ogl.m_states.bUseTransform) {
 	CFixVector	h;
 

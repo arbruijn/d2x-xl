@@ -115,7 +115,7 @@ tHitbox* hb = TransformHitboxes (pObj, &pObj->info.position.vPos);
 for (; iBox <= nBoxes; iBox++) {
 #if 0
 	if (iBox)
-		transformation.Begin (pmhb [iBox].vOffset, CAngleVector::ZERO);
+		transformation.Begin (pmhb [iBox].vOffset, CAngleVector::ZERO, __FILE__, __LINE__);
 	TransformHitboxf (pObj, vertList, iBox);
 #endif
 	if ((pObj->info.nType == OBJ_PLAYER) && (iBox == nDbgBox))

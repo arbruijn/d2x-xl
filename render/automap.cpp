@@ -310,9 +310,9 @@ FORALL_OBJS (pObj) {
 						CCanvas::Current ()->SetColorRGB (78 + (int32_t) FRound ((123 - 78) * fScale), 0, 96 + (int32_t) FRound ((135 - 96) * fScale), 255);
 					}
 				spherePoint.TransformAndEncode (pObj->info.position.vPos);
-				//transformation.Begin (&pObj->info.position.vPos, &pObj->info.position.mOrient);
+				//transformation.Begin (&pObj->info.position.vPos, &pObj->info.position.mOrient, __FILE__, __LINE__);
 				G3DrawSphere (&spherePoint, bTextured ? size : (size * 3) / 2, !m_bRadar);
-				//transformation.End ();
+				//transformation.End (__FILE__, __LINE__);
 				}
 			break;
 

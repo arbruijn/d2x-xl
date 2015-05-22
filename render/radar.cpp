@@ -139,7 +139,7 @@ void CRadar::RenderBackground (void)
 RenderSetup ();
 ogl.SetTransform (1);
 CFixMatrix mOrient = gameData.objData.pViewer->Orientation ();
-transformation.Begin (m_vCenter, mOrient);
+transformation.Begin (m_vCenter, mOrient, __FILE__, __LINE__);
 glScalef (m_radius * 1.2f, m_radius * 1.2f, m_radius * 1.2f);
 glColor4f (0.0f, 0.0f, 0.0f, 0.5f);
 ogl.FlushBuffers (GL_POLYGON, RADAR_SLICES, 3);
@@ -147,7 +147,7 @@ ogl.FlushBuffers (GL_POLYGON, RADAR_SLICES, 3);
 glColor4f (0.125f, 0.125f, 0.125f, 0.5f);
 ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
 #endif
-transformation.End ();
+transformation.End (__FILE__, __LINE__);
 ogl.SetTransform (0);
 // glPopMatrix ();
 }
@@ -167,7 +167,7 @@ ogl.SetTexturing (false);
 // render the three dashed, moving rings
 // glPushMatrix ();
 mOrient = CFixMatrix::IDENTITY;
-transformation.Begin (m_vCenter, mOrient);
+transformation.Begin (m_vCenter, mOrient, __FILE__, __LINE__);
 glScalef (m_radius, m_radius, m_radius);
 glLineWidth (m_lineWidth);
 
@@ -195,13 +195,13 @@ if (gameOpts->render.cockpit.nRadarStyle)
 	glColor4fv ((GLfloat*) &lineColors [2]);
 ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
 
-transformation.End ();
+transformation.End (__FILE__, __LINE__);
 // glPopMatrix ();
 
 // render the radar plane
 // glPushMatrix ();
 mOrient = gameData.objData.pViewer->Orientation ();
-transformation.Begin (m_vCenter, mOrient);
+transformation.Begin (m_vCenter, mOrient, __FILE__, __LINE__);
 
 // render the transparent green dish
 glColor4fv ((GLfloat*) &planeColors [gameOpts->render.cockpit.nRadarColor]);
@@ -249,12 +249,12 @@ glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
 ogl.FlushBuffers (GL_LINES, 8, 3);
 #endif
 
-transformation.End ();
+transformation.End (__FILE__, __LINE__);
 // glPopMatrix ();
 
 // glPushMatrix ();
 mOrient = CFixMatrix::IDENTITY;
-transformation.Begin (m_vCenter, mOrient);
+transformation.Begin (m_vCenter, mOrient, __FILE__, __LINE__);
 glScalef (m_radius, m_radius, m_radius);
 
 // render the 6 lines pointing inwards from where the dashed rings touch
@@ -275,7 +275,7 @@ pv [11].Set (0.0f, 0.0f, 0.5f);
 glColor4f (0.0f, 0.333f, 0.0f, 0.5f);
 glLineWidth (m_lineWidth);
 ogl.FlushBuffers (GL_LINES, 12, 3);
-transformation.End ();
+transformation.End (__FILE__, __LINE__);
 // glPopMatrix ();
 
 ogl.SetTransform (0);
@@ -350,7 +350,7 @@ FORALL_OBJS (pObj) {
 			RenderBlip (pObj, powerupColor.Red (), powerupColor.Green (), powerupColor.Blue (), 0.9f * 0.25f, bAbove);
 		}
 	}
-//transformation.End ();
+//transformation.End (__FILE__, __LINE__);
 //ogl.SetTransform (0);
 // glPopMatrix ();
 }

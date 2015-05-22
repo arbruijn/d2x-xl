@@ -461,7 +461,7 @@ if (!gameData.models.vScale.IsZero ())
 	vo *= gameData.models.vScale;
 #if 1
 if (pvOffset) {
-	transformation.Begin (vo, va);
+	transformation.Begin (vo, va, __FILE__, __LINE__);
 	vo += *pvOffset;
 	}
 #endif
@@ -485,7 +485,7 @@ for (i = 0, j = pModel->m_nSubModels, pSubModel = pModel->m_subModels.Buffer ();
 	if (pSubModel->m_nParent == nSubModel)
 		G3TransformSubModel (pObj, nModel, i, animAnglesP, &vo, bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 	}
-transformation.End ();
+transformation.End (__FILE__, __LINE__);
 }
 
 //------------------------------------------------------------------------------
@@ -538,7 +538,7 @@ if (!gameData.models.vScale.IsZero ())
 	vo *= gameData.models.vScale;
 
 if (pvOffset && (nExclusive < 0)) {
-	transformation.Begin (vo, va);
+	transformation.Begin (vo, va, __FILE__, __LINE__);
 	vo += *pvOffset;
 	}
 
@@ -725,7 +725,7 @@ if (bRestoreMatrix)
 #endif
 #if 1
 if (pvOffset && (nExclusive < 0))
-	transformation.End ();
+	transformation.End (__FILE__, __LINE__);
 #endif
 }
 
@@ -852,7 +852,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 			glDisable (GL_LIGHT0 + iLight);
 		}
 
-	transformation.Begin (pPos->vPos, pPos->mOrient);
+	transformation.Begin (pPos->vPos, pPos->mOrient, __FILE__, __LINE__);
 
 	pModel = gameData.models.renderModels [bHires] + nModel;
 	if (bEdges) {
@@ -879,7 +879,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 		G3DrawSubModel (pObj, nModel, 0, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &pModel->m_subModels [0].m_vOffset : pvOffset,
 							 bHires, bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles, bEdges, bBlur);
 		}
-	transformation.End ();
+	transformation.End (__FILE__, __LINE__);
 	if (!bLighting)
 		break;
 	}
@@ -930,7 +930,7 @@ vo = pSubModel->m_vOffset;
 if (!gameData.models.vScale.IsZero ())
 	vo *= gameData.models.vScale;
 if (pvOffset) {
-	transformation.Begin (vo, *va);
+	transformation.Begin (vo, *va, __FILE__, __LINE__);
 	vo += *pvOffset;
 	}
 // render any dependent submodels
@@ -941,7 +941,7 @@ for (i = 0, j = pModel->m_nSubModels, pSubModel = pModel->m_subModels.Buffer ();
 for (pSubModel = pModel->m_subModels + nSubModel, i = pSubModel->m_nFaces, pmf = pSubModel->m_faces; i; i--, pmf++)
 	lightningManager.RenderForDamage (pObj, NULL, pModel->m_faceVerts + pmf->m_nIndex, pmf->m_nVerts);
 if (pvOffset)
-	transformation.End ();
+	transformation.End (__FILE__, __LINE__);
 }
 
 //------------------------------------------------------------------------------
@@ -1025,7 +1025,7 @@ if (!bRenderTransparency && gameStates.render.bCloaked) {
 	glowRenderer.End ();
 	ogl.ResetClientStates (0);
 	bBlur = (gameOpts->render.nImageQuality >= 4) && glowRenderer.Begin (BLUR_OUTLINE, 5, false, 1.0f);
-	if (bBlur && !glowRenderer.SetViewport (BLUR_OUTLINE, vPos, 2 * X2F (pObj->info.xSize))) {
+	if (bBlur && (glowRenderer.SetViewport (BLUR_OUTLINE, vPos, 2 * X2F (pObj->info.xSize) < 1))) {
 		glowRenderer.Done (BLUR_OUTLINE);
 		bBlur = false;
 		}	
@@ -1105,7 +1105,7 @@ if (bRenderTransparency) {
 			CFixVector vPos;
 			PolyObjPos (pObj, &vPos);
 			glowRenderer.Begin (GLOW_HEADLIGHT, 2, true, 0.666f);
-			if (!glowRenderer.SetViewport (GLOW_HEADLIGHT, vPos, 2 * X2F (pObj->info.xSize))) 
+			if (glowRenderer.SetViewport (GLOW_HEADLIGHT, vPos, 2 * X2F (pObj->info.xSize)) < 1) 
 				glowRenderer.Done (GLOW_HEADLIGHT);
 			else {
 				ogl.SetFaceCulling (false);
@@ -1156,13 +1156,13 @@ if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) {
 				}
 			}
 		if (pModel) {
-			transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient);
+			transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient, __FILE__, __LINE__);
 			RenderModel::CSubModel*	pSubModel = pModel->m_subModels.Buffer ();
 			for (int32_t i = 0, j = pModel->m_nSubModels; i < j; i++, pSubModel++)
 				if ((pSubModel->m_nParent == -1) && !G3FilterSubModel (pObj, pSubModel, nGunId, nBombId, nMissileId, nMissiles))
 					G3RenderDamageLightning (pObj, nModel, i, animAnglesP, NULL, bHires);
 			//	G3RenderDamageLightning (pObj, nModel, 0, animAnglesP, NULL, bHires);
-			transformation.End ();
+			transformation.End (__FILE__, __LINE__);
 #if 0 // lightning is just pushed to the transparency renderer here and will be actually rendered in a subsequent render pass
 			glowRenderer.End ();
 #endif

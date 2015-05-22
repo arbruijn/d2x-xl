@@ -1208,7 +1208,7 @@ m_info.pTexture->Prepare ();
 #if 1// DBG
 if (strstr (m_info.szName, "targ"))
 	BRP;
-if (strstr (m_info.szName, "door35"))
+if (strstr (m_info.szName, "door"))
 	BRP;
 #endif
 //	if (width!=twidth || height!=theight)
@@ -1329,7 +1329,7 @@ if (nFrames < 2)
 	return 0;
 else {
 #if DBG
-	if (!strcmp (m_info.szName, "sparks.tga"))
+	if (strstr (m_info.szName, "door"))
 		BRP;
 	if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
 		BRP;

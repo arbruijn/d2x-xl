@@ -1718,10 +1718,8 @@ if (nEdge >= 0) {
 #endif
 		int32_t nEdges = gameData.segData.nEdges;
 		do {
-			if (nEdges >= (int32_t) edges.Length () - 1) {
-				if (!edges.Resize (nEdges * 2))
-					return -1;
-				}
+			if ((nEdges >= (int32_t) edges.Length () - 1) && !edges.Resize (nEdges * 2))
+				return -1;
 			pEdge = &edges [nEdge];
 			CMeshEdge *pNewEdge = &edges [nEdges++];
 			memcpy (pNewEdge, pEdge, sizeof (CMeshEdge));
@@ -1756,12 +1754,12 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t CSegmentData::CreateEdgeBuffers (int32_t nEdges)
+int32_t CSegmentData::CreateEdgeBuffers (int32_t nLength)
 {
 for (int32_t i = 0; i < 2; i++) {
-	if (!gameData.segData.edgeVertexData [i].m_vertices.Resize (gameData.segData.nEdges, false))
+	if (!gameData.segData.edgeVertexData [i].m_vertices.Resize (nLength, false))
 		return 0;
-	if (!gameData.segData.edgeVertexData [i].m_dists.Resize (gameData.segData.nEdges, false))
+	if (!gameData.segData.edgeVertexData [i].m_dists.Resize (nLength, false))
 		return 0;
 	}
 return 1;

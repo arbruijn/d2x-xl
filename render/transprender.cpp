@@ -424,7 +424,15 @@ if (transparencyRenderer.LoadTexture (NULL, pBm, 0, 0, 0, 0, GL_CLAMP)) {
 	pBm->SetColor ();
 	CFloatVector vPosf;
 	transformation.Transform (vPosf, position, 0);
-	if (!bGlow || glowRenderer.SetViewport (GLOW_SPRITES, *vPosf.XYZ (), X2F (nWidth), X2F (nHeight), true))
+#if DBG
+	if (glowRenderer.SetViewport (GLOW_SPRITES, *vPosf.XYZ (), X2F (nWidth), X2F (nHeight), true) < 0) {
+		transformation.Transform (vPosf, vPosf);
+		tScreenPos s;
+		ProjectPoint (*vPosf.XYZ (), s);
+		BRP;
+		}
+#endif
+	if (!bGlow || (glowRenderer.SetViewport (GLOW_SPRITES, *vPosf.XYZ (), X2F (nWidth), X2F (nHeight), true) > -1))
 		ogl.RenderQuad (pBm, vPosf, X2F (nWidth), X2F (nHeight), 3);
 	}
 if (bGlow)

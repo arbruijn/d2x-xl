@@ -504,6 +504,9 @@ if (fLog) {
 		nLogLine &= 3;
 		vsprintf (szLogLine [nLogLine] + nLogIndent, fmt, arglist);
 		va_end (arglist);
+#if 0
+		if (strstr (szLogLine [nLogLine], "transformation"))
+#endif
 		if (strcmp (szLogLine [nLogLine], szLogLine [!nLogLine])) {
 			fprintf (fLog, szLogLine [nLogLine]);
 			fflush (fLog);

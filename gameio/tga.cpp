@@ -725,6 +725,10 @@ int32_t CTGA::Shrink (int32_t xFactor, int32_t yFactor, int32_t bRealloc)
 
 	static uint8_t superTranspKeys [3] = {120,88,128};
 
+#if DBG
+if (strstr (m_pBm->Name (), "door"))
+	BRP;
+#endif
 if (!m_pBm->Buffer ())
 	return 0;
 if ((xFactor < 1) || (yFactor < 1))
@@ -811,9 +815,8 @@ if (bRealloc) {
 	m_pBm->DestroyBuffer ();
 	m_pBm->SetBuffer (pData);
 	}
-m_pBm->SetWidth (xMax);
+m_pBm->SetWidth (xMax); // also sets row size
 m_pBm->SetHeight (yMax);
-m_pBm->SetRowSize (m_pBm->RowSize () / xFactor);
 if (bRealloc)
 	UseBitmapCache (m_pBm, int32_t (m_pBm->Height ()) * int32_t (m_pBm->RowSize ()));
 return 1;
@@ -826,8 +829,8 @@ double CTGA::Brightness (void)
 if (!m_pBm)
 	return 0;
 else {
-		int32_t		bAlpha = m_pBm->BPP () == 4, i, j;
-		uint8_t		*pData;
+		int32_t	bAlpha = m_pBm->BPP () == 4, i, j;
+		uint8_t	*pData;
 		double	pixelBright, totalBright, nPixels, alpha;
 
 	if (!(pData = m_pBm->Buffer ()))

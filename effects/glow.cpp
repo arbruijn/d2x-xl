@@ -413,15 +413,15 @@ else if (!m_bViewport) {
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (int32_t const nType, CFloatVector3* pVertex, int32_t nVerts)
+int32_t CGlowRenderer::SetViewport (int32_t const nType, CFloatVector3* pVertex, int32_t nVerts)
 {
 if (!Available (nType))
-	return true;
+	return 1;
 if ((GLOW_FLAGS & nType) == 0)
-	return false;
+	return 0;
 #if USE_VIEWPORT
 if (gameOpts->render.effects.bGlow != 1)
-	return true;
+	return 1;
 //#pragma omp parallel for
 m_itemMin.x = m_itemMin.y = 0x7FFF;
 m_itemMax.x = m_itemMax.y = -0x7FFF;
@@ -433,17 +433,17 @@ return Visible ();
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (int32_t const nType, CFloatVector* pVertex, int32_t nVerts)
+int32_t CGlowRenderer::SetViewport (int32_t const nType, CFloatVector* pVertex, int32_t nVerts)
 {
 if (!Available (nType))
-	return true;
+	return 1;
 if ((GLOW_FLAGS & nType) == 0)
-	return false;
+	return 0;
 #if USE_VIEWPORT
 if (!UseViewport ())
-	return true;
+	return 1;
 if (!pVertex || !nVerts)
-	return true;
+	return 1;
 //#pragma omp parallel for
 m_itemMin.x = m_itemMin.y = 0x7FFF;
 m_itemMax.x = m_itemMax.y = -0x7FFF;
@@ -455,45 +455,48 @@ return Visible ();
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (int32_t const nType, CFloatVector3 v, float width, float height, bool bTransformed)
+int32_t CGlowRenderer::SetViewport (int32_t const nType, CFloatVector3 v, float width, float height, bool bTransformed)
 {
 if (!Available (nType))
-	return true;
+	return 1;
 if ((GLOW_FLAGS & nType) == 0)
-	return false;
+	return 0;
 #if USE_VIEWPORT
 if (!UseViewport ())
-	return true;
-if (!bTransformed)
-	transformation.Transform (v, v);
-CFloatVector3 r;
-r.Set (width, height, 0.0f);
+	return 1;
+
 m_itemMin.x = m_itemMin.y = 0x7FFF;
 m_itemMax.x = m_itemMax.y = -0x7FFF;
-SetItemExtent (v - r, true);
-SetItemExtent (v + r, true);
+
+CFloatVector3 o;
+o.Set (width, height, 0.0f);
+
+if (!bTransformed)
+	transformation.Transform (v, v);
+SetItemExtent (v - o, 1);
+SetItemExtent (v + o, 1);
 #endif
-return Visible ();
+return Visible () ? 1 : -1;
 }
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (int32_t const nType, CFixVector pos, float radius)
+int32_t CGlowRenderer::SetViewport (int32_t const nType, CFixVector pos, float radius)
 {
 if (!Available (nType))
-	return true;
+	return 1;
 if ((GLOW_FLAGS & nType) == 0)
-	return false;
+	return 0;
 #if USE_VIEWPORT
 if (!UseViewport ())
-	return true;
+	return 1;
 CFloatVector3 v;
 v.Assign (pos);
 m_itemMin.x = m_itemMin.y = 0x7FFF;
 m_itemMax.x = m_itemMax.y = -0x7FFF;
 return SetViewport (nType, v, radius, radius);
 #else
-return true;
+return 1;
 #endif
 }
 

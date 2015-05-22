@@ -198,13 +198,14 @@ if (!ogl.UseTransform ()) {
 	fSize *= X2F (pObj->Size ());
 	ogl.SetupTransform (0);
 	m = CFixMatrix::IDENTITY;
-	transformation.Begin (*PolyObjPos (pObj, &m_v), m); 
+	transformation.Begin (*PolyObjPos (pObj, &m_v), m, __FILE__, __LINE__); 
 	}
 else {
 	m = pPos->mOrient;
 	m.Transpose (m);
 	m = m.Inverse ();
 	}
+
 for (int32_t i = 0; i < 3; i++) {
 	int32_t dt = gameStates.app.nSDLTicks [0] - int32_t (hitInfo.t [i]);
 	if (dt < SHIELD_EFFECT_TIME) {
@@ -232,8 +233,9 @@ for (int32_t i = 0; i < 3; i++) {
 		vHitf [i].SetZero ();
 		}
 	}
+
 if (!ogl.UseTransform ()) {
-	transformation.End ();
+	transformation.End (__FILE__, __LINE__);
 	ogl.ResetTransform (1);
 	}
 
@@ -633,7 +635,7 @@ PolyObjPos (pObj, &vPos);
 tObjTransformation *pPos = OBJPOS (pObj);
 
 ogl.SetTransform (1);
-transformation.Begin (vPos, pPos->mOrient);
+transformation.Begin (vPos, pPos->mOrient, __FILE__, __LINE__);
 glScalef (xScale, xScale, xScale);
 
 #if SPHERE_DRAW_OUTLINE && (SPHERE_WIREFRAME < 2)
@@ -641,11 +643,11 @@ if (!bEffect/* && (gameOpts->render.textures.nQuality > 1)*/) {
 	if (gameStates.render.CartoonStyle ()) {
 #	if SPHERE_SW_TRANSFORM
 #		if 0 //DBG
-		transformation.End ();
+		transformation.End (__FILE__, __LINE__);
 		ogl.ResetTransform (1);
 		ogl.SetTransform (0);
 		CFixMatrix m = CFixMatrix::IDENTITY;
-		transformation.Begin (vPos, m);
+		transformation.Begin (vPos, m, __FILE__, __LINE__);
 #		endif
 #	endif
 		//gameStates.render.SetOutlineColor (0, 128, 255);
@@ -653,7 +655,7 @@ if (!bEffect/* && (gameOpts->render.textures.nQuality > 1)*/) {
 		//gameStates.render.ResetOutlineColor ();
 #	if SPHERE_SW_TRANSFORM
 		ogl.SetTransform (1);
-		transformation.Begin (vPos, pPos->mOrient);
+		transformation.Begin (vPos, pPos->mOrient, __FILE__, __LINE__);
 #	endif
 		}
 #	if 0
@@ -681,9 +683,19 @@ if (!bEffect/* && (gameOpts->render.textures.nQuality > 1)*/) {
 Pulsate ();
 if (bGlow) {
 	glowRenderer.Begin (GLOW_SHIELDS, 3, pObj->Type () == OBJ_POWERUP, 1.0f);
-	if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, 4 * xScale / 3)) {
+	if (glowRenderer.SetViewport (GLOW_SHIELDS, CFixVector::ZERO, 4 * xScale / 3) < 0) { // not on screen
+#if DBG
+		tScreenPos s;
+		ProjectPoint (vPos, s);
+		transformation.Transform (vPos, vPos);
+		ProjectPoint (vPos, s);
+		ProjectPoint (pPos->vPos, s);
+		transformation.Transform (vPos, pPos->vPos);
+		ProjectPoint (vPos, s);
+#endif
 		glowRenderer.Done (GLOW_SHIELDS);
 		ogl.SetDepthMode (GL_LEQUAL);
+		transformation.End (__FILE__, __LINE__);
 		return 0;
 		}
 #if 1
@@ -701,8 +713,10 @@ ogl.SetDepthMode (GL_LEQUAL);
 if (!bEffect)
 	UnloadSphereShader ();
 else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
-	if (!SetupHitEffectShader (pObj, fabs (alpha)))
+	if (!SetupHitEffectShader (pObj, fabs (alpha))) {
+		transformation.End (__FILE__, __LINE__);
 		return 0;
+		}
 	}
 
 bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : fabs (alpha), fScale);
@@ -721,7 +735,7 @@ if (bGlow) {
 	}
 #endif
 
-transformation.End ();
+transformation.End (__FILE__, __LINE__);
 ogl.ResetTransform (0);
 ogl.ResetClientStates (0);
 gameStates.render.SetCartoonStyle (bCartoonStyle);
@@ -888,7 +902,7 @@ if (m_edges.Buffer ()) {
 	if ((pObj->Type () == OBJ_POWERUP) && (pObj->Id () == POW_SHIELD_BOOST)) // draw thinner lines
 		Swap (gameData.segData.edgeVertexData [0], gameData.segData.edgeVertexData [1]);
 #if SPHERE_SW_TRANSFORM
-	transformation.End ();
+	transformation.End (__FILE__, __LINE__);
 #endif
 	UnloadSphereShader ();
 	RenderMeshOutline (CMeshEdge::DistToScale (X2F (Max (0, CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ()) - pObj->Size ()))));

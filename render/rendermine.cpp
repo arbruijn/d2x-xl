@@ -1055,6 +1055,11 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 #if POLYGONAL_OUTLINE
 		if (!bPolygonalOutline) 
 #endif
+#if DBG
+		if ((gameData.segData.edgeVertexData [bPartial].m_nVertices >= (int32_t) gameData.segData.edgeVertexData [bPartial].m_vertices.Length ()) &&
+			 !gameData.segData.edgeVertexData [bPartial].m_vertices.Resize (2 * gameData.segData.edgeVertexData [bPartial].m_nVertices))
+			return -1;
+#endif
 		gameData.segData.edgeVertexData [bPartial].Add (v);
 		}
 	if (bAutoScale)
@@ -1073,6 +1078,10 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 		vertices [1] -= p;
 		CFloatVector::Perp (p, vertices [0], vertices [1], CFloatVector::ZERO);
 		p *= wPixel * fScale * fLineWidths [nType != 0] / l;
+#if DBG
+		if (nVertices [0] > nVertices [1])
+			BRP;
+#endif
 		if (bPartial) {
 			gameData.segData.edgeVertices [--nVertices [1]] = vertices [0] - p;
 			gameData.segData.edgeVertices [--nVertices [1]] = vertices [0] + p;
@@ -1085,6 +1094,10 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 			gameData.segData.edgeVertices [nVertices [0]++] = vertices [1] + p;
 			gameData.segData.edgeVertices [nVertices [0]++] = vertices [1] - p;
 			}
+#if DBG
+		if (nVertices [0] > nVertices [1])
+			BRP;
+#endif
 		}
 #endif
 	}

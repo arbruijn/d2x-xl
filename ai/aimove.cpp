@@ -301,7 +301,6 @@ void AIMoveRelativeToTarget (CObject *pObj, tAILocalInfo *pLocalInfo, fix xDistT
 									  CFixVector *vVecToTarget, fix circleDistance, int32_t bEvadeOnly,
 									  int32_t nTargetVisibility)
 {
-	CObject		*pDangerObj = OBJECT (pObj->cType.aiInfo.nDangerLaser);
 	tRobotInfo	*pRobotInfo = ROBOTINFO (pObj);
 
 if (!pRobotInfo)
@@ -309,12 +308,16 @@ if (!pRobotInfo)
 	//	See if should take avoidance.
 
 	// New way, green guys don't evade:	if ((pRobotInfo->attackType == 0) && (pObj->cType.aiInfo.nDangerLaser != -1)) {
-if (pDangerObj && (pDangerObj->info.nType == OBJ_WEAPON) && (pDangerObj->info.nSignature == pObj->cType.aiInfo.nDangerLaserSig)) {
+	CObject		*pThreat = OBJECT (pObj->cType.aiInfo.nDangerLaser);
+
+if (!pThreat)
+	pObj->cType.aiInfo.nDangerLaser = -1;
+else if ((pThreat->info.nType == OBJ_WEAPON) && (pThreat->info.nSignature == pObj->cType.aiInfo.nDangerLaserSig)) {
 	fix			dot, xDistToLaser, fieldOfView;
 	CFixVector	vVecToLaser, fVecLaser;
 
 	fieldOfView = pRobotInfo->fieldOfView [gameStates.app.nDifficultyLevel];
-	vVecToLaser = pDangerObj->info.position.vPos - pObj->info.position.vPos;
+	vVecToLaser = pThreat->info.position.vPos - pObj->info.position.vPos;
 	xDistToLaser = CFixVector::Normalize (vVecToLaser);
 	dot = CFixVector::Dot (vVecToLaser, pObj->info.position.mOrient.m.dir.f);
 
@@ -324,13 +327,13 @@ if (pDangerObj && (pDangerObj->info.nType == OBJ_WEAPON) && (pDangerObj->info.nS
 
 		//	The laser is seen by the robot, see if it might hit the robot.
 		//	Get the laser's direction.  If it's a polyobjP, it can be gotten cheaply from the orientation matrix.
-		if (pDangerObj->info.renderType == RT_POLYOBJ)
-			fVecLaser = pDangerObj->info.position.mOrient.m.dir.f;
+		if (pThreat->info.renderType == RT_POLYOBJ)
+			fVecLaser = pThreat->info.position.mOrient.m.dir.f;
 		else {		//	Not a polyobjP, get velocity and Normalize.
-			fVecLaser = pDangerObj->mType.physInfo.velocity;	//pDangerObj->info.position.mOrient.m.v.f;
+			fVecLaser = pThreat->mType.physInfo.velocity;	//pThreat->info.position.mOrient.m.v.f;
 			CFixVector::Normalize (fVecLaser);
 			}
-		vLaserToRobot = pObj->info.position.vPos - pDangerObj->info.position.vPos;
+		vLaserToRobot = pObj->info.position.vPos - pThreat->info.position.vPos;
 		CFixVector::Normalize (vLaserToRobot);
 		dotLaserRobot = CFixVector::Dot (fVecLaser, vLaserToRobot);
 

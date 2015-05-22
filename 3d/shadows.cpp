@@ -663,9 +663,9 @@ for (;;)
 			nChild = ++m_iSubObj;
 			m_subModels [nChild].m_vPos = *VECPTR (p+4);
 			m_subModels [nChild].m_vAngles = *a;
-			transformation.Begin (*VECPTR (p+4), *a);
+			transformation.Begin (*VECPTR (p+4), *a, __FILE__, __LINE__);
 			GatherItems (p + WORDVAL (p+16), animAngleP, bInitModel, bShadowData, nChild, nThis);
-			transformation.End ();
+			transformation.End (__FILE__, __LINE__);
 			if (bInitModel)
 				pf = m_faces + m_iFace;
 			p += 20;
@@ -1370,7 +1370,7 @@ int32_t CSubModel::RenderShadow (CObject *pObj, CModel* po)
 	int32_t			h = 1, i;
 
 if (m_nParent >= 0)
-	transformation.Begin (m_vPos, m_vAngles);
+	transformation.Begin (m_vPos, m_vAngles, __FILE__, __LINE__);
 h = (int32_t) (this - po->m_subModels);
 for (i = 0; i < po->m_nSubModels; i++)
 	if (po->m_subModels [i].m_nParent == h)
@@ -1392,7 +1392,7 @@ h = RenderShadowCaps (pObj, po, 0) &&
 ResetCullAndStencil ();
 }
 if (m_nParent >= 0)
-	transformation.End ();
+	transformation.End (__FILE__, __LINE__);
 return h;
 }
 
@@ -1407,7 +1407,7 @@ int32_t POFGatherPolyModelItems (CObject *pObj, void *modelDataP, CAngleVector *
 if (!(po->m_nState || po->Create (modelDataP, bShadowData)))
 	return 0;
 if (po->m_nState == 1) {
-	transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient);
+	transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient, __FILE__, __LINE__);
 	po->GatherItems (modelDataP, animAngleP, 1, bShadowData, 0, -1);
 	if (bShadowData) {
 		CFixVector vCenter;
@@ -1423,13 +1423,13 @@ if (po->m_nState == 1) {
 		po->CalcCenters ();
 		}
 	po->m_nState = 2;
-	transformation.End ();
+	transformation.End (__FILE__, __LINE__);
 	}
 if (bShadowData) {
 	po->m_iSubObj = 0;
-	transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient);
+	transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient, __FILE__, __LINE__);
 	po->GatherItems (modelDataP, animAngleP, 0, 1, 0, -1);
-	transformation.End ();
+	transformation.End (__FILE__, __LINE__);
 	}
 return 1;
 }
@@ -1483,12 +1483,12 @@ if (FAST_SHADOWS) {
 		else
 			fInf = G3_INFINITY;
 		po->VertsToFloat ();
-		transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient);
+		transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient, __FILE__, __LINE__);
 		po->m_litFaces.Reset ();
 		if (gameOpts->render.shadows.nClip >= 2)
 			po->m_fClipDist.Clear ();
 		po->m_subModels [0].RenderShadow (pObj, po);
-		transformation.End ();
+		transformation.End (__FILE__, __LINE__);
 		gameStates.render.bRendering = 0;
 		}
 	}
@@ -1502,10 +1502,10 @@ else {
 		if (*nearestLightP == j) {
 			vLightPosf = gameData.render.shadows.vLightPos;
 			po->VertsToFloat ();
-			transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient);
+			transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient, __FILE__, __LINE__);
 			po->m_litFaces.Reset ();
 			po->m_subModels [0].RenderShadow (pObj, po);
-			transformation.End ();
+			transformation.End (__FILE__, __LINE__);
 			}
 		}
 	}
@@ -1603,12 +1603,12 @@ if (FAST_SHADOWS) {
 					dist = 400.0;
 				vShadowOffset *= F2X (sqrt (dist / 400.0));
 #endif
-				transformation.Begin (pObj->Position (), pObj->info.position.mOrient);
+				transformation.Begin (pObj->Position (), pObj->info.position.mOrient, __FILE__, __LINE__);
 				po->m_litFaces.Reset ();
 				if (gameOpts->render.shadows.nClip >= 2)
 					po->m_fClipDist.Clear ();
 				po->m_subModels [0].RenderShadow (pObj, po);
-				transformation.End ();
+				transformation.End (__FILE__, __LINE__);
 				gameStates.render.bRendering = 0;
 				}
 			}
@@ -1626,10 +1626,10 @@ else {
 		if (*nearestLightP == j) {
 			vLightPosf = gameData.render.shadows.vLightPos;
 			po->VertsToFloat ();
-			transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient);
+			transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient, __FILE__, __LINE__);
 			po->m_litFaces.Reset ();
 			po->m_subModels [0].RenderShadow (pObj, po);
-			transformation.End ();
+			transformation.End (__FILE__, __LINE__);
 			}
 		}
 	}

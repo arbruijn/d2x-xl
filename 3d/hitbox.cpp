@@ -216,7 +216,7 @@ else {
 	iModel = 1;
 	nModels = gameData.models.hitboxes [pObj->ModelId ()].nSubModels;
 	}
-transformation.Begin (vPos ? vPos : &pObj->info.position.vPos, &pObj->info.position.mOrient);
+transformation.Begin (vPos ? vPos : &pObj->info.position.vPos, &pObj->info.position.mOrient, __FILE__, __LINE__);
 for (; iModel <= nModels; iModel++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++)
 		transformation.Transform (rotVerts + i, pmhb->box.vertices + i, 0);
@@ -226,7 +226,7 @@ for (; iModel <= nModels; iModel++, phb++, pmhb++) {
 		VmVecNormal (pf->n + 1, pf->dir, pf->dir + 1, pf->dir + 2);
 		}
 	}
-transformation.End ();
+transformation.End (__FILE__, __LINE__);
 }
 
 #else //G3_HITBOX_TRANSFORM

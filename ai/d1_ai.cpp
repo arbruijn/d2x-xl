@@ -1014,85 +1014,85 @@ if (speed > pObj->MaxSpeed ()) {
 //	If the flag evade_only is set, then only allowed to evade, not allowed to move otherwise (must have mode == D1_AIM_STILL).
 void ai_move_relative_to_player(CObject *pObj, tAILocalInfo *pLocalInfo, fix dist_to_player, CFixVector *vec_to_player, fix circle_distance, int32_t evade_only)
 {
-	CObject		*pDangerObj;
 	tRobotInfo	*pRobotInfo = &gameData.botData.info [1][pObj->info.nId];
 
 	//	See if should take avoidance.
 
 // New way, green guys don't evade:	if ((pRobotInfo->attackType == 0) && (pObj->cType.aiInfo.nDangerLaser != -1)) {
-	if (pObj->cType.aiInfo.nDangerLaser != -1) {
-		pDangerObj = OBJECT (pObj->cType.aiInfo.nDangerLaser);
+if (pObj->cType.aiInfo.nDangerLaser != -1) {
+	CObject *pThreat = OBJECT (pObj->cType.aiInfo.nDangerLaser);
 
-		if ((pDangerObj->info.nType == OBJ_WEAPON) && (pDangerObj->info.nSignature == pObj->cType.aiInfo.nDangerLaserSig)) {
-			fix			dot, dist_to_laser, fieldOfView;
-			CFixVector	vec_to_laser, laser_fVec;
+	if (!pThreat)
+		pObj->cType.aiInfo.nDangerLaser = -1;
+	else if ((pThreat->info.nType == OBJ_WEAPON) && (pThreat->info.nSignature == pObj->cType.aiInfo.nDangerLaserSig)) {
+		fix			dot, dist_to_laser, fieldOfView;
+		CFixVector	vec_to_laser, laser_fVec;
 
-			fieldOfView = gameData.botData.info [1][pObj->info.nId].fieldOfView [gameStates.app.nDifficultyLevel];
+		fieldOfView = gameData.botData.info [1][pObj->info.nId].fieldOfView [gameStates.app.nDifficultyLevel];
 
-			vec_to_laser = pDangerObj->info.position.vPos - pObj->info.position.vPos;
-			dist_to_laser = CFixVector::Normalize (vec_to_laser);
-			dot = CFixVector::Dot (vec_to_laser, pObj->info.position.mOrient.m.dir.f);
+		vec_to_laser = pThreat->info.position.vPos - pObj->info.position.vPos;
+		dist_to_laser = CFixVector::Normalize (vec_to_laser);
+		dot = CFixVector::Dot (vec_to_laser, pObj->info.position.mOrient.m.dir.f);
 
-			if (dot > fieldOfView) {
-				fix			laser_robot_dot;
-				CFixVector	laser_vec_to_robot;
+		if (dot > fieldOfView) {
+			fix			laser_robot_dot;
+			CFixVector	laser_vec_to_robot;
 
-				//	The laser is seen by the pRobot, see if it might hit the pRobot.
-				//	Get the laser's direction.  If it's a polyobj, it can be gotten cheaply from the orientation matrix.
-				if (pDangerObj->info.renderType == RT_POLYOBJ)
-					laser_fVec = pDangerObj->info.position.mOrient.m.dir.f;
-				else {		//	Not a polyobj, get velocity and Normalize.
-					laser_fVec = pDangerObj->mType.physInfo.velocity;	//pDangerObj->info.position.mOrient.m.v.f;
-					CFixVector::Normalize (laser_fVec);
+			//	The laser is seen by the pRobot, see if it might hit the pRobot.
+			//	Get the laser's direction.  If it's a polyobj, it can be gotten cheaply from the orientation matrix.
+			if (pThreat->info.renderType == RT_POLYOBJ)
+				laser_fVec = pThreat->info.position.mOrient.m.dir.f;
+			else {		//	Not a polyobj, get velocity and Normalize.
+				laser_fVec = pThreat->mType.physInfo.velocity;	//pThreat->info.position.mOrient.m.v.f;
+				CFixVector::Normalize (laser_fVec);
 				}
-				laser_vec_to_robot = pObj->info.position.vPos - pDangerObj->info.position.vPos;
-				CFixVector::Normalize (laser_vec_to_robot);
-				laser_robot_dot = CFixVector::Dot (laser_fVec, laser_vec_to_robot);
+			laser_vec_to_robot = pObj->info.position.vPos - pThreat->info.position.vPos;
+			CFixVector::Normalize (laser_vec_to_robot);
+			laser_robot_dot = CFixVector::Dot (laser_fVec, laser_vec_to_robot);
 
-				if ((laser_robot_dot > I2X (7) / 8) && (dist_to_laser < I2X (80))) {
-					int32_t	evadeSpeed;
+			if ((laser_robot_dot > I2X (7) / 8) && (dist_to_laser < I2X (80))) {
+				int32_t	evadeSpeed;
 
-					D1_AI_evaded = 1;
-					evadeSpeed = gameData.botData.info [1][pObj->info.nId].evadeSpeed [gameStates.app.nDifficultyLevel];
+				D1_AI_evaded = 1;
+				evadeSpeed = gameData.botData.info [1][pObj->info.nId].evadeSpeed [gameStates.app.nDifficultyLevel];
 
-					move_around_player(pObj, vec_to_player, evadeSpeed);
+				move_around_player(pObj, vec_to_player, evadeSpeed);
 				}
 			}
-			return;
-		}
-	}
-
-	//	If only allowed to do evade code, then done.
-	//	Hmm, perhaps brilliant insight.  If want claw-type guys to keep coming, don't return here after evasion.
-	if ((!pRobotInfo->attackType) && evade_only)
 		return;
-
-	//	If we fall out of above, then no CObject to be avoided.
-	pObj->cType.aiInfo.nDangerLaser = -1;
-
-	//	Green guy selects move around/towards/away based on firing time, not distance.
-	if (pRobotInfo->attackType == 1) {
-		if (((pLocalInfo->pNextrimaryFire > pRobotInfo->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) && (dist_to_player < I2X (30))) || gameStates.app.bPlayerIsDead) {
-			//	1/4 of time, move around pPlayer, 3/4 of time, move away from pPlayer
-			if (RandShort () < 8192) {
-				move_around_player(pObj, vec_to_player, -1);
-			} else {
-				move_away_from_player(pObj, vec_to_player, 1);
-			}
-		} else {
-			move_towards_player(pObj, vec_to_player);
 		}
-	} else {
-		if (dist_to_player < circle_distance)
-			move_away_from_player(pObj, vec_to_player, 0);
-		else if (dist_to_player < circle_distance*2)
-			move_around_player(pObj, vec_to_player, -1);
-		else
-			move_towards_player(pObj, vec_to_player);
 	}
 
-}
+//	If only allowed to do evade code, then done.
+//	Hmm, perhaps brilliant insight.  If want claw-type guys to keep coming, don't return here after evasion.
+if ((!pRobotInfo->attackType) && evade_only)
+	return;
 
+//	If we fall out of above, then no CObject to be avoided.
+pObj->cType.aiInfo.nDangerLaser = -1;
+
+//	Green guy selects move around/towards/away based on firing time, not distance.
+if (pRobotInfo->attackType == 1) {
+	if (((pLocalInfo->pNextrimaryFire > pRobotInfo->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) && (dist_to_player < I2X (30))) || gameStates.app.bPlayerIsDead) {
+		//	1/4 of time, move around pPlayer, 3/4 of time, move away from pPlayer
+		if (RandShort () < 8192)
+			move_around_player(pObj, vec_to_player, -1);
+		else 
+			move_away_from_player(pObj, vec_to_player, 1);
+		}
+	else {
+		move_towards_player(pObj, vec_to_player);
+		}
+	} 
+else {
+	if (dist_to_player < circle_distance)
+		move_away_from_player(pObj, vec_to_player, 0);
+	else if (dist_to_player < circle_distance*2)
+		move_around_player(pObj, vec_to_player, -1);
+	else
+		move_towards_player(pObj, vec_to_player);
+	}
+}
 
 //	-------------------------------------------------------------------------------------------------------------------
 int32_t	Break_on_object = -1;

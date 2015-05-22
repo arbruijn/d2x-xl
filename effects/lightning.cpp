@@ -1038,33 +1038,31 @@ if (m_nLife > 0) {
 	else if (m_nTTL < m_nLife / 4)
 		color.Alpha () *= (float) m_nTTL / (float) (m_nLife / 4);
 	}
-color.Red () *= (float) (0.9 + RandDouble () / 5);
-color.Green () *= (float) (0.9 + RandDouble () / 5);
-color.Blue () *= (float) (0.9 + RandDouble () / 5);
+color.Red () *= (float) (1.0 - RandDouble () / 5.0);
+color.Green () *= (float) (1.0 - RandDouble () / 5.0);
+color.Blue () *= (float) (1.0 - RandDouble () / 5.0);
 ComputeDistScale (100.0f);
 
 int32_t bGlow = (m_fDistScale > 0.0f) && SetupGlow ();
+int32_t bVisible = 1;
 if (m_bBlur) {
-	//color *= 1.0f / 3.0f;
-	glBlendEquation (GL_MAX);
-	if (m_plasmaVerts.Buffer ())
-		glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1));
-	else
-		glowRenderer.SetViewport (GLOW_LIGHTNING, m_coreVerts.Buffer (), m_nNodes - m_bRandom);
+	if (0 > (m_plasmaVerts.Buffer () 
+				? glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1))
+				: glowRenderer.SetViewport (GLOW_LIGHTNING, m_coreVerts.Buffer (), m_nNodes - m_bRandom)))
+		bVisible = 0;
+	else {
+		glBlendEquation (GL_MAX);
+		color /= 3.0f;
+		}
 	}
-#if DBG
-else
-	BRP;
-#endif
-if (bGlow && m_plasmaVerts.Buffer ()) 
-	RenderGlow (&color, nDepth, nThread);
-#if DBG
-else
-	BRP;
-#endif
-RenderCore (&color, nDepth, nThread);
-if (m_bBlur)
-	glBlendEquation (GL_FUNC_ADD);
+
+if (bVisible) {
+	if (bGlow && m_plasmaVerts.Buffer ()) 
+		RenderGlow (&color, nDepth, nThread);
+	RenderCore (&color, nDepth, nThread);
+	if (m_bBlur)
+		glBlendEquation (GL_FUNC_ADD);
+	}
 
 if (extraGameInfo [0].bUseLightning > 1)
 		for (int32_t i = 0; i < m_nNodes; i++)
