@@ -928,10 +928,10 @@ if (!gameStates.app.bNostalgia && gameOpts->Use3DPowerups ()) {
 		pObj->mType.physInfo.drag = 512;
 		int32_t bSpinning = !pObj->mType.physInfo.rotVel.IsZero ();
 		if (gameOpts->render.powerups.nSpin !=	bSpinning) {
-			if (bSpinning)
-				pObj->mType.physInfo.rotVel.SetZero ();
-			else
+			if (gameOpts->render.powerups.nSpin)
 				pObj->mType.physInfo.rotVel.Set (I2X (1) / 4, I2X (1) / 4, I2X (1) / 4);
+			else
+				pObj->mType.physInfo.rotVel.SetZero ();
 			}
 		}
 #if DBG

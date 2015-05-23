@@ -331,9 +331,10 @@ a.v.coord.p = 2 * SRandShort ();
 a.v.coord.b = 2 * SRandShort ();
 a.v.coord.h = 2 * SRandShort ();
 pObj->info.position.mOrient = CFixMatrix::Create (a);
-pObj->mType.physInfo.rotVel.v.coord.z =
-pObj->mType.physInfo.rotVel.v.coord.y = 0;
-pObj->mType.physInfo.rotVel.v.coord.x = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+if (gameOpts->render.powerups.nSpin)
+	pObj->mType.physInfo.rotVel.Set (I2X (1) / 4, I2X (1) / 4, I2X (1) / 4);
+else
+	pObj->mType.physInfo.rotVel.SetZero ();
 #endif
 #if 0
 pObj->mType.physInfo.mass = I2X (1);
