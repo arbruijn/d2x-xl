@@ -173,7 +173,9 @@ void UpdateSpin (CObject *pObj)
 
 static CAngleVector vSpin = { 0, 0, 0 };
 
-a.Set (I2X (1) / 12, 0, (I2X (1) * (SDL_GetTicks () % 2001)) / 2000);
+int32_t nId = pObj->Id ();
+
+a.Set (((nId == POW_EXTRA_LIFE) || (nId == POW_SHIELD_BOOST) || (nId == POW_INVUL) || (nId == POW_CLOAK)) ? 0 : I2X (1) / 12, 0, (I2X (1) * (SDL_GetTicks () % 2001)) / 2000);
 #if 1
 pObj->info.position.mOrient = CFixMatrix::Create (a);
 #else
