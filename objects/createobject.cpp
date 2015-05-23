@@ -248,7 +248,7 @@ else if (nType == OBJ_POWERUP) {
 	BRP;
 	if (nId == POW_MONSTERBALL)
 		BRP;
-	if (nId == 27) // unknown powerup type
+	if (nId == POW_VULCAN_AMMO) // unknown powerup type
 		BRP;
 	}
 #endif
@@ -406,6 +406,10 @@ int32_t PowerupsInMine (int32_t nPowerup)
 if (MultiPowerupIs4Pack (nPowerup))
 	nCount = PowerupsInMine (nPowerup - 1) / 4;
 else {
+#if DBG
+	if (nPowerup == nDbgPowerup)
+		BRP;
+#endif
 	nCount = gameData.multiplayer.powerupsInMine [nPowerup];
 	if (gameStates.multi.nGameType == UDP_GAME)
 		nCount += PowerupsOnShips (nPowerup);
@@ -547,7 +551,7 @@ if (nCount && powerupFilter [nPowerup]) {
 
 int32_t MissingPowerups (int32_t nPowerup, int32_t bBreakDown)
 {
-return powerupFilter [nPowerup] ? 0 : gameData.multiplayer.maxPowerupsAllowed [nPowerup] - PowerupsInMine (nPowerup);
+return powerupFilter [nPowerup] ? gameData.multiplayer.maxPowerupsAllowed [nPowerup] - PowerupsInMine (nPowerup) : 0;
 }
 
 //------------------------------------------------------------------------------
@@ -591,8 +595,10 @@ if (!bIgnoreLimits && TooManyPowerups ((int32_t) nId)) {
 if (gameStates.gameplay.bMineMineCheat && !bForce && (CObject::IsEquipment (nId) < 2))
 	return -1;
 int16_t nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objData.pwrUp.info [nId].size, CT_POWERUP, MT_PHYSICS, RT_POWERUP);
-if ((nObject >= 0) && IsMultiGame && PowerupClass (nId))
+if ((nObject >= 0) && IsMultiGame && PowerupClass (nId)) {
+	OBJECT (nObject)->SetShield (I2X (100));
 	AddPowerupInMine ((int32_t) nId);
+	}
 return nObject;
 }
 

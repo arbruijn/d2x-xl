@@ -1239,14 +1239,11 @@ for (int16_t i = 0; i < N_PLAYERS; i++, pPlayer++) {
 		nPowerups += gameData.multiplayer.SecondaryAmmo (i, nIndex, 0);
 		}
 	else {	// guns
-		if (!(extraGameInfo [IsMultiGame].loadout.nGuns & (1 << nIndex))) {
-			if (nIndex == LASER_INDEX) {
-				//if (!(extraGameInfo [0].loadout.nGuns & (1 << 5)))
-					nPowerups += pPlayer->LaserLevel (0);
-				}
-			else if (nIndex == SUPER_LASER_INDEX) {
+		if (!IsBuiltinWeapon (nIndex)) {
+			if (nIndex == LASER_INDEX)
+				nPowerups += pPlayer->LaserLevel (0);
+			else if (nIndex == SUPER_LASER_INDEX)
 				nPowerups += pPlayer->LaserLevel (1);
-				}
 			else if (pPlayer->primaryWeaponFlags & (1 << nIndex)) {
 				nPowerups++;
 				if ((nIndex == FUSION_INDEX) && gameData.multiplayer.weaponStates [i].bTripleFusion)

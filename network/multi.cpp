@@ -2558,6 +2558,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 			}
 		}
 	}
+AddAllowedPowerup (POW_VULCAN_AMMO, (gameData.multiplayer.PrimaryAmmo (nPlayer, VULCAN_INDEX) + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CAPACITY);
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 	nType = int32_t (secondaryWeaponToPowerup [0][i]);
 	AddAllowedPowerup (nType, i ? gameData.multiplayer.SecondaryAmmo (nPlayer, i) : gameData.multiplayer.SecondaryAmmo (nPlayer, i, 0));
@@ -5629,11 +5630,11 @@ t0 = t;
 for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 	if (MultiPowerupIs4Pack (i))
 		continue;
-	h = MissingPowerups (i, 1);
 #if DBG
 	if (i == nDbgPowerup)
 		BRP;
 #endif
+	h = MissingPowerups (i, 1);
 	if (h < 0) {
 		if (gameData.multiplayer.powerupsInMine [i] > 0) 
 			j = i;

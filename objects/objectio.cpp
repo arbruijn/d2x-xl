@@ -103,6 +103,8 @@ cf.ReadVector (info.position.vPos);
 cf.ReadMatrix (info.position.mOrient);
 SetSize (cf.ReadFix ());
 SetShield (cf.ReadFix ());
+if (info.nType == OBJ_POWERUP)
+	SetShield (I2X (100));
 cf.ReadVector (info.vLastPos);
 info.contains.nType = cf.ReadByte ();
 info.contains.nId = cf.ReadByte ();
@@ -359,6 +361,10 @@ cf.ReadVector (info.position.vPos);
 cf.ReadMatrix (info.position.mOrient);  
 SetSize (cf.ReadFix ()); 
 SetShield (cf.ReadFix ());
+#if DBG
+if (Type () == OBJ_POWERUP)
+	BRP;
+#endif
 cf.ReadVector (info.vLastPos);  
 info.contains.nType = cf.ReadByte (); 
 info.contains.nId = cf.ReadByte ();   
