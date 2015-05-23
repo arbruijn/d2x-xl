@@ -232,6 +232,12 @@ gameStates.render.bUsePerPixelLighting = 1;
 gameStates.render.nMaxLightsPerPass = 8;
 gameStates.render.nMaxLightsPerFace = 16;
 gameStates.render.xPlaneDistTolerance = DEFAULT_PLANE_DIST_TOLERANCE;
+gameStates.render.bBlurTextures = 1;
+gameStates.render.bPosterizeTextures = 1;
+gameStates.render.outlineColor.r = 2;
+gameStates.render.outlineColor.g = 2;
+gameStates.render.outlineColor.b = 2;
+gameStates.render.outlineColor.a = 255;
 gameStates.render.outlineWidth [0][0] = 3.0f;
 gameStates.render.outlineWidth [0][1] = 2.0f;
 gameStates.render.outlineWidth [1][0] = 2.0f;
@@ -395,11 +401,7 @@ return Clamp (w, ogl.m_data.lineWidthRange [0], Min (ogl.m_data.lineWidthRange [
 
 int32_t CRenderStates::EnableCartoonStyle (int32_t bBlur, int32_t bPosterize, int32_t bOutline) 
 {
-bBlurTextures = bBlur;
-bPosterizeTextures = bPosterize;
-bOutlineTextures = bOutline;
-SetOutlineColor ();
-return SetCartoonStyle (gameOpts->render.bCartoonize);
+return SetCartoonStyle (gameOpts->render.bCartoonize, bBlur, bPosterize, bOutline);
 }
 
 // ----------------------------------------------------------------------------

@@ -491,7 +491,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <OmitFramePointers>true</OmitFramePointers>
+      <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\..\..\libraries\sixense\include;..\..\..\libraries\rift\LibOVR\include;..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -510,8 +510,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CallingConvention>FastCall</CallingConvention>
       <CompileAs>Default</CompileAs>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -523,7 +522,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\..\Libraries\Rift\VC10\x64\Release\;"..\..\..\libraries\zlib-1.2.5\VC10\x64\DLL Release";..\..\..\libraries\SDL_image-1.2.7\VC10\x64\Release;..\..\..\libraries\SDL_net-1.2.7\VC10\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <SubSystem>Windows</SubSystem>
       <LinkTimeCodeGeneration>

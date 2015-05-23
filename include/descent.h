@@ -1128,11 +1128,6 @@ class CRenderStates {
 			}
 
 		inline bool Dirty (void) { return (nWindow [0] != nWindow [1]) || (xStereoSeparation [0] != xStereoSeparation [1]); }
-		inline int32_t SetCartoonStyle (int32_t bNewStyle) {
-			int32_t bOldStyle = bCartoonize;
-			bCartoonize = bNewStyle;
-			return bOldStyle;
-			}
 
 		inline void SetOutlineColor (uint8_t r = 2, uint8_t g = 2, uint8_t b = 2, uint8_t a = 255) {
 			outlineColor.r = r;
@@ -1145,11 +1140,19 @@ class CRenderStates {
 			SetOutlineColor ();
 			}
 
+		inline int32_t SetCartoonStyle (int32_t bNewStyle, int32_t bBlur = 1, int32_t bPosterize = 1, int32_t bOutline = 0) {
+			int32_t bOldStyle = bCartoonize;
+			bCartoonize = bNewStyle;
+			bBlurTextures = bBlur;
+			bPosterizeTextures = bPosterize;
+			bOutlineTextures = bOutline;
+			SetOutlineColor ();
+			return bOldStyle;
+			}
+
 		int32_t EnableCartoonStyle (int32_t bBlur = 1, int32_t bPosterize = 1, int32_t bOutline = 0);
 
 		inline int32_t DisableCartoonStyle (void) {
-			bOutlineTextures = 0;
-			ResetOutlineColor ();
 			return SetCartoonStyle (0);
 			}
 
