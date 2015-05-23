@@ -8,7 +8,7 @@ SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
 FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
 CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
 AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
+COPYRIGHT 1993	999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -345,26 +345,25 @@ return PickupEnergyBoost (NULL, nPlayer);
 int32_t PickupGatlingGun (CObject *pObj, int32_t nId, int32_t nPlayer)
 {
 	int32_t nAmmo = pObj->cType.powerupInfo.nCount;
-	int32_t bUsed = PickupPrimary (nId, nPlayer);
+	int32_t bPickedUp = PickupPrimary (nId, nPlayer);
 
 //didn't get the weapon (because we already have it), but
-//maybe snag some of the nAmmo.  if single-CPlayerData, grab all the nAmmo
-//and remove the powerup.  If multi-CPlayerData take nAmmo in excess of
+//maybe snag some of the nAmmo.  if singleplayer, grab all the ammo
+//and remove the powerup.  If multiplayer take ammo in excess of
 //the amount in a powerup, and leave the rest.
-if (!bUsed && IsMultiGame)
+if (!bPickedUp && IsMultiGame)
 	nAmmo -= VULCAN_CLIP_CAPACITY;	//don't let take all ammo
 if (nAmmo > 0) {
 	int32_t nAmmoUsed = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, nAmmo, NULL, nPlayer);
 	pObj->cType.powerupInfo.nCount -= nAmmoUsed;
 	if (ISLOCALPLAYER (nPlayer)) {
-		if (!bUsed && nAmmoUsed) {
+		if (!bPickedUp && nAmmoUsed) {
 			PowerupBasic (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO);
-			nId = POW_VULCAN_AMMO;		//set new id for making sound at end of this function
 			return pObj->cType.powerupInfo.nCount ? -1 : -2;
 			}
 		}
 	}
-return bUsed;
+return bPickedUp;
 }
 
 //	-----------------------------------------------------------------------------

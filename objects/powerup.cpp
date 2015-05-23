@@ -408,13 +408,13 @@ return 0;
 int32_t PickupEquipment (CObject *pObj, int32_t nEquipment, const char *pszHave, const char *pszGot, int32_t nPlayer)
 {
 	CPlayerData	*pPlayer = gameData.multiplayer.players + nPlayer;
-	int32_t		id, bUsed = 0;
+	int32_t		id, bPickedUp = 0;
 
 if (pPlayer->flags & nEquipment) {
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %s!", TXT_ALREADY_HAVE, pszHave);
 	if (!IsMultiGame)
-		bUsed = PickupEnergyBoost (pObj, nPlayer);
+		bPickedUp = PickupEnergyBoost (pObj, nPlayer);
 	} 
 else {
 	pPlayer->flags |= nEquipment;
@@ -426,9 +426,9 @@ else {
 		audio.PlaySound ((int16_t) gameData.objData.pwrUp.info [id].hitSound);
 		PowerupBasic (15, 0, 15, 0, pszGot, nPlayer);
 		}
-	bUsed = -1;
+	bPickedUp = -1;
 	}
-return bUsed;
+return bPickedUp;
 }
 
 //	-----------------------------------------------------------------------------
@@ -440,9 +440,9 @@ int32_t PickupHeadlight (CObject *pObj, int32_t nPlayer)
 
 sprintf (szTemp, TXT_GOT_HEADLIGHT, (EGI_FLAG (headlight.bAvailable, 0, 0, 1) && gameOpts->gameplay.bHeadlightOnWhenPickedUp) ? TXT_ON : TXT_OFF);
 HUDInitMessage (szTemp);
-int32_t bUsed = PickupEquipment (pObj, PLAYER_FLAGS_HEADLIGHT, TXT_THE_HEADLIGHT, szTemp, nPlayer);
-if (bUsed >= 0)
-	return bUsed;
+int32_t bPickedUp = PickupEquipment (pObj, PLAYER_FLAGS_HEADLIGHT, TXT_THE_HEADLIGHT, szTemp, nPlayer);
+if (bPickedUp >= 0)
+	return bPickedUp;
 if (ISLOCALPLAYER (nPlayer)) {
 	if (EGI_FLAG (headlight.bAvailable, 0, 0, 1)  && gameOpts->gameplay.bHeadlightOnWhenPickedUp)
 		pPlayer->flags |= PLAYER_FLAGS_HEADLIGHT_ON;
@@ -484,10 +484,10 @@ return (gameData.multiplayer.weaponStates [nPlayer].nShip != 0)
 
 int32_t PickupAfterburner (CObject *pObj, int32_t nPlayer)
 {
-	int32_t bUsed = PickupEquipment (pObj, PLAYER_FLAGS_AFTERBURNER, TXT_THE_BURNER, TXT_GOT_BURNER, nPlayer);
+	int32_t bPickedUp = PickupEquipment (pObj, PLAYER_FLAGS_AFTERBURNER, TXT_THE_BURNER, TXT_GOT_BURNER, nPlayer);
 	
-if (bUsed >= 0)
-	return bUsed;
+if (bPickedUp >= 0)
+	return bPickedUp;
 gameData.physics.xAfterburnerCharge = I2X (1);
 return 1;
 }
@@ -554,9 +554,9 @@ return 0;
 
 void UsePowerup (int32_t id)
 {
-	int32_t	bApply;
+	int32_t	bApply = id < 0;
 
-if ((bApply = (id < 0)))
+if (bApply)
 	id = -id;
 if (id >= MAX_POWERUP_TYPES_D2)
 	id = POW_AFTERBURNER;
@@ -674,8 +674,8 @@ if (pObj->Ignored (1, 1))
 	return 0;
 
 	CPlayerData*	pPlayer;
-	int32_t			bUsed = 0;
-	int32_t			bSpecialUsed = 0;		//for when hitting vulcan cannon gets vulcan ammo
+	int32_t			bPickedUp = 0;
+	int32_t			bPickedUpAmmo = 0;		//for when hitting vulcan cannon gets vulcan ammo
 	int32_t			bLocalPlayer;
 	int32_t			nId, nType;
 
@@ -702,38 +702,40 @@ if ((abs (nId) >= (int32_t) sizeofa (pickupHandler)) || !pickupHandler [nId]) //
 	return 0;
 nType = powerupType [nId];
 if (nType == POWERUP_IS_GUN) {
-	bUsed = ((pPickupGun) (pickupHandler [nId])) (pObj, powerupToDevice [nId], nPlayer);
-	if ((bUsed < 0) && ((nId == POW_VULCAN) || (nId == POW_GAUSS))) {
-		bUsed = -bUsed - 1;
-		bSpecialUsed = 1;
-		nId = POW_VULCAN_AMMO;
+	bPickedUp = ((pPickupGun) (pickupHandler [nId])) (pObj, powerupToDevice [nId], nPlayer);
+	if (bPickedUp < 0) { // only true if hit a gatling gun
+		bPickedUp = -bPickedUp - 1; // yields 0 if gun still has some ammo (-> keep gun), 1 otherwise (-> remove gun)
+		if (!bPickedUp) { // if gun will stay, create ammo pickup effect instead
+			bPickedUpAmmo = 1;
+			nId = POW_VULCAN_AMMO;
+			}
 		}
 	}
 else if (nType == POWERUP_IS_MISSILE) {
-	bUsed = ((pPickupMissile) (pickupHandler [nId])) (pObj, powerupToDevice [nId], PowerupCount (nId), nPlayer);
+	bPickedUp = ((pPickupMissile) (pickupHandler [nId])) (pObj, powerupToDevice [nId], PowerupCount (nId), nPlayer);
 	}
 else if (nType == POWERUP_IS_KEY) {
 	int32_t nKey = nId - POW_KEY_BLUE;
-	bUsed = ((pPickupKey) (pickupHandler [nId])) (pObj, PLAYER_FLAGS_BLUE_KEY << nKey, GAMETEXT (12 + nKey), nPlayer);
+	bPickedUp = ((pPickupKey) (pickupHandler [nId])) (pObj, PLAYER_FLAGS_BLUE_KEY << nKey, GAMETEXT (12 + nKey), nPlayer);
 	}
 else if (nType == POWERUP_IS_EQUIPMENT) {
-	bUsed = ((pPickupEquipment) (pickupHandler [nId])) (pObj, nPlayer);
+	bPickedUp = ((pPickupEquipment) (pickupHandler [nId])) (pObj, nPlayer);
 	}
 else if (nType == POWERUP_IS_FLAG) {
 	int32_t nFlag = nId - POW_BLUEFLAG;
-	bUsed = ((pPickupFlag) (pickupHandler [nId])) (pObj, nFlag, !nFlag, GT (1077 + nFlag), nPlayer);
+	bPickedUp = ((pPickupFlag) (pickupHandler [nId])) (pObj, nFlag, !nFlag, GT (1077 + nFlag), nPlayer);
 	}
 else
 	return 0;
 
-//always say bUsed, until physics problem (getting stuck on unused powerup)
+//always say bPickedUp, until physics problem (getting stuck on unused powerup)
 //is solved.  Note also the break statements above that are commented out
-//!!	bUsed = 1;
+//!!	bPickedUp = 1;
 
-if (bUsed || bSpecialUsed)
-	UsePowerup (nId * (bUsed ? bUsed : bSpecialUsed));
+if (bPickedUp || bPickedUpAmmo)
+	UsePowerup (nId);
 gameData.hud.bPlayerMessage = 1;
-return bUsed;
+return bPickedUp;
 }
 
 //------------------------------------------------------------------------------
