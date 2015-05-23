@@ -600,7 +600,7 @@ switch (nType) {
 
 		int32_t	nRandScale, nOffset;
 		vNewVel = vInitVel;
-		xOldMag = vInitVel.Mag();
+		xOldMag = vInitVel.Mag ();
 
 		//	We want powerups to move more in network mode.
 		if (IsMultiGame && !gameData.app.GameMode (GM_MULTI_ROBOTS)) {

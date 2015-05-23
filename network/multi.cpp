@@ -221,6 +221,7 @@ static int32_t multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{31, 35}, // MULTI_DROP_POWERUP
 	{31, 35}, // MULTI_CREATE_WEAPON
 	{6, -1},  // MULTI_AMMO
+	{8, -1},  // MULTI_UPDATE_AMMO
 	{6, -1},  // MULTI_FUSION_CHARGE
 	{7, -1},  // MULTI_PLAYER_THRUST
 	{6, 10},  // MULTI_PICKUP_KEY
@@ -1665,6 +1666,8 @@ int16_t nLocalObj = GetLocalObjNum (nObject, nObjOwner); // translate to local n
 if (nLocalObj < 0)
 	return;
 CObject* pObj = OBJECT (nLocalObj);
+if (!pObj)
+	return;
 if ((gameStates.multi.nGameType == UDP_GAME) && (pObj->info.nType == OBJ_ROBOT)) {
 	if (pObj->cType.aiInfo.xDyingStartTime > 0)	// robot death sequence
 		return;
@@ -4275,6 +4278,35 @@ gameData.multiplayer.weaponStates [int32_t (nPlayer)].nAmmoUsed = GET_INTEL_SHOR
 
 //-----------------------------------------------------------------------------
 
+void MultiDoAmmoUpdate (uint8_t* buf)
+{
+if ((gameStates.multi.nGameType == UDP_GAME) && (buf [8] == N_LOCALPLAYER))
+	return;
+
+int32_t pBuffer = 1;
+
+CHECK_MSG_ID
+
+int16_t nObject = GET_INTEL_SHORT (buf + pBuffer);
+if (nObject < 1)
+	return;
+pBuffer += 2;
+int8_t nObjOwner = buf [pBuffer++];
+int16_t nLocalObj = GetLocalObjNum (nObject, nObjOwner); // translate to local nObject
+if (nLocalObj < 0)
+	return;
+CObject* pObj = OBJECT (nLocalObj);
+if (!pObj)
+	return;
+if (pObj->info.nFlags & (OF_SHOULD_BE_DEAD | OF_EXPLODING | OF_DESTROYED))
+	return;
+if ((pObj->info.nType != OBJ_POWERUP) || (pObj->info.nId != POW_VULCAN_AMMO))
+	return;
+pObj->SetShield (GET_INTEL_INT (buf + pBuffer)); // quick and painless
+}
+
+//-----------------------------------------------------------------------------
+
 int32_t PickupKey (CObject *pObj, int32_t nKey, const char *pszKey, int32_t nPlayer);
 
 void MultiDoKeys (uint8_t* buf)
@@ -4345,6 +4377,33 @@ pBuffer += 2;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + pBuffer, gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed);
 pBuffer += 2;
 MultiSendData (gameData.multigame.msg.buf, pBuffer, 1);
+}
+
+//-----------------------------------------------------------------------------
+// Tell the other guy to remove an object from his list
+
+void MultiSendAmmoUpdate (int32_t nObject)
+{
+	CObject	*pObj = OBJECT (nObject);
+
+if (!pObj)
+	return;
+
+	int8_t	nObjOwner;
+	int16_t	nRemoteObj;
+	int32_t	pBuffer = 0;
+
+gameData.multigame.msg.buf [pBuffer++] = uint8_t (MULTI_UPDATE_AMMO);
+ADD_MSG_ID
+nRemoteObj = GetRemoteObjNum (int16_t (nObject), nObjOwner);
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + pBuffer, nRemoteObj); // Map to network objnums
+pBuffer += 2;
+gameData.multigame.msg.buf [pBuffer++] = nObjOwner;
+PUT_INTEL_INT (gameData.multigame.msg.buf + pBuffer, pObj->Shield ()); // Map to network objnums
+pBuffer += 4;
+SET_MSG_ID
+MultiSendData (gameData.multigame.msg.buf, pBuffer, 0);
+NetworkResetObjSync (nObject);
 }
 
 //-----------------------------------------------------------------------------
@@ -5716,6 +5775,7 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE] = {
 	{MultiDoDropPowerup, 1},
 	{MultiDoCreateWeapon, 1},
 	{MultiDoAmmo, 1},
+	{MultiDoAmmoUpdate, 1},
 	{MultiDoFusionCharge, 1},
 	{MultiDoPlayerThrust, 1},
 	{MultiDoKeys, 1}
@@ -6065,6 +6125,10 @@ switch (nType) {
 	case MULTI_AMMO:
 		if (!gameStates.app.bEndLevelSequence)
 			MultiDoAmmo (buf);
+		break;
+	case MULTI_UPDATE_AMMO:
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoAmmoUpdate (buf);
 		break;
 	case MULTI_FUSION_CHARGE:
 		if (!gameStates.app.bEndLevelSequence)

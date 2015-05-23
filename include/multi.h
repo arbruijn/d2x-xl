@@ -22,13 +22,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // What version of the multiplayer protocol is this?
 
-#define MULTI_PROTO_VERSION			4
+#define MULTI_PROTO_VERSION			5
 
 // Protocol versions:
-//   1 Descent Shareware
-//   2 Descent Registered/Commercial
-//   3 Descent II Shareware
-//   4 Descent II Commercial
+// 1 Descent Shareware
+// 2 Descent Registered/Commercial
+// 3 Descent II Shareware
+// 4 Descent II Commercial
+//	5+: D2X-XL
 
 // Save multiplayer games?
 
@@ -133,11 +134,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_DROP_POWERUP				83
 #define MULTI_CREATE_WEAPON			84
 #define MULTI_AMMO						85
-#define MULTI_FUSION_CHARGE			86
-#define MULTI_PLAYER_THRUST			87
-#define MULTI_KEYS						88
-#define MULTI_CONFIRM_MESSAGE			89
-#define MULTI_MAX_TYPE					89
+#define MULTI_UPDATE_AMMO				86
+#define MULTI_FUSION_CHARGE			87
+#define MULTI_PLAYER_THRUST			88
+#define MULTI_KEYS						89
+#define MULTI_CONFIRM_MESSAGE			90
+#define MULTI_MAX_TYPE					90
 
 #define MAX_NET_CREATE_OBJECTS		40
 
@@ -161,6 +163,7 @@ void MultiSendPlayerThrust (void);
 void MultiSendFlags (uint8_t);
 void MultiSendWeapons (int32_t bForce);
 void MultiSendAmmo (void);
+void MultiSendAmmoUpdate (int32_t nObject);
 void MultiSendKeys (void);
 void MultiSendMonsterball (int32_t bForce, int32_t bCreate);
 void MultiSendFire (void);
