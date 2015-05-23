@@ -139,6 +139,55 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
+#define POWERUP_SPIN_TYPE 1 // 0: irregular, 1: regular
+
+void SetupSpin (CObject *pObj, bool bOrient)
+{
+#if !POWERUP_SPIN_TYPE
+if (bOrient && (gameData.demo.nState != ND_STATE_PLAYBACK)) {
+	if (gameData.objData.pViewer)
+		pObj->info.position.mOrient = gameData.objData.pViewer->Orientation ();
+	else {
+		CAngleVector a;
+		a.Set (2 * SRandShort (), 2 * SRandShort (), 2 * SRandShort ());
+		pObj->info.position.mOrient = CFixMatrix::Create (a);
+		}
+	}
+
+static CFixVector vSpin = { I2X (1) / 4, I2X (1) / 4, I2X (1) / 4 };
+
+if (gameOpts->render.powerups.nSpin)
+	pObj->mType.physInfo.rotVel = vSpin;
+else
+#endif
+	pObj->mType.physInfo.rotVel.SetZero ();
+}
+
+// -----------------------------------------------------------------------------
+
+#if POWERUP_SPIN_TYPE
+
+void UpdateSpin (CObject *pObj)
+{
+	CAngleVector a;
+
+static CAngleVector vSpin = { 0, 0, 0 };
+
+a.Set (I2X (1) / 12, 0, (I2X (1) * (SDL_GetTicks () % 2001)) / 2000);
+#if 1
+pObj->info.position.mOrient = CFixMatrix::Create (a);
+#else
+CFixMatrix mRotate = CFixMatrix::Create (a);
+CFixMatrix mOrient = CFixMatrix::IDENTITY;
+pObj->info.position.mOrient = mOrient * mRotate;
+#endif
+pObj->mType.physInfo.rotVel.SetZero ();
+}
+
+#endif
+
+// -----------------------------------------------------------------------------
+
 int32_t CObject::PowerupToDevice (void)
 {
 
@@ -172,17 +221,7 @@ mType.physInfo.rotVel.v.coord.x =
 mType.physInfo.rotVel.v.coord.y =
 mType.physInfo.rotVel.v.coord.z = 0;
 #else
-if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	CAngleVector a;
-	a.v.coord.p = 2 * SRandShort ();
-	a.v.coord.b = 2 * SRandShort ();
-	a.v.coord.h = 2 * SRandShort ();
-	info.position.mOrient = CFixMatrix::Create(a);
-	}
-if (gameOpts->render.powerups.nSpin)
-	mType.physInfo.rotVel.Set (I2X (1) / 4, I2X (1) / 4, I2X (1) / 4);
-else
-	mType.physInfo.rotVel.SetZero ();
+SetupSpin (this, true);
 #endif
 mType.physInfo.mass = I2X (1);
 mType.physInfo.drag = 512;
@@ -927,12 +966,11 @@ if (!gameStates.app.bNostalgia && gameOpts->Use3DPowerups ()) {
 		pObj->mType.physInfo.mass = I2X (1);
 		pObj->mType.physInfo.drag = 512;
 		int32_t bSpinning = !pObj->mType.physInfo.rotVel.IsZero ();
-		if (gameOpts->render.powerups.nSpin !=	bSpinning) {
-			if (gameOpts->render.powerups.nSpin)
-				pObj->mType.physInfo.rotVel.Set (I2X (1) / 4, I2X (1) / 4, I2X (1) / 4);
-			else
-				pObj->mType.physInfo.rotVel.SetZero ();
-			}
+		if (gameOpts->render.powerups.nSpin !=	bSpinning) 
+			SetupSpin (pObj, false);
+#if POWERUP_SPIN_TYPE
+		UpdateSpin (pObj);
+#endif
 		}
 #if DBG
 	RenderRobotShield (pObj);
