@@ -179,9 +179,10 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	a.v.coord.h = 2 * SRandShort ();
 	info.position.mOrient = CFixMatrix::Create(a);
 	}
-mType.physInfo.rotVel.v.coord.x = 0;
-mType.physInfo.rotVel.v.coord.y =
-mType.physInfo.rotVel.v.coord.z = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+if (gameOpts->render.powerups.nSpin)
+	mType.physInfo.rotVel.Set (I2X (1) / 4, I2X (1) / 4, I2X (1) / 4);
+else
+	mType.physInfo.rotVel.SetZero ();
 #endif
 mType.physInfo.mass = I2X (1);
 mType.physInfo.drag = 512;
@@ -925,10 +926,13 @@ if (!gameStates.app.bNostalgia && gameOpts->Use3DPowerups ()) {
 	else {
 		pObj->mType.physInfo.mass = I2X (1);
 		pObj->mType.physInfo.drag = 512;
-		if (gameOpts->render.powerups.nSpin !=
-			((pObj->mType.physInfo.rotVel.v.coord.y | pObj->mType.physInfo.rotVel.v.coord.z) != 0))
-			pObj->mType.physInfo.rotVel.v.coord.y =
-			pObj->mType.physInfo.rotVel.v.coord.z = gameOpts->render.powerups.nSpin ? I2X (1) / (5 - gameOpts->render.powerups.nSpin) : 0;
+		int32_t bSpinning = !pObj->mType.physInfo.rotVel.IsZero ();
+		if (gameOpts->render.powerups.nSpin !=	bSpinning) {
+			if (bSpinning)
+				pObj->mType.physInfo.rotVel.SetZero ();
+			else
+				pObj->mType.physInfo.rotVel.Set (I2X (1) / 4, I2X (1) / 4, I2X (1) / 4);
+			}
 		}
 #if DBG
 	RenderRobotShield (pObj);

@@ -665,7 +665,7 @@ switch (nType) {
 
 	case OBJ_ROBOT: {
 		vNewVel = vInitVel;
-		xOldMag = vInitVel.Mag();
+		xOldMag = vInitVel.Mag ();
 		CFixVector::Normalize (vNewVel);
 		vNewVel.v.coord.x += SRandShort () * 2;
 		vNewVel.v.coord.y += SRandShort () * 2;

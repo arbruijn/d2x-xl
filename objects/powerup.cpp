@@ -185,7 +185,7 @@ void CObject::DoPowerupFrame (void)
 //if (gameStates.app.tick40fps.bTick) 
 if (info.renderType != RT_POLYOBJ) {
 	tAnimationState	*pClip = &rType.animationInfo;
-	tAnimationInfo	*pAnimInfo = ((pClip->nClipIndex < 0) || (pClip->nClipIndex >= MAX_ANIMATIONS_D2)) ? NULL : gameData.effects.animations [0] + pClip->nClipIndex;
+	tAnimationInfo		*pAnimInfo = ((pClip->nClipIndex < 0) || (pClip->nClipIndex >= MAX_ANIMATIONS_D2)) ? NULL : gameData.effects.animations [0] + pClip->nClipIndex;
 	UpdatePowerupClip (pAnimInfo, pClip, i);
 	}
 if (info.xLifeLeft <= 0) {
@@ -208,7 +208,7 @@ if (pObj->info.nType == OBJ_MONSTERBALL) {
 	}
 else if ((pObj->rType.animationInfo.nClipIndex >= -MAX_ADDON_BITMAP_FILES) && (pObj->rType.animationInfo.nClipIndex < MAX_ANIMATIONS_D2)) {
 	if ((pObj->info.nId < MAX_POWERUP_TYPES_D2) || ((pObj->info.nType == OBJ_EXPLOSION) && (pObj->info.nId < MAX_ANIMATIONS_D2))) {
-			tBitmapIndex*	pFrame = gameData.effects.animations [0][pObj->rType.animationInfo.nClipIndex].frames;
+			tBitmapIndex	*pFrame = gameData.effects.animations [0][pObj->rType.animationInfo.nClipIndex].frames;
 			int32_t			iFrame = pObj->rType.animationInfo.nCurFrame;
 		DrawObjectBitmap (pObj, pFrame->index, pFrame [iFrame].index, iFrame, NULL, 0);
 		}
