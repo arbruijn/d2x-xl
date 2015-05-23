@@ -4303,7 +4303,7 @@ if (pObj->info.nFlags & (OF_SHOULD_BE_DEAD | OF_EXPLODING | OF_DESTROYED))
 	return;
 if ((pObj->info.nType != OBJ_POWERUP) || (pObj->info.nId != POW_VULCAN_AMMO))
 	return;
-pObj->SetShield (GET_INTEL_INT (buf + pBuffer)); // quick and painless
+pObj->cType.powerupInfo.nCount = GET_INTEL_INT (buf + pBuffer); // quick and painless
 }
 
 //-----------------------------------------------------------------------------
@@ -4400,7 +4400,7 @@ nRemoteObj = GetRemoteObjNum (int16_t (nObject), nObjOwner);
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + pBuffer, nRemoteObj); // Map to network objnums
 pBuffer += 2;
 gameData.multigame.msg.buf [pBuffer++] = nObjOwner;
-PUT_INTEL_INT (gameData.multigame.msg.buf + pBuffer, pObj->Shield ()); // Map to network objnums
+PUT_INTEL_INT (gameData.multigame.msg.buf + pBuffer, pObj->cType.powerupInfo.nCount); // Map to network objnums
 pBuffer += 4;
 SET_MSG_ID
 MultiSendData (gameData.multigame.msg.buf, pBuffer, 0);

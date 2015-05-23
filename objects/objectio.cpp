@@ -103,8 +103,6 @@ cf.ReadVector (info.position.vPos);
 cf.ReadMatrix (info.position.mOrient);
 SetSize (cf.ReadFix ());
 SetShield (cf.ReadFix ());
-if (info.nType == OBJ_POWERUP)
-	SetShield (I2X (100));
 cf.ReadVector (info.vLastPos);
 info.contains.nType = cf.ReadByte ();
 info.contains.nId = cf.ReadByte ();
@@ -173,13 +171,15 @@ switch (info.controlType) {
 		if (gameTopFileInfo.fileinfoVersion >= 25)
 			cType.powerupInfo.nCount = cf.ReadInt ();
 		else
-			cType.powerupInfo.nCount = 1;
+			cType.powerupInfo.nCount = 0;
 		if (info.nId == POW_VULCAN)
 			cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
 		else if (info.nId == POW_GAUSS)
 			cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
 		else if (info.nId == POW_OMEGA)
 			cType.powerupInfo.nCount = MAX_OMEGA_CHARGE;
+		else if (info.nId == POW_VULCAN_AMMO)
+			cType.powerupInfo.nCount = VULCAN_CLIP_CAPACITY;
 		break;
 
 	case CT_NONE:
@@ -439,6 +439,8 @@ switch (info.controlType) {
 
 	case CT_POWERUP:
 		cType.powerupInfo.nCount = cf.ReadInt ();
+		if (!!cType.powerupInfo.nCount && (info.nId == POW_VULCAN_AMMO))
+			cType.powerupInfo.nCount = VULCAN_CLIP_CAPACITY;
 		cType.powerupInfo.xCreationTime = cf.ReadFix ();
 		cType.powerupInfo.nFlags = cf.ReadInt ();
 		break;

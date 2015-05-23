@@ -233,11 +233,8 @@ return ammoCount;	//return amount used
 int32_t PickupVulcanAmmo (CObject *pObj, int32_t nPlayer)
 {
 	int32_t	pwSave = gameData.weapons.nPrimary;	
-	// abusing the vulcan ammo powerup's shield value for keeping track of the ammo count it contains here
-	// using a "negative" ammo count here, i.e. ammo count = 98 - I2X (100) (I2X (100) is the basic shield value)
-	int32_t	nUsed = gameStates.app.bNostalgia ? 0 : pObj->Shield () % I2X (100); // already been taken from this clip prior to this call to PickupVulcanAmmo
-	int32_t	nAmmo = VULCAN_CLIP_CAPACITY - nUsed; // ammo available in this clip
-	int32_t	nTaken = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, nAmmo, NULL, nPlayer); // what the player actually took this time
+	int32_t	nAmmo = gameStates.app.bNostalgia ? VULCAN_CLIP_CAPACITY : pObj->cType.powerupInfo.nCount; // ammo available in this clip
+	int32_t	nUsed = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, nAmmo, NULL, nPlayer); // what the player actually took this time
 
 // Ugh, save selected primary weapon around the picking up of the ammo.  
 // I apologize for this code.  Matthew A. Toschlog
@@ -245,10 +242,10 @@ if (nUsed) {
 	if (ISLOCALPLAYER (nPlayer))
 		PowerupBasic (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO, nPlayer);
 	MultiSendAmmo ();
-	pObj->SetShield (I2X (100) + nUsed + nTaken);
+	pObj->cType.powerupInfo.nCount -= nUsed;
 	MultiSendAmmoUpdate (pObj->Index ());
 	gameData.weapons.nPrimary = pwSave;
-	return nTaken >= nAmmo;
+	return nUsed >= nAmmo;
 	} 
 else {
 	int32_t nMaxAmmo = nMaxPrimaryAmmo [VULCAN_INDEX];
@@ -257,7 +254,7 @@ else {
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %d %s!", TXT_ALREADY_HAVE,X2I ((uint32_t) VULCAN_AMMO_SCALE * (uint32_t) nMaxAmmo), TXT_VULCAN_ROUNDS);
 	gameData.weapons.nPrimary = pwSave;
-	return nTaken > 0;
+	return 0;
 	}
 }
 
