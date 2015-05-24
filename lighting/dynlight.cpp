@@ -986,9 +986,7 @@ for (i = 0; i < gameData.segData.nVertices; i++) {
 if (gameStates.render.bPerPixelLighting/* && lightmapManager.HaveLightmaps ()*/)
 	return;
 if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
-		CFaceColor*	pf = gameData.render.color.ambient.Buffer ();
-		CSegment*	pSeg;
-
+	CFaceColor*	pf = gameData.render.color.ambient.Buffer ();
 	memset (pf, 0, gameData.segData.nVertices * sizeof (*pf));
 #if USE_OPENMP // > 1
 	if (gameStates.app.bMultiThreaded) {
@@ -1005,7 +1003,8 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 #endif
 		lightManager.GatherStaticVertexLights (0, gameData.segData.nVertices, 0);
 	pf = gameData.render.color.ambient.Buffer ();
-	for (i = 0, pSeg = SEGMENTS.Buffer (); i < gameData.segData.nSegments; i++, pSeg++) {
+	CSegment* pSeg = SEGMENTS.Buffer ();
+	for (i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 		if (pSeg->m_function == SEGMENT_FUNC_SKYBOX) {
 			uint16_t* sv = pSeg->m_vertices;
 			for (j = 8; j; j--, sv++)

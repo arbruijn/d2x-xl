@@ -682,7 +682,7 @@ if (!bEffect/* && (gameOpts->render.textures.nQuality > 1)*/) {
 
 Pulsate ();
 if (bGlow) {
-	glowRenderer.Begin (GLOW_SHIELDS, 3, pObj->Type () == OBJ_POWERUP, 1.0f);
+	glowRenderer.Begin (GLOW_SHIELDS, 3, /*pObj->Type () == OBJ_POWERUP*/true, 1.0f);
 	if (glowRenderer.SetViewport (GLOW_SHIELDS, CFixVector::ZERO, 4 * xScale / 3) < 0) { // not on screen
 #if DBG
 		tScreenPos s;
