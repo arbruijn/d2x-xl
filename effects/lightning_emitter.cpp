@@ -141,7 +141,7 @@ void CLightningEmitter::Animate (int32_t nStart, int32_t nBolts, int32_t nThread
 if (m_bValid < 1)
 	return;
 CObject *pObj = OBJECT (m_nObject);
-if (pObj && (pObj->Type () == OBJ_POWERUP) && (pObj->Frame () != gameData.app.nFrameCount))
+if (pObj && (pObj->Type () == OBJ_POWERUP) && (pObj->Frame () != gameData.app.nFrameCount - 1))
 	return;
 if (nBolts < 0)
 	nBolts = m_nBolts;

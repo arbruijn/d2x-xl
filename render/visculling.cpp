@@ -383,11 +383,14 @@ void AddObjectToSegList (int16_t nObject, int16_t nSegment)
 if (nObject == nDbgObj)
 	BRP;
 #endif
-pi->nNextItem = gameData.render.mine.objRenderList.ref [nSegment];
-gameData.render.mine.objRenderList.ref [nSegment] = gameData.render.mine.objRenderList.nUsed++;
-pi->nObject = nObject;
-pi->xDist = CFixVector::Dist (OBJECT (nObject)->Position (), gameData.render.mine.viewer.vPos);
-OBJECT (nObject)->SetFrame (gameData.app.nFrameCount);
+CObject *pObj = OBJECT (nObject);
+if (pObj) {
+	pi->nNextItem = gameData.render.mine.objRenderList.ref [nSegment];
+	gameData.render.mine.objRenderList.ref [nSegment] = gameData.render.mine.objRenderList.nUsed++;
+	pi->nObject = nObject;
+	pi->xDist = CFixVector::Dist (pObj->Position (), gameData.render.mine.viewer.vPos);
+	pObj->SetFrame (gameData.app.nFrameCount);
+	}
 }
 
 //------------------------------------------------------------------------------
