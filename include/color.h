@@ -54,14 +54,52 @@ class CRGBColor {
 
 //-----------------------------------------------------------------------------
 
-class CRGBAColor : public CRGBColor {
+class CRGBAColor {
 	public:
-		uint8_t	a;
+		uint8_t	r, g, b, a;
 
 	inline void Set (uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255) {
 		r = red, g = green, b = blue, a = alpha;
 		}
+
+	inline uint8_t& Red (void) { return r; }
+	inline uint8_t& Green (void) { return g; }
+	inline uint8_t& Blue (void) { return b; }
 	inline uint8_t& Alpha (void) { return a; }
+
+	inline void ToGrayScale (int32_t bWeighted = 0) {
+		if (bWeighted)
+			r = g = b = (uint8_t) FRound (((float) r + (float) g + (float) b) / 3.0f);
+		else
+			r = g = b = (uint8_t) FRound ((float) r * 0.30f + (float) g * 0.584f + (float) b * 0.116f);
+		}
+
+	inline uint8_t Posterize (int32_t nColor, int32_t nSteps) {
+		return Max (0, ((nColor + nSteps / 2) / nSteps) * nSteps - nSteps);
+		}
+
+	inline void Posterize (int32_t nSteps = 15) {
+		r = Posterize (r, nSteps);
+		g = Posterize (g, nSteps);
+		b = Posterize (b, nSteps);
+		}
+
+	inline void Saturate (int32_t nMethod = 1) {
+		uint8_t m = Max (r, Max (g, b));
+		if (nMethod) {
+			float s = 255.0f / float (m);
+			r = uint8_t (float (r) * s);
+			g = uint8_t (float (g) * s);
+			b = uint8_t (float (b) * s);
+			}
+		else {
+			if ((m = 255 - m)) {
+				r += m;
+				g += m;
+				b += m;
+				}
+			}
+		}
 
 	inline void Assign (CRGBAColor& other) { r = other.r, g = other.g, b = other.b, a = other.a;	}
 	};

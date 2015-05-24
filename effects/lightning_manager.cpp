@@ -26,6 +26,33 @@
 
 CLightningManager lightningManager;
 
+static tLightningInfo robotLightningInfo = {
+	-5000, // nLife
+	0, // nDelay
+	0, // nLength
+	-4, // nAmplitude
+	0, // nOffset
+	-1, // nWayPoint
+	5, // nBolts
+	-1, // nId
+	-1, // nTarget
+	100, // nNodes
+	0, // nChildren
+	3, // nFrames
+	3, // nWidth
+	0, // nAngle
+	-1, // nStyle
+	1, // nSmoothe
+	1, // bClamp
+	-1, // bGlow
+	1, // bBlur
+	1, // bSound
+	0, // bRandom
+	0, // bInPlane
+	1, // bEnabled
+	0 // bDirection
+	};
+
 //------------------------------------------------------------------------------
 
 CLightningManager::CLightningManager ()
@@ -803,33 +830,6 @@ CreateForTeleport (pObj, &color);
 }
 
 //------------------------------------------------------------------------------
-
-static tLightningInfo robotLightningInfo = {
-	-5000, // nLife
-	0, // nDelay
-	0, // nLength
-	-4, // nAmplitude
-	0, // nOffset
-	-1, // nWayPoint
-	5, // nBolts
-	-1, // nId
-	-1, // nTarget
-	100, // nNodes
-	0, // nChildren
-	3, // nFrames
-	3, // nWidth
-	0, // nAngle
-	-1, // nStyle
-	1, // nSmoothe
-	1, // bClamp
-	-1, // bGlow
-	1, // bBlur
-	1, // bSound
-	0, // bRandom
-	0, // bInPlane
-	1, // bEnabled
-	0 // bDirection
-	};
 
 void CLightningManager::CreateForRobot (CObject* pObj, CFloatVector *pColor)
 {
