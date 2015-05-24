@@ -308,10 +308,7 @@ class COmegaLightning {
 	public:
 		COmegaLightning () : m_nHandles (0) { Init (); }
 		~COmegaLightning () {};
-		void Init (void) { 
-			m_nHandles = 0; 
-			memset (m_handles, 0xFF, sizeof (m_handles));
-			};
+		void Init (void);
 		int32_t Create (CFixVector *vTargetPos, CObject *pParentObj, CObject *pTargetObj);
 		int32_t Update (CObject *pParentObj, CObject *pTargetObj, CFixVector* vTargetPos = NULL);
 		void Destroy (int16_t nObject);

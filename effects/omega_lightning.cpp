@@ -77,7 +77,7 @@ else {
 
 CFixVector *COmegaLightning::GetGunPoint (CObject* pObj, CFixVector *vMuzzle)
 {
-	CFixVector			*vGunPoints;
+	CFixVector				*vGunPoints;
 	int32_t					bSpectate;
 	tObjTransformation	*pPos;
 
@@ -191,8 +191,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	0, // bRandom
 	0, // bInPlane
 	1, // bEnabled
-	0, // bDirection
-	{(uint8_t) (255 * 0.9f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.3f)} // color;
+	0 // bDirection
 	},
 	{
 	OMEGA_LIFE, // nLife
@@ -218,8 +217,7 @@ static tLightningInfo omegaLightningInfo [2] = {
 	0, // bRandom
 	0, // bInPlane
 	1, // bEnabled
-	0, // bDirection
-	{(uint8_t) (255 * 0.9f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.3f)} // color;
+	0 // bDirection
 	}
 };
 
@@ -268,6 +266,16 @@ else {
 	}
 return (pHandle->nLightning [0] >= 0);
 }
+
+//------------------------------------------------------------------------------
+
+void COmegaLightning::Init (void) 
+{ 
+m_nHandles = 0; 
+memset (m_handles, 0xFF, sizeof (m_handles));
+omegaLightningInfo [0].color.Set ((uint8_t) (255 * 0.9f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.3f));
+omegaLightningInfo [1].color.Set ((uint8_t) (255 * 0.9f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.3f));
+};
 
 //------------------------------------------------------------------------------
 //eof

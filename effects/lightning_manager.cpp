@@ -25,6 +25,7 @@
 #include "automap.h"
 
 CLightningManager lightningManager;
+
 //------------------------------------------------------------------------------
 
 CLightningManager::CLightningManager ()
@@ -32,6 +33,7 @@ CLightningManager::CLightningManager ()
 m_objects = NULL;
 m_lights = NULL;
 m_nFirstLight = -1;
+robotLightningInfo.color.Set ((uint8_t) (255 * 0.9f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.3f)); // color;
 }
 
 //------------------------------------------------------------------------------
@@ -826,8 +828,7 @@ static tLightningInfo robotLightningInfo = {
 	0, // bRandom
 	0, // bInPlane
 	1, // bEnabled
-	0, // bDirection
-	{(uint8_t) (255 * 0.9f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.6f), (uint8_t) (255 * 0.3f)} // color;
+	0 // bDirection
 	};
 
 void CLightningManager::CreateForRobot (CObject* pObj, CFloatVector *pColor)
