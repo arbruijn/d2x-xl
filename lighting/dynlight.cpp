@@ -623,9 +623,13 @@ int32_t nLightSeg = LightSeg ();
 
 #if FAST_POINTVIS
 
+		CSegment			*pLightSeg = SEGMENT (nLightSeg);
+
 if (info.nSide < 0) {
 	if (nLightSeg < 0)
 		RETURN (1);
+	if (!pLightSeg)
+		RETURN (0);
 	v1.Assign (*vPoint);
 	CFloatVector v0;
 	v0.Assign (info.vPos);
@@ -655,8 +659,9 @@ else {
 			inline bool operator> (CLightPoint& other) { return d > other.d; }
 			};
 	
-		CSide* pSide = SEGMENT (nLightSeg)->Side (info.nSide);
-
+		if (!pLightSeg)
+			RETURN (0);
+		CSide	*pSide = SEGMENT (nLightSeg)->Side (info.nSide);
 		if (pSide->Shape () > SIDE_SHAPE_TRIANGLE)
 			RETURN (0);
 
@@ -747,7 +752,7 @@ return PLAYEROBJECT (info.nPlayer);
 int32_t CDynLight::Contribute (const int16_t nDestSeg, const int16_t nDestSide, const int16_t nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, 
 										 fix xMaxLightRange, float fRangeMod, fix xDistMod, int32_t nThread)
 {
-ENTER (1, 0, "CDynLight::Contribute");
+ENTER (1, nThread, "CDynLight::Contribute");
 
 	int16_t nLightSeg = info.nSegment;
 

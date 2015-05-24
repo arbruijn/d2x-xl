@@ -1437,18 +1437,15 @@ return SphereIntersectsWall (&pObj->info.position.vPos, pObj->info.nSegment, pOb
 
 int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int32_t nDepth, int32_t nThread)
 {
-ENTER (1, 0, "PointSeesPoint");
+ENTER (1, nThread, "PointSeesPoint");
 
 	static			uint32_t segVisList [MAX_THREADS][MAX_SEGMENTS_D2X];
 	static			uint32_t segVisFlags [MAX_THREADS] = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
 
-	CSegment*		pSeg;
-	CSide*			pSide;
-	CWall*			pWall;
 	CFloatVector	vIntersection, v0, v1;
 	float				l0, l1 = 0.0f;
 	int16_t			nSide, nFace, nFaceCount, nChildSeg;
-	uint32_t*		bVisited = segVisList [nThread];
+	uint32_t			*bVisited = segVisList [nThread];
 
 if (!nDepth) {
 #if 0
@@ -1473,10 +1470,12 @@ CFloatVector::Normalize (vRay);
 #endif
 
 for (;;) {
-	bVisited [nStartSeg] = bFlag;
-	if (!(pSeg = SEGMENT (nStartSeg)))
+	CSegment *pSeg = SEGMENT (nStartSeg);
+	if (pSeg)
 		RETURN (0);
-	pSide = pSeg->Side (0);
+	bVisited [nStartSeg] = bFlag;
+	CSide *pSide = pSeg->Side (0);
+	CWall *pWall;
 	// check all sides of current segment whether they are penetrated by the vector p0,p1.
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, pSide++) {
 		nChildSeg = pSeg->m_children [nSide];
