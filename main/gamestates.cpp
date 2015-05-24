@@ -290,6 +290,7 @@ gameStates.app.bGameSuspended = 0;
 gameStates.app.bEnterGame = 0;
 gameStates.app.bUseSound = 1;
 gameStates.app.bLunacy = 0;
+gameStates.app.nTraceLevel = -1;
 gameStates.app.bHaveExtraGameInfo [0] = 1;
 gameStates.app.bHaveExtraGameInfo [1] = 0;
 gameStates.app.nSDLTicks [0] = -1;
