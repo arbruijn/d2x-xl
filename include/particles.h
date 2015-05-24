@@ -588,10 +588,10 @@ extern CParticleManager particleManager;
 typedef struct tParticleImageInfo {
 	CBitmap*		pBm;
 	const char*	szName;
-	int32_t			nFrames;
-	int32_t			iFrame;
-	int32_t			bHave;
-	int32_t			bAnimate;
+	int32_t		nFrames;
+	int32_t		iFrame;
+	int32_t		bHave;
+	int32_t		bAnimate;
 	float			xBorder;
 	float			yBorder;
 } tParticleImageInfo;
