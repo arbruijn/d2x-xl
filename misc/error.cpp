@@ -532,7 +532,11 @@ if ((nLevel <= gameStates.app.nTraceLevel) && fmt && *fmt) {
 	va_end (arglist);
 	int32_t nTraceLevel = gameStates.app.nTraceLevel;
 	gameStates.app.nTraceLevel = -1;
-	PrintLog (nIndent, szLogLine);
+	if (nIndent < 0)
+		PrintLog (nIndent);
+	PrintLog (0, szLogLine);
+	if (nIndent > 0)
+		PrintLog (nIndent);
 	gameStates.app.nTraceLevel = nTraceLevel;
 	}
 }
