@@ -139,6 +139,10 @@ if (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameCo
 #endif
 
 CObject*	pObj = OBJECT (nObject);
+if (!pObj) {
+	PrintLog (0, "Error: Invalid object in DoRenderObject\n");
+	return;
+	}
 
 #if DBG
 if (nWindow && (pObj->info.nType == OBJ_WEAPON))

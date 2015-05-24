@@ -140,6 +140,9 @@ void CLightningEmitter::Animate (int32_t nStart, int32_t nBolts, int32_t nThread
 {
 if (m_bValid < 1)
 	return;
+CObject *pObj = OBJECT (m_nObject);
+if (pObj && (pObj->Type () == OBJ_POWERUP) && (pObj->Frame () != gameData.app.nFrameCount))
+	return;
 if (nBolts < 0)
 	nBolts = m_nBolts;
 for (int32_t i = nStart; i < nBolts; i++)
@@ -219,10 +222,9 @@ if (m_bValid < 1) {
 if (!m_bSound)
 	return;
 
-	CLightning	*pLightning;
-	int32_t			i;
+	CLightning	*pLightning = m_lightning.Buffer ();
 
-for (i = m_nBolts, pLightning = m_lightning.Buffer (); i > 0; i--, pLightning++)
+for (int32_t i = m_nBolts; i > 0; i--, pLightning++)
 	if (pLightning->m_nNodes > 0) {
 		if (m_bSound < 0)
 			CreateSound (1, nThread);
@@ -286,9 +288,13 @@ void CLightningEmitter::Render (int32_t nStart, int32_t nBolts, int32_t nThread)
 if (m_bValid < 1)
 	return;
 
+CObject *pObj = OBJECT (m_nObject);
+if (pObj && (pObj->Type () == OBJ_POWERUP) && (pObj->Frame () != gameData.app.nFrameCount))
+	return;
+
 if (automap.Active () && !(gameStates.render.bAllVisited || automap.m_bFull)) {
-	if (m_nObject >= 0) {
-		if (!automap.m_visited [OBJECT (m_nObject)->Segment ()])
+	if (pObj) {
+		if (!automap.m_visited [pObj->Segment ()])
 			return;
 		}
 	else if (!automap.m_bFull) {

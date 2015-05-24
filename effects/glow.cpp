@@ -10,10 +10,9 @@
 
 CGlowRenderer glowRenderer;
 
-#define USE_VIEWPORT 1
-#define BLUR 2
-#define START_RAD (m_bViewport ? 2.0f : 0.0f)
-#define RAD_INCR (m_bViewport ? 2.0f : 2.0f)
+#define USE_VIEWPORT	2
+#define BLUR			2
+#define BLUR_RADIUS	(m_bViewport ? 3.0f : 0.0f)
 
 //------------------------------------------------------------------------------
 
@@ -331,8 +330,10 @@ return CCanvas::Current ()->Height ();
 void CGlowRenderer::SetItemExtent (CFloatVector3 v, bool bTransformed)
 {
 #if USE_VIEWPORT
+#if	USE_VIEWPORT < 2
 if (gameOpts->render.effects.bGlow != 1)
 	return;
+#	endif
 if (!bTransformed)
 	transformation.Transform (v, v);
 tScreenPos s;
@@ -358,8 +359,10 @@ m_bViewport = 0;
 
 bool CGlowRenderer::UseViewport (void)
 {
-#if USE_VIEWPORT
+#if USE_VIEWPORT == 1
 return !ogl.IsSideBySideDevice () && (gameOpts->render.effects.bGlow == 1);
+#elif USE_VIEWPORT == 2
+return !ogl.IsSideBySideDevice ();
 #else
 return 0;
 #endif
@@ -420,8 +423,10 @@ if (!Available (nType))
 if ((GLOW_FLAGS & nType) == 0)
 	return 0;
 #if USE_VIEWPORT
+#	if USE_VIEWPORT < 2
 if (gameOpts->render.effects.bGlow != 1)
 	return 1;
+#	endif
 //#pragma omp parallel for
 m_itemMin.x = m_itemMin.y = 0x7FFF;
 m_itemMax.x = m_itemMax.y = -0x7FFF;
@@ -598,42 +603,6 @@ static int32_t bEnableViewport = 1;
 
 void CGlowRenderer::Render (int32_t const source, int32_t const direction, float const radius, bool const bClear)
 {
-#if USE_VIEWPORT == 2 //DBG
-
-	bool bUseRadius = UseViewport () && !ogl.IsSideBySideDevice ();
-
-float r = bUseRadius ? 0.0f : radius * 4.0f; // scale with a bit more than the max. offset from the blur shader
-// define the destination area to be rendered to
-float w = (float) gameData.render.frame.Width ();
-float h = (float) gameData.render.frame.Height ();
-if (ogl.IsSideBySideDevice ())
-	w *= 2;
-float verts [4][2] = {
-	{ScreenCoord ((float) m_renderMin.x - r, (float) w),
-	 ScreenCoord ((float) m_renderMin.y - r, (float) h)},
-	{ScreenCoord ((float) m_renderMin.x - r, (float) w),
-	 ScreenCoord ((float) m_renderMax.y + r, (float) h) * scale},
-	{ScreenCoord ((float) m_renderMax.x + r, (float) w) * scale,
-	 ScreenCoord ((float) m_renderMax.y + r, (float) h) * scale},
-	{ScreenCoord ((float) m_renderMax.x + r, (float) w) * scale,
-	 ScreenCoord ((float) m_renderMin.y - r, (float) h)}
-	};
-if (bUseRadius) 
-	r += 4.0f;
-// define the source area (part of the glow buffer, which serves as a texture here) to be rendered
-float texCoord [4][2] = {
-	{ScreenCoord ((float) m_renderMin.x - r, (float) w),
-	 ScreenCoord ((float) m_renderMin.y - r, (float) h)},
-	{ScreenCoord ((float) m_renderMin.x - r, (float) w),
-	 ScreenCoord ((float) m_renderMax.y + r, (float) h)},
-	{ScreenCoord ((float) m_renderMax.x + r, (float) w),
-	 ScreenCoord ((float) m_renderMax.y + r, (float) h)},
-	{ScreenCoord ((float) m_renderMax.x + r, (float) w),
-	 ScreenCoord ((float) m_renderMin.y - r, (float) h)}
-	};
-
-#else
-
 float verts [2][4][2] = {
 	{{0,0},{0,1},{1,1},{1,0}},
 	{{0,0},{0,1},{1,1},{1,0}},
@@ -709,7 +678,6 @@ float texCoord [4][2] = {
 	{ScreenCoord (r, w), ScreenCoord (t, h)}
 	};
 
-#endif
 
 #if 1 //!DBG
 if (direction >= 0) {
@@ -797,7 +765,6 @@ else
 	ogl.SetFaceCulling (false);
 	ogl.ResetClientStates (0);
 
-	float radius = 0.0f;
 	if (m_bViewport < 0) {
 		m_renderMin.x = CCanvas::Current ()->Left ();
 		m_renderMin.y = CCanvas::Current ()->Top ();
@@ -811,7 +778,7 @@ else
 	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 
-	radius += RAD_INCR;
+	float radius = BLUR_RADIUS;
 	if (!ogl.SelectBlurBuffer (0))
 		return Reset (0, 1);
 	ClearDrawBuffer (m_nType);
@@ -829,7 +796,7 @@ else
 		ogl.SetBlendMode (OGL_BLEND_ADD);
 #		endif
 	for (int32_t i = 1; i < m_nStrength; i++) {
-		radius += RAD_INCR;
+		radius += BLUR_RADIUS;
 		if (!ogl.SelectBlurBuffer (0))
 			return Reset (0, 1);
 		Render (1, 0, radius); // Blur 1 -> Blur 0

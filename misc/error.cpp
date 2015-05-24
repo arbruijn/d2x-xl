@@ -490,7 +490,7 @@ if (*gameFolders.user.szCache && (gameStates.app.nLogLevel > 0)) {
 
 void _CDECL_ PrintLog (const int32_t nIndent, const char *fmt, ...)
 {
-if (fLog) {
+if (fLog && (gameStates.app.nTraceLevel < 0)) {
 	if (fmt && *fmt) {
 		va_list arglist;
 			static char	szLogLine [2][100000] = {{'\0'}, {'\0'}};
@@ -524,12 +524,15 @@ void _CDECL_ StackTrace (const int32_t nLevel, const int32_t nIndent, const char
 {
 if ((nLevel <= gameStates.app.nTraceLevel) && fmt && *fmt) {
 	va_list arglist;
-		static char	szLogLine [100000] = {'\0'};
+	static char	szLogLine [100000] = {'\0'};
 
 	va_start (arglist, fmt);
 	vsprintf (szLogLine, fmt, arglist);
 	va_end (arglist);
+	int32_t nTraceLevel = gameStates.app.nTraceLevel;
+	gameStates.app.nTraceLevel = -1;
 	PrintLog (nIndent, szLogLine);
+	gameStates.app.nTraceLevel = nTraceLevel;
 	}
 }
 

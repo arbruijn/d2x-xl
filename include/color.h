@@ -3,21 +3,6 @@
 
 //-----------------------------------------------------------------------------
 
-class CRGBAColor {
-	public:
-		uint8_t	r, g, b, a;
-
-	inline void Set (uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255) {
-		r = red, g = green, b = blue, a = alpha;
-		}
-	inline uint8_t& Red (void) { return r; }
-	inline uint8_t& Green (void) { return g; }
-	inline uint8_t& Blue (void) { return b; }
-	inline uint8_t& Alpha (void) { return a; }
-
-	inline void Assign (CRGBAColor& other) { r = other.r, g = other.g, b = other.b, a = other.a;	}
-	};
-
 class CRGBColor {
 	public:
 		uint8_t	r, g, b;
@@ -47,8 +32,41 @@ class CRGBColor {
 		b = Posterize (b, nSteps);
 		}
 
+	inline void Saturate (int32_t nMethod = 1) {
+		uint8_t m = Max (r, Max (g, b));
+		if (nMethod) {
+			float s = 255.0f / float (m);
+			r = uint8_t (float (r) * s);
+			g = uint8_t (float (g) * s);
+			b = uint8_t (float (b) * s);
+			}
+		else {
+			if ((m = 255 - m)) {
+				r += m;
+				g += m;
+				b += m;
+				}
+			}
+		}
+
 	inline void Assign (CRGBColor& other) { r = other.r, g = other.g, b = other.b;	}
 	};
+
+//-----------------------------------------------------------------------------
+
+class CRGBAColor : public CRGBColor {
+	public:
+		uint8_t	a;
+
+	inline void Set (uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255) {
+		r = red, g = green, b = blue, a = alpha;
+		}
+	inline uint8_t& Alpha (void) { return a; }
+
+	inline void Assign (CRGBAColor& other) { r = other.r, g = other.g, b = other.b, a = other.a;	}
+	};
+
+//-----------------------------------------------------------------------------
 
 class CFaceColor : public CFloatVector {
 	public:
@@ -81,7 +99,6 @@ class CStaticCanvasColor : public CCanvasColor {
 			rgb = 1;
 			}
 	};
-
 
 //-----------------------------------------------------------------------------
 

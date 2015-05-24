@@ -34,7 +34,7 @@ int32_t InitAddonPowerup (CObject *pObj);
 void ConvertWeaponToPowerup (CObject *pObj);
 int32_t ConvertPowerupToWeapon (CObject *pObj);
 void ConvertAllPowerupsToWeapons (void);
-int32_t RenderObject(CObject *pObj, int32_t nWindowNum, int32_t bForce);
+int32_t RenderObject (CObject *pObj, int32_t nWindowNum, int32_t bForce);
 void TransformHitboxf (CObject *pObj, CFloatVector *vertList, int32_t iSubObj);
 int32_t GetCloakInfo (CObject *pObj, fix xCloakStartTime, fix xCloakEndTime, tCloakInfo *ciP);
 
