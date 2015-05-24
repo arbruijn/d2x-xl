@@ -802,11 +802,13 @@ return -1;
 //if no intersects, returns 0, else fills in intP and returns dist
 fix CheckVectorObjectCollision (CHitData& hitData, CFixVector *p0, CFixVector *p1, fix rad, CObject *pThisObj, CObject *pOtherObj, int32_t nCollisionModel, bool bCheckVisibility)
 {
+ENTER (1, 0, "CheckVectorObjectCollision");
+
 	fix			size, dist;
 	CFixVector	vHit, vNormal, v0, v1, vn, vPos;
 	int32_t		bThisPoly, bOtherPoly;
 	int16_t		nModel = -1;
-	tRobotInfo*	pRobotInfo;
+	tRobotInfo	*pRobotInfo;
 
 if (rad < 0)
 	size = 0;
@@ -840,23 +842,23 @@ if ((CollisionModel (nCollisionModel) || pThisObj->IsStatic () || pOtherObj->IsS
 	FindPointLineIntersection (vHit, *p0, *p1, vPos, 0);
 	dist = VmLinePointDist (*p0, *p1, OBJPOS (pThisObj)->vPos);
 	if (dist > pThisObj->ModelRadius (0) + pOtherObj->ModelRadius (0))
-		return 0;
+		RETURN (0);
 #endif
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
 #if 1
 		dist = CheckHitboxCollision (vHit, vNormal, pOtherObj, pThisObj, p0, p1, nModel);
 		if ((dist == 0x7fffffff) /*|| (dist > pThisObj->info.xSize)*/)
-			return 0;
+			RETURN (0);
 #else
 		// check whether one object is stuck inside the other
 		if (!(dist = CheckHitboxCollision (vHit, vNormal, pOtherObj, pThisObj, p0, p1, nModel))) {
 			if (!CFixVector::Dist (*p0, *p1))
-				return 0;
+				RETURN (0);
 			// check whether objects collide at all
 			dist = CheckVectorHitboxCollision (vHit, vNormal, p0, p1, NULL, pThisObj, 0, nModel);
 			if ((dist == 0x7fffffff) || (dist > pThisObj->info.xSize))
-				return 0;
+				RETURN (0);
 			}
 		CheckHitboxCollision (vHit, vNormal, pOtherObj, pThisObj, p0, p1, nModel);
 		FindPointLineIntersection (vHit, *p0, *p1, vHit, 1);
@@ -867,7 +869,7 @@ if ((CollisionModel (nCollisionModel) || pThisObj->IsStatic () || pOtherObj->IsS
 			// *pThisObj (stationary) has hitboxes, *pOtherObj (moving) a hit sphere. To detect whether the sphere
 			// intersects with the hitbox, check whether the radius line of *pThisObj intersects any of the hitboxes.
 			if (0x7fffffff == (dist = CheckVectorHitboxCollision (vHit, vNormal, p0, p1, NULL, pThisObj, pOtherObj->info.xSize, nModel)))
-				return 0;
+				RETURN (0);
 			}
 		else {
 			// *pOtherObj (moving) has hitboxes, *pThisObj (stationary) a hit sphere. To detect whether the sphere
@@ -877,13 +879,13 @@ if ((CollisionModel (nCollisionModel) || pThisObj->IsStatic () || pOtherObj->IsS
 			CFixVector::Normalize (vn);
 			v1 = v0 + vn * pThisObj->info.xSize;
 			if (0x7fffffff == (dist = CheckVectorHitboxCollision (vHit, vNormal, &v0, &v0, p1, pOtherObj, pThisObj->info.xSize, nModel)))
-				return 0;
+				RETURN (0);
 			}
 		}
 	}
 else {
 	if (0 > (dist = CheckVectorSphereCollision (vHit, p0, p1, &vPos, size + rad)))
-		return 0;
+		RETURN (0);
 	nModel = 0;
 	vNormal.SetZero ();
 	}
@@ -900,7 +902,7 @@ if (!bCheckVisibility && (pOtherObj->info.nType != OBJ_POWERUP)
 	vHit = pThisObj->RegisterHit (vHit, nModel);
 	//vHit = pOtherObj->RegisterHit (vHit, nModel);
 	}
-return dist;
+RETURN (dist);
 }
 
 //	-----------------------------------------------------------------------------
@@ -919,6 +921,8 @@ return (t == nObject);
 
 int32_t ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery, int32_t nCollisionModel, int32_t nThread)
 {
+ENTER (1; "ComputeObjectHitpoint");
+
 	CObject		* pThisObj = (hitQuery.nObject < 0) ? NULL : OBJECT (hitQuery.nObject),
 			 		* pOtherObj;
 	int32_t		nThisType = (hitQuery.nObject < 0) ? -1 : OBJECT (hitQuery.nObject)->info.nType;
@@ -1022,11 +1026,11 @@ restart:
 			hitData.nObject = (gameData.collisions.hitResult.nObject = nObject);
 			Assert (nObject != -1);
 			if (hitQuery.flags & FQ_ANY_OBJECT)
-				return dMin;
+				RETURN (dMin);
 			}
 		}
 	}
-return dMin;
+RETURN (dMin);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1034,6 +1038,9 @@ return dMin;
 static inline int32_t PassThrough (int16_t nObject, int16_t nSegment, int16_t nSide, int16_t nFace, int32_t flags, CFixVector& vHitPoint)
 {
 CSegment* pSeg = SEGMENT (nSegment);
+if (!pSeg)
+	return 0;
+
 int32_t widResult = pSeg->IsPassable (nSide, (nObject < 0) ? NULL : OBJECT (nObject));
 
 if (widResult & WID_PASSABLE_FLAG) // check whether side can be passed through
@@ -1057,6 +1064,8 @@ int16_t nChildSeg = pSeg->m_children [nSide];
 if (nChildSeg < 0)
 	return 0;
 CSegment* pChildSeg = SEGMENT (nChildSeg);
+if (!pChildSeg)
+	return 0;
 if (pChildSeg->HasBlockedProp () ||
     (gameData.objData.speedBoost [nObject].bBoosted && ((pSeg->m_function != SEGMENT_FUNC_SPEEDBOOST) || (pChildSeg->m_function == SEGMENT_FUNC_SPEEDBOOST))))
 	return 1;
@@ -1084,6 +1093,8 @@ return 0;
 
 int32_t ComputeHitpoint (CHitData& hitData, CHitQuery& hitQuery, int16_t* segList, int16_t* nSegments, int32_t nEntrySeg, int32_t nCollisionModel, int32_t nThread)
 {
+ENTER (1, 0, "ComputeHitpoint");
+
 	CHitData		bestHit, curHit;
 	fix			d, dMin = 0x7fffffff;					//distance to hit pRef
 	int32_t		nHitNoneSegment = -1;
@@ -1244,7 +1255,7 @@ else {
 			? gameData.collisions.hitResult.nAltSegment
 			: nHitNoneSegment;
 	}
-return bestHit.nType;
+RETURN (bestHit.nType);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1261,6 +1272,8 @@ return bestHit.nType;
 //Returns the hitResult->nHitType
 int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult, int32_t nCollisionModel, int32_t nThread)
 {
+ENTER (1, 0, "FindHitPoint");
+
 	CHitData		curHit, newHit;
 	int32_t		i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes; // save value
 
@@ -1277,7 +1290,7 @@ if ((hitQuery.nSegment > gameData.segData.nLastSegment) || (hitQuery.nSegment < 
 		hitResult.nObject = 0;
 		hitResult.nSideSegment = -1;
 		hitResult.nSegments = 0;
-		return hitResult.nType;
+		RETURN (hitResult.nType);
 		}
 	}
 
@@ -1300,7 +1313,7 @@ if (masks.m_center) {
 		hitResult.nObject = 0;
 		hitResult.nSideSegment = -1;
 		hitResult.nSegments = 0;
-		return hitResult.nType;
+		RETURN (hitResult.nType);
 		}
 	}
 gameData.collisions.segsVisited [nThread][0] = hitQuery.nSegment;
@@ -1357,7 +1370,7 @@ if ((curHit.nSegment != -1) && (hitQuery.flags & FQ_GET_SEGLIST))
 *((CHitData *) &hitResult) = curHit;
 if ((curHit.nType == HIT_OBJECT) && (gameData.collisions.hitResult.nObject == -1))
 	curHit.nType = HIT_NONE;
-return curHit.nType;
+RETURN (curHit.nType);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1365,20 +1378,18 @@ return curHit.nType;
 //note: gameData.collisions.nSegsVisited [nThread] must be set to zero before this is called
 int32_t SphereIntersectsWall (CFixVector *vPoint, int16_t nSegment, fix rad)
 {
-	int32_t		faceMask;
-	CSegment*	pSeg;
-
-#if DBG
-if (nSegment == -1) {
-	Error("nSegment == -1 in SphereIntersectsWall()");
+CSegment *pSeg = SEGMENT (nSegment);
+if (!pSeg) {
+	PrintLog (0, "Error: Invalid segment in SphereIntersectsWall ()\n");
 	return 0;
 	}
-#endif
+
 if ((gameData.collisions.nSegsVisited [0] < 0) || (gameData.collisions.nSegsVisited [0] > MAX_SEGS_VISITED))
 	gameData.collisions.nSegsVisited [0] = 0;
 gameData.collisions.segsVisited [0][gameData.collisions.nSegsVisited [0]++] = nSegment;
-pSeg = SEGMENT (nSegment);
-faceMask = pSeg->Masks (*vPoint, rad).m_face;
+
+int32_t faceMask = pSeg->Masks (*vPoint, rad).m_face;
+
 if (faceMask != 0) {				//on the back of at least one face
 	int32_t		nSide, bit, iFace, nChild, i;
 	int32_t		nFaceHitType;      //in what way did we hit the face?
@@ -1426,6 +1437,8 @@ return SphereIntersectsWall (&pObj->info.position.vPos, pObj->info.nSegment, pOb
 
 int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int32_t nDepth, int32_t nThread)
 {
+ENTER (1, 0, "PointSeesPoint");
+
 	static			uint32_t segVisList [MAX_THREADS][MAX_SEGMENTS_D2X];
 	static			uint32_t segVisFlags [MAX_THREADS] = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
 
@@ -1461,7 +1474,8 @@ CFloatVector::Normalize (vRay);
 
 for (;;) {
 	bVisited [nStartSeg] = bFlag;
-	pSeg = SEGMENT (nStartSeg);
+	if (!(pSeg = SEGMENT (nStartSeg)))
+		RETURN (0);
 	pSide = pSeg->Side (0);
 	// check all sides of current segment whether they are penetrated by the vector p0,p1.
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, pSide++) {
@@ -1519,14 +1533,14 @@ for (;;) {
 			if (l1 >= 0.001f) 
 				break;
 			if (l1 < 1.0e-10f)
-				return 1;
+				RETURN (1);
 			// end point lies in this face
 			if (nDestSeg < 0)
-				return 1; // any segment acceptable
+				RETURN (1); // any segment acceptable
 			if (nStartSeg == nDestSeg)
-				return 1; // point is in desired segment
+				RETURN (1); // point is in desired segment
 			if ((nChildSeg == nDestSeg) && !((pWall = pSide->Wall ()) && !(pWall->IsVolatile () || (pWall->IsPassable (NULL, false) & WID_TRANSPARENT_FLAG))))
-				return 1; // point at border to destination segment and the portal to that segment is passable
+				RETURN (1); // point at border to destination segment and the portal to that segment is passable
 			nFace = nFaceCount; // no eligible child segment, so try next segment side
 			break; 
 			}
@@ -1537,13 +1551,13 @@ for (;;) {
 		if ((pWall = pSide->Wall ()) && !(pWall->IsVolatile () || (pWall->IsPassable (NULL, false) & WID_TRANSPARENT_FLAG))) // impassable
 			continue;
 		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDepth + 1, nThread))
-			return 1;
+			RETURN (1);
 		}
 #if DBG
 	if (!nDepth)
 		BRP;
 #endif
-	return (nDestSeg < 0) || (nStartSeg == nDestSeg); // line doesn't intersect any side of this segment -> p1 must be inside segment
+	RETURN ((nDestSeg < 0) || (nStartSeg == nDestSeg)); // line doesn't intersect any side of this segment -> p1 must be inside segment
 	}
 }
 

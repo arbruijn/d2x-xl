@@ -682,6 +682,9 @@ return (gameStates.app.bAutoRunMission || !missionManager.nSongs) ? szNoSong : m
 
 void UnloadLevelData (int32_t bRestore, bool bQuit)
 {
+ENTER (0, 0, "UnloadLevelData");
+PrintLog (1);
+
 paletteManager.EnableEffect (true);
 if (bQuit)
 	DestroyRenderThreads ();
@@ -694,16 +697,14 @@ if (gameOpts->UseHiresSound () != gameOpts->sound.bHires [1]) {
 	gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1];
 	audio.Reset ();
 	}
-/*---*/PrintLog (1, "unloading mine rendering data\n");
+/*---*/PrintLog (0, "unloading mine rendering data\n");
 gameData.render.mine.Destroy ();
-PrintLog (-1);
 
-/*---*/PrintLog (1, "stopping sounds\n");
+/*---*/PrintLog (0, "stopping sounds\n");
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
 audio.StopAllChannels ();
-PrintLog (-1);
 
-/*---*/PrintLog (1, "reconfiguring audio\n");
+/*---*/PrintLog (0, "reconfiguring audio\n");
 if (!bRestore) {
 	gameStates.gameplay.slowmo [0].fSpeed =
 	gameStates.gameplay.slowmo [1].fSpeed = 1.0f;
@@ -714,99 +715,62 @@ if (!bRestore) {
 		audio.Setup (1);
 		}
 	}
-PrintLog (-1);
-/*---*/PrintLog (1, "unloading lightmaps\n");
+/*---*/PrintLog (0, "unloading lightmaps\n");
 lightmapManager.Destroy ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "unloading hoard data\n");
+/*---*/PrintLog (0, "unloading hoard data\n");
 /*---*/FreeHoardData ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "unloading textures\n");
+/*---*/PrintLog (0, "unloading textures\n");
 UnloadTextures ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "unloading custom sounds\n");
+/*---*/PrintLog (0, "unloading custom sounds\n");
 FreeSoundReplacements ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "unloading addon sounds\n");
+/*---*/PrintLog (0, "unloading addon sounds\n");
 FreeAddonSounds ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "unloading hardware lights\n");
+/*---*/PrintLog (0, "unloading hardware lights\n");
 lightManager.Reset ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "unloading hires models\n");
+/*---*/PrintLog (0, "unloading hires models\n");
 FreeHiresModels (1);
-PrintLog (-1);
-
-/*---*/PrintLog (1, "unloading cambot\n");
+/*---*/PrintLog (0, "unloading cambot\n");
 UnloadCamBot ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "unloading additional models\n");
+/*---*/PrintLog (0, "unloading additional models\n");
 FreeModelExtensions ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "unloading additional model textures\n");
+/*---*/PrintLog (0, "unloading additional model textures\n");
 FreeObjExtensionBitmaps ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "unloading additional model textures\n");
+/*---*/PrintLog (0, "unloading additional model textures\n");
 UnloadHiresAnimations ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "freeing spark effect buffers\n");
+/*---*/PrintLog (0, "freeing spark effect buffers\n");
 sparkManager.Destroy ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "freeing auxiliary poly model data\n");
+/*---*/PrintLog (0, "freeing auxiliary poly model data\n");
 gameData.models.Destroy ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "Destroying camera objects\n");
+/*---*/PrintLog (0, "Destroying camera objects\n");
 cameraManager.Destroy ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "Destroying omega lightnings\n");
+/*---*/PrintLog (0, "Destroying omega lightnings\n");
 omegaLightning.Destroy (-1);
-PrintLog (-1);
-
-/*---*/PrintLog (1, "Destroying monsterball\n");
+/*---*/PrintLog (0, "Destroying monsterball\n");
 RemoveMonsterball ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "Unloading way points\n");
+/*---*/PrintLog (0, "Unloading way points\n");
 wayPointManager.Destroy ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "Unloading mod text messages\n");
+/*---*/PrintLog (0, "Unloading mod text messages\n");
 FreeModTexts ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "Unloading addon texures\n");
+/*---*/PrintLog (0, "Unloading addon texures\n");
 UnloadAddonImages ();
-PrintLog (-1);
-
-/*---*/PrintLog (1, "Unloading particle texures\n");
+/*---*/PrintLog (0, "Unloading particle texures\n");
 particleImageManager.FreeAll ();
-
-/*---*/PrintLog (1, "Unloading HUD icons\n");
+/*---*/PrintLog (0, "Unloading HUD icons\n");
 hudIcons.Destroy ();
+PrintLog (-1);
+LEAVE;
 }
 
 //------------------------------------------------------------------------------
 
 int32_t LoadModData (char* pszLevelName, int32_t bLoadTextures, int32_t nStage)
 {
+ENTER (0, 0, "LoadModData");
+
 	int32_t	nLoadRes = 0;
 	char	szFile [FILENAME_LEN];
 
 // try to read mod files, and load default files if that fails
-PrintLog (1, "loading mod data (state %d)\n", nStage);
 if (nStage == 0) {
 	SetD1Sound ();
 	SetDataVersion (-1);
@@ -893,13 +857,12 @@ else {
 	/*---*/PrintLog (1, "loading replacement robots\n");
 	if (0 > LoadRobotReplacements (pszLevelName, NULL, 0, 0, true)) {
 		PrintLog (-1);
-		return -1;
+		RETURN (-1);
 		}
 	/*---*/PrintLog (1, "loading cambot\n");
 	gameData.botData.nCamBotId = (LoadRobotReplacements ("cambot.hxm", NULL, 1, 0) > 0) ? gameData.botData.nTypes [0] - 1 : -1;
 	PrintLog (-1);
 	gameData.botData.nCamBotModel = gameData.models.nPolyModels - 1;
-	PrintLog (-1);
 
 	/*---*/PrintLog (1, "loading replacement models\n");
 	if (*gameFolders.mods.szModels [0]) {
@@ -917,15 +880,14 @@ else {
 	LoadModTexts ();
 	PrintLog (-1);
 	}
-PrintLog (-1);
-return nLoadRes;
+RETURN (nLoadRes);
 }
 
 //------------------------------------------------------------------------------
 
 static void CleanupBeforeGame (int32_t nLevel, int32_t bRestore)
 {
-/*---*/PrintLog (1, "cleaning up...\n");
+ENTER (0, 0, "CleanupBeforeGame");
 DestroyRenderThreads ();
 transparencyRenderer.ResetBuffers ();
 gameData.Destroy ();
@@ -985,7 +947,7 @@ SetFreeCam (0);
 StopObserverMode ();
 PrintLog (-1);
 paletteManager.EnableEffect (true);
-PrintLog (-1);
+LEAVE;
 }
 
 //------------------------------------------------------------------------------
@@ -995,13 +957,14 @@ extern char szAutoMission [255];
 
 int32_t LoadLevel (int32_t nLevel, bool bLoadTextures, bool bRestore)
 {
+ENTER (0, 0, "LoadLevel");
+
 	char			*pszLevelName;
 	char			szHogName [FILENAME_LEN];
 	CPlayerInfo	savePlayer;
 	int32_t		nRooms, nCurrentLevel = missionManager.nCurrentLevel;
 
 strlwr (pszLevelName = LevelName (nLevel));
-/*---*/PrintLog (1, "loading level '%s'\n", pszLevelName);
 CleanupBeforeGame (nLevel, bRestore);
 gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
@@ -1017,7 +980,7 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 		gameStates.app.bBetweenLevels = 0;
 		missionManager.nCurrentLevel = nCurrentLevel;
 		PrintLog (-1);
-		return -1;
+		RETURN (-1);
 		}
 #endif
 	songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
@@ -1032,8 +995,7 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 		gameStates.app.bBetweenLevels = 0;
 		missionManager.nCurrentLevel = nCurrentLevel;
 		Warning ("Invalid level number!");
-		PrintLog (-1);
-		return 0;
+		RETURN (0);
 		}
 	nLastMsgYCrd = -1;		//so we don't restore backgound under msg
 	if (!gameStates.app.bProgressBars)
@@ -1042,7 +1004,6 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 
 /*---*/PrintLog (1, "loading texture brightness and color info\n");
 SetDataVersion (-1);
-
 memcpy (gameData.pig.tex.brightness.Buffer (),
 			gameData.pig.tex.defaultBrightness [gameStates.app.bD1Mission].Buffer (),
 			gameData.pig.tex.brightness. Size ());
@@ -1080,8 +1041,7 @@ if (nLoadRes) {
 	gameStates.app.bBetweenLevels = 0;
 	missionManager.nCurrentLevel = nCurrentLevel;
 	Warning (TXT_LOAD_ERROR, pszLevelName);
-	PrintLog (-1);
-	return 0;
+	RETURN (0);
 	}
 
 if (!gameStates.app.bPrecomputeLightmaps) {
@@ -1092,15 +1052,14 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 	if (LoadModData (pszLevelName, bLoadTextures, 1) < 0) {
 		gameStates.app.bBetweenLevels = 0;
 		missionManager.nCurrentLevel = nCurrentLevel;
-		PrintLog (-1);
-		return -1;
+		RETURN (-1);
 		}
 #endif
 	}
 #if 1
 if (!lightManager.Setup (nLevel)) {
 	PrintLog (-1, "Not enough memory for light data\n");
-	return -1;
+	RETURN (-1);
 	}
 #endif
 if (!gameStates.app.bPrecomputeLightmaps) {

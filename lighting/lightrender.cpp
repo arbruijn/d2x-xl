@@ -192,7 +192,7 @@ return pLight;
 
 uint8_t CLightManager::VariableVertexLights (int32_t nVertex)
 {
-	int16_t*		nearestLightP = m_data.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
+	int16_t*		pNearestLight = m_data.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	CDynLight*	pLight;
 	int16_t			i, j;
 	uint8_t			h;
@@ -201,8 +201,8 @@ uint8_t CLightManager::VariableVertexLights (int32_t nVertex)
 if (nVertex == nDbgVertex)
 	BRP;
 #endif
-for (h = 0, i = MAX_NEAREST_LIGHTS; i; i--, nearestLightP++) {
-	if ((j = *nearestLightP) < 0)
+for (h = 0, i = MAX_NEAREST_LIGHTS; i; i--, pNearestLight++) {
+	if ((j = *pNearestLight) < 0)
 		break;
 	if ((pLight = RenderLights (j)))
 		h += pLight->info.bVariable;
@@ -215,7 +215,7 @@ return h;
 void CLightManager::SetNearestToVertex (int32_t nSegment, int32_t nSide, int32_t nVertex, CFixVector *vNormal, uint8_t nType, int32_t bStatic, int32_t bVariable, int32_t nThread)
 {
 if (bStatic || m_data.variableVertLights [nVertex]) {
-	int16_t*				nearestLightP = m_data.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
+	int16_t*				pNearestLight = m_data.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	CDynLightIndex*	pLightIndex = &m_data.index [0][nThread];
 	int16_t				i, j, nActiveLightI = pLightIndex->nActive;
 	CDynLight*			pLight;
@@ -228,8 +228,8 @@ if (nVertex == nDbgVertex)
 	BRP;
 #endif
 	pLightIndex->iVertex = nActiveLightI;
-	for (i = MAX_NEAREST_LIGHTS; i; i--, nearestLightP++) {
-		if ((j = *nearestLightP) < 0)
+	for (i = MAX_NEAREST_LIGHTS; i; i--, pNearestLight++) {
+		if ((j = *pNearestLight) < 0)
 			break;
 		if (!(pLight = RenderLights (j)))
 			continue;
@@ -284,7 +284,7 @@ if ((pFace == prevFaceP) && (nFrameCount == gameData.app.nFrameCount))
 prevFaceP = pFace;
 nFrameCount = gameData.app.nFrameCount;
 #endif
-	int32_t			i;
+	int32_t		i;
 	CFixVector	vNormal;
 	CSide*		pSide = SEGMENT (pFace->m_info.nSegment)->m_sides + pFace->m_info.nSide;
 
@@ -317,7 +317,7 @@ return m_data.index [0][0].nActive;
 void CLightManager::SetNearestStatic (int32_t nSegment, int32_t bStatic, int32_t nThread)
 {
 if (gameStates.render.nLightingMethod) {
-	int16_t*				nearestLightP = m_data.nearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
+	int16_t*				pNearestLight = m_data.nearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	int16_t					i, j;
 	CDynLight*			pLight;
 	CActiveDynLight*	pActiveLights = m_data.active [nThread].Buffer ();
@@ -325,8 +325,8 @@ if (gameStates.render.nLightingMethod) {
 	CFixVector			c = SEGMENT (nSegment)->Center ();
 
 	//m_data.iStaticLights [nThread] = m_data.index [0][nThread].nActive;
-	for (i = MAX_NEAREST_LIGHTS; i; i--, nearestLightP++) {
-		if ((j = *nearestLightP) < 0)
+	for (i = MAX_NEAREST_LIGHTS; i; i--, pNearestLight++) {
+		if ((j = *pNearestLight) < 0)
 			break;
 		if (!(pLight = RenderLights (j)))
 			continue;
@@ -657,12 +657,12 @@ for (int16_t i = 0; i < gameData.segData.nSegments; i++)
 void CLightManager::ResetNearestStatic (int32_t nSegment, int32_t nThread)
 {
 if (gameStates.render.nLightingMethod) {
-	int16_t*		nearestLightP = m_data.nearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
+	int16_t*		pNearestLight = m_data.nearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	int16_t			i, j;
 	CDynLight*	pLight;
 
-	for (i = MAX_NEAREST_LIGHTS /*gameStates.render.nMaxLightsPerFace*/; i; i--, nearestLightP++) {
-		if ((j = *nearestLightP) < 0)
+	for (i = MAX_NEAREST_LIGHTS /*gameStates.render.nMaxLightsPerFace*/; i; i--, pNearestLight++) {
+		if ((j = *pNearestLight) < 0)
 			break;
 		if ((pLight = RenderLights (j)) && (pLight->render.bUsed [nThread] == 3))
 			ResetUsed (pLight, nThread);
@@ -676,7 +676,7 @@ void CLightManager::ResetNearestToVertex (int32_t nVertex, int32_t nThread)
 {
 //if (gameStates.render.nLightingMethod)
  {
-	int16_t*		nearestLightP = m_data.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
+	int16_t*		pNearestLight = m_data.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	int16_t			i, j;
 	CDynLight*	pLight;
 
@@ -684,8 +684,8 @@ void CLightManager::ResetNearestToVertex (int32_t nVertex, int32_t nThread)
 	if (nVertex == nDbgVertex)
 		BRP;
 #endif
-	for (i = MAX_NEAREST_LIGHTS; i; i--, nearestLightP++) {
-		if ((j = *nearestLightP) < 0)
+	for (i = MAX_NEAREST_LIGHTS; i; i--, pNearestLight++) {
+		if ((j = *pNearestLight) < 0)
 			break;
 		if ((pLight = RenderLights (j)) && (pLight->render.bUsed [nThread] == 2))
 			ResetUsed (pLight, nThread);

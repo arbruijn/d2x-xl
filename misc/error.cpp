@@ -519,6 +519,21 @@ if (fLog) {
 }
 
 //------------------------------------------------------------------------------
+
+void _CDECL_ StackTrace (const int32_t nLevel, const int32_t nIndent, const char *fmt, ...)
+{
+if ((nLevel <= gameStates.app.nTraceLevel) && fmt && *fmt) {
+	va_list arglist;
+		static char	szLogLine [100000] = {'\0'};
+
+	va_start (arglist, fmt);
+	vsprintf (szLogLine, fmt, arglist);
+	va_end (arglist);
+	PrintLog (nIndent, szLogLine);
+	}
+}
+
+//------------------------------------------------------------------------------
 //print out warning message to user
 void _CDECL_ Warning (const char *fmt, ...)
 {

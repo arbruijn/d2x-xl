@@ -563,6 +563,7 @@ void CBriefing::RenderRobotFrame (void)
 {
 if (!ROBOTINFO (m_info.nRobot))
 	return;
+
 int32_t t = SDL_GetTicks ();
 if (t - m_info.tAnimate < 10)
 	return;

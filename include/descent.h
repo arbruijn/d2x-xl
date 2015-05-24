@@ -1319,8 +1319,9 @@ class CApplicationStates {
 		int32_t		iDownloadTimeout;
 		int32_t		bHaveSDLNet;
 		int32_t		nSpawnPos;
-		int16_t		nPlayerSegment;
+		int32_t		nTraceLevel;
 		uint32_t		nRandSeed;
+		int16_t		nPlayerSegment;
 		bool			bCustomData;
 		bool			bCustomSounds;
 		fix			xThisLevelTime;
@@ -4352,6 +4353,23 @@ inline tRobotInfo* CGameData::RobotInfo (CObject* pObj) {
 	}
 
 #endif
+
+//	-----------------------------------------------------------------------------------------------------------
+
+#if 1 //DBG
+
+#	define ENTER(_level,_thread,_funcName)	const char *__FUNC__ = (_funcName); const int32_t __LEVEL__ = (_level); const int32_t __THREAD__ = (_thread); StackTrace (__LEVEL__, +1, "-> %s [%d] (s.%d)\n", __FUNC__, __THREAD__, __FILE__, __LINE__)
+#	define LEAVE									StackTrace (__LEVEL__, -1, "<- %s [%d] (%s.%d)\n", __FUNC__, __THREAD__, __FILE__, __LINE__)
+#	define RETURN(_retVal)						{ LEAVE; return (_retVal); }
+
+#else
+
+#	define ENTER(_funcName)				
+#	define LEAVE				
+#	define RETURN(_retVal)	return (_retVal)
+
+#endif
+
 //	-----------------------------------------------------------------------------------------------------------
 
 #define EX_OUT_OF_MEMORY		1

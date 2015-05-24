@@ -116,7 +116,7 @@ void ResetObjectSmoke (void)
 {
 	int32_t	i;
 
-for (i = 0; i < LEVEL_OBJECTS; i++)
+for (int32_t i = 0; i < LEVEL_OBJECTS; i++)
 	KillObjectSmoke (i);
 InitObjectSmoke ();
 }

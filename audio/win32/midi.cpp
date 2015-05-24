@@ -198,6 +198,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 	
 	songManager.SetPlaying (bCustom ? -1 : 1);
 	SetVolume (m_nVolume);
+	PrintLog (-1);
 	return songManager.Playing ();
 	}
 #	endif

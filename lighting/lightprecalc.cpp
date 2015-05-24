@@ -97,6 +97,8 @@ static int32_t nSavedCount = 0;
 
 void ComputeSingleSegmentDistance (int32_t nSegment, int32_t nThread)
 {
+ENTER (2, nThread, "ComputeSingleSegmentDistance");
+
 	fix xMaxDist = 0;
 	float scale = 1.0f;
 	int16_t nMinSeg = -1, nMaxSeg = -1;
@@ -148,6 +150,7 @@ for (int32_t i = nMinSeg; i <= nMaxSeg; i++)
 #if DBG
 nSavedCount += gameData.segData.nSegments - segDist.length;
 #endif
+LEAVE;
 }
 
 //------------------------------------------------------------------------------
@@ -211,19 +214,21 @@ return 0;
 
 int32_t ComputeNearestSegmentLights (int32_t i, int32_t nThread)
 {
-	CSegment*			pSeg;
-	CDynLight*			pLight;
-	int32_t					h, j, k, l, n, nMaxLights;
+ENTER (0, nThread, "ComputeNearestSegmentLights");
+
+	CSegment				*pSeg;
+	CDynLight			*pLight;
+	int32_t				h, j, k, l, n, nMaxLights;
 	CFixVector			center;
 	struct tLightDist	*pDists;
 
 if (!lightManager.LightCount (0))
-	return 0;
+	RETURN (0);
 
 if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
 	gameOpts->render.nLightingMethod = 0;
 	gameData.render.shadows.nLights = 0;
-	return 0;
+	RETURN (0);
 	}
 
 nMaxLights = MAX_NEAREST_LIGHTS;
@@ -252,7 +257,7 @@ for (pSeg = SEGMENT (i); i < j; i++, pSeg++) {
 		lightManager.NearestSegLights ()[k + l] = -1;
 	}
 delete[] pDists;
-return 1;
+RETURN (1);
 }
 
 //------------------------------------------------------------------------------
@@ -263,21 +268,23 @@ extern int32_t nDbgVertex;
 
 int32_t ComputeNearestVertexLights (int32_t nVertex, int32_t nThread)
 {
-	CFixVector*				pVertex;
-	CDynLight*				pLight;
-	int32_t						h, j, k, l, n, nMaxLights;
-	CFixVector				vLightToVert;
-	struct tLightDist*	pDists;
+ENTER (1, nThread, "ComputeNearestVertexLights");
+
+	CFixVector*			pVertex;
+	CDynLight*			pLight;
+	int32_t				h, j, k, l, n, nMaxLights;
+	CFixVector			vLightToVert;
+	struct tLightDist	*pDists;
 
 G3_SLEEP (0);
 
 if (!lightManager.LightCount (0))
-	return 0;
+	RETURN (0);
 
 if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
 	gameOpts->render.nLightingMethod = 0;
 	gameData.render.shadows.nLights = 0;
-	return 0;
+	RETURN (0);
 	}
 
 #if DBG
@@ -335,7 +342,7 @@ for (pVertex = gameData.segData.vertices + nVertex; nVertex < j; nVertex++, pVer
 		lightManager.NearestVertLights ()[k + l] = -1;
 	}
 delete[] pDists;
-return 1;
+RETURN (1);
 }
 
 //------------------------------------------------------------------------------
@@ -409,7 +416,7 @@ static CTransformation projection;
 
 static void SetupProjection (void)
 {
-	int32_t		w = gameData.render.screen.Width (),
+	int32_t	w = gameData.render.screen.Width (),
 				h = gameData.render.screen.Height ();
 	CCanvas canvas;
 
@@ -441,8 +448,10 @@ ogl.EndFrame (-1);
 
 static void ComputeSingleSegmentVisibility (int32_t nThread, int16_t nStartSeg, int16_t nFirstSide, int16_t nLastSide, int32_t bLights)
 {
-	CSegment*			pStartSeg;
-	CSide*				pSide;
+ENTER (1, nThread, "ComputeSingleSegmentVisibility");
+
+	CSegment				*pStartSeg;
+	CSide					*pSide;
 	int16_t				nSegment, nSide, nLight = -1, i;
 	CFixVector			fVec, uVec, rVec;
 	CObject				viewer;
@@ -541,6 +550,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			}
 		}
 	}
+LEAVE;
 }
 
 //------------------------------------------------------------------------------
