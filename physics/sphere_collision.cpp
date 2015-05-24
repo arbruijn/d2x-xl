@@ -921,7 +921,7 @@ return (t == nObject);
 
 int32_t ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery, int32_t nCollisionModel, int32_t nThread)
 {
-ENTER (1; "ComputeObjectHitpoint");
+ENTER (1, nThread, "ComputeObjectHitpoint");
 
 	CObject		* pThisObj = (hitQuery.nObject < 0) ? NULL : OBJECT (hitQuery.nObject),
 			 		* pOtherObj;

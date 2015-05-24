@@ -325,7 +325,7 @@ return j ? i / j : 1;
 int32_t CLightManager::Add (CSegFace* pFace, CFloatVector *pColor, fix xBrightness, int16_t nSegment,
 									 int16_t nSide, int16_t nObject, int16_t nTexture, CFixVector *vPos, uint8_t bAmbient)
 {
-ENTER (2, "CLightManager::Add");
+ENTER (2, 0, "CLightManager::Add");
 
 	int16_t		h, i;
 	float			fBrightness = X2F (xBrightness);
