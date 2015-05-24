@@ -4358,8 +4358,8 @@ inline tRobotInfo* CGameData::RobotInfo (CObject* pObj) {
 
 #if 1 //DBG
 
-#	define ENTER(_level,_thread,_funcName)	const char *__FUNC__ = (_funcName); const int32_t __LEVEL__ = (_level); const int32_t __THREAD__ = (_thread); StackTrace (__LEVEL__, 0, "-> %s [%d] (%s.%d)\n", __FUNC__, __THREAD__, __FILE__, __LINE__)
-#	define LEAVE									StackTrace (__LEVEL__, 0, "<- %s [%d] (%s.%d)\n", __FUNC__, __THREAD__, __FILE__, __LINE__)
+#	define ENTER(_level,_thread,_funcName)	const char *__FUNC__ = (_funcName); const int32_t __LEVEL__ = (_level); const int32_t __THREAD__ = (_thread); StackTrace (__LEVEL__, 1, "-> %s [%d] (%s.%d)\n", __FUNC__, __THREAD__, __FILE__, __LINE__)
+#	define LEAVE									StackTrace (__LEVEL__, -1, "<- %s [%d] (%s.%d)\n", __FUNC__, __THREAD__, __FILE__, __LINE__)
 #	define RETURN(_retVal)						{ LEAVE; return (_retVal); }
 
 #else
