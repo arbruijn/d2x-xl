@@ -467,6 +467,7 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameOptions [i].render.nQuality, i, 0);
 		RP (gameOptions [i].render.bCartoonize, i, 0);
+		RP (gameOptions [i].render.bPowerupSpinType, i, 1);
 		RP (gameOptions [i].render.effects.bEnabled, i, 0);
 		RP (gameOptions [i].render.effects.bGlow, i, 0);
 		RP (gameOptions [i].render.effects.bSoftParticles, i, 0);
@@ -1027,6 +1028,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.nLightingMethod", "0"},
 	 {"gameOptions[0].render.nQuality", "2"},
 	 {"gameOptions[0].render.bCartoonize", "0"},
+	 ("gameOptions [i].render.bPowerupSpinType, i, 1");
 	 {"gameOptions[0].render.stereo.nGlasses", "0"},
 	 {"gameOptions[0].render.stereo.nMethod", "0"},
 	 {"gameOptions[0].render.stereo.nScreenDist", "3"},
@@ -1756,7 +1758,7 @@ SetMaxOmegaCharge ();
 if (bRewriteIt)
 	SavePlayerProfile ();
 
-gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize * CARTOON_BLUR_PASSES);
+gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
 gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
 if ((gameOpts->render.nLightingMethod > 1) && !ogl.m_features.bShaders)
 	gameOpts->render.nLightingMethod = 1;

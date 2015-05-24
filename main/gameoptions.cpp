@@ -128,6 +128,7 @@ if (i) {
 	bHiresModels [1] = 0;
 	bUseLightmaps = 0;
 	bCartoonize = 0;
+	bPowerupSpinType = 1;
 	effects.bAutoTransparency = 0;
 	nMeshQuality = 0;
 	nMathFormat = 2;
@@ -247,6 +248,7 @@ else {
 	bHiresModels [1] = 1;
 	bUseLightmaps = 0;
 	bCartoonize = 0;
+	bPowerupSpinType = 1;
 	effects.bAutoTransparency = 1;
 	nMathFormat = 2;
 	nDefMathFormat = 2;

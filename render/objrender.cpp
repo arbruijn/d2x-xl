@@ -139,36 +139,34 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-#define POWERUP_SPIN_TYPE 1 // 0: irregular, 1: regular
-
 void SetupSpin (CObject *pObj, bool bOrient)
 {
-#if !POWERUP_SPIN_TYPE
-if (bOrient && (gameData.demo.nState != ND_STATE_PLAYBACK)) {
-	if (gameData.objData.pViewer)
-		pObj->info.position.mOrient = gameData.objData.pViewer->Orientation ();
-	else {
-		CAngleVector a;
-		a.Set (2 * SRandShort (), 2 * SRandShort (), 2 * SRandShort ());
-		pObj->info.position.mOrient = CFixMatrix::Create (a);
-		}
-	}
-
-static CFixVector vSpin = { I2X (1) / 4, I2X (1) / 4, I2X (1) / 4 };
-
-if (gameOpts->render.powerups.nSpin)
-	pObj->mType.physInfo.rotVel = vSpin;
-else
-#endif
+if (gameOpts->render.bPowerupSpinType)
 	pObj->mType.physInfo.rotVel.SetZero ();
+else {
+	if (bOrient && (gameData.demo.nState != ND_STATE_PLAYBACK)) {
+		if (gameData.objData.pViewer)
+			pObj->info.position.mOrient = gameData.objData.pViewer->Orientation ();
+		else {
+			CAngleVector a;
+			a.Set (2 * SRandShort (), 2 * SRandShort (), 2 * SRandShort ());
+			pObj->info.position.mOrient = CFixMatrix::Create (a);
+			}
+		}
+
+	static CFixVector vSpin = { I2X (1) / 4, I2X (1) / 4, I2X (1) / 4 };
+
+	if (gameOpts->render.powerups.nSpin)
+		pObj->mType.physInfo.rotVel = vSpin;
+	else
+		pObj->mType.physInfo.rotVel.SetZero ();
+	}
 }
 
 // -----------------------------------------------------------------------------
 // Make 3D powerups spin like their 2D counter parts: At an angle of 45 deg around their vertical axis
 // Unfortunately, the 3D powerup models have various different orientations that need to be adjusted.
 // That sucks. 
-
-#if POWERUP_SPIN_TYPE
 
 void UpdateSpin (CObject *pObj)
 {
@@ -1037,9 +1035,8 @@ if (!gameStates.app.bNostalgia && gameOpts->Use3DPowerups ()) {
 		int32_t bSpinning = !pObj->mType.physInfo.rotVel.IsZero ();
 		if (gameOpts->render.powerups.nSpin !=	bSpinning) 
 			SetupSpin (pObj, false);
-#if POWERUP_SPIN_TYPE
-		UpdateSpin (pObj);
-#endif
+		if (gameOpts->render.bPowerupSpinType)
+			UpdateSpin (pObj);
 		}
 #if DBG
 	RenderRobotShield (pObj);

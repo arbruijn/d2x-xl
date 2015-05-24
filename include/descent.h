@@ -152,12 +152,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define AMBIENT_LIGHT	0.3f
 #define DIFFUSE_LIGHT	0.7f
 
-#if DBG
-#	define CARTOON_BLUR_PASSES	1
-#else
-#	define CARTOON_BLUR_PASSES	3
-#endif
-
 //------------------------------------------------------------------------------
 
 #ifdef _OPENMP
@@ -453,6 +447,7 @@ class CRenderOptions {
 		int32_t nImageQuality;
 		int32_t nDebrisLife;
 		int32_t bCartoonize;
+		int32_t bPowerupSpinType;
 		tCameraOptions cameras;
 		tColorOptions color;
 		tCockpitOptions cockpit;
