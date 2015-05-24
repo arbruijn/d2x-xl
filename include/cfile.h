@@ -49,8 +49,8 @@ typedef struct CFILE {
 	size_t	libOffset;
 	size_t	rawPosition;
 	char		buffer [16384];
-	int32_t		bufLen;
-	int32_t		pBufferos;
+	int32_t	bufLen;
+	int32_t	pBufferos;
 } CFILE;
 
 class CFile {

@@ -2697,7 +2697,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann die Verwendung von Blitzen ausgewaehlt werden.", "Adjust the usage of lightning here."},
  {"Hier kann das Radar eingeschaltet und positioniert werden.", "Enable RADAR and chose its position here."},
  {"Hier kann eingestellt werden, wann und ob das Spiel automatisch\ndie Waffe umschaltet.", "Adjust whether and when the game will automatically switch\nweapons for you."},
- {"Wenn angekreuzt, werden blinkende Lichter und Blinkeffekte reduziert.", "If checked flashing lights and flash effects will be reduced."},
+ {"Wenn angekreuzt, werden blinkende Lichter und Blinkeffekte reduziert\nund das Schiff schwingt nicht auf und ab.", "If checked flashing lights and flash effects will be reduced\nand the ship won't wiggle."},
  {"Wenn angekreuzt, erhalten einige Cockpitelemente eine andere Farbe.", "If checked some cockpit elements get a different color."},
  {"Wenn angekreuzt, erscheinen in einigen Menues zusaetzliche\nEinstellungsmoeglichkeiten.", "If checked, additional settings are displayed in some menus."},
  {"Beim Standardmodell werden einfach die Schutzschilde abgenutzt\nund schliesslich der Gegner zerstoert. Beim erweiterten\nModell koennen je nach Zustand des gegnerischen\nSchutzschildes kritische Treffer erzielt werden, die seine\nGeschwindigkeit, Zielsicherheit oder Feuerrate verringern.",

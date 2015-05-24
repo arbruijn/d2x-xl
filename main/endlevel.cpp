@@ -1111,7 +1111,7 @@ void LoadEndLevelData (int32_t nLevel)
 ENTER (0, 0, "LoadEndLevelData");
 
 	char			filename [13];
-	char			line [LINE_LEN], *p;
+	char			line [LINE_LEN], *p = NULL;
 	CFile			cf;
 	int32_t		var, nSegment, nSide;
 	int32_t		nExitSide = 0, i;
@@ -1276,7 +1276,7 @@ for (nSegment = 0, gameData.endLevel.exit.nSegNum = -1;
 
 if (gameData.endLevel.exit.nSegNum == -1) {
 #if DBG
-	Warning (TXT_EXIT_TERRAIN, p, 12);
+	Warning (TXT_EXIT_TERRAIN, p ? p : "", cf.Name ());
 #endif
 	gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
 	LEAVE;
