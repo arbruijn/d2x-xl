@@ -231,7 +231,7 @@ if (gameOpts->render.ship.bBullets) {
 
 				if (bSpectate) {
 					pView = &m;
-					m = pPos->mOrient.Transpose();
+					m = pPos->mOrient.Transpose ();
 				}
 				else
 					pView = pObj->View (0);

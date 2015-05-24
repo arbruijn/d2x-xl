@@ -164,26 +164,93 @@ else
 }
 
 // -----------------------------------------------------------------------------
+// Make 3D powerups spin like their 2D counter parts: At an angle of 45 deg around their vertical axis
+// Unfortunately, the 3D powerup models have various different orientations that need to be adjusted.
+// That sucks. 
 
 #if POWERUP_SPIN_TYPE
 
 void UpdateSpin (CObject *pObj)
 {
-	CAngleVector a;
+	CAngleVector	a;
+	fix				xRotAngle = (I2X (1) * (SDL_GetTicks () % 2001)) / 2000;
 
-static CAngleVector vSpin = { 0, 0, 0 };
+switch (pObj->Id ()) {
+	case POW_EXTRA_LIFE:
+	case POW_ENERGY:
+	case POW_SHIELD_BOOST:
+	case POW_HOARD_ORB:
+	case POW_CLOAK:
+	case POW_INVUL:
+		a.Set (0, 0, xRotAngle); // don't tilt
+		break;
 
-int32_t nId = pObj->Id ();
+	case POW_MONSTERBALL:
+		return;
 
-a.Set (((nId == POW_EXTRA_LIFE) || (nId == POW_SHIELD_BOOST) || (nId == POW_INVUL) || (nId == POW_CLOAK)) ? 0 : I2X (1) / 8, 0, (I2X (1) * (SDL_GetTicks () % 2001)) / 2000);
+	case POW_VULCAN_AMMO:
+		a.Set (0, -I2X (1) / 8, xRotAngle); // flipped and pointing down
+		break;
+
+	case POW_GAUSS:
+		a.Set (-I2X (3) / 8, 0, int16_t ((xRotAngle + I2X (3) / 4) % I2X (1))); // rotated
+		break;
+
+	case POW_HOMINGMSL_1:
+	case POW_HOMINGMSL_4:
+	case POW_SMARTMSL:
+	case POW_MEGAMSL:
+	case POW_CONCUSSION_1:
+	case POW_CONCUSSION_4:
+	case POW_FLASHMSL_1:
+	case POW_FLASHMSL_4:
+	case POW_GUIDEDMSL_1:
+	case POW_GUIDEDMSL_4:
+	case POW_MERCURYMSL_1:
+	case POW_EARTHSHAKER:
+	case POW_QUADLASER:
+		a.Set (-I2X (1) / 8, 0, xRotAngle); // pointing down
+		break;
+
+#if 0
+	case POW_LASER:
+	case POW_VULCAN:
+	case POW_SPREADFIRE:
+	case POW_PLASMA:
+	case POW_FUSION:
+	case POW_SUPERLASER:
+	case POW_HELIX:
+	case POW_PHOENIX:
+	case POW_OMEGA:
+	case POW_MERCURYMSL_4:
+	case POW_PROXMINE:
+	case POW_SMARTMINE:
+	case POW_KEY_BLUE:
+	case POW_KEY_RED:
+	case POW_KEY_GOLD:
+	case POW_BLUEFLAG:
+	case POW_REDFLAG:
+	case POW_FULL_MAP:
+	case POW_CONVERTER:
+	case POW_AMMORACK:
+	case POW_AFTERBURNER:
+	case POW_HEADLIGHT:
+	case POW_SLOWMOTION:
+	case POW_BULLETTIME:
+#endif
+	default:
+		a.Set (I2X (1) / 8, 0, xRotAngle);
+		break;
+	}
+
 #if 1
 pObj->info.position.mOrient = CFixMatrix::Create (a);
 #else
-CFixMatrix mRotate = CFixMatrix::Create (a);
-CFixMatrix mOrient = CFixMatrix::IDENTITY;
-pObj->info.position.mOrient = mOrient * mRotate;
+// Make powerups align to player orientation. Makes them look quite fake.
+CFixMatrix mOrient = CFixMatrix::Create (a);
+pObj->info.position.mOrient = gameData.objData.pViewer->Orientation () * mOrient;
 #endif
-pObj->mType.physInfo.rotVel.SetZero ();
+pObj->mType.physInfo.rotVel.SetZero (); // better safe than sorry ...
 }
 
 #endif
