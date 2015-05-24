@@ -409,11 +409,11 @@ class CParticleManager {
 	private:
 		CDataPool<CParticleSystem>	m_systems;
 		CArray<CParticleSystem*>	m_systemList;
-		CArray<int16_t>					m_objectSystems;
+		CArray<int16_t>				m_objectSystems;
 		CArray<time_t>					m_objExplTime;
-		int32_t								m_bAnimate;
-		int32_t								m_bStencil;
-		int32_t								m_iRenderBuffer;
+		int32_t							m_bAnimate;
+		int32_t							m_bStencil;
+		int32_t							m_iRenderBuffer;
 		GLhandleARB						m_shaderProg;
 
 	public:
