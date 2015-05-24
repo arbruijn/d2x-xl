@@ -531,13 +531,13 @@ if ((nLevel <= gameStates.app.nTraceLevel) && fmt && *fmt) {
 	vsprintf (szLogLine, fmt, arglist);
 	va_end (arglist);
 	int32_t nTraceLevel = gameStates.app.nTraceLevel;
-	gameStates.app.nTraceLevel = -1;
 	if (nIndent < 0)
-		PrintLog (nIndent);
+		IndentLog (nIndent);
+	gameStates.app.nTraceLevel = -1;
 	PrintLog (0, szLogLine);
-	if (nIndent > 0)
-		PrintLog (nIndent);
 	gameStates.app.nTraceLevel = nTraceLevel;
+	if (nIndent > 0)
+		IndentLog (nIndent);
 	}
 }
 
