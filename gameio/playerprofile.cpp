@@ -1028,7 +1028,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.nLightingMethod", "0"},
 	 {"gameOptions[0].render.nQuality", "2"},
 	 {"gameOptions[0].render.bCartoonize", "0"},
-	 ("gameOptions [i].render.bPowerupSpinType, i, 1");
+	 {"gameOptions [i].render.bPowerupSpinType", "1"},
 	 {"gameOptions[0].render.stereo.nGlasses", "0"},
 	 {"gameOptions[0].render.stereo.nMethod", "0"},
 	 {"gameOptions[0].render.stereo.nScreenDist", "3"},

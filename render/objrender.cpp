@@ -251,8 +251,6 @@ pObj->info.position.mOrient = gameData.objData.pViewer->Orientation () * mOrient
 pObj->mType.physInfo.rotVel.SetZero (); // better safe than sorry ...
 }
 
-#endif
-
 // -----------------------------------------------------------------------------
 
 int32_t CObject::PowerupToDevice (void)
