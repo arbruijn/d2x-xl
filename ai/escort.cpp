@@ -884,10 +884,7 @@ vVecToRobot = pBuddyObj->info.position.vPos - pObj->info.position.vPos;
 dist = CFixVector::Normalize (vVecToRobot);
 if (dist > I2X (100))
 	return 0;
-dot = CFixVector::Dot (vVecToRobot, pBuddyObj->info.position.mOrient.m.dir.f);
-if (dot < I2X (1)/2)
-	return 0;
-if (!ObjectToObjectVisibility (pBuddyObj, pObj, FQ_TRANSWALL))
+if (!ObjectToObjectVisibility (pBuddyObj, pObj, FQ_TRANSWALL, 0.5f))
 	return 0;
 if (gameData.weapons.info [MEGAMSL_ID].renderType == 0) {
 #if TRACE
@@ -915,10 +912,10 @@ int32_t MaybeBuddyFireSmart (int16_t nObject)
 	fix		dist;
 	int16_t	nWeaponObj;
 
-dist = CFixVector::Dist(pBuddyObj->info.position.vPos, pObj->info.position.vPos);
+dist = CFixVector::Dist (pBuddyObj->info.position.vPos, pObj->info.position.vPos);
 if (dist > I2X (80))
 	return 0;
-if (!ObjectToObjectVisibility (pBuddyObj, pObj, FQ_TRANSWALL))
+if (!ObjectToObjectVisibility (pBuddyObj, pObj, FQ_TRANSWALL, -1.0f))
 	return 0;
 #if TRACE
 console.printf (CON_DBG, "Buddy firing smart missile in frame %i\n", gameData.app.nFrameCount);

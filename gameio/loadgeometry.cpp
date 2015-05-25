@@ -893,10 +893,10 @@ vMax.Set (vMax.v.coord.x / m_dimensions.v.coord.x, vMax.v.coord.y / m_dimensions
 
 bool CFaceGrid::Create (int32_t nSize)
 {
-ComputeDimensions (nSize);
 #if 1
 return false;
 #else
+ComputeDimensions (nSize);
 if (!m_grid.Create (int32_t (m_dimensions.v.coord.x) * int32_t (m_dimensions.v.coord.y) * int32_t (m_dimensions.v.coord.z)))
 	return false;
 #endif

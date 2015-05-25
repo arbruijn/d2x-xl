@@ -122,14 +122,16 @@ return nTranspType;
 
 //------------------------------------------------------------------------------
 
-bool CHitQuery::InFoV (CObject *pObj)
+bool CHitQuery::InFoV (CObject *pObj, float fov)
 {
 if (!pObj)
+	return true;
+if (fov == -1.0f)
 	return true;
 CFixVector v = *p1 - *p0;
 CFixVector::Normalize (v);
 fix dot = CFixVector::Dot (v, OBJPOS (pObj)->mOrient.m.dir.f);
-return dot >= pObj->FoV ();
+return dot >= ((fov < -1.0f) ? pObj->FoV () : fov);
 }
 
 //------------------------------------------------------------------------------
@@ -169,7 +171,7 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) :
 //	-----------------------------------------------------------------------------------------------------------
 //	Determine if two OBJECTS are on a line of sight.  If so, return true, else return false.
 //	Calls fvi.
-int32_t ObjectToObjectVisibility (CObject *pViewer, CObject *pTarget, int32_t transType, int32_t nThread)
+int32_t ObjectToObjectVisibility (CObject *pViewer, CObject *pTarget, int32_t transType, float fov, int32_t nThread)
 {
 	CHitQuery	hitQuery;
 	CHitResult	hitResult;
@@ -179,7 +181,7 @@ do {
 	hitQuery.flags = transType | FQ_CHECK_OBJS | FQ_VISIBILITY;
 	hitQuery.p0 = &OBJPOS (pViewer)->vPos;
 	hitQuery.p1 = &OBJPOS (pTarget)->vPos;
-	if (!hitQuery.InFoV (pViewer))
+	if (!hitQuery.InFoV (pViewer, fov))
 		return false;
 
 	hitQuery.radP0 =

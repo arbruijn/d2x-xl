@@ -818,7 +818,7 @@ FORALL_OBJS (pTarget) {
 	else
 		continue;
 	fix dist = CFixVector::Dist (pObj->info.position.vPos, pTarget->info.position.vPos);
-	if ((dist < MAX_SMART_DISTANCE) && ObjectToObjectVisibility (pObj, pTarget, FQ_TRANSWALL)) {
+	if ((dist < MAX_SMART_DISTANCE) && ObjectToObjectVisibility (pObj, pTarget, FQ_TRANSWALL, -1.0f)) {
 		targetList [nObjects++] = nObject;
 		if (nObjects >= MAX_TARGET_OBJS)
 			break;

@@ -1080,7 +1080,7 @@ FORALL_PLAYER_OBJS (pCandidate, j) {
 		continue;
 	CFixVector vDir = OBJPOS (pCandidate)->vPos - vPos;
 	curDist = vDir.Mag ();
-	if ((curDist < MAX_WAKEUP_DIST /*/ 2*/) && (curDist < minDist) && ObjectToObjectVisibility (pAttacker, pCandidate, FQ_TRANSWALL)) {
+	if ((curDist < MAX_WAKEUP_DIST /*/ 2*/) && (curDist < minDist) && ObjectToObjectVisibility (pAttacker, pCandidate, FQ_TRANSWALL, -1.0f)) {
 		vDir /= curDist;
 		fix angle = CFixVector::Dot (vViewDir, vDir);
 		if (angle > bestAngle) {
@@ -1117,7 +1117,7 @@ FORALL_ROBOT_OBJS (pCandidate) {
 		continue;
 	CFixVector vDir = OBJPOS (pCandidate)->vPos - vPos;
 	curDist = vDir.Mag ();
-	if ((curDist < MAX_WAKEUP_DIST /*/ 2*/) && (curDist < minDist) && ObjectToObjectVisibility (pAttacker, pCandidate, FQ_TRANSWALL)) {
+	if ((curDist < MAX_WAKEUP_DIST /*/ 2*/) && (curDist < minDist) && ObjectToObjectVisibility (pAttacker, pCandidate, FQ_TRANSWALL, -1.0f)) {
 		vDir /= curDist;
 		fix angle = CFixVector::Dot (vViewDir, vDir);
 		if (angle > bestAngle) {

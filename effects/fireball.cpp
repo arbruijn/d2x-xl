@@ -206,7 +206,7 @@ FORALL_OBJS (pObj) {
 	// Make damage be from 'xMaxDamage' to 0.0, where 0.0 is 'xMaxDistance' away;
 	if (dist >= xMaxDistance)
 		continue;
-	if (!ObjectToObjectVisibility (pExplObj, pObj, FQ_TRANSWALL))
+	if (!ObjectToObjectVisibility (pExplObj, pObj, FQ_TRANSWALL, -1.0f))
 		continue;
 	damage = xMaxDamage - FixMulDiv (dist, xMaxDamage, xMaxDistance);
 	force = xMaxForce - FixMulDiv (dist, xMaxForce, xMaxDistance);

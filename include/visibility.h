@@ -20,7 +20,7 @@ int32_t CanSeePoint (CObject *pObj, CFixVector *vSource, CFixVector *vDest, int1
 
 int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs, int32_t nThread = MAX_THREADS);
 
-int32_t ObjectToObjectVisibility (CObject *pObj1, CObject *pObj2, int32_t transType, int32_t nThread = MAX_THREADS);
+int32_t ObjectToObjectVisibility (CObject *pObj1, CObject *pObj2, int32_t transType, float fov = -2.0f, int32_t nThread = MAX_THREADS);
 
 int32_t TargetInLineOfFire (void);
 

@@ -85,7 +85,7 @@ m_targets.Push (CTarget (fix (dist * (1.0f - X2F (dot) / 2.0f)), pTarget));
 //	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 //	to determine if an CObject is initially trackable.  FindHomingTarget is called on subsequent
 //	frames to determine if the CObject remains trackable.
-if (ObjectToObjectVisibility (m_pTracker, pTarget, FQ_TRANSWALL, nThread)) {
+if (ObjectToObjectVisibility (m_pTracker, pTarget, FQ_TRANSWALL, 1.0f, nThread)) {
 	m_xBestDot = dot;
 	m_nBestObj = pTarget->Index ();
 	}
@@ -103,7 +103,7 @@ if (m_targets.ToS () > 1)
 	m_targets.SortDescending ();
 
 for (uint32_t i = 0; i < m_targets.ToS (); i++) {
-	if (ObjectToObjectVisibility (m_pTracker, m_targets [i].m_pObj, FQ_TRANSWALL, nThread))
+	if (ObjectToObjectVisibility (m_pTracker, m_targets [i].m_pObj, FQ_TRANSWALL, -1.0f, nThread))
 		return m_targets[i].m_pObj->Index ();
 	}
 return -1;
@@ -147,7 +147,7 @@ if ((xDot < gameData.weapons.xMinTrackableDot) && (xDot > I2X (9) / 10)) {
 
 if ((EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (Type () == OBJ_WEAPON) && (Id () == EARTHSHAKER_MEGA_ID) /*&& (xDot >= 0)*/)) {
 	//	xDot is in legal range, now see if CObject is visible
-	return ObjectToObjectVisibility (this, pTarget, FQ_TRANSWALL, nThread);
+	return ObjectToObjectVisibility (this, pTarget, FQ_TRANSWALL, -2.0f, nThread);
 	}
 return 0;
 }
