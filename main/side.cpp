@@ -726,7 +726,7 @@ int32_t CSide::SeesSide (int16_t nSegment, int16_t nSide)
 	
 vDir.Assign (pSide->Center () - Center ());
 CFloatVector::Normalize (vDir);
-return (CFloatVector::Dot (vDir, Normalf (2)) > 0.0f) && (CFloatVector::Dot (vDir, pSide->Normalf (2)) < 0.0f);
+return (CFloatVector::Dot (vDir, Normalf (2)) >= 0.0f) && (CFloatVector::Dot (vDir, pSide->Normalf (2)) <= 0.0f);
 }
 
 //	-----------------------------------------------------------------------------
