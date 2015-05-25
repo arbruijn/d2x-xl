@@ -1471,7 +1471,7 @@ CFloatVector::Normalize (vRay);
 
 for (;;) {
 	CSegment *pSeg = SEGMENT (nStartSeg);
-	if (pSeg)
+	if (!pSeg)
 		RETURN (0);
 	bVisited [nStartSeg] = bFlag;
 	CSide *pSide = pSeg->Side (0);

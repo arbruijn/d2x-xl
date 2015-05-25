@@ -702,12 +702,26 @@ return (m_nFaces && IS_WALL (m_nWall)) ? WALL (m_nWall) : NULL;
 // Check whether point vPoint in segment nDestSeg can be seen from this side.
 // Level 0: Check from side center, 1: check from center and corners, 2: check from center, corners, and edge centers
 
+int32_t CSide::SeesSide (int16_t nSegment, int16_t nSide, int32_t nThread)
+{
+	CSide				*pSide = SEGMENT (nSegment)->Side (nSide);
+	CFloatVector	vDir;
+	
+vDir.Assign (pSide->Center () - Center ());
+CFloatVector::Normalize (vDir);
+return CFloatVector::Dot (vDir, pSide->Normalf (2)) < 0.0f;
+}
+
+//	-----------------------------------------------------------------------------
+// Check whether point vPoint in segment nDestSeg can be seen from this side.
+// Level 0: Check from side center, 1: check from center and corners, 2: check from center, corners, and edge centers
+
 int32_t CSide::SeesPoint (CFixVector& vPoint, int16_t nDestSeg, int32_t nLevel, int32_t nThread)
 {
 	static int32_t nLevels [3] = {4, 0, -4};
 
 	CFloatVector	v0, v1;
-	int32_t				i, j;
+	int32_t			i, j;
 
 v1.Assign (vPoint);
 

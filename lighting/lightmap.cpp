@@ -672,6 +672,8 @@ for (y = yMin; y < yMax; y++) {
 #endif
 #if DBG
 		int32_t nLights = lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, pixelPosP, pFace->m_info.fRads [1] / 10.0f, nThread);
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+			BRP;
 		if (0 < nLights) {
 #else
 		if (0 < lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, pixelPosP, pFace->m_info.fRads [1] / 10.0f, nThread)) {
@@ -679,6 +681,10 @@ for (y = yMin; y < yMax; y++) {
 			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();
 			ComputeVertexColor (nSegment, nSide, -1, &color, &vcd, nThread);
+#if DBG
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				BRP;
+#endif
 			if ((color.Red () >= 1.0f / 255.0f) || (color.Green () >= 1.0f / 255.0f) || (color.Blue () >= 1.0f / 255.0f)) {
 					bBlack = false;
 				if (color.Red () >= 254.0f / 255.0f)

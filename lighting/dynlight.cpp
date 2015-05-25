@@ -661,7 +661,7 @@ else {
 	
 		if (!pLightSeg)
 			RETURN (0);
-		CSide	*pSide = SEGMENT (nLightSeg)->Side (info.nSide);
+		CSide	*pSide = pLightSeg->Side (info.nSide);
 		if (pSide->Shape () > SIDE_SHAPE_TRIANGLE)
 			RETURN (0);
 
@@ -692,7 +692,7 @@ else {
 			continue;
 		if (vNormal && (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f)) // light doesn't "see" face
 			continue;
-		if (0 <= SEGMENT (nLightSeg)->ChildIndex (nDestSeg)) // don't check point to point visibility for connected segments
+		if (0 <= pLightSeg->ChildIndex (nDestSeg)) // don't check point to point visibility for connected segments
 			RETURN (1);
 		if (PointSeesPoint (&vLight [i], &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread))
 			RETURN (1);
@@ -820,11 +820,11 @@ else if (info.bVariable && (nDestVertex >= 0)) {
 		info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
 	}
 else { // check whether light only contributes ambient light to point
-	int32_t bDiffuse = info.bDiffuse [nThread] && SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
+	CSegment *pLightSeg = SEGMENT (nLightSeg);
+
+	int32_t bDiffuse = info.bDiffuse [nThread] && ((pLightSeg->ChildId (info.nSide) == nDestSeg) ? 0 : SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread));
 	if (nDestSeg >= 0) {
-		int32_t bSeesPoint = (info.nSide < 0) 
-									? bDiffuse 
-									: SEGMENT (nLightSeg)->Side (info.nSide)->SeesPoint (vDestPos, nDestSeg, bDiffuse ? gameOpts->render.nLightmapPrecision : -gameOpts->render.nLightmapPrecision - 1, nThread);
+		int32_t bSeesPoint = bDiffuse ? (info.nSide < 0) ? 1 : pLightSeg->Side (info.nSide)->SeesPoint (vDestPos, nDestSeg, bDiffuse ? gameOpts->render.nLightmapPrecision : -gameOpts->render.nLightmapPrecision - 1, nThread) : 0;
 		info.bDiffuse [nThread] = bDiffuse && bSeesPoint;
 
 		// if point is occluded, use segment path distance to point for light range and attenuation

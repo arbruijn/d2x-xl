@@ -239,6 +239,7 @@ class CSide {
 		int32_t CheckLineToFaceRegular (CFixVector& vIntersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal);
 		int32_t SphereToFaceRelation (CFixVector& vIntersection, fix rad, int16_t iFace, CFixVector vNormal);
 		uint32_t PointToFaceRelation (CFixVector& vIntersection, int16_t iFace, CFixVector vNormal);
+		int32_t CSide::SeesSide (int16_t nSegment, int16_t nSide, int32_t nThread);
 		int32_t SeesPoint (CFixVector& vPoint, int16_t nDestSeg, int32_t nLevel = 0, int32_t nThread = 0);
 
 		int32_t CheckLineToFaceEdgesf (CFloatVector& vIntersection, CFloatVector& p0, CFloatVector& p1, float rad, int16_t iFace, CFloatVector& vNormal);
