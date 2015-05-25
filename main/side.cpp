@@ -702,14 +702,39 @@ return (m_nFaces && IS_WALL (m_nWall)) ? WALL (m_nWall) : NULL;
 // Check whether point vPoint in segment nDestSeg can be seen from this side.
 // Level 0: Check from side center, 1: check from center and corners, 2: check from center, corners, and edge centers
 
-int32_t CSide::SeesSide (int16_t nSegment, int16_t nSide, int32_t nThread)
+int32_t CSide::IsConnected (int16_t nSegment, int16_t nSide)
+{
+	CSide				*pSide = SEGMENT (nSegment)->Side (nSide);
+	CFloatVector	vDir;
+
+for (int32_t i = 4 - pSide->m_nShape; i > 0; --i) {
+	uint16_t h = pSide->m_corners [i];
+	for (int32_t j = 4 - m_nShape; j; --j)
+		if (m_corners [j] == h)
+			return 1;
+	}
+return 0;
+}
+
+//	-----------------------------------------------------------------------------
+// Check whether side nSide in segment nSegment can be seen from this side.
+
+int32_t CSide::SeesSide (int16_t nSegment, int16_t nSide)
 {
 	CSide				*pSide = SEGMENT (nSegment)->Side (nSide);
 	CFloatVector	vDir;
 	
 vDir.Assign (pSide->Center () - Center ());
 CFloatVector::Normalize (vDir);
-return CFloatVector::Dot (vDir, pSide->Normalf (2)) < 0.0f;
+return (CFloatVector::Dot (vDir, Normalf (2)) > 0.0f) && (CFloatVector::Dot (vDir, pSide->Normalf (2)) < 0.0f);
+}
+
+//	-----------------------------------------------------------------------------
+// Check whether side nSide in segment nSegment can be seen from this side.
+
+int32_t CSide::SeesConnectedSide (int16_t nSegment, int16_t nSide)
+{
+return !IsConnected (nSegment, nSide) || SeesSide (nSegment, nSide);
 }
 
 //	-----------------------------------------------------------------------------

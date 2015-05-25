@@ -56,12 +56,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_SEGMENTS_D2					900
 #define MAX_SEGMENTS_D2X				20000
 #define MAX_SEGMENTS						gameData.segData.nMaxSegments
-#define MAX_SEGMENT_VERTICES			(8 * MAX_SEGMENTS) 
-#define MAX_SEGMENT_VERTICES_D2X		(3 * MAX_SEGMENTS_D2X)
+#define MAX_SEGMENT_VERTICES			(8  *MAX_SEGMENTS) 
+#define MAX_SEGMENT_VERTICES_D2X		(3  *MAX_SEGMENTS_D2X)
 
-#define MAX_SIDES			(MAX_SEGMENTS * 6)
-#define MAX_FACES			(MAX_SIDES * 2)
-#define MAX_TRIANGLES	(MAX_FACES * 16)
+#define MAX_SIDES			(MAX_SEGMENTS  *6)
+#define MAX_FACES			(MAX_SIDES  *2)
+#define MAX_TRIANGLES	(MAX_FACES  *16)
 
 //------------------------------------------------------------------------------
 //normal everyday vertices
@@ -216,7 +216,7 @@ class CSide {
 
 	public:
 		inline void Init (void) { memset (this, 0, sizeof (*this)); }
-		int32_t Read (CFile& cf, uint16_t* segVerts, uint16_t* sideVerts, bool bSolid);
+		int32_t Read (CFile& cf, uint16_t *segVerts, uint16_t *sideVerts, bool bSolid);
 		void ReadWallNum (CFile& cf, bool bWall);
 		void SaveState (CFile& cf);
 		void LoadState (CFile& cf);
@@ -225,8 +225,8 @@ class CSide {
 		inline int8_t Type (void) { return m_nType; }
 		inline void SetType (int8_t nType) { m_nType = nType; }
 		bool IsWall (void);
-		CWall* Wall (void);
-		CTrigger* Trigger (void);
+		CWall *Wall (void);
+		CTrigger *Trigger (void);
 		bool IsVolatile (void);
 		inline uint8_t IsQuad (void) { return m_bIsQuad; }
 		inline uint8_t CornerCount (void) { return m_nCorners; }
@@ -239,11 +239,13 @@ class CSide {
 		int32_t CheckLineToFaceRegular (CFixVector& vIntersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal);
 		int32_t SphereToFaceRelation (CFixVector& vIntersection, fix rad, int16_t iFace, CFixVector vNormal);
 		uint32_t PointToFaceRelation (CFixVector& vIntersection, int16_t iFace, CFixVector vNormal);
-		int32_t CSide::SeesSide (int16_t nSegment, int16_t nSide, int32_t nThread);
+		int32_t IsConnected (int16_t nSegment, int16_t nSide);
+		int32_t SeesSide (int16_t nSegment, int16_t nSide);
+		int32_t SeesConnectedSide (int16_t nSegment, int16_t nSide);
 		int32_t SeesPoint (CFixVector& vPoint, int16_t nDestSeg, int32_t nLevel = 0, int32_t nThread = 0);
 
 		int32_t CheckLineToFaceEdgesf (CFloatVector& vIntersection, CFloatVector& p0, CFloatVector& p1, float rad, int16_t iFace, CFloatVector& vNormal);
-		int32_t CheckLineToFaceRegularf (CFloatVector& vIntersection, CFloatVector* p0, CFloatVector* p1, float rad, int16_t iFace, CFloatVector& vNormal);
+		int32_t CheckLineToFaceRegularf (CFloatVector& vIntersection, CFloatVector *p0, CFloatVector *p1, float rad, int16_t iFace, CFloatVector& vNormal);
 		int32_t SphereToFaceRelationf (CFloatVector& vIntersection, float rad, int16_t iFace, CFloatVector& vNormal);
 		uint32_t PointToFaceRelationf (CFloatVector& vIntersection, int16_t iFace, CFloatVector& vNormal);
 
@@ -256,7 +258,7 @@ class CSide {
 		fix MaxRad (void) { return m_rads [1]; }
 		fix AvgRad (void) { return (m_rads [0] + m_rads [1]) / 2; }
 
-		void Setup (int16_t nSegment, uint16_t* verts, uint16_t* index, bool bSolid);
+		void Setup (int16_t nSegment, uint16_t *verts, uint16_t *index, bool bSolid);
 		void FixNormals (void);
 
 		void SetTextures (int32_t nBaseTex, int32_t nOvlTex);
@@ -265,8 +267,8 @@ class CSide {
 			vertices = m_vertices;
 			return m_nFaces;
 			}
-		CFixVector* GetCornerVertices (CFixVector* vertices);
-		inline uint16_t* Corners (void) { return m_corners; }
+		CFixVector *GetCornerVertices (CFixVector *vertices);
+		inline uint16_t *Corners (void) { return m_corners; }
 		int32_t HasVertex (uint16_t nVertex);
 		CFixVector& Vertex (int32_t nVertex);
 		CFixVector& MinVertex (void);
@@ -291,14 +293,14 @@ class CSide {
 
 		inline uint8_t Shape (void) { return m_nShape; }
 		inline uint8_t FaceCount (void) { return m_nFaces; }
-		void RemapVertices (uint8_t* map);
+		void RemapVertices (uint8_t *map);
 
 	private:
-		void SetupCorners (uint16_t* verts, uint16_t* index);
-		void SetupVertexList (uint16_t* verts, uint16_t* index);
+		void SetupCorners (uint16_t *verts, uint16_t *index);
+		void SetupVertexList (uint16_t *verts, uint16_t *index);
 		void SetupFaceVertIndex (void);
-		void SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, uint16_t* verts, uint16_t* index);
-		void SetupAsTriangles (bool bSolid, uint16_t* verts, uint16_t* index);
+		void SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, uint16_t *verts, uint16_t *index);
+		void SetupAsTriangles (bool bSolid, uint16_t *verts, uint16_t *index);
 	};
 
 //------------------------------------------------------------------------------
@@ -370,8 +372,8 @@ class CSegment {
 		void ToggleWall (int32_t nSide);
 		int32_t ProcessWallHit (int32_t nSide, fix damage, int32_t nPlayer, CObject *pObj);
 		int32_t DoorIsBlocked (int32_t nSide, bool bIgnoreMarker = false);
-		int32_t TextureIsDestructable (int32_t nSide, tDestructableTextureProps* dtpP = NULL);
-		int32_t BlowupTexture (int32_t nSide, CFixVector& vHit, CObject* blower, int32_t bForceBlowup);
+		int32_t TextureIsDestructable (int32_t nSide, tDestructableTextureProps *dtpP = NULL);
+		int32_t BlowupTexture (int32_t nSide, CFixVector& vHit, CObject *blower, int32_t bForceBlowup);
 		void CreateSound (int16_t nSound, int32_t nSide);
 
 		fix Refuel (fix xMaxFuel);
@@ -397,28 +399,29 @@ class CSegment {
 		void ComputeChildDists (void);
 		inline void ComputeSideCenter (int32_t nSide) { m_sides [nSide].ComputeCenter (); }
 		inline int16_t ChildId (int32_t nSide) { return m_children [nSide]; }
-		inline CSide* Side (int32_t nSide) { return m_sides + nSide; }
+		inline CSide *Side (int32_t nSide) { return m_sides + nSide; }
 		int32_t ChildIndex (int32_t nChild);
-		CSide* AdjacentSide (int32_t nSegment);
-		CSide* OppositeSide (int32_t nSide);
-		inline CWall* Wall (int32_t nSide) { return m_sides [nSide].Wall (); }
-		inline CTrigger* Trigger (int32_t nSide) { return m_sides [nSide].Trigger (); }
+		CSide *AdjacentSide (int32_t nSegment);
+		CSide *OppositeSide (int32_t nSide);
+		int32_t SeesConnectedSide (int16_t nSide, int16_t nChildSeg, int16_t nChildSide);
+		inline CWall *Wall (int32_t nSide) { return m_sides [nSide].Wall (); }
+		inline CTrigger *Trigger (int32_t nSide) { return m_sides [nSide].Trigger (); }
 		inline int8_t Type (int32_t nSide) { return m_sides [nSide].m_nType; }
 		inline void SetType (int32_t nSide, int8_t nType) { m_sides [nSide].SetType (nType); }
 		inline void SetTextures (int32_t nSide, int32_t nBaseTex, int32_t nOvlTex) { m_sides [nSide].SetTextures (nBaseTex, nOvlTex); }
 
-		void GetCornerIndex (int32_t nSide, uint16_t* vertIndex);
+		void GetCornerIndex (int32_t nSide, uint16_t *vertIndex);
 		void ComputeSideRads (void);
 		float FaceSize (uint8_t nSide);
 		inline bool IsVertex (int32_t nVertex);
 		void GetNormals (int32_t nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
 		inline CFixVector& Center (void) { return m_vCenter; }
 		inline CFixVector& SideCenter (int32_t nSide) { return m_sides [nSide].Center (); }
-		inline uint16_t* Corners (int32_t nSide) { return m_sides [nSide].Corners (); }
+		inline uint16_t *Corners (int32_t nSide) { return m_sides [nSide].Corners (); }
 		inline uint8_t CornerCount (int32_t nSide) { return m_sides [nSide].CornerCount (); }
-		inline CFixVector* GetCornerVertices (int32_t nSide, CFixVector* vertices) { return m_sides [nSide].GetCornerVertices (vertices); }
-		uint8_t SideDists (const CFixVector& intersection, fix* xSideDists, int32_t bBehind = 1);
-		int32_t ConnectedSide (CSegment* other);
+		inline CFixVector *GetCornerVertices (int32_t nSide, CFixVector *vertices) { return m_sides [nSide].GetCornerVertices (vertices); }
+		uint8_t SideDists (const CFixVector& intersection, fix *xSideDists, int32_t bBehind = 1);
+		int32_t ConnectedSide (CSegment *other);
 		inline CFixVector& Normal (int32_t nSide, int32_t nFace) { return m_sides [nSide].Normal (nFace); }
 #if 0
 		inline uint32_t PointToFaceRelation (CFixVector& intersection, int32_t nSide, int16_t iFace)
@@ -434,8 +437,8 @@ class CSegment {
 		inline int32_t FaceCount (int32_t nSide) { return m_sides [nSide].FaceCount (); }
 		CSegMasks Masks (const CFixVector& pRef, fix xRad);
 		CSegMasks SideMasks (int32_t nSide, const CFixVector& pRef, fix xRad, bool bCheckPoke = false);
-		uint8_t GetSideDists (const CFixVector& pRef, fix* xSideDists, int32_t bBehind);
-		uint8_t GetSideDistsf (const CFloatVector& pRef, float* fSideDists, int32_t bBehind);
+		uint8_t GetSideDists (const CFixVector& pRef, fix *xSideDists, int32_t bBehind);
+		uint8_t GetSideDistsf (const CFloatVector& pRef, float *fSideDists, int32_t bBehind);
 		void HitPointUV (int32_t nSide, fix *u, fix *v, fix *l, CFixVector& intersection, int32_t iFace)
 			{ m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }
 
@@ -448,11 +451,11 @@ class CSegment {
 
 		inline fix AvgRad (void) {return (m_rads [0] + m_rads [1]) / 2;}
 		inline float AvgRadf (void) {return X2F (m_rads [0] + m_rads [1]) / 2;}
-		inline fix Volume (void) {return (fix) DRound (1.25 * PI * pow (AvgRadf (), 3));}
+		inline fix Volume (void) {return (fix) DRound (1.25  *PI  *pow (AvgRadf (), 3));}
 
 		CFixVector RandomPoint (void);
 
-		int32_t IsPassable (int32_t nSide, CObject* pObj, bool bIgnoreDoors = false);
+		int32_t IsPassable (int32_t nSide, CObject *pObj, bool bIgnoreDoors = false);
 		int32_t HasOpenableDoor (void);
 
 		inline int32_t CheckForTranspPixel (CFixVector& intersection, int16_t nSide, int16_t iFace) 
@@ -462,7 +465,7 @@ class CSegment {
 		int32_t Physics (fix& xDamage);
 
 		int32_t TexturedSides (void);
-		CBitmap* ChangeTextures (int16_t nBaseTex, int16_t nOvlTex, int16_t nSide = -1);
+		CBitmap *ChangeTextures (int16_t nBaseTex, int16_t nOvlTex, int16_t nSide = -1);
 
 		void OperateTrigger (int32_t nSide, CObject *pObj, int32_t bShot);
 
@@ -491,7 +494,7 @@ class CSegment {
 		void Upgrade (void);
 	};
 
-inline int32_t operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s); }
+inline int32_t operator- (CSegment *s, CArray<CSegment>& a) { return a.Index (s); }
 
 //------------------------------------------------------------------------------
 
@@ -561,15 +564,15 @@ class CSegFace {
 		CSegFace*			nextSlidingFace;
 
 	public:
-		CSegment* Segment (void);
-		inline CSide* Side (void) { return Segment ()->Side (m_info.nSide); }
+		CSegment *Segment (void);
+		inline CSide *Side (void) { return Segment ()->Side (m_info.nSide); }
 		inline CFloatVector Normal (void) { 
-			CSide* pSide = Side ();
+			CSide *pSide = Side ();
 			return (pSide->m_nType == 1) ? pSide->m_fNormals [0] : CFloatVector::Avg (pSide->m_fNormals [0], pSide->m_fNormals [1]);
 			}
 		};
 
-inline int32_t operator- (CSegFace* f, CArray<CSegFace>& a) { return a.Index (f); }
+inline int32_t operator- (CSegFace *f, CArray<CSegFace>& a) { return a.Index (f); }
 
 //------------------------------------------------------------------------------
 
@@ -635,7 +638,7 @@ class CLightDeltaIndex {
 #define MAX_DELTA_LIGHTS_D2  10000
 
 #define MAX_DL_INDICES       (MAX_SEGMENTS / 2)
-#define MAX_DELTA_LIGHTS     (MAX_SEGMENTS * 10)
+#define MAX_DELTA_LIGHTS     (MAX_SEGMENTS  *10)
 
 #define DL_SCALE            2048    // Divide light to allow 3 bits integer, 5 bits fraction.
 

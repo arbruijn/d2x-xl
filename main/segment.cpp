@@ -1275,6 +1275,17 @@ if (m_children [nSide] < 0)
 return SEGMENT (m_children [nSide])->AdjacentSide (Index ());
 }
 
+//	-----------------------------------------------------------------------------
+// Check whether side nSide in segment nSegment can be seen from this side.
+
+int32_t CSegment::SeesConnectedSide (int16_t nSide, int16_t nChildSeg, int16_t nChildSide)
+{
+if (ChildIndex (nChildSeg) >= 0)
+	return 0;
+CSide *pSide = Side (nSide);
+return !pSide->IsConnected (nChildSeg, nChildSide) || pSide->SeesSide (nChildSeg, nChildSide);
+}
+
 //------------------------------------------------------------------------------
 
 CSegment* CSegFace::Segment (void) 
