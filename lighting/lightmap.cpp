@@ -452,7 +452,7 @@ Copy (pTexColor, nLightmap);
 
 void CLightmapManager::Build (CSegFace* pFace, int32_t nThread)
 {
-	CFixVector*		pixelPosP;
+	CFixVector*		pPixelPos;
 	CRGBColor*		pTexColor;
 	CFloatVector3	color;
 	int32_t			w, h, x, y, yMin, yMax;
@@ -485,7 +485,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 
 vcd.vertPosP = &vcd.vertPos;
-pixelPosP = m_data.m_pixelPos + yMin * w;
+pPixelPos = m_data.m_pixelPos + yMin * w;
 
 #if 1 
 
@@ -561,14 +561,14 @@ if (!nTriangles) {
 	CFixVector l0 = v2 - v1;
 	CFixVector l1 = v1 - v0;
 	for (y = yMin; y < yMax; y++) {
-		for (x = 0; x <= y; x++, pixelPosP++) {
+		for (x = 0; x <= y; x++, pPixelPos++) {
 			dx = l0;
 			dy = l1;
 			dx *= m_data.nOffset [x];
 			dy *= m_data.nOffset [y];
-			*pixelPosP = v0;
-			*pixelPosP += dx; 
-			*pixelPosP += dy; 
+			*pPixelPos = v0;
+			*pPixelPos += dx; 
+			*pPixelPos += dy; 
 			}
 		}
 	}
@@ -578,7 +578,7 @@ else if (m_data.m_nType != SIDE_IS_TRI_13) {
 	CFixVector l2 = v3 - v0;
 	CFixVector l3 = v2 - v3;
 	for (y = yMin; y < yMax; y++) {
-		for (x = 0; x < w; x++, pixelPosP++) {
+		for (x = 0; x < w; x++, pPixelPos++) {
 			if (x <= y) {
 				dx = l0;
 				dy = l1;
@@ -589,9 +589,9 @@ else if (m_data.m_nType != SIDE_IS_TRI_13) {
 				}
 			dx *= m_data.nOffset [x];
 			dy *= m_data.nOffset [y];
-			*pixelPosP = v0;
-			*pixelPosP += dx; 
-			*pixelPosP += dy; 
+			*pPixelPos = v0;
+			*pPixelPos += dx; 
+			*pPixelPos += dy; 
 			}
 		}
 	}
@@ -602,23 +602,23 @@ else {
 	CFixVector l2 = v1 - v2;
 	CFixVector l3 = v3 - v2;
 	for (y = yMin; y < yMax; y++) {
-		for (x = 0; x < w; x++, pixelPosP++) {
+		for (x = 0; x < w; x++, pPixelPos++) {
 			if (h - y >= x) {
 				dx = l0;
 				dx *= m_data.nOffset [x];
 				dy = l1;
 				dy *= m_data.nOffset [y];  
-				*pixelPosP = v0;
+				*pPixelPos = v0;
 				}
 			else {
 				dx = l2;
 				dx *= m_data.nOffset [h - x];  
 				dy = l3;
 				dy *= m_data.nOffset [h - y]; 
-				*pixelPosP = v2; 
+				*pPixelPos = v2; 
 				}
-			*pixelPosP += dx; 
-			*pixelPosP += dy; 
+			*pPixelPos += dx; 
+			*pPixelPos += dy; 
 			}
 		}
 	}
@@ -632,8 +632,8 @@ for (y = yMin; y < yMax; y++) {
 		BRP;
 #endif
 	int32_t h = nTriangles ? w : y + 1;
-	pixelPosP = m_data.m_pixelPos + y * w;
-	for (x = 0; x < h; x++, pixelPosP++) { 
+	pPixelPos = m_data.m_pixelPos + y * w;
+	for (x = 0; x < h; x++, pPixelPos++) { 
 
 	if (!nThread) {
 		static CTimeout to (33);
@@ -668,17 +668,17 @@ for (y = yMin; y < yMax; y++) {
 			if (y == w - 1)
 				BRP;
 			}
-		fix dist = x ? CFixVector::Dist (*pixelPosP, *(pixelPosP - 1)) : 0;
+		fix dist = x ? CFixVector::Dist (*pPixelPos, *(pPixelPos - 1)) : 0;
 #endif
 #if DBG
-		int32_t nLights = lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, pixelPosP, pFace->m_info.fRads [1] / 10.0f, nThread);
+		int32_t nLights = lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, pPixelPos, pFace->m_info.fRads [1] / 10.0f, nThread);
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			BRP;
 		if (0 < nLights) {
 #else
-		if (0 < lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, pixelPosP, pFace->m_info.fRads [1] / 10.0f, nThread)) {
+		if (0 < lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, pPixelPos, pFace->m_info.fRads [1] / 10.0f, nThread)) {
 #endif
-			vcd.vertPos.Assign (*pixelPosP);
+			vcd.vertPos.Assign (*pPixelPos);
 			color.SetZero ();
 			ComputeVertexColor (nSegment, nSide, -1, &color, &vcd, nThread);
 #if DBG
