@@ -110,10 +110,14 @@ pObj->cType.explInfo.nDestroyedObj = -1;
 pObj->cType.explInfo.nDeleteTime = -1;
 #if 0
 pObj->Orientation () = Orientation ();
-#else
+#elif 0
 CAngleVector a = CAngleVector::Create (SRandShort (), SRandShort (), SRandShort ());
 CFixMatrix mRotate = CFixMatrix::Create (a);
 pObj->Orientation () = mRotate * Orientation ();
+#else // always keep the same orientation towards the player, pitched down 45 degrees
+CAngleVector a = CAngleVector::Create (-I2X (1) / 8, /*I2X (1) / 8 - SRandShort () % (I2X (1) / 4)*/0, 0);
+CFixMatrix mOrient = CFixMatrix::Create (a);
+pObj->info.position.mOrient = gameData.objData.pViewer->Orientation () * mOrient;
 #endif
 
 if (IsMissile ()) {
