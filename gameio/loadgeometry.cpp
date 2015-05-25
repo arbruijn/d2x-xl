@@ -863,6 +863,8 @@ m_dimensions.Set (X2F (vDim.v.coord.x / vSize.v.coord.x), X2F (vDim.v.coord.y / 
 
 bool CFaceGrid::AddSide (CSide *pSide)
 {
+if (pSide->Shape () > SIDE_SHAPE_TRIANGLE)
+	return true;
 }
 
 //------------------------------------------------------------------------------
