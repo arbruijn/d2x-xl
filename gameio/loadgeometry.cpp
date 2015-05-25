@@ -822,49 +822,71 @@ return 0;
 void CFaceGrid::ComputeDimensions (int32_t nSize)
 {
 	CSegment		*pSeg = SEGMENT (0);
-	CFixVector	vMin, vMax;
 
-vMin.Set (0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF);
-vMax.Set (-0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
+m_vMin.Set (0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF);
+m_vMax.Set (-0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
 
 for (int32_t i = gameData.segData.nSegments; i; i--, pSeg++) {
 	if (pSeg->Function () != SEGMENT_FUNC_SKYBOX) {
 		for (int32_t j = pSeg->m_nVertices; j; --j) {
 			CFixVector v = gameData.segData.vertices [pSeg->m_vertices [j]];
-			vMin.v.coord.x = Min (vMin.v.coord.x, v.v.coord.x);
-			vMin.v.coord.y = Min (vMin.v.coord.x, v.v.coord.y);
-			vMin.v.coord.z = Min (vMin.v.coord.x, v.v.coord.z);
-			vMax.v.coord.x = Max (vMax.v.coord.x, v.v.coord.x);
-			vMax.v.coord.y = Max (vMax.v.coord.x, v.v.coord.y);
-			vMax.v.coord.z = Max (vMax.v.coord.x, v.v.coord.z);
+			m_vMin.v.coord.x = Min (m_vMin.v.coord.x, v.v.coord.x);
+			m_vMin.v.coord.y = Min (m_vMin.v.coord.x, v.v.coord.y);
+			m_vMin.v.coord.z = Min (m_vMin.v.coord.x, v.v.coord.z);
+			m_vMax.v.coord.x = Max (m_vMax.v.coord.x, v.v.coord.x);
+			m_vMax.v.coord.y = Max (m_vMax.v.coord.x, v.v.coord.y);
+			m_vMax.v.coord.z = Max (m_vMax.v.coord.x, v.v.coord.z);
 			}
 		}
 	}
-CFixVector v = vMax - vMin;
-CFixVector vDim, vSize;
+CFixVector v = m_vMax - m_vMin;
+CFixVector vDim;
 if (nSize > 0)
-	vSize.Set (I2X (nSize), I2X (nSize), I2X (nSize));
+	m_steps.Set (I2X (nSize), I2X (nSize), I2X (nSize));
 else {
 	vDim.Set ((v.v.coord.x + I2X (100) - 1) % I2X (100), (v.v.coord.y + I2X (100) - 1) % I2X (100), (v.v.coord.z + I2X (100) - 1) % I2X (100)); // round to next multiple of I2X (100)
-	vSize.Set (Min (vDim.v.coord.x / I2X (100), 50), Min (vDim.v.coord.y / I2X (100), 50), Min (vDim.v.coord.z / I2X (100), 50));
+	m_steps.Set (Min (vDim.v.coord.x / I2X (100), 50), Min (vDim.v.coord.y / I2X (100), 50), Min (vDim.v.coord.z / I2X (100), 50));
 	}
-vDim.Set ((v.v.coord.x + vSize.v.coord.x - 1) % vSize.v.coord.x, (v.v.coord.y + vSize.v.coord.y - 1) % vSize.v.coord.y, (v.v.coord.z + vSize.v.coord.z - 1) % vSize.v.coord.z); // round to next multiple of I2X (nSize)
+vDim.Set ((v.v.coord.x + m_steps.v.coord.x - 1) % m_steps.v.coord.x, (v.v.coord.y + m_steps.v.coord.y - 1) % m_steps.v.coord.y, (v.v.coord.z + m_steps.v.coord.z - 1) % m_steps.v.coord.z); // round to next multiple of I2X (nSize)
 v = vDim - v;
 v /= 2;
-vMax += v;
-vMax -= v;
-m_vMin.Assign (vMin);
-m_vMax.Assign (vMax);
-m_vSteps.Assign (vSize);
-m_dimensions.Set (X2F (vDim.v.coord.x / vSize.v.coord.x), X2F (vDim.v.coord.y / vSize.v.coord.y), X2F (vDim.v.coord.z / vSize.v.coord.z));
+m_vMin -= v;
+m_vMax += v;
+m_dimensions.Set (X2I (vDim.v.coord.x / m_steps.v.coord.x), X2I (vDim.v.coord.y / m_steps.v.coord.y), X2I (vDim.v.coord.z / m_steps.v.coord.z));
 }
 
 //------------------------------------------------------------------------------
 
 bool CFaceGrid::AddSide (CSide *pSide)
 {
-if (pSide->Shape () > SIDE_SHAPE_TRIANGLE)
+	int32_t	nVertices;
+
+switch (pSide->Shape ()) {
+	case SIDE_SHAPE_QUAD:
+		nVertices = 4;
+		break;
+	case SIDE_SHAPE_TRIANGLE:
+		nVertices = 3;
+		break;
 	return true;
+	}
+
+	CFixVector	vMin, vMax;
+
+m_vMin.Set (0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF);
+m_vMax.Set (-0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
+for (int32_t j = nVertices; j; --j) {
+	CFixVector v = gameData.segData.vertices [pSide->m_corners [j]];
+	v -= m_vMin;
+	vMin.v.coord.x = Min (m_vMin.v.coord.x, v.v.coord.x);
+	vMin.v.coord.y = Min (m_vMin.v.coord.x, v.v.coord.y);
+	vMin.v.coord.z = Min (m_vMin.v.coord.x, v.v.coord.z);
+	vMax.v.coord.x = Max (m_vMax.v.coord.x, v.v.coord.x);
+	vMax.v.coord.y = Max (m_vMax.v.coord.x, v.v.coord.y);
+	vMax.v.coord.z = Max (m_vMax.v.coord.x, v.v.coord.z);
+	}
+vMin.Set (vMin.v.coord.x / m_dimensions.v.coord.x, vMin.v.coord.y / m_dimensions.v.coord.y, vMin.v.coord.z / m_dimensions.v.coord.z);
+vMax.Set (vMax.v.coord.x / m_dimensions.v.coord.x, vMax.v.coord.y / m_dimensions.v.coord.y, vMax.v.coord.z / m_dimensions.v.coord.z);
 }
 
 //------------------------------------------------------------------------------

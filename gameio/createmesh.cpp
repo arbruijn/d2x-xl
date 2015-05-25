@@ -1652,7 +1652,7 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 	for (int32_t j = 0; j < 6; j++, pSide++) {
 		if ((pSeg->ChildId (j) < 0) || (pSide->Wall () && !pSide->Wall ()->IsInvisible ())) {
 			switch (pSide->Shape ()) {
-				case SIDE_SHAPE_RECTANGLE:
+				case SIDE_SHAPE_QUAD:
 					nEdges += 4;
 					break;
 				case SIDE_SHAPE_TRIANGLE:
@@ -1788,7 +1788,7 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 				continue;
 		int32_t nVertices;
 		switch (pSide->Shape ()) {
-			case SIDE_SHAPE_RECTANGLE:
+			case SIDE_SHAPE_QUAD:
 				nVertices = 4;
 				break;
 			case SIDE_SHAPE_TRIANGLE:

@@ -2223,10 +2223,10 @@ class CGridFace {
 class CFaceGrid {
 	public:
 		CArray<CGridFace*>		m_grid;
-		CFloatVector				m_vMin;
-		CFloatVector				m_vMax;
-		CFloatVector				m_vSteps;
-		CFloatVector				m_dimensions;
+		CFixVector					m_vMin;
+		CFixVector					m_vMax;
+		CFixVector					m_steps;
+		CFixVector					m_dimensions;
 
 		bool Create (int32_t nSize);
 

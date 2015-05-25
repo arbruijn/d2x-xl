@@ -27,18 +27,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Version 1 - Initial version
 // Version 2 - Mike changed some shorts to bytes in segments, so incompatible!
 
-#define SIDE_IS_QUAD				1   // render CSide as quadrilateral
-#define SIDE_IS_TRI_02			2   // render CSide as two triangles, triangulated along edge from 0 to 2
-#define SIDE_IS_TRI_13			3   // render CSide as two triangles, triangulated along edge from 1 to 3
+#define SIDE_IS_QUAD						1   // render CSide as quadrilateral
+#define SIDE_IS_TRI_02					2   // render CSide as two triangles, triangulated along edge from 0 to 2
+#define SIDE_IS_TRI_13					3   // render CSide as two triangles, triangulated along edge from 1 to 3
 
-#define SEGMENT_SHAPE_CUBE    0
-#define SEGMENT_SHAPE_WEDGE   1
-#define SEGMENT_SHAPE_PYRAMID 2
+#define SEGMENT_SHAPE_CUBE				0
+#define SEGMENT_SHAPE_WEDGE			1
+#define SEGMENT_SHAPE_PYRAMID			2
 
-#define SIDE_SHAPE_RECTANGLE  0
-#define SIDE_SHAPE_TRIANGLE   1
-#define SIDE_SHAPE_EDGE       2
-#define SIDE_SHAPE_POINT      3
+#define SIDE_SHAPE_QUAD					0
+#define SIDE_SHAPE_TRIANGLE			1
+#define SIDE_SHAPE_EDGE					2
+#define SIDE_SHAPE_POINT				3
 
 //------------------------------------------------------------------------------
 // Set maximum values for tSegment and face data structures.
@@ -59,17 +59,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_SEGMENT_VERTICES			(8  *MAX_SEGMENTS) 
 #define MAX_SEGMENT_VERTICES_D2X		(3  *MAX_SEGMENTS_D2X)
 
-#define MAX_SIDES			(MAX_SEGMENTS  *6)
-#define MAX_FACES			(MAX_SIDES  *2)
-#define MAX_TRIANGLES	(MAX_FACES  *16)
+#define MAX_SIDES							(MAX_SEGMENTS  *6)
+#define MAX_FACES							(MAX_SIDES  *2)
+#define MAX_TRIANGLES					(MAX_FACES  *16)
 
 //------------------------------------------------------------------------------
 //normal everyday vertices
 
-#define DEFAULT_LIGHTING        0   // (I2X (1)/2)
+#define DEFAULT_LIGHTING				0   // (I2X (1)/2)
 
-# define MAX_VERTICES           (MAX_SEGMENT_VERTICES)
-# define MAX_VERTICES_D2X       (MAX_SEGMENT_VERTICES_D2X)
+# define MAX_VERTICES					(MAX_SEGMENT_VERTICES)
+# define MAX_VERTICES_D2X				(MAX_SEGMENT_VERTICES_D2X)
 
 //------------------------------------------------------------------------------
 //values for function field
