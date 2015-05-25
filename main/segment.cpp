@@ -1282,7 +1282,7 @@ int32_t CSegment::SeesConnectedSide (int16_t nSide, int16_t nChildSeg, int16_t n
 {
 if (nChildSeg == Index ())
 	return 1;
-if (ChildIndex (nChildSeg) >= 0)
+if (SEGMENT (nChildSeg)->ChildId (nChildSide) == Index ())
 	return 0;
 CSide *pSide = Side (nSide);
 return !pSide->IsConnected (nChildSeg, nChildSide) || pSide->SeesSide (nChildSeg, nChildSide);
