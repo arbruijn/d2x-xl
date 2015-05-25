@@ -1049,8 +1049,8 @@ for (int32_t i = 0; i < 2; i++) {
 	DESTROY (gameData.segData.edgeVertexData [i].m_vertices);
 	DESTROY (gameData.segData.edgeVertexData [i].m_dists);
 	}
-gameData.segData.grids [0].Destroy ();
-gameData.segData.grids [1].Destroy ();
+gameData.segData.segmentGrids [0].Destroy ();
+gameData.segData.segmentGrids [1].Destroy ();
 nSegments = 0;
 nFaces = 0;
 nEdges = 0;

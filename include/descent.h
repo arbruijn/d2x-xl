@@ -2079,7 +2079,7 @@ class CSkyBox : public CStack< int16_t > {
 #define TRIAMATIDX(_i, _j)					(((_j) < (_i)) ? TRIAMATSIZE (_i) + (_j) : TRIAMATSIZE (_j) + (_i))
 
 typedef struct tSegGridIndex {
-	int32_t		nIndex;
+	int32_t	nIndex;
 	uint16_t	nSegments;
 	} tSegGridIndex;
 
@@ -2209,6 +2209,34 @@ class CEdgeVertexData {
 		inline uint16_t VertexCountPerDist (uint8_t d) { return m_countsPerDist [d]; }
 	};
 
+
+//------------------------------------------------------------------------------
+
+class CGridFace {
+	public:
+		CGridFace	*pNextFace;
+		CSide			*pSide;
+	};
+
+//------------------------------------------------------------------------------
+
+class CFaceGrid {
+	public:
+		CArray<CGridFace*>		m_grid;
+		CFloatVector				m_vMin;
+		CFloatVector				m_vMax;
+		CFloatVector				m_vSteps;
+		CFloatVector				m_dimensions;
+
+		bool Create (int32_t nSize);
+
+	private:
+		void ComputeDimensions (int32_t nSize);
+		bool AddSide (CSide *pSide);
+	};
+
+//------------------------------------------------------------------------------
+
 class CSegmentData {
 	public:
 		int32_t						nMaxSegments;
@@ -2221,7 +2249,8 @@ class CSegmentData {
 		CEdgeVertexData			edgeVertexData [2];
 		CArray<fix>					segDists;
 		CSkyBox						skybox;
-		CSegmentGrid				grids [2];
+		CSegmentGrid				segmentGrids [2];
+		CFaceGrid					faceGrid;
 #if CALC_SEGRADS
 		CArray<fix>					segRads [2];
 		CArray<tSegExtent>		extent;
@@ -2326,9 +2355,10 @@ class CSegmentData {
 			return 1;
 			}
 
-		inline bool BuildGrid (int32_t nSize, int32_t bSkyBox) { return grids [bSkyBox].Create (nSize, bSkyBox); }
-		inline int32_t GetSegList (CFixVector vPos, int16_t*& listP, int32_t bSkyBox) { return grids [bSkyBox].GetSegList (vPos, listP); }
-		inline bool HaveGrid (int32_t bSkyBox) { return grids [bSkyBox].Available (); }
+		inline bool BuildSegmentGrid (int32_t nSize, int32_t bSkyBox) { return segmentGrids [bSkyBox].Create (nSize, bSkyBox); }
+		inline int32_t GetSegList (CFixVector vPos, int16_t*& listP, int32_t bSkyBox) { return segmentGrids [bSkyBox].GetSegList (vPos, listP); }
+		inline bool HaveSegmentGrid (int32_t bSkyBox) { return segmentGrids [bSkyBox].Available (); }
+		inline bool BuildFaceGrid (int32_t nSize) { return faceGrid.Create (nSize); }
 
 		int32_t CountEdges (void);
 		int32_t FindEdge (int16_t nVertex1, int16_t nVertex2, int32_t nStart);

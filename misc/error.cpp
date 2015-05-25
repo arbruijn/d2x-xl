@@ -307,7 +307,7 @@ XtManageChild (form);
 XtSetArg (args [0], XmNfractionBase, 5);
 form = XmCreateForm (pane, const_cast<char*>("form2"), args, 1);
 // The OK button is under the pane's separator and is attached to the left edge of the form. It spreads from
-// position 0 to 1 along the bottom (the form is split into 5 separate grids via XmNfractionBase upon creation).
+// position 0 to 1 along the bottom (the form is split into 5 separate segmentGrids via XmNfractionBase upon creation).
 widget = XmCreatePushButtonGadget (form, const_cast<char*>("Close"), NULL, 0);
 XtVaSetValues (widget,
 			   XmNtopAttachment, XmATTACH_FORM,

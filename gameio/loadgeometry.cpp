@@ -807,11 +807,75 @@ else {
 	ComputeSegSideRads (-1);
 	ComputeChildDists (-1);
 	}
-gameData.segData.BuildGrid (40, 0);
-gameData.segData.BuildGrid (80, 1);
+gameData.segData.BuildSegmentGrid (40, 0);
+gameData.segData.BuildSegmentGrid (80, 1);
+gameData.segData.BuildFaceGrid (0);
 gameData.segData.fRad = X2F (CFixVector::Dist (gameData.segData.vMax, gameData.segData.vMin));
 ResetObjects (1);		//one CObject, the player
 return 0;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CFaceGrid::ComputeDimensions (int32_t nSize)
+{
+	CSegment		*pSeg = SEGMENT (0);
+	CFixVector	vMin, vMax;
+
+vMin.Set (0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF);
+vMax.Set (-0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
+
+for (int32_t i = gameData.segData.nSegments; i; i--, pSeg++) {
+	if (pSeg->Function () != SEGMENT_FUNC_SKYBOX) {
+		for (int32_t j = pSeg->m_nVertices; j; --j) {
+			CFixVector v = gameData.segData.vertices [pSeg->m_vertices [j]];
+			vMin.v.coord.x = Min (vMin.v.coord.x, v.v.coord.x);
+			vMin.v.coord.y = Min (vMin.v.coord.x, v.v.coord.y);
+			vMin.v.coord.z = Min (vMin.v.coord.x, v.v.coord.z);
+			vMax.v.coord.x = Max (vMax.v.coord.x, v.v.coord.x);
+			vMax.v.coord.y = Max (vMax.v.coord.x, v.v.coord.y);
+			vMax.v.coord.z = Max (vMax.v.coord.x, v.v.coord.z);
+			}
+		}
+	}
+CFixVector v = vMax - vMin;
+CFixVector vDim, vSize;
+if (nSize > 0)
+	vSize.Set (I2X (nSize), I2X (nSize), I2X (nSize));
+else {
+	vDim.Set ((v.v.coord.x + I2X (100) - 1) % I2X (100), (v.v.coord.y + I2X (100) - 1) % I2X (100), (v.v.coord.z + I2X (100) - 1) % I2X (100)); // round to next multiple of I2X (100)
+	vSize.Set (Min (vDim.v.coord.x / I2X (100), 50), Min (vDim.v.coord.y / I2X (100), 50), Min (vDim.v.coord.z / I2X (100), 50));
+	}
+vDim.Set ((v.v.coord.x + vSize.v.coord.x - 1) % vSize.v.coord.x, (v.v.coord.y + vSize.v.coord.y - 1) % vSize.v.coord.y, (v.v.coord.z + vSize.v.coord.z - 1) % vSize.v.coord.z); // round to next multiple of I2X (nSize)
+v = vDim - v;
+v /= 2;
+vMax += v;
+vMax -= v;
+m_vMin.Assign (vMin);
+m_vMax.Assign (vMax);
+m_vSteps.Assign (vSize);
+m_dimensions.Set (X2F (vDim.v.coord.x / vSize.v.coord.x), X2F (vDim.v.coord.y / vSize.v.coord.y), X2F (vDim.v.coord.z / vSize.v.coord.z));
+}
+
+//------------------------------------------------------------------------------
+
+bool CFaceGrid::AddSide (CSide *pSide)
+{
+}
+
+//------------------------------------------------------------------------------
+
+bool CFaceGrid::Create (int32_t nSize)
+{
+ComputeDimensions (nSize);
+#if 1
+return false;
+#else
+if (!m_grid.Create (int32_t (m_dimensions.v.coord.x) * int32_t (m_dimensions.v.coord.y) * int32_t (m_dimensions.v.coord.z)))
+	return false;
+#endif
 }
 
 //------------------------------------------------------------------------------

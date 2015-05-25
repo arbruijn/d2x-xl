@@ -161,7 +161,7 @@ if ((nStartSeg >= 0) && (PointInSeg (SEGMENT (nStartSeg), vPos)))
 	int16_t*		segListP = NULL;
 	CSegment*	pSeg;
 
-if (gameData.segData.HaveGrid (bSkyBox)) {
+if (gameData.segData.HaveSegmentGrid (bSkyBox)) {
 	for (i = gameData.segData.GetSegList (vPos, segListP, bSkyBox); i; i--, segListP++) {
 #if DBG
 		if ((*segListP < 0) || (*segListP >= gameData.segData.nSegments))
@@ -201,7 +201,7 @@ int32_t FindSegByPos (const CFixVector& vPos, int32_t nStartSeg, int32_t bExhaus
 if (nStartSeg >= 0) {
 	if (PointInSeg (SEGMENT (nStartSeg), vPos))
 		return nStartSeg;
-	if (!xTolerance && bExhaustive && gameData.segData.HaveGrid (bSkyBox)) 
+	if (!xTolerance && bExhaustive && gameData.segData.HaveSegmentGrid (bSkyBox)) 
 		return FindSegByPosExhaustive (vPos, SEGMENT (nStartSeg)->m_function == SEGMENT_FUNC_SKYBOX, nStartSeg);
 	if (SEGMENT (nStartSeg)->m_function == SEGMENT_FUNC_SKYBOX) {
 		if (0 <= (nSegment = TraceSegs (vPos, nStartSeg, 1, bVisited [nThread], bFlags [nThread], xTolerance))) 
