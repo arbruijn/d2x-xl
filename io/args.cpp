@@ -162,11 +162,11 @@ int32_t CConfigManager::Int (int32_t t, int32_t nDefault)
 {
 	char *psz = m_properties [t];
 
-if (!psz)
+if (!psz || !*psz)
 	return nDefault;
-if (psz && isdigit (*psz))
+if (isdigit (*psz))
 	return atoi (psz);
-if (((*psz == '-') || (*psz == '+')) && isdigit (*psz + 1))
+if (((*psz == '-') || (*psz == '+')) && isdigit (*(psz + 1)))
 	return atoi (psz);
 return nDefault;
 }

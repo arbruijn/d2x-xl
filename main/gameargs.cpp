@@ -478,7 +478,7 @@ else
 	gameStates.app.bMultiThreaded = 0;
 	}
 if ((t = FindArg ("-tracelevel")))
-	gameStates.app.nTraceLevel = NumArg (t, 1);
+	gameStates.app.nTraceLevel = NumArg (t, 0);
 else
 	gameStates.app.nTraceLevel = -1;
 if ((t = FindArg ("-nosound")))
