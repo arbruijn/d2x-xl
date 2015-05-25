@@ -721,19 +721,19 @@ return 0;
 
 int32_t CSide::SeesSide (int16_t nSegment, int16_t nSide)
 {
-	static float fMinDot = 0.1f;
-
 	CSide				*pSide = SEGMENT (nSegment)->Side (nSide);
 	CFloatVector	vDir;
 	
 vDir.Assign (pSide->Center () - Center ());
 CFloatVector::Normalize (vDir);
 #if DBG
+	static float fMinDot = 0.1f;
+
 float dot1 = CFloatVector::Dot (vDir, Normalf (2));
 float dot2 = CFloatVector::Dot (vDir, pSide->Normalf (2));
 return (dot1 >= -fMinDot) && (dot2 <= fMinDot);
 #else
-return (CFloatVector::Dot (vDir, Normalf (2)) >= -fMinDot) && (CFloatVector::Dot (vDir, pSide->Normalf (2)) <= fMinDot);
+return (CFloatVector::Dot (vDir, Normalf (2)) >= -0.1f) && (CFloatVector::Dot (vDir, pSide->Normalf (2)) <= 0.1f);
 #endif
 }
 
