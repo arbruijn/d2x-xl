@@ -1280,6 +1280,8 @@ return SEGMENT (m_children [nSide])->AdjacentSide (Index ());
 
 int32_t CSegment::SeesConnectedSide (int16_t nSide, int16_t nChildSeg, int16_t nChildSide)
 {
+if (nChildSeg == Index ())
+	return 1;
 if (ChildIndex (nChildSeg) >= 0)
 	return 0;
 CSide *pSide = Side (nSide);
