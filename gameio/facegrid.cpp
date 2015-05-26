@@ -377,7 +377,7 @@ line.m_vStart = vStart;
 line.m_vEnd = vEnd;
 line.m_vNormal = vEnd - vStart;
 CFixVector::Normalize (line.m_vNormal);
-return pOrigin->Occluder (line, NULL, ++m_nVisited) : NULL;
+return pOrigin->Occluder (line, NULL, ++m_nVisited);
 }
 
 //------------------------------------------------------------------------------
