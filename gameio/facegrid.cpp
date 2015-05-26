@@ -332,23 +332,28 @@ if (!(m_pRoot = new CFaceGridSegment))
 CSegment *pSeg = SEGMENT (0);
 for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 	if (pSeg->Function () != SEGMENT_FUNC_SKYBOX) {
-		CSide *pSide = pSeg->Side (0);
-		for (uint8_t j = 0; j < 6; j++, pSide++) {
-			switch (pSide->Shape ()) {
-				case SIDE_SHAPE_QUAD:
-					if (!m_pRoot->AddFace (i, j, pSide->m_faceVerts + 3, pSide->m_normals [1]))
-						return false;
-					// fall through
-				case SIDE_SHAPE_TRIANGLE:
-					if (!m_pRoot->AddFace (i, j, pSide->m_faceVerts, pSide->m_normals [0]))
-						return false;
-					break;
-				default:
-					break;
-				}
+		for (uint8_t j = 0; j < pSeg->m_nVertices; j++) {
 			CFixVector v = gameData.segData.vertices [pSeg->m_vertices [j]];
 			m_vMin.Set (Min (m_vMin.v.coord.x, v.v.coord.x), Min (m_vMin.v.coord.x, v.v.coord.y), Min (m_vMin.v.coord.x, v.v.coord.z));
 			m_vMax.Set (Max (m_vMax.v.coord.x, v.v.coord.x), Max (m_vMax.v.coord.x, v.v.coord.y), Max (m_vMax.v.coord.x, v.v.coord.z));
+			}
+
+		CSide *pSide = pSeg->Side (0);
+		for (uint8_t j = 0; j < 6; j++, pSide++) {
+			if ((pSeg->ChildId (j) < 0) || pSide->Wall ()) {
+				switch (pSide->Shape ()) {
+					case SIDE_SHAPE_QUAD:
+						if (!m_pRoot->AddFace (i, j, pSide->m_faceVerts + 3, pSide->m_normals [1]))
+							return false;
+						// fall through
+					case SIDE_SHAPE_TRIANGLE:
+						if (!m_pRoot->AddFace (i, j, pSide->m_faceVerts, pSide->m_normals [0]))
+							return false;
+						break;
+					default:
+						break;
+					}
+				}
 			}
 		}
 	}
