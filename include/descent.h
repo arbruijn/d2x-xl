@@ -2243,7 +2243,8 @@ class CFaceGridSegment {
 		void Destroy (void);
 		void InsertFace (CGridFace *pFace);
 		bool AddFace (CGridFace *pFace);
-		bool AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices []);
+		bool AddFace (uint16_t nSegment, uint8_t nSide, CFixVector [], CFixVector vNormal);
+		bool AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [], CFixVector vNormal);
 		bool Contains (CFixVector vertices []);
 		bool ContainsPoint (CFixVector& v);
 		bool ContainsLine (CFixVector& v1, CFixVector& v2);
