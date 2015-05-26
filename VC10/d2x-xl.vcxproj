@@ -1022,6 +1022,7 @@
     <ClCompile Include="..\cockpit\genericdrawers.cpp" />
     <ClCompile Include="..\cockpit\utilities.cpp" />
     <ClCompile Include="..\console\console.cpp" />
+    <ClCompile Include="..\gameio\facegrid.cpp" />
     <ClCompile Include="..\include\cquicksort.cpp" />
     <ClCompile Include="..\input\sixense_wrapper.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">true</ExcludedFromBuild>

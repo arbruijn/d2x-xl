@@ -1871,6 +1871,9 @@
     <ClCompile Include="..\ogl\ogl_cartoonize.cpp">
       <Filter>Source Files\ogl\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\gameio\facegrid.cpp">
+      <Filter>Source Files\gameio\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Websites\Descent\d2x-faq.html">
