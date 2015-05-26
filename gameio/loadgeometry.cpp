@@ -828,8 +828,9 @@ m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 
 //------------------------------------------------------------------------------
 
-void CFaceGridSegment::Setup (CFixVector& vMin, CFixVector& vMax)
+void CFaceGridSegment::Setup (CFaceGridSegment *pParent, CFixVector& vMin, CFixVector& vMax)
 {
+m_pParent = pParent;
 m_vMin = vMin;
 m_vMax = vMax;
 m_corners [0] = m_vMin;
@@ -995,7 +996,7 @@ for (int32_t nChild = 0, z = 0; z < 2; z++) {
 			CFixVector vMin, vMax;
 			vMin.Set (m_vMin.v.coord.x + vOffs.v.coord.x * x, m_vMin.v.coord.y + vOffs.v.coord.y * y, m_vMin.v.coord.z + vOffs.v.coord.z * z);
 			vMax.Set (m_vMin.v.coord.x + vOffs.v.coord.x * (x + 1), m_vMin.v.coord.y + vOffs.v.coord.y * (y + 1), m_vMin.v.coord.z + vOffs.v.coord.z * (z + 1));
-			m_pChildren [nChild]->Setup (vMin, vMax);
+			m_pChildren [nChild]->Setup (this, vMin, vMax);
 			}
 		}
 	}
@@ -1018,6 +1019,22 @@ for (int32_t i = 0; i < 8; i++) {
 	}
 
 return true;
+}
+
+//------------------------------------------------------------------------------
+
+CFaceGridSegment *CFaceGridSegment::Origin (CFixVector v)
+{
+if (!ContainsPoint (v))
+	return NULL;
+for (int32_t i = 0; i < 8; i++) {
+	if (!m_pChildren [i])
+		continue;
+	CFaceGridSegment *pOrigin = m_pChildren [i]->Origin (v);
+	if (pOrigin)
+		return pOrigin;
+	}
+return NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -1076,8 +1093,16 @@ for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 		}
 	}
 
+m_pRoot->Setup (NULL, m_vMin, m_vMax);
 return m_pRoot->Split ();
 #endif
+}
+
+//------------------------------------------------------------------------------
+
+CFaceGridSegment *CFaceGrid::Origin (CFixVector v)
+{
+return m_pRoot ? m_pRoot->Origin (v) : NULL;
 }
 
 //------------------------------------------------------------------------------

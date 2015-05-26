@@ -2229,6 +2229,7 @@ class CGridFace : public CGridFacePlane {
 
 class CFaceGridSegment {
 	public:
+		CFaceGridSegment	*m_pParent;
 		CFaceGridSegment	*m_pChildren [8];
 		CGridFace			*m_pFaces;
 		uint16_t				m_nFaces;
@@ -2239,7 +2240,7 @@ class CFaceGridSegment {
 
 		CFaceGridSegment ();
 		~CFaceGridSegment ();
-		void Setup (CFixVector& vMin, CFixVector& vMax);
+		void Setup (CFaceGridSegment *pParent, CFixVector& vMin, CFixVector& vMax);
 		void Destroy (void);
 		void InsertFace (CGridFace *pFace);
 		bool AddFace (CGridFace *pFace);
@@ -2249,6 +2250,7 @@ class CFaceGridSegment {
 		bool ContainsPoint (CFixVector& v);
 		bool ContainsLine (CFixVector& v1, CFixVector& v2);
 		bool Split (int32_t nMaxFaces = 20);
+		CFaceGridSegment *Origin (CFixVector v);
 	};
 
 //------------------------------------------------------------------------------
@@ -2262,6 +2264,7 @@ class CFaceGrid {
 
 		CFaceGrid () : m_pRoot (NULL) {}
 		bool Create (int32_t nSize);
+		CFaceGridSegment *Origin (CFixVector v);
 
 	private:
 		void ComputeDimensions (int32_t nSize);
