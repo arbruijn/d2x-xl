@@ -67,11 +67,11 @@ m_vCenter.Assign (vCenter);
 CFixVector v0 = m_vCenter + m_normals [2];
 CFixVector v1 = m_vCenter - m_normals [2];
 #if 1
-FindPlaneLineIntersection (m_vCenter, &VERTICES [m_corners [0]], &m_normals [0], &v0, &v1, 0, false);
+FindPlaneLineIntersection (m_vCenter, &VERTICES [m_corners [0]], &m_normals [0], &v0, &v1, 0);
 #else
 CFixVector c0, c1;
-FindPlaneLineIntersection (c0, &VERTICES [m_corners [0]], &m_normals [0], &v0, &v1, 0, false);
-FindPlaneLineIntersection (c1, &VERTICES [m_corners [3]], &m_normals [1], &v0, &v1, 0, false);
+FindPlaneLineIntersection (c0, &VERTICES [m_corners [0]], &m_normals [0], &v0, &v1, 0);
+FindPlaneLineIntersection (c1, &VERTICES [m_corners [3]], &m_normals [1], &v0, &v1, 0);
 if (c0 == c1) 
 	m_vCenter = c0;
 else {
@@ -704,8 +704,7 @@ return (m_nFaces && IS_WALL (m_nWall)) ? WALL (m_nWall) : NULL;
 
 int32_t CSide::IsConnected (int16_t nSegment, int16_t nSide)
 {
-	CSide				*pSide = SEGMENT (nSegment)->Side (nSide);
-	CFloatVector	vDir;
+	CSide	*pSide = SEGMENT (nSegment)->Side (nSide);
 
 for (int32_t i = 4 - pSide->m_nShape; i > 0; --i) {
 	uint16_t h = pSide->m_corners [i];
