@@ -2216,6 +2216,8 @@ class CGridFacePlane {
 	public:
 		CFixVector		m_vNormal;
 		CFixVector		m_vertices [3];
+		CFixVector		m_vIntersect;
+		fix				m_xDist;
 	};
 
 class CGridFace : public CGridFacePlane {
@@ -2224,7 +2226,7 @@ class CGridFace : public CGridFacePlane {
 		uint16_t			m_nSegment;
 		uint8_t			m_nSide;
 
-		fix LineIntersects (CFixVector& v1, CFixVector& v2, CFixVector& vIntersect);
+		bool LineIntersects (CFixVector& v1, CFixVector& v2);
 	};
 
 //------------------------------------------------------------------------------
@@ -2248,7 +2250,7 @@ class CFaceGridSegment {
 		bool Contains (CFixVector vertices []);
 		bool Split (int32_t nMaxFaces = 20);
 		CFaceGridSegment *Origin (CFixVector& v);
-		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd, CFixVector& vIntersect);
+		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd, CFixVector *pOccluder);
 
 	private:
 		bool ContainsPoint (CFixVector& v);
@@ -2256,7 +2258,7 @@ class CFaceGridSegment {
 		bool AddFace (CGridFace *pFace);
 		bool AddFace (uint16_t nSegment, uint8_t nSide, CFixVector [], CFixVector vNormal);
 		bool AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [], CFixVector vNormal);
-		CGridFace *FindOccluder (CFixVector& vStart, CFixVector& vEnd, CFixVector& vIntersect);
+		CGridFace *FindOccluder (CFixVector& vStart, CFixVector& vEnd, CFixVector *pOccluder);
 	};
 
 //------------------------------------------------------------------------------
