@@ -828,8 +828,10 @@ m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 
 //------------------------------------------------------------------------------
 
-void CFaceGridSegment::Setup (void)
+void CFaceGridSegment::Setup (CFixVector& vMin, CFixVector& vMax)
 {
+m_vMin = vMin;
+m_vMax = vMax;
 m_corners [0] = m_vMin;
 m_corners [1].Set (m_vMax.v.coord.x, m_vMin.v.coord.y, m_vMin.v.coord.z);
 m_corners [2].Set (m_vMax.v.coord.x, m_vMax.v.coord.y, m_vMin.v.coord.z);
@@ -872,6 +874,24 @@ return false;
 
 //------------------------------------------------------------------------------
 
+void CFaceGridSegment::InsertFace (CGridFace *pFace)
+{
+pFace->m_pNextFace = m_pFaces;
+m_pFaces = pFace;
+++m_nFaces;
+}
+
+//------------------------------------------------------------------------------
+
+bool CFaceGridSegment::AddFace (CGridFace *pFace)
+{
+if (Contains (pFace->m_vertices))
+	InsertFace (pFace);
+return true;
+}
+
+//------------------------------------------------------------------------------
+
 bool CFaceGridSegment::AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [])
 {
 if (!Contains (vertices))
@@ -883,10 +903,69 @@ memcpy (pFace->m_vertices, vertices, 3 * sizeof (uint16_t));
 pFace->m_vNormal = CFloatVector::Normal (gameData.segData.fVertices [vertices [0]], gameData.segData.fVertices [vertices [1]], gameData.segData.fVertices [vertices [2]]);
 pFace->m_nSegment = nSegment;
 pFace->m_nSide = nSide;
-pFace->m_pNextFace = m_pFaces;
-m_pFaces = pFace;
-++m_nFaces;
+InsertFace (pFace);
 return true;
+}
+
+//------------------------------------------------------------------------------
+
+void CFaceGridSegment::Destroy (void)
+{
+for (int32_t i = 0; i < 8; i++) {
+	if (m_pChildren [i]) {
+		delete m_pChildren [i];
+		m_pChildren [i] = NULL;
+		}
+	}
+
+for (;;) {
+	CGridFace *pFace = m_pFaces;
+	if (!pFace)
+		break;
+	m_pFaces = m_pFaces->m_pNextFace;
+	delete pFace;
+	}
+m_nFaces = 0;
+}
+
+//------------------------------------------------------------------------------
+
+CFaceGridSegment::~CFaceGridSegment ()
+{
+Destroy ();
+}
+
+//------------------------------------------------------------------------------
+
+bool CFaceGridSegment::Split (void)
+{
+if (!m_pFaces)
+	return true;
+
+	CFixVector	vOffs = (m_vMax - m_vMin) / 2;
+
+for (int32_t nChild = 0, z = 0; z < 2; z++) {
+	for (int32_t y = 0; y < 2; y++) {
+		for (int32_t x = 0; x < 2; x++, nChild++) {
+			if (!(m_pChildren [nChild] = new CFaceGridSegment ()))
+				return false;
+			CFixVector vMin, vMax;
+			vMin.Set (m_vMin.v.coord.x + vOffs.v.coord.x * x, m_vMin.v.coord.y + vOffs.v.coord.y * y, m_vMin.v.coord.z + vOffs.v.coord.z * z);
+			vMax.Set (m_vMin.v.coord.x + vOffs.v.coord.x * (x + 1), m_vMin.v.coord.y + vOffs.v.coord.y * (y + 1), m_vMin.v.coord.z + vOffs.v.coord.z * (z + 1));
+			m_pChildren [nChild]->Setup (vMin, vMax);
+			}
+		}
+	}
+
+for (;;) {
+	CGridFace *pFace = m_pFaces;
+	if (!pFace)
+		break;
+	m_pFaces = m_pFaces->m_pNextFace;
+	for (int32_t i = 0; i < 8; i++) {
+		if (!m_pChildren [i].AddFace (pFace))
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -928,10 +1007,12 @@ for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 		for (uint8_t j = 0; j < 6; j++, pSide++) {
 			switch (pSide->Shape ()) {
 				case SIDE_SHAPE_QUAD:
-					m_pRoot->AddFace (i, j, pSide->m_faceVerts + 3);
+					if (!m_pRoot->AddFace (i, j, pSide->m_faceVerts + 3))
+						return false;
 					// fall through
 				case SIDE_SHAPE_TRIANGLE:
-					m_pRoot->AddFace (i, j, pSide->m_faceVerts);
+					if (!m_pRoot->AddFace (i, j, pSide->m_faceVerts))
+						return false;
 					break;
 				default:
 					break;

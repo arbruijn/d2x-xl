@@ -2233,9 +2233,14 @@ class CFaceGridSegment {
 		CFixVector			m_corners [8];
 
 		CFaceGridSegment ();
-		void Setup (void);
+		~CFaceGridSegment ();
+		void Setup (CFixVector& vMin, CFixVector& vMax);
+		void Destroy (void);
+		void InsertFace (CGridFace *pFace);
+		bool AddFace (CGridFace *pFace);
 		bool AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices []);
 		bool Contains (uint16_t vertices []);
+		bool Split (void);
 	};
 
 //------------------------------------------------------------------------------
