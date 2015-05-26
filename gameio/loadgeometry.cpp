@@ -866,8 +866,7 @@ bool CFaceGridSegment::ContainsLine (CFixVector& v1, CFixVector& v2)
 if (ContainsPoint (v1) || ContainsPoint (v2))
 	return true;
 for (int32_t i = 0; i < 6; i++) {
-	CFixVector vIntersect, vNormal;
-	for (int32_t j = 0; j < 3; j++)
+	CFixVector vIntersect;
 	if (FindPlaneLineIntersection (vIntersect, m_faces [i].m_vertices, &m_faces [i].m_vNormal, &v1, &v2, 0) &&
 		 !PointToFaceRelation (&vIntersect, m_faces [i].m_vertices, 3, &m_faces [i].m_vNormal))
 		return true;
