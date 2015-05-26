@@ -2259,6 +2259,7 @@ class CFaceGridSegment {
 		bool ContainsPoint (CFixVector& v);
 		bool ContainsLine (CFixVector& v1, CFixVector& v2);
 		bool AddFace (CGridFace *pFace);
+		bool LineIntersectsFace (CFixVector *vertices, CFixVector& vNormal, CFixVector& v1, CFixVector& v2);
 		CGridFace *FindOccluder (CFixVector& vStart, CFixVector& vEnd, CGridFace *pOccluder);
 	};
 

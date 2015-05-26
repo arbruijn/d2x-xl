@@ -80,6 +80,15 @@ return (v >= m_vMin) && (v <= m_vMax);
 //------------------------------------------------------------------------------
 // Check whether the line between v1 and v2 intersects with at least one of the grid segment's faces
 
+bool CFaceGridSegment::LineIntersectsFace (CFixVector *vertices, CFixVector& vNormal, CFixVector& v1, CFixVector& v2)
+{
+CFixVector vIntersect;
+return FindPlaneLineIntersection (vIntersect, vertices, &vNormal, &v1, &v2, 0) && !PointToFaceRelation (&vIntersect, vertices, 3, &vNormal);
+}
+
+//------------------------------------------------------------------------------
+// Check whether the line between v1 and v2 intersects with at least one of the grid segment's faces
+
 bool CFaceGridSegment::ContainsLine (CFixVector& v1, CFixVector& v2)
 {
 	static int32_t nFaces [6][4] = {{0,1,2,3},{1,5,6,2},{5,4,7,6},{2,0,3,7},{3,2,6,7},{0,1,5,4}};
@@ -87,9 +96,7 @@ bool CFaceGridSegment::ContainsLine (CFixVector& v1, CFixVector& v2)
 if (ContainsPoint (v1) || ContainsPoint (v2))
 	return true;
 for (int32_t i = 0; i < 6; i++) {
-	CFixVector vIntersect;
-	if (FindPlaneLineIntersection (vIntersect, m_faces [i].m_vertices, &m_faces [i].m_vNormal, &v1, &v2, 0) &&
-		 !PointToFaceRelation (&vIntersect, m_faces [i].m_vertices, 3, &m_faces [i].m_vNormal))
+	if (LineIntersectsFace (m_faces [i].m_vertices, m_faces [i].m_vNormal, v1, v2))
 		return true;
 	}
 return false;
@@ -113,14 +120,12 @@ for (int32_t i = 0; i < 3; i++) {
 if ((vMin > m_vMax) || (vMax < m_vMin))
 	return false;
 // check whether grid segment intersects triangle
-CFixVector vNormal = CFixVector::Normal (vertices [0], vertices [1], vertices [2]), vPlane = (vertices [0] + vertices [1] + vertices [2]) / 3;
+CFixVector vNormal = CFixVector::Normal (vertices [0], vertices [1], vertices [2]);
 
 static int32_t nEdges [12][2] = {{0,1},{1,2},{2,3},{3,0},{4,5},{5,6},{6,7},{7,4},{0,4},{1,5},{2,6},{3,7}};
 
 for (int32_t i = 0; i < 12; i++) {
-	CFixVector vIntersect;
-	if (FindPlaneLineIntersection (vIntersect, &vPlane, &vNormal, &m_corners [nEdges [i][0]], &m_corners [nEdges [i][1]], 0) &&
-		 !PointToFaceRelation (&vIntersect, vertices, 3, &vNormal))
+	if (LineIntersectsFace (vertices, vNormal, m_corners [nEdges [i][0]], m_corners [nEdges [i][1]]))
 		return true;
 	}
 return false;
