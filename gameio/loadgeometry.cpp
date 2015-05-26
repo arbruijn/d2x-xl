@@ -961,7 +961,7 @@ for (int32_t i = 0; i < 8; i++) {
 
 for (;;) {
 	CGridFace *pFace = m_pFaces;
-	if (!pFace)
+	if (!pFace)	
 		break;
 	m_pFaces = m_pFaces->m_pNextFace;
 	delete pFace;
@@ -978,9 +978,11 @@ Destroy ();
 
 //------------------------------------------------------------------------------
 
-bool CFaceGridSegment::Split (void)
+bool CFaceGridSegment::Split (int32_t nMaxFaces)
 {
 if (!m_pFaces)
+	return true;
+if (m_nFaces <= nMaxFaces)
 	return true;
 
 	CFixVector	vOffs = (m_vMax - m_vMin) / 2;
@@ -1009,6 +1011,12 @@ for (;;) {
 			return false;
 		}
 	}
+
+for (int32_t i = 0; i < 8; i++) {
+	if (m_pChildren [i]->m_pFaces && !m_pChildren [i]->Split (nMaxFaces))
+		return false;
+	}
+
 return true;
 }
 
@@ -1068,7 +1076,7 @@ for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 		}
 	}
 
-return true;
+return m_pRoot->Split ();
 #endif
 }
 

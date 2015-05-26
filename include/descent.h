@@ -2248,7 +2248,7 @@ class CFaceGridSegment {
 		bool Contains (CFixVector vertices []);
 		bool ContainsPoint (CFixVector& v);
 		bool ContainsLine (CFixVector& v1, CFixVector& v2);
-		bool Split (void);
+		bool Split (int32_t nMaxFaces = 20);
 	};
 
 //------------------------------------------------------------------------------

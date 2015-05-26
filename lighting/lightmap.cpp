@@ -1041,7 +1041,7 @@ if (Load (nLevel))
 
 m_bSuccess = 1;
 
-if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
+if ((gameStates.render.bPerPixelLighting || gameStates.app.bPrecomputeLightmaps) && FACES.nFaces) {
 	if (nLights) {
 		lightManager.Transform (1, 0);
 		int32_t nSaturation = gameOpts->render.color.nSaturation;
@@ -1109,7 +1109,7 @@ return m_bSuccess;
 
 int32_t CLightmapManager::Setup (int32_t nLevel)
 {
-if (gameStates.render.bPerPixelLighting) {
+if (gameStates.render.bPerPixelLighting || gameStates.app.bPrecomputeLightmaps) {
 	if (!Create (nLevel))
 		return 0;
 	if (HaveLightmaps ())
