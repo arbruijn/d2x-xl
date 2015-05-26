@@ -2260,10 +2260,10 @@ class CFaceGrid {
 		CFixVector					m_vMax;
 		CFixVector					m_dimensions;
 
+		CFaceGrid () : m_pRoot (NULL) {}
 		bool Create (int32_t nSize);
 
 	private:
-		CFaceGrid () : m_pRoot (NULL) {}
 		void ComputeDimensions (int32_t nSize);
 	};
 

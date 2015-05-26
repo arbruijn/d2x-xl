@@ -481,7 +481,7 @@ for (j = 0; j < pSide->m_nFaces; j++)
 for (i = 11; i >= 4; i--) {
 	for (j = 0; j < pSide->m_nFaces; j++) {
 		if (!FindPlaneLineIntersection (intersection, &points [j]->ViewPos (), &pSide->m_rotNorms [j],
-												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0, false))
+												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0))
 			continue;
 		if (!pSide->PointToFaceRelation (intersection, j, pSide->m_rotNorms [j])) {
 			gameStates.render.bRendering = 0;
