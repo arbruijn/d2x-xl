@@ -98,6 +98,13 @@ bool CFaceGridSegment::ContainsLine (CFixVector& v1, CFixVector& v2)
 
 if (ContainsPoint (v1) || ContainsPoint (v2))
 	return true;
+
+CFixVector vMin, vMax;
+vMin.Set (Min (v1.v.coord.x, v2.v.coord.x), Min (v1.v.coord.x, v2.v.coord.y), Min (v1.v.coord.x, v2.v.coord.z));
+vMax.Set (Max (v1.v.coord.x, v2.v.coord.x), Max (v1.v.coord.x, v2.v.coord.y), Max (v1.v.coord.x, v2.v.coord.z));
+if ((vMin > m_vMax) || (vMax < m_vMin))
+	return false;
+
 for (int32_t i = 0; i < 6; i++) {
 	if (LineIntersectsFace (m_faces [i].m_vertices, m_faces [i].m_vNormal, v1, v2))
 		return true;
