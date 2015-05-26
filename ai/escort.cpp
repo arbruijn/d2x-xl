@@ -876,7 +876,7 @@ int32_t MaybeBuddyFireMega (int16_t nObject)
 {
 	CObject		*pObj = OBJECT (nObject);
 	CObject		*pBuddyObj = OBJECT (gameData.escort.nObjNum);
-	fix			dist, dot;
+	fix			dist;
 	CFixVector	vVecToRobot;
 	int32_t		nWeaponObj;
 

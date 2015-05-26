@@ -851,7 +851,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (p
 
 void CLightningManager::CreateForShieldOrb (CObject* pObj, CFloatVector *pColor)
 {
-if (SHOW_LIGHTNING (3) && OBJECT_EXISTS (pObj)) {
+if (gameOpts->render.powerups.b3D && SHOW_LIGHTNING (3) && OBJECT_EXISTS (pObj)) {
 		int32_t nObject = pObj->Index ();
 
 	if (0 <= m_objects [nObject])

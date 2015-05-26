@@ -126,8 +126,10 @@ if (!bFix && pParent && (pParent->info.nType == OBJ_PLAYER) && (gameData.weapons
 #if 1
 	pWeapon->mType.physInfo.velocity = vDir * (gameData.laser.nOffset + xLaserLength / 2);
 	if (pWeapon->Velocity ().IsZero ()) 
-		PrintLog (0, "weapon parent has no velocity\n");
-	else {
+		PrintLog (0, "weapon object has no velocity\n");
+	else 
+#endif
+		{
 		fix xTime = gameData.physics.xTime;
 		gameData.physics.xTime = -1;	// make it move the entire velocity vector
 		pWeapon->Update ();
@@ -137,7 +139,6 @@ if (!bFix && pParent && (pParent->info.nType == OBJ_PLAYER) && (gameData.weapons
 			return -1;
 			}
 		}
-#endif
 	}
 
 fix xWeaponSpeed = WI_speed (pWeapon->info.nId, gameStates.app.nDifficultyLevel);

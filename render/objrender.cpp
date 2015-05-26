@@ -187,11 +187,11 @@ switch (pObj->Id ()) {
 		return;
 
 	case POW_VULCAN_AMMO:
-		a.Set (0, -I2X (1) / 8, xRotAngle); // flipped and pointing down
+		a.Set (0, -I2X (1) / 12, xRotAngle); // flipped and pointing down
 		break;
 
 	case POW_GAUSS:
-		a.Set (-I2X (3) / 8, 0, int16_t ((xRotAngle + I2X (3) / 4) % I2X (1))); // rotated
+		a.Set (-I2X (3) / 12, 0, int16_t ((xRotAngle + I2X (3) / 4) % I2X (1))); // rotated
 		break;
 
 	case POW_HOMINGMSL_1:
@@ -206,8 +206,23 @@ switch (pObj->Id ()) {
 	case POW_GUIDEDMSL_4:
 	case POW_MERCURYMSL_1:
 	case POW_EARTHSHAKER:
-	case POW_QUADLASER:
-		a.Set (-I2X (1) / 8, 0, xRotAngle); // pointing down
+		a.Set (-I2X (1) / 12, 0, xRotAngle); // pointing down
+		break;
+
+	case POW_AFTERBURNER:
+	case POW_AMMORACK:
+		a.Set (I2X (1) / 6, -I2X (1) / 24, xRotAngle); // pointing down
+		break;
+
+	case POW_KEY_BLUE:
+	case POW_KEY_RED:
+	case POW_KEY_GOLD:
+		a.Set (0, I2X (3) / 4, xRotAngle); // pointing down
+		break;
+
+
+	case POW_HEADLIGHT:
+		a.Set (I2X (1) / 12, -I2X (1) / 64, int16_t ((xRotAngle + I2X (3) / 8) % I2X (1)));
 		break;
 
 #if 0
@@ -223,21 +238,16 @@ switch (pObj->Id ()) {
 	case POW_MERCURYMSL_4:
 	case POW_PROXMINE:
 	case POW_SMARTMINE:
-	case POW_KEY_BLUE:
-	case POW_KEY_RED:
-	case POW_KEY_GOLD:
 	case POW_BLUEFLAG:
 	case POW_REDFLAG:
 	case POW_FULL_MAP:
 	case POW_CONVERTER:
-	case POW_AMMORACK:
-	case POW_AFTERBURNER:
-	case POW_HEADLIGHT:
 	case POW_SLOWMOTION:
 	case POW_BULLETTIME:
+	case POW_QUADLASER:
 #endif
 	default:
-		a.Set (I2X (1) / 8, 0, xRotAngle);
+		a.Set (I2X (1) / 12, 0, xRotAngle);
 		break;
 	}
 
