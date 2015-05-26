@@ -840,33 +840,64 @@ m_corners [4].Set (m_vMin.v.coord.x, m_vMin.v.coord.y, m_vMax.v.coord.z);
 m_corners [5].Set (m_vMax.v.coord.x, m_vMin.v.coord.y, m_vMax.v.coord.z);
 m_corners [6] = m_vMax;
 m_corners [7].Set (m_vMin.v.coord.x, m_vMax.v.coord.y, m_vMax.v.coord.z);
+
+	static int32_t nFaces [6][4] = {{0,1,2,3},{1,5,6,2},{5,4,7,6},{2,0,3,7},{3,2,6,7},{0,1,5,4}};
+
+for (int32_t i = 0; i < 6; i++) {
+	for (int32_t j = 0; j < 3; j++)
+		m_faces [i].m_vertices [j] = m_corners [nFaces [i][j]];
+	m_faces [i].m_vNormal = CFixVector::Normal (m_faces [i].m_vertices [0], m_faces [i].m_vertices [1], m_faces [i].m_vertices [2]);
+	}
 }
 
 //------------------------------------------------------------------------------
 
-bool CFaceGridSegment::Contains (uint16_t vertices [])
+bool CFaceGridSegment::ContainsPoint (CFixVector& v)
+{
+return (v > m_vMin) && (v < m_vMax);
+}
+
+//------------------------------------------------------------------------------
+
+bool CFaceGridSegment::ContainsLine (CFixVector& v1, CFixVector& v2)
+{
+	static int32_t nFaces [6][4] = {{0,1,2,3},{1,5,6,2},{5,4,7,6},{2,0,3,7},{3,2,6,7},{0,1,5,4}};
+
+if (ContainsPoint (v1) || ContainsPoint (v2))
+	return true;
+for (int32_t i = 0; i < 6; i++) {
+	CFixVector vIntersect, vNormal;
+	for (int32_t j = 0; j < 3; j++)
+	if (FindPlaneLineIntersection (vIntersect, m_faces [i].m_vertices, &m_faces [i].m_vNormal, &v1, &v2, 0) &&
+		 !PointToFaceRelation (&vIntersect, m_faces [i].m_vertices, 3, &m_faces [i].m_vNormal))
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+bool CFaceGridSegment::Contains (CFixVector vertices [])
 {
 	CFixVector vMin, vMax, v [3];
 
 vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 for (int32_t i = 0; i < 3; i++) {
-	v [i] = gameData.segData.vertices [vertices [i]];
-	if ((v [i] > m_vMin) && (v [i] < m_vMax))
+	if (ContainsPoint (vertices [i]))
 		return true; // vertex contained in grid segment
-	vMin.Set (Min (vMin.v.coord.x, v [i].v.coord.x), Min (vMin.v.coord.x, v [i].v.coord.y), Min (vMin.v.coord.x, v [i].v.coord.z));
-	vMax.Set (Max (vMax.v.coord.x, v [i].v.coord.x), Max (vMax.v.coord.x, v [i].v.coord.y), Max (vMax.v.coord.x, v [i].v.coord.z));
+	vMin.Set (Min (vMin.v.coord.x, vertices [i].v.coord.x), Min (vMin.v.coord.x, vertices [i].v.coord.y), Min (vMin.v.coord.x, vertices [i].v.coord.z));
+	vMax.Set (Max (vMax.v.coord.x, vertices [i].v.coord.x), Max (vMax.v.coord.x, vertices [i].v.coord.y), Max (vMax.v.coord.x, vertices [i].v.coord.z));
 	}
 if ((vMin > m_vMax) || (vMax < m_vMin))
 	return false;
 // check whether grid segment intersects triangle
-CFixVector vIntersect, vNormal = CFixVector::Normal (v [0], v [1], v [2]), vPlane = (v [0] + v [1] + v [2]) / 3;
+CFixVector vIntersect, vNormal = CFixVector::Normal (vertices [0], vertices [1], vertices [2]), vPlane = (vertices [0] + vertices [1] + vertices [2]) / 3;
 
 static int32_t nEdges [12][2] = {{0,1},{1,2},{2,3},{3,0},{4,5},{5,6},{6,7},{7,4},{0,4},{1,5},{2,6},{3,7}};
 
 for (int32_t i = 0; i < 12; i++) {
 	if (FindPlaneLineIntersection (vIntersect, &vPlane, &vNormal, &m_corners [nEdges [i][0]], &m_corners [nEdges [i][1]], 0) &&
-		 !PointToFaceRelation (&vIntersect, v, 3, &vNormal))
+		 !PointToFaceRelation (&vIntersect, vertices, 3, &vNormal))
 		return true;
 	}
 return false;
@@ -894,13 +925,16 @@ return true;
 
 bool CFaceGridSegment::AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [])
 {
-if (!Contains (vertices))
+CFixVector v [3];
+for (int32_t i = 0; i < 3; i++)
+	v [i] = gameData.segData.vertices [vertices [i]];
+if (!Contains (v))
 	return true;
 CGridFace *pFace = new CGridFace;
 if (!pFace)
 	return false;
 memcpy (pFace->m_vertices, vertices, 3 * sizeof (uint16_t));
-pFace->m_vNormal = CFloatVector::Normal (gameData.segData.fVertices [vertices [0]], gameData.segData.fVertices [vertices [1]], gameData.segData.fVertices [vertices [2]]);
+pFace->m_vNormal = CFixVector::Normal (gameData.segData.vertices [vertices [0]], gameData.segData.vertices [vertices [1]], gameData.segData.vertices [vertices [2]]);
 pFace->m_nSegment = nSegment;
 pFace->m_nSide = nSide;
 InsertFace (pFace);
