@@ -2,8 +2,6 @@
 #include <conf.h>
 #endif
 
-#define LIGHT_VERSION 4
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
