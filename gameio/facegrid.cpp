@@ -320,6 +320,28 @@ for (uint16_t i = gameData.segData.nSegments; i; i--, pSeg++) {
 
 //------------------------------------------------------------------------------
 
+CFaceGridSegment *CFaceGrid::Origin (CFixVector v)
+{
+return m_pRoot ? m_pRoot->Origin (v) : NULL;
+}
+
+//------------------------------------------------------------------------------
+
+CGridFace *CFaceGrid::Occluder (CFixVector& vStart, CFixVector &vEnd)
+{
+CFaceGridSegment *pOrigin = Origin (vStart);
+if (!pOrigin)
+	return NULL;
+CGridLine line;
+line.m_vStart = vStart;
+line.m_vEnd = vEnd;
+line.m_vNormal = vEnd - vStart;
+CFixVector::Normalize (line.m_vNormal);
+return pOrigin->Occluder (line, NULL, ++m_nVisited);
+}
+
+//------------------------------------------------------------------------------
+
 bool CFaceGrid::Create (int32_t nSize)
 {
 #if !DBG
@@ -364,28 +386,6 @@ for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 m_pRoot->Setup (NULL, m_vMin, m_vMax);
 return m_pRoot->Split ();
 #endif
-}
-
-//------------------------------------------------------------------------------
-
-CFaceGridSegment *CFaceGrid::Origin (CFixVector v)
-{
-return m_pRoot ? m_pRoot->Origin (v) : NULL;
-}
-
-//------------------------------------------------------------------------------
-
-CGridFace *CFaceGrid::Occluder (CFixVector& vStart, CFixVector &vEnd)
-{
-CFaceGridSegment *pOrigin = Origin (vStart);
-if (!pOrigin)
-	return NULL;
-CGridLine line;
-line.m_vStart = vStart;
-line.m_vEnd = vEnd;
-line.m_vNormal = vEnd - vStart;
-CFixVector::Normalize (line.m_vNormal);
-return pOrigin->Occluder (line, NULL, ++m_nVisited);
 }
 
 //------------------------------------------------------------------------------
