@@ -257,13 +257,13 @@ return this;
 
 //------------------------------------------------------------------------------
 
-CGridFace *CFaceGridSegment::Occluder (CFixVector& vStart, CFixVector& vEnd, CFixVector *pOccluder)
+CGridFace *CFaceGridSegment::Occluder (CFixVector& vStart, CFixVector& vEnd, CGridFace *pOccluder)
 {
 }
 
 //------------------------------------------------------------------------------
 
-CGridFace *CFaceGridSegment::FindOccluder (CFixVector& vStart, CFixVector& vEnd, CFixVector *pOccluder)
+CGridFace *CFaceGridSegment::FindOccluder (CFixVector& vStart, CFixVector& vEnd, CGridFace *pOccluder)
 {
 if (!m_pFaces)
 	return NULL;

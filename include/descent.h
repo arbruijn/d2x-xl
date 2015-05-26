@@ -2251,14 +2251,14 @@ class CFaceGridSegment {
 		bool Contains (CFixVector vertices []);
 		bool Split (int32_t nMaxFaces = 20);
 		CFaceGridSegment *Origin (CFixVector& v);
-		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd, CFixVector *pOccluder);
+		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd, CGridFace *pOccluder);
 
 	private:
 		void InsertFace (CGridFace *pFace);
 		bool ContainsPoint (CFixVector& v);
 		bool ContainsLine (CFixVector& v1, CFixVector& v2);
 		bool AddFace (CGridFace *pFace);
-		CGridFace *FindOccluder (CFixVector& vStart, CFixVector& vEnd, CFixVector *pOccluder);
+		CGridFace *FindOccluder (CFixVector& vStart, CFixVector& vEnd, CGridFace *pOccluder);
 	};
 
 //------------------------------------------------------------------------------
