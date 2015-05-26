@@ -2229,6 +2229,13 @@ class CGridFace : public CGridFacePlane {
 		bool LineIntersects (CFixVector& v1, CFixVector& v2);
 	};
 
+class CGridLine {
+	public:
+		CFixVector		m_vStart;
+		CFixVector		m_vEnd;
+		CFixVector		m_vNormal;
+};
+
 //------------------------------------------------------------------------------
 
 class CFaceGridSegment {
@@ -2252,7 +2259,7 @@ class CFaceGridSegment {
 		bool ContainsTriangle (CFixVector vertices []);
 		bool Split (int32_t nMaxFaces = 20);
 		CFaceGridSegment *Origin (CFixVector& v);
-		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd, CGridFace *pOccluder, int32_t nVisited);
+		CGridFace *Occluder (CGridLine& line, CGridFace *pOccluder, int32_t nVisited);
 
 	private:
 		void InsertFace (CGridFace *pFace);
@@ -2260,7 +2267,7 @@ class CFaceGridSegment {
 		bool ContainsLine (CFixVector& v1, CFixVector& v2);
 		bool AddFace (CGridFace *pFace);
 		bool LineIntersectsFace (CFixVector *vertices, CFixVector& vNormal, CFixVector& v1, CFixVector& v2);
-		CGridFace *FindOccluder (CFixVector& vStart, CFixVector& vEnd, CGridFace *pOccluder);
+		CGridFace *FindOccluder (CGridLine& line, CGridFace *pOccluder);
 	};
 
 //------------------------------------------------------------------------------

@@ -269,30 +269,29 @@ return this;
 
 //------------------------------------------------------------------------------
 
-CGridFace *CFaceGridSegment::Occluder (CFixVector& vStart, CFixVector& vEnd, CGridFace *pOccluder, int32_t nVisited)
+CGridFace *CFaceGridSegment::Occluder (CGridLine& line, CGridFace *pOccluder, int32_t nVisited)
 {
 if (m_nVisited == nVisited) 
 	return pOccluder;
 m_nVisited = nVisited;
 if (m_pFaces)
-	pOccluder = FindOccluder (vStart, vEnd, pOccluder);
+	pOccluder = FindOccluder (line, pOccluder);
 else {
 	for (int32_t i = 0; i < 8; i++) {
 		if (m_pChildren [i])
-			pOccluder = m_pChildren [i]->Occluder (vStart, vEnd, pOccluder, nVisited);
+			pOccluder = m_pChildren [i]->Occluder (line, pOccluder, nVisited);
 		}
 	}
-return m_pParent ? m_pParent->Occluder (vStart, vEnd, pOccluder, nVisited) : pOccluder;
+return m_pParent ? m_pParent->Occluder (line, pOccluder, nVisited) : pOccluder;
 }
 
 //------------------------------------------------------------------------------
 
-CGridFace *CFaceGridSegment::FindOccluder (CFixVector& vStart, CFixVector& vEnd, CGridFace *pOccluder)
+CGridFace *CFaceGridSegment::FindOccluder (CGridLine& line, CGridFace *pOccluder)
 {
 fix xMinDist = 0x7fffffff;
-
 for (CGridFace *pFace = m_pFaces; pFace; pFace = pFace->m_pNextFace) {
-	if (pFace->LineIntersects (vStart, vEnd) && (!pOccluder || (pFace->m_xDist < pOccluder->m_xDist)))
+	if ((CFixVector::Dot (line.m_vNormal, pFace->m_vNormal) <= 0) && pFace->LineIntersects (line.m_vStart, line.m_vEnd) && (!pOccluder || (pFace->m_xDist < pOccluder->m_xDist)))
 		pOccluder = pFace;
 	}
 return pOccluder;
@@ -371,7 +370,14 @@ return m_pRoot ? m_pRoot->Origin (v) : NULL;
 CGridFace *CFaceGrid::Occluder (CFixVector& vStart, CFixVector &vEnd)
 {
 CFaceGridSegment *pOrigin = Origin (vStart);
-return pOrigin ? pOrigin->Occluder (vStart, vEnd, NULL, ++m_nVisited) : NULL;
+if (!pOrigin)
+	return NULL;
+CGridLine line;
+line.m_vStart = vStart;
+line.m_vEnd = vEnd;
+line.m_vNormal = vEnd - vStart;
+CFixVector::Normalize (line.m_vNormal);
+return pOrigin->Occluder (line, NULL, ++m_nVisited) : NULL;
 }
 
 //------------------------------------------------------------------------------
