@@ -819,6 +819,61 @@ return 0;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+CFaceGridSegment::CFaceGridSegment () : m_pFaces (NULL), m_nFaces (0)
+{
+memset (m_pChildren, 0, sizeof (m_pChildren));
+m_vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
+m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
+}
+
+//------------------------------------------------------------------------------
+
+void CFaceGridSegment::Setup (void)
+{
+m_corners [0] = m_vMin;
+m_corners [1].Set (m_vMax.v.coord.x, m_vMin.v.coord.y, m_vMin.v.coord.z);
+m_corners [2].Set (m_vMax.v.coord.x, m_vMax.v.coord.y, m_vMin.v.coord.z);
+m_corners [3].Set (m_vMin.v.coord.x, m_vMax.v.coord.y, m_vMin.v.coord.z);
+m_corners [4].Set (m_vMin.v.coord.x, m_vMin.v.coord.y, m_vMax.v.coord.z);
+m_corners [5].Set (m_vMax.v.coord.x, m_vMin.v.coord.y, m_vMax.v.coord.z);
+m_corners [6] = m_vMax;
+m_corners [7].Set (m_vMin.v.coord.x, m_vMax.v.coord.y, m_vMax.v.coord.z);
+}
+
+//------------------------------------------------------------------------------
+
+bool CFaceGridSegment::Contains (uint16_t vertices [])
+{
+	CFixVector vMin, vMax, v [3];
+
+vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
+vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
+for (int32_t i = 0; i < 3; i++) {
+	v [i] = gameData.segData.vertices [vertices [i]];
+	if ((v [i] > m_vMin) && (v [i] < m_vMax))
+		return true; // vertex contained in grid segment
+	vMin.Set (Min (vMin.v.coord.x, v [i].v.coord.x), Min (vMin.v.coord.x, v [i].v.coord.y), Min (vMin.v.coord.x, v [i].v.coord.z));
+	vMax.Set (Max (vMax.v.coord.x, v [i].v.coord.x), Max (vMax.v.coord.x, v [i].v.coord.y), Max (vMax.v.coord.x, v [i].v.coord.z));
+	}
+if ((vMin > m_vMax) || (vMax < m_vMin))
+	return false;
+// check whether grid segment intersects triangle
+CFixVector vIntersect, vNormal = CFixVector::Normal (v [0], v [1], v [2]), vPlane = (v [0] + v [1] + v [2]) / 3;
+
+static int32_t nEdges [12][2] = {{0,1},{1,2},{2,3},{3,0},{4,5},{5,6},{6,7},{7,4},{0,4},{1,5},{2,6},{3,7}};
+
+for (int32_t i = 0; i < 12; i++) {
+	if (FindPlaneLineIntersection (vIntersect, &vPlane, &vNormal, &m_corners [nEdges [i][0]], &m_corners [nEdges [i][1]], 0) &&
+		 !PointToFaceRelation (&vIntersect, v, 3, &vNormal))
+		return true;
+	}
+return false;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 void CFaceGrid::ComputeDimensions (int32_t nSize)
 {
 	CSegment		*pSeg = SEGMENT (0);
@@ -830,63 +885,11 @@ for (int32_t i = gameData.segData.nSegments; i; i--, pSeg++) {
 	if (pSeg->Function () != SEGMENT_FUNC_SKYBOX) {
 		for (int32_t j = pSeg->m_nVertices; j; --j) {
 			CFixVector v = gameData.segData.vertices [pSeg->m_vertices [j]];
-			m_vMin.v.coord.x = Min (m_vMin.v.coord.x, v.v.coord.x);
-			m_vMin.v.coord.y = Min (m_vMin.v.coord.x, v.v.coord.y);
-			m_vMin.v.coord.z = Min (m_vMin.v.coord.x, v.v.coord.z);
-			m_vMax.v.coord.x = Max (m_vMax.v.coord.x, v.v.coord.x);
-			m_vMax.v.coord.y = Max (m_vMax.v.coord.x, v.v.coord.y);
-			m_vMax.v.coord.z = Max (m_vMax.v.coord.x, v.v.coord.z);
+			m_vMin.Set (Min (m_vMin.v.coord.x, v.v.coord.x), Min (m_vMin.v.coord.x, v.v.coord.y), Min (m_vMin.v.coord.x, v.v.coord.z));
+			m_vMax.Set (Max (m_vMax.v.coord.x, v.v.coord.x), Max (m_vMax.v.coord.x, v.v.coord.y), Max (m_vMax.v.coord.x, v.v.coord.z));
 			}
 		}
 	}
-CFixVector v = m_vMax - m_vMin;
-CFixVector vDim;
-if (nSize > 0)
-	m_steps.Set (I2X (nSize), I2X (nSize), I2X (nSize));
-else {
-	vDim.Set ((v.v.coord.x + I2X (100) - 1) % I2X (100), (v.v.coord.y + I2X (100) - 1) % I2X (100), (v.v.coord.z + I2X (100) - 1) % I2X (100)); // round to next multiple of I2X (100)
-	m_steps.Set (Min (vDim.v.coord.x / I2X (100), 50), Min (vDim.v.coord.y / I2X (100), 50), Min (vDim.v.coord.z / I2X (100), 50));
-	}
-vDim.Set ((v.v.coord.x + m_steps.v.coord.x - 1) % m_steps.v.coord.x, (v.v.coord.y + m_steps.v.coord.y - 1) % m_steps.v.coord.y, (v.v.coord.z + m_steps.v.coord.z - 1) % m_steps.v.coord.z); // round to next multiple of I2X (nSize)
-v = vDim - v;
-v /= 2;
-m_vMin -= v;
-m_vMax += v;
-m_dimensions.Set (X2I (vDim.v.coord.x / m_steps.v.coord.x), X2I (vDim.v.coord.y / m_steps.v.coord.y), X2I (vDim.v.coord.z / m_steps.v.coord.z));
-}
-
-//------------------------------------------------------------------------------
-
-bool CFaceGrid::AddSide (CSide *pSide)
-{
-	int32_t	nVertices;
-
-switch (pSide->Shape ()) {
-	case SIDE_SHAPE_QUAD:
-		nVertices = 4;
-		break;
-	case SIDE_SHAPE_TRIANGLE:
-		nVertices = 3;
-		break;
-	return true;
-	}
-
-	CFixVector	vMin, vMax;
-
-m_vMin.Set (0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF);
-m_vMax.Set (-0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
-for (int32_t j = nVertices; j; --j) {
-	CFixVector v = gameData.segData.vertices [pSide->m_corners [j]];
-	v -= m_vMin;
-	vMin.v.coord.x = Min (m_vMin.v.coord.x, v.v.coord.x);
-	vMin.v.coord.y = Min (m_vMin.v.coord.x, v.v.coord.y);
-	vMin.v.coord.z = Min (m_vMin.v.coord.x, v.v.coord.z);
-	vMax.v.coord.x = Max (m_vMax.v.coord.x, v.v.coord.x);
-	vMax.v.coord.y = Max (m_vMax.v.coord.x, v.v.coord.y);
-	vMax.v.coord.z = Max (m_vMax.v.coord.x, v.v.coord.z);
-	}
-vMin.Set (vMin.v.coord.x / m_dimensions.v.coord.x, vMin.v.coord.y / m_dimensions.v.coord.y, vMin.v.coord.z / m_dimensions.v.coord.z);
-vMax.Set (vMax.v.coord.x / m_dimensions.v.coord.x, vMax.v.coord.y / m_dimensions.v.coord.y, vMax.v.coord.z / m_dimensions.v.coord.z);
 }
 
 //------------------------------------------------------------------------------
@@ -897,6 +900,8 @@ bool CFaceGrid::Create (int32_t nSize)
 return false;
 #else
 ComputeDimensions (nSize);
+if (!(m_pRoot = new CGridSegment))
+	return false;
 if (!m_grid.Create (int32_t (m_dimensions.v.coord.x) * int32_t (m_dimensions.v.coord.y) * int32_t (m_dimensions.v.coord.z)))
 	return false;
 #endif

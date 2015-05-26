@@ -2214,25 +2214,42 @@ class CEdgeVertexData {
 
 class CGridFace {
 	public:
-		CGridFace	*pNextFace;
-		CSide			*pSide;
+		CGridFace		*m_pNextFace;
+		uint16_t			m_vertices;
+		CFloatVector	m_vNormal;
+	};
+
+//------------------------------------------------------------------------------
+
+class CFaceGridSegment {
+	public:
+		CFaceGridSegment	*m_pChildren [8];
+		CGridFace			*m_pFaces;
+		uint16_t				m_nFaces;
+		CFixVector			m_vMin;
+		CFixVector			m_vMax;
+		CFixVector			m_corners [8];
+
+		CFaceGridSegment ();
+		void Setup (void);
+		bool AddFace (uint16_t vertices []);
+		bool Contains (uint16_t vertices []);
 	};
 
 //------------------------------------------------------------------------------
 
 class CFaceGrid {
 	public:
-		CArray<CGridFace*>		m_grid;
+		CFaceGridSegment			*m_pRoot;
 		CFixVector					m_vMin;
 		CFixVector					m_vMax;
-		CFixVector					m_steps;
 		CFixVector					m_dimensions;
 
 		bool Create (int32_t nSize);
 
 	private:
+		CFaceGrid () : m_pRoot (NULL) {}
 		void ComputeDimensions (int32_t nSize);
-		bool AddSide (CSide *pSide);
 	};
 
 //------------------------------------------------------------------------------

@@ -303,7 +303,7 @@ return 1;
 //vPlanePoint & vPlaneNorm describe the plane
 //p0 & p1 are the ends of the line
 
-int32_t FindPlaneLineIntersection (CFixVector& vIntersection, CFixVector *vPlane, CFixVector *vNormal, CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow)
+int32_t FindPlaneLineIntersection (CFixVector& vIntersection, CFixVector *vPlane, CFixVector *vNormal, CFixVector *p0, CFixVector *p1, fix rad)
 {
 #if 0 // FLOAT_COLLISION_MATH
 // for some reason I haven't been able to figure, the following code is not equivalent to the fix point arithmetic code below it

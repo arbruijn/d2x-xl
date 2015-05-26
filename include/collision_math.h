@@ -224,7 +224,7 @@ int32_t ObjectIntersectsWall (CObject *pObj);
 
 int32_t CheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1, int16_t nSegment, int16_t nSide, int16_t iFace, int32_t nv, fix rad);
 
-int32_t FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm, CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow = true);
+int32_t FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm, CFixVector *p0, CFixVector *p1, fix rad);
 
 int32_t FindPlaneLineIntersectionf (CFloatVector& intersection, CFloatVector& vPlanePoint, CFloatVector& vPlaneNorm, CFloatVector& p0, CFloatVector& p1, float rad);
 
