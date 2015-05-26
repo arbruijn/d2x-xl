@@ -74,7 +74,7 @@ for (int32_t i = 0; i < 6; i++) {
 
 bool CFaceGridSegment::ContainsPoint (CFixVector& v)
 {
-return (v > m_vMin) && (v < m_vMax);
+return (v >= m_vMin) && (v <= m_vMax);
 }
 
 //------------------------------------------------------------------------------

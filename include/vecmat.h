@@ -121,7 +121,9 @@ class __pack__ CFixVector {
 		const bool operator== (const CFixVector& other);
 		const bool operator!= (const CFixVector& other);
 		const bool operator< (const CFixVector& other);
+		const bool operator<= (const CFixVector& other);
 		const bool operator> (const CFixVector& other);
+		const bool operator>= (const CFixVector& other);
 		const CFixVector& operator+= (const CFixVector& other);
 		const CFixVector& operator+= (const CFloatVector& other);
 		const CFixVector& operator-= (const CFloatVector& other);
@@ -1105,9 +1107,19 @@ inline const bool CFixVector::operator< (const CFixVector& other)
 return (v.coord.x < other.v.coord.x) && (v.coord.y < other.v.coord.y) && (v.coord.z < other.v.coord.z);
 }
 
+inline const bool CFixVector::operator<= (const CFixVector& other)
+{
+return (v.coord.x <= other.v.coord.x) && (v.coord.y <= other.v.coord.y) && (v.coord.z <= other.v.coord.z);
+}
+
 inline const bool CFixVector::operator> (const CFixVector& other)
 {
 return (v.coord.x > other.v.coord.x) && (v.coord.y > other.v.coord.y) && (v.coord.z > other.v.coord.z);
+}
+
+inline const bool CFixVector::operator>= (const CFixVector& other)
+{
+return (v.coord.x >= other.v.coord.x) && (v.coord.y >= other.v.coord.y) && (v.coord.z >= other.v.coord.z);
 }
 
 inline const CFixVector& CFixVector::operator+= (const CFixVector& other)
