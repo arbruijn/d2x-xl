@@ -360,7 +360,7 @@ return m_pRoot ? m_pRoot->Origin (v) : NULL;
 CGridFace *CFaceGrid::Occluder (CFixVector& vStart, CFixVector &vEnd)
 {
 CFaceGridSegment *pOrigin = Origin (vStart);
-return pOrigin ? pOrigin->Occluder (vStart, vEnd, NULL) : NULL;
+return pOrigin ? pOrigin->Occluder (vStart, vEnd, NULL, ++m_nVisited) : NULL;
 }
 
 //------------------------------------------------------------------------------
