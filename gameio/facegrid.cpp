@@ -357,7 +357,7 @@ return m_pRoot ? m_pRoot->Origin (v) : NULL;
 
 //------------------------------------------------------------------------------
 
-CGridFace *CFaceGrid::Occluder (CFixVector& vStart, CFixVector &vEnd, CFixVector& vIntersect)
+CGridFace *CFaceGrid::Occluder (CFixVector& vStart, CFixVector &vEnd)
 {
 CFaceGridSegment *pOrigin = Origin (vStart);
 return pOrigin ? pOrigin->Occluder (vStart, vEnd, NULL) : NULL;
