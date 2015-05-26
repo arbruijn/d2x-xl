@@ -340,19 +340,22 @@ for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 
 		CSide *pSide = pSeg->Side (0);
 		for (uint8_t j = 0; j < 6; j++, pSide++) {
-			if ((pSeg->ChildId (j) < 0) || pSide->Wall ()) {
-				switch (pSide->Shape ()) {
-					case SIDE_SHAPE_QUAD:
-						if (!m_pRoot->AddFace (i, j, pSide->m_faceVerts + 3, pSide->m_normals [1]))
-							return false;
-						// fall through
-					case SIDE_SHAPE_TRIANGLE:
-						if (!m_pRoot->AddFace (i, j, pSide->m_faceVerts, pSide->m_normals [0]))
-							return false;
-						break;
-					default:
-						break;
-					}
+			if (pSeg->ChildId (j) >= 0) {
+				CWall *pWall = pSide->Wall ();
+				if (!pWall || pWall->IsVolatile () || (pWall->IsPassable (NULL, false) & WID_TRANSPARENT_FLAG))
+					continue;
+				}
+			switch (pSide->Shape ()) {
+				case SIDE_SHAPE_QUAD:
+					if (!m_pRoot->AddFace (i, j, pSide->m_faceVerts + 3, pSide->m_normals [1]))
+						return false;
+					// fall through
+				case SIDE_SHAPE_TRIANGLE:
+					if (!m_pRoot->AddFace (i, j, pSide->m_faceVerts, pSide->m_normals [0]))
+						return false;
+					break;
+				default:
+					break;
 				}
 			}
 		}
