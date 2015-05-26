@@ -78,6 +78,7 @@ return (v > m_vMin) && (v < m_vMax);
 }
 
 //------------------------------------------------------------------------------
+// Check whether the line between v1 and v2 intersects with at least one of the grid segment's faces
 
 bool CFaceGridSegment::ContainsLine (CFixVector& v1, CFixVector& v2)
 {
@@ -95,8 +96,9 @@ return false;
 }
 
 //------------------------------------------------------------------------------
+// check whether a triangle is at least partially inside a grid segment
 
-bool CFaceGridSegment::Contains (CFixVector vertices [])
+bool CFaceGridSegment::ContainsTriangle (CFixVector vertices [])
 {
 	CFixVector vMin, vMax;
 
@@ -111,11 +113,12 @@ for (int32_t i = 0; i < 3; i++) {
 if ((vMin > m_vMax) || (vMax < m_vMin))
 	return false;
 // check whether grid segment intersects triangle
-CFixVector vIntersect, vNormal = CFixVector::Normal (vertices [0], vertices [1], vertices [2]), vPlane = (vertices [0] + vertices [1] + vertices [2]) / 3;
+CFixVector vNormal = CFixVector::Normal (vertices [0], vertices [1], vertices [2]), vPlane = (vertices [0] + vertices [1] + vertices [2]) / 3;
 
 static int32_t nEdges [12][2] = {{0,1},{1,2},{2,3},{3,0},{4,5},{5,6},{6,7},{7,4},{0,4},{1,5},{2,6},{3,7}};
 
 for (int32_t i = 0; i < 12; i++) {
+	CFixVector vIntersect;
 	if (FindPlaneLineIntersection (vIntersect, &vPlane, &vNormal, &m_corners [nEdges [i][0]], &m_corners [nEdges [i][1]], 0) &&
 		 !PointToFaceRelation (&vIntersect, vertices, 3, &vNormal))
 		return true;
@@ -136,7 +139,7 @@ m_pFaces = pFace;
 
 bool CFaceGridSegment::AddFace (CGridFace *pFace)
 {
-if (Contains (pFace->m_vertices))
+if (ContainsTriangle (pFace->m_vertices))
 	InsertFace (pFace);
 return true;
 }
@@ -145,7 +148,7 @@ return true;
 
 bool CFaceGridSegment::AddFace (uint16_t nSegment, uint8_t nSide, CFixVector vertices [], CFixVector vNormal)
 {
-if (!Contains (vertices))
+if (!ContainsTriangle (vertices))
 	return true;
 CGridFace *pFace = new CGridFace;
 if (!pFace)

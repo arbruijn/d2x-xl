@@ -2249,7 +2249,7 @@ class CFaceGridSegment {
 		void Destroy (void);
 		bool AddFace (uint16_t nSegment, uint8_t nSide, CFixVector [], CFixVector vNormal);
 		bool AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [], CFixVector vNormal);
-		bool Contains (CFixVector vertices []);
+		bool ContainsTriangle (CFixVector vertices []);
 		bool Split (int32_t nMaxFaces = 20);
 		CFaceGridSegment *Origin (CFixVector& v);
 		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd, CGridFace *pOccluder, int32_t nVisited);
