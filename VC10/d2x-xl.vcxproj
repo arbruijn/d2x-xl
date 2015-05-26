@@ -1040,6 +1040,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\console\cvar.cpp" />
+    <ClCompile Include="..\main\meshedge.cpp" />
     <ClCompile Include="..\main\producers.cpp" />
     <ClCompile Include="..\misc\error.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
