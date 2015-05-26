@@ -23,6 +23,19 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+fix CGridFace::LineIntersects (CFixVector& v1, CFixVector& v2, CFixVector& vIntersect)
+{
+if (!FindPlaneLineIntersection (vIntersect, m_vertices, &m_vNormal, &v1, &v2, 0))
+	return -1;
+if (PointToFaceRelation (&vIntersect, m_vertices, 3, &m_vNormal))
+	return -1;
+return CFixVector::Dist (v1, vIntersect);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 CFaceGridSegment::CFaceGridSegment () : m_pFaces (NULL), m_nFaces (0)
 {
 memset (m_pChildren, 0, sizeof (m_pChildren));
@@ -227,7 +240,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-CFaceGridSegment *CFaceGridSegment::Origin (CFixVector v)
+CFaceGridSegment *CFaceGridSegment::Origin (CFixVector& v)
 {
 if (!ContainsPoint (v))
 	return NULL;
@@ -239,6 +252,22 @@ for (int32_t i = 0; i < 8; i++) {
 		return pOrigin;
 	}
 return this;
+}
+
+//------------------------------------------------------------------------------
+
+CGridFace *CFaceGridSegment::Occluder (CFixVector& vStart, CFixVector& vEnd, CFixVector& vIntersect)
+{
+if (m_pFaces) {
+	fix vMin = 0x7fffffff;
+	for (CGridFace *pFace = m_pFaces; pFace; pFace = pFace->m_pNextFace) {
+		}
+}
+
+//------------------------------------------------------------------------------
+
+CGridFace *CFaceGridSegment::FindOccluder (CFixVector& vStart, CFixVector& vEnd, CFixVector& vIntersect)
+{
 }
 
 //------------------------------------------------------------------------------
@@ -307,6 +336,14 @@ return m_pRoot->Split ();
 CFaceGridSegment *CFaceGrid::Origin (CFixVector v)
 {
 return m_pRoot ? m_pRoot->Origin (v) : NULL;
+}
+
+//------------------------------------------------------------------------------
+
+CGridFace *CFaceGrid::Occluder (CFixVector& vStart, CFixVector &vEnd, CFixVector& vIntersect)
+{
+CFaceGridSegment *pOrigin = Origin (vStart);
+return pOrigin ? pOrigin->Occluder (vStart, vEnd, vIntersect) : NULL;
 }
 
 //------------------------------------------------------------------------------
