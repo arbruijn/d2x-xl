@@ -885,6 +885,7 @@ pFace->m_nSegment = nSegment;
 pFace->m_nSide = nSide;
 pFace->m_pNextFace = m_pFaces;
 m_pFaces = pFace;
+++m_nFaces;
 return true;
 }
 
