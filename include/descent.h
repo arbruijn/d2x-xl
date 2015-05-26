@@ -2234,13 +2234,14 @@ class CGridFace : public CGridFacePlane {
 class CFaceGridSegment {
 	public:
 		CFaceGridSegment	*m_pParent;
-		CFaceGridSegment	*m_pChildren [8];
 		CGridFace			*m_pFaces;
 		uint16_t				m_nFaces;
 		CFixVector			m_vMin;
 		CFixVector			m_vMax;
+		CFaceGridSegment	*m_pChildren [8];
 		CFixVector			m_corners [8];
 		CGridFacePlane		m_faces [6];
+		int32_t				m_nVisited;
 
 		CFaceGridSegment ();
 		~CFaceGridSegment ();
@@ -2251,7 +2252,7 @@ class CFaceGridSegment {
 		bool Contains (CFixVector vertices []);
 		bool Split (int32_t nMaxFaces = 20);
 		CFaceGridSegment *Origin (CFixVector& v);
-		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd, CGridFace *pOccluder);
+		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd, CGridFace *pOccluder, int32_t nVisited);
 
 	private:
 		void InsertFace (CGridFace *pFace);
@@ -2269,11 +2270,12 @@ class CFaceGrid {
 		CFixVector					m_vMin;
 		CFixVector					m_vMax;
 		CFixVector					m_dimensions;
+		int32_t						m_nVisited;
 
-		CFaceGrid () : m_pRoot (NULL) {}
+		CFaceGrid () : m_pRoot (NULL) { m_nVisited = 0; }
 		bool Create (int32_t nSize);
 		CFaceGridSegment *Origin (CFixVector v);
-		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd, CFixVector& vIntersect);
+		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd);
 
 	private:
 		void ComputeDimensions (int32_t nSize);

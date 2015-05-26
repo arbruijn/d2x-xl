@@ -37,11 +37,12 @@ return true;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-CFaceGridSegment::CFaceGridSegment () : m_pFaces (NULL), m_nFaces (0)
+CFaceGridSegment::CFaceGridSegment () : m_pParent (NULL), m_pFaces (NULL), m_nFaces (0)
 {
 memset (m_pChildren, 0, sizeof (m_pChildren));
 m_vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
+m_nVisited = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -257,17 +258,26 @@ return this;
 
 //------------------------------------------------------------------------------
 
-CGridFace *CFaceGridSegment::Occluder (CFixVector& vStart, CFixVector& vEnd, CGridFace *pOccluder)
+CGridFace *CFaceGridSegment::Occluder (CFixVector& vStart, CFixVector& vEnd, CGridFace *pOccluder, int32_t nVisited)
 {
+if (m_nVisited == nVisited) 
+	return pOccluder;
+m_nVisited = nVisited;
+if (m_pFaces)
+	pOccluder = FindOccluder (vStart, vEnd, pOccluder);
+else {
+	for (int32_t i = 0; i < 8; i++) {
+		if (m_pChildren [i])
+			pOccluder = m_pChildren [i]->Occluder (vStart, vEnd, pOccluder, nVisited);
+		}
+	}
+return m_pParent ? m_pParent->Occluder (vStart, vEnd, pOccluder, nVisited) : pOccluder;
 }
 
 //------------------------------------------------------------------------------
 
 CGridFace *CFaceGridSegment::FindOccluder (CFixVector& vStart, CFixVector& vEnd, CGridFace *pOccluder)
 {
-if (!m_pFaces)
-	return NULL;
-
 fix xMinDist = 0x7fffffff;
 
 for (CGridFace *pFace = m_pFaces; pFace; pFace = pFace->m_pNextFace) {
