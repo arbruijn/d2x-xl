@@ -2215,8 +2215,10 @@ class CEdgeVertexData {
 class CGridFace {
 	public:
 		CGridFace		*m_pNextFace;
-		uint16_t			m_vertices;
 		CFloatVector	m_vNormal;
+		uint16_t			m_vertices [3];
+		uint16_t			m_nSegment;
+		uint8_t			m_nSide;
 	};
 
 //------------------------------------------------------------------------------
@@ -2232,7 +2234,7 @@ class CFaceGridSegment {
 
 		CFaceGridSegment ();
 		void Setup (void);
-		bool AddFace (uint16_t vertices []);
+		bool AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices []);
 		bool Contains (uint16_t vertices []);
 	};
 

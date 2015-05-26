@@ -871,19 +871,36 @@ return false;
 }
 
 //------------------------------------------------------------------------------
+
+bool CFaceGridSegment::AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [])
+{
+if (!Contains (vertices))
+	return true;
+CGridFace *pFace = new CGridFace;
+if (!pFace)
+	return false;
+memcpy (pFace->m_vertices, vertices, 3 * sizeof (uint16_t));
+pFace->m_vNormal = CFloatVector::Normal (gameData.segData.fVertices [vertices [0]], gameData.segData.fVertices [vertices [1]], gameData.segData.fVertices [vertices [2]]);
+pFace->m_nSegment = nSegment;
+pFace->m_nSide = nSide;
+pFace->m_pNextFace = m_pFaces;
+m_pFaces = pFace;
+return true;
+}
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 void CFaceGrid::ComputeDimensions (int32_t nSize)
 {
-	CSegment		*pSeg = SEGMENT (0);
-
 m_vMin.Set (0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF);
 m_vMax.Set (-0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
 
-for (int32_t i = gameData.segData.nSegments; i; i--, pSeg++) {
+CSegment *pSeg = SEGMENT (0);
+for (uint16_t i = gameData.segData.nSegments; i; i--, pSeg++) {
 	if (pSeg->Function () != SEGMENT_FUNC_SKYBOX) {
-		for (int32_t j = pSeg->m_nVertices; j; --j) {
+		for (uint8_t j = pSeg->m_nVertices; j; --j) {
 			CFixVector v = gameData.segData.vertices [pSeg->m_vertices [j]];
 			m_vMin.Set (Min (m_vMin.v.coord.x, v.v.coord.x), Min (m_vMin.v.coord.x, v.v.coord.y), Min (m_vMin.v.coord.x, v.v.coord.z));
 			m_vMax.Set (Max (m_vMax.v.coord.x, v.v.coord.x), Max (m_vMax.v.coord.x, v.v.coord.y), Max (m_vMax.v.coord.x, v.v.coord.z));
@@ -896,14 +913,36 @@ for (int32_t i = gameData.segData.nSegments; i; i--, pSeg++) {
 
 bool CFaceGrid::Create (int32_t nSize)
 {
-#if 1
+#if !DBG
 return false;
 #else
 ComputeDimensions (nSize);
-if (!(m_pRoot = new CGridSegment))
+if (!(m_pRoot = new CFaceGridSegment))
 	return false;
-if (!m_grid.Create (int32_t (m_dimensions.v.coord.x) * int32_t (m_dimensions.v.coord.y) * int32_t (m_dimensions.v.coord.z)))
-	return false;
+
+CSegment *pSeg = SEGMENT (0);
+for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
+	if (pSeg->Function () != SEGMENT_FUNC_SKYBOX) {
+		CSide *pSide = pSeg->Side (0);
+		for (uint8_t j = 0; j < 6; j++, pSide++) {
+			switch (pSide->Shape ()) {
+				case SIDE_SHAPE_QUAD:
+					m_pRoot->AddFace (i, j, pSide->m_faceVerts + 3);
+					// fall through
+				case SIDE_SHAPE_TRIANGLE:
+					m_pRoot->AddFace (i, j, pSide->m_faceVerts);
+					break;
+				default:
+					break;
+				}
+			CFixVector v = gameData.segData.vertices [pSeg->m_vertices [j]];
+			m_vMin.Set (Min (m_vMin.v.coord.x, v.v.coord.x), Min (m_vMin.v.coord.x, v.v.coord.y), Min (m_vMin.v.coord.x, v.v.coord.z));
+			m_vMax.Set (Max (m_vMax.v.coord.x, v.v.coord.x), Max (m_vMax.v.coord.x, v.v.coord.y), Max (m_vMax.v.coord.x, v.v.coord.z));
+			}
+		}
+	}
+
+return true;
 #endif
 }
 
