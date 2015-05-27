@@ -520,7 +520,7 @@ networkThread.UnlockThread ();
 if (!bServer && (nConnected < 2)) {
 	int32_t nInMenu = gameStates.menus.nInMenu;
 	gameStates.menus.nInMenu = 0;
-	int32_t choice = InfoBox (NULL, NULL, BG_STANDARD, 1, TXT_YES, TXT_CONNECT_LOST, gameData.multiplayer.players [0].callsign);
+	int32_t choice = InfoBox (NULL, NULL, BG_STANDARD, 1, TXT_OK, TXT_CONNECT_LOST, gameData.multiplayer.players [0].callsign);
 	gameStates.menus.nInMenu = nInMenu;
 	Cleanup (1);
 	return -1;

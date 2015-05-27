@@ -372,6 +372,16 @@ if (nState)
 CMenuItem*	m;
 int32_t		v;
 
+if ((m = menu ["difficulty"])) {
+	v = m->Value ();
+	if (gameStates.app.nDifficultyLevel != v) {
+		gameStates.app.nDifficultyLevel = v;
+		gameData.bosses.InitGateIntervals ();
+		sprintf (m->Text (), TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
+		m->Rebuild ();
+		}
+	}
+
 if ((m = menu ["reactor life"])) {
 	v = m->Value ();
 	if (nLastReactorLife != v)  {
@@ -427,7 +437,9 @@ void NetworkMoreGameOptions (void)
 do {
 	m.Destroy ();
 	m.Create (40);
-	m.AddSlider ("difficulty", TXT_DIFFICULTY, mpParams.nDifficulty, 0, DIFFICULTY_LEVEL_COUNT - 1, KEY_D, HTX_GPLAY_DIFFICULTY); 
+	sprintf (szSlider + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
+	*szSlider = *(TXT_DIFFICULTY2 - 1);
+	m.AddSlider ("difficulty", szSlider + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
 	sprintf (szInvul + 1, "%s: %d %s", TXT_REACTOR_LIFE, mpParams.nReactorLife * 5, TXT_MINUTES_ABBREV);
 	strupr (szInvul + 1);
 	*szInvul = * (TXT_REACTOR_LIFE - 1);
