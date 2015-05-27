@@ -241,7 +241,6 @@ for (;;) {
 	if (!pFace)
 		break;
 	m_pFaces = m_pFaces->m_pNextFace;
-	--m_nFaces;
 	for (int32_t i = 0; i < 8; i++) {
 		if (!m_pChildren [i]->AddFace (pFace->m_nSegment, pFace->m_nSide, pFace->m_vertices, pFace->m_vNormal))
 			return false;

@@ -2808,7 +2808,7 @@ while (!bDone) {
 				NDErrorMsg (TXT_CANT_PLAYBACK, TXT_LEVEL_CANT_LOAD, TXT_DEMO_OLD_CORRUPT);
 				return -1;
 				}
-			if (!LoadLevel ((int32_t) loadedLevel, true, false))
+			if (LoadLevel ((int32_t) loadedLevel, true, false) <= 0)
 				return -1;
 			meshBuilder.ComputeFaceKeys ();
 			gameData.demo.bCtrlcenDestroyed = 0;
