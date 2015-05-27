@@ -1441,13 +1441,7 @@ ENTER (1, nThread, "PointSeesPoint");
 
 #if 1
 
-CFixVector v0, v1;
-
-v0.Assign (*p0);
-v1.Assign (*p1);
-
-CGridFace *pOccluder = gameData.segData.faceGrid.Occluder (v0, v1, nDestSeg, 255);
-return !pOccluder || (pOccluder->m_nSegment == nDestSeg);
+return gameData.segData.faceGrid.PointSeesPoint (*p0, *p1, nDestSeg, nDestSide);
 
 #else
 
