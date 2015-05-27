@@ -217,7 +217,7 @@ switch (pObj->Id ()) {
 	case POW_KEY_BLUE:
 	case POW_KEY_RED:
 	case POW_KEY_GOLD:
-		a.Set (0, I2X (3) / 4, xRotAngle); // pointing down
+		a.Set (0, -I2X (1) / 4, xRotAngle); // pointing down
 		break;
 
 
