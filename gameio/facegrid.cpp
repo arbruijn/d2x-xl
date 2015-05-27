@@ -368,7 +368,7 @@ for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 
 m_pRoot->Setup (NULL, m_vMin, m_vMax);
 
-CSegment *pSeg = SEGMENT (0);
+pSeg = SEGMENT (0);
 for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 	if (pSeg->Function () != SEGMENT_FUNC_SKYBOX) {
 		CSide *pSide = pSeg->Side (0);
