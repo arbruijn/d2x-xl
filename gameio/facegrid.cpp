@@ -315,8 +315,14 @@ CGridFace *CFaceGridSegment::FindOccluder (CGridLine& line, CGridFace *pOccluder
 {
 fix xMinDist = 0x7fffffff;
 for (CGridFace *pFace = m_pFaces; pFace; pFace = pFace->m_pNextFace) {
-	if ((CFixVector::Dot (line.m_vNormal, pFace->m_vNormal) <= 0) && pFace->LineIntersects (line.m_vStart, line.m_vEnd) && (!pOccluder || (pFace->m_xDist < pOccluder->m_xDist)))
-		pOccluder = pFace;
+	if ((CFixVector::Dot (line.m_vNormal, pFace->m_vNormal) <= 0) && pFace->LineIntersects (line.m_vStart, line.m_vEnd)) {
+		if (!pOccluder)
+			pOccluder = pFace;
+		else if (pFace->m_xDist < pOccluder->m_xDist)
+			pOccluder = pFace;
+		else if ((pFace->m_xDist == pOccluder->m_xDist) && (pFace->m_nSegment == line.m_nSegment))
+			pOccluder = pFace;
+		}
 	}
 return pOccluder;
 }
@@ -351,7 +357,7 @@ return m_pRoot ? m_pRoot->Origin (v) : NULL;
 
 //------------------------------------------------------------------------------
 
-CGridFace *CFaceGrid::Occluder (CFixVector& vStart, CFixVector &vEnd)
+CGridFace *CFaceGrid::Occluder (CFixVector& vStart, CFixVector &vEnd, int16_t nSegment, uint8_t nSide)
 {
 CFaceGridSegment *pOrigin = Origin (vStart);
 if (!pOrigin)
@@ -360,6 +366,8 @@ CGridLine line;
 line.m_vStart = vStart;
 line.m_vEnd = vEnd;
 line.m_vNormal = vEnd - vStart;
+line.m_nSegment = nSegment;
+line.m_nSide = nSide;
 CFixVector::Normalize (line.m_vNormal);
 return pOrigin->Occluder (line, NULL, ++m_nVisited);
 }
