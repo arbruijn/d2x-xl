@@ -819,32 +819,22 @@ else { // check whether light only contributes ambient light to point
 #if 1
 
 	int32_t bSeesPoint = -1;
-	int32_t bDiffuse = (pLightSeg && !pLightSeg->SeesConnectedSide (info.nSide, nDestSeg, nDestSide)) 
-							 ? 0
-							 : bSeesPoint = SeesPoint (nDestSeg, nDestSide, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
-	if (nDestSeg >= 0) {
-		if (bSeesPoint < 0)
-			bSeesPoint = SeesPoint (nDestSeg, nDestSide, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
-		info.bDiffuse [nThread] = bDiffuse;
-
-		// if point is occluded, use segment path distance to point for light range and attenuation
-		// if bDiffuse == 0 then point is completely occluded (determined by above call to SeesPoint ()), otherwise use SeesPoint() to test occlusion
-		if (!bSeesPoint) { // => ambient contribution only
-			fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
-			if (xPathLength < 0)
+	info.bDiffuse [nThread] = (pLightSeg && !pLightSeg->SeesConnectedSide (info.nSide, nDestSeg, nDestSide)) 
+									  ? 0
+									  : bSeesPoint = SeesPoint (nDestSeg, nDestSide, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
+	// if point is occluded, use segment path distance to point for light range and attenuation
+	// if bDiffuse == 0 then point is completely occluded (determined by above call to SeesPoint ()), otherwise use SeesPoint() to test occlusion
+	if (!bSeesPoint) { // => ambient contribution only
+		fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+		if (xPathLength < 0)
+			RETURN (0);
+		if (xDistance < xPathLength) {
+			// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
+			xDistance = (xDistance + xPathLength) / 2; 
+			if (xDistance - xRad > xMaxLightRange)
 				RETURN (0);
-			if (xDistance < xPathLength) {
-				// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
-				xDistance = (xDistance + xPathLength) / 2; 
-				if (xDistance - xRad > xMaxLightRange)
-					RETURN (0);
-				}
 			}
 		}
-#if DBG
-	else
-		BRP;
-#endif
 
 #else
 
