@@ -221,7 +221,9 @@ if (!m_pFaces)
 if (m_nFaces <= nMaxFaces)
 	return true;
 
-	CFixVector	vOffs = (m_vMax - m_vMin) / 2;
+	CFixVector	vOffs;
+	
+vOffs.Set ((m_vMax.v.coord.x - m_vMin.v.coord.x) / 2, (m_vMax.v.coord.y - m_vMin.v.coord.y) / 2, (m_vMax.v.coord.z - m_vMin.v.coord.z) / 2);
 
 for (int32_t nChild = 0, z = 0; z < 2; z++) {
 	for (int32_t y = 0; y < 2; y++) {
