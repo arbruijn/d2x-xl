@@ -2288,6 +2288,7 @@ class CFaceGrid {
 		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd);
 
 	private:
+		bool AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [], CFixVector vNormal);
 		void ComputeDimensions (int32_t nSize);
 	};
 

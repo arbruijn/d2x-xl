@@ -243,16 +243,13 @@ for (;;) {
 	if (!pFace)
 		break;
 	m_pFaces = m_pFaces->m_pNextFace;
-#if DBG
+
 	bool bPropagated = false;
-#endif
 	for (int32_t i = 0; i < 8; i++) {
-		if (!m_pChildren [i]->AddFace (pFace->m_nSegment, pFace->m_nSide, pFace->m_vertices, pFace->m_vNormal))
+		if (bPropagated ? !m_pChildren [i]->AddFace (pFace->m_nSegment, pFace->m_nSide, pFace->m_vertices, pFace->m_vNormal) : !m_pChildren [i]->AddFace (pFace))
 			return false;
-#if DBG
-		if (m_pChildren [i]->m_pFaces == pFace)
+		if (!bPropagated && (m_pChildren [i]->m_pFaces == pFace))
 			bPropagated = true;
-#endif
 		}
 #if DBG
 	if (!bPropagated) {
@@ -369,6 +366,20 @@ return pOrigin->Occluder (line, NULL, ++m_nVisited);
 
 //------------------------------------------------------------------------------
 
+bool CFaceGrid::AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [], CFixVector vNormal)
+{
+	CFixVector v [3];
+
+for (int32_t i = 0; i < 3; i++) {
+	v [i] = gameData.segData.vertices [vertices [i]];
+	m_vMin.Set (Min (m_vMin.v.coord.x, v [i].v.coord.x), Min (m_vMin.v.coord.x, v [i].v.coord.y), Min (m_vMin.v.coord.x, v [i].v.coord.z));
+	m_vMax.Set (Max (m_vMax.v.coord.x, v [i].v.coord.x), Max (m_vMax.v.coord.x, v [i].v.coord.y), Max (m_vMax.v.coord.x, v [i].v.coord.z));
+	}
+return m_pRoot->AddFace (nSegment, nSide, v, vNormal);
+}
+
+//------------------------------------------------------------------------------
+
 bool CFaceGrid::Create (int32_t nSize)
 {
 #if !DBG
@@ -379,17 +390,9 @@ if (!(m_pRoot = new CFaceGridSegment))
 	return false;
 
 CSegment *pSeg = SEGMENT (0);
-for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
-	if (pSeg->Function () != SEGMENT_FUNC_SKYBOX) {
-		for (uint8_t j = 0; j < pSeg->m_nVertices; j++) {
-			CFixVector v = gameData.segData.vertices [pSeg->m_vertices [j]];
-			m_vMin.Set (Min (m_vMin.v.coord.x, v.v.coord.x), Min (m_vMin.v.coord.x, v.v.coord.y), Min (m_vMin.v.coord.x, v.v.coord.z));
-			m_vMax.Set (Max (m_vMax.v.coord.x, v.v.coord.x), Max (m_vMax.v.coord.x, v.v.coord.y), Max (m_vMax.v.coord.x, v.v.coord.z));
-			}
-		}
-	}
 
-m_pRoot->Setup (NULL, m_vMin, m_vMax);
+m_vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
+m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 
 pSeg = SEGMENT (0);
 for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
@@ -417,6 +420,7 @@ for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 		}
 	}
 
+m_pRoot->Setup (NULL, m_vMin, m_vMax);
 return m_pRoot->Split ();
 #endif
 }
