@@ -1439,6 +1439,18 @@ int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, i
 {
 ENTER (1, nThread, "PointSeesPoint");
 
+#if 1
+
+CFixVector v0, v1;
+
+v0.Assign (*p0);
+v1.Assign (*p1);
+
+CGridFace *pOccluder = gameData.segData.faceGrid.Occluder (v0, v1, nDestSeg, 255);
+return !pOccluder || (pOccluder->m_nSegment == nDestSeg);
+
+#else
+
 	static			uint32_t segVisList [MAX_THREADS][MAX_SEGMENTS_D2X];
 	static			uint32_t segVisFlags [MAX_THREADS] = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
 
@@ -1558,6 +1570,9 @@ for (;;) {
 #endif
 	RETURN ((nDestSeg < 0) || (nStartSeg == nDestSeg)); // line doesn't intersect any side of this segment -> p1 must be inside segment
 	}
+
+#endif
+
 }
 
 //	-----------------------------------------------------------------------------

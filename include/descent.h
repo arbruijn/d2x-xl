@@ -2235,7 +2235,7 @@ class CGridLine {
 		CFixVector		m_vEnd;
 		CFixVector		m_vNormal;
 		int16_t			m_nSegment;
-		uint8_t			m_nSide;
+		int8_t			m_nSide;
 };
 
 //------------------------------------------------------------------------------
@@ -2287,7 +2287,7 @@ class CFaceGrid {
 		void Destroy (void);
 		bool Create (int32_t nSize);
 		CFaceGridSegment *Origin (CFixVector v);
-		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd, int16_t nSegment = -1, uint8_t nSide = 0);
+		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd, int16_t nSegment = -1, int8_t nSide = -1);
 
 	private:
 		bool AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [], CFixVector vNormal);

@@ -320,7 +320,7 @@ for (CGridFace *pFace = m_pFaces; pFace; pFace = pFace->m_pNextFace) {
 			pOccluder = pFace;
 		else if (pFace->m_xDist < pOccluder->m_xDist)
 			pOccluder = pFace;
-		else if ((pFace->m_xDist == pOccluder->m_xDist) && (pFace->m_nSegment == line.m_nSegment))
+		else if ((pFace->m_xDist == pOccluder->m_xDist) && (pFace->m_nSegment == line.m_nSegment) && ((line.m_nSide < 0) || (pFace->m_nSide == line.m_nSide)))
 			pOccluder = pFace;
 		}
 	}
@@ -357,7 +357,7 @@ return m_pRoot ? m_pRoot->Origin (v) : NULL;
 
 //------------------------------------------------------------------------------
 
-CGridFace *CFaceGrid::Occluder (CFixVector& vStart, CFixVector &vEnd, int16_t nSegment, uint8_t nSide)
+CGridFace *CFaceGrid::Occluder (CFixVector& vStart, CFixVector &vEnd, int16_t nSegment, int8_t nSide)
 {
 CFaceGridSegment *pOrigin = Origin (vStart);
 if (!pOrigin)
