@@ -250,8 +250,14 @@ for (;;) {
 	}
 
 for (int32_t i = 0; i < 8; i++) {
-	if (m_pChildren [i]->m_pFaces && !m_pChildren [i]->Split (nMaxFaces))
-		return false;
+	if (m_pChildren [i]->m_pFaces) {
+		if (!m_pChildren [i]->Split (nMaxFaces))
+			return false;
+		}
+	else {
+		delete m_pChildren [i];
+		m_pChildren [i] = NULL;
+		}
 	}
 
 return true;
