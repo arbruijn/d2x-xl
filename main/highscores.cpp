@@ -520,7 +520,7 @@ networkThread.UnlockThread ();
 if (!bServer && (nConnected < 2)) {
 	int32_t nInMenu = gameStates.menus.nInMenu;
 	gameStates.menus.nInMenu = 0;
-	int32_t choice = InfoBox (NULL, NULL, BG_STANDARD, 1, TXT_YES, TXT_CONNECT_LOST);
+	int32_t choice = InfoBox (NULL, NULL, BG_STANDARD, 1, TXT_YES, TXT_CONNECT_LOST, gameData.multiplayer.players [0].callsign);
 	gameStates.menus.nInMenu = nInMenu;
 	Cleanup (1);
 	return -1;
@@ -536,7 +536,7 @@ void CScoreTable::Display (void)
    int32_t	i;
 	int32_t	key;
 	int32_t	bRedraw = 0;
-	uint32_t	tIdleTimeout = SDL_GetTicks () +  + MAX_VIEW_TIME;
+	uint32_t	tIdleTimeout = SDL_GetTicks () + MAX_VIEW_TIME;
 	uint32_t tRenderTimeout = SDL_GetTicks () + 40;
 
 m_bNetwork = IsNetworkGame != 0;
