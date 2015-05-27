@@ -1435,7 +1435,7 @@ return SphereIntersectsWall (&pObj->info.position.vPos, pObj->info.nSegment, pOb
 
 #define CHECK_FACE_ORIENT 1
 
-int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int32_t nDepth, int32_t nThread)
+int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int8_t nDestSide, int32_t nDepth, int32_t nThread)
 {
 ENTER (1, nThread, "PointSeesPoint");
 
@@ -1561,7 +1561,7 @@ for (;;) {
 			continue;
 		if ((pWall = pSide->Wall ()) && !(pWall->IsVolatile () || (pWall->IsPassable (NULL, false) & WID_TRANSPARENT_FLAG))) // impassable
 			continue;
-		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDepth + 1, nThread))
+		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDestSide, nDepth + 1, nThread))
 			RETURN (1);
 		}
 #if DBG

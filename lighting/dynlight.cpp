@@ -608,25 +608,21 @@ return fix (dist / info.fRange);
 //  0: Point is occluded by geometry or too far away
 //  1: Point is visible
 
-#define LIGHTING_LEVEL 1
+#define LIGHTING_LEVEL	1
+#define USE_FACE_GRID	1
 
 int32_t CDynLight::SeesPoint (const int16_t nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, int32_t nLevel, int32_t nThread)
 {
 ENTER (1, 0, "CDynLight::SeesPoint");
-#if 1
-int32_t nLightSeg = info.nSegment;
-#else
-int32_t nLightSeg = LightSeg ();
-#endif
 
-		CFloatVector	v1, vNormalf;
+	CFloatVector	v1, vNormalf;
 
 #if FAST_POINTVIS
 
-		CSegment			*pLightSeg = SEGMENT (nLightSeg);
+	CSegment			*pLightSeg = SEGMENT (info.nSegment);
 
 if (info.nSide < 0) {
-	if (nLightSeg < 0)
+	if (info.nSegment < 0)
 		RETURN (1);
 	if (!pLightSeg)
 		RETURN (0);
@@ -644,7 +640,7 @@ if (info.nSide < 0) {
 		if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f) // light doesn't "see" face
 			RETURN (0);
 		}
-	RETURN ((nDestSeg < 0) || PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread));
+	RETURN ((nDestSeg < 0) || PointSeesPoint (&v1, &v0, nDestSeg, info.nSegment, info.nSide, 0, nThread));
 	}
 else {
 		static int32_t nLevels [3] = {4, 0, -4};
@@ -694,19 +690,19 @@ else {
 			continue;
 		if (0 <= pLightSeg->ChildIndex (nDestSeg)) // don't check point to point visibility for connected segments
 			RETURN (1);
-		if (PointSeesPoint (&vLight [i], &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread))
+		if (PointSeesPoint (&v1, &vLight [i], nDestSeg, info.nSegment, info.nSide, 0, nThread))
 			RETURN (1);
 		}
-	RETURN (0); // && PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread);
+	RETURN (0); 
 #if DBG
-	if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
+	if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
 		BRP;
 #endif
 	}
 
 #else
 
-CHitQuery hitQuery (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &info.vPos, vPoint, nLightSeg, -1, 1, 0);
+CHitQuery hitQuery (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &info.vPos, vPoint, info.nSegment, -1, 1, 0);
 CHitResult	hitResult;
 int32_t nHitType = FindHitpoint (hitQuery, hitResult, 0, nThread);
 return (!nHitType || ((nHitType == HIT_WALL) && (hitResult.nSegment == nDestSeg)));

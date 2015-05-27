@@ -374,6 +374,14 @@ return pOrigin->Occluder (line, NULL, ++m_nVisited);
 
 //------------------------------------------------------------------------------
 
+bool CFaceGrid::PointSeesPoint (CFixVector& vStart, CFixVector &vEnd, int16_t nSegment, int8_t nSide)
+{
+CGridFace *pOccluder = Occluder (vStart, vEnd, nSegment, nSide);
+return !pOccluder || (pOccluder->m_nSegment == nSegment) && (pOccluder->m_nSide == nSide));
+}
+
+//------------------------------------------------------------------------------
+
 bool CFaceGrid::AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [], CFixVector vNormal)
 {
 	CFixVector v [3];

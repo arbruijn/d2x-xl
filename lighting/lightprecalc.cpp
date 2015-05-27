@@ -657,7 +657,7 @@ for (i = 4; i >= -4; i--) {
 			continue;
 		if (dMin > d)
 			dMin = d;
-		if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, 0, nThread)) {
+		if (PointSeesPoint (&v1, &v0, nDestSeg, nLightSeg, pLight->info.nSide, 0, nThread)) {
 			gameData.segData.SetLightVis (nLight, nDestSeg, 2);
 			return;
 			}

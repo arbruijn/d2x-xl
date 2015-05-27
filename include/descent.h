@@ -2288,6 +2288,7 @@ class CFaceGrid {
 		bool Create (int32_t nSize);
 		CFaceGridSegment *Origin (CFixVector v);
 		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd, int16_t nSegment = -1, int8_t nSide = -1);
+		bool PointSeesPoint (CFixVector& vStart, CFixVector &vEnd, int16_t nSegment, int8_t nSide);
 
 	private:
 		bool AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [], CFixVector vNormal);

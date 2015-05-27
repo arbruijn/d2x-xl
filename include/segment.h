@@ -242,7 +242,7 @@ class CSide {
 		int32_t IsConnected (int16_t nSegment, int16_t nSide);
 		int32_t SeesSide (int16_t nSegment, int16_t nSide);
 		int32_t SeesConnectedSide (int16_t nSegment, int16_t nSide);
-		int32_t SeesPoint (CFixVector& vPoint, int16_t nDestSeg, int32_t nLevel = 0, int32_t nThread = 0);
+		int32_t SeesPoint (CFixVector& vPoint, int16_t nDestSeg, int8_t nDestSide, int32_t nLevel = 0, int32_t nThread = 0);
 
 		int32_t CheckLineToFaceEdgesf (CFloatVector& vIntersection, CFloatVector& p0, CFloatVector& p1, float rad, int16_t iFace, CFloatVector& vNormal);
 		int32_t CheckLineToFaceRegularf (CFloatVector& vIntersection, CFloatVector *p0, CFloatVector *p1, float rad, int16_t iFace, CFloatVector& vNormal);

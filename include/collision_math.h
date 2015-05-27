@@ -248,7 +248,7 @@ uint8_t PointIsOutsideFace (CFloatVector* pRef, uint16_t* nVertIndex, int16_t nV
 
 uint32_t PointToFaceRelation (CFixVector* pRef, CFixVector *vertList, int32_t nVerts, CFixVector* vNormal);
 
-int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int32_t nDepth, int32_t nThread);
+int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int8_t nDestSide, int32_t nDepth, int32_t nThread);
 
 //	-----------------------------------------------------------------------------
 
