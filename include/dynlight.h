@@ -105,10 +105,10 @@ class CDynLight {
 		inline int16_t Index (void) { return info.nIndex; }
 		inline int16_t Segment (void) { return info.nSegment; }
 		inline int16_t Side (void) { return info.nSide; }
-		int32_t SeesPoint (const int16_t nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, const int32_t nLevel, int32_t nThread);
-		int32_t SeesPoint (const int16_t nSegment, const int16_t nSide, CFixVector* vPoint, const int32_t nLevel, int32_t nThread);
+		int32_t SeesPoint (const int16_t nDestSeg, const int8_t nDestSide, const CFixVector* vNormal, CFixVector* vPoint, const int32_t nLevel, int32_t nThread);
+		int32_t SeesPoint (const int16_t nSegment, const int8_t nSide, CFixVector* vPoint, const int32_t nLevel, int32_t nThread);
 		int32_t LightPathLength (const int16_t nLightSeg, const int16_t nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int32_t bFastRoute, int32_t nThread);
-		int32_t Contribute (const int16_t nDestSeg, const int16_t nDestSide, const int16_t nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, 
+		int32_t Contribute (const int16_t nDestSeg, const int8_t nDestSide, const int16_t nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, 
 								  fix xMaxLightRange, float fRangeMod, fix xDistMod, int32_t nThread);
 		inline int32_t Illuminate (int16_t nSegment, int16_t nSide) { 
 			return !info.bAmbient || (nSegment < 0) || ((info.nSegment == nSegment) && ((nSide < 0) || (info.nSide == nSide))); 

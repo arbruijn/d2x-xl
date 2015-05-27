@@ -611,7 +611,7 @@ return fix (dist / info.fRange);
 #define LIGHTING_LEVEL	1
 #define USE_FACE_GRID	1
 
-int32_t CDynLight::SeesPoint (const int16_t nDestSeg, const CFixVector* vNormal, CFixVector* vPoint, int32_t nLevel, int32_t nThread)
+int32_t CDynLight::SeesPoint (const int16_t nDestSeg, const int8_t nDestSide, const CFixVector* vNormal, CFixVector* vPoint, int32_t nLevel, int32_t nThread)
 {
 ENTER (1, 0, "CDynLight::SeesPoint");
 
@@ -619,7 +619,7 @@ ENTER (1, 0, "CDynLight::SeesPoint");
 
 #if FAST_POINTVIS
 
-	CSegment			*pLightSeg = SEGMENT (info.nSegment);
+	CSegment	*pLightSeg = SEGMENT (info.nSegment);
 
 if (info.nSide < 0) {
 	if (info.nSegment < 0)
@@ -640,11 +640,9 @@ if (info.nSide < 0) {
 		if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f) // light doesn't "see" face
 			RETURN (0);
 		}
-	RETURN ((nDestSeg < 0) || PointSeesPoint (&v1, &v0, nDestSeg, info.nSegment, info.nSide, 0, nThread));
+	RETURN ((nDestSeg < 0) || PointSeesPoint (&v0, &v1, info.nSegment, nDestSeg, nDestSide, 0, nThread));
 	}
 else {
-		static int32_t nLevels [3] = {4, 0, -4};
-
 		class CLightPoint {
 			public:
 				CFloatVector	v;
@@ -662,7 +660,7 @@ else {
 			RETURN (0);
 
 		CStaticArray<CFloatVector, 9>	vLight;
-		int32_t	nVertices = 0, i, j = nLevels [nLevel];
+		int32_t	nVertices = 0, i;
 
 	vLight [nVertices++].Assign (pSide->Center ());
 	if (nLevel) {
@@ -690,7 +688,7 @@ else {
 			continue;
 		if (0 <= pLightSeg->ChildIndex (nDestSeg)) // don't check point to point visibility for connected segments
 			RETURN (1);
-		if (PointSeesPoint (&v1, &vLight [i], nDestSeg, info.nSegment, info.nSide, 0, nThread))
+		if (PointSeesPoint (&vLight [i], &v1, info.nSegment, nDestSeg, nDestSide, 0, nThread))
 			RETURN (1);
 		}
 	RETURN (0); 
@@ -713,9 +711,9 @@ RETURN (0);
 
 //------------------------------------------------------------------------------
 
-int32_t CDynLight::SeesPoint (const int16_t nSegment, const int16_t nSide, CFixVector* vPoint, const int32_t nLevel, int32_t nThread)
+int32_t CDynLight::SeesPoint (const int16_t nSegment, const int8_t nSide, CFixVector* vPoint, const int32_t nLevel, int32_t nThread)
 {
-return SeesPoint (nSegment, &SEGMENT (nSegment)->Side (nSide)->Normal (2), vPoint, nLevel, nThread);
+return SeesPoint (nSegment, nSide, &SEGMENT (nSegment)->Side (nSide)->Normal (2), vPoint, nLevel, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -745,7 +743,7 @@ return PLAYEROBJECT (info.nPlayer);
 
 //------------------------------------------------------------------------------
 
-int32_t CDynLight::Contribute (const int16_t nDestSeg, const int16_t nDestSide, const int16_t nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, 
+int32_t CDynLight::Contribute (const int16_t nDestSeg, const int8_t nDestSide, const int16_t nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, 
 										 fix xMaxLightRange, float fRangeMod, fix xDistMod, int32_t nThread)
 {
 ENTER (1, nThread, "CDynLight::Contribute");
@@ -813,14 +811,46 @@ else if (info.bVariable && (nDestVertex >= 0)) {
 	if (info.visibleVertices && info.visibleVertices->Buffer ())
 		info.bDiffuse [nThread] = (*info.visibleVertices) [nDestVertex];
 	else
-		info.bDiffuse [nThread] = SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
+		info.bDiffuse [nThread] = SeesPoint (nDestSeg, nDestSide, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
 	}
 else { // check whether light only contributes ambient light to point
 	CSegment *pLightSeg = SEGMENT (nLightSeg);
 
-	int32_t bDiffuse = info.bDiffuse [nThread] ? (pLightSeg && !pLightSeg->SeesConnectedSide (info.nSide, nDestSeg, nDestSide)) ? 0 : SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread) : 0;
+#if 1
+
+	int32_t bSeesPoint = -1;
+	int32_t bDiffuse = (pLightSeg && !pLightSeg->SeesConnectedSide (info.nSide, nDestSeg, nDestSide)) 
+							 ? 0
+							 : bSeesPoint = SeesPoint (nDestSeg, nDestSide, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
 	if (nDestSeg >= 0) {
-		int32_t bSeesPoint = (info.nSide < 0) ? bDiffuse : pLightSeg->Side (info.nSide)->SeesPoint (vDestPos, nDestSeg, bDiffuse ? gameOpts->render.nLightmapPrecision : -gameOpts->render.nLightmapPrecision - 1, nThread);
+		if (bSeesPoint < 0)
+			bSeesPoint = SeesPoint (nDestSeg, nDestSide, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
+		info.bDiffuse [nThread] = bDiffuse;
+
+		// if point is occluded, use segment path distance to point for light range and attenuation
+		// if bDiffuse == 0 then point is completely occluded (determined by above call to SeesPoint ()), otherwise use SeesPoint() to test occlusion
+		if (!bSeesPoint) { // => ambient contribution only
+			fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+			if (xPathLength < 0)
+				RETURN (0);
+			if (xDistance < xPathLength) {
+				// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
+				xDistance = (xDistance + xPathLength) / 2; 
+				if (xDistance - xRad > xMaxLightRange)
+					RETURN (0);
+				}
+			}
+		}
+#if DBG
+	else
+		BRP;
+#endif
+
+#else
+
+	int32_t bDiffuse = info.bDiffuse [nThread] ? (pLightSeg && !pLightSeg->SeesConnectedSide (info.nSide, nDestSeg, nDestSide)) ? 0 : SeesPoint (nDestSeg, nDestSide, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread) : 0;
+	if (nDestSeg >= 0) {
+		int32_t bSeesPoint = (info.nSide < 0) ? bDiffuse : pLightSeg->Side (info.nSide)->SeesPoint (vDestPos, nDestSeg, nDestSide, bDiffuse ? gameOpts->render.nLightmapPrecision : -gameOpts->render.nLightmapPrecision - 1, nThread);
 		info.bDiffuse [nThread] = bDiffuse && bSeesPoint;
 
 		// if point is occluded, use segment path distance to point for light range and attenuation
@@ -837,6 +867,7 @@ else { // check whether light only contributes ambient light to point
 				}
 			}
 		}
+#endif
 	}
 #if DBG
 if ((nDbgSeg == nDestSeg) && ((nDbgSide < 0) || (nDestSide == nDbgSide)) && info.bDiffuse [nThread])

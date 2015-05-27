@@ -1439,7 +1439,7 @@ int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, i
 {
 ENTER (1, nThread, "PointSeesPoint");
 
-#if 1
+#if 0
 
 return gameData.segData.faceGrid.PointSeesPoint (*p0, *p1, nDestSeg, nDestSide);
 
