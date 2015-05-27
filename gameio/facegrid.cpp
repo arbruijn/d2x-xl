@@ -377,7 +377,7 @@ return pOrigin->Occluder (line, NULL, ++m_nVisited);
 bool CFaceGrid::PointSeesPoint (CFloatVector& vStart, CFloatVector &vEnd, int16_t nSegment, int8_t nSide)
 {
 CGridFace *pOccluder = Occluder (vStart, vEnd, nSegment, nSide);
-return !pOccluder || (pOccluder->m_nSegment == nSegment) && (pOccluder->m_nSide == nSide));
+return !pOccluder || ((pOccluder->m_nSegment == nSegment) && (pOccluder->m_nSide == nSide));
 }
 
 //------------------------------------------------------------------------------
