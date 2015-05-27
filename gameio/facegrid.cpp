@@ -363,7 +363,14 @@ for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 			m_vMin.Set (Min (m_vMin.v.coord.x, v.v.coord.x), Min (m_vMin.v.coord.x, v.v.coord.y), Min (m_vMin.v.coord.x, v.v.coord.z));
 			m_vMax.Set (Max (m_vMax.v.coord.x, v.v.coord.x), Max (m_vMax.v.coord.x, v.v.coord.y), Max (m_vMax.v.coord.x, v.v.coord.z));
 			}
+		}
+	}
 
+m_pRoot->Setup (NULL, m_vMin, m_vMax);
+
+CSegment *pSeg = SEGMENT (0);
+for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
+	if (pSeg->Function () != SEGMENT_FUNC_SKYBOX) {
 		CSide *pSide = pSeg->Side (0);
 		for (uint8_t j = 0; j < 6; j++, pSide++) {
 			if (pSeg->ChildId (j) >= 0) {
@@ -387,7 +394,6 @@ for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 		}
 	}
 
-m_pRoot->Setup (NULL, m_vMin, m_vMax);
 return m_pRoot->Split ();
 #endif
 }
