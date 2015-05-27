@@ -951,7 +951,7 @@ int32_t CNetworkThread::ConnectionStatus (int32_t nPlayer)
 if (!PLAYER (nPlayer).callsign [0])
 	return 0;
 if (PLAYER (nPlayer).m_nLevel && (PLAYER (nPlayer).m_nLevel != missionManager.nCurrentLevel))
-	return 3;	// the client being tested is in a different level, so immediately disconnect him to make his ship disappear until he enters the current level
+	return 4;	// the client being tested is in a different level, so immediately disconnect him to make his ship disappear until he enters the current level
 if (downloadManager.Downloading (nPlayer))
 	return 1;	// try to reconnect, using relaxed timeout values
 if ((PLAYER (nPlayer).connected == CONNECT_DISCONNECTED) || (PLAYER (nPlayer).connected == CONNECT_PLAYING))
@@ -991,6 +991,13 @@ if (to.Expired () /*&& !gameData.reactor.bDestroyed*/)
 				case 2:
 					if ((networkData.nLastPacketTime [nPlayer] == 0) || (t - networkData.nLastPacketTime [nPlayer] < extraGameInfo [0].timeout.nDisconnectPlayer)) {
 						ResetPlayerTimeout (nPlayer, t);
+						break;
+						}
+
+				case 3:
+					if ((networkData.nLastPacketTime [nPlayer] == 0) || (t - networkData.nLastPacketTime [nPlayer] < extraGameInfo [0].timeout.nDisconnectPlayer)) {
+						ResetPlayerTimeout (nPlayer, t);
+						MultiTurnPlayerToGhost (nPlayer);
 						break;
 						}
 
