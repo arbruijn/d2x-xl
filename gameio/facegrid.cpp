@@ -389,13 +389,11 @@ ComputeDimensions (nSize);
 if (!(m_pRoot = new CFaceGridSegment))
 	return false;
 
-CSegment *pSeg = SEGMENT (0);
-
 m_vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 
 CSegment *pSeg = SEGMENT (0);
-#if 0
+#if 1
 for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 	if (pSeg->Function () != SEGMENT_FUNC_SKYBOX) {
 		for (uint8_t j = 0; j < pSeg->m_nVertices; j++) {
@@ -407,6 +405,9 @@ for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 	}
 
 m_pRoot->Setup (NULL, m_vMin, m_vMax);
+
+m_vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
+m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 
 pSeg = SEGMENT (0);
 #endif
@@ -421,11 +422,11 @@ for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 				}
 			switch (pSide->Shape ()) {
 				case SIDE_SHAPE_QUAD:
-					if (!m_pRoot->AddFace (i, j, pSide->m_faceVerts + 3, pSide->m_normals [1]))
+					if (!/*m_pRoot->*/AddFace (i, j, pSide->m_vertices + 3, pSide->m_normals [1]))
 						return false;
 					// fall through
 				case SIDE_SHAPE_TRIANGLE:
-					if (!m_pRoot->AddFace (i, j, pSide->m_faceVerts, pSide->m_normals [0]))
+					if (!/*m_pRoot->*/AddFace (i, j, pSide->m_vertices, pSide->m_normals [0]))
 						return false;
 					break;
 				default:
