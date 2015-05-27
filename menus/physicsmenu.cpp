@@ -157,8 +157,8 @@ if ((m = menu ["drag"])) {
 if (gameOpts->app.bExpertMode == SUPERUSER) {
 	if ((m = menu ["msl turn speed"])) {
 		v = m->Value ();
-		if (extraGameInfo [0].nMslTurnSpeed != v) {
-			extraGameInfo [0].nMslTurnSpeed = v;
+		if (extraGameInfo [0].nWeaponTurnSpeed != v) {
+			extraGameInfo [0].nWeaponTurnSpeed = v;
 			sprintf (m->m_text, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [v]);
 			m->m_bRebuild = 1;
 			}
@@ -259,9 +259,9 @@ do {
 	*szSlider = *(TXT_PLAYER_DRAG - 1);
 	m.AddSlider ("drag", szSlider + 1, nDrag, 0, 3, KEY_P, HTX_PLAYER_DRAG);
 	if (gameOpts->app.bExpertMode == SUPERUSER) {
-		sprintf (szSlider + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [int32_t (extraGameInfo [0].nMslTurnSpeed)]);
+		sprintf (szSlider + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [int32_t (extraGameInfo [0].nWeaponTurnSpeed)]);
 		*szSlider = *(TXT_MSL_TURNSPEED - 1);
-		m.AddSlider ("msl turn speed", szSlider + 1, extraGameInfo [0].nMslTurnSpeed, 0, 3, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
+		m.AddSlider ("msl turn speed", szSlider + 1, extraGameInfo [0].nWeaponTurnSpeed, 0, 3, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
 		sprintf (szSlider + 1, TXT_MSL_STARTSPEED, pszMslStartSpeeds [int32_t (3) - extraGameInfo [0].nMslStartSpeed]);
 		*szSlider = *(TXT_MSL_STARTSPEED - 1);
 		m.AddSlider ("msl start speed", szSlider + 1, 3 - extraGameInfo [0].nMslStartSpeed, 0, 3, KEY_S, HTX_MSL_STARTSPEED);

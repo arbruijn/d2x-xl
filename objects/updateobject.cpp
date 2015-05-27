@@ -636,7 +636,7 @@ if (gameOpts->gameplay.nAutoLeveling)
 else
 	gameData.objData.pConsole->mType.physInfo.flags &= ~PF_LEVELLING;
 gameData.physics.xTime = gameData.time.xFrame;
-gameData.laser.xUpdateTime %= HOMING_MSL_FRAMETIME;
+gameData.laser.xUpdateTime %= HOMING_WEAPON_FRAMETIME;
 gameData.laser.xUpdateTime += gameData.time.xFrame;
 // Move all OBJECTS
 gameStates.entropy.bConquering = 0;

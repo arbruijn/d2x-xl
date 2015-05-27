@@ -392,7 +392,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bGatlingSpeedUp, i, 0);
 		RP (extraGameInfo [i].nLightRange, 0, 0);
 		RP (extraGameInfo [i].nMaxSmokeGrenades, 0, 0);
-		RP (extraGameInfo [i].nMslTurnSpeed, 0, 0);
+		RP (extraGameInfo [i].nWeaponTurnSpeed, 0, 0);
 		RP (extraGameInfo [i].nMslStartSpeed, 0, 0);
 		RP (extraGameInfo [i].nRadar, 0, 0);
 		RP (extraGameInfo [i].nDrag, 0, 0);
@@ -1447,7 +1447,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].bWiggle", "1"},
 	 {"extraGameInfo[0].grWallTransparency", "19"},
 	 {"extraGameInfo[0].nOmegaRamp", "4"},
-	 {"extraGameInfo[0].nMslTurnSpeed", "0"},
+	 {"extraGameInfo[0].nWeaponTurnSpeed", "0"},
 	 {"extraGameInfo[0].nMslStartSpeed", "0"},
 	 {"extraGameInfo[0].nSpeedBoost", "10"},
 	 {"extraGameInfo[0].nShieldEffect", "1"},

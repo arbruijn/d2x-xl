@@ -374,7 +374,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bBrightObjects = i;
 	extraGameInfo [i].bCheckUDPPort = 1;
 	extraGameInfo [i].bSmokeGrenades = 0;
-	extraGameInfo [i].nMslTurnSpeed = 0;
+	extraGameInfo [i].nWeaponTurnSpeed = 0;
 	extraGameInfo [i].nMslStartSpeed = 0;
 	extraGameInfo [i].nMaxSmokeGrenades = 2;
 	extraGameInfo [i].nCoopPenalty = 0;
@@ -550,7 +550,7 @@ else {
 	PrintLog (0, "bFlickerLights: %d\n", extraGameInfo [1].bFlickerLights);
 	PrintLog (0, "bCheckUDPPort: %d\n", extraGameInfo [1].bCheckUDPPort);
 	PrintLog (0, "bSmokeGrenades: %d\n", extraGameInfo [1].bSmokeGrenades);
-	PrintLog (0, "nMslTurnSpeed: %d\n", extraGameInfo [1].nMslTurnSpeed);
+	PrintLog (0, "nWeaponTurnSpeed: %d\n", extraGameInfo [1].nWeaponTurnSpeed);
 	PrintLog (0, "nMslStartSpeed: %d\n", extraGameInfo [1].nMslStartSpeed);
 	PrintLog (0, "nCoopPenalty: %d\n", (int32_t) nCoopPenalties [(int32_t) extraGameInfo [1].nCoopPenalty]);
 	PrintLog (0, "bKillMissiles: %d\n", extraGameInfo [1].bKillMissiles);

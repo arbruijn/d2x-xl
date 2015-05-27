@@ -428,7 +428,7 @@ void HomingMissileTurnTowardsVelocity (CObject *pObj, CFixVector *vNormVel)
 	CFixVector	vNewDir;
 	fix 			frameTime;
 
-frameTime = gameStates.limitFPS.bHomers ? MSEC2X (HOMING_MSL_FRAMETIME) : gameData.time.xFrame;
+frameTime = gameStates.limitFPS.bHomers ? MSEC2X (HOMING_WEAPON_FRAMETIME) : gameData.time.xFrame;
 vNewDir = *vNormVel;
 vNewDir *= ((fix) (frameTime * 16 / gameStates.gameplay.slowmo [0].fSpeed));
 vNewDir += pObj->info.position.mOrient.m.dir.f;
@@ -480,7 +480,7 @@ return false;
 
 void CObject::UpdateHomingWeapon (int32_t nThread)
 {
-for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= HOMING_MSL_FRAMETIME; xFrameTime -= HOMING_MSL_FRAMETIME) {
+for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= HOMING_WEAPON_FRAMETIME; xFrameTime -= HOMING_WEAPON_FRAMETIME) {
 	CFixVector	vVecToObject, vNewVel;
 	fix			dot = I2X (1);
 	fix			speed, xMaxSpeed, xDist;
@@ -572,7 +572,7 @@ if (info.nType == OBJ_WEAPON) {
 		mType.physInfo.velocity *= (WI_speed (info.nId, gameStates.app.nDifficultyLevel));
 		}
 	//	For homing missiles, turn towards target. (unless it's a guided missile still under player control)
-	if ((gameOpts->legacy.bHomers || (gameData.laser.xUpdateTime >= HOMING_MSL_FRAMETIME)) && // limit update frequency to 40 fps
+	if ((gameOpts->legacy.bHomers || (gameData.laser.xUpdateTime >= HOMING_WEAPON_FRAMETIME)) && // limit update frequency to 40 fps
 	    (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (info.nId)) &&
 		 !(info.nFlags & PF_BOUNCED_ONCE) &&
 		!IsGuidedMissile ()) {

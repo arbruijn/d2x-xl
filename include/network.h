@@ -292,7 +292,7 @@ typedef struct tExtraGameInfo {
 	uint8_t				bCheckUDPPort;
 	uint8_t				bSmokeGrenades;
 	uint8_t				nMaxSmokeGrenades;
-	uint8_t				nMslTurnSpeed;
+	uint8_t				nWeaponTurnSpeed;
 	uint8_t				nMslStartSpeed;
 	uint8_t				nCoopPenalty;
 	uint8_t				bKillMissiles;

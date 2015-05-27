@@ -2638,7 +2638,7 @@ class CPhysicsData {
 		CFixVector			playerThrust;
 		int32_t				nSegments;
 		int32_t				bIgnoreObjFlag;
-		int32_t				nHomingMslFPS [4];
+		int32_t				nHomingWeaponFPS [4];
 
 	public:
 		CPhysicsData ();
