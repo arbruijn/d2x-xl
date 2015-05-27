@@ -244,7 +244,7 @@ class CLightManager {
 		int32_t SetNearestToFace (CSegFace* pFace, int32_t bTextured);
 		int16_t SetNearestToSegment (int32_t nSegment, int32_t nFace, int32_t bVariable, int32_t nType, int32_t nThread);
 		void SetNearestStatic (int32_t nSegment, int32_t bStatic, int32_t nThread);
-		int16_t SetNearestToPixel (int16_t nSegment, int16_t nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int32_t nThread);
+		int16_t SetNearestToPixel (int16_t nSegment, int8_t nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int32_t nThread);
 		void ResetNearestStatic (int32_t nSegment, int32_t nThread);
 		void ResetNearestToVertex (int32_t nVertex, int32_t nThread);
 		int32_t SetNearestToSgmAvg (int16_t nSegment, int32_t nThread);

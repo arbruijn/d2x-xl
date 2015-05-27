@@ -476,7 +476,7 @@ RETURN (pLightIndex->nActive);
 
 //------------------------------------------------------------------------------
 
-int16_t CLightManager::SetNearestToPixel (int16_t nSegment, int16_t nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int32_t nThread)
+int16_t CLightManager::SetNearestToPixel (int16_t nSegment, int8_t nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int32_t nThread)
 {
 ENTER (2, nThread, "CLightManager::SetNearestToPixel");
 #if DBG

@@ -458,7 +458,7 @@ void CLightmapManager::Build (CSegFace* pFace, int32_t nThread)
 	int32_t			w, h, x, y, yMin, yMax;
 	uint8_t			nTriangles = pFace->m_info.nTriangles - 1;
 	int16_t			nSegment = pFace->m_info.nSegment;
-	int16_t			nSide = pFace->m_info.nSide;
+	int8_t			nSide = (int8_t) pFace->m_info.nSide;
 	bool				bBlack, bWhite;
 
 	CVertColorData	vcd = m_data.m_vcd; // need a local copy for each thread!
