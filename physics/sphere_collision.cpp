@@ -401,19 +401,19 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-uint32_t PointToFaceRelationf (CFloatVector& vr, CFloatVector* vl, int32_t nVerts, CFloatVector& vn)
+uint32_t PointToFaceRelationf (CFloatVector& vRef, CFloatVector* vertList, int32_t nVerts, CFloatVector& vNormal)
 {
 //now do 2d check to see if pRef is in side
 //project polygon onto plane by finding largest component of Normal
-CFloatVector vt;
-vt.v.coord.x = fabs (vn.v.coord.x);
-vt.v.coord.y = fabs (vn.v.coord.y);
-vt.v.coord.z = fabs (vn.v.coord.z);
+CFloatVector v;
+v.v.coord.x = fabs (vNormal.v.coord.x);
+v.v.coord.y = fabs (vNormal.v.coord.y);
+v.v.coord.z = fabs (vNormal.v.coord.z);
 
-int32_t nBiggest = (vt.v.coord.x > vt.v.coord.y) ? (vt.v.coord.x > vt.v.coord.z) ? 0 : 2 : (vt.v.coord.y > vt.v.coord.z) ? 1 : 2;
+int32_t nBiggest = (v.v.coord.x > v.v.coord.y) ? (v.v.coord.x > v.v.coord.z) ? 0 : 2 : (v.v.coord.y > v.v.coord.z) ? 1 : 2;
 
 int32_t i, j;
-if (vn.v.vec [nBiggest] > 0) {
+if (vNormal.v.vec [nBiggest] > 0) {
 	i = ijTable [nBiggest][0];
 	j = ijTable [nBiggest][1];
 	}
@@ -423,13 +423,13 @@ else {
 	}
 
 //now do the 2d problem in the i, j plane
-float check_i = vr.v.vec [i];
-float check_j = vr.v.vec [j];
+float check_i = vRef.v.vec [i];
+float check_j = vRef.v.vec [j];
 
 uint32_t nEdgeMask = 0;
 for (int32_t nEdge = 0; nEdge < nVerts; nEdge++) {
-	CFloatVector& v0 = vl [nEdge];
-	CFloatVector& v1 = vl [(nEdge + 1) % nVerts];
+	CFloatVector& v0 = vertList [nEdge];
+	CFloatVector& v1 = vertList [(nEdge + 1) % nVerts];
 	CFloatVector2 vEdge (v1.v.vec [i] - v0.v.vec [i], v1.v.vec [j] - v0.v.vec [j]);
 	CFloatVector2 vCheck (check_i - v0.v.vec [i], check_j - v0.v.vec [j]);
 	float d = vCheck.Cross (vEdge);

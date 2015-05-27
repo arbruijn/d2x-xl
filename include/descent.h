@@ -2214,10 +2214,10 @@ class CEdgeVertexData {
 
 class CGridFacePlane {
 	public:
-		CFixVector		m_vNormal;
-		CFixVector		m_vertices [3];
-		CFixVector		m_vIntersect;
-		fix				m_xDist;
+		CFloatVector	m_vNormal;
+		CFloatVector	m_vertices [3];
+		CFloatVector	m_vIntersect;
+		float				m_fDist;
 	};
 
 class CGridFace : public CGridFacePlane {
@@ -2226,14 +2226,14 @@ class CGridFace : public CGridFacePlane {
 		uint16_t			m_nSegment;
 		uint8_t			m_nSide;
 
-		bool LineIntersects (CFixVector& v1, CFixVector& v2);
+		bool LineIntersects (CFloatVector& v1, CFloatVector& v2);
 	};
 
 class CGridLine {
 	public:
-		CFixVector		m_vStart;
-		CFixVector		m_vEnd;
-		CFixVector		m_vNormal;
+		CFloatVector	m_vStart;
+		CFloatVector	m_vEnd;
+		CFloatVector	m_vNormal;
 		int16_t			m_nSegment;
 		int8_t			m_nSide;
 };
@@ -2245,30 +2245,30 @@ class CFaceGridSegment {
 		CFaceGridSegment	*m_pParent;
 		CGridFace			*m_pFaces;
 		uint16_t				m_nFaces;
-		CFixVector			m_vMin;
-		CFixVector			m_vMax;
+		CFloatVector		m_vMin;
+		CFloatVector		m_vMax;
 		CFaceGridSegment	*m_pChildren [8];
-		CFixVector			m_corners [8];
+		CFloatVector		m_corners [8];
 		CGridFacePlane		m_faces [6];
 		int32_t				m_nVisited;
 
 		CFaceGridSegment ();
 		~CFaceGridSegment ();
-		void Setup (CFaceGridSegment *pParent, CFixVector& vMin, CFixVector& vMax);
+		void Setup (CFaceGridSegment *pParent, CFloatVector& vMin, CFloatVector& vMax);
 		void Destroy (void);
-		bool AddFace (uint16_t nSegment, uint8_t nSide, CFixVector [], CFixVector vNormal);
-		bool AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [], CFixVector vNormal);
-		bool ContainsTriangle (CFixVector vertices []);
+		bool AddFace (uint16_t nSegment, uint8_t nSide, CFloatVector [], CFloatVector vNormal);
+		bool AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [], CFloatVector vNormal);
+		bool ContainsTriangle (CFloatVector vertices []);
 		bool Split (int32_t nMaxFaces = 20);
-		CFaceGridSegment *Origin (CFixVector& v);
+		CFaceGridSegment *Origin (CFloatVector& v);
 		CGridFace *Occluder (CGridLine& line, CGridFace *pOccluder, int32_t nVisited);
 
 	private:
 		void InsertFace (CGridFace *pFace);
-		bool ContainsPoint (CFixVector& v);
-		bool ContainsLine (CFixVector& v1, CFixVector& v2);
+		bool ContainsPoint (CFloatVector& v);
+		bool ContainsLine (CFloatVector& v1, CFloatVector& v2);
 		bool AddFace (CGridFace *pFace);
-		bool LineIntersectsFace (CFixVector *vertices, CFixVector& vNormal, CFixVector& v1, CFixVector& v2);
+		bool LineIntersectsFace (CFloatVector *vertices, CFloatVector& vNormal, CFloatVector& v1, CFloatVector& v2);
 		CGridFace *FindOccluder (CGridLine& line, CGridFace *pOccluder);
 	};
 
@@ -2277,21 +2277,21 @@ class CFaceGridSegment {
 class CFaceGrid {
 	public:
 		CFaceGridSegment			*m_pRoot;
-		CFixVector					m_vMin;
-		CFixVector					m_vMax;
-		CFixVector					m_dimensions;
+		CFloatVector					m_vMin;
+		CFloatVector					m_vMax;
+		CFloatVector					m_dimensions;
 		int32_t						m_nVisited;
 
 		CFaceGrid () : m_pRoot (NULL) { m_nVisited = 0; }
 		~CFaceGrid () { Destroy (); }
 		void Destroy (void);
 		bool Create (int32_t nSize);
-		CFaceGridSegment *Origin (CFixVector v);
-		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd, int16_t nSegment = -1, int8_t nSide = -1);
-		bool PointSeesPoint (CFixVector& vStart, CFixVector &vEnd, int16_t nSegment, int8_t nSide);
+		CFaceGridSegment *Origin (CFloatVector v);
+		CGridFace *Occluder (CFloatVector& vStart, CFloatVector &vEnd, int16_t nSegment = -1, int8_t nSide = -1);
+		bool PointSeesPoint (CFloatVector& vStart, CFloatVector &vEnd, int16_t nSegment, int8_t nSide);
 
 	private:
-		bool AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [], CFixVector vNormal);
+		bool AddFace (uint16_t nSegment, uint8_t nSide, uint16_t vertices [], CFloatVector vNormal);
 		void ComputeDimensions (int32_t nSize);
 	};
 

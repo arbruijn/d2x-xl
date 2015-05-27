@@ -242,6 +242,10 @@ class CFloatVector {
 		const CFloatVector operator- (void) const;
 		const bool operator== (const CFloatVector& other);
 		const bool operator!= (const CFloatVector& other);
+		const bool operator< (const CFloatVector& other);
+		const bool operator<= (const CFloatVector& other);
+		const bool operator> (const CFloatVector& other);
+		const bool operator>= (const CFloatVector& other);
 		const CFloatVector& operator+= (const CFloatVector& other);
 		const CFloatVector& operator+= (const CFixVector& other);
 		const CFloatVector& operator-= (const CFixVector& other);
@@ -592,6 +596,26 @@ inline const bool CFloatVector::operator== (const CFloatVector& other) {
 
 inline const bool CFloatVector::operator!= (const CFloatVector& other) {
 	return (v.coord.x != other.v.coord.x) || (v.coord.y != other.v.coord.y) || (v.coord.z != other.v.coord.z);
+}
+
+inline const bool CFloatVector::operator< (const CFloatVector& other)
+{
+return (v.coord.x < other.v.coord.x) && (v.coord.y < other.v.coord.y) && (v.coord.z < other.v.coord.z);
+}
+
+inline const bool CFloatVector::operator<= (const CFloatVector& other)
+{
+return (v.coord.x <= other.v.coord.x) && (v.coord.y <= other.v.coord.y) && (v.coord.z <= other.v.coord.z);
+}
+
+inline const bool CFloatVector::operator> (const CFloatVector& other)
+{
+return (v.coord.x > other.v.coord.x) && (v.coord.y > other.v.coord.y) && (v.coord.z > other.v.coord.z);
+}
+
+inline const bool CFloatVector::operator>= (const CFloatVector& other)
+{
+return (v.coord.x >= other.v.coord.x) && (v.coord.y >= other.v.coord.y) && (v.coord.z >= other.v.coord.z);
 }
 
 inline const CFloatVector& CFloatVector::operator+= (const CFloatVector& other) {
