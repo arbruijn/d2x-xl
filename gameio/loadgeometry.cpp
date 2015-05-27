@@ -809,7 +809,7 @@ else {
 	}
 gameData.segData.BuildSegmentGrid (40, 0);
 gameData.segData.BuildSegmentGrid (80, 1);
-gameData.segData.BuildFaceGrid (0);
+gameData.segData.BuildFaceGrid ();
 gameData.segData.fRad = X2F (CFixVector::Dist (gameData.segData.vMax, gameData.segData.vMin));
 ResetObjects (1);		//one CObject, the player
 return 0;

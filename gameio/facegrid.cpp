@@ -100,7 +100,7 @@ if (ContainsPoint (v1) || ContainsPoint (v2))
 CFixVector vMin, vMax;
 vMin.Set (Min (v1.v.coord.x, v2.v.coord.x), Min (v1.v.coord.x, v2.v.coord.y), Min (v1.v.coord.x, v2.v.coord.z));
 vMax.Set (Max (v1.v.coord.x, v2.v.coord.x), Max (v1.v.coord.x, v2.v.coord.y), Max (v1.v.coord.x, v2.v.coord.z));
-if ((vMin > m_vMax) || (vMax < m_vMin))
+if (!(vMin <= m_vMax) || !(vMax >= m_vMin))
 	return false;
 
 for (int32_t i = 0; i < 6; i++) {
@@ -125,7 +125,7 @@ for (int32_t i = 0; i < 3; i++) {
 	vMin.Set (Min (vMin.v.coord.x, vertices [i].v.coord.x), Min (vMin.v.coord.x, vertices [i].v.coord.y), Min (vMin.v.coord.x, vertices [i].v.coord.z));
 	vMax.Set (Max (vMax.v.coord.x, vertices [i].v.coord.x), Max (vMax.v.coord.x, vertices [i].v.coord.y), Max (vMax.v.coord.x, vertices [i].v.coord.z));
 	}
-if ((vMin > m_vMax) || (vMax < m_vMin))
+if (!(vMin <= m_vMax) || !(vMax >= m_vMin)) // Attention: !CFixVector:operator>= != CFixVector::operator<
 	return false;
 // check whether grid segment intersects triangle
 CFixVector vNormal = CFixVector::Normal (vertices [0], vertices [1], vertices [2]);
@@ -391,6 +391,16 @@ for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 m_pRoot->Setup (NULL, m_vMin, m_vMax);
 return m_pRoot->Split ();
 #endif
+}
+
+//------------------------------------------------------------------------------
+
+void CFaceGrid::Destroy (void)
+{
+if (m_pRoot) {
+	delete m_pRoot;
+	m_pRoot = NULL;
+	}
 }
 
 //------------------------------------------------------------------------------

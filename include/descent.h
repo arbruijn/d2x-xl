@@ -2281,6 +2281,8 @@ class CFaceGrid {
 		int32_t						m_nVisited;
 
 		CFaceGrid () : m_pRoot (NULL) { m_nVisited = 0; }
+		~CFaceGrid () { Destroy (); }
+		void Destroy (void);
 		bool Create (int32_t nSize);
 		CFaceGridSegment *Origin (CFixVector v);
 		CGridFace *Occluder (CFixVector& vStart, CFixVector &vEnd);
@@ -2412,7 +2414,7 @@ class CSegmentData {
 		inline bool BuildSegmentGrid (int32_t nSize, int32_t bSkyBox) { return segmentGrids [bSkyBox].Create (nSize, bSkyBox); }
 		inline int32_t GetSegList (CFixVector vPos, int16_t*& listP, int32_t bSkyBox) { return segmentGrids [bSkyBox].GetSegList (vPos, listP); }
 		inline bool HaveSegmentGrid (int32_t bSkyBox) { return segmentGrids [bSkyBox].Available (); }
-		inline bool BuildFaceGrid (int32_t nSize) { return faceGrid.Create (nSize); }
+		inline bool BuildFaceGrid (int32_t nSize = 20) { return faceGrid.Create (nSize); }
 
 		int32_t CountEdges (void);
 		int32_t FindEdge (int16_t nVertex1, int16_t nVertex2, int32_t nStart);

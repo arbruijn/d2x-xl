@@ -1051,6 +1051,7 @@ for (int32_t i = 0; i < 2; i++) {
 	}
 gameData.segData.segmentGrids [0].Destroy ();
 gameData.segData.segmentGrids [1].Destroy ();
+gameData.segData.faceGrid.Destroy ();
 nSegments = 0;
 nFaces = 0;
 nEdges = 0;
