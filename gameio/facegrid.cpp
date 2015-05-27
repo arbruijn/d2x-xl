@@ -394,7 +394,22 @@ CSegment *pSeg = SEGMENT (0);
 m_vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 
+CSegment *pSeg = SEGMENT (0);
+#if 0
+for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
+	if (pSeg->Function () != SEGMENT_FUNC_SKYBOX) {
+		for (uint8_t j = 0; j < pSeg->m_nVertices; j++) {
+			CFixVector v = gameData.segData.vertices [pSeg->m_vertices [j]];
+			m_vMin.Set (Min (m_vMin.v.coord.x, v.v.coord.x), Min (m_vMin.v.coord.x, v.v.coord.y), Min (m_vMin.v.coord.x, v.v.coord.z));
+			m_vMax.Set (Max (m_vMax.v.coord.x, v.v.coord.x), Max (m_vMax.v.coord.x, v.v.coord.y), Max (m_vMax.v.coord.x, v.v.coord.z));
+			}
+		}
+	}
+
+m_pRoot->Setup (NULL, m_vMin, m_vMax);
+
 pSeg = SEGMENT (0);
+#endif
 for (uint16_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 	if (pSeg->Function () != SEGMENT_FUNC_SKYBOX) {
 		CSide *pSide = pSeg->Side (0);
