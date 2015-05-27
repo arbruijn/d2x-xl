@@ -136,14 +136,14 @@ return dot >= ((fov < -1.0f) ? pObj->FoV () : fov);
 
 //------------------------------------------------------------------------------
 
-int32_t CanSeePoint (CObject *pObj, CFixVector *pvSource, CFixVector *pvDest, int16_t nSegment, fix xRad, int32_t nThread)
+int32_t CanSeePoint (CObject *pObj, CFixVector *pvSource, CFixVector *pvDest, int16_t nSegment, fix xRad, float fov, int32_t nThread)
 {
 	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_VISIBILITY, pvSource, pvDest, -1, pObj ? pObj->Index () : -1, 1, xRad);
 	CHitResult	hitResult;
-
-if (!hitQuery.InFoV (pObj))
+#if 1
+if (!hitQuery.InFoV (pObj, fov))
 	return 0;
-
+#endif
 hitQuery.nSegment = FindSegByPos (OBJPOS (pObj)->vPos, pObj->info.nSegment, 1, 0);
 int32_t nHitType = FindHitpoint (hitQuery, hitResult, 0, nThread);
 return nHitType != HIT_WALL;

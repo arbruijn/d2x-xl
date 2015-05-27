@@ -16,7 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int32_t PixelTranspType (int16_t nTexture, int16_t nOrient, int16_t nFrame, fix u, fix v);	//-1: supertransp., 0: opaque, 1: transparent
 
-int32_t CanSeePoint (CObject *pObj, CFixVector *vSource, CFixVector *vDest, int16_t nSegment, fix xRad = 0, int32_t nThread = MAX_THREADS);
+int32_t CanSeePoint (CObject *pObj, CFixVector *vSource, CFixVector *vDest, int16_t nSegment, fix xRad = 0, float fov = -2.0f, int32_t nThread = MAX_THREADS);
 
 int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs, int32_t nThread = MAX_THREADS);
 

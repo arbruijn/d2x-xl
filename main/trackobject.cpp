@@ -147,7 +147,7 @@ if ((xDot < gameData.weapons.xMinTrackableDot) && (xDot > I2X (9) / 10)) {
 
 if ((EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (Type () == OBJ_WEAPON) && (Id () == EARTHSHAKER_MEGA_ID) /*&& (xDot >= 0)*/)) {
 	//	xDot is in legal range, now see if CObject is visible
-	return ObjectToObjectVisibility (this, pTarget, FQ_TRANSWALL, -2.0f, nThread);
+	return ObjectToObjectVisibility (this, pTarget, FQ_TRANSWALL, -1.0f, nThread);
 	}
 return 0;
 }

@@ -1460,7 +1460,7 @@ if (FAST_SHADOWS) {
 		gameData.render.shadows.pLight = lightManager.RenderLights (*nearestLightP);
 		if (!gameData.render.shadows.pLight->info.bState)
 			continue;
-		if (!CanSeePoint (pObj, &pObj->info.position.vPos, &gameData.render.shadows.pLight->info.vPos, pObj->info.nSegment, 0, 0))
+		if (!CanSeePoint (pObj, &pObj->info.position.vPos, &gameData.render.shadows.pLight->info.vPos, pObj->info.nSegment, 0, -1.0f, 0))
 			continue;
 		vLightDir = pObj->info.position.vPos - gameData.render.shadows.pLight->info.vPos;
 		CFixVector::Normalize (vLightDir);
@@ -1566,7 +1566,7 @@ if (FAST_SHADOWS) {
 					continue;
 				if (!gameData.render.shadows.pLight->info.bState)
 					continue;
-				if (!CanSeePoint (pObj, &pObj->info.position.vPos, &gameData.render.shadows.pLight->info.vPos, pObj->info.nSegment, 0, 0))
+				if (!CanSeePoint (pObj, &pObj->info.position.vPos, &gameData.render.shadows.pLight->info.vPos, pObj->info.nSegment, 0, -1.0f, 0))
 					continue;
 				vLightDir = pObj->info.position.vPos - gameData.render.shadows.pLight->info.vPos;
 				CFixVector::Normalize (vLightDir);
