@@ -2165,7 +2165,8 @@ if (!IsMultiGame) {
 				if (movieManager.Play ("briefa.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) != MOVIE_ABORTED)
 					 movieManager.Play ("briefb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 				}
-			briefing.Run (missionManager.szBriefingFilename [0], nLevel);
+			else
+				briefing.Run (missionManager.szBriefingFilename [0], nLevel);
 			}
 		else {
 			char szBriefing [FILENAME_LEN];

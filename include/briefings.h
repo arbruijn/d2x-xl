@@ -102,7 +102,7 @@ class CBriefing {
 		CBitmap*			m_bitmap;
 		char				m_szBackground [FILENAME_LEN + 1];
 		char				m_message [2];
-		int32_t				m_pcxError;
+		int32_t			m_pcxError;
 
 	public:
 		CBriefing () { Init (); }
@@ -131,7 +131,7 @@ class CBriefing {
 	private:
 		int32_t StartSound (int32_t nChannel, int16_t nSound, fix nVolume, const char* pszWAV);
 		void StopSound (int32_t& nChannel);
-		int32_t StartHum (int32_t nChannel, int32_t nLevel, int32_t nScreen, int32_t bExtraSounds);
+		int32_t StartHum (int32_t nLevel, int32_t nScreen, int32_t bExtraSounds);
 		tD1ExtraBotSound* FindExtraBotSound (int16_t nLevel, int16_t nBotSig);
 		int32_t StartExtraBotSound (int32_t nChannel, int16_t nLevel, int16_t nBotSig);
 

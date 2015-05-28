@@ -356,7 +356,7 @@ if (nChannel > -1) {
 
 //-----------------------------------------------------------------------------
 
-int32_t CBriefing::StartHum (int32_t nChannel, int32_t nLevel, int32_t nScreen, int32_t bExtraSounds)
+int32_t CBriefing::StartHum (int32_t nLevel, int32_t nScreen, int32_t bExtraSounds)
 {
 if (bExtraSounds && (nScreen > 3)) {	//only play for the mission directives on a planet background
 	char	szWAV [20];
@@ -364,17 +364,24 @@ if (bExtraSounds && (nScreen > 3)) {	//only play for the mission directives on a
 	if (nLevel < 0)
 		nLevel = 27 - nLevel;
  	sprintf (szWAV, "brf%02d.wav", nLevel);
-	return StartSound (nChannel, SOUND_BRIEFING_HUM, I2X (4), szWAV);
+	if (0 > (m_info.nHumChannel = StartSound (m_info.nHumChannel, SOUND_BRIEFING_HUM, I2X (4), szWAV)))
+		return 0;
+	songManager.StopAll ();
 	}
-return StartSound (nChannel, SOUND_BRIEFING_HUM, I2X (1) / 2, NULL);
+else {
+	if (songManager.Playing ())
+		return 0;
+	m_info.nHumChannel = StartSound (m_info.nHumChannel, SOUND_BRIEFING_HUM, I2X (1) / 2, NULL);
+	}
+return m_info.nHumChannel >= 0;
 }
 
 //-----------------------------------------------------------------------------
 
 tD1ExtraBotSound* CBriefing::FindExtraBotSound (int16_t nLevel, int16_t nBotSig)
 {
-	tD1ExtraBotSound*	p = extraBotSounds;
-	int32_t					i = sizeof (extraBotSounds) / sizeof (tD1ExtraBotSound);
+	tD1ExtraBotSound	*p = extraBotSounds;
+	int32_t				i = sizeof (extraBotSounds) / sizeof (tD1ExtraBotSound);
 
 if (!gameStates.app.bD1Mission)
 	return NULL;
@@ -416,7 +423,7 @@ else if ((ps = strstr (m_szBackground, ".pcx"))) {
 
 
 if (strstr (m_szBackground, ".tga")) {
-	CTGA		tga (&m_background);
+	CTGA tga (&m_background);
 	if (!tga.Read (m_szBackground, gameFolders.game.szData [0], -1, 1.0, 0))
 		return PCX_ERROR_OPENING;
 	RenderElement (3);
@@ -467,7 +474,7 @@ if (!bRedraw && m_info.nDoorDivCount) {
 
 if (*m_info.szBitmapName) {
 	char		*poundSignP;
-	int32_t		nFrame, dig1, dig2;
+	int32_t	nFrame, dig1, dig2;
 
 	//	Set supertransparency color to black
 	if (!bRedraw) {	//extract current bitmap frame number from bitmap name (<name>#<frame>)
@@ -1402,8 +1409,8 @@ if (m_info.bOnlyRobots) {
 	}
 m_info.pi = m_info.pj = m_info.message;
 
-if (!songManager.Playing ())
-	m_info.nHumChannel = StartHum (m_info.nHumChannel, m_info.nLevel, m_info.nScreen, m_info.bExtraSounds);
+int32_t bSongPlaying = songManager.Playing ();
+int32_t bHumPlaying = StartHum (m_info.nLevel, m_info.nScreen, m_info.bExtraSounds);
 m_info.curScreen = briefingScreens [m_info.nScreen % MAX_BRIEFING_SCREENS];
 m_info.pScreen = &m_info.curScreen;
 if (gameStates.app.bD1Mission)
@@ -1480,10 +1487,12 @@ if (m_info.bRobotPlaying) {
 	movieManager.StopRobot ();
 	m_info.bRobotPlaying = 0;
 	}
-if (!songManager.Playing ())
-	StopSound (m_info.nHumChannel);
 StopSound (m_info.nPrintingChannel);
 StopSound (m_info.nBotChannel);
+if (bHumPlaying)
+	StopSound (m_info.nHumChannel);
+if (bSongPlaying && !songManager.Playing ())
+	songManager.Play (SONG_BRIEFING, 1);
 return m_info.nFuncRes;
 }
 

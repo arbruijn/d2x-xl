@@ -124,16 +124,16 @@ if (!cf.Open (filename, gameFolders.game.szData [0], "rb", 0)) { // first try te
 	}
 
 size = (int32_t) cf.Length ();
-m_rawDataP = new uint8_t [size+1];
-readCount = (int32_t) cf.Read (m_rawDataP, 1, size);
+m_pRawData = new uint8_t [size+1];
+readCount = (int32_t) cf.Read (m_pRawData, 1, size);
 cf.Close ();
-m_rawDataP [size] = 0;
+m_pRawData [size] = 0;
 if (readCount != size) {
-	delete[] m_rawDataP;
+	delete[] m_pRawData;
 	return 0;
 	}
-p = m_rawDataP;
-while (p && (p < m_rawDataP + size)) {
+p = m_pRawData;
+while (p && (p < m_pRawData + size)) {
 	char* endp = strchr (reinterpret_cast<char*> (p), '\n'); 
 
 	if (endp) {
@@ -164,9 +164,9 @@ return 1;
 
 void CSubTitles::Close (void)
 {
-if (m_rawDataP) {
-	delete[] m_rawDataP;
-	m_rawDataP = NULL;
+if (m_pRawData) {
+	delete[] m_pRawData;
+	m_pRawData = NULL;
 	}
 m_nCaptions = 0;
 }
@@ -582,7 +582,7 @@ if (bHires)
 for (nTries = 0; !m_libs [nLibrary].Setup (filename) && (nTries < 4); nTries++) {
 	strcpy (cdName, (nTries < 2) ? CDROM_dir : "d1/");
 	strcat (cdName, filename);
-	if (m_libs [nLibrary].Setup (cdName)) {
+	if (m_libs [nLibrary].Setup (cdName) && (nTries < 2)) {
 		m_libs [nLibrary].m_flags |= MLF_ON_CD;
 		break; // we found our movie on the CD
 		}
@@ -691,10 +691,10 @@ int32_t CMovieManager::Run (char* filename, int32_t bHires, int32_t bRequired, i
 {
 	CFile			cf;
 	CMovie*		pMovie = NULL;
-	int32_t			result = 1, aborted = 0;
-	int32_t			track = 0;
-	int32_t			nFrame;
-	int32_t			key;
+	int32_t		result = 1, aborted = 0;
+	int32_t		track = 0;
+	int32_t		nFrame;
+	int32_t		key;
 	CMovieLib*	pLib = Find (filename);
 
 result = 1;

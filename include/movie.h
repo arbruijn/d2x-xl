@@ -40,8 +40,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 class CMovie {
 	public:
-		CFile	m_cf;
-		char	m_name [FILENAME_LEN];
+		CFile		m_cf;
+		char		m_name [FILENAME_LEN];
 		int32_t	m_offset;
 		int32_t	m_len;
 		int32_t	m_pos;
@@ -62,11 +62,11 @@ class CMovie {
 
 class CMovieLib {
 	public:
-		char				m_name [100]; // [FILENAME_LEN];
+		char					m_name [100]; // [FILENAME_LEN];
 		int32_t				m_nMovies;
 		uint8_t				m_flags;
 		uint8_t				m_pad [3];
-		CArray<CMovie>	m_movies;
+		CArray<CMovie>		m_movies;
 		int32_t				m_bLittleEndian;
 
 	public:
@@ -89,16 +89,16 @@ class CMovieLib {
 class CMovieManager {
 	public:
 		CArray<CMovieLib>	m_libs; // [N_MOVIE_LIBS];
-		int32_t					m_nLibs;
+		int32_t				m_nLibs;
 		CPalette*			m_palette;
-		int32_t					m_nRobots;
-		int32_t					m_bHaveIntro;
-		int32_t					m_bHaveExtras;
+		int32_t				m_nRobots;
+		int32_t				m_bHaveIntro;
+		int32_t				m_bHaveExtras;
 
 	private:
-		int32_t					m_nLib;
-		int32_t					m_nMovies;
-		int32_t					m_nMovie;
+		int32_t				m_nLib;
+		int32_t				m_nMovies;
+		int32_t				m_nMovie;
 		CMovie*				m_pRobot;
 
 	public:
@@ -137,8 +137,8 @@ typedef struct {
 class CSubTitles {
 	public:
 		subtitle m_captions [MAX_SUBTITLES];
-		int32_t		m_nCaptions;
-		uint8_t*	m_rawDataP;
+		int32_t	m_nCaptions;
+		uint8_t	*m_pRawData;
 
 	public:
 		int32_t Init (const char* filename);

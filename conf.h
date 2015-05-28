@@ -11,7 +11,7 @@
 #define D2XMAJOR 1
 
 /* d2x micro version */
-#define D2XMICRO 18
+#define D2XMICRO 20
 
 /* d2x minor version */
 #define D2XMINOR 18
