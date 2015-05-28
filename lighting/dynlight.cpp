@@ -748,25 +748,23 @@ int32_t CDynLight::Contribute (const int16_t nDestSeg, const int8_t nDestSide, c
 {
 ENTER (1, nThread, "CDynLight::Contribute");
 
-	int16_t nLightSeg = info.nSegment;
-
 #if 1
 info.bDiffuse [nThread] = 1;
 #else
-if ((nLightSeg >= 0) && (nDestSeg >= 0)) {
+if ((info.nSegment >= 0) && (nDestSeg >= 0)) {
 #if DBG
-	if ((nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == info.nSide)))
+	if ((info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == info.nSide)))
 		BRP;
 #endif
 	if (info.nSide < 0) 
-		info.bDiffuse [nThread] = gameData.segData.SegVis (nLightSeg, nDestSeg);
+		info.bDiffuse [nThread] = gameData.segData.SegVis (info.nSegment, nDestSeg);
 	else {
 #if DBG
 		if (nDestSeg == nDbgSeg)
 			BRP;
 #endif
-		if (SEGMENT (nLightSeg)->HasOutdoorsProp ()) {
-			if ((nDestSide >= 0) && ((info.nSide != nDestSide) || (nLightSeg != nDestSeg)))
+		if (SEGMENT (info.nSegment)->HasOutdoorsProp ()) {
+			if ((nDestSide >= 0) && ((info.nSide != nDestSide) || (info.nSegment != nDestSeg)))
 				RETURN (0);
 			info.bDiffuse [nThread] = 1;
 			}
@@ -776,8 +774,8 @@ if ((nLightSeg >= 0) && (nDestSeg >= 0)) {
 	}
 #if 0 //DBG
 #else
-else if ((nLightSeg = LightSeg ()) >= 0)
-	info.bDiffuse [nThread] = (nDestSeg < 0) || gameData.segData.SegVis (nLightSeg, nDestSeg);
+else if ((info.nSegment = LightSeg ()) >= 0)
+	info.bDiffuse [nThread] = (nDestSeg < 0) || gameData.segData.SegVis (info.nSegment, nDestSeg);
 #endif
 else
 	RETURN (0);
@@ -785,7 +783,12 @@ else
 
 	fix xDistance, xRad;
 
-if ((nLightSeg < 0) || (nDestSeg < 0) || (info.nSide < 0)) {
+if ((info.nSegment < 0) || (nDestSeg < 0) || (info.nSide < 0)) {
+#if 0 //DBG
+	CObject *pObj = OBJECT (info.nObject);
+	if (pObj && (pObj->info.nType == OBJ_WEAPON) && (pObj->info.nId == FLARE_ID))
+		PrintLog (0);
+#endif
 	CFixVector vLightToPoint = vDestPos - info.vPos;
 	xRad = F2X (info.fRad);
 	xDistance = vLightToPoint.Mag ();
@@ -798,14 +801,14 @@ if ((nLightSeg < 0) || (nDestSeg < 0) || (info.nSide < 0)) {
 else {
 	CFloatVector3 v, vHit;
 	v.Assign (vDestPos);
-	DistToFace (v, nLightSeg, uint8_t (info.nSide), &vHit);
+	DistToFace (v, info.nSegment, uint8_t (info.nSide), &vHit);
 	float distance = CFloatVector3::Dist (v, vHit) / (info.fRange * fRangeMod) + X2F (xDistMod);
 	if (distance > X2F (xMaxLightRange))
 		RETURN (0);
 	xDistance = F2X (distance);
 	xRad = 0;
 	}
-if (nLightSeg == nDestSeg)
+if (info.nSegment == nDestSeg)
 	info.bDiffuse [nThread] = 1;
 else if (info.bVariable && (nDestVertex >= 0)) {
 	if (info.visibleVertices && info.visibleVertices->Buffer ())
@@ -814,7 +817,7 @@ else if (info.bVariable && (nDestVertex >= 0)) {
 		info.bDiffuse [nThread] = SeesPoint (nDestSeg, nDestSide, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
 	}
 else { // check whether light only contributes ambient light to point
-	CSegment *pLightSeg = SEGMENT (nLightSeg);
+	CSegment *pLightSeg = SEGMENT (info.nSegment);
 
 #if 1
 
@@ -825,7 +828,7 @@ else { // check whether light only contributes ambient light to point
 	// if point is occluded, use segment path distance to point for light range and attenuation
 	// if bDiffuse == 0 then point is completely occluded (determined by above call to SeesPoint ()), otherwise use SeesPoint() to test occlusion
 	if (!bSeesPoint) { // => ambient contribution only
-		fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+		fix xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 		if (xPathLength < 0)
 			RETURN (0);
 		if (xDistance < xPathLength) {
@@ -846,7 +849,7 @@ else { // check whether light only contributes ambient light to point
 		// if point is occluded, use segment path distance to point for light range and attenuation
 		// if bDiffuse == 0 then point is completely occluded (determined by above call to SeesPoint ()), otherwise use SeesPoint() to test occlusion
 		if (!bSeesPoint) { // => ambient contribution only
-			fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+			fix xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 			if (xPathLength < 0)
 				RETURN (0);
 			if (xDistance < xPathLength) {

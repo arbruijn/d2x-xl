@@ -32,7 +32,7 @@ class CTarget {
 		inline bool operator>= (CTarget& other) { return m_xDot >= other.m_xDot; }
 	};
 
-static CStack<class CTarget>	targetLists [MAX_THREADS];
+static CStack<class CTarget>	targetLists [MAX_THREADS + 1];
 
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
