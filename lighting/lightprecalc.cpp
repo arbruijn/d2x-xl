@@ -1300,8 +1300,10 @@ if (bSecret < 0) {
 		return nCurItem;
 		}
 	}
+#if 0
 menu [0].Value ()++;
 menu [0].Rebuild ();
+#endif
 return nCurItem;
 }
 
@@ -1325,8 +1327,7 @@ if (nLevel > -1) {
 	gameStates.app.tPrecomputeLightmaps = SDL_GetTicks ();
 	if (gameStates.app.bProgressBars) {
 		bSecret = 1;
-		int32_t nLevels = missionManager.nLastLevel - nLevel + 1 - missionManager.nLastSecretLevel;
-		ProgressBar (TXT_CALC_LIGHTMAPS, (nLevels > 1) ? 2 : 1, 0, nLevels, PrecomputeLightmapsPoll);
+		ProgressBar (TXT_CALC_LIGHTMAPS, 2, 0, (missionManager.nLastLevel - nLevel + 1 - missionManager.nLastSecretLevel) * 10, PrecomputeLightmapsPoll);
 		}
 	else {
 		for (; nLevel <= missionManager.nLastLevel; nLevel++)

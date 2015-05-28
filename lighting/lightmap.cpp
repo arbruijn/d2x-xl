@@ -773,10 +773,11 @@ for (m_data.pFace = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.pFa
 		BRP;
 #endif
 		if (gameStates.app.bPrecomputeLightmaps && pProgressMenu && pLevelProgress) {
+			float fLevelProgress = float (nFace + 1) / float (FACES.nFaces);
 			if (pTime) {
 				static CTimeout to (1000);
 				if (to.Expired ()) {
-					float fDone = pTotalProgress->Value () + float (nFace + 1) / float (FACES.nFaces);
+					float fDone = pTotalProgress->Value () + fLevelProgress;
 					int32_t tPassed = SDL_GetTicks () - gameStates.app.tPrecomputeLightmaps;
 					int32_t tLeft = int32_t (float (tPassed) * fTotal / fDone) - tPassed;
 					tPassed = (tPassed + 500) / 1000;
@@ -787,6 +788,12 @@ for (m_data.pFace = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.pFa
 								tLeft / 3600, (tLeft / 60) % 60, tLeft % 60);
 					pTime->SetText (szTime);
 					}
+				}
+			int32_t nTotalProgress = pTotalProgress->Value (); 
+			int32_t nLevelProgress = int32_t (fLevelProgress * 0.1f + 0.5f) / 10;
+			if (nTotalProgress < nTotalProgress - nTotalProgress % 10 + nLevelProgress) {
+				pTotalProgress->SetValue (nTotalProgress - nTotalProgress % 10 + nLevelProgress);
+				pTotalProgress->Rebuild ();
 				}
 			pLevelProgress->Value ()++;
 			pLevelProgress->Rebuild ();
