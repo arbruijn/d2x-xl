@@ -100,31 +100,31 @@ typedef char tMenuText[MENU_MAX_TEXTLEN];
 
 class CMenuItem {
 public:
-	int32_t m_nType; // What kind of item this is, see NM_TYPE_????? defines
-	int32_t m_group; // What group this belongs to for radio buttons.
-	int32_t m_nTextLen; // The maximum length of characters that can be entered by this inputboxes
-	uint32_t m_color;
-	int16_t m_nKey;
+	int32_t		m_nType; // What kind of item this is, see NM_TYPE_????? defines
+	int32_t		m_group; // What group this belongs to for radio buttons.
+	int32_t		m_nTextLen; // The maximum length of characters that can be entered by this inputboxes
+	uint32_t		m_color;
+	int16_t		m_nKey;
 	// The rest of these are used internally by by the menu system, so don't set 'em!!
-	int16_t m_x, m_y, m_xSave, m_ySave;
-	int16_t m_xSlider;
-	int16_t m_w, m_h;
-	int16_t m_rightOffset;
-	uint8_t m_bRedraw;
-	uint8_t m_bRebuild;
-	uint8_t m_bNoScroll;
-	uint8_t m_bUnavailable;
-	uint8_t m_bCentered;
-	char m_text[MENU_MAX_TEXTLEN + 1];
-	char m_savedText[MENU_MAX_TEXTLEN + 1];
-	char* m_pszText;
-	CBitmap* m_bmText[2];
-	const char* m_szHelp;
-	char* m_szId;
+	int16_t		m_x, m_y, m_xSave, m_ySave;
+	int16_t		m_xSlider;
+	int16_t		m_w, m_h;
+	int16_t		m_rightOffset;
+	uint8_t		m_bRedraw;
+	uint8_t		m_bRebuild;
+	uint8_t		m_bNoScroll;
+	uint8_t		m_bUnavailable;
+	uint8_t		m_bCentered;
+	char			m_text [MENU_MAX_TEXTLEN + 1];
+	char			m_savedText [MENU_MAX_TEXTLEN + 1];
+	char			*m_pszText;
+	CBitmap		*m_bmText[2];
+	const char	*m_szHelp;
+	char			*m_szId;
 
 protected:
-	int32_t m_value; // For checkboxes and radio buttons, this is 1 if marked initially, else 0
-	int32_t m_minValue, m_maxValue; // For sliders and number bars.
+	int32_t		m_value; // For checkboxes and radio buttons, this is 1 if marked initially, else 0
+	int32_t		m_minValue, m_maxValue; // For sliders and number bars.
 
 public:
 	CMenuItem () {
@@ -162,6 +162,7 @@ public:
 	inline int32_t& Value (void) {
 		return m_value;
 	}
+
 	inline void SetValue (int32_t value) {
 		if (m_value == value)
 			return;
@@ -203,7 +204,7 @@ public:
 //------------------------------------------------------------------------------
 
 typedef struct tMenuProps {
-	int32_t				screenWidth, screenHeight, x, y, xOffs, yOffs, userWidth, userHeight, width, height, aw, titleWidth, titleHeight,
+	int32_t			screenWidth, screenHeight, x, y, xOffs, yOffs, userWidth, userHeight, width, height, aw, titleWidth, titleHeight,
 						ty, titlePos, rightOffset, nStringHeight, bTinyMode, nMenus, nOthers,
 						nMaxNoScroll, nMaxOnMenu, nMaxDisplayable, nScrollOffset,
 						bIsScrollBox, nDisplayMode, bValid;
@@ -215,7 +216,7 @@ typedef struct tMenuProps {
 
 class CMenu;
 
-typedef int32_t (*pMenuCallback) (CMenu& mat, int32_t& lastKey, int32_t nItem, int32_t nState);
+typedef int32_t (*pMenuCallback) (CMenu& m, int32_t& lastKey, int32_t nItem, int32_t nState);
 
 class CMenu : public CStack<CMenuItem> {
 private:

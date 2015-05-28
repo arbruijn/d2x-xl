@@ -113,7 +113,7 @@ if (nState)
 	return nCurItem;
 
 	CMenuItem*	m;
-	int32_t			v;
+	int32_t		v;
 
 #if WEAPON_ICONS
 mat = menu + optWeaponIcons;

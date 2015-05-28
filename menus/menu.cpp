@@ -1630,9 +1630,12 @@ item.SetId (szId);
 
 //------------------------------------------------------------------------------ 
 
-CMenuItem* CMenu::AddItem (void)
+CMenuItem *CMenu::AddItem (void)
 {
-return Grow (1) ? Top () : NULL;
+CMenuItem *pBuffer = Buffer (); 
+CMenuItem *pItem = Grow (1) ? Top () : NULL;
+if (pBuffer != Buffer ()) // reallocated?
+	m_current = NULL;
 }
 
 //------------------------------------------------------------------------------ 
@@ -1844,11 +1847,11 @@ delete[] tbuf;
 
 void ProgressBar (const char* szCaption, int32_t nBars, int32_t nCurProgress, int32_t nMaxProgress, pMenuCallback doProgress)
 {
-	int32_t	i, nInMenu;
+	int32_t	i = 0, nInMenu;
 	CMenu		menu;
 
 nBars = Clamp (nBars, 1, 2);
-menu.Create (3 + (nBars - 1) * 3);
+menu.Create (3 + (nBars - 1) * 3 + (doProgress ? doProgress (menu, i, i, -1) : 0)); // doProgress can add menu items - ask it how many it will add
 for (i = 0; i < nBars; i++) {
 	char szId [20];
 	if (i) {
@@ -1861,6 +1864,10 @@ for (i = 0; i < nBars; i++) {
 	menu.AddGauge (szId, "                    ", -1, nMaxProgress); //the blank string denotes the screen width of the gauge
 	menu.Item (menu.ToS () - 1).m_bCentered = 1;
 	menu.Item (menu.ToS () - 1).Value () = i ? 0 : nCurProgress;
+	}
+if (doProgress) { // let doProgress add menu items
+	i = 0;
+	doProgress (menu, i, i, -2);
 	}
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;

@@ -505,16 +505,28 @@ psz3DMethod [1] = TXT_3D_TOE_IN;
 
 //------------------------------------------------------------------------------
 
+const char *LightmapQualityText (void)
+{
+return pszQuality [gameOpts->render.nLightmapQuality];
+}
+
+const char *LightmapPrecisionText (void)
+{
+return pszPrecision [gameOpts->render.nLightmapPrecision];
+}
+
+//------------------------------------------------------------------------------
+
 void AddLightmapControls (CMenu& m)
 {
 	char szSlider [50];
 
-sprintf (szSlider + 1, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
+sprintf (szSlider + 1, TXT_LMAP_QUALITY, LightmapQualityText ());
 *szSlider = *(TXT_LMAP_QUALITY - 1);
 m.AddSlider ("lightmap quality", szSlider + 1, gameOpts->render.nLightmapQuality, 0, 3, KEY_M, HTX_LMAP_QUALITY);
 
 if (gameOpts->app.bExpertMode) {
-	sprintf (szSlider + 1, TXT_LMAP_PRECISION, pszPrecision [gameOpts->render.nLightmapPrecision]);
+	sprintf (szSlider + 1, TXT_LMAP_PRECISION, LightmapPrecisionText ());
 	*szSlider = *(TXT_LMAP_PRECISION - 1);
 	m.AddSlider ("lightmap precision", szSlider + 1, gameOpts->render.nLightmapPrecision, 0, 2, KEY_P, HTX_LMAP_PRECISION);
 	}
