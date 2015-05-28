@@ -1325,7 +1325,8 @@ if (nLevel > -1) {
 	gameStates.app.tPrecomputeLightmaps = SDL_GetTicks ();
 	if (gameStates.app.bProgressBars) {
 		bSecret = 1;
-		ProgressBar (TXT_CALC_LIGHTMAPS, 2, 0, missionManager.nLastLevel - nLevel + 1 - missionManager.nLastSecretLevel, PrecomputeLightmapsPoll);
+		int32_t nLevels = missionManager.nLastLevel - nLevel + 1 - missionManager.nLastSecretLevel;
+		ProgressBar (TXT_CALC_LIGHTMAPS, (nLevels > 1) ? 2 : 1, 0, nLevels, PrecomputeLightmapsPoll);
 		}
 	else {
 		for (; nLevel <= missionManager.nLastLevel; nLevel++)
