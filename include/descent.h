@@ -1300,6 +1300,7 @@ class CApplicationStates {
 		int32_t		bAutoRunMission;
 		int32_t		bProgressBars;
 		int32_t		bPrecomputeLightmaps;
+		int32_t		tPrecomputeLightmaps;
 		int32_t		bLittleEndian;
 		int32_t		bUsingConverter;
 		int32_t		bFixModels;

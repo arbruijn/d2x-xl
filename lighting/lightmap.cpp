@@ -743,7 +743,7 @@ int32_t CLightmapManager::BuildAll (int32_t nFace)
 	int32_t		nLastFace;
 	float			fTotal;
 
-	time_t		tStart = SDL_GetTicks (), tPassed = 0, tLeft = 0;
+	time_t		tPassed = 0, tLeft = 0;
 
 INIT_PROGRESS_LOOP (nFace, nLastFace, FACES.nFaces);
 
@@ -779,7 +779,7 @@ for (m_data.pFace = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.pFa
 				static CTimeout to (1000);
 				if (to.Expired ()) {
 					float fDone = pTotalProgress->Value () + float (nFace + 1) / float (FACES.nFaces);
-					tPassed = SDL_GetTicks () - tStart;
+					tPassed = SDL_GetTicks () - gameStates.app.tPrecomputeLightmaps;
 					tLeft = time_t (float (tPassed) * fTotal / fDone);
 					tPassed = (tPassed + 500) / 1000;
 					tLeft = (tLeft + 500) / 1000;
