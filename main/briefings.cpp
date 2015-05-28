@@ -367,6 +367,8 @@ if (bExtraSounds && (nScreen > 3)) {	//only play for the mission directives on a
 	if (0 > (m_info.nHumChannel = StartSound (m_info.nHumChannel, SOUND_BRIEFING_HUM, I2X (4), szWAV)))
 		return 0;
 	songManager.StopAll ();
+	G3_SLEEP (250);
+	m_bAudioPlaying = 1;
 	}
 else {
 	if (songManager.Playing ())
@@ -782,10 +784,10 @@ else if (m_info.nCurrentColor >= MAX_BRIEFING_COLORS)
 if (m_info.bFlashingCursor && !m_info.bRedraw) 
 	RenderElement (0);
 
-	fix t;
+	fix t = SDL_GetTicks ();
 
 if ((delay > 0) && !m_info.bRedraw) {
-	delay = tText + 1000 / 15;
+	delay = tText + (m_bAudioPlaying ? 110 : 1000 / 15);
 	do {
 		Animate ();
 		} while ((t = SDL_GetTicks ()) < delay);
@@ -1409,6 +1411,7 @@ if (m_info.bOnlyRobots) {
 	}
 m_info.pi = m_info.pj = m_info.message;
 
+m_bAudioPlaying = 0;
 int32_t bSongPlaying = songManager.Playing ();
 int32_t bHumPlaying = StartHum (m_info.nLevel, m_info.nScreen, m_info.bExtraSounds);
 m_info.curScreen = briefingScreens [m_info.nScreen % MAX_BRIEFING_SCREENS];
@@ -1493,6 +1496,7 @@ if (bHumPlaying)
 	StopSound (m_info.nHumChannel);
 if (bSongPlaying && !songManager.Playing ())
 	songManager.Play (SONG_BRIEFING, 1);
+m_bAudioPlaying = 0;
 return m_info.nFuncRes;
 }
 

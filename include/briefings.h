@@ -89,7 +89,7 @@ class CBriefingInfo {
 //-----------------------------------------------------------------------------
 
 typedef struct tD1ExtraBotSound {
-	const char*	pszName;
+	const char		*pszName;
 	int16_t			nLevel;
 	int16_t			nBotSig;
 } tD1ExtraBotSound;
@@ -103,6 +103,7 @@ class CBriefing {
 		char				m_szBackground [FILENAME_LEN + 1];
 		char				m_message [2];
 		int32_t			m_pcxError;
+		int32_t			m_bAudioPlaying;
 
 	public:
 		CBriefing () { Init (); }
