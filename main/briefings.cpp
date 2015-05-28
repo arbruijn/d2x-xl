@@ -1390,6 +1390,7 @@ return -1;
 int32_t CBriefing::ShowMessage (int32_t nScreen, char* message, int32_t nLevel)
 {
 	tBriefingHandlerInfo	*pInfo;
+	int32_t					bSongPlaying = songManager.Playing (), bHumPlaying = 0;
 	int32_t					h, i;
 
 m_info.Setup (message, nLevel, nScreen);
@@ -1412,8 +1413,7 @@ if (m_info.bOnlyRobots) {
 m_info.pi = m_info.pj = m_info.message;
 
 m_bAudioPlaying = 0;
-int32_t bSongPlaying = songManager.Playing ();
-int32_t bHumPlaying = StartHum (m_info.nLevel, m_info.nScreen, m_info.bExtraSounds);
+bHumPlaying = StartHum (m_info.nLevel, m_info.nScreen, m_info.bExtraSounds);
 m_info.curScreen = briefingScreens [m_info.nScreen % MAX_BRIEFING_SCREENS];
 m_info.pScreen = &m_info.curScreen;
 if (gameStates.app.bD1Mission)
