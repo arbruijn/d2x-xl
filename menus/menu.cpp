@@ -567,25 +567,26 @@ fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNoScroll; i++) {
 	if ((i >= m_props.nMaxNoScroll) && (i < m_props.nScrollOffset))
 		continue;
-	if ((Item (i).m_nType == NM_TYPE_TEXT) && !*Item (i).m_text)
+	CMenuItem& item = Item (i);
+	if ((item.m_nType == NM_TYPE_TEXT) && !*item.m_text)
 		continue;	// skip empty lines
 	m_bRedraw = 1;
-	if (Item (i).m_bCentered)
-		Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text);
+	if (item.m_bCentered)
+		item.m_x = (item.m_nType == NM_TYPE_GAUGE) ? Max (m_props.width - item.m_w, 0) / 2 : fontManager.Current ()->GetCenteredX (item.m_text);
 	if (i >= m_props.nScrollOffset) {
-		y = Item (i).m_y;
-		Item (i).m_y = Item (i - m_props.nScrollOffset + m_props.nMaxNoScroll).m_y;
+		y = item.m_y;
+		item.m_y = Item (i - m_props.nScrollOffset + m_props.nMaxNoScroll).m_y;
 		}
-	Item (i).Draw ((i == m_nChoice) && !m_bAllText, m_props.bTinyMode);
-	Item (i).m_bRedraw = 0;
+	item.Draw ((i == m_nChoice) && !m_bAllText, m_props.bTinyMode);
+	item.m_bRedraw = 0;
 	if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING)
 		SDL_ShowCursor (1);
 	if (i >= m_props.nScrollOffset)
-		Item (i).m_y = y;
+		item.m_y = y;
 	if ((i == m_nChoice) && 
-		 ((Item (i).m_nType == NM_TYPE_INPUT) || 
-		 ((Item (i).m_nType == NM_TYPE_INPUT_MENU) && Item (i).m_group)))
-		Item (i).UpdateCursor ();
+		 ((item.m_nType == NM_TYPE_INPUT) || 
+		 ((item.m_nType == NM_TYPE_INPUT_MENU) && item.m_group)))
+		item.UpdateCursor ();
 	}
 #if 1
 if (m_props.bIsScrollBox) {
@@ -600,8 +601,9 @@ if (m_props.bIsScrollBox) {
 		else
 			DrawRightStringWXY (Scaled (gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
 		i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll -1;
-		sy = Item (i).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
-		sx = Item (i).m_x - (gameStates.menus.bHires ? 24 : 12);
+		CMenuItem& item = Item (i);
+		sy = item.m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+		sx = item.m_x - (gameStates.menus.bHires ? 24 : 12);
 		if (m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll < int32_t (ToS ()))
 			DrawRightStringWXY (Scaled (gameStates.menus.bHires ? 20 : 10), sx, sy, DOWN_ARROW_MARKER);
 		else
@@ -1636,6 +1638,7 @@ CMenuItem *pBuffer = Buffer ();
 CMenuItem *pItem = Grow (1) ? Top () : NULL;
 if (pBuffer != Buffer ()) // reallocated?
 	m_current = NULL;
+return pItem;
 }
 
 //------------------------------------------------------------------------------ 
@@ -1703,7 +1706,7 @@ item->m_pszText = NULL;
 item->SetText (szText);
 item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
 SetId (*item, szId);
-return ToS () -1;
+return ToS () - 1;
 }
 
 //------------------------------------------------------------------------------ 
@@ -1852,23 +1855,32 @@ void ProgressBar (const char* szCaption, int32_t nBars, int32_t nCurProgress, in
 
 nBars = Clamp (nBars, 1, 2);
 menu.Create (3 + (nBars - 1) * 3 + (doProgress ? doProgress (menu, i, i, -1) : 0)); // doProgress can add menu items - ask it how many it will add
+
+if (doProgress) { // let doProgress add menu items before the gauges
+	i = 0;
+	doProgress (menu, i, i, -2);
+	}
+
+
 for (i = 0; i < nBars; i++) {
 	char szId [20];
 	if (i) {
 		menu.AddText ("", "");
 		sprintf (szId, "subtitle %d", i);
-		menu.AddText (szId, "");
-		menu.Item (menu.ToS () - 1).m_bCentered = 1;
+		int32_t h = menu.AddText (szId, "");
+		menu [h].m_bCentered = 1;
 		}
 	sprintf (szId, "progress bar %d", i + 1);
-	menu.AddGauge (szId, "                    ", -1, nMaxProgress); //the blank string denotes the screen width of the gauge
-	menu.Item (menu.ToS () - 1).m_bCentered = 1;
-	menu.Item (menu.ToS () - 1).Value () = i ? 0 : nCurProgress;
+	int32_t h = menu.AddGauge (szId, "                    ", -1, nMaxProgress); //the blank string denotes the screen width of the gauge
+	menu [h].m_bCentered = 1;
+	menu [h].Value () = i ? 0 : nCurProgress;
 	}
-if (doProgress) { // let doProgress add menu items
+
+if (doProgress) { // let doProgress add menu items after the gauges
 	i = 0;
-	doProgress (menu, i, i, -2);
+	doProgress (menu, i, i, -3);
 	}
+
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
 gameData.app.bGamePaused = 1;

@@ -734,8 +734,6 @@ return (k < m) ? -1 : (k > m) ? 1 : 0;
 
 //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-
 int32_t CLightmapManager::BuildAll (int32_t nFace)
 {
 	CMenu			*pProgressMenu = NULL;
@@ -778,16 +776,19 @@ for (m_data.pFace = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.pFa
 #endif
 		if (gameStates.app.bPrecomputeLightmaps && pProgressMenu && pLevelProgress) {
 			if (pTime) {
-				float fDone = (pTotalProgress->Value () - 1) + float (FACES.nFaces) / float (nFace);
-				tPassed = SDL_GetTicks () - tStart;
-				tLeft = time_t (float (tPassed) * fTotal / fDone);
-				tPassed = (tPassed + 500) / 1000;
-				tLeft = (tLeft + 500) / 1000;
-				char szTime [50];
-				sprintf (szTime, "%2d:%02d:%02d / %2d:%02d:%02d", 
-							tLeft / 3600, (tLeft % 3600) / 60, tLeft % 60, 
-							tPassed / 3600, (tPassed % 3600) / 60, tPassed % 60);
-				pTime->SetText (szTime);
+				static CTimeout to (1000);
+				if (to.Expired ()) {
+					float fDone = pTotalProgress->Value () + float (nFace + 1) / float (FACES.nFaces);
+					tPassed = SDL_GetTicks () - tStart;
+					tLeft = time_t (float (tPassed) * fTotal / fDone);
+					tPassed = (tPassed + 500) / 1000;
+					tLeft = (tLeft + 500) / 1000;
+					char szTime [50];
+					sprintf (szTime, "%d:%02d:%02d / %d:%02d:%02d", 
+								tPassed / 3600, (tPassed / 60) % 60, tPassed % 60,
+								tLeft / 3600, (tLeft / 60) % 60, tLeft % 60);
+					pTime->SetText (szTime);
+					}
 				}
 			pLevelProgress->Value ()++;
 			pLevelProgress->Rebuild ();

@@ -1245,23 +1245,40 @@ const char *LightmapPrecisionText (void);
 
 static int32_t PrecomputeLightmapsPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
-if (nState == -1)
-	return 5;
+if (nState) {
+	if (nState == -1)
+		return 6;
 
-if (nState == -2) {
-	char szLabel [50];
-	menu.AddText ("", "");
-	sprintf (szLabel, TXT_LMAP_QUALITY, LightmapQualityText ());
-	menu.AddText ("quality", szLabel);
-	sprintf (szLabel, TXT_LMAP_PRECISION, LightmapPrecisionText ());
-	menu.AddText ("precision", szLabel);
-	menu.AddText ("", "");
-	menu.AddText ("time", "");
-	return 0;
-	}
+	if (nState == -2) {
+#if 0
+		char szLabel [50];
+		int32_t h = menu.AddText ("", "settings:");
+		sprintf (szLabel, "%s / %s", LightmapQualityText (), LightmapPrecisionText ());
+		menu.AddText ("", szLabel);
+		menu.AddText ("", "");
+		menu.AddText ("", "total progress");
+		for (int32_t i = 0; i < 4; i++)
+			menu [h + i].m_bCentered = 1;
+#endif
+		return 0;
+		}
 
-if (nState)
+	if (nState == -3) {
+		int32_t h = menu.AddText ("", "");
+		menu.AddText ("", "time:");
+		menu.AddText ("time", "00:00:00 / 00:00:00");
+		menu.AddText ("", "");
+		menu.AddText ("", "settings:");
+		char szLabel [50];
+		sprintf (szLabel, "%s / %s", LightmapQualityText (), LightmapPrecisionText ());
+		menu.AddText ("", szLabel);
+		for (int32_t i = 0; i < 6; i++)
+			menu [h + i].m_bCentered = 1;
+		return 0;
+		}
+
 	return nCurItem;
+	}
 
 int32_t bProgressBars = gameStates.app.bProgressBars;
 gameStates.app.bProgressBars = 0;

@@ -682,8 +682,13 @@ return nLineCount;
 void CMenuItem::SetText (const char* pszSrc, char* pszDest)
 {
 if (pszSrc) {
-	if (!pszDest)
+	if (!pszDest) {
 		pszDest = m_text;
+		if (m_bmText [0]) {
+			delete m_bmText [0];
+			m_bmText [0] = NULL;
+			}
+		}
 	strncpy (pszDest, pszSrc, MENU_MAX_TEXTLEN);
 	pszDest [MENU_MAX_TEXTLEN] = '\0';
 	}
@@ -725,3 +730,4 @@ if (pszId && *pszId) {
 
 //------------------------------------------------------------------------------
 //eof
+
