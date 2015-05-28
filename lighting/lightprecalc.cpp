@@ -1324,7 +1324,6 @@ gameStates.render.bPerPixelLighting = 1;
 SetFunctionMode (FMODE_GAME);
 nLevel = NewGameMenu ();
 if (nLevel > -1) {
-	gameStates.app.tPrecomputeLightmaps = SDL_GetTicks ();
 	if (gameStates.app.bProgressBars) {
 		bSecret = 1;
 		ProgressBar (TXT_CALC_LIGHTMAPS, 2, 0, (missionManager.nLastLevel - nLevel + 1 - missionManager.nLastSecretLevel) * 100, PrecomputeLightmapsPoll);
