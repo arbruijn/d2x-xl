@@ -1274,7 +1274,8 @@ if (key != -1) {
 			return 1;
 		}
 	strncpy (mpParams.szGameName, szName, sizeof (mpParams.szGameName));
-	mpParams.nLevel = atoi (szLevel);
+	if (gameStates.app.bNostalgia)
+		mpParams.nLevel = atoi (szLevel);
 	if ((missionManager.nLastLevel > 0) && ((mpParams.nLevel < 1) || (mpParams.nLevel > missionManager.nLastLevel))) {
 		InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_LEVEL_OUT_RANGE);
 		sprintf (szLevel, "1");
