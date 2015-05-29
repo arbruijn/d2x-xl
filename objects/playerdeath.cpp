@@ -182,11 +182,8 @@ if (!LOCALPLAYER.m_bExploded) {
 
 void DeadPlayerFrame (void)
 {
-	fix			xTimeDead, h;
-	CFixVector	fVec;
-
 if (gameStates.app.bPlayerIsDead) {
-	xTimeDead = gameData.time.xGame - gameStates.app.nPlayerTimeOfDeath;
+	fix xTimeDead = gameData.time.xGame - gameStates.app.nPlayerTimeOfDeath;
 
 	//	If unable to create camera at time of death, create now.
 	if (!gameData.objData.deadPlayerCamera) {
@@ -197,12 +194,12 @@ if (gameStates.app.bPlayerIsDead) {
 		else
 			Int3 ();
 		}
-	h = DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead;
+	fix h = DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead;
 	h = Max (0, h);
 	gameData.objData.pConsole->mType.physInfo.rotVel = CFixVector::Create (h / 4, h / 2, h / 3);
 	xCameraToPlayerDistGoal = Min (xTimeDead * 8, I2X (20)) + gameData.objData.pConsole->info.xSize;
 	SetCameraPos (&gameData.objData.deadPlayerCamera->info.position.vPos, gameData.objData.pConsole);
-	fVec = gameData.objData.pConsole->info.position.vPos - gameData.objData.deadPlayerCamera->info.position.vPos;
+	CFixVector fVec = gameData.objData.pConsole->info.position.vPos - gameData.objData.deadPlayerCamera->info.position.vPos;
 	gameData.objData.deadPlayerCamera->info.position.mOrient = CFixMatrix::CreateF (fVec);
 
 	if (xTimeDead > DEATH_SEQUENCE_EXPLODE_TIME) {
@@ -218,7 +215,7 @@ if (gameStates.app.bPlayerIsDead) {
 			if (TactileStick)
 				ClearForces ();
 #endif
-			if (gameOpts->gameplay.bObserve)
+			if (IsMultiGame && gameOpts->gameplay.bObserve)
 				gameStates.app.bDeathSequenceAborted = 1;
 			else
 				DestroyPlayerShip ();

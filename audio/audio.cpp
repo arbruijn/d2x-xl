@@ -485,8 +485,8 @@ return F2X (float (m_info.pMixChunk->alen) / float (gameOpts->sound.audioSampleR
 
 // Volume 0-I2X (1)
 int32_t CAudioChannel::Start (int16_t nSound, int32_t nSoundClass, fix nVolume, int32_t nPan, int32_t bLooping, 
-								  int32_t nLoopStart, int32_t nLoopEnd, int32_t nSoundObj, int32_t nSpeed, 
-								  const char *pszWAV, CFixVector* vPos)
+										int32_t nLoopStart, int32_t nLoopEnd, int32_t nSoundObj, int32_t nSpeed, 
+										const char *pszWAV, CFixVector* vPos)
 {
 	CSoundSample*	pSound = NULL;
 	int32_t			bPersistent = (nSoundObj > -1) || bLooping || (nVolume > I2X (1));
@@ -699,6 +699,8 @@ m_info.nLoopingChannel = -1;
 m_info.fSlowDown = 1.0f;
 m_channels.Resize (m_info.nMaxChannels);
 m_usedChannels.Resize (m_info.nMaxChannels);
+if (m_info.bAvailable)
+	Mix_AllocateChannels (m_info.nMaxChannels);
 m_objects.Resize (MAX_SOUND_OBJECTS);
 m_bSDLInitialized = false;
 m_nListenerSeg = -1;
