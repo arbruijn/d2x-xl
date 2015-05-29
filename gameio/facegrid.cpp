@@ -92,8 +92,6 @@ return FindPlaneLineIntersectionf (vIntersect, vertices [0], vNormal, v1, v2, 0.
 
 bool CFaceGridSegment::ContainsLine (CFloatVector& v1, CFloatVector& v2)
 {
-	static int32_t nFaces [6][4] = {{0,1,2,3},{1,5,6,2},{5,4,7,6},{2,0,3,7},{3,2,6,7},{0,1,5,4}};
-
 if (ContainsPoint (v1) || ContainsPoint (v2))
 	return true;
 
@@ -313,7 +311,6 @@ return m_pParent ? m_pParent->Occluder (line, pOccluder, nVisited) : pOccluder;
 
 CGridFace *CFaceGridSegment::FindOccluder (CGridLine& line, CGridFace *pOccluder)
 {
-float fMinDist = 1e6f;
 for (CGridFace *pFace = m_pFaces; pFace; pFace = pFace->m_pNextFace) {
 	if ((CFloatVector::Dot (line.m_vNormal, pFace->m_vNormal) <= 0) && pFace->LineIntersects (line.m_vStart, line.m_vEnd)) {
 		if (!pOccluder)

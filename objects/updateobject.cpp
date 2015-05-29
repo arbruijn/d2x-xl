@@ -718,7 +718,7 @@ void CleanupObjects (void)
 	CObject*		pObj, *pPrevObj;
 	int32_t		nLocalDeadPlayerObj = -1;
 
-for (CObjectIterator iter (pObj); pObj; pObj = pPrevObj ? iter.Step () : iter.Start ()) {
+for (CObjectIterator iter (pObj); pObj; pObj = (pPrevObj ? iter.Step () : iter.Start ())) {
 	pPrevObj = pObj;
 	if (pObj->info.nType == OBJ_NONE)
 		continue;
@@ -733,7 +733,7 @@ for (CObjectIterator iter (pObj); pObj; pObj = pPrevObj ? iter.Step () : iter.St
 			}
 		}
 	else {
-		CObject* pPrevObj = iter.Back ();
+		pPrevObj = iter.Back ();
 		if ((pObj->info.nType == OBJ_ROBOT) ||
 			 (pObj->info.nType == OBJ_DEBRIS) ||	// exploded robot
 			 (pObj->info.nType == OBJ_REACTOR) ||

@@ -817,10 +817,9 @@ return gameData.render.scene.Height () / 2 - (gameStates.app.bD1Mission ? 1 : 2)
 void CHUD::DrawPrimaryWeaponList (void)
 {
 // Q6SPVF HPGO - (Quad) Lasers <level>, Spreafire, Plasma, Vulcan, Fusion, Helix, Gauss, Omega
-	static char* szWeaponIds = "LVSPFSGHXO";
+	static const char* szWeaponIds = "LVSPFSGHXO";
 
 	int32_t	n = (gameStates.app.bD1Mission) ? 5 : 10;
-	int32_t	nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
 	int32_t	nState [2] = {-1, 0};
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
 	int32_t	x = gameData.render.scene.Width () / 2 - cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth) * 3);
@@ -921,7 +920,7 @@ return l;
 char* CHUD::StrSecondaryWeaponList (char* pszList)
 {
 // CHSM MGFS - Concussion, Homer, Smart, Mega, Mercury, Guided, Flash, Shaker
-	static char* szWeaponIds = "CHBSMFGSYE";
+	static const char* szWeaponIds = "CHBSMFGSYE";
 
 	int32_t	n = (gameStates.app.bD1Mission) ? 5 : 10;
 	int32_t	l = 1;

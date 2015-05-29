@@ -9,7 +9,7 @@ class CPostEffect {
 	private:
 		class CPostEffect*	m_prev;
 		class CPostEffect*	m_next;
-		int32_t						m_nType;
+		int32_t					m_nType;
 
 	protected:
 		bool						m_bValid;
@@ -86,7 +86,7 @@ class CPostEffectShockwave : public CPostEffect {
 	public:
 		CPostEffectShockwave (int32_t nStart = 0, int32_t nLife = 0, int32_t nSize = 0, int32_t nBias = 1, CFixVector pos = CFixVector::ZERO, int32_t nObject = -1) :
 			CPostEffect (PP_EFFECT_SHOCKWAVE), 
-			m_nStart (nStart), m_nLife (int32_t (1000 * X2F (nLife))), m_nSize (nSize), m_nBias (nBias), m_nObject (nObject), m_rad (0.0f), m_screenRad (0.0f), m_ttl (0.0f), m_pos (pos)
+			m_nStart (nStart), m_nLife (int32_t (1000 * X2F (nLife))), m_nSize (nSize), m_nBias (nBias), m_pos (pos), m_nObject (nObject), m_rad (0.0f), m_screenRad (0.0f), m_ttl (0.0f)
 			{ m_pos = pos; }
 
 		void Setup (int32_t nStart, int32_t nLife, int32_t nSize, int32_t nBias, CFixVector pos, int32_t nObject) {

@@ -2836,6 +2836,7 @@ PUT_INTEL_SHORT (gameData.multigame.msg.buf + pBuffer, nSegment);
 pBuffer += 2;
 gameData.multigame.msg.buf [pBuffer++] = (int8_t) nSide;
 gameData.multigame.msg.buf [pBuffer++] = (uint8_t) flags;
+SET_MSG_ID
 NetworkSendMineSyncPacket (gameData.multigame.msg.buf, 5, nPlayer);
 }
 
@@ -3937,6 +3938,7 @@ gameData.multigame.msg.buf [pBuffer++] = uint8_t (flags);
 gameData.multigame.msg.buf [pBuffer++] = state;
 // This message is only sent during initial sync'ing when a new player enters a match and can be sent a lot
 // do not set the message id here to avoid generating tons of message confirmations
+SET_MSG_ID
 NetworkSendMineSyncPacket (gameData.multigame.msg.buf, pBuffer, nPlayer); // twice, just to be sure
 if (gameStates.multi.nGameType < UDP_GAME)
 	NetworkSendMineSyncPacket (gameData.multigame.msg.buf, pBuffer, nPlayer);
@@ -4170,6 +4172,7 @@ gameData.multigame.msg.buf [pBuffer++] = val;
 CSegment* pSeg = SEGMENT (nSegment);
 for (int32_t i = 0; i < 6; i++, pBuffer += 2)
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + pBuffer, (pSeg->m_sides [i].FaceCount ()) ? pSeg->m_sides [i].m_nOvlTex : 0);
+SET_MSG_ID
 MultiSendData (gameData.multigame.msg.buf, pBuffer, 1);
 }
 
@@ -4188,6 +4191,7 @@ CSegment* pSeg = SEGMENT (nSegment);
 for (int32_t i = 0; i < 6; i++, pBuffer += 2)
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + pBuffer, (pSeg->m_sides [i].FaceCount ()) ? pSeg->m_sides [i].m_nOvlTex : 0);
 // Multiple sync message for joining players - do not set message id to avoid confirmation message spamming
+SET_MSG_ID
 NetworkSendMineSyncPacket (gameData.multigame.msg.buf, pBuffer, nPlayer);
 }
 

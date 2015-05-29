@@ -133,7 +133,7 @@ return m_iTimeout;
 
 bool CDownloadManager::Downloading (uint32_t nPlayer) 
 { 
-if (nPlayer == N_LOCALPLAYER)
+if (nPlayer == (uint32_t) N_LOCALPLAYER)
 	return m_bDownloading [MAX_PLAYERS - 1];
 if (nPlayer >= MAX_PLAYERS) 
 	return false;

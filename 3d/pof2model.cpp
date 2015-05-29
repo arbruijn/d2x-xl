@@ -225,12 +225,12 @@ for (;;) {
 			Assert (n <= int32_t (m_vertices.Length ()));
 			CFloatVector3 *pVertexIndex = m_vertices.Buffer ();
 			CFixVector *pv = VECPTR (p+4);
-			for (i = n; i; i--) {
+			for (i = n; i; i--, h++) {
 				pVertexIndex->Assign (*pv);
 				pVertexIndex++; 
 				pv++;
 				m_vertexOwner [h].m_nOwner = (uint16_t) nThis;
-				m_vertexOwner [h].m_nVertex = (uint16_t) h++;
+				m_vertexOwner [h].m_nVertex = (uint16_t) h;
 				}
 			pSubModel->m_nVertices += n;
 			p += n * sizeof (CFixVector) + 4;
@@ -242,12 +242,12 @@ for (;;) {
 			int32_t h = WORDVAL (p+4);
 			CFloatVector3 *pVertexIndex = m_vertices + h;
 			CFixVector *pv = VECPTR (p+8);
-			for (i = n; i; i--) {
+			for (i = n; i; i--, h++) {
 				pVertexIndex->Assign (*pv);
 				pVertexIndex++; 
 				pv++;
 				m_vertexOwner [h].m_nOwner = (uint16_t) nThis;
-				m_vertexOwner [h].m_nVertex = (uint16_t) h++;
+				m_vertexOwner [h].m_nVertex = (uint16_t) h;
 				}
 			pSubModel->m_nVertices += n;
 			p += n * sizeof (CFixVector) + 8;

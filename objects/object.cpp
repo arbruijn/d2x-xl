@@ -2229,7 +2229,7 @@ return Appearing () ? float (gameData.multiplayer.tAppearing [Id ()][0]) / float
 
 //------------------------------------------------------------------------------
 
-CObjectIterator::CObjectIterator () : m_pObj (NULL), m_nLink (0), m_i (0) {}
+CObjectIterator::CObjectIterator () : m_pObj (NULL), m_i (0), m_nLink (0) {}
 
 //------------------------------------------------------------------------------
 

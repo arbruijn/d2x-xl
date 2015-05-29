@@ -85,20 +85,6 @@ for (int32_t y = 0; y < h; y++) {
 
 #define MAX_BLUR_RADIUS		15
 
-#if DBG
-
-static int32_t bWrapBlur = 1;
-static int32_t nBlurStrength = 1;
-static int32_t nColorSteps = 15;
-
-#else
-
-static int32_t bWrapBlur = 1;
-static int32_t nBlurStrength = 3;
-static int32_t nColorSteps = 15;
-
-#endif
-
 //------------------------------------------------------------------------------
 
 static inline int32_t Wrap (int32_t i, int32_t l)

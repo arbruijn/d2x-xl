@@ -48,7 +48,7 @@ return (ogl.m_features.bDepthBlending > 0) && gameOpts->render.coronas.bUse && g
 int32_t CGlareRenderer::CalcFaceDimensions (int16_t nSegment, int16_t nSide, fix *w, fix *h, uint16_t* corners)
 {
 	fix		d1, d2, dMax = -1;
-	int32_t		i, j;
+	int32_t	i, j;
 
 if (!corners) 
 	corners = SEGMENT (nSegment)->Corners (nSide);

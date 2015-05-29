@@ -207,7 +207,7 @@ if (!pObj)
 	int32_t i;
 	int32_t lowest_agitation = 0x7fffffff; // MAX POSITIVE INT
 	int32_t lowest_agitated_bot = -1;
-	int32_t first_freeRobot = -1;
+	int32_t firstFreeRobot = -1;
 
 if (pObj->IsBoss ()) // this is a boss, so make sure he gets a slot
 	agitation = (agitation * 3) + N_LOCALPLAYER;  
@@ -217,15 +217,15 @@ if (pObj->cType.aiInfo.REMOTE_SLOT_NUM > 0) {
 	}
 for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 	CObject* pRobot = MULTIROBOT (gameData.multigame.robots.controlled [i]);
-	if (!pObj || !pObj->IsRobot ()) {
-		first_freeRobot = i;
+	if (!pRobot || !pRobot->IsRobot ()) {
+		firstFreeRobot = i;
 		break;
 		}
 	if (gameData.multigame.robots.lastMsgTime [i] + ROBOT_TIMEOUT < gameData.time.xGame) {
 		if (gameData.multigame.robots.sendPending [i])
 			MultiSendRobotPosition (gameData.multigame.robots.controlled [i], 1);
 		MultiSendReleaseRobot (gameData.multigame.robots.controlled [i]);
-		first_freeRobot = i;
+		firstFreeRobot = i;
 		break;
 		}
 	if ((gameData.multigame.robots.controlled [i] != -1) && 
@@ -235,8 +235,8 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 			lowest_agitated_bot = i;
 		}
 	}
-if (first_freeRobot != -1)  // Room left for new robots
-	i = first_freeRobot;
+if (firstFreeRobot != -1)  // Room left for new robots
+	i = firstFreeRobot;
 else if ((agitation > lowest_agitation)) {// && (lowest_agitation <= MAX_TO_DELETE)) // Replace some old robot with a more agitated one
 	if (gameData.multigame.robots.sendPending [lowest_agitated_bot])
 		MultiSendRobotPosition (gameData.multigame.robots.controlled [lowest_agitated_bot], 1);

@@ -271,7 +271,6 @@ if ((nMission >= 0) &&
 	nOffset = 5;
 char szLabel [200];
 sprintf (szLabel, "%s %s", TXT_SEL_MISSION, (nMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nMission].szMissionName + nOffset));
-CMenuItem* mi = m ["mission selector"];
 m ["mission selector"]->SetText (szLabel);
 }
 
