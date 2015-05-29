@@ -1247,7 +1247,7 @@ static int32_t PrecomputeLightmapsPoll (CMenu& menu, int32_t& key, int32_t nCurI
 {
 if (nState) {
 	if (nState == -1)
-		return 6;
+		return 9;
 
 	if (nState == -2) {
 #if 0
@@ -1268,11 +1268,14 @@ if (nState) {
 		menu.AddText ("", "time:");
 		menu.AddText ("time", "00:00:00 / 00:00:00");
 		menu.AddText ("", "");
+		menu.AddText ("", "levels:");
+		menu.AddText ("level count", "00 / 00");
+		menu.AddText ("", "");
 		menu.AddText ("", "settings:");
 		char szLabel [50];
 		sprintf (szLabel, "%s / %s", LightmapQualityText (), LightmapPrecisionText ());
 		menu.AddText ("", szLabel);
-		for (int32_t i = 0; i < 6; i++)
+		for (int32_t i = 0; i < 9; i++)
 			menu [h + i].m_bCentered = 1;
 		return 0;
 		}
@@ -1326,7 +1329,10 @@ nLevel = NewGameMenu ();
 if (nLevel > -1) {
 	if (gameStates.app.bProgressBars) {
 		bSecret = 1;
-		ProgressBar (TXT_CALC_LIGHTMAPS, 2, 0, (missionManager.nLastLevel - nLevel + 1 - missionManager.nLastSecretLevel) * 100, PrecomputeLightmapsPoll);
+		lightmapManager.ResetProgress ();
+		ProgressBar (TXT_CALC_LIGHTMAPS, 2, 0, 
+						 (missionManager.nLastLevel - nLevel + 1 - missionManager.nLastSecretLevel) * lightmapManager.Progress ().Scale (), 
+						 PrecomputeLightmapsPoll);
 		}
 	else {
 		for (; nLevel <= missionManager.nLastLevel; nLevel++)

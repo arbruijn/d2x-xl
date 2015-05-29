@@ -77,6 +77,83 @@ tLightmap dummyLightmap;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+void CLightmapProgress::Setup (void)
+{
+if (!gameStates.app.bPrecomputeLightmaps) 
+	return;
+if (!(m_pProgressMenu = CMenu::Active ()))
+	return;
+if ((m_pLevelProgress = (*m_pProgressMenu) ["subtitle 1"]))
+		m_pLevelProgress->SetText ("level progress");
+	if (!(m_pLevelProgress = (*m_pProgressMenu) ["progress bar 2"]))
+		return;
+
+if (!m_bActive) {
+	if (!((m_pTotalProgress = (*m_pProgressMenu) ["progress bar 1"])))
+		return;
+	if (!(m_pTime = (*m_pProgressMenu) ["time"]))
+		return;
+	m_fTotal = float (m_pTotalProgress->MaxValue ());
+	m_tStart = SDL_GetTicks ();
+	m_pLevelCount = (*m_pProgressMenu) ["level count"];
+	m_bActive = true;
+	}
+
+if (m_pLevelCount) {
+	char szLabel [50];
+	sprintf (szLabel, "%d / %d", m_pTotalProgress->Value () / 100 + 1, m_pTotalProgress->MaxValue () / Scale ());
+	m_pLevelCount->SetText (szLabel);
+	}
+
+m_pLevelProgress->Value () = 0;
+m_pLevelProgress->MaxValue () = FACES.nFaces;
+m_nLocalProgress = 0; 
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapProgress::Update (void)
+{
+if (m_bActive) {
+	m_pLevelProgress->Value ()++;
+	m_pLevelProgress->Rebuild ();
+	int32_t nLevelProgress = int32_t (float (Scale () * m_pLevelProgress->Value ()) / float (FACES.nFaces) + 0.5f);
+	if (m_pTime) {
+		static CTimeout to (1000);
+		if (to.Expired ()) {
+			float fDone = float (m_pTotalProgress->Value () + nLevelProgress);
+			int32_t tPassed = SDL_GetTicks () - m_tStart;
+			int32_t tLeft = Max (int32_t (float (tPassed) * m_fTotal / fDone) - tPassed, 0);
+			tPassed = (tPassed + 500) / 1000;
+			tLeft = (tLeft + 500) / 1000;
+			char szTime [50];
+			sprintf (szTime, "%d:%02d:%02d / %d:%02d:%02d", 
+						tPassed / 3600, (tPassed / 60) % 60, tPassed % 60,
+						tLeft / 3600, (tLeft / 60) % 60, tLeft % 60);
+			m_pTime->SetText (szTime);
+			}
+		}
+	if (m_nLocalProgress < nLevelProgress) {
+		m_nLocalProgress = nLevelProgress;
+		m_pTotalProgress->Value ()++;
+		m_pTotalProgress->Rebuild ();
+		}
+	m_pProgressMenu->Render (m_pProgressMenu->Title (), m_pProgressMenu->SubTitle ());
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapProgress::Skip (int32_t i)
+{
+if (m_pTotalProgress)
+	m_pTotalProgress->Value () += i * Scale ();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 void CLightmapFaceData::Setup (CSegFace* pFace)
 {
 CSide* pSide = SEGMENT (pFace->m_info.nSegment)->m_sides + pFace->m_info.nSide;
@@ -733,33 +810,17 @@ return (k < m) ? -1 : (k > m) ? 1 : 0;
 }
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 int32_t CLightmapManager::BuildAll (int32_t nFace)
 {
-	CMenu			*pProgressMenu = NULL;
+	CMenu			*m_pProgressMenu = NULL;
 	CMenuItem	*pTotalProgress = NULL;
 	CMenuItem	*pLevelProgress = NULL;
 	CMenuItem	*pTime = NULL;
 	int32_t		nLastFace;
-	float			fTotal;
 
 INIT_PROGRESS_LOOP (nFace, nLastFace, FACES.nFaces);
-
-if (gameStates.app.bPrecomputeLightmaps) {
-	pProgressMenu = CMenu::Active ();
-	if (pProgressMenu) {
-		if ((pLevelProgress = (*pProgressMenu) ["subtitle 1"])) {
-			pLevelProgress->SetText ("level progress");
-			}
-		if ((pLevelProgress = (*pProgressMenu) ["progress bar 2"])) {
-			pLevelProgress->Value () = 0;
-			pLevelProgress->MaxValue () = FACES.nFaces;
-			}
-		fTotal = (pTotalProgress = (*pProgressMenu) ["progress bar 1"]) ? float (pTotalProgress->MaxValue ()) : 0.0f;
-		if (fTotal > 0.0f) 
-			pTime = (*pProgressMenu) ["time"];
-		}
-	}
 
 if (nFace <= 0) {
 	CreateSpecial (m_data.m_texColor, 0, 0);
@@ -767,41 +828,12 @@ if (nFace <= 0) {
 	m_list.nLightmaps = 2;
 	}
 //Next Go through each surface and create a lightmap for it.
-	int32_t nTotalProgress = pTotalProgress->Value (), nLocalProgress = 0; 
-
 for (m_data.pFace = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.pFace++) {
 #if DBG
 	if ((m_data.pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.pFace->m_info.nSide == nDbgSide)))
 		BRP;
 #endif
-		if (gameStates.app.bPrecomputeLightmaps && pProgressMenu) {
-			int32_t nLevelProgress = int32_t (float (100 * nFace + 1) / float (FACES.nFaces) + 0.5f);
-			if (pTime) {
-				static CTimeout to (1000);
-				if (to.Expired ()) {
-					float fDone = float (nTotalProgress + nLevelProgress);
-					int32_t tPassed = SDL_GetTicks () - gameStates.app.tPrecomputeLightmaps;
-					int32_t tLeft = Max (int32_t (float (tPassed) * fTotal / fDone) - tPassed, 0);
-					tPassed = (tPassed + 500) / 1000;
-					tLeft = (tLeft + 500) / 1000;
-					char szTime [50];
-					sprintf (szTime, "%d:%02d:%02d / %d:%02d:%02d", 
-								tPassed / 3600, (tPassed / 60) % 60, tPassed % 60,
-								tLeft / 3600, (tLeft / 60) % 60, tLeft % 60);
-					pTime->SetText (szTime);
-					}
-				}
-			if (nLocalProgress < nLevelProgress) {
-				nLocalProgress = nLevelProgress;
-				pTotalProgress->Value ()++;
-				pTotalProgress->Rebuild ();
-				}
-			if (pLevelProgress) {
-				pLevelProgress->Value ()++;
-				pLevelProgress->Rebuild ();
-				}
-			pProgressMenu->Render (pProgressMenu->Title (), pProgressMenu->SubTitle ());
-			}
+	m_progress.Update ();
 	if (SEGMENT (m_data.pFace->m_info.nSegment)->m_function == SEGMENT_FUNC_SKYBOX) {
 		m_data.pFace->m_info.nLightmap = 1;
 		continue;
@@ -1068,8 +1100,13 @@ Destroy ();
 int32_t nLights = Init (0);
 if (nLights < 0)
 	return 0;
-if (Load (nLevel))
+
+SetupProgress ();
+
+if (Load (nLevel)) {
+	m_progress.Skip (1);
 	return 1;
+	}
 
 m_bSuccess = 1;
 
@@ -1092,7 +1129,6 @@ if ((gameStates.render.bPerPixelLighting || gameStates.app.bPrecomputeLightmaps)
 		//PLANE_DIST_TOLERANCE = fix (I2X (1) * 0.001f);
 		//SetupSegments (); // set all faces up as triangles
 		gameStates.render.bBuildLightmaps = 1;
-		gameStates.app.tPrecomputeLightmaps = SDL_GetTicks ();
 		if (!gameStates.app.bPrecomputeLightmaps && gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 			nFace = 0;
 			ProgressBar (TXT_CALC_LIGHTMAPS, 1, 0, PROGRESS_STEPS (FACES.nFaces), CreatePoll);
