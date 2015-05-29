@@ -814,10 +814,6 @@ return (k < m) ? -1 : (k > m) ? 1 : 0;
 
 int32_t CLightmapManager::BuildAll (int32_t nFace)
 {
-	CMenu			*m_pProgressMenu = NULL;
-	CMenuItem	*pTotalProgress = NULL;
-	CMenuItem	*pLevelProgress = NULL;
-	CMenuItem	*pTime = NULL;
 	int32_t		nLastFace;
 
 INIT_PROGRESS_LOOP (nFace, nLastFace, FACES.nFaces);
