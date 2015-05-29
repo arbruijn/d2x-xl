@@ -712,7 +712,6 @@ char* CHUD::StrPrimaryWeaponList (char* pszList, char* pszAmmo)
 
 	int32_t	n = (gameStates.app.bD1Mission) ? 5 : 10;
 	int32_t	l = 0;
-	int32_t	nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
 	int32_t	nState [2] = {-1, 0};
 	int32_t	nMaxAutoSelect = 255;
 	bool		bLasers = false;
