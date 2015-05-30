@@ -11,7 +11,7 @@
 CGlowRenderer glowRenderer;
 
 #define USE_VIEWPORT	2
-#define BLUR			0
+#define BLUR			2
 #define BLUR_RADIUS	(m_bViewport ? 3.0f : 0.0f)
 
 //------------------------------------------------------------------------------

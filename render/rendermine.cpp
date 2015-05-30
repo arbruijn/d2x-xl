@@ -921,6 +921,7 @@ void RenderMeshOutline (int32_t nScale, float fScale)
 bool bBlur = (gameOpts->render.effects.bGlow == 2) && glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
 
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
+ogl.SetDepthTest (true);
 ogl.SetDepthWrite (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetLineSmooth (true);
@@ -930,7 +931,7 @@ fScale *= Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
 //if (!bBlur)
 //	fScale *= 2.0f;
 
-#if !DBG
+#if 1 //!DBG
 glColor4f (float (gameStates.render.outlineColor.r) / 255.0f, float (gameStates.render.outlineColor.g) / 255.0f, float (gameStates.render.outlineColor.b) / 255.0f, float (gameStates.render.outlineColor.a) / 255.0f);
 #else
 glColor3f (1,1,1);
