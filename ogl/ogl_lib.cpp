@@ -718,7 +718,7 @@ else
 	glLoadIdentity ();
 	if (gameStates.render.nRenderPass < 0) {
 		ogl.SetDepthWrite (true);
-		glClearDepth (1.0);
+		glClearDepth (/*gameStates.render.nWindow [0] ? 1.0 : 0.0*/ 1.0);
 #if MAX_SHADOWMAPS > 0
 		if (gameStates.render.nShadowMap) {
 			ColorMask (0, 0, 0, 0, 0);

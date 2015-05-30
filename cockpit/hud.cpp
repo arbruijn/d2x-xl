@@ -1440,6 +1440,8 @@ else {
 CCockpitInfo::bWindowDrawn [nWindow] = 1;
 gameData.render.window.Setup (&gameData.render.scene, x, y, w, h);
 gameData.render.window.Activate ("CHUD::SetupWindow (window)", &gameData.render.scene);
+glClearDepth (1.0);
+glClear (GL_DEPTH_BUFFER_BIT);
 }
 
 //	-----------------------------------------------------------------------------

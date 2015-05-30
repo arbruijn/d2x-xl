@@ -918,22 +918,23 @@ if (!bPolygonalOutline)
 
 void RenderMeshOutline (int32_t nScale, float fScale)
 {
+bool bBlur = (gameOpts->render.effects.bGlow == 2) && glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
+
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetDepthWrite (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetLineSmooth (true);
 glEnable (GL_POINT_SMOOTH);
-#if 1
-glColor4f (float (gameStates.render.outlineColor.r) / 255.0f, float (gameStates.render.outlineColor.g) / 255.0f, float (gameStates.render.outlineColor.b) / 255.0f, float (gameStates.render.outlineColor.a) / 255.0f);
-#else
-glColor3f (1,1,1);
-#endif
-
-bool bBlur = (gameOpts->render.effects.bGlow == 2) && glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
 
 fScale *= Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
 //if (!bBlur)
 //	fScale *= 2.0f;
+
+#if !DBG
+glColor4f (float (gameStates.render.outlineColor.r) / 255.0f, float (gameStates.render.outlineColor.g) / 255.0f, float (gameStates.render.outlineColor.b) / 255.0f, float (gameStates.render.outlineColor.a) / 255.0f);
+#else
+glColor3f (1,1,1);
+#endif
 
 for (int32_t j = 0; j < 2; j++) {
 #if 0
@@ -991,6 +992,8 @@ if (bBlur)
 
 void RenderMine (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow)
 {
+//if (!nWindow)
+//	return;
 PROF_START
 SetupMineRenderer (nWindow);
 PROF_END(ptAux)
@@ -1009,7 +1012,7 @@ RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
 #if 1
 if (gameStates.render.CartoonStyle () && (gameStates.render.nShadowPass < 2)) {
-	ogl.CopyDepthTexture (0, GL_TEXTURE1, 1);
+	//ogl.CopyDepthTexture (0, GL_TEXTURE1, 1);
 	RenderSegmentEdges ();
 	}
 #endif

@@ -69,7 +69,7 @@ return true;
 bool CTransformation::Pop (const char *pszFile, const int32_t nLine)
 {
 if (m_save.ToS () <= 0) {
-#if 0
+#if DBG
 	PrintLog (0, "transformation underflow (%s.%d)!\n", pszFile, nLine);
 #endif
 	return false;
@@ -94,7 +94,7 @@ void CTransformation::Begin (const CFixVector& vPos, CFixMatrix& mOrient, const 
 
 //Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
 if (!Push ()) {
-#if 0
+#if DBG
 	PrintLog (0, "transformation overflow (%s.%d)!\n", pszFile, nLine);
 #endif
 	return;

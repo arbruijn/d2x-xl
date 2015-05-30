@@ -11,7 +11,7 @@
 CGlowRenderer glowRenderer;
 
 #define USE_VIEWPORT	2
-#define BLUR			2
+#define BLUR			0
 #define BLUR_RADIUS	(m_bViewport ? 3.0f : 0.0f)
 
 //------------------------------------------------------------------------------
@@ -250,7 +250,11 @@ if (gameStates.render.cameras.bActive) {
 if (nType == BLUR_SHADOW) 
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else if (nType == BLUR_OUTLINE) 
+#if DBG
+	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+#else
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
+#endif
 else 
 #if 0 && DBG
 	glClearColor (1.0f, 0.5f, 0.0f, 0.25f);
@@ -362,7 +366,7 @@ bool CGlowRenderer::UseViewport (void)
 #if USE_VIEWPORT == 1
 return !ogl.IsSideBySideDevice () && (gameOpts->render.effects.bGlow == 1);
 #elif USE_VIEWPORT == 2
-return !ogl.IsSideBySideDevice ();
+return !gameStates.render.nWindow [0] && !ogl.IsSideBySideDevice ();
 #else
 return 0;
 #endif
@@ -746,7 +750,12 @@ else
 	if (m_nType == BLUR_SHADOW)
 		BRP;
 #endif
-	gameData.render.scene.Activate ("CGlowRenderer::End");
+#if 1
+	if (gameStates.render.nWindow [0])
+		gameData.render.window.Activate ("CGlowRenderer::End");
+	else
+#endif
+		gameData.render.scene.Activate ("CGlowRenderer::End");
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
@@ -774,11 +783,11 @@ else
 
 	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 
+	float radius = BLUR_RADIUS;
 #if BLUR
 	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 
-	float radius = BLUR_RADIUS;
 	if (!ogl.SelectBlurBuffer (0))
 		return Reset (0, 1);
 	ClearDrawBuffer (m_nType);
@@ -810,9 +819,9 @@ else
 
 	ogl.ChooseDrawBuffer ();
 	ogl.SetDepthMode (GL_ALWAYS);
+	ogl.SetBlending (true);
 
 #if BLUR
-	ogl.SetBlending (true);
 	ogl.SetBlendMode ((m_nType >= BLUR_OUTLINE) ? OGL_BLEND_MULTIPLY : (fAlpha < 1.0f) ? OGL_BLEND_ALPHA : OGL_BLEND_ADD);
 	glColor4f (1.0f, 1.0f, 1.0f, fAlpha);
 	Render (1, -1, radius); // Glow -> back buffer
@@ -821,7 +830,7 @@ else
 		Render (-1, -1, radius); // render the unblurred stuff on top of the blur
 #	endif
 #else
-	ogl.SetBlendMode ((m_nType >= BLUR_OUTLINE) ? OGL_BLEND_MULTIPLY : (fAlpha < 1.0f) ? OGL_BLEND_ALPHA : OGL_BLEND_ADD);
+	ogl.SetBlendMode ((m_nType > BLUR_OUTLINE) ? OGL_BLEND_MULTIPLY : (fAlpha < 1.0f) ? OGL_BLEND_ALPHA : OGL_BLEND_ADD);
 	glColor4f (1.0f, 1.0f, 1.0f, fAlpha);
 	Render (-1, -1, radius); // render the unblurred stuff on top of the blur
 #endif

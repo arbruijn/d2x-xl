@@ -907,7 +907,10 @@ if (m_edges.Buffer ()) {
 	transformation.End (__FILE__, __LINE__);
 #endif
 	UnloadSphereShader ();
+	int32_t bGlow = gameOpts->render.effects.bGlow;
+	//gameOpts->render.effects.bGlow  = Min (gameOpts->render.effects.bGlow, 1);
 	RenderMeshOutline (CMeshEdge::DistToScale (X2F (Max (0, CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ()) - pObj->Size ()))));
+	gameOpts->render.effects.bGlow = bGlow;
 	}
 }
 
