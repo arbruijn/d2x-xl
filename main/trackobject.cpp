@@ -120,11 +120,11 @@ return m_nBestObj;
 //	and it must not be obstructed by a CWall.
 int32_t CObject::ObjectIsTrackable (int32_t nTarget, fix& xDot, int32_t nThread)
 {
-if (nTarget == -1)
-	return 0;
 if (IsCoopGame)
 	return 0;
 CObject* pTarget = OBJECT (nTarget);
+if (!pTarget)
+	return 0;
 //	Don't track player if he's cloaked.
 if ((nTarget == LOCALPLAYER.nObject) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 	return 0;

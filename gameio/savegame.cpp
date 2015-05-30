@@ -419,7 +419,7 @@ bRestoringMenu = 1;
 choice = m_nDefaultSlot + NM_IMG_SPACE;
 i = m.Menu (NULL, TXT_LOAD_GAME_MENU, SaveStateMenuCallback, &choice, BG_SUBMENU, BG_STANDARD, 190, -1);
 bRestoringMenu = 0;
-if (i < 0)
+if (i == -1) // esc pressed
 	return 0;
 choice -= NM_IMG_SPACE;
 for (i = 0; i < NUM_SAVES + 1; i++)
