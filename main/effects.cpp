@@ -367,10 +367,10 @@ xEffectTime += gameData.time.xFrame;
 
 // ----------------------------------------------------------------------------
 
-void RestoreEffectBitmapIcons()
+void RestoreEffectBitmapIcons (void)
 {
-	int32_t i,j;
-	tEffectInfo *pEffectInfo;
+	int32_t			i,j;
+	tEffectInfo		*pEffectInfo;
 	tBitmapIndex	bmi;
 
 for (i = 0, j = gameData.effects.nEffects [gameStates.app.bD1Data], pEffectInfo = gameData.effects.pEffect.Buffer (); i < j; i++, pEffectInfo++)
@@ -395,9 +395,9 @@ for (i = 0, j = gameData.effects.nEffects [0], pEffectInfo = gameData.effects.ef
 
 // ----------------------------------------------------------------------------
 //stop an effect from animating.  Show first frame.
-void StopEffect(int32_t effect_num)
+void StopEffect(int32_t nEffect)
 {
-	tEffectInfo *pEffectInfo = gameData.effects.pEffect + effect_num;
+	tEffectInfo *pEffectInfo = gameData.effects.pEffect + nEffect;
 	//Assert(pEffectInfo->bm_ptr != -1);
 pEffectInfo->flags |= EF_STOPPED;
 pEffectInfo->nCurFrame = 0;
@@ -410,11 +410,11 @@ if (pEffectInfo->changing.nObjectTexture != -1)
 
 // ----------------------------------------------------------------------------
 //restart a stopped effect
-void RestartEffect(int32_t effect_num)
+void RestartEffect(int32_t nEffect)
 {
-gameData.effects.pEffect [effect_num].flags &= ~EF_STOPPED;
+gameData.effects.pEffect [nEffect].flags &= ~EF_STOPPED;
 
-	//Assert(gameData.effects.pEffect [effect_num].bm_ptr != -1);
+	//Assert(gameData.effects.pEffect [nEffect].bm_ptr != -1);
 }
 
 // ----------------------------------------------------------------------------
@@ -450,6 +450,7 @@ ec.nSound = cf.ReadInt ();
 ec.nSegment = cf.ReadInt ();
 ec.nSide = cf.ReadInt ();
 }
+
 
 int32_t ReadEffectInfo (CArray<tEffectInfo>& ec, int32_t n, CFile& cf)
 {

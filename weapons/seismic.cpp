@@ -235,16 +235,14 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 
 void DoSeismicStuff (void)
 {
-	int32_t		stv_save;
-
 if (gameStates.limitFPS.bSeismic && !gameStates.app.tick40fps.bTick)
 	return;
-stv_save = gameStates.gameplay.seismic.nVolume;
+int32_t nVolume = gameStates.gameplay.seismic.nVolume;
 gameStates.gameplay.seismic.nMagnitude = 0;
 gameStates.gameplay.seismic.nVolume = 0;
 RockTheMineFrame ();
 SeismicDisturbanceFrame ();
-if (stv_save != 0) {
+if (nVolume != 0) {
 	if (gameStates.gameplay.seismic.nVolume == 0) {
 		audio.StopLoopingSound ();
 		gameStates.gameplay.seismic.bSound = 0;
