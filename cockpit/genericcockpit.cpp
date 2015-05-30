@@ -218,7 +218,7 @@ gameStates.render.bRearView = -bRearView;
 transformation.Push ();
 SetupWindow (nWindow);
 fontManager.SetCurrent (GAME_FONT);
-gameOpts->render.effects.bGlow = Min (gameOpts->render.effects.bGlow, 1);
+//gameOpts->render.effects.bGlow = Min (gameOpts->render.effects.bGlow, 1);
 nZoomSave = gameStates.zoom.nFactor;
 gameStates.zoom.nFactor = float (I2X (gameOpts->render.cockpit.nWindowZoom + 1));					//the player's zoom factor
 if (((nUser != WBU_RADAR_TOPDOWN) && (nUser != WBU_RADAR_HEADSUP)) ||

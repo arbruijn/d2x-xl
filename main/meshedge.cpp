@@ -27,11 +27,23 @@ bool bPolygonalOutline = false;
 
 int32_t CMeshEdge::Visibility (void)
 {
-	CFloatVector		vViewDir, vViewer;
-	
-vViewer.Assign (gameData.objData.pViewer->Position ());
+	CFloatVector	vViewDir, vViewer;
+	int32_t			nVisible = 1;
 
-int32_t nVisible = 0;
+vViewer.Assign (transformation.m_info.pos);
+vViewDir.Assign (transformation.m_info.view [0].m.dir.f);
+for (int32_t j = 0; j < m_nFaces; j++) {
+	CFloatVector vVertDir = m_vertices [0][j] - vViewer;
+	CFloatVector::Normalize (vVertDir);
+	if (CFloatVector::Dot (vVertDir, vViewDir) >= 0.0f) {
+		nVisible = 0;
+		break;
+		}
+	}
+
+if (nVisible)
+	return 0;
+
 for (int32_t j = 0; j < m_nFaces; j++) {
 	vViewDir = vViewer - m_faces [j].m_vCenter [0];
 	CFloatVector::Normalize (vViewDir);
