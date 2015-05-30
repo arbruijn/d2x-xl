@@ -931,11 +931,13 @@ fScale *= Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
 //if (!bBlur)
 //	fScale *= 2.0f;
 
-#if 1 //!DBG
+#if 0 //!DBG
 glColor4f (float (gameStates.render.outlineColor.r) / 255.0f, float (gameStates.render.outlineColor.g) / 255.0f, float (gameStates.render.outlineColor.b) / 255.0f, float (gameStates.render.outlineColor.a) / 255.0f);
 #else
 glColor3f (1,1,1);
 #endif
+
+CCanvas::Current ()->SetViewport ();
 
 for (int32_t j = 0; j < 2; j++) {
 #if 0

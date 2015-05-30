@@ -11,7 +11,7 @@
 CGlowRenderer glowRenderer;
 
 #define USE_VIEWPORT	2
-#define BLUR			2
+#define BLUR			0
 #define BLUR_RADIUS	((m_bViewport > 0) ? 3.0f : 0.0f)
 
 //------------------------------------------------------------------------------
@@ -250,7 +250,7 @@ if (gameStates.render.cameras.bActive) {
 if (nType == BLUR_SHADOW) 
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else if (nType == BLUR_OUTLINE) 
-#if 0 //DBG
+#if 1 //DBG
 	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 #else
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
@@ -274,6 +274,8 @@ if (!ogl.SelectGlowBuffer ()) {
 #endif
 	return 0;
 	}
+//gameData.render.frame.Activate ("StartFrame (frame)");
+//gameData.render.frame.Deactivate ();
 CCanvas::Current ()->SetViewport ();
 ClearDrawBuffer (m_nType);
 return 1;
@@ -727,6 +729,8 @@ if (Available (nType)) {
 
 //------------------------------------------------------------------------------
 
+static int32_t bNoEdgeBlurInWindows = 0;
+
 bool CGlowRenderer::End (float fAlpha)
 {
 if (m_nStrength < 0)
@@ -741,14 +745,21 @@ else
 #if DBG
 	if (m_nType == BLUR_SHADOW)
 		BRP;
-	if (gameStates.render.nWindow [0] && (m_nType == BLUR_OUTLINE)) {
+	if (m_nType == BLUR_OUTLINE) {
+		if (bNoEdgeBlurInWindows == (gameStates.render.nWindow [0] != 0)) {
+			ogl.ChooseDrawBuffer ();
+			m_nStrength = -1;
+			return false;
+			}
+		}
+	if (m_nType != BLUR_OUTLINE) {
 		ogl.ChooseDrawBuffer ();
 		m_nStrength = -1;
 		return false;
 		}
 
 #endif
-#if 0
+#if 1
 	if (gameStates.render.nWindow [0])
 		gameData.render.window.Activate ("CGlowRenderer::End");
 	else
