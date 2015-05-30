@@ -331,7 +331,7 @@ class COGL {
 		void GetVerInfo (void);
 		GLuint CreateDepthTexture (int32_t nTMU, int32_t bFBO, int32_t nType = 0, int32_t nWidth = -1, int32_t hHeight = -1);
 		void DestroyDepthTexture (int32_t bFBO);
-		GLuint CopyDepthTexture (int32_t nId, int32_t nTMU = GL_TEXTURE1);
+		GLuint CopyDepthTexture (int32_t nId, int32_t nTMU = GL_TEXTURE1, int32_t bForce = 0);
 		GLuint CreateColorTexture (int32_t nTMU, int32_t bFBO);
 		void DestroyColorTexture (void);
 		GLuint CopyColorTexture (void);

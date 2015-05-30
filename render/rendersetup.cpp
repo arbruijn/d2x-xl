@@ -105,7 +105,7 @@ glMatrixMode (matrixMode);
 
 //------------------------------------------------------------------------------
 
-void SetupRenderView (fix xStereoSeparation, int16_t *nStartSegP, int32_t bOglScale)
+void SetupRenderView (fix xStereoSeparation, int16_t *pnStartSeg, int32_t bOglScale)
 {
 	int16_t		nStartSeg;
 	bool			bPlayer = (gameData.objData.pViewer == LOCALOBJECT);
@@ -159,13 +159,13 @@ else {
 				}
 			}
 		}
-	if (!nStartSegP)
+	if (!pnStartSeg)
 		nStartSeg = gameStates.render.nStartSeg; // re-use start segment
 	else if (0 > (nStartSeg = FindSegByPos (gameData.render.mine.viewer.vPos, gameData.objData.pViewer->info.nSegment, 1, 0)))
 		nStartSeg = gameData.objData.pViewer->info.nSegment;
 	}
-if (nStartSegP)
-	*nStartSegP = nStartSeg;
+if (pnStartSeg)
+	*pnStartSeg = nStartSeg;
 
 SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView, xZoom, bOglScale, xStereoSeparation);
 #if DBG

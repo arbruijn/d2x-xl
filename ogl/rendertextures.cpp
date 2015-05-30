@@ -113,7 +113,7 @@ if (m_states.hDepthBuffer [bFBO]) {
 
 // -----------------------------------------------------------------------------------
 
-GLuint COGL::CopyDepthTexture (int32_t nId, int32_t nTMU)
+GLuint COGL::CopyDepthTexture (int32_t nId, int32_t nTMU, int32_t bForce)
 {
 	static int32_t nSamples = -1;
 	static int32_t nDuration = 0;
@@ -135,7 +135,7 @@ if (!m_states.hDepthBuffer [nId])
 	m_states.bDepthBuffer [nId] = 0;
 if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTexture (-1, nId, nId))) {
 	BindTexture (m_states.hDepthBuffer [nId]);
-	if (!m_states.bDepthBuffer [nId]) {
+	if (bForce || !m_states.bDepthBuffer [nId]) {
 #if 0
 		if (ogl.StereoDevice () == -GLASSES_SHUTTER_NVIDIA)
 			ogl.SetReadBuffer ((ogl.StereoSeparation () < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
