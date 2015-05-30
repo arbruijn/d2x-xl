@@ -336,7 +336,7 @@ int32_t CSegmentData::FindEdge (int16_t nVertex1, int16_t nVertex2, int32_t nSta
 {
 	CMeshEdge *pEdge = &edges [nStart];
 
-for (int32_t i = nStart; i < gameData.segData.nEdges; i++, pEdge++)
+for (int32_t i = nStart; i < nEdges; i++, pEdge++)
 	if ((pEdge->m_nVertices [0] == nVertex1) && (pEdge->m_nVertices [1] == nVertex2))
 		return i;
 return -1;
@@ -422,9 +422,9 @@ return 0;
 int32_t CSegmentData::CreateEdgeBuffers (int32_t nLength)
 {
 for (int32_t i = 0; i < 2; i++) {
-	if (!gameData.segData.edgeVertexData [i].m_vertices.Resize (nLength, false))
+	if ((gameData.segData.edgeVertexData [i].m_vertices.Length () < uint32_t (nLength)) && !gameData.segData.edgeVertexData [i].m_vertices.Resize (nLength, false))
 		return 0;
-	if (!gameData.segData.edgeVertexData [i].m_dists.Resize (nLength, false))
+	if ((gameData.segData.edgeVertexData [i].m_dists.Length () < uint32_t (nLength)) && !gameData.segData.edgeVertexData [i].m_dists.Resize (nLength, false))
 		return 0;
 	}
 return 1;

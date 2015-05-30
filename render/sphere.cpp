@@ -859,8 +859,10 @@ int32_t CTesselatedSphere::AddEdge (CFloatVector& v1, CFloatVector& v2, CFloatVe
 #if SPHERE_DRAW_NORMALS
 CSphereEdge *pEdge = m_edges + m_nEdges++;
 pEdge->m_faces [0].m_vNormal [0] = -CFloatVector::Normal (v1, v2, v3);
+#if DBG
 if (pEdge->m_faces [0].m_vNormal [0].IsZero ())
 	BRP;
+#endif
 pEdge->m_faces [0].m_vCenter [0] = (v1 + v2 + v3) / 3.0f;
 pEdge->m_vertices [1][0] = pEdge->m_faces [0].m_vCenter [0];
 pEdge->m_vertices [0][0] = pEdge->m_faces [0].m_vCenter [0] + pEdge->m_faces [0].m_vNormal [0];
