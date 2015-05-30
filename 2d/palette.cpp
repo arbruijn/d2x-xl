@@ -271,33 +271,12 @@ if (!gameStates.render.nLightingMethod) // || gameStates.menus.nInMenu || !gameS
 	blue += float (m_data.nGamma) / 64.0f;
 	}
 #endif
-CLAMP (red, 0.0f, 1.0f);
-CLAMP (green, 0.0f, 1.0f);
-CLAMP (blue, 0.0f, 1.0f);
-//if (!bForce && (m_data.effect.Red () == red) && (m_data.effect.Green () == green) && (m_data.effect.Blue () == blue))
-//	return;
-#if 1
-m_data.effect.Red () = red;
-m_data.effect.Green () = green;
-m_data.effect.Blue () = blue;
-#else
-if (m_data.effect.Red () < red)
-	m_data.effect.Red () = red;
-else
-	red = m_data.effect.Red ();
-if (m_data.effect.Green () < green)
-	m_data.effect.Green () = green;
-else
-	green = m_data.effect.Green ();
-if (m_data.effect.Blue () < blue)
-	m_data.effect.Blue () = blue;
-else
-	blue = m_data.effect.Blue ();
-#endif
-
+m_data.effect.Red () = Clamp (red, 0.0f, 1.0f);
+m_data.effect.Green () = Clamp (green, 0.0f, 1.0f);
+m_data.effect.Blue () = Clamp (blue, 0.0f, 1.0f);
 float maxColor = Max (Max (red, green), blue);
-SetFadeDuration (F2X (maxColor * 64.0 / FADE_RATE));
 m_data.bDoEffect = (maxColor > 0.0f); //if we arrive here, brightness needs adjustment
+SetFadeDuration (F2X (maxColor * 64.0 / FADE_RATE));
 }
 
 //------------------------------------------------------------------------------
@@ -372,7 +351,7 @@ BumpEffect (float (red) / 64.0f, float (green) / 64.0f, float (blue) / 64.0f);
 
 void CPaletteManager::BumpEffect (float red, float green, float blue)
 {
-	float	maxVal = (paletteManager.FadeDelay () ? 60 : MAX_PALETTE_ADD) / 64.0f;
+	float	maxVal = 1.0f; //(paletteManager.FadeDelay () ? 60 : MAX_PALETTE_ADD) / 64.0f;
 	float fFade = Clamp (FadeScale (), 0.0f, 1.0f);
 
 red = Clamp (m_data.effect.Red () * fFade + red, 0.0f, maxVal);
@@ -429,11 +408,14 @@ SetEffect (0, 0, 0);
 
 void CPaletteManager::UpdateEffect (void)
 {
-float	fFade = FadeScale ();
-
-m_data.flash.Red () = m_data.effect.Red () * fFade;
-m_data.flash.Green () = m_data.effect.Green () * fFade;
-m_data.flash.Blue () = m_data.effect.Blue () * fFade;
+if (m_data.bDoEffect) {
+	float	fFade = FadeScale ();
+	m_data.flash.Red () = m_data.effect.Red () * fFade;
+	m_data.flash.Green () = m_data.effect.Green () * fFade;
+	m_data.flash.Blue () = m_data.effect.Blue () * fFade;
+	if (m_data.flash.IsZero ())
+		ClearEffect ();
+	}
 }
 
 //	------------------------------------------------------------------------------------
@@ -463,7 +445,7 @@ if (m_data.xFadeDelay) {
 		}
 	}
 else {
-	m_data.xFadeDuration [0] -= gameData.time.xFrame;
+	m_data.xFadeDuration [0] = Max (0, m_data.xFadeDuration [0] - gameData.time.xFrame);
 	if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.Red () || m_data.effect.Green () || m_data.effect.Blue ()))
 		  NDRecordPaletteEffect (int16_t (m_data.effect.Red () * 64.0f), int16_t (m_data.effect.Green () * 64.0f), int16_t (m_data.effect.Blue () * 64.0f));
 	}

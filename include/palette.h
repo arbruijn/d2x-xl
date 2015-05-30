@@ -211,7 +211,7 @@ class CPaletteManager {
 		inline void SetGreenEffect (int8_t color) {  m_data.effect.Green () = float (color) / 64.0f; }
 		inline void SetBlueEffect (int8_t color) {  m_data.effect.Blue () = float (color) / 64.0f; }
 		inline void SetFadeDelay (fix xDelay) { m_data.xFadeDelay = xDelay; }
-		inline void SetFadeDuration (fix xDuration) { m_data.xFadeDuration [0] = m_data.xFadeDuration [1] = xDuration; }
+		inline void SetFadeDuration (fix xDuration) { m_data.xFadeDuration [0] = (m_data.xFadeDuration [1] = xDuration); }
 		inline void SetLastEffectTime (fix xTime) { m_data.xLastEffectTime = xTime; }
 		inline fix FadeDelay (void) { return m_data.xFadeDelay; }
 		inline fix LastEffectTime (void) { return m_data.xLastEffectTime; }

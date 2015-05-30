@@ -232,7 +232,12 @@ void _CDECL_ PowerupBasic (int32_t redAdd, int32_t greenAdd, int32_t blueAdd, in
 va_start (args, format);
 vsprintf (text, format, args);
 va_end (args);
+#if 0
 paletteManager.BumpEffect (redAdd, greenAdd, blueAdd);
+#else
+float h = 60.0f / float (Max (redAdd, Max (greenAdd, blueAdd)));
+paletteManager.BumpEffect (int32_t (float (redAdd) * h), int32_t (float (greenAdd) * h), int32_t (float (blueAdd) * h));
+#endif
 HUDInitMessage (text);
 //mprintf_gameData.objs.pwrUp.Info ();
 cockpit->AddPointsToScore (score);
@@ -281,7 +286,7 @@ if (pPlayer->Energy () < pPlayer->MaxEnergy ()) {
 		boost += boost / 2;
 	pPlayer->UpdateEnergy (boost);
 	if (ISLOCALPLAYER (nPlayer))
-		PowerupBasic (15,15,7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (pPlayer->energy));
+		PowerupBasic (15, 7, 0, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (pPlayer->energy));
 	return 1;
 	} 
 else if (ISLOCALPLAYER (nPlayer))
@@ -328,7 +333,7 @@ if (!gameOpts->gameplay.bInventory || (IsMultiGame && !IsCoopGame))
 	return -ApplyCloak (1, nPlayer);
 if (pPlayer->nCloaks < MAX_INV_ITEMS) {
 	pPlayer->nCloaks++;
-	PowerupBasic (0, 0, 0, 0, "%s!", TXT_CLOAKING_DEVICE);
+	PowerupBasic (15, 0, 15, 0, "%s!", TXT_CLOAKING_DEVICE);
 	return 1;
 	}
 if (ISLOCALPLAYER (nPlayer))
@@ -346,7 +351,7 @@ if (!gameOpts->gameplay.bInventory || (IsMultiGame && !IsCoopGame))
 	return -ApplyInvul (1, nPlayer);
 if (pPlayer->nInvuls < MAX_INV_ITEMS) {
 	pPlayer->nInvuls++;
-	PowerupBasic (0, 0, 0, 0, "%s!", TXT_INVULNERABILITY);
+	PowerupBasic (0, 7, 15, 0, "%s!", TXT_INVULNERABILITY);
 	return 1;
 	}
 if (ISLOCALPLAYER (nPlayer))
@@ -360,7 +365,7 @@ int32_t PickupExtraLife (CObject *pObj, int32_t nPlayer)
 {
 PLAYER (nPlayer).lives++;
 if (nPlayer == N_LOCALPLAYER)
-	PowerupBasic (15, 15, 15, 0, TXT_EXTRA_LIFE);
+	PowerupBasic (0, 15, 7, 0, TXT_EXTRA_LIFE);
 return 1;
 }
 
@@ -374,7 +379,7 @@ if (IsHoardGame) {
 	if (pPlayer->secondaryAmmo [PROXMINE_INDEX] < 12) {
 		if (ISLOCALPLAYER (nPlayer)) {
 			MultiSendGotOrb (N_LOCALPLAYER);
-			PowerupBasic (15, 0, 15, 0, "Orb!!!", nPlayer);
+			PowerupBasic (7, 15, 7, 0, "Orb!!!", nPlayer);
 			}
 		pPlayer->secondaryAmmo [PROXMINE_INDEX]++;
 		pPlayer->flags |= PLAYER_FLAGS_FLAG;

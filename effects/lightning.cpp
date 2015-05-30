@@ -995,11 +995,11 @@ if (gameOpts->render.lightning.bGlow && m_bGlow) {
 			glowRenderer.End ();
 		return 1;
 		}
-	if (m_bBlur)
-		glowRenderer.Begin (GLOW_LIGHTNING, 3, false, 1.0f);
-	else
-		glowRenderer.End ();
 	}
+if (m_bBlur)
+	glowRenderer.Begin (GLOW_LIGHTNING, 3, false, 1.0f);
+else
+	glowRenderer.End ();
 ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 ogl.SetTexturing (false);
 return 0;
@@ -1032,7 +1032,7 @@ if (gameStates.app.bMultiThreaded && (nThread > 0))
 #endif
 CFloatVector color = m_color;
 if (m_nLife > 0) {
-	int32_t i = m_nLife - m_nTTL;
+	int32_t i = abs (m_nLife) - m_nTTL;
 	if (i < 250)
 		color.Alpha () *= (float) i / 250.0f;
 	else if (m_nTTL < m_nLife / 4)
@@ -1068,7 +1068,7 @@ if (extraGameInfo [0].bUseLightning > 1)
 		for (int32_t i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())
 				m_nodes [i].GetChild ()->Draw (nDepth + 1, nThread);
-glowRenderer.Done (GLOW_LIGHTNING);
+glowRenderer.End (GLOW_LIGHTNING);
 ogl.ClearError (0);
 }
 

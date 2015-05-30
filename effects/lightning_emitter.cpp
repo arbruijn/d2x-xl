@@ -74,7 +74,7 @@ if (gameStates.app.bMultiThreaded) {
 			if (bFail)
 				continue;
 			m_lightning [i] = l;
-			if (!m_lightning [i].Create (bChildren, nThread))
+			if (!m_lightning [i].Create (0, nThread))
 				bFail = 1;
 			}
 		}
@@ -85,7 +85,7 @@ else
 #endif
 for (int32_t i = 0; i < nBolts; i++) {
 		m_lightning [i] = l;
-		if (!m_lightning [i].Create (bChildren, 0))
+		if (!m_lightning [i].Create (0, 0))
 			return false;
 		}
 

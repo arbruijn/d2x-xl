@@ -40,11 +40,11 @@ void CPaletteManager::RenderEffect (void)
 #if 1
 if (m_data.nSuspended)
 	return;
+UpdateEffect ();
 if (!m_data.bDoEffect)
 	return;
 ogl.SetBlending (true);
 ogl.SetBlendMode (OGL_BLEND_ADD);
-UpdateEffect ();
 glColor3fv (reinterpret_cast<GLfloat*> (&m_data.flash));
 bool bDepthTest = ogl.GetDepthTest ();
 ogl.SetDepthTest (false);
