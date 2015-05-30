@@ -544,7 +544,7 @@ if (!GuidedMissileActive () && ((gameOpts->render.cockpit.bHUD > 1) || (gameStat
 
 		if (!bLimited) {
 			DrawPlayerNames ();
-			RenderWindows ();
+			//RenderWindows ();
 			}
 		DrawCockpit (false);
 		if (bExtraInfo) {

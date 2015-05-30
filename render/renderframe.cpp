@@ -549,6 +549,7 @@ else {
 	if ((xStereoSeparation <= 0) && cameraManager.Render ())
 		CCanvas::Current ()->SetViewport ();
 	RenderFrame (xStereoSeparation, 0);
+	cockpit->RenderWindows ();
 	}
 FlushFrame (xStereoSeparation);
 }

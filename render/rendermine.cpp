@@ -995,8 +995,10 @@ if (bBlur)
 
 void RenderMine (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow)
 {
-//if (!nWindow)
-//	return;
+#if 0
+if (!nWindow)
+	return;
+#endif
 PROF_START
 SetupMineRenderer (nWindow);
 PROF_END(ptAux)

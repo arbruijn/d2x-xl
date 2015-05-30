@@ -548,6 +548,7 @@ if (m_bDone)
 	int32_t y = 0;
 
 ogl.SetDepthTest (false);
+ogl.SetDepthMode (GL_ALWAYS);
 FadeIn ();
 ogl.ColorMask (1,1,1,1,0);
 backgroundManager.Activate (m_background);

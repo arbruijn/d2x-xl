@@ -282,7 +282,8 @@ if (gameStates.app.bGameRunning)	{
 	if (gameStates.render.bRenderIndirect > 0) 
 		FlushDrawBuffer ();
 	if (StereoDevice () >= 0) {
-		int32_t bRenderIndirect = gameStates.render.bRenderIndirect = 0;
+		int32_t bRenderIndirect = gameStates.render.bRenderIndirect;
+		gameStates.render.bRenderIndirect = 0;
 		Draw2DFrameElements ();
 		gameStates.render.bRenderIndirect = bRenderIndirect;
 		}

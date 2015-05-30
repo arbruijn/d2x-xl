@@ -11,7 +11,7 @@
 CGlowRenderer glowRenderer;
 
 #define USE_VIEWPORT	2
-#define BLUR			0
+#define BLUR			2
 #define BLUR_RADIUS	((m_bViewport > 0) ? 3.0f : 0.0f)
 
 //------------------------------------------------------------------------------
@@ -250,8 +250,13 @@ if (gameStates.render.cameras.bActive) {
 if (nType == BLUR_SHADOW) 
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else if (nType == BLUR_OUTLINE) 
-#if 1 //DBG
-	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+#if 0 //DBG
+#	if 0
+	if (gameStates.render.nWindow [0])
+		glClearColor (0.0f, 0.1f, 0.2f, 1.0f);
+	else
+#	endif
+		glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 #else
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 #endif
@@ -742,7 +747,7 @@ if (!Visible ())
 else
 #endif
 	{
-#if DBG
+#if 0 //DBG
 	if (m_nType == BLUR_SHADOW)
 		BRP;
 	if (m_nType == BLUR_OUTLINE) {
