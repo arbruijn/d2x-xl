@@ -50,6 +50,7 @@ return (pLocalInfo->pNextrimaryFire <= 0) || ((pRobotInfo->nSecWeaponType != -1)
 void SetNextFireTime (CObject *pObj, tAILocalInfo *pLocalInfo, tRobotInfo *pRobotInfo, int32_t nGun)
 {
 	//	For guys in snipe mode, they have a 50% shot of getting this shot free.
+ENTER (0);
 if ((nGun != 0) || (pRobotInfo->nSecWeaponType == -1))
 	if ((pObj->cType.aiInfo.behavior != AIB_SNIPE) || (RandShort () > 16384))
 		pLocalInfo->nRapidFireCount++;
@@ -65,6 +66,7 @@ else {
 	else
 		pLocalInfo->nextSecondaryFire = pRobotInfo->secondaryFiringWait [gameStates.app.nDifficultyLevel];
 	}
+LEAVE
 }
 
 // ----------------------------------------------------------------------------------
@@ -72,22 +74,23 @@ else {
 //	If player is cloaked, then robot probably didn't actually collide, deal with that here.
 void DoAIRobotHitAttack (CObject *pRobot, CObject *pTarget, CFixVector *vCollision)
 {
+ENTER (0);
 	tAILocalInfo	*pLocalInfo = gameData.aiData.localInfo + OBJ_IDX (pRobot);
 	tRobotInfo		*pRobotInfo = ROBOTINFO (pRobot->info.nId);
 
 if (!pRobotInfo)
-	return;
+	LEAVE
 if (!pRobot->AttacksObject (pTarget))
-	return;
+	LEAVE
 if (pRobot->IsStatic ())
-	return;
+	LEAVE
 //	If player is dead, stop firing.
 if (LOCALOBJECT->info.nType == OBJ_GHOST)
-	return;
+	LEAVE
 if (pRobotInfo->attackType != 1)
-	return;
+	LEAVE
 if (pLocalInfo->pNextrimaryFire > 0)
-	return;
+	LEAVE
 if (!TARGETOBJ->Cloaked ()) {
 	if (CFixVector::Dist (OBJPOS (TARGETOBJ)->vPos, pRobot->info.position.vPos) < pRobot->info.xSize + TARGETOBJ->info.xSize + I2X (2)) {
 		pTarget->CollidePlayerAndNastyRobot (pRobot, *vCollision);
@@ -96,6 +99,7 @@ if (!TARGETOBJ->Cloaked ()) {
 	}
 pRobot->cType.aiInfo.GOAL_STATE = AIS_RECOVER;
 SetNextFireTime (pRobot, pLocalInfo, pRobotInfo, 1);	//	1 = nGun: 0 is special (uses nextSecondaryFire)
+LEAVE
 }
 
 #define	FIRE_K	8		//	Controls average accuracy of robot firing.  Smaller numbers make firing worse.  Being power of 2 doesn't matter.
@@ -123,6 +127,7 @@ return FixDiv (vTarget - vAttacker, elapsedTime) + player_vel;
 //		if firing a matter weapon, less leading, based on skill level.
 int32_t LeadTarget (CObject *pObj, CFixVector *vFirePoint, CFixVector *vBelievedTargetPos, int32_t nGuns, CFixVector *vFire)
 {
+ENTER (0);
 	fix			dot, xTargetSpeed, xDistToTarget, xMaxWeaponSpeed, xProjectedTime;
 	CFixVector	vTargetMovementDir, vVecToTarget;
 	int32_t		nWeaponType;
@@ -130,38 +135,38 @@ int32_t LeadTarget (CObject *pObj, CFixVector *vFirePoint, CFixVector *vBelieved
 	tRobotInfo	*pRobotInfo = ROBOTINFO (pObj);
 
 if (!pRobotInfo)
-	return 0;
+	RETURN (0)
 if (TARGETOBJ->Cloaked ())
-	return 0;
+	RETURN (0)
 vTargetMovementDir = TARGETOBJ->mType.physInfo.velocity;
 xTargetSpeed = CFixVector::Normalize (vTargetMovementDir);
 if (xTargetSpeed < MIN_LEAD_SPEED)
-	return 0;
+	RETURN (0)
 vVecToTarget = *vBelievedTargetPos - *vFirePoint;
 xDistToTarget = CFixVector::Normalize (vVecToTarget);
 if (xDistToTarget > MAX_LEAD_DISTANCE)
-	return 0;
+	RETURN (0)
 dot = CFixVector::Dot (vVecToTarget, vTargetMovementDir);
 if ((dot < -LEAD_RANGE) || (dot > LEAD_RANGE))
-	return 0;
+	RETURN (0)
 //	Looks like it might be worth trying to lead the player.
 nWeaponType = pRobotInfo->nWeaponType;
 if ((nGuns == 0) && (pRobotInfo->nSecWeaponType != -1))
 	nWeaponType = pRobotInfo->nSecWeaponType;
 if (nWeaponType < 0)
-	return 0;
+	RETURN (0)
 pWeaponInfo = WEAPONINFO (nWeaponType);
 if (!pWeaponInfo)
-	return 0;
+	RETURN (0)
 xMaxWeaponSpeed = pWeaponInfo->speed [gameStates.app.nDifficultyLevel];
 if (xMaxWeaponSpeed < I2X (1))
-	return 0;
+	RETURN (0)
 //	Matter weapons:
 //	At Rookie or Trainee, don't lead at all.
 //	At higher skill levels, don't lead as well.  Accomplish this by screwing up xMaxWeaponSpeed.
 if (pWeaponInfo->matter) {
 	if (gameStates.app.nDifficultyLevel <= 1)
-		return 0;
+		RETURN (0)
 	else
 		xMaxWeaponSpeed *= (DIFFICULTY_LEVEL_COUNT-gameStates.app.nDifficultyLevel);
    }
@@ -176,10 +181,10 @@ if (CFixVector::Dot (*vFire, pObj->info.position.mOrient.m.dir.f) < I2X (1) / 2)
 	*vFire += vVecToTarget;
 	*vFire *= I2X (1) / 2;
 	if (CFixVector::Dot (*vFire, pObj->info.position.mOrient.m.dir.f) < I2X (1) / 2) {
-		return 0;
+		RETURN (0)
 		}
 	}
-return 1;
+RETURN (1)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -188,6 +193,7 @@ return 1;
 //	When this routine is complete, the parameter gameData.aiData.target.vDir should not be necessary.
 void AIFireLaserAtTarget (CObject *pObj, CFixVector *vFirePoint, int32_t nGun, CFixVector *vBelievedTargetPos)
 {
+ENTER (0);
 	int16_t			nShot, nObject = pObj->Index ();
 	tAILocalInfo	*pLocalInfo = gameData.aiData.localInfo + nObject;
 	tRobotInfo		*pRobotInfo = ROBOTINFO (pObj);
@@ -198,25 +204,25 @@ void AIFireLaserAtTarget (CObject *pObj, CFixVector *vFirePoint, int32_t nGun, C
 	int32_t			count, i;
 
 if (!pRobotInfo)
-	return;
+	LEAVE
 //	If this robot is only awake because a camera woke it up, don't fire.
 if (pObj->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE)
-	return;
+	LEAVE
 if (TARGETOBJ->IsPlayer () && !pObj->AttacksPlayer ())
-	return;
+	LEAVE
 if (pObj->info.controlType == CT_MORPH)
-	return;
+	LEAVE
 //	If player is exploded, stop firing.
 if (LOCALPLAYER.m_bExploded)
-	return;
+	LEAVE
 if (pObj->cType.aiInfo.xDyingStartTime)
-	return;		//	No firing while in death roll.
+	LEAVE		//	No firing while in death roll.
 //	Don't let the boss fire while in death roll.  Sorry, this is the easiest way to do this.
 //	If you try to key the boss off pObj->cType.aiInfo.xDyingStartTime, it will hose the endlevel stuff.
 if (pObj->IsBoss ()) {
 	i = gameData.bossData.Find (nObject);
 	if ((i < 0) || (gameData.bossData [i].m_nDyingStartTime))
-		return;
+		LEAVE
 	}
 //	If player is cloaked, maybe don't fire based on how long cloaked and randomness.
 if (TARGETOBJ->Cloaked ()) {
@@ -224,7 +230,7 @@ if (TARGETOBJ->Cloaked ()) {
 	if ((gameData.timeData.xGame - xCloakTime > CLOAK_TIME_MAX / 4) &&
 		 (RandShort () > FixDiv (gameData.timeData.xGame - xCloakTime, CLOAK_TIME_MAX) / 2)) {
 		SetNextFireTime (pObj, pLocalInfo, pRobotInfo, nGun);
-		return;
+		LEAVE
 		}
 	}
 //	Handle problem of a robot firing through a CWall because its gun tip is on the other
@@ -242,7 +248,7 @@ if (pObj->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		//	See if they are unobstructed.
 		if (!(SEGMENT (pObj->info.nSegment)->IsPassable (nConnSide, NULL) & WID_PASSABLE_FLAG)) {
 			//	Can't fly through, so don't let this bot fire through!
-			return;
+			LEAVE
 			}
 		}
 	else {
@@ -253,7 +259,7 @@ if (pObj->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		if (fate != HIT_NONE) {
 			Int3 ();		//	This bot's gun is poking through a CWall, so don't fire.
 			MoveTowardsSegmentCenter (pObj);		//	And decrease chances it will happen again.
-			return;
+			LEAVE
 			}
 		}
 	}
@@ -309,9 +315,9 @@ nWeaponType = pRobotInfo->nWeaponType;
 if ((pRobotInfo->nSecWeaponType != -1) && ((nWeaponType < 0) || !nGun))
 	nWeaponType = pRobotInfo->nSecWeaponType;
 if (nWeaponType < 0)
-	return;
+	LEAVE
 if (0 > (nShot = CreateNewWeaponSimple (&vFire, vFirePoint, pObj->Index (), (uint8_t) nWeaponType, 1)))
-	return;
+	LEAVE
 
 if ((nWeaponType == FUSION_ID) && (gameStates.app.nSDLTicks [0] - pObj->TimeLastEffect () > 1000)) {
 	pObj->SetTimeLastEffect (gameStates.app.nSDLTicks [0]);
@@ -337,12 +343,14 @@ if (++(pObj->cType.aiInfo.CURRENT_GUN) >= pRobotInfo->nGuns) {
 #endif
 CreateAwarenessEvent (pObj, PA_NEARBY_ROBOT_FIRED);
 SetNextFireTime (pObj, pLocalInfo, pRobotInfo, nGun);
+LEAVE
 }
 
 //	-------------------------------------------------------------------------------------------------------------------
 
 void DoFiringStuff (CObject *pObj, int32_t nTargetVisibility, CFixVector *vVecToTarget)
 {
+ENTER (0);
 if ((gameData.aiData.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) ||
 	 (gameData.aiData.nTargetVisibility >= 1)) {
 	//	Now, if in robot's field of view, lock onto player
@@ -375,18 +383,22 @@ if ((gameData.aiData.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESH
 			}
 		}
 	}
+LEAVE
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 //	If a hiding robot gets bumped or hit, he decides to find another hiding place.
 void DoAIRobotHit (CObject *pObj, int32_t nType)
 {
+ENTER (0);
+if (!pObj)
+	LEAVE
 if (pObj->info.controlType != CT_AI)
-	return;
+	LEAVE
 if ((nType != PA_WEAPON_ROBOT_COLLISION) && (nType != PA_PLAYER_COLLISION))
-	return;
+	LEAVE
 if (pObj->cType.aiInfo.behavior != AIB_STILL)
-	return;
+	LEAVE
 int32_t r = RandShort ();
 //	Attack robots (eg, green guy) shouldn't have behavior = still.
 //	1/8 time, charge player, 1/4 time create path, rest of time, do nothing
@@ -400,6 +412,7 @@ else if (r < 4096 + 8192) {
 	CreateNSegmentPath (pObj, RandShort () / 8192 + 2, -1);
 	gameData.aiData.localInfo [pObj->Index ()].mode = AIM_FOLLOW_PATH;
 	}
+LEAVE
 }
 
 #if DBG
@@ -413,11 +426,12 @@ int32_t	Gun_point_hack=0;
 //	Returns true if this CObject should be allowed to fire at the player.
 int32_t AIMaybeDoActualFiringStuff (CObject *pObj, tAIStaticInfo *pStaticInfo)
 {
+ENTER (0);
 if (IsMultiGame &&
 	 (pStaticInfo->GOAL_STATE != AIS_FLINCH) && (pObj->info.nId != ROBOT_BRAIN) &&
 	 (pStaticInfo->CURRENT_STATE == AIS_FIRE))
-	return 1;
-return 0;
+	RETURN (1)
+RETURN (0)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -425,6 +439,7 @@ return 0;
 //	lurking behind a corner.
 void AIDoActualFiringStuff (CObject *pObj, tAIStaticInfo *pStaticInfo, tAILocalInfo *pLocalInfo, tRobotInfo *pRobotInfo, int32_t nGun)
 {
+ENTER (0);
 if ((gameData.aiData.nTargetVisibility == 2) ||
 	 (gameData.aiData.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
 	CFixVector vFirePos = gameData.aiData.target.vBelievedPos;
@@ -443,11 +458,11 @@ if ((gameData.aiData.nTargetVisibility == 2) ||
 			if (nGun < pRobotInfo->nGuns) {
 				if (pRobotInfo->attackType == 1) {
 					if ((TARGETOBJ->Type () == OBJ_PLAYER) && LOCALPLAYER.m_bExploded)
-						return;
+						LEAVE
 					if (gameData.aiData.target.xDist >= pObj->info.xSize + TARGETOBJ->info.xSize + I2X (2))
-						return;
+						LEAVE
 					if (!AILocalPlayerControlsRobot (pObj, ROBOT_FIRE_AGITATION - 2))
-						return;
+						LEAVE
 					DoAIRobotHitAttack (pObj, TARGETOBJ, &pObj->info.position.vPos);
 					}
 				else {
@@ -457,7 +472,7 @@ if ((gameData.aiData.nTargetVisibility == 2) ||
 					if (gameData.aiData.vGunPoint.p.x || gameData.aiData.vGunPoint.p.y || gameData.aiData.vGunPoint.p.z) {
 #endif
 						if (!AILocalPlayerControlsRobot (pObj, ROBOT_FIRE_AGITATION))
-							return;
+							LEAVE
 						//	New, multi-weapon-nType system, 06/05/95 (life is slipping awayd:\temp\dm_test.)
 						if (nGun != 0) {
 							if (pLocalInfo->pNextrimaryFire <= 0) {
@@ -509,7 +524,7 @@ else if ((!pRobotInfo->attackType && (pRobotInfo->nWeaponType >= 0) && WI_homing
 				((pLocalInfo->nextSecondaryFire <= 0) && (pStaticInfo->CURRENT_GUN == 0)))
 			&& ((dist = CFixVector::Dist(gameData.aiData.vHitPos, pObj->info.position.vPos)) > I2X (40))) {
 		if (!AILocalPlayerControlsRobot (pObj, ROBOT_FIRE_AGITATION))
-			return;
+			LEAVE
 		AIFireLaserAtTarget (pObj, &gameData.aiData.vGunPoint, nGun, &gameData.aiData.target.vBelievedPos);
 		pStaticInfo->GOAL_STATE = AIS_RECOVER;
 		pLocalInfo->goalState [pStaticInfo->CURRENT_GUN] = AIS_RECOVER;
@@ -536,18 +551,18 @@ else {	//	---------------------------------------------------------------
 					if (pRobotInfo->attackType == 1) {
 						if (!LOCALPLAYER.m_bExploded && (gameData.aiData.target.xDist < pObj->info.xSize + TARGETOBJ->info.xSize + I2X (2))) {	
 							if (!AILocalPlayerControlsRobot (pObj, ROBOT_FIRE_AGITATION-2))
-								return;
+								LEAVE
 							DoAIRobotHitAttack (pObj, TARGETOBJ, &pObj->info.position.vPos);
 							}
 						else
-							return;
+							LEAVE
 						}
 					else {
 						if (gameData.aiData.vGunPoint.IsZero ())
 							;
 						else {
 							if (!AILocalPlayerControlsRobot (pObj, ROBOT_FIRE_AGITATION))
-								return;
+								LEAVE
 							//	New, multi-weapon-nType system, 06/05/95 (life is slipping awayd:\temp\dm_test.)
 							if (nGun != 0) {
 								if (pLocalInfo->pNextrimaryFire <= 0)
@@ -580,6 +595,7 @@ else {	//	---------------------------------------------------------------
 			}
 		}
 	}
+LEAVE
 }
 
 //	---------------------------------------------------------------

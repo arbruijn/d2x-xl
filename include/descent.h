@@ -4653,9 +4653,15 @@ return pInfo ? pInfo->xBlobSize : 0;
 
 #if 1 //DBG
 
-#	define ENTER(_thread)		const int32_t __THREAD__ = (_thread); TraceCallStack (1, __FUNCTION__, __THREAD__, __FILE__, __LINE__)
-#	define LEAVE					{ TraceCallStack (-1, __FUNCTION__, __THREAD__, __FILE__, __LINE__); return; }
-#	define RETURN(_retVal)		{ TraceCallStack (-1, __FUNCTION__, __THREAD__, __FILE__, __LINE__); return (_retVal); }
+#ifdef _WIN32
+#	define	__FUNC__	__FUNCSIG__
+#else
+#	define	__FUNC__	__PRETTY_FUNCTION__
+#endif
+
+#	define ENTER(_thread)		const int32_t __THREAD__ = (_thread); TraceCallStack (1, __FUNC__, __THREAD__, __FILE__, __LINE__)
+#	define LEAVE					{ TraceCallStack (-1, __FUNC__, __THREAD__, __FILE__, __LINE__); return; }
+#	define RETURN(_retVal)		{ TraceCallStack (-1, __FUNC__, __THREAD__, __FILE__, __LINE__); return (_retVal); }
 
 #else
 

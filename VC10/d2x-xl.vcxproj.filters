@@ -217,13 +217,13 @@
     <Filter Include="Source Files\cockpit\Header Files">
       <UniqueIdentifier>{36480db8-b6f1-449d-957e-564c121366db}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\audio\ai">
+    <Filter Include="Source Files\ai">
       <UniqueIdentifier>{3a878324-145e-438f-914b-ef3c30c01608}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\audio\ai\Source Files">
+    <Filter Include="Source Files\ai\Source Files">
       <UniqueIdentifier>{eb8ec6d9-8ace-4e52-a3e4-5add2e21f196}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\audio\ai\Header Files">
+    <Filter Include="Source Files\ai\Header Files">
       <UniqueIdentifier>{18c2da63-f456-48e0-b3c4-a9c2b4d5362e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -364,16 +364,16 @@
       <Filter>Source Files\main\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\ai.h">
-      <Filter>Source Files\audio\ai\Header Files</Filter>
+      <Filter>Source Files\ai\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\aistruct.h">
-      <Filter>Source Files\audio\ai\Header Files</Filter>
+      <Filter>Source Files\ai\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\d1_ai.h">
-      <Filter>Source Files\audio\ai\Header Files</Filter>
+      <Filter>Source Files\ai\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\d1_aistruct.h">
-      <Filter>Source Files\audio\ai\Header Files</Filter>
+      <Filter>Source Files\ai\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\autodl.h">
       <Filter>Source Files\network\Header Files</Filter>
@@ -1107,46 +1107,46 @@
       <Filter>Source Files\main\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\ai.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\aianimate.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\aiboss.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\aifire.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\aiframe.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\aiinit.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\ailib.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\aimove.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\aipath.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\aisave.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\aisnipe.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\d1_ai.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\escort.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ai\thief.cpp">
-      <Filter>Source Files\audio\ai\Source Files</Filter>
+      <Filter>Source Files\ai\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\network\autodl.cpp">
       <Filter>Source Files\network\Source Files</Filter>

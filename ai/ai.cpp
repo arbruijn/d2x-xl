@@ -33,6 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void AIDoCloakStuff (void)
 {
+ENTER (0);
 	CObject*	pObj = TARGETOBJ ? TARGETOBJ : gameData.objData.pConsole;
 
 for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
@@ -43,12 +44,14 @@ for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 // Make work for control centers.
 gameData.aiData.target.vBelievedPos = gameData.aiData.cloakInfo [0].vLastPos;
 gameData.aiData.target.nBelievedSeg = gameData.aiData.cloakInfo [0].nLastSeg;
+LEAVE
 }
 
 // ----------------------------------------------------------------------------
 // Returns false if awareness is considered too puny to add, else returns true.
 int32_t AddAwarenessEvent (CObject *pObj, int32_t nType)
 {
+ENTER (0);
 	// If player cloaked and hit a robot, then increase awareness
 if (nType >= WEAPON_WALL_COLLISION)
 	AIDoCloakStuff ();
@@ -57,13 +60,13 @@ if (gameData.aiData.nAwarenessEvents < MAX_AWARENESS_EVENTS) {
 	if ((nType == WEAPON_WALL_COLLISION) || (nType == WEAPON_ROBOT_COLLISION))
 		if (pObj->info.nId == VULCAN_ID)
 			if (RandShort () > 3276)
-				return 0;       // For vulcan cannon, only about 1/10 actually cause awareness
+				RETURN (0)       // For vulcan cannon, only about 1/10 actually cause awareness
 	gameData.aiData.awarenessEvents [gameData.aiData.nAwarenessEvents].nSegment = pObj->info.nSegment;
 	gameData.aiData.awarenessEvents [gameData.aiData.nAwarenessEvents].pos = pObj->info.position.vPos;
 	gameData.aiData.awarenessEvents [gameData.aiData.nAwarenessEvents].nType = nType;
 	gameData.aiData.nAwarenessEvents++;
 	} 
-return 1;
+RETURN (1)
 }
 
 // ----------------------------------------------------------------------------------
@@ -72,6 +75,7 @@ return 1;
 void CreateAwarenessEvent (CObject *pObj, int32_t nType)
 {
 	// If not in multiplayer, or in multiplayer with robots, do this, else unnecessary!
+ENTER (0);
 if (IsRobotGame) {
 	if (AddAwarenessEvent (pObj, nType)) {
 		if (((RandShort () * (nType + 4)) >> 15) > 4)
@@ -80,6 +84,7 @@ if (IsRobotGame) {
 			gameData.aiData.nOverallAgitation = OVERALL_AGITATION_MAX;
 		}
 	}
+LEAVE
 }
 
 int8_t newAwareness [MAX_SEGMENTS_D2X];
@@ -88,6 +93,7 @@ int8_t newAwareness [MAX_SEGMENTS_D2X];
 
 void pae_aux (int32_t nSegment, int32_t nType, int32_t level)
 {
+ENTER (0);
 CSegment* pSeg = SEGMENT (nSegment);
 if (pSeg) {
 	if (newAwareness [nSegment] < nType)
@@ -100,26 +106,30 @@ if (pSeg) {
 			}
 		}
 	}
+LEAVE
 }
 
 // ----------------------------------------------------------------------------------
 
 void ProcessAwarenessEvents (void)
 {
+ENTER (0);
 if (IsRobotGame) {
 	memset (newAwareness, 0, sizeof (newAwareness [0]) * gameData.segData.nSegments);
 	for (int32_t i = 0; i < gameData.aiData.nAwarenessEvents; i++)
 		pae_aux (gameData.aiData.awarenessEvents [i].nSegment, gameData.aiData.awarenessEvents [i].nType, 1);
 	}
 gameData.aiData.nAwarenessEvents = 0;
+LEAVE
 }
 
 // ----------------------------------------------------------------------------------
 
 void SetPlayerAwarenessAll (void)
 {
-	int32_t		i;
-	int16_t		nSegment;
+ENTER (0);
+	int32_t	i;
+	int16_t	nSegment;
 	CObject	*pObj;
 
 ProcessAwarenessEvents ();
@@ -135,6 +145,7 @@ FORALL_OBJS (pObj)
 		if (newAwareness [nSegment] > gameData.aiData.localInfo [i].targetAwarenessType)
 			pObj->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		}
+LEAVE
 }
 
 // ----------------------------------------------------------------------------------
@@ -143,9 +154,10 @@ FORALL_OBJS (pObj)
 //  Setting player_awareness (a fix, time in seconds which CObject is aware of player)
 void DoAIFrameAll (void)
 {
+ENTER (0);
 SetPlayerAwarenessAll ();
 if (USE_D1_AI)
-	return;
+	LEAVE
 CObject *pObj = OBJECT (gameData.aiData.nLastMissileCamera);
 if (pObj) {
 	// Clear if supposed misisle camera is not a weapon, or just every so often, just in case.
@@ -168,6 +180,7 @@ for (int32_t h = gameData.bossData.ToS (), j = 0; j < h; j++)
 				}
 		}
 	}
+LEAVE
 }
 
 //	-------------------------------------------------------------------------------------------------

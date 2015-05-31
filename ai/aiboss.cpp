@@ -66,9 +66,10 @@ int32_t	maxSpewBots [NUM_D2_BOSSES] = {2, 1, 2, 3, 3, 3, 3, 3};
 //	If pos == NULL, pick random spot in CSegment.
 int32_t CObject::CreateGatedRobot (int16_t nSegment, uint8_t nObjId, CFixVector* vPos)
 {
+ENTER (0);
 tRobotInfo*	pRobotInfo = ROBOTINFO (nObjId);
 if (!pRobotInfo)
-	return -1;
+	RETURN (-1)
 
 	int32_t		nObject, nTries = 5;
 	CObject*		pObj;
@@ -81,18 +82,18 @@ if (!pRobotInfo)
 #if !DBG
 if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
 #endif
-	return -1;
+	RETURN (-1)
 nBoss = gameData.bossData.Find (OBJ_IDX (this));
 if (nBoss < 0)
-	return -1;
+	RETURN (-1)
 if (gameData.timeData.xGame - gameData.bossData [nBoss].m_nLastGateTime < gameData.bossData [nBoss].m_nGateInterval)
-	return -1;
+	RETURN (-1)
 FORALL_ROBOT_OBJS (pObj)
 	if (pObj->info.nCreator == BOSS_GATE_PRODUCER_NUM)
 		count++;
 if (count > 2 * gameStates.app.nDifficultyLevel + 6) {
 	gameData.bossData [nBoss].m_nLastGateTime = gameData.timeData.xGame - 3 * gameData.bossData [nBoss].m_nGateInterval / 4;
-	return -1;
+	RETURN (-1)
 	}
 vObjPos = pSeg->Center ();
 for (;;) {
@@ -105,7 +106,7 @@ for (;;) {
 	if (CheckObjectObjectIntersection (&vObjPos, objsize, pSeg)) {
 		if (!--nTries) {
 			gameData.bossData [nBoss].m_nLastGateTime = gameData.timeData.xGame - 3 * gameData.bossData [nBoss].m_nGateInterval / 4;
-			return -1;
+			RETURN (-1)
 			}
 		vPos = NULL;
 		}
@@ -116,7 +117,7 @@ nObject = CreateRobot (nObjId, nSegment, vObjPos);
 pObj = OBJECT (nObject);
 if (!pObj) {
 	gameData.bossData [nBoss].m_nLastGateTime = gameData.timeData.xGame - 3 * gameData.bossData [nBoss].m_nGateInterval / 4;
-	return -1;
+	RETURN (-1)
 	}
 // added lifetime increase depending on difficulty level 04/26/06 DM
 gameData.multigame.create.nObjNums [0] = nObject; // A convenient global to get nObject back to caller for multiplayer
@@ -139,19 +140,20 @@ pObj->MorphStart ();
 gameData.bossData [nBoss].m_nLastGateTime = gameData.timeData.xGame;
 LOCALPLAYER.numRobotsLevel++;
 LOCALPLAYER.numRobotsTotal++;
-return pObj->Index ();
+RETURN (pObj->Index ())
 }
 
 //	----------------------------------------------------------------------------------------------------------
 //	pObj points at a boss.  He was presumably just hit and he's supposed to create a bot at the hit location *pos.
 int32_t CObject::BossSpewRobot (CFixVector *vPos, int16_t objType, int32_t bObjTrigger)
 {
+ENTER (0);
 if (!bObjTrigger && FindObjTrigger (OBJ_IDX (this), TT_SPAWN_BOT, -1)) // not caused by an object trigger, but object has an object trigger
-	return -1;
+	RETURN (-1)
 
 tRobotInfo *pRobotInfo = ROBOTINFO (info.nId);
 if (!pRobotInfo)
-	return -1;
+	RETURN (-1)
 
 	int16_t			nObject, nSegment, maxRobotTypes;
 	int16_t			nBossIndex, nBossId = pRobotInfo->bossFlag;
@@ -162,7 +164,7 @@ if (nSegment == -1) {
 #if TRACE
 	console.printf (CON_DBG, "Tried to spew a bot outside the mine! Aborting!\n");
 #endif
-	return -1;
+	RETURN (-1)
 	}
 if (!vPos) 
 	vPos = &SEGMENT (nSegment)->Center ();
@@ -195,7 +197,7 @@ if (nObject != -1) {
 		pNewObj->mType.physInfo.velocity *= I2X (128);
 		}
 	}
-return nObject;
+RETURN (nObject)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -205,24 +207,26 @@ return nObject;
 //	Return nObject if robot successfully created, else return -1
 int32_t GateInRobot (int16_t nObject, uint8_t nType, int16_t nSegment)
 {
+ENTER (0);
 if (!gameData.bossData.ToS ())
-	return -1;
+	RETURN (-1)
 if (nSegment < 0) {
 	int32_t nBoss = gameData.bossData.Find (nObject);
 	if (nBoss < 0)
-		return -1;
+		RETURN (-1)
 	if (!(gameData.bossData [nBoss].m_gateSegs.Buffer () && gameData.bossData [nBoss].m_nGateSegs))
-		return -1;
+		RETURN (-1)
 	nSegment = gameData.bossData [nBoss].m_gateSegs [(RandShort () * gameData.bossData [nBoss].m_nGateSegs) >> 15];
 	}
 Assert ((nSegment >= 0) && (nSegment <= gameData.segData.nLastSegment));
-return OBJECT (nObject)->CreateGatedRobot (nSegment, nType, NULL);
+RETURN (OBJECT (nObject) ? OBJECT (nObject)->CreateGatedRobot (nSegment, nType, NULL) : -1)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
 int32_t BossFitsInSeg (CObject *pBossObj, int32_t nSegment)
 {
+ENTER (0);
 	int32_t		nObject = OBJ_IDX (pBossObj);
 	int32_t		nPos;
 	CFixVector	vSegCenter, vVertPos;
@@ -241,15 +245,16 @@ for (nPos = 0; nPos < 9; nPos++) {
 		}
 	OBJECT (nObject)->RelinkToSeg (nSegment);
 	if (!ObjectIntersectsWall (pBossObj))
-		return 1;
+		RETURN (1)
 	}
-return 0;
+RETURN (0)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
 int32_t IsValidTeleportDest (CFixVector *vPos, int32_t nMinDist)
 {
+ENTER (0);
 	CObject		*pObj;
 	CFixVector	vOffs;
 	fix			xDist;
@@ -258,31 +263,31 @@ FORALL_ACTOR_OBJS (pObj) {
 	vOffs = *vPos - pObj->info.position.vPos;
 	xDist = vOffs.Mag();
 	if (xDist > ((nMinDist + pObj->info.xSize) * 3 / 2))
-		return 1;
+		RETURN (1)
 	}
-return 0;
+RETURN (0)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
 void TeleportBoss (CObject *pObj)
 {
+ENTER (0);
 	int16_t		i, nAttempts = 5, nRandSeg = 0, nRandIndex, nObject = pObj->Index ();
 	CFixVector	vBossDir, vNewPos;
 
 //	Pick a random CSegment from the list of boss-teleportable-to segments.
-Assert (nObject >= 0);
 i = gameData.bossData.Find (nObject);
 if (i < 0)
-	return;
+	LEAVE
 // do not teleport if less than 1% of initial shield strength left or drives heavily damaged
 if ((pObj->Damage () < 0.01) || (RandShort () > pObj->DriveDamage ()))
-	return;
+	LEAVE
 //Assert (gameData.bossData [i].m_nTeleportSegs > 0);
 if (gameData.bossData [i].m_nTeleportSegs <= 0)
-	return;
+	LEAVE
 if (gameData.bossData [i].m_nDyingStartTime > 0)
-	return;
+	LEAVE
 do {
 	nRandIndex = Rand (gameData.bossData [i].m_nTeleportSegs);
 	nRandSeg = gameData.bossData [i].m_teleportSegs [nRandIndex];
@@ -295,8 +300,8 @@ do {
 	}
 	while (--nAttempts);
 if (!nAttempts)
-	return;
-OBJECT (nObject)->RelinkToSeg (nRandSeg);
+	LEAVE
+pObj->RelinkToSeg (nRandSeg);
 gameData.bossData [i].m_nLastTeleportTime = gameData.timeData.xGame;
 //	make boss point right at CPlayerData
 pObj->info.position.vPos = vNewPos;
@@ -310,13 +315,15 @@ if (pRobotInfo)
 //	After a teleport, boss can fire right away.
 gameData.aiData.localInfo [nObject].pNextrimaryFire = 0;
 gameData.aiData.localInfo [nObject].nextSecondaryFire = 0;
+LEAVE
 }
 
 //	----------------------------------------------------------------------
 
 void StartBossDeathSequence (CObject *pObj)
 {
-if (pObj->IsBoss ()) {
+ENTER (0);
+if (pObj && pObj->IsBoss ()) {
 	int32_t	nObject = pObj->Index (),
 				i = gameData.bossData.Find (nObject);
 
@@ -327,19 +334,21 @@ if (pObj->IsBoss ()) {
 		gameData.bossData [i].m_nDyingStartTime = gameData.timeData.xGame;
 		}
 	}
+LEAVE
 }
 
 //	----------------------------------------------------------------------
 
 void DoBossDyingFrame (CObject *pObj)
 {
+ENTER (0);
 tRobotInfo	*pRobotInfo = ROBOTINFO (pObj);
 if (!pRobotInfo)
-	return;
+	LEAVE
 
 int32_t	i = gameData.bossData.Find (pObj->Index ());
 if (i < 0)
-	return;
+	LEAVE
 
 int32_t rval = DoRobotDyingFrame (pObj, gameData.bossData [i].m_nDyingStartTime, BOSS_DEATH_DURATION,
 											 &gameData.bossData [i].m_bDyingSoundPlaying, pRobotInfo->deathrollSound, I2X (4), I2X (4));
@@ -354,20 +363,22 @@ if (rval) {
 #endif
 	pObj->Explode (I2X (1)/4);
 	}
+LEAVE
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Do special stuff for a boss.
 void DoBossStuff (CObject *pObj, int32_t nTargetVisibility)
 {
+ENTER (0);
 int32_t nBossId = pObj->BossId ();
 if (!nBossId)
-	return;
+	LEAVE
 
 int32_t nObject = pObj->Index ();
 int32_t i = gameData.bossData.Find (nObject);
 if (i < 0)
-	return;
+	LEAVE
 int32_t nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 #if DBG
 if (pObj->info.xShield != gameData.bossData [i].m_xPrevShield) {
@@ -388,7 +399,7 @@ if (gameData.bossData [i].m_nLastGateTime > gameData.timeData.xGame)
 //		Level 4 boss behind locked door.  But he's allowed to teleport out of there.  So he
 //		teleports out of there right away, and blasts player right after first door.
 if (!gameData.aiData.nTargetVisibility && (gameData.timeData.xGame - gameData.bossData [i].m_nHitTime > I2X (2)))
-	return;
+	LEAVE
 
 if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 	if (pObj->cType.aiInfo.CLOAKED == 1) {
@@ -431,6 +442,7 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 			}
 		}
 	}
+LEAVE
 }
 
 //	---------------------------------------------------------------

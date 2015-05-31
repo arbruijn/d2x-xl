@@ -34,10 +34,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void AIDoRandomPatrol (CObject *pObj, tAILocalInfo *pLocalInfo)
 {
+ENTER (0);
 #if DBG
 static int bPatrols = 1;
 if (!bPatrols)
-	return;
+	LEAVE
 if (pObj->Index () == nDbgObj)
 	BRP;
 #endif
@@ -82,6 +83,7 @@ if (!IsMultiGame && gameOpts->gameplay.bIdleAnims && (pLocalInfo->mode == AIM_ID
 		DoSillyAnimation (pObj);
 		}
 	}
+LEAVE
 }
 
 // ------------------------------------------------------------------------------------------------------------------
@@ -94,6 +96,7 @@ static int8_t   xlatAnimation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLI
 
 int32_t DoSillyAnimation (CObject *pObj)
 {
+ENTER (0);
 	int32_t			nObject = pObj->Index ();
 	tJointPos*		jointPositions;
 	int32_t			robotType = pObj->info.nId, nGun, robotState, nJointPositions;
@@ -105,9 +108,9 @@ int32_t DoSillyAnimation (CObject *pObj)
 	tRobotInfo*		pRobotInfo = ROBOTINFO (robotType);
 
 if (!pRobotInfo)
-	return 0;
+	RETURN (0)
 if (0 > (nGunCount = pRobotInfo->nGuns))
-	return 0;
+	RETURN (0)
 attackType = pRobotInfo->attackType;
 robotState = xlatAnimation [pStaticInfo->GOAL_STATE];
 if (attackType) // && ((robotState == AS_FIRE) || (robotState == AS_RECOIL)))
@@ -160,7 +163,7 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 
 if (at_goal == 1) //nGunCount)
 	pStaticInfo->CURRENT_STATE = pStaticInfo->GOAL_STATE;
-return 1;
+RETURN (1)
 }
 
 //	------------------------------------------------------------------------------------------
@@ -170,6 +173,7 @@ return 1;
 //	Delta orientation of CObject is at:		aiInfo.deltaAngles
 void AIFrameAnimation (CObject *pObj)
 {
+ENTER (0);
 	int32_t	nObject = pObj->Index ();
 	int32_t	nJoint;
 	int32_t	nJoints = gameData.modelData.polyModels [0][pObj->ModelId ()].ModelCount ();
@@ -197,6 +201,7 @@ for (nJoint = 1; nJoint < nJoints; nJoint++) {
 			}
 		}
 	}
+LEAVE
 }
 
 //	----------------------------------------------------------------------
@@ -205,6 +210,7 @@ for (nJoint = 1; nJoint < nJoints; nJoint++) {
 //	scale: I2X (4) for boss, much smaller for much smaller guys
 int32_t DoRobotDyingFrame (CObject *pObj, fix StartTime, fix xRollDuration, int8_t *bDyingSoundPlaying, int16_t deathSound, fix xExplScale, fix xSoundScale)
 {
+ENTER (0);
 	fix	xRollVal, temp;
 	fix	xSoundDuration;
 	CSoundSample *pSound;
@@ -246,25 +252,28 @@ if (StartTime + xRollDuration - xSoundDuration < gameData.timeData.xGame) {
 else if (RandShort () < gameData.timeData.xFrame * 8) {
 	CreateSmallFireballOnObject (pObj, (I2X (1)/2 + RandShort ()) * (16 * xExplScale / I2X (1)) / 8, RandShort () < gameData.timeData.xFrame);
 	}
-return (StartTime + xRollDuration < gameData.timeData.xGame);
+RETURN (StartTime + xRollDuration < gameData.timeData.xGame)
 }
 
 //	----------------------------------------------------------------------
 
 void StartRobotDeathSequence (CObject *pObj)
 {
-if (!pObj->cType.aiInfo.xDyingStartTime) { // if not already dying
+ENTER (0);
+if (pObj && !pObj->cType.aiInfo.xDyingStartTime) { // if not already dying
 	pObj->cType.aiInfo.xDyingStartTime = gameData.timeData.xGame;
 	pObj->cType.aiInfo.bDyingSoundPlaying = 0;
 	pObj->cType.aiInfo.SKIP_AI_COUNT = 0;
 	}
+LEAVE
 }
 
 //	----------------------------------------------------------------------
 
 int32_t DoAnyRobotDyingFrame (CObject *pObj)
 {
-if (pObj->cType.aiInfo.xDyingStartTime) {
+ENTER (0);
+if (pObj && pObj->cType.aiInfo.xDyingStartTime) {
 	tRobotInfo	*pRobotInfo = ROBOTINFO (pObj);
 	int32_t bDeathRoll = pRobotInfo ? pRobotInfo->bDeathRoll : 0;
 	int32_t rval = DoRobotDyingFrame (pObj, pObj->cType.aiInfo.xDyingStartTime, I2X (Min (bDeathRoll / 2 + 1, 6)), 
@@ -276,9 +285,9 @@ if (pObj->cType.aiInfo.xDyingStartTime) {
 		if (!gameOpts->gameplay.bNoThief && (missionManager.nCurrentLevel < 0) && pObj->IsThief ())
 			RecreateThief (pObj);
 		}
-	return 1;
+	RETURN (1)
 	}
-return 0;
+RETURN (0)
 }
 
 //	---------------------------------------------------------------
