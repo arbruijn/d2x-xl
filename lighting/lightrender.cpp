@@ -111,7 +111,7 @@ if (left < r)
 
 int32_t CLightManager::SetActive (CActiveDynLight* pActiveLights, CDynLight* pLight, int16_t nType, int32_t nThread, bool bForce)
 {
-ENTER (2, nThread, "CLightManager::SetActive");
+ENTER (nThread, "CLightManager::SetActive");
 #if DBG
 if ((nDbgSeg >= 0) && (pLight->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pLight->info.nSide == nDbgSide)))
 	BRP;
@@ -215,7 +215,7 @@ return h;
 
 void CLightManager::SetNearestToVertex (int32_t nSegment, int32_t nSide, int32_t nVertex, CFixVector *vNormal, uint8_t nType, int32_t bStatic, int32_t bVariable, int32_t nThread)
 {
-ENTER (2, nThread, "CLightManager::SetNearestToVertex");
+ENTER (nThread, "CLightManager::SetNearestToVertex");
 
 if (bStatic || m_data.variableVertLights [nVertex]) {
 	int16_t				*pNearestLight = m_data.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
@@ -280,7 +280,7 @@ LEAVE;
 
 int32_t CLightManager::SetNearestToFace (CSegFace* pFace, int32_t bTextured)
 {
-ENTER (2, 0, "CLightManager::SetNearestToFace");
+ENTER (0, "CLightManager::SetNearestToFace");
 
 PROF_START
 #if 0
@@ -323,7 +323,7 @@ RETURN (m_data.index [0][0].nActive);
 
 void CLightManager::SetNearestStatic (int32_t nSegment, int32_t bStatic, int32_t nThread)
 {
-ENTER (2, nThread, "CLightManager::SetNearestStatic");
+ENTER (nThread, "CLightManager::SetNearestStatic");
 if (gameStates.render.nLightingMethod) {
 	CSegment				*pSeg = SEGMENT (nSegment);
 	if (!pSeg)
@@ -368,7 +368,7 @@ LEAVE;
 
 int16_t CLightManager::SetNearestToSegment (int32_t nSegment, int32_t nFace, int32_t bVariable, int32_t nType, int32_t nThread)
 {
-ENTER (2, nThread, "CLightManager::SetNearestToSegment");
+ENTER (nThread, "CLightManager::SetNearestToSegment");
 
 	CDynLightIndex*	pLightIndex = &m_data.index [0][nThread];
 
@@ -478,7 +478,7 @@ RETURN (pLightIndex->nActive);
 
 int16_t CLightManager::SetNearestToPixel (int16_t nSegment, int8_t nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int32_t nThread)
 {
-ENTER (2, nThread, "CLightManager::SetNearestToPixel");
+ENTER (nThread, "CLightManager::SetNearestToPixel");
 #if DBG
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	BRP;
@@ -559,7 +559,7 @@ RETURN (m_data.index [0][nThread].nActive);
 
 int32_t CLightManager::SetNearestToSgmAvg (int16_t nSegment, int32_t nThread)
 {
-ENTER (2, nThread, "CLightManager::SetNearestToSgmAvg");
+ENTER (nThread, "CLightManager::SetNearestToSgmAvg");
 
 	CSegment		*pSeg = SEGMENT (nSegment);
 

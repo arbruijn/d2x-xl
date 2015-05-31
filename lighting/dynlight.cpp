@@ -325,7 +325,7 @@ return j ? i / j : 1;
 int32_t CLightManager::Add (CSegFace* pFace, CFloatVector *pColor, fix xBrightness, int16_t nSegment,
 									 int16_t nSide, int16_t nObject, int16_t nTexture, CFixVector *vPos, uint8_t bAmbient)
 {
-ENTER (2, 0, "CLightManager::Add");
+ENTER (0, "CLightManager::Add");
 
 	int16_t		h, i;
 	float			fBrightness = X2F (xBrightness);
@@ -613,7 +613,7 @@ return fix (dist / info.fRange);
 
 int32_t CDynLight::SeesPoint (const int16_t nDestSeg, const int8_t nDestSide, const CFixVector* vNormal, CFixVector* vPoint, int32_t nLevel, int32_t nThread)
 {
-ENTER (1, 0, "CDynLight::SeesPoint");
+ENTER (0, "CDynLight::SeesPoint");
 
 	CFloatVector	v1, vNormalf;
 
@@ -746,7 +746,7 @@ return PLAYEROBJECT (info.nPlayer);
 int32_t CDynLight::Contribute (const int16_t nDestSeg, const int8_t nDestSide, const int16_t nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, 
 										 fix xMaxLightRange, float fRangeMod, fix xDistMod, int32_t nThread)
 {
-ENTER (1, nThread, "CDynLight::Contribute");
+ENTER (nThread, "CDynLight::Contribute");
 
 #if 1
 info.bDiffuse [nThread] = 1;
@@ -874,7 +874,7 @@ RETURN (1);
 
 int32_t CDynLight::ComputeVisibleVertices (int32_t nThread)
 {
-ENTER (1, 0, "CDynLight::ComputeVisibleVertices");
+ENTER (0, "CDynLight::ComputeVisibleVertices");
 if (!info.bVariable)
 	RETURN (0);
 int16_t nLightSeg = LightSeg ();

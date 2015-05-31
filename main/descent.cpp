@@ -152,20 +152,21 @@ void __cdecl D2SignalHandler (int32_t nSignal)
 {
 	static int32_t nErrors = 0;
 
+PrintCallStack ();
 if (nSignal == SIGABRT)
-	PrintLog (0, "+++ Abnormal program termination\n");
+	PrintLog (0, "\n+++ Abnormal program termination\n");
 else if (nSignal == SIGFPE)
-	PrintLog (0, "+++ Floating point error\n");
+	PrintLog (0, "\n+++ Floating point error\n");
 else if (nSignal == SIGILL)
-	PrintLog (0, "+++ Illegal instruction\n");
+	PrintLog (0, "\n+++ Illegal instruction\n");
 else if (nSignal == SIGINT)
-	PrintLog (0, "+++ Ctrl+C signal\n");
+	PrintLog (0, "\n+++ Ctrl+C signal\n");
 else if (nSignal == SIGSEGV)
-	PrintLog (0, "+++ Memory access violation\n");
+	PrintLog (0, "\n+++ Memory access violation\n");
 else if (nSignal == SIGTERM)
-	PrintLog (0, "+++ Termination request\n");
+	PrintLog (0, "\n+++ Termination request\n");
 else
-	PrintLog (0, "+++ Unknown signal\n");
+	PrintLog (0, "\n+++ Unknown signal\n");
 if (++nErrors > 4)
 	exit (1);
 }

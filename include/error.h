@@ -40,7 +40,8 @@ void _CDECL_ Error(const char *fmt,...) __noreturn __format;				//exit with erro
 void Assert(int32_t expr);
 void OpenLogFile (void);
 void _CDECL_ PrintLog (const int32_t nIndent, const char *fmt = NULL, ...);
-void _CDECL_ StackTrace (const int32_t nLevel, const int32_t nIndent, const char *fmt, ...);
+void TraceCallStack (const int32_t nDirection, const char *pszFunction, const int32_t nThread, const char *pszFile, const int32_t nLine);
+void PrintCallStack (void);
 void Int3();
 
 #if 1//DBG
