@@ -328,7 +328,7 @@ gameStates.render.DisableCartoonStyle ();
 PrintLog (1, "caching weapon sprites\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 5);
 for (i = 0; i < EXTRA_OBJ_IDS; i++)
-	OglCacheWeaponTextures (gameData.weaponData.info + i);
+	OglCacheWeaponTextures (gameData.weaponData.info [0] + i);
 PrintLog (-1);
 
 gameStates.render.EnableCartoonStyle (0, 0, 1);

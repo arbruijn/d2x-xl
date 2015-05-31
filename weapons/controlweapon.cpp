@@ -1021,7 +1021,7 @@ PrintLog (0, "%d,%d,%d,%d,{%d},%d,%d,%d,{",
 	xFireWait,
 	xMultiDamageScale,
 	bitmap.index,
-	blob_size,
+	xBlobSize,
 	xFlashSize,
 	xImpactSize);
 for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)

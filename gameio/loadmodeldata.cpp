@@ -136,8 +136,8 @@ if (nType > 1) {
 
 t = cf.ReadInt ();
 gameData.weaponData.nTypes [0] = N_D2_WEAPON_TYPES+t;
-if (gameData.weaponData.nTypes [0] >= MAX_WEAPON_TYPES) {
-	Warning ("Too many weapons (%d) in <%s>.  Max is %d.", t, fname, MAX_WEAPON_TYPES - N_D2_WEAPON_TYPES);
+if (gameData.weaponData.nTypes [0] >= D2_MAX_WEAPON_TYPES) {
+	Warning ("Too many weapons (%d) in <%s>.  Max is %d.", t, fname, D2_MAX_WEAPON_TYPES - N_D2_WEAPON_TYPES);
 	return -1;
 	}
 ReadWeaponInfos (N_D2_WEAPON_TYPES, t, cf, 3, bVertigoData != 0);

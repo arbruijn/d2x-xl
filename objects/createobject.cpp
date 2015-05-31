@@ -612,7 +612,7 @@ if (rType == 255) {
 	switch (gameData.weaponData.info [0][nId].renderType) {
 		case WEAPON_RENDER_BLOB:
 			rType = RT_LASER;			// Render as a laser even if blob (see render code above for explanation)
-			xSize = gameData.weaponData.info [0][nId].blob_size;
+			xSize = gameData.weaponData.info [0][nId].xBlobSize;
 			break;
 		case WEAPON_RENDER_POLYMODEL:
 			xSize = 0;	//	Filled in below.
@@ -624,7 +624,7 @@ if (rType == 255) {
 			break;
 		case WEAPON_RENDER_VCLIP:
 			rType = RT_WEAPON_VCLIP;
-			xSize = gameData.weaponData.info [0][nId].blob_size;
+			xSize = gameData.weaponData.info [0][nId].xBlobSize;
 			break;
 		default:
 			PrintLog (0, "Error: Invalid weapon render nType in CreateNewWeapon\n");

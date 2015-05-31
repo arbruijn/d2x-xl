@@ -468,7 +468,7 @@ PrintLog (0, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,
 	wi.xEnergyUsage,
 	wi.xFireWait,
 	wi.bitmap.index,
-	wi.blob_size,
+	wi.xBlobSize,
 	wi.xFlashSize,
 	wi.xImpactSize);
 for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
