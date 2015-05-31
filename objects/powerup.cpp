@@ -235,7 +235,7 @@ va_end (args);
 #if 0
 paletteManager.BumpEffect (redAdd, greenAdd, blueAdd);
 #else
-float h = 60.0f / float (Max (redAdd, Max (greenAdd, blueAdd)));
+float h = 48.0f / float (Max (redAdd, Max (greenAdd, blueAdd)));
 paletteManager.BumpEffect (int32_t (float (redAdd) * h), int32_t (float (greenAdd) * h), int32_t (float (blueAdd) * h));
 #endif
 HUDInitMessage (text);

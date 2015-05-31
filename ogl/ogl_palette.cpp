@@ -43,6 +43,8 @@ if (m_data.nSuspended)
 UpdateEffect ();
 if (!m_data.bDoEffect)
 	return;
+if (gameOpts->app.bEpilepticFriendly)
+	return;
 ogl.SetBlending (true);
 ogl.SetBlendMode (OGL_BLEND_ADD);
 glColor3fv (reinterpret_cast<GLfloat*> (&m_data.flash));

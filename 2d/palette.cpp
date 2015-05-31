@@ -276,7 +276,7 @@ m_data.effect.Green () = Clamp (green, 0.0f, 1.0f);
 m_data.effect.Blue () = Clamp (blue, 0.0f, 1.0f);
 float maxColor = Max (Max (red, green), blue);
 m_data.bDoEffect = (maxColor > 0.0f); //if we arrive here, brightness needs adjustment
-SetFadeDuration (F2X (maxColor * 64.0 / FADE_RATE));
+SetFadeDuration (m_data.bDoEffect ? /*F2X (64.0 / FADE_RATE)*/I2X (1) / 2 : 0);
 }
 
 //------------------------------------------------------------------------------
