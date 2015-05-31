@@ -4651,28 +4651,6 @@ return pInfo ? pInfo->xBlobSize : 0;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-#if 1 //DBG
-
-#ifdef _WIN32
-#	define	__FUNC__	__FUNCSIG__
-#else
-#	define	__FUNC__	__PRETTY_FUNCTION__
-#endif
-
-#	define ENTER(_thread)		const int32_t __THREAD__ = (_thread); TraceCallStack (1, __FUNC__, __THREAD__, __FILE__, __LINE__)
-#	define LEAVE					{ TraceCallStack (-1, __FUNC__, __THREAD__, __FILE__, __LINE__); return; }
-#	define RETURN(_retVal)		{ TraceCallStack (-1, __FUNC__, __THREAD__, __FILE__, __LINE__); return (_retVal); }
-
-#else
-
-#	define ENTER(_thread)				
-#	define LEAVE				
-#	define RETURN(_retVal)	return (_retVal)
-
-#endif
-
-//	-----------------------------------------------------------------------------------------------------------
-
 #define EX_OUT_OF_MEMORY		1
 #define EX_IO_ERROR				2
 

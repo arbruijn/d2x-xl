@@ -57,6 +57,8 @@ extern int32_t nDbgVertex, nDbgBaseTex, nDbgOvlTex, nDbgTexture, nDbgLight;
 #define TrapTex (int32_t nBaseTex, int32_t nOvlTex)
 #define TrapBmp (CBitmap *pBm, char *pszName)
 
+//	-----------------------------------------------------------------------------------------------------------
+
 #if DBG		//macros for debugging
 
 #	define Int3() ((void)0)
@@ -78,5 +80,29 @@ void Breakpoint (void);
 #else
 #	define BRP
 #endif
+
+//	-----------------------------------------------------------------------------------------------------------
+
+#if 1 //DBG
+
+#ifdef _WIN32
+#	define	__FUNC__	__FUNCSIG__
+#else
+#	define	__FUNC__	__PRETTY_FUNCTION__
+#endif
+
+#	define ENTER(_thread)		const int32_t __THREAD__ = (_thread); TraceCallStack (1, __FUNC__, __THREAD__, __FILE__, __LINE__)
+#	define LEAVE					{ TraceCallStack (-1, __FUNC__, __THREAD__, __FILE__, __LINE__); return; }
+#	define RETURN(_retVal)		{ TraceCallStack (-1, __FUNC__, __THREAD__, __FILE__, __LINE__); return (_retVal); }
+
+#else
+
+#	define ENTER(_thread)				
+#	define LEAVE				
+#	define RETURN(_retVal)	return (_retVal);
+
+#endif
+
+//	-----------------------------------------------------------------------------------------------------------
 
 #endif /* _ERROR_H */

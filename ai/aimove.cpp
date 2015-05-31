@@ -432,7 +432,7 @@ if (pObj - OBJECTS == nDbgObj)
 if (bMoveToCenter) {
 	vSegCenter = SEGMENT (pObj->info.nSegment)->Center ();
 	MoveObjectToLegalPoint (pObj, &vSegCenter);
-	RETURN (!ObjectIntersectsWall (pObj))fl
+	RETURN (!ObjectIntersectsWall (pObj))
 	}
 else {
 	for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {

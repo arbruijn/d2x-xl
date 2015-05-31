@@ -220,7 +220,7 @@ class CDACSBiDirRouter : public CDACSRouter {
 	private:
 		CDialHeap				m_heap [2];
 		CDialHeap::tPathNode	m_route [2 * MAX_SEGMENTS_D2X];
-		int16_t						m_nSegments [2];
+		int16_t					m_nSegments [2];
 
 	private:
 		int32_t Expand (int32_t nDir);
