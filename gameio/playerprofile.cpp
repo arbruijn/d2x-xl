@@ -230,12 +230,15 @@ return pszTag;
 int32_t CPlayerProfile::Register (void *valP, const char *pszIdent, int32_t i, int32_t j, uint8_t nSize)
 {
 	char		szTag [200];
-	int32_t		l;
+	int32_t	l;
 	CParam	*pp;
 
 l = (int32_t) strlen (MakeTag (szTag, pszIdent, i, j));
-pp = reinterpret_cast<CParam*> (new uint8_t [sizeof (CParam) + l]);
+pp = new CParam;
 if (!pp)
+	return 0;
+pp->szTag = new char [l + 1];
+if (!pp->szTag)
 	return 0;
 memcpy (pp->szTag, szTag, l + 1);
 pp->valP = reinterpret_cast<char*> (valP);
@@ -717,6 +720,34 @@ RegisterConfig (kcSuperJoy, KcSuperJoySize (), "superjoy.");
 RegisterConfig (kcHotkeys, KcHotkeySize (), "hotkeys.");
 }
 
+typedef struct tParamHistory {
+	const char *pszNewTag, *pszOldTag;
+} tParamHistory;
+
+tParamHistory paramHistory [] = {
+	{"gameData.appData.nLifetimeChecksum", "gameData.app.nLifetimeChecksum"},
+	{NULL, NULL}
+};
+
+//------------------------------------------------------------------------------
+// Find the newest parameter name for some obsolete parameter name.
+
+const char *FindCurrentTag (const char *pszTag)
+{
+for (;;) {
+	bool bFound = false;
+	for (tParamHistory *pHistory = paramHistory; pHistory->pszNewTag; pHistory++) {
+		if (!strcmp (pszTag, pHistory->pszOldTag)) {
+			pszTag = pHistory->pszNewTag;
+			bFound = true;
+			break;
+			}
+		}
+	if (!bFound)
+		return pszTag;
+	}
+}
+
 //------------------------------------------------------------------------------
 
 int32_t CPlayerProfile::Save (void)
@@ -741,9 +772,8 @@ return !m_cf.Close ();
 
 CParam* CPlayerProfile::Find (const char *pszTag)
 {
-	CParam	*pp;
-
-for (pp = paramList; pp; pp = pp->next)
+pszTag = FindCurrentTag (pszTag);
+for (CParam *pp = paramList; pp; pp = pp->next)
 	if (!stricmp (pszTag, pp->szTag))
 		return pp;
 return NULL;
@@ -773,6 +803,10 @@ int32_t CPlayerProfile::LoadParam (void)
 
 m_cf.GetS (szParam, sizeof (szParam));
 szParam [sizeof (szParam) - 1] = '\0';
+#if DBG
+if (strstr (szParam, "nLifetimeChecksum"))
+	BRP;
+#endif
 if ((pszValue = strchr (szParam, '\n')))
 	*pszValue = '\0';
 if (!(pszValue = strchr (szParam, '=')))
@@ -1558,7 +1592,7 @@ tParamValue defaultParams [] = {
 void CPlayerProfile::Setup (void)
 {
 	tParamValue	*pv;
-	int32_t			i;
+	int32_t		i;
 
 for (i = sizeofa (defaultParams), pv = defaultParams; i; i--, pv++) {
 	Set (pv->pszIdent, pv->pszValue);

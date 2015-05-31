@@ -1,4 +1,4 @@
-/*
+/*	
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
 END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
@@ -50,14 +50,24 @@ int32_t GetHighestLevel(void);
 
 class CParam {
 	public:
-		class CParam*	next;
-		char*				valP;
-		int16_t				nValues;
-		uint8_t				nSize;
-		char				szTag [1];
+		class CParam	*next;
+		char				*valP;
+		int16_t			nValues;
+		uint8_t			nSize;
+		char				*szTag;
 
 	public:
+		CParam () : next (NULL), valP (NULL), nValues (0), nSize (0), szTag (NULL) { }
+
+		~CParam () {
+			if (szTag) {
+				delete szTag;
+				szTag = NULL;
+				}
+			}
+
 		int32_t Save (CFile& cf);
+
 		int32_t Set (const char *pszIdent, const char *pszValue);
 	};
 
