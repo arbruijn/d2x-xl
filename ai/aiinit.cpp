@@ -71,6 +71,7 @@ return AIM_IDLING;
 //	initial_mode == -1 means leave mode unchanged.
 void InitAIObject (int16_t nObject, int16_t behavior, int16_t nHideSegment)
 {
+ENTER (0);
 	CObject			*pObj = OBJECT (nObject);
 	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
 	tAILocalInfo	*pLocalInfo = gameData.aiData.localInfo + nObject;
@@ -81,7 +82,7 @@ if (!pObj->IsRobot ())
 	BRP;
 #endif
 if (!pRobotInfo)
-	return;
+	LEAVE
 if (behavior == AIB_STATIC) {
 	pObj->info.controlType = CT_NONE;
 	pObj->info.movementType = MT_NONE;
@@ -137,6 +138,7 @@ pObj->mType.physInfo.flags |= (PF_BOUNCES | PF_TURNROLL);
 pStaticInfo->REMOTE_OWNER = -1;
 pStaticInfo->bDyingSoundPlaying = 0;
 pStaticInfo->xDyingStartTime = 0;
+LEAVE
 }
 
 
@@ -144,6 +146,7 @@ pStaticInfo->xDyingStartTime = 0;
 
 void InitAIObjects (void)
 {
+ENTER (0);
 	int16_t		nBosses = 0;
 	CObject		*pObj;
 
@@ -169,6 +172,7 @@ if (0 < i) {
 gameData.aiData.bInitialized = 1;
 AIDoCloakStuff ();
 InitBuddyForLevel ();
+LEAVE
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -180,14 +184,13 @@ int8_t		RapidfireCount_copy [MAX_ROBOT_TYPES];
 
 void DoLunacyOn (void)
 {
-	int32_t	i;
-
+ENTER (0);
 if (gameStates.app.bLunacy)	//already on
-	return;
+	LEAVE
 gameStates.app.bLunacy = 1;
 nDiffSave = gameStates.app.nDifficultyLevel;
 gameStates.app.nDifficultyLevel = DIFFICULTY_LEVEL_COUNT-1;
-for (i = 0; i < MAX_ROBOT_TYPES; i++) {
+for (int32_t i = 0; i < MAX_ROBOT_TYPES; i++) {
 	Firing_wait_copy [i] = gameData.botData.pInfo [i].primaryFiringWait [DIFFICULTY_LEVEL_COUNT-1];
 	Firing_wait2_copy [i] = gameData.botData.pInfo [i].secondaryFiringWait [DIFFICULTY_LEVEL_COUNT-1];
 	RapidfireCount_copy [i] = gameData.botData.pInfo [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1];
@@ -195,29 +198,31 @@ for (i = 0; i < MAX_ROBOT_TYPES; i++) {
 	gameData.botData.pInfo [i].secondaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = gameData.botData.pInfo [i].secondaryFiringWait [1];
 	gameData.botData.pInfo [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1] = gameData.botData.pInfo [i].nRapidFireCount [1];
 	}
+LEAVE
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 void DoLunacyOff (void)
 {
-	int32_t	i;
-
+ENTER (0);
 if (!gameStates.app.bLunacy)	//already off
-	return;
+	LEAVE
 gameStates.app.bLunacy = 0;
-for (i = 0; i < MAX_ROBOT_TYPES; i++) {
+for (int32_t i = 0; i < MAX_ROBOT_TYPES; i++) {
 	gameData.botData.pInfo [i].primaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = Firing_wait_copy [i];
 	gameData.botData.pInfo [i].secondaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = Firing_wait2_copy [i];
 	gameData.botData.pInfo [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1] = RapidfireCount_copy [i];
 	}
 gameStates.app.nDifficultyLevel = nDiffSave;
+LEAVE
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Call this each time the player starts a new ship.
 void InitAIForShip (void)
 {
+ENTER (0);
 for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.aiData.cloakInfo [i].lastTime = gameData.timeData.xGame;
 	if (gameData.objData.pConsole) {
@@ -229,12 +234,14 @@ for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 		gameData.aiData.cloakInfo [i].vLastPos = CFixVector::ZERO;
 		}
 	}
+LEAVE
 }
 
 //	-------------------------------------------------------------------------------------------------
 // Initializations to be performed for all robots for a new level.
 void InitRobotsForLevel (void)
 {
+ENTER (0);
 gameData.aiData.nOverallAgitation = 0;
 gameStates.gameplay.bFinalBossIsDead = 0;
 gameData.escortData.nObjNum = 0;
@@ -242,12 +249,14 @@ gameData.escortData.bMayTalk = 0;
 gameData.physicsData.xBossInvulDot = I2X (1)/4 - I2X (gameStates.app.nDifficultyLevel)/8;
 for (uint32_t i = 0; i < gameData.bossData.Count (); i++)
 	gameData.bossData [i].m_nDyingStartTime = 0;
+LEAVE
 }
 
 // ----------------------------------------------------------------------------
 
 void InitAIFrame (void)
 {
+ENTER (0);
 	int32_t abState;
 
 if (gameData.aiData.nMaxAwareness < PA_PLAYER_COLLISION)
@@ -262,6 +271,7 @@ abState = gameData.physicsData.xAfterburnerCharge && controls [0].afterburnerSta
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || HeadlightIsOn (-1) || abState)
 	AIDoCloakStuff ();
 gameData.aiData.nMaxAwareness = 0;
+LEAVE
 }
 
 //	---------------------------------------------------------------
