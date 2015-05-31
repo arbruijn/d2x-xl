@@ -95,6 +95,7 @@ modelPointList = pointlist;
 
 void RotatePointList (CRenderPoint *dest, CFixVector *src, CRenderNormal *norms, int32_t n, int32_t o)
 {
+ENTER (0);
 PROF_START
 	CFloatVector	*pfv = gameData.modelData.fPolyModelVerts + o;
 	CFloatVector	fScale;
@@ -152,21 +153,23 @@ while (n--) {
 	pfv++;
 	}
 PROF_END(ptTransform)
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void G3SwapPolyModelData (uint8_t *pData)
 {
+ENTER (0);
 	int32_t	i;
-	int16_t n;
-	tUVL*	uvl_val;
+	int16_t	n;
+	tUVL		* uvl_val;
 
 for (;;) {
 	UShortSwap (WORDPTR (pData));
 	switch (WORDVAL (pData)) {
 		case OP_EOF:
-			return;
+			LEAVE
 
 		case OP_DEFPOINTS:
 			UShortSwap (WORDPTR (pData + 2));
@@ -248,6 +251,7 @@ for (;;) {
 			Error ("invalid polygon model\n"); //Int3 ();
 		}
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -268,6 +272,7 @@ chunk_list [*no_chunks].correction = 0;
 
 void G3PolyModelVerify (uint8_t *pData)
 {
+ENTER (0);
 	int16_t n;
 
 for (;;) {
@@ -309,46 +314,49 @@ for (;;) {
 			Error ("invalid polygon model\n");
 		}
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 int32_t G3CheckAndSwap (void *pData)
 {
+ENTER (0);
 	int16_t	h = WORDVAL (pData);
 
 if ((h >= 0) && (h <= OP_GLOW))
-	return 1;
+	RETURN (1)
 ShortSwap (&h);
 if ((h < 0) || (h > OP_GLOW))
-	return 0;
+	RETURN (0)
 G3SwapPolyModelData (reinterpret_cast<uint8_t*> (pData));
-return 1;
+RETURN (1)
 }
 
 //------------------------------------------------------------------------------
 
 void GetThrusterPos (int32_t nModel, CFixVector *vNormal, CFixVector *vOffset, CBitmap *pBm, int32_t nPoints)
 {
+ENTER (0);
 	int32_t				h, i, nSize;
 	CFixVector			v, vForward = CFixVector::Create(0,0,I2X (1));
 	CModelThrusters	*pThruster = gameData.modelData.thrusters + nModel;
 
 if (pThruster->nCount >= 2)
-	return;
+	LEAVE
 if (pBm) {
 	if (!gameData.pigData.tex.bitmaps [0].IsElement (pBm))
-		return;
+		LEAVE
 	i = (int32_t) (pBm - gameData.pigData.tex.bitmaps [0]);
 	if ((i != 24) && ((i < 1741) || (i > 1745)))
-		return;
+		LEAVE
 	}
 #if 1
 if (CFixVector::Dot (*vNormal, vForward) > -I2X (1) / 3)
 #else
 if (vNormal->p.x || vNormal->p.y || (vNormal->p.z != -I2X (1)))
 #endif
-	return;
+	LEAVE
 for (i = 1, v = pointList [0]->WorldPos (); i < nPoints; i++)
 	v += pointList [i]->WorldPos ();
 v.v.coord.x /= nPoints;
@@ -358,7 +366,7 @@ v.v.coord.z -= I2X (1) / 8;
 if (vOffset)
 	v += *vOffset;
 if (pThruster->nCount && (v.v.coord.x == pThruster->vPos [0].v.coord.x) && (v.v.coord.y == pThruster->vPos [0].v.coord.y) && (v.v.coord.z == pThruster->vPos [0].v.coord.z))
-	return;
+	LEAVE
 pThruster->vPos [pThruster->nCount] = v;
 if (vOffset)
 	v -= *vOffset;
@@ -370,6 +378,7 @@ if (!pThruster->nCount++) {
 			nSize = h;
 	pThruster->fSize [i] = X2F (nSize);// * 1.25f;
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -388,6 +397,7 @@ int32_t G3DrawPolyModel (
 	POF::CModel*		po,
 	int32_t				nModel)
 {
+ENTER (0);
 	uint8_t *p = reinterpret_cast<uint8_t*> (modelDataP);
 	int16_t	nTag;
 	int16_t bGetThrusterPos, bLightning;
@@ -403,11 +413,11 @@ else {
 	}
 #if DBG_SHADOWS
 if (bShadowTest)
-	return 1;
+	RETURN (1)
 #endif
 #if CONTOUR_OUTLINE
 //if (extraGameInfo [0].bShadows && (gameStates.render.nShadowPass < 3))
-	return 1;
+	RETURN (1)
 #endif
 nDepth++;
 G3CheckAndSwap (modelDataP);
@@ -519,13 +529,13 @@ for (;;) {
 			//draw back then front
 			if (!(G3DrawPolyModel (pObj, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel) &&
 					G3DrawPolyModel (pObj, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel)))
-				return 0;
+				RETURN (0)
 			}
 #if CHECK_NORMAL_FACING
 		else {			//not facing.  draw front then back
 			if (!(G3DrawPolyModel (pObj, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel) &&
 					G3DrawPolyModel (pObj, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel)))
-				return 0;
+				RETURN (0)
 			}
 #endif
 		p += 32;
@@ -550,7 +560,7 @@ for (;;) {
 			vo += *vOffset;
 		if (!G3DrawPolyModel (pObj, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, pColor, po, nModel)) {
 			transformation.End (__FILE__, __LINE__);
-			return 0;
+			RETURN (0)
 			}
 		transformation.End (__FILE__, __LINE__);
 		p += 20;
@@ -564,11 +574,11 @@ for (;;) {
 #if DBG
 		PrintLog (0, "invalid polygon model\n");
 #endif
-		return 0;
+		RETURN (0)
 		}
 	}
 nDepth--;
-return 1;
+RETURN (1)
 }
 
 //------------------------------------------------------------------------------

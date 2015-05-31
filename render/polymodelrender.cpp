@@ -81,6 +81,7 @@ return 1;
 
 CPolyModel* GetPolyModel (CObject *pObj, CFixVector *pos, int32_t nModel, int32_t flags, int32_t* bCustomModel)
 {
+ENTER (0);
 	CPolyModel	*pModel = NULL;
 	int32_t		bHaveAltModel, bIsDefModel;
 
@@ -89,7 +90,7 @@ if (nModel == nDbgModel)
 	BRP;
 #endif
 if (nModel < 0)
-	return NULL;
+	RETURN (NULL)
 bCustomModel = 0;
 if (gameStates.app.bEndLevelSequence && 
 	 ((nModel == gameData.endLevelData.exit.nModel) || (nModel == gameData.endLevelData.exit.nDestroyedModel))) {
@@ -105,14 +106,14 @@ if (nModel == nDbgModel)
 	BRP;
 #endif
 if ((nModel >= gameData.modelData.nPolyModels) && !(pModel = gameData.modelData.modelToPOL [nModel]))
-	return NULL;
+	RETURN (NULL)
 // only render shadows for custom models and for standard models with a shadow proof alternative model
 if (!pObj)
 	pModel = ((gameStates.app.bAltModels && bIsDefModel && bHaveAltModel) ? gameData.modelData.polyModels [2] : gameData.modelData.polyModels [0]) + nModel;
 else if (!pModel) {
 	if (!(bIsDefModel && bHaveAltModel)) {
 		if (gameStates.app.bFixModels && (pObj->info.nType == OBJ_ROBOT) && (gameStates.render.nShadowPass == 2))
-			return NULL;
+			RETURN (NULL)
 		pModel = gameData.modelData.polyModels [0] + nModel;
 		if (bCustomModel)
 			*bCustomModel = 1;
@@ -126,7 +127,7 @@ else if (!pModel) {
 	else if (bHaveAltModel)
 		pModel = gameData.modelData.polyModels [2] + nModel;
 	else
-		return NULL;
+		RETURN (NULL)
 	if ((gameStates.render.nShadowPass == 2) && (pObj->info.nType == OBJ_REACTOR) && !(nModel & 1))	// use the working reactor model for rendering destroyed reactors' shadows
 		pModel--;
 	}
@@ -137,7 +138,7 @@ if (!(SHOW_DYN_LIGHT || SHOW_SHADOWS) && pModel->SimplerModel () && !flags && po
 	while (pModel->SimplerModel () && (depth > cnt++ * gameData.modelData.nSimpleModelThresholdScale * pModel->Rad ()))
 		pModel = gameData.modelData.polyModels [0] + pModel->SimplerModel () - 1;
 	}
-return pModel;
+RETURN (pModel)
 }
 
 //------------------------------------------------------------------------------
@@ -155,22 +156,23 @@ int32_t DrawPolyModel (
 	tBitmapIndex	altTextures [],
 	CFloatVector*	pColor)
 {
-	CPolyModel*	pModel;
-	int32_t			bHires = 0, bCustomModel = 0;
+ENTER (0);
+	CPolyModel	*pModel;
+	int32_t		bHires = 0, bCustomModel = 0;
 
 #if 0 //DBG
 if (!gameStates.render.bBuildModels) {
 	glColor3f (0,0,0);
 	ogl.RenderScreenQuad (0);
-	return 0;
+	RETURN (0)
 	}
 #endif
 
 if (nModel < 0)
-	return 1;
+	RETURN (1)
 #if !MAX_SHADOWMAPS
 if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (pObj))
-	return 1;
+	RETURN (1)
 if (!(pModel = GetPolyModel (pObj, pos, nModel, flags, &bCustomModel))) {
 	if (!(bCustomModel || flags) && (gameStates.render.nShadowPass != 2) && HaveHiresModel (nModel))
 		bHires = 1;
@@ -182,14 +184,14 @@ if (gameStates.render.nShadowPass == 2) {
 		G3SetModelPoints (gameData.modelData.polyModelPoints.Buffer ());
 		G3DrawPolyModelShadow (pObj, pModel->Data (), animAngles, nModel);
 		}
-	return 1;
+	RETURN (1)
 	}
 #else
 if (!(pModel = GetPolyModel (pObj, pos, nModel, flags, &bCustomModel))) {
 	if (!flags && HaveHiresModel (nModel))
 		bHires = 1;
 	else
-		return 0;
+		RETURN (0)
 	}
 #endif
 
@@ -207,12 +209,12 @@ if (!flags) {	//draw entire object
 	if (!gameStates.app.bNostalgia && G3RenderModel (pObj, bCustomModel ? -nModel : nModel, -1, pModel, gameData.modelData.textures, animAngles, NULL, light, glowValues, pColor)) {
 		ogl.SetTransform (0);
 		gameData.renderData.pVertex = NULL;
-		return 1;
+		RETURN (1)
 		}
 	if (bHires) {
 		ogl.SetTransform (0);
 		gameData.renderData.pVertex = NULL;
-		return 0;
+		RETURN (0)
 		}
 	if (pObj && (pObj->info.nType == OBJ_POWERUP)) {
 		if ((pObj->info.nId == POW_SMARTMINE) || (pObj->info.nId == POW_PROXMINE))
@@ -240,7 +242,7 @@ else {
 				if (bHires) {
 					ogl.SetTransform (0);
 					gameData.renderData.pVertex = NULL;
-					return 0;
+					RETURN (0)
 					}
 #if DBG
 				G3RenderModel (pObj, nModel, i, pModel, gameData.modelData.textures, animAngles, &vOffset, light, glowValues, pColor);
@@ -257,7 +259,7 @@ else {
 	}
 ogl.SetTransform (0);
 gameData.renderData.pVertex = NULL;
-return 1;
+RETURN (1)
 }
 
 //------------------------------------------------------------------------------
@@ -269,6 +271,7 @@ return 1;
 
 void DrawModelPicture (int32_t nModel, CAngleVector *orientAngles)
 {
+ENTER (0);
 	CFixVector	p = CFixVector::ZERO;
 	CFixMatrix	o = CFixMatrix::IDENTITY;
 
@@ -286,6 +289,7 @@ DrawPolyModel (NULL, &p, &o, NULL, nModel, 0, I2X (1), NULL, NULL, NULL);
 G3EndFrame (transformation, 0);
 if (ogl.m_states.nDrawBuffer != GL_BACK)
 	ogl.Update (0);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
