@@ -190,7 +190,7 @@ if (pLightning)
 	pLightning->Destroy ();
 else
 	pEmitter->m_bDestroy = 1;
-LEAVEf
+LEAVE
 }
 
 //------------------------------------------------------------------------------

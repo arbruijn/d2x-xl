@@ -906,7 +906,7 @@ for (int32_t i = 0; i < m_data.nLights [0]; i++)
 
 void CLightManager::AddGeometryLights (void)
 {
-ENTER (0, 0, "CLightManager::AddGeometryLights");
+ENTER (0);
 
 	int32_t		nFace, nSegment, nSide, nTexture, nLight;
 	CSegFace		*pFace;
@@ -970,7 +970,7 @@ LEAVE
 
 void CLightManager::GatherStaticVertexLights (int32_t nVertex, int32_t nMax, int32_t nThread)
 {
-ENTER (0, 0, "CLightManager::GatherStaticVertexLights");
+ENTER (0);
 	CFaceColor*		pf = gameData.renderData.color.ambient + nVertex;
 	CFloatVector	vVertex;
 	int32_t			bColorize = !gameStates.render.nLightingMethod;
@@ -998,7 +998,7 @@ extern int32_t nDbgVertex;
 
 void CLightManager::GatherStaticLights (int32_t nLevel)
 {
-ENTER (0, 0, "CLightManager::GatherStaticLights");
+ENTER (0);
 
 int32_t i, j, bColorize = !gameStates.render.nLightingMethod;
 
@@ -1093,7 +1093,7 @@ return gameStates.render.bPerPixelLighting;
 
 int32_t CLightManager::Setup (int32_t nLevel)
 {
-ENTER (0, 0, "CLightManager::Setup");
+ENTER (0);
 SetMethod ();
 gameData.renderData.fBrightness = 1.0f;
 if (!gameStates.app.bPrecomputeLightmaps)

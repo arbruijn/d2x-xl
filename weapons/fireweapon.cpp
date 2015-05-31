@@ -755,17 +755,18 @@ int32_t CreateHomingWeapon (CObject *pObj, int32_t nGoalObj, uint8_t objType, in
 ENTER (0);
 	int16_t		nObject;
 	CFixVector	vGoal, vRandom;
+	CObject		*pGoalObj = OBJECT (nGoalObj);
 
-if (nGoalObj == -1)
+if (!pGoalObj)
 	vGoal = CFixVector::Random ();
 else { //	Create a vector towards the goal, then add some noise to it.
-	CFixVector::NormalizedDir (vGoal, OBJECT (nGoalObj)->info.position.vPos, pObj->info.position.vPos);
+	CFixVector::NormalizedDir (vGoal, pGoalObj->info.position.vPos, pObj->info.position.vPos);
 	vRandom = CFixVector::Random ();
 	vGoal += vRandom * (I2X (1)/4);
 	CFixVector::Normalize (vGoal);
 	}
 nObject = CreateNewWeapon (&vGoal, &pObj->info.position.vPos, pObj->info.nSegment, pObj->Index (), objType, bMakeSound);
-CObject *pObj = OBJECT (nObject);
+pObj = OBJECT (nObject);
 if (!pObj)
 	RETURN (-1)
 pObj->cType.laserInfo.nHomingTarget = nGoalObj;
