@@ -60,10 +60,10 @@ tFaceRenderFunc faceRenderFunc = RenderFace;
 typedef struct tFaceBuffer {
 	CBitmap	*bmBot;
 	CBitmap	*bmTop;
-	int16_t			nFaces;
-	int16_t			nElements;
-	int32_t			bTextured;
-	int32_t			index [FACE_BUFFER_INDEX_SIZE];
+	int16_t	nFaces;
+	int16_t	nElements;
+	int32_t	bTextured;
+	int32_t	index [FACE_BUFFER_INDEX_SIZE];
 } tFaceBuffer;
 
 static tFaceBuffer faceBuffer = {NULL, NULL, 0, 0, 0, {0}};
@@ -182,10 +182,11 @@ else
 
 int32_t SetupShader (CSegFace *pFace, int32_t bColorKey, int32_t bMultiTexture, int32_t bTextured, int32_t bColored, CFloatVector *pColor)
 {
+ENTER (0);
 	int32_t	nType, nShader = -1;
 
 if (!ogl.m_features.bShaders || (gameStates.render.nType == RENDER_TYPE_SKYBOX))
-	return -1;
+	RETURN (-1)
 #if DBG
 if (pFace && (pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 	BRP;
@@ -207,7 +208,7 @@ else if (bColorKey || bMultiTexture)
 else
 	shaderManager.Deploy (-1);
 ogl.ClearError (0);
-return nShader;
+RETURN (nShader)
 }
 
 //------------------------------------------------------------------------------
@@ -288,6 +289,7 @@ int32_t SetRenderStates (CSegFace *pFace, CBitmap *bmBot, CBitmap *bmTop,
 								 int32_t bTextured, int32_t bColorKey, int32_t bColored, int32_t bLightmaps, 
 								 bool bForce = false)
 {
+ENTER (0);
 PROF_START
 if (bTextured) {
 	bool bStateChange = false;
@@ -295,13 +297,13 @@ if (bTextured) {
 	if (bForce || (bmBot != gameStates.render.history.bmBot)) {
 		bStateChange = true;
 		if (!(gameStates.render.history.bmBot = SetupTMU (bmBot, GL_TEXTURE0 + bLightmaps, GL_MODULATE)))
-			return 0;
+			RETURN (0)
 		}
 	if (bForce || (bmTop != gameStates.render.history.bmTop)) {
 		bStateChange = true;
 		if (bmTop) {
 			if (!(gameStates.render.history.bmTop = SetupTMU (bmTop, GL_TEXTURE1 + bLightmaps, GL_DECAL)))
-				return 0;
+				RETURN (0)
 			}
 		else {
 			gameStates.render.history.bmTop = NULL;
@@ -313,7 +315,7 @@ if (bTextured) {
 		bStateChange = true;
 		if (bmMask) {
 			if (!(gameStates.render.history.bmMask = SetupTMU (bmMask, GL_TEXTURE2 + bLightmaps, GL_MODULATE)))
-				return 0;
+				RETURN (0)
 			}
 		else {
 			gameStates.render.history.bmMask = NULL;
@@ -336,7 +338,7 @@ else {
 	ResetTMU (GL_TEXTURE0);
 	}
 PROF_END(ptRenderStates)
-return 1;
+RETURN (1)
 }
 
 //------------------------------------------------------------------------------
@@ -397,6 +399,7 @@ else
 
 int32_t RenderFace (CSegFace *pFace, CBitmap *bmBot, CBitmap *bmTop, int32_t bTextured, int32_t bLightmaps)
 {
+ENTER (0);
 PROF_START
 	int32_t bColored, bTransparent, bColorKey = 0, bMonitor = 0;
 
@@ -433,7 +436,7 @@ if ((bTransparent /*|| (pFace->m_info.nSegColor && gameStates.render.bPerPixelLi
 #if 1 //!DBG
 	if (!(pFace->m_info.nSegColor && bmBot))
 #endif
-		return 0;
+		RETURN (0)
 	}
 
 #if 1
@@ -442,7 +445,7 @@ SetRenderStates (pFace, bmBot, bmTop, bTextured, bColorKey, bColored, bLightmaps
 SetRenderStates (pFace, bmBot, bmTop, ((gameStates.render.nType == RENDER_TYPE_ZCULL) && !(bColorKey || (bmBot->Flags () & BM_FLAG_SEE_THRU))) ? 0 : bTextured, bColorKey, bColored, bLightmaps);
 if (gameStates.render.nType == RENDER_TYPE_ZCULL) {
 	DrawFace (pFace);
-	return 1;
+	RETURN (1)
 	}
 #endif
 
@@ -498,13 +501,14 @@ else {
 if (bMonitor)
 	ResetMonitor (bmTop, bLightmaps);
 PROF_END(ptRenderFaces)
-return 0;
+RETURN (0)
 }
 
 //------------------------------------------------------------------------------
 
 int32_t DrawHeadlights (CSegFace *pFace, CBitmap *bmBot, CBitmap *bmTop, int32_t bTextured, int32_t bLightmaps)
 {
+ENTER (0);
 	int32_t bColorKey = 0, bMonitor = 0;
 
 if (!pFace->m_info.bTextured)
@@ -512,7 +516,7 @@ if (!pFace->m_info.bTextured)
 else if (bmBot)
 	bmBot = bmBot->Override (-1);
 if (FaceIsTransparent (pFace, bmBot, bmTop) && !(bMonitor || bmTop))
-	return 0;
+	RETURN (0)
 bMonitor = (pFace->m_info.nCamera >= 0);
 if (bmTop) {
 	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
@@ -531,7 +535,7 @@ lightManager.Headlights ().SetupShader (gameStates.render.history.nType, 1, bmBo
 DrawFace (pFace);
 if (bMonitor)
 	ResetMonitor (bmTop, 1);
-return 0;
+RETURN (0)
 }
 
 //------------------------------------------------------------------------------

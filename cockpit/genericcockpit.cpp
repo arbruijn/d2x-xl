@@ -181,14 +181,15 @@ SetFontScale (1.0f);
 
 void CGenericCockpit::RenderWindow (int32_t nWindow, CObject *pViewer, int32_t bRearView, int32_t nUser, const char *pszLabel)
 {
+ENTER (0);
 if (Hide ())
-	return;
+	LEAVE
 if (gameStates.app.bPlayerIsDead)
-	return;
+	LEAVE
 if (gameStates.app.bEndLevelSequence >= EL_LOOKBACK)
-	return;
+	LEAVE
 if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor))
-	return;
+	LEAVE
 
 	static CCanvas overlapCanv;
 
@@ -205,11 +206,11 @@ if (!pViewer) {								//this nUser is done
 	if ((nUser == WBU_STATIC) && (m_info.weaponBoxUser [nWindow] != WBU_STATIC))
 		staticTime [nWindow] = 0;
 	if (m_info.weaponBoxUser [nWindow] == WBU_WEAPON || m_info.weaponBoxUser [nWindow] == WBU_STATIC)
-		return;		//already set
+		LEAVE		//already set
 	m_info.weaponBoxUser [nWindow] = nUser;
 	if (bOverlapDirty [nWindow])
 		bOverlapDirty [nWindow] = 0;
-	return;
+	LEAVE
 	}
 UpdateRenderedData (nWindow + 1, pViewer, bRearView, nUser);
 m_info.weaponBoxUser [nWindow] = nUser;						//say who's using window
@@ -290,14 +291,16 @@ gameData.SetViewer (pViewerSave);
 ogl.SetDepthTest (true);
 gameData.renderData.window.Deactivate ();
 gameStates.render.bRearView = bRearViewSave;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CGenericCockpit::RenderWindows (void)
 {
+ENTER (0);
 if (ogl.IsOculusRift ())
-	return;
+	LEAVE
 
 	int32_t		bDidMissileView = 0;
 	int32_t		saveNewDemoState = gameData.demoData.nState;
@@ -322,7 +325,7 @@ if (gameData.demoData.nState == ND_STATE_PLAYBACK) {
 		cockpit->RenderWindow (1, NULL, 0, WBU_WEAPON, NULL);
    nDemoDoLeft = nDemoDoRight = 0;
 	nDemoDoingLeft = nDemoDoingRight = 0;
-   return;
+   LEAVE
    }
 bDidMissileView = RenderMissileView ();
 for (w = 0; w < 2 - bDidMissileView; w++) {
@@ -396,12 +399,14 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 	}
 gameStates.render.nRenderingType = 0;
 gameData.demoData.nState = saveNewDemoState;
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------
 
 void CGenericCockpit::SetupSceneCenter (CCanvas* refCanv, int32_t& w, int32_t& h)
 {
+ENTER (0);
 if (ogl.IsOculusRift ()) {
 	w = refCanv->Width (false) / 2;
 	h = refCanv->Height (false) * w / refCanv->Width (false);
@@ -420,6 +425,7 @@ glLineWidth (float (gameData.renderData.screen.Width ()) / 640.0f);
 OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 glLineWidth (1);
 #endif
+LEAVE
 }
 
 
@@ -428,23 +434,24 @@ glLineWidth (1);
 
 void CGenericCockpit::Render (int32_t bExtraInfo, fix xStereoSeparation)
 {
+ENTER (0);
 #if DBG
 extern int32_t bHave3DCockpit;
 if (bHave3DCockpit > 0)
-	return;
+	LEAVE
 #endif
 if (Hide ()) 
-	return;
+	LEAVE
 if (gameStates.app.bPlayerIsDead)
-	return;
+	LEAVE
 if (gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0)) {
 #if DBG
 	HUDRenderMessageFrame ();
 #endif
-	return;
+	LEAVE
 	}
 if (!cockpit->Setup (false, false))
-	return;
+	LEAVE
 
 int32_t nOffsetSave;
 
@@ -609,6 +616,7 @@ if (!GuidedMissileActive () && ((gameOpts->render.cockpit.bHUD > 1) || (gameStat
 DemoRecording ();
 Canvas ()->Deactivate ();
 m_history [0].bCloak = m_info.bCloak;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -616,8 +624,9 @@ m_history [0].bCloak = m_info.bCloak;
 //called every time the screen mode or cockpit changes
 bool CGenericCockpit::Setup (bool bScene, bool bRebuild)
 {
+ENTER (0);
 if (gameStates.video.nScreenMode != SCREEN_GAME)
-	return false;
+	RETURN (false)
 if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordCockpitChange (gameStates.render.cockpit.nType);
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
@@ -628,13 +637,14 @@ SetFontScale (1.0f);
 SetFontColor (GREEN_RGBA);
 if (bRebuild)
 	gameStates.render.cockpit.nShieldFlash = 0;
-return true;
+RETURN (true)
 }
 
 //------------------------------------------------------------------------------
 
 void CGenericCockpit::Activate (int32_t nType, bool bClearMessages)
 {
+ENTER (0);
 if (ogl.IsOculusRift ())
 	cockpit = &hudCockpit;
 else if (nType == CM_FULL_COCKPIT)
@@ -650,7 +660,7 @@ else if (nType == CM_REAR_VIEW) {
 	gameStates.render.bRearView = 1;
 	}
 else
-	return;
+	LEAVE
 gameStates.render.cockpit.nType = nType;
 gameStates.zoom.nFactor = float (gameStates.zoom.nMinFactor);
 m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.modelData.nCockpits / 2 : 0;
@@ -660,6 +670,7 @@ if (bClearMessages)
 	HUDClearMessages ();
 if (!gameStates.app.bPlayerIsDead)
 	SavePlayerProfile ();
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------
