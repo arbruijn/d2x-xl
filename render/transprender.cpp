@@ -100,6 +100,7 @@ CEffectArea sparkArea;
 
 CEffectArea& CEffectArea::Add (CFloatVector& pos, float rad) 
 {
+ENTER (0);
 if (m_rad == 0.0f) {
 	m_pos = pos;
 	m_rad = rad;
@@ -117,7 +118,7 @@ else {
 		}
 	m_pos = CFloatVector::Avg (m_pos, pos);
 	}
-return *this;
+RETURN (*this)
 }
 
 //------------------------------------------------------------------------------
@@ -126,6 +127,7 @@ return *this;
 
 void CTranspPoly::Render (void)
 {
+ENTER (0);
 #if TRANSP_POLYS
 if (pFace || pTriangle)
 	RenderFace ();
@@ -173,12 +175,14 @@ else {
 	PROF_END(ptRenderFaces)
 	}
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspPoly::RenderFace (void)
 {
+ENTER (0);
 #if TRANSP_FACES
 PROF_START
 	//CSegFace*		pFace = this->pFace;
@@ -240,14 +244,14 @@ if (bmTop) {
 	transparencyRenderer.Data ().pBm [1] = NULL;
 #endif
 	if (!transparencyRenderer.LoadTexture (pFace, bmTop, pFace->m_info.nOvlTex, 0, 1, bLightmaps, nWrap))
-		return;
+		LEAVE
 	if (bTextured)
 		OglTexCoordPointer (2, GL_FLOAT, 0, FACES.ovlTexCoord + nIndex);
 	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 	if (bmMask) {
 		ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE2 + bLightmaps);
 		if (!transparencyRenderer.LoadTexture (pFace, bmMask, pFace->m_info.nBaseTex, 0, 2, bLightmaps, nWrap))
-			return;
+			LEAVE
 		if (bTextured)
 			OglTexCoordPointer (2, GL_FLOAT, 0, FACES.ovlTexCoord + nIndex);
 		OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
@@ -266,7 +270,7 @@ else
 if (!transparencyRenderer.LoadTexture (pFace, bmBot, pFace->m_info.nBaseTex, 0, 0, bLightmaps, nWrap)) {
 	if (bAdditive & 3)
 		glowRenderer.Done (GLOW_FACES);
-	return;
+	LEAVE
 	}	
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, (bDecal < 0) ? FACES.ovlTexCoord + nIndex : FACES.texCoord + nIndex);
@@ -306,7 +310,7 @@ ogl.SetBlendMode (bAdditive);
 if ((pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 	BRP;
 //else
-//	return;
+//	LEAVE
 //shaderManager.Deploy (-1);
 #endif
 
@@ -368,12 +372,14 @@ if (pFace->m_info.nSegColor) {
 #endif
 PROF_END(ptRenderFaces)
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspObject::Render (void)
 {
+ENTER (0);
 #if TRANSP_OBJECTS
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
@@ -382,12 +388,14 @@ DrawPolygonObject (pObj, 1);
 gameData.modelData.vScale.SetZero ();
 transparencyRenderer.ResetBitmaps ();
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspSprite::Render (void)
 {
+ENTER (0);
 #if TRANSP_SPRITES
 	int32_t bSoftBlend = (fSoftRad > 0) && transparencyRenderer.SoftBlend (SOFT_BLEND_SPRITES);
 	int32_t bGlow = 0;
@@ -438,12 +446,14 @@ if (transparencyRenderer.LoadTexture (NULL, pBm, 0, 0, 0, 0, GL_CLAMP)) {
 if (bGlow)
 	glowRenderer.Done (GLOW_SPRITES);
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspSpark::Render (void)
 {
+ENTER (0);
 #if TRANSP_SPARKS
 	float	nCol = (float) (nFrame / 8);
 	float	nRow = (float) (nFrame % 8);
@@ -513,12 +523,14 @@ else {
 	}
 sparkBuffer.nSparks++;
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspSphere::Render (void)
 {
+ENTER (0);
 #if TRANSP_SPHERES
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1, true);
@@ -535,12 +547,14 @@ else if (nType == riMonsterball) {
 ogl.SetDepthWrite (false);
 transparencyRenderer.ResetBitmaps ();
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspParticle::RenderBullet (CParticle *bullet)
 {
+ENTER (0);
 #if TRANSP_BULLETS
 	CObject	o;
 
@@ -558,12 +572,14 @@ if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, bullet->m_nSegme
 	transparencyRenderer.ResetBitmaps ();
 	}
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspParticle::Render (void)
 {
+ENTER (0);
 #if TRANSP_PARTICLES
 if (particle->m_nType == BULLET_PARTICLES)
 	RenderBullet (particle);
@@ -572,12 +588,14 @@ else {
 		transparencyRenderer.ResetBitmaps ();
 	}
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspLightning::Render (void)
 {
+ENTER (0);
 #if TRANSP_LIGHTNING
 if (transparencyRenderer.Data ().nPrevType != transparencyRenderer.Data ().nCurType) {
 	ogl.ResetClientStates ();
@@ -587,12 +605,14 @@ shaderManager.Deploy (-1, false);
 lightning->Render (nDepth, 0);
 transparencyRenderer.ResetBitmaps ();
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspLightTrail::Render (void)
 {
+ENTER (0);
 #if TRANSP_LIGHTTRAILS
 if (transparencyRenderer.Data ().nPrevType != transparencyRenderer.Data ().nCurType) {
 	ogl.ResetClientStates (1);
@@ -617,12 +637,14 @@ if (transparencyRenderer.LoadTexture (NULL, pBm, 0, 0, 0, 0, GL_CLAMP)) {
 	}
 glowRenderer.Done (GLOW_LIGHTTRAILS);
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspThruster::Render (void)
 {
+ENTER (0);
 #if TRANSP_THRUSTER
 shaderManager.Deploy (-1, true);
 ogl.ResetClientStates ();
@@ -630,6 +652,7 @@ thrusterFlames.Render (pObj, &info, nThruster);
 gameData.modelData.vScale.SetZero ();
 transparencyRenderer.ResetBitmaps ();
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -638,63 +661,71 @@ transparencyRenderer.ResetBitmaps ();
 
 int32_t CTranspItemBuffers::Create (void)
 {
+ENTER (0);
 	float scale = 1.0f / sqrt (float (gameStates.app.nThreads));
 
 if (depthBuffer.Buffer ())
-	return 1;
+	RETURN (1)
 if (!depthBuffer.Create (uint32_t (ITEM_DEPTHBUFFER_SIZE * scale)))
-	return 0;
+	RETURN (0)
 if (!itemHeap.Create (uint32_t (ITEM_BUFFER_SIZE * scale))) {
 	depthBuffer.Destroy ();
-	return 0;
+	RETURN (0)
 	}
 nHeapSize = 0;
 Clear ();
 ResetFreeList ();
-return 1;
+RETURN (1)
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspItemBuffers::Destroy (void)
 {
+ENTER (0);
 itemHeap.Destroy ();
 depthBuffer.Destroy ();
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspItemBuffers::Clear (void)
 {
+ENTER (0);
 if (depthBuffer.Buffer ())
 	depthBuffer.Clear ();
 #if DBG
 if (itemHeap.Buffer ())
 	memset (itemHeap.Buffer (), 0, nHeapSize);
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTranspItemBuffers::ResetFreeList (void)
 {
+ENTER (0);
 memset (freeList, 0, sizeof (freeList));
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 inline CTranspItem* CTranspItemBuffers::AllocItem (int32_t nType, int32_t nSize)
 {
+ENTER (0);
 	CTranspItem* ti = freeList [nType];
 
 if (ti) {
 	freeList [nType] = ti->nextItemP;
-	return ti;
+	RETURN (ti)
 	}
 if (nHeapSize + nSize >= (int32_t) itemHeap.Length ())
-	return NULL;
+	RETURN (NULL)
 nHeapSize += nSize;
-return (CTranspItem*) itemHeap.Buffer (nHeapSize - nSize);
+RETURN ((CTranspItem*) itemHeap.Buffer (nHeapSize - nSize))
 }
 
 //------------------------------------------------------------------------------
@@ -739,55 +770,66 @@ return -1;
 
 int32_t CTransparencyRenderer::AllocBuffers (void)
 {
+ENTER (0);
 for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 	if (!m_data.buffers [i].Create ())
-		return 0;
-return 1;
+		RETURN (0)
+RETURN (1)
 }
 
 //------------------------------------------------------------------------------
 
 void CTransparencyRenderer::FreeBuffers (void)
 {
+ENTER (0);
 for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 	m_data.buffers [i].Destroy ();
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTransparencyRenderer::ResetBuffers (void)
 {
+ENTER (0);
 for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 	m_data.buffers [i].Clear ();
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTransparencyRenderer::ResetFreeList (void)
 {
+ENTER (0);
 for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 	m_data.buffers [i].ResetFreeList ();
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTransparencyRenderer::Reset (void)
 {
+ENTER (0);
 for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 	m_data.buffers [i].Reset ();
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 inline CTranspItem* CTransparencyRenderer::AllocItem (int32_t nType, int32_t nSize, int32_t nThread)
 {
-return m_data.buffers [nThread].AllocItem (nType, nSize);
+ENTER (0);
+RETURN (m_data.buffers [nThread].AllocItem (nType, nSize))
 }
 
 //------------------------------------------------------------------------------
 
 void CTransparencyRenderer::InitBuffer (int32_t zMin, int32_t zMax, int32_t nWindow)
 {
+ENTER (0);
 #if LAZY_RESET
 if (nWindow)
 	m_data.bAllowAdd = 1;
@@ -820,21 +862,23 @@ if (ogl.StereoSeparation () <= 0)
 	m_data.bRenderGlow =
 	m_data.bSoftBlend = 0;
 m_data.bReady = 1;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CTransparencyRenderer::Add (CTranspItem* item, CFixVector vPos, int32_t nOffset, bool bClamp, int32_t bTransformed)
 {
+ENTER (0);
 //if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
-//	return 0;
+//	RETURN (0)
 if (!Ready ())
-	return 0;
+	RETURN (0)
 #if LAZY_RESET
 if (!m_data.bAllowAdd)
-	return 0;
+	RETURN (0)
 if ((bTransformed > 0) && (m_data.bAllowAdd < 0))	// already added and still in buffer
-	return 0;
+	RETURN (0)
 #endif
 
 #if RENDER_TRANSPARENCY
@@ -846,12 +890,12 @@ if (nDepth >= I2X (nOffset))
 
 if (nDepth < 0) {
 	if (!bClamp)
-		return 1;
+		RETURN (1)
 	nDepth = m_data.zMin;
 	}
 else if (nDepth > m_data.zMax) {
 	if (!bClamp)
-		return 1;
+		RETURN (1)
 	nDepth = m_data.zMax;
 	}
 
@@ -862,7 +906,7 @@ nOffset = int32_t (double (nDepth) * m_data.zScale);
 int32_t nThread = omp_get_thread_num ();
 #	if DBG
 if (nThread > gameStates.app.nThreads)
-	return 0;
+	RETURN (0)
 if (nThread == gameStates.app.nThreads)
 	nThread = nThread;
 #	endif
@@ -873,10 +917,10 @@ int32_t nThread = 0;
 CTranspItemBuffers& buffer = m_data.buffers [nThread];
 
 if ((nOffset < 0) || (nOffset >= (int32_t) buffer.depthBuffer.Length ()))
-	return 0;
+	RETURN (0)
 CTranspItem* ph = buffer.AllocItem (item->Type (), item->Size ());
 if (!ph) {
-	return 0;
+	RETURN (0)
 	}
 
 memcpy (ph, item, item->Size ());
@@ -906,9 +950,9 @@ if (buffer.nMinOffs > nOffset)
 	buffer.nMinOffs = nOffset;
 if (buffer.nMaxOffs < nOffset)
 	buffer.nMaxOffs = nOffset;
-return 1;
+RETURN (1)
 #else // RENDER_TRANSPARENCY
-return 0;
+RETURN (0)
 #endif // RENDER_TRANSPARENCY
 }
 
@@ -1012,20 +1056,21 @@ return SplitPoly (split, nDepth + 1) && SplitPoly (split + 1, nDepth + 1);
 
 int32_t CTransparencyRenderer::AddObject (CObject *pObj)
 {
+ENTER (0);
 if (gameStates.render.nShadowMap)
-	return 0;
+	RETURN (0)
 
 	CTranspObject	item;
 //	CFixVector		vPos;
 
 if (pObj->info.nType == 255)
-	return 0;
+	RETURN (0)
 item.pObj = pObj;
 item.vScale = gameData.modelData.vScale;
 if (pObj->Cloaked ())
 	m_data.bRenderGlow = 1;
 //transformation.Transform (vPos, OBJPOS (pObj)->vPos, 0);
-return Add (&item, OBJPOS (pObj)->vPos, 0, 0, -1);
+RETURN (Add (&item, OBJPOS (pObj)->vPos, 0, 0, -1))
 }
 
 //------------------------------------------------------------------------------
@@ -1035,11 +1080,12 @@ int32_t CTransparencyRenderer::AddPoly (CSegFace *pFace, tFaceTriangle *pTriangl
 													 CFaceColor* altColor, char nColors, char bDepthMask, int32_t nPrimitive, int32_t nWrap, int32_t bAdditive,
 													 int16_t nSegment)
 {
+ENTER (0);
 if (gameStates.render.nShadowMap)
-	return 0;
+	RETURN (0)
 
 	CTranspPoly		item;
-	int32_t				i;
+	int32_t			i;
 	float				s = gameStates.render.grAlpha;
 	//fix			zCenter;
 
@@ -1087,7 +1133,7 @@ else
 #endif
 	{
 	if (pFace)
-		return Add (&item, SEGMENT (pFace->m_info.nSegment)->Side (pFace->m_info.nSide)->Center (), 0, true, -1);
+		RETURN (Add (&item, SEGMENT (pFace->m_info.nSegment)->Side (pFace->m_info.nSide)->Center (), 0, true, -1))
 	CFloatVector v = item.vertices [0];
 	for (i = 1; i < item.nVertices; i++) 
 		v += item.vertices [i];
@@ -1098,7 +1144,7 @@ else
 		m_data.bRenderGlow = 1;
 	if (gameOpts->SoftBlend (SOFT_BLEND_SPRITES) != 0)
 		m_data.bSoftBlend = 1;
-	return Add (&item, vPos, 0, true);
+	RETURN (Add (&item, vPos, 0, true))
 	}
 }
 
@@ -1106,12 +1152,13 @@ else
 
 int32_t CTransparencyRenderer::AddFaceTris (CSegFace *pFace)
 {
+ENTER (0);
 if (gameStates.render.nShadowMap)
-	return 0;
+	RETURN (0)
 
 	tFaceTriangle*	pTriangle;
 	CFloatVector	vertices [3];
-	int32_t				h, i, j, bAdditive = FaceIsAdditive (pFace);
+	int32_t			h, i, j, bAdditive = FaceIsAdditive (pFace);
 	CBitmap*			pBm = pFace->m_info.bTextured ? /*pFace->bmTop ? pFace->bmTop :*/ pFace->bmBot : NULL;
 
 if (pBm)
@@ -1136,17 +1183,18 @@ for (h = pFace->m_info.nTris; h; h--, pTriangle++) {
 					  FACES.color + pTriangle->nIndex,
 					  NULL, 3, (pBm != NULL) && !bAdditive, GL_TRIANGLES, GL_REPEAT,
 					  bAdditive, pFace->m_info.nSegment))
-		return 0;
+		RETURN (0)
 	}
-return 1;
+RETURN (1)
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CTransparencyRenderer::AddFaceQuads (CSegFace *pFace)
 {
+ENTER (0);
 if (gameStates.render.nShadowMap)
-	return 0;
+	RETURN (0)
 
 	CFloatVector	vertices [4];
 	int32_t			i, j, bAdditive = FaceIsAdditive (pFace);
@@ -1168,11 +1216,11 @@ for (i = 0, j = pFace->m_info.nIndex; i < 4; i++, j++) {
 		vertices [i].Assign (RENDERPOINTS [pFace->m_info.index [i]].m_vertex [1]);
 #endif
 	}
-return AddPoly (pFace, NULL, pBm,
-					 vertices, 4, FACES.texCoord + pFace->m_info.nIndex,
-					 FACES.color + pFace->m_info.nIndex,
-					 NULL, 4, (pBm != NULL) && !bAdditive, GL_TRIANGLE_FAN, GL_REPEAT,
-					 bAdditive, pFace->m_info.nSegment) > 0;
+RETURN (AddPoly (pFace, NULL, pBm,
+					  vertices, 4, FACES.texCoord + pFace->m_info.nIndex,
+					  FACES.color + pFace->m_info.nIndex,
+					  NULL, 4, (pBm != NULL) && !bAdditive, GL_TRIANGLE_FAN, GL_REPEAT,
+					  bAdditive, pFace->m_info.nSegment) > 0)
 }
 
 //------------------------------------------------------------------------------
@@ -1180,8 +1228,9 @@ return AddPoly (pFace, NULL, pBm,
 int32_t CTransparencyRenderer::AddSprite (CBitmap *pBm, const CFixVector& position, CFloatVector *color,
 														int32_t nWidth, int32_t nHeight, char nFrame, char bAdditive, float fSoftRad)
 {
+ENTER (0);
 if (gameStates.render.nShadowMap)
-	return 0;
+	RETURN (0)
 
 	CTranspSprite	item;
 
@@ -1198,7 +1247,7 @@ if (bAdditive & 3)
 	m_data.bRenderGlow = 1;
 if (gameOpts->SoftBlend (SOFT_BLEND_SPRITES) != 0)
 	m_data.bSoftBlend = 1;
-return Add (&item, position);
+RETURN (Add (&item, position))
 }
 
 //------------------------------------------------------------------------------
@@ -1206,8 +1255,9 @@ return Add (&item, position);
 int32_t CTransparencyRenderer::AddSpark (const CFixVector& position, char nType, int32_t nSize, char nFrame, char nRotFrame, char nOrient)
 {
 #if 1
+ENTER (0);
 if (gameStates.render.nShadowMap)
-	return 0;
+	RETURN (0)
 
 	CTranspSpark	item;
 //	CFixVector		vPos;
@@ -1220,9 +1270,9 @@ item.nType = nType;
 item.position.Assign (position);
 if (gameOpts->SoftBlend (SOFT_BLEND_PARTICLES))
 	m_data.bSoftBlend = 1;
-return Add (&item, position);
+RETURN (Add (&item, position))
 #else
-return 0;
+RETURN (0)
 #endif
 }
 
@@ -1230,8 +1280,9 @@ return 0;
 
 int32_t CTransparencyRenderer::AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha,  CObject *pObj, char bAdditive, fix nSize)
 {
+ENTER (0);
 if (gameStates.render.nShadowMap)
-	return 0;
+	RETURN (0)
 
 	CTranspSphere	item;
 	//CFixVector		vPos;
@@ -1249,35 +1300,37 @@ item.pBitmap = gameData.renderData.shield->GetBitmap ();
 if (nType != riMonsterball)
 	m_data.bRenderGlow = 1;
 //transformation.Transform (vPos, pObj->info.position.vPos, 0);
-return Add (&item, pObj->info.position.vPos);
+RETURN (Add (&item, pObj->info.position.vPos))
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CTransparencyRenderer::AddParticle (CParticle *particle, float fBrightness, int32_t nThread)
 {
+ENTER (0);
 if (gameStates.render.nShadowMap)
-	return 0;
+	RETURN (0)
 
 	CTranspParticle	item;
 //	fix					z;
 
 if ((particle->m_nType < 0) || (particle->m_nType >= PARTICLE_TYPES))
-	return 0;
+	RETURN (0)
 item.particle = particle;
 item.fBrightness = fBrightness;
 //particle->Transform (gameStates.render.bPerPixelLighting == 2);
 if (gameOpts->SoftBlend (SOFT_BLEND_PARTICLES))
 	m_data.bSoftBlend = 1;
-return Add (&item, particle->m_vPos, 10);
+RETURN (Add (&item, particle->m_vPos, 10))
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CTransparencyRenderer::AddLightning (CLightning *pLightning, int16_t nDepth)
 {
+ENTER (0);
 if (gameStates.render.nShadowMap)
-	return 0;
+	RETURN (0)
 
 	CTranspLightning	item;
 	bool					bSwap;
@@ -1297,21 +1350,22 @@ fix d2 = Depth (pLightning->m_vEnd, false);
 if ((bSwap = (d1 < d2)))
 	::Swap (d1, d2);
 if (d2 > m_data.zMax)
-	return 0;
+	RETURN (0)
 if (d1 < m_data.zMin)
-	return 0;
+	RETURN (0)
 m_data.bRenderGlow = 1;
 if (!Add (&item, bSwap ? pLightning->m_vEnd : pLightning->m_vPos /*CFixVector::Avg (pLightning->m_vPos, pLightning->m_vEnd)*/, 0, true, 0)) // -1))
-	return 0;
-return 1;
+	RETURN (0)
+RETURN (1)
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CTransparencyRenderer::AddLightTrail (CBitmap *pBm, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, CFloatVector *pColor)
 {
+ENTER (0);
 if (gameStates.render.nShadowMap)
-	return 0;
+	RETURN (0)
 
 	CTranspLightTrail	item;
 	int32_t					i, j, iMin = 0;
@@ -1338,15 +1392,16 @@ for (i = 0; i < j; i++) {
 	}
 v.Assign (item.vertices [iMin]);
 m_data.bRenderGlow = 1;
-return Add (&item, v, 0, false, 0);
+RETURN (Add (&item, v, 0, false, 0))
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CTransparencyRenderer::AddThruster (CObject* pObj, tThrusterInfo* pInfo, int32_t nThruster)
 {
+ENTER (0);
 if (gameStates.render.nShadowMap)
-	return 0;
+	RETURN (0)
 
 	CTranspThruster item;
 
@@ -1354,13 +1409,14 @@ item.pObj = pObj;
 item.info = *pInfo;
 item.nThruster = nThruster;
 m_data.bRenderGlow = 1;
-return Add (&item, pInfo->vPos [nThruster], 0, false, 0);
+RETURN (Add (&item, pInfo->vPos [nThruster], 0, false, 0))
 }
 
 //------------------------------------------------------------------------------
 
 inline void CTransparencyRenderer::ResetBitmaps (void)
 {
+ENTER (0);
 m_data.pBm [0] =
 m_data.pBm [1] =
 m_data.pBm [2] = NULL;
@@ -1368,12 +1424,14 @@ m_data.bDecal = 0;
 m_data.bTextured = 0;
 m_data.nFrame = -1;
 m_data.bUseLightmaps = 0;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CTransparencyRenderer::LoadTexture (CSegFace* pFace, CBitmap *pBm, int16_t nTexture, int32_t nFrame, int32_t bDecal, int32_t bLightmaps, int32_t nWrap)
 {
+ENTER (0);
 if (pBm) {
 #if 0
 	ogl.SelectTMU (GL_TEXTURE0 + bLightmaps, true);
@@ -1384,7 +1442,7 @@ if (pBm) {
 		if (pBm) {
 			if (pBm->Bind (1)) {
 				ResetBitmaps ();
-				return 0;
+				RETURN (0)
 				}
 			if (bDecal != 2)
 				pBm = pBm->Override (nFrame);
@@ -1402,18 +1460,19 @@ else {
 	ogl.SetTexturing (false);
 	ResetBitmaps ();
 	}
-return 1;
+RETURN (1)
 }
 
 //------------------------------------------------------------------------------
 
 void CTransparencyRenderer::FlushSparkBuffer (void)
 {
+ENTER (0);
 if (DepthBuffer () < 0)
-	return;
+	LEAVE
 
 if (!sparkBuffer.nSparks)
-	return;
+	LEAVE
 
 sparkArea.Reset ();
 
@@ -1435,16 +1494,18 @@ if (LoadTexture (NULL, sparks.Bitmap (), 0, 0, 0, 0, GL_CLAMP)) {
 	ogl.SetDepthTest (true);
 	sparkBuffer.nSparks = 0;
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTransparencyRenderer::FlushParticleBuffer (int32_t nType)
 {
+ENTER (0);
 if (DepthBuffer () < 0)
-	return;
+	LEAVE
 if (!HeapSize ())
-	return;
+	LEAVE
 
 if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))) {
 	ResetBitmaps ();
@@ -1459,16 +1520,18 @@ if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))
 		ResetBitmaps ();
 		}
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CTransparencyRenderer::FlushBuffers (int32_t nType, CTranspItem *item)
 {
+ENTER (0);
 if (DepthBuffer () < 0)
-	return;
+	LEAVE
 if (!HeapSize ())
-	return;
+	LEAVE
 
 if (glowRenderer.Available (GLOW_LIGHTNING | GLOW_SHIELDS | GLOW_SPRITES | GLOW_THRUSTERS) && 
 	 (nType != tiLightning) && (nType != tiSphere) && (nType != tiSprite) && (nType != tiThruster)) {
@@ -1495,12 +1558,14 @@ else {
 		FlushParticleBuffer (nType);
 		}
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CTransparencyRenderer::RenderItem (CTranspItem *pItem)
 {
+ENTER (0);
 if (!pItem->bRendered) {
 	//pItem->bRendered = true;
 	m_data.nPrevType = m_data.nCurType;
@@ -1522,7 +1587,7 @@ if (!pItem->bRendered) {
 		PrintLog (0, "invalid transparent render item (type: %d)\n", m_data.nCurType);
 		}
 	}
-return m_data.nCurType;
+RETURN (m_data.nCurType)
 }
 
 //------------------------------------------------------------------------------
@@ -1551,6 +1616,7 @@ return m_data.bHaveDepthBuffer && !gameStates.render.cameras.bActive && (gameOpt
 
 void CTransparencyRenderer::RenderBuffer (CTranspItemBuffers& buffer, bool bCleanup)
 {
+ENTER (0);
 CTranspItem* pCurrent = *buffer.pBuffer, * pNext, * pPrev;
 if (bCleanup)
 	*buffer.pBuffer = NULL;
@@ -1582,6 +1648,7 @@ do {
 		pPrev = pCurrent;
 	pCurrent = pNext;
 	} while (pCurrent);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -1590,14 +1657,15 @@ extern int32_t bLog;
 
 void CTransparencyRenderer::Render (int32_t nWindow)
 {
+ENTER (0);
 #if RENDER_TRANSPARENCY
 	int32_t			bStencil, bGlow;
 	bool				bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || nWindow;
 
 if (!AllocBuffers ())
-	return;
+	LEAVE
 if (!HeapSize ())
-	return;
+	LEAVE
 if (gameStates.render.cameras.bActive)
 	nWindow = nWindow;
 //HUDMessage (0, "transp. render heap size: %d.%03d.%03d", HeapSize () / 1000000, (HeapSize () % 1000000) / 1000, HeapSize () % 1000);
@@ -1728,6 +1796,7 @@ gameOpts->render.effects.bGlow = bGlow;
 
 PROF_END(ptTranspPolys)
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------

@@ -53,21 +53,22 @@ void DropStolenItems (CObject *pObj);
 
 CObject *CObject::CreateExplBlast (bool bForce)
 {
+ENTER (0);
 #if 0 //DBG
-return NULL;
+RETURN (NULL)
 #endif
 
 	int16_t	nObject;
 	CObject*	pObj;
 
 if (!(bForce || (gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves)))
-	return NULL;
+	RETURN (NULL)
 if (SPECTATOR (this))
-	return NULL;
+	RETURN (NULL)
 nObject = CreateFireball (0, info.nSegment, info.position.vPos, info.xSize, RT_EXPLBLAST);
 pObj = OBJECT (nObject);
 if (!pObj)
-	return NULL;
+	RETURN (NULL)
 pObj->SetLife (BLAST_LIFE);
 pObj->cType.explInfo.nSpawnTime = -1;
 pObj->cType.explInfo.nDestroyedObj = -1;
@@ -84,26 +85,27 @@ if (IsMissile ()) {
 	else
 		pObj->SetSize (I2X (1));
 	}
-return pObj;
+RETURN (pObj)
 }
 
 //------------------------------------------------------------------------------
 
 CObject *CObject::CreateShockwave (void)
 {
+ENTER (0);
 	int16_t	nObject;
 	CObject	*pObj;
 
 if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves))
-	return NULL;
+	RETURN (NULL)
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
-	return NULL;
+	RETURN (NULL)
 if (SPECTATOR (this))
-	return NULL;
+	RETURN (NULL)
 nObject = CreateFireball (0, info.nSegment, info.position.vPos, 10 * info.xSize, RT_SHOCKWAVE);
 pObj = OBJECT (nObject);
 if (!pObj)
-	return NULL;
+	RETURN (NULL)
 pObj->SetLife (SHOCKWAVE_LIFE);
 pObj->cType.explInfo.nSpawnTime = -1;
 pObj->cType.explInfo.nDestroyedObj = -1;
@@ -130,7 +132,7 @@ if (IsMissile ()) {
 	else 
 		pObj->SetSize (I2X (1));
 	}
-return pObj;
+RETURN (pObj)
 }
 
 //------------------------------------------------------------------------------
@@ -138,6 +140,7 @@ return pObj;
 CObject* CreateExplosion (CObject* pParent, int16_t nSegment, CFixVector& vPos, CFixVector& vImpact, fix xSize,
 								  uint8_t nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, int16_t nParent)
 {
+ENTER (0);
 	int16_t		nObject;
 	CObject		*pExplObj, *pObj;
 	fix			dist, force, damage;
@@ -149,7 +152,7 @@ CObject* CreateExplosion (CObject* pParent, int16_t nSegment, CFixVector& vPos, 
 nObject = CreateFireball (nVClip, nSegment, vPos, xSize, RT_FIREBALL);
 pExplObj = OBJECT (nObject);
 if (!pExplObj)
-	return NULL;
+	RETURN (NULL)
 
 //now set explosion-specific data
 pExplObj->SetLife (gameData.effectData.animations [0][nVClip].xTotalTime);
@@ -317,7 +320,7 @@ FORALL_OBJS (pObj) {
 			pObj->ApplyDamageToPlayer (pKiller, damage);
 		}
 	}
-return pExplObj;
+RETURN (pExplObj)
 }
 
 //------------------------------------------------------------------------------
@@ -325,6 +328,7 @@ return pExplObj;
 CObject* CreateSplashDamageExplosion (CObject* pObj, int16_t nSegment, CFixVector& position, CFixVector &impact, fix size, uint8_t nVClip,
 												  fix maxDamage, fix maxDistance, fix maxForce, int16_t nParent)
 {
+ENTER (0);
 CObject* pExplObj = CreateExplosion (pObj, nSegment, position, impact, size, nVClip, maxDamage, maxDistance, maxForce, nParent);
 if (pExplObj) {
 	if (!pObj ||
@@ -335,7 +339,7 @@ if (pExplObj) {
 	if (pObj && (pObj->info.nType == OBJ_WEAPON))
 		CreateSmartChildren (pObj, NUM_SMART_CHILDREN);
 	}
-return pExplObj;
+RETURN (pExplObj)
 }
 
 //------------------------------------------------------------------------------
@@ -343,10 +347,11 @@ return pExplObj;
 //return the explosion CObject
 CObject* CObject::ExplodeSplashDamageWeapon (CFixVector& vImpact, CObject* pTarget)
 {
+ENTER (0);
 	CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
 
 if (!pWeaponInfo)
-	return NULL;
+	RETURN (NULL)
 
 Assert (pWeaponInfo->xDamageRadius);
 // adjust the impact location in case it is inside the object
@@ -373,9 +378,9 @@ else { //make sure explosion center is not behind some wall
 	//VmVecScale (&v, I2X (10));
 	vExplPos += vImpact;
 	}
-return CreateSplashDamageExplosion (this, info.nSegment, vExplPos, vImpact, pWeaponInfo->xImpactSize, pWeaponInfo->nRobotHitAnimation,
-												pWeaponInfo->strength [gameStates.app.nDifficultyLevel], pWeaponInfo->xDamageRadius, pWeaponInfo->strength [gameStates.app.nDifficultyLevel],
-												cType.laserInfo.parent.nObject);
+RETURN (CreateSplashDamageExplosion (this, info.nSegment, vExplPos, vImpact, pWeaponInfo->xImpactSize, pWeaponInfo->nRobotHitAnimation,
+												 pWeaponInfo->strength [gameStates.app.nDifficultyLevel], pWeaponInfo->xDamageRadius, pWeaponInfo->strength [gameStates.app.nDifficultyLevel],
+												 cType.laserInfo.parent.nObject))
 }
 
 //------------------------------------------------------------------------------
@@ -383,11 +388,12 @@ return CreateSplashDamageExplosion (this, info.nSegment, vExplPos, vImpact, pWea
 CObject* CObject::ExplodeSplashDamage (fix damage, fix distance, fix force)
 {
 
+ENTER (0);
 CObject* pExplObj = CreateSplashDamageExplosion (this, info.nSegment, info.position.vPos, info.position.vPos, info.xSize,
 																 (uint8_t) GetExplosionVClip (this, 0), damage, distance, force, OBJ_IDX (this));
 if (pExplObj)
 	audio.CreateObjectSound (gameStates.app.bD1Mission ? SOUND_STANDARD_EXPLOSION : SOUND_BADASS_EXPLOSION_ACTOR, SOUNDCLASS_EXPLOSION, OBJ_IDX (pExplObj));
-return pExplObj;
+RETURN (pExplObj)
 }
 
 //------------------------------------------------------------------------------
@@ -395,7 +401,8 @@ return pExplObj;
 //return the explosion CObject
 CObject* CObject::ExplodeSplashDamagePlayer (void)
 {
-return ExplodeSplashDamage (I2X (50), I2X (40), I2X (150));
+ENTER (0);
+RETURN (ExplodeSplashDamage (I2X (50), I2X (40), I2X (150)))
 }
 
 //------------------------------------------------------------------------------
@@ -411,6 +418,7 @@ return fabs (X2F (vMax.v.coord.x - vMin.v.coord.x)) *
 
 double ObjectVolume (CObject *pObj)
 {
+ENTER (0);
 	CPolyModel	*pModel;
 	int32_t		i, j;
 	double		size;
@@ -430,7 +438,7 @@ else {
 			size += VectorVolume (pModel->SubModels ().mins [j], pModel->SubModels ().maxs [j]);
 		}
 	}
-return sqrt (size);
+RETURN (sqrt (size))
 }
 
 //------------------------------------------------------------------------------
@@ -459,6 +467,7 @@ fix nDebrisLife [] = {2, 5, 10, 15, 30, 60, 120, 180, 300};
 
 void CObject::SetupDebris (int32_t nSubObj, int32_t nId, int32_t nTexOverride)
 {
+ENTER (0);
 Assert (nSubObj < 32);
 info.nType = OBJ_DEBRIS;
 //Set polygon-CObject-specific data
@@ -486,58 +495,64 @@ if (gameOpts->render.nDebrisLife) {
 	mType.physInfo.rotVel /= 3;
 	}
 mType.physInfo.flags &= ~(PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 CObject* CObject::CreateDebris (int32_t nSubObj)
 {
+ENTER (0);
 int32_t nObject = ::CreateDebris (this, nSubObj);
 if ((nObject < 0) && (gameData.objData.nLastObject [0] >= LEVEL_OBJECTS - 1)) {
 #if TRACE
 	console.printf (1, "Can't create object in ObjectCreateDebris.\n");
 #endif
 	Int3 ();
-	return NULL;
+	RETURN (NULL)
 	}
 
 CObject* pObj = OBJECT (nObject);
 if (!pObj)
-	return NULL;				// Not enough debris slots!
+	RETURN (NULL)				// Not enough debris slots!
 pObj->SetupDebris (nSubObj, ModelId (), rType.polyObjInfo.nTexOverride);
-return pObj;
+RETURN (pObj)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
 void DrawFireball (CObject *pObj)
 {
+ENTER (0);
 if (pObj->info.xLifeLeft > 0)
 	DrawVClipObject (pObj, pObj->info.xLifeLeft, 0, pObj->info.nId, (pObj->info.nType == OBJ_WEAPON) ? gameData.weaponData.color + pObj->info.nId : NULL);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 //what tAnimationInfo does this explode with?
 int16_t GetExplosionVClip (CObject *pObj, int32_t stage)
 {
+ENTER (0);
 if (pObj->info.nType == OBJ_ROBOT) {
 	tRobotInfo *pRobotInfo = ROBOTINFO (pObj);
 	if (pRobotInfo) {
 		if ((stage == 0) && (pRobotInfo->nExp1VClip > -1))
-			return pRobotInfo->nExp1VClip;
+			RETURN (pRobotInfo->nExp1VClip)
 		else if ((stage == 1) && (pRobotInfo->nExp2VClip > -1))
-			return pRobotInfo->nExp2VClip;
+			RETURN (pRobotInfo->nExp2VClip)
 		}
 	}
 else if ((pObj->info.nType == OBJ_PLAYER) && (gameData.pigData.ship.player->nExplVClip >- 1))
-	return gameData.pigData.ship.player->nExplVClip;
-return ANIM_SMALL_EXPLOSION;		//default
+	RETURN (gameData.pigData.ship.player->nExplVClip)
+RETURN (ANIM_SMALL_EXPLOSION)		//default
 }
 
 //------------------------------------------------------------------------------
 //blow up a polygon model
 void CObject::ExplodePolyModel (void)
 {
+ENTER (0);
 Assert (info.renderType == RT_POLYOBJ);
 
 //CreateExplBlast (); TEST!!!
@@ -567,6 +582,7 @@ if ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER)) {
 	if (info.nType != OBJ_REACTOR)
 		SetupDebris (0, ModelId (), rType.polyObjInfo.nTexOverride);
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -589,8 +605,9 @@ else {		//Normal, multi-stage explosion
 //blow up an CObject.  Takes the CObject to destroy, and the point of impact
 void CObject::Explode (fix delayTime)
 {
+ENTER (0);
 if (info.nFlags & OF_EXPLODING)
-	return;
+	LEAVE
 if (delayTime) {		//wait a little while before creating explosion
 	//create a placeholder CObject to do the delay, with id==-1
 	int32_t nObject = CreateFireball (uint8_t (-1), info.nSegment, info.position.vPos, 0, RT_NONE);
@@ -601,7 +618,7 @@ if (delayTime) {		//wait a little while before creating explosion
 		console.printf (1, "Couldn't start explosion, deleting object now\n");
 #endif
 		Int3 ();
-		return;
+		LEAVE
 		}
 	//now set explosion-specific data
 	pObj->UpdateLife (delayTime);
@@ -624,7 +641,7 @@ else {
 #if TRACE
 		console.printf (CON_DBG, "Couldn't start explosion, deleting CObject now\n");
 #endif
-		return;
+		LEAVE
 		}
 	//don't make debris explosions have physics, because they often
 	//happen when the debris has hit the CWall, so the fireball is trying
@@ -639,6 +656,7 @@ else {
 	}
 info.nFlags |= OF_EXPLODING;		//say that this is blowing up
 info.controlType = CT_NONE;		//become inert while exploding
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -655,6 +673,7 @@ if (pObj->info.xLifeLeft < 0)
 //do whatever needs to be done for this explosion for this frame
 void CObject::DoExplosionSequence (void)
 {
+ENTER (0);
 	int32_t nType;
 
 Assert (info.controlType == CT_EXPLOSION);
@@ -664,12 +683,12 @@ if (info.xLifeLeft <= 0) {	// We died of old age
 	Die ();
 	}
 if (info.renderType == RT_EXPLBLAST)
-	return;
+	LEAVE
 if (info.renderType == RT_SHOCKWAVE)
-	return;
+	LEAVE
 if (info.renderType == RT_SHRAPNELS) {
 	//- moved to DoSmokeFrame() - UpdateShrapnels (this);
-	return;
+	LEAVE
 	}
 
 if (m_xMoveTime) {
@@ -692,7 +711,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDestroyedO
 		console.printf (CON_DBG, "Warning: Illegal value for nDestroyedObj in fireball.c\n");
 #endif
 		Int3 (); // get Rob, please... thanks
-		return;
+		LEAVE
 		}
 	pDelObj = OBJECT (cType.explInfo.nDestroyedObj);
 	tRobotInfo* pRobotInfo = pDelObj->IsRobot () ? ROBOTINFO (pDelObj->info.nId) : NULL; 
@@ -702,7 +721,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDestroyedO
 	if (((nType != OBJ_ROBOT) && (nType != OBJ_CLUTTER) && (nType != OBJ_REACTOR) && (nType != OBJ_PLAYER)) ||
 			(pDelObj->info.nSegment == -1)) {
 		Int3 ();	//pretty bad
-		return;
+		LEAVE
 		}
 	nVClip = (uint8_t) GetExplosionVClip (pDelObj, 1);
 	if ((pDelObj->info.nType == OBJ_ROBOT) && xSplashDamage)
@@ -781,6 +800,7 @@ if ((info.xLifeLeft <= cType.explInfo.nDeleteTime) && (cType.explInfo.nDestroyed
 	cType.explInfo.nDeleteTime = -1;
 	pDelObj->MaybeDelete ();
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------

@@ -39,28 +39,28 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 inline int32_t CurFrame (CObject *pObj, int32_t nClip, fix timeToLive, int32_t nFrames = -1)
 {
+ENTER (0);
 tAnimationInfo	*pAnimInfo = gameData.effectData.animations [0] + nClip;
 if (nFrames < 0)
 	nFrames = pAnimInfo->nFrameCount;
 //	iFrame = (nFrames - X2I (FixDiv ((nFrames - 1) * timeToLive, pAnimInfo->xTotalTime))) - 1;
-int32_t iFrame;
 if (timeToLive > pAnimInfo->xTotalTime)
 	timeToLive = timeToLive % pAnimInfo->xTotalTime;
-if ((nClip == ANIM_AFTERBURNER_BLOB) && pObj->rType.animationInfo.xFrameTime)
-	iFrame = (pObj->rType.animationInfo.xTotalTime - timeToLive) / pObj->rType.animationInfo.xFrameTime;
-else
-	iFrame = (pAnimInfo->xTotalTime - timeToLive) / pAnimInfo->xFrameTime;
-return (iFrame < nFrames) ? iFrame : nFrames - 1;
+int32_t iFrame = ((nClip == ANIM_AFTERBURNER_BLOB) && pObj->rType.animationInfo.xFrameTime)
+					  ? (pObj->rType.animationInfo.xTotalTime - timeToLive) / pObj->rType.animationInfo.xFrameTime
+					  : (pAnimInfo->xTotalTime - timeToLive) / pAnimInfo->xFrameTime;
+RETURN ((iFrame < nFrames) ? iFrame : nFrames - 1)
 }
 
 //------------------------------------------------------------------------------
 
 CRGBColor *AnimationColor (CObject *pObj)
 {
+ENTER (0);
 	CWeaponInfo		*pWeaponInfo = WEAPONINFO (pObj);
 
 if (!pWeaponInfo)
-	return NULL;
+	RETURN (NULL)
 
 	int32_t			nVClip = pWeaponInfo->nAnimationIndex;
 	tBitmapIndex	bmi;
@@ -77,13 +77,14 @@ pBm = gameData.pigData.tex.bitmaps [0] + bmi.index;
 if ((pBm->Type () == BM_TYPE_STD) && pBm->Override ())
 	pBm = pBm->Override ();
 pBm->AvgColor (NULL, false);
-return pBm->GetAvgColor ();
+RETURN (pBm->GetAvgColor ())
 }
 
 //------------------------------------------------------------------------------
 
 int32_t SetupHiresVClip (tAnimationInfo *pAnimInfo, tAnimationState *pState, CBitmap* pBm)
 {
+ENTER (0);
 	int32_t nFrames = pAnimInfo->nFrameCount;
 
 if (pAnimInfo->flags & WCF_ALTFMT) {
@@ -103,7 +104,7 @@ if (pAnimInfo->flags & WCF_ALTFMT) {
 			pState->nCurFrame = Rand (nFrames);
 		}
 	}
-return nFrames;
+RETURN (nFrames)
 }
 
 //------------------------------------------------------------------------------
@@ -115,6 +116,7 @@ return nFrames;
 
 void DrawVClipObject (CObject *pObj, fix timeToLive, int32_t bLit, int32_t nVClip, CFloatVector *color)
 {
+ENTER (0);
 	double		ta = 0, alpha = 0;
 	tAnimationInfo*	pAnimInfo = gameData.effectData.animations [0] + nVClip;
 	int32_t		nFrames = SetupHiresVClip (pAnimInfo, &pObj->rType.animationInfo);
@@ -122,7 +124,7 @@ void DrawVClipObject (CObject *pObj, fix timeToLive, int32_t bLit, int32_t nVCli
 	int32_t		bThruster = (pObj->info.renderType == RT_THRUSTER) && (pObj->mType.physInfo.flags & PF_WIGGLE);
 
 if ((iFrame < 0) || (iFrame >= MAX_ANIMATION_FRAMES))
-	return;
+	LEAVE
 if ((pObj->info.nType == OBJ_FIREBALL) || (pObj->info.nType == OBJ_EXPLOSION)) {
 	if (bThruster) {
 		alpha = THRUSTER_ALPHA;
@@ -152,12 +154,14 @@ else
 if ((pObj->info.nType == OBJ_FIREBALL) || (pObj->info.nType == OBJ_EXPLOSION))
 	ogl.SetDepthWrite (true);
 #endif
+LEAVE
 }
 
 // -----------------------------------------------------------------------------
 
 void DrawExplBlast (CObject *pObj)
 {
+ENTER (0);
 #if BLAST_TYPE == 1
 	int32_t			i;
 	fix			xSize2;
@@ -176,9 +180,9 @@ void DrawExplBlast (CObject *pObj)
 	 {1, 1, 1, 3}};
 #endif
 if (pObj->info.xLifeLeft <= 0)
-	return;
+	LEAVE
 if (!explBlast.Load ())
-	return;
+	LEAVE
 
 float fScale;
 if (true || pObj->Collapsing ()) {
@@ -234,17 +238,19 @@ for (i = 0; i < 3; i++) {
 transformation.End (__FILE__, __LINE__);
 #endif
 ogl.SetDepthWrite (true);
+LEAVE
 }
 
 // -----------------------------------------------------------------------------
 
 void DrawShockwave (CObject *pObj)
 {
+ENTER (0);
 
 	CBitmap* pBm = shockwave.Bitmap (SHOCKWAVE_LIFE, pObj->info.xLifeLeft);
 
 if (!pBm)
-	return;
+	LEAVE
 
 	CFloatVector	v, vertices [4];
 
@@ -252,9 +258,9 @@ if (!pBm)
 	static CFloatVector color = {{{1.0f, 1.0f, 1.0f, 1.0f}}};
 
 if (pObj->info.xLifeLeft <= 0)
-	return;
+	LEAVE
 if (!shockwave.Load ())
-	return;
+	LEAVE
 
 vertices [0].Assign (pObj->Position ());
 vertices [1] = 
@@ -283,6 +289,7 @@ for (int32_t i = 0; i < 4; i++)
 	transformation.Transform (vertices [i], vertices [i], 0);
 transparencyRenderer.AddPoly (NULL, NULL, pBm, vertices, 4, texCoord, &color, NULL, 1, 0, GL_QUADS, GL_CLAMP, 2, -1);
 #endif
+LEAVE
 }
 
 // -----------------------------------------------------------------------------

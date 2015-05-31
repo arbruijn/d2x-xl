@@ -69,8 +69,9 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 
 tPointSeg *InsertTransitPoint (tPointSeg *pCurSeg, tPointSeg *pPredSeg, tPointSeg *pSuccSeg, uint8_t nConnSide)
 {
+ENTER (0);
 	CFixVector	vCenter, vPoint;
-	int16_t			nSegment;
+	int16_t		nSegment;
 
 vCenter = SEGMENT (pPredSeg->nSegment)->SideCenter (nConnSide);
 vPoint = pPredSeg->point - vCenter;
@@ -87,14 +88,15 @@ if (nSegment == -1) {
 	FindSegByPos (pCurSeg->point, pSuccSeg->nSegment, 1, 0);
 	}
 pCurSeg->nSegment = pSuccSeg->nSegment;
-return pCurSeg;
+RETURN (pCurSeg)
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
 int32_t OptimizePath (tPointSeg *pPointSeg, int32_t nSegs)
 {
-	int32_t			i, j;
+ENTER (0);
+	int32_t		i, j;
 	CFixVector	temp1, temp2;
 	fix			dot, mag1, mag2 = 0;
 
@@ -117,7 +119,7 @@ for (i = 1; i < nSegs - 1; i += 2) {
 for (i = j = 0; i < nSegs; i++)
 	if (pPointSeg [i].nSegment != -1)
 		pPointSeg [j++] = pPointSeg [i];
-return j;
+RETURN (j)
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -126,13 +128,14 @@ return j;
 // at the end of the list and go backwards.
 int32_t InsertCenterPoints (tPointSeg *pPointSeg, int32_t numPoints)
 {
+ENTER (0);
 	int32_t	i, j;
 
 for (i = 0; i < numPoints; i++) {
 	j = i + 2;
 	InsertTransitPoint (pPointSeg + i + 1, pPointSeg + i, pPointSeg + j, pPointSeg [j].nConnSide);
 	}
-return OptimizePath (pPointSeg, numPoints);
+RETURN (OptimizePath (pPointSeg, numPoints))
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -141,16 +144,17 @@ static tPointSeg newPtSegs [MAX_SEGMENTS_D2X];
 
 void MoveTowardsOutside (tPointSeg *ptSegs, int32_t *nPoints, CObject *pObj, int32_t bRandom)
 {
-	int32_t			i, j;
-	int32_t			nNewSeg;
+ENTER (0);
+	int32_t		i, j;
+	int32_t		nNewSeg;
 	fix			xSegSize;
-	int32_t			nSegment;
+	int32_t		nSegment;
 	CFixVector	a, b, c, d, e;
 	CFixVector	vGoalPos;
-	int32_t			count;
-	int32_t			nTempSeg;
-	CHitResult		hitResult;
-	int32_t			nHitType;
+	int32_t		count;
+	int32_t		nTempSeg;
+	CHitResult	hitResult;
+	int32_t		nHitType;
 
 j = *nPoints;
 if (j > LEVEL_SEGMENTS)
@@ -220,7 +224,7 @@ for (i = 1, --j; i < j; i++) {
 			count = 0;
 		else {
 			if ((count == 3) && (nHitType == HIT_BAD_P0))
-				return;
+				LEAVE
 			vGoalPos.v.coord.x = ((*hitQuery.p0).v.coord.x + hitResult.vPoint.v.coord.x)/2;
 			vGoalPos.v.coord.y = ((*hitQuery.p0).v.coord.y + hitResult.vPoint.v.coord.y)/2;
 			vGoalPos.v.coord.z = ((*hitQuery.p0).v.coord.z + hitResult.vPoint.v.coord.z)/2;
@@ -241,6 +245,7 @@ for (i = 1, --j; i < j; i++) {
 	}
 if (j > 1)
 	memcpy (ptSegs + 1, newPtSegs + 1, (j - 1) * sizeof (tPointSeg));
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -258,23 +263,24 @@ if (j > 1)
 int32_t CreatePathPoints (CObject *pObj, int32_t nStartSeg, int32_t nEndSeg, tPointSeg *pPointSeg, int16_t *numPoints,
 							 int32_t nMaxDepth, int32_t bRandom, int32_t bSafeMode, int32_t nAvoidSeg)
 {
-	int16_t					nCurSeg;
-	int16_t					nSide, hSide;
-	int32_t					qTail = 0, qHead = 0;
-	int32_t					h, i, j;
-	int8_t					bVisited [MAX_SEGMENTS_D2X];
+ENTER (0);
+	int16_t				nCurSeg;
+	int16_t				nSide, hSide;
+	int32_t				qTail = 0, qHead = 0;
+	int32_t				h, i, j;
+	int8_t				bVisited [MAX_SEGMENTS_D2X];
 	segQueueEntry		segmentQ [MAX_SEGMENTS_D2X];
-	int16_t					depth [MAX_SEGMENTS_D2X];
-	int32_t					nCurDepth;
-	int8_t					randomXlate [SEGMENT_SIDE_COUNT];
+	int16_t				depth [MAX_SEGMENTS_D2X];
+	int32_t				nCurDepth;
+	int8_t				randomXlate [SEGMENT_SIDE_COUNT];
 	tPointSeg*			origPointSegs = pPointSeg;
-	int32_t					lNumPoints;
+	int32_t				lNumPoints;
 	CSegment*			pSeg;
 	CFixVector			vCenter;
-	int32_t					nParentSeg, nDestSeg;
-	CHitResult				hitResult;
-	int32_t					hitType;
-	int32_t					bAvoidTarget;
+	int32_t				nParentSeg, nDestSeg;
+	CHitResult			hitResult;
+	int32_t				hitType;
+	int32_t				bAvoidTarget;
 
 #if PATH_VALIDATION
 ValidateAllPaths ();
@@ -363,7 +369,7 @@ pathTooLong: ;
 while (segmentQ [--qTail].end != nEndSeg)
 	if (qTail < 0) {
 		*numPoints = lNumPoints;
-		return -1;
+		RETURN (-1)
 		}
 for (i = qTail; i >= 0; ) {
 	nParentSeg = segmentQ [i].start;
@@ -381,7 +387,7 @@ if (bSafeMode && ((pPointSeg - gameData.aiData.routeSegs) + 2 * lNumPoints + 1 >
 #endif
 	AIResetAllPaths ();
 	*numPoints = lNumPoints;
-	return -1;
+	RETURN (-1)
 	}
 pPointSeg->nSegment = nStartSeg;
 pPointSeg->point = SEGMENT (nStartSeg)->Center ();
@@ -428,7 +434,7 @@ ValidatePath (4, origPointSegs, lNumPoints);
 #endif
 
 *numPoints = lNumPoints;
-return 0;
+RETURN (0)
 }
 
 int32_t	Last_buddy_polish_path_frame;
@@ -488,6 +494,7 @@ return numPoints - nFirstPoint;
 
 int32_t ValidatePath (int32_t debugFlag, tPointSeg *pPointSeg, int32_t numPoints)
 {
+ENTER (0);
 	int32_t i, nCurSeg, nSide, nNextSeg;
 
 nCurSeg = pPointSeg->nSegment;
@@ -496,14 +503,14 @@ if ((nCurSeg < 0) || (nCurSeg > gameData.segData.nLastSegment)) {
 	console.printf (CON_DBG, "Path beginning at index %i, length=%i is bogus!\n", pPointSeg-gameData.aiData.routeSegs, numPoints);
 #endif
 	Int3 ();		//	Contact Mike: Debug trap for elusive, nasty bug.
-	return 0;
+	RETURN (0)
 	}
 #if TRACE
 if (debugFlag == 999)
 	console.printf (CON_DBG, "That's curious...\n");
 #endif
 if (numPoints == 0)
-	return 1;
+	RETURN (1)
 for (i = 1; i < numPoints; i++) {
 	nNextSeg = pPointSeg [i].nSegment;
 	if ((nNextSeg < 0) || (nNextSeg > gameData.segData.nLastSegment)) {
@@ -511,7 +518,7 @@ for (i = 1; i < numPoints; i++) {
 		console.printf (CON_DBG, "Path beginning at index %i, length=%i is bogus!\n", pPointSeg-gameData.aiData.routeSegs, numPoints);
 #endif
 		Int3 ();		//	Contact Mike: Debug trap for elusive, nasty bug.
-		return 0;
+		RETURN (0)
 		}
 	if (nCurSeg != nNextSeg) {
 		for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
@@ -522,12 +529,12 @@ for (i = 1; i < numPoints; i++) {
 			console.printf (CON_DBG, "Path beginning at index %i, length=%i is bogus!\n", pPointSeg-gameData.aiData.routeSegs, numPoints);
 #endif
 			Int3 ();
-			return 0;
+			RETURN (0)
 			}
 		nCurSeg = nNextSeg;
 		}
 	}
-return 1;
+RETURN (1)
 }
 
 #endif
@@ -538,6 +545,7 @@ return 1;
 
 void ValidateAllPaths (void)
 {
+ENTER (0);
 	CObject*			pObj;
 	tAIStaticInfo*	pStaticInfo;
 
@@ -548,6 +556,7 @@ FORALL_ROBOT_OBJS (pObj) {
 		 !ValidatePath (4, &gameData.aiData.routeSegs [pStaticInfo->nHideIndex], pStaticInfo->nPathLength))
 		pStaticInfo->nPathLength = 0;	//	This allows people to resume without harm...
 	}
+LEAVE
 }
 #endif
 
@@ -560,6 +569,7 @@ FORALL_ROBOT_OBJS (pObj) {
 
 void CreatePathToTarget (CObject *pObj, int32_t nMaxDepth, int32_t bSafeMode)
 {
+ENTER (0);
 	tAIStaticInfo*	pStaticInfo = &pObj->cType.aiInfo;
 	tAILocalInfo*	pLocalInfo = gameData.aiData.localInfo + pObj->Index ();
 	int32_t				nStartSeg, nEndSeg;
@@ -585,7 +595,7 @@ if (nEndSeg != -1) {
 	gameData.aiData.freePointSegs += pStaticInfo->nPathLength;
 	if (uint32_t (gameData.aiData.routeSegs.Index (gameData.aiData.freePointSegs) + MAX_PATH_LENGTH * 2) > uint32_t (LEVEL_POINT_SEGS)) {
 		AIResetAllPaths ();
-		return;
+		LEAVE
 		}
 	pStaticInfo->PATH_DIR = 1;		//	Initialize to moving forward.
 	// -- UNUSED!pStaticInfo->SUBMODE = AISM_GOHIDE;		//	This forces immediate movement.
@@ -594,14 +604,16 @@ if (nEndSeg != -1) {
 		pLocalInfo->targetAwarenessType = 0;		//	If robot too aware of CPlayerData, will set mode to chase
 	}
 MaybeAIPathGarbageCollect ();
+LEAVE
 }
 
 //	-------------------------------------------------------------------------------------------------------
 //	Creates a path from the CObject's current CSegment (pObj->info.nSegment) to CSegment goalseg.
 void CreatePathToSegment (CObject *pObj, int16_t goalseg, int32_t nMaxDepth, int32_t bSafeMode)
 {
+ENTER (0);
 	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
-	tAILocalInfo		*pLocalInfo = &gameData.aiData.localInfo [pObj->Index ()];
+	tAILocalInfo	*pLocalInfo = &gameData.aiData.localInfo [pObj->Index ()];
 	int16_t			nStartSeg, nEndSeg;
 
 if (nMaxDepth == -1)
@@ -623,7 +635,7 @@ if (nEndSeg != -1) {
 	gameData.aiData.freePointSegs += pStaticInfo->nPathLength;
 	if (uint32_t (gameData.aiData.routeSegs.Index (gameData.aiData.freePointSegs) + MAX_PATH_LENGTH * 2) > uint32_t (LEVEL_POINT_SEGS)) {
 		AIResetAllPaths ();
-		return;
+		LEAVE
 		}
 	pStaticInfo->PATH_DIR = 1;		//	Initialize to moving forward.
 	// -- UNUSED!pStaticInfo->SUBMODE = AISM_GOHIDE;		//	This forces immediate movement.
@@ -631,6 +643,7 @@ if (nEndSeg != -1) {
 		pLocalInfo->targetAwarenessType = 0;		//	If robot too aware of CPlayerData, will set mode to chase
 	}
 MaybeAIPathGarbageCollect ();
+LEAVE
 }
 
 //	-------------------------------------------------------------------------------------------------------
@@ -641,8 +654,9 @@ MaybeAIPathGarbageCollect ();
 //			gameData.aiData.freePointSegs				global pointer into gameData.aiData.routeSegs array
 void CreatePathToStation (CObject *pObj, int32_t nMaxDepth)
 {
+ENTER (0);
 	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
-	tAILocalInfo		*pLocalInfo = &gameData.aiData.localInfo [pObj->Index ()];
+	tAILocalInfo	*pLocalInfo = &gameData.aiData.localInfo [pObj->Index ()];
 	int32_t			nStartSeg, nEndSeg;
 
 if (nMaxDepth == -1)
@@ -666,7 +680,7 @@ if (nEndSeg != -1) {
 	gameData.aiData.freePointSegs += pStaticInfo->nPathLength;
 	if (uint32_t (gameData.aiData.routeSegs.Index (gameData.aiData.freePointSegs) + MAX_PATH_LENGTH * 2) > uint32_t (LEVEL_POINT_SEGS)) {
 		AIResetAllPaths ();
-		return;
+		LEAVE
 		}
 	pStaticInfo->PATH_DIR = 1;		//	Initialize to moving forward.
 	pLocalInfo->mode = AIM_FOLLOW_PATH;
@@ -674,6 +688,7 @@ if (nEndSeg != -1) {
 		pLocalInfo->targetAwarenessType = 0;
 	}
 MaybeAIPathGarbageCollect ();
+LEAVE
 }
 
 
@@ -684,8 +699,9 @@ static int32_t nObject = 0;
 
 void CreateNSegmentPath (CObject *pObj, int32_t nPathLength, int16_t nAvoidSeg)
 {
+ENTER (0);
 	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
-	tAILocalInfo		*pLocalInfo = gameData.aiData.localInfo + pObj->Index ();
+	tAILocalInfo	*pLocalInfo = gameData.aiData.localInfo + pObj->Index ();
 	nObject = pObj->Index ();
 
 if (CreatePathPoints (pObj, pObj->info.nSegment, -2, gameData.aiData.freePointSegs, &pStaticInfo->nPathLength, nPathLength, 1, 0, nAvoidSeg) == -1) {
@@ -719,6 +735,7 @@ if (gameData.aiData.localInfo [pObj->Index ()].nPrevVisibility) {
 		}
 	}
 MaybeAIPathGarbageCollect ();
+LEAVE
 }
 
 //	-------------------------------------------------------------------------------------------------------
@@ -734,17 +751,18 @@ CreateNSegmentPath (pObj, nPathLength, nAvoidSeg);
 
 void MoveObjectToGoal (CObject *pObj, CFixVector *vGoalPoint, int16_t nGoalSeg)
 {
+ENTER (0);
 	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
 	int32_t			nSegment;
 
 if (pStaticInfo->nPathLength < 2)
-	return;
+	LEAVE
 Assert (pObj->info.nSegment != -1);
 Assert (pStaticInfo->nPathLength >= 2);
 if (pStaticInfo->nCurPathIndex <= 0) {
 	if (pStaticInfo->behavior == AIB_STATION) {
 		CreatePathToStation (pObj, 15);
-		return;
+		LEAVE
 		}
 	pStaticInfo->nCurPathIndex = 1;
 	pStaticInfo->PATH_DIR = 1;
@@ -756,7 +774,7 @@ else if (pStaticInfo->nCurPathIndex >= pStaticInfo->nPathLength - 1) {
 			tAILocalInfo	*pLocalInfo = &gameData.aiData.localInfo [pObj->Index ()];
 			pLocalInfo->mode = AIM_IDLING;
 			}
-		return;
+		LEAVE
 		}
 	Assert (pStaticInfo->nPathLength != 0);
 	pStaticInfo->nCurPathIndex = pStaticInfo->nPathLength - 2;
@@ -778,6 +796,7 @@ if (nSegment == -1) {
 	}
 else
 	pObj->RelinkToSeg (nSegment);
+LEAVE
 }
 
 // -- too much work -- //	----------------------------------------------------------------------------------------------------------
@@ -814,6 +833,7 @@ else
 //	Optimization: If current velocity will take robot near goal, don't change velocity
 void AIFollowPath (CObject *pObj, int32_t nTargetVisibility, int32_t nPrevVisibility, CFixVector *vecToTarget)
 {
+ENTER (0);
 	tAIStaticInfo*	pStaticInfo = &pObj->cType.aiInfo;
 
 	CFixVector		vGoalPoint;
@@ -826,7 +846,7 @@ void AIFollowPath (CObject *pObj, int32_t nTargetVisibility, int32_t nPrevVisibi
 	tRobotInfo*		pRobotInfo = ROBOTINFO (pObj);
 
 if (!pRobotInfo)
-	return;
+	LEAVE
 #if DBG
 if (pObj->Index () == nDbgObj)
 	BRP;
@@ -851,7 +871,7 @@ if ((pStaticInfo->nPathLength > 0) && (pStaticInfo->nHideIndex + pStaticInfo->nP
 	AICollectPathGarbage ();
 	//force_dump_aiObjects_all ("Error in AIFollowPath");
 	AIResetAllPaths ();
-	return;
+	LEAVE
 	}
 
 if (pStaticInfo->nPathLength < 2) {
@@ -877,7 +897,7 @@ if (pStaticInfo->nPathLength < 2) {
 	else if (pRobotInfo->companion == 0) {
 		pLocalInfo->mode = AIM_IDLING;
 		pStaticInfo->nPathLength = 0;
-		return;
+		LEAVE
 		}
 #if DBG
 	if (pStaticInfo->nHideIndex < 0)
@@ -901,7 +921,7 @@ else
 if (!(nTargetVisibility || nPrevVisibility) && (xDistToTarget > I2X (200)) && !IsMultiGame) {
 	if (xDistToGoal && (xDistToGoal < I2X (2))) {
 		MoveObjectToGoal (pObj, &vGoalPoint, nGoalSeg);
-		return;
+		LEAVE
 		}
 	else {
 		fix	xCurSpeed = pObj->MaxSpeed () / 2;
@@ -913,7 +933,7 @@ if (!(nTargetVisibility || nPrevVisibility) && (xDistToTarget > I2X (200)) && !I
 		if (!(pObj->IsGuideBot () || pObj->IsThief ())) {
 			if ((xCoverableDist >= xDistToGoal) || ((RandShort () >> 1) < FixDiv (xCoverableDist, xDistToGoal)))
 				MoveObjectToGoal (pObj, &vGoalPoint, nGoalSeg);
-			return;
+			LEAVE
 			}
 		}
 	}
@@ -924,7 +944,7 @@ if (pLocalInfo->mode == AIM_RUN_FROM_OBJECT) {
 		if (xVelScale < I2X (1) / 2)
 			xVelScale = I2X (1) / 2;
 		pObj->mType.physInfo.velocity *= FixMul (xVelScale, pObj->DriveDamage () * 2);
-		return;
+		LEAVE
 		}
 	else if (!(gameData.appData.nFrameCount ^ ((pObj->Index ()) & 0x07))) {		//	Done 1/8 frames.
 		//	If CPlayerData on path (beyond point robot is now at), then create a new path.
@@ -979,7 +999,7 @@ while (xDistToGoal < thresholdDistance) {
 		//	If mode = hiding, then stay here until get bonked or hit by player.
 		// --	if (pLocalInfo->mode == AIM_BEHIND) {
 		// --		pLocalInfo->mode = AIM_IDLING;
-		// --		return;		// Stay here until bonked or hit by player.
+		// --		LEAVE		// Stay here until bonked or hit by player.
 		// --	} else
 
 		//	Buddy bot.  If he's in mode to get away from CPlayerData and at end of line,
@@ -992,14 +1012,14 @@ while (xDistToGoal < thresholdDistance) {
 					Assert (pStaticInfo->nPathLength != 0);
 					pLocalInfo->mode = AIM_WANDER;	//	Special buddy mode.p.
 					//--Int3_if (( (pStaticInfo->nCurPathIndex >= 0) && (pStaticInfo->nCurPathIndex < pStaticInfo->nPathLength));
-					return;
+					LEAVE
 					}
 				else {
 					pLocalInfo->mode = AIM_WANDER;	//	Special buddy mode.p.
 					pObj->mType.physInfo.velocity.SetZero ();
 					pObj->mType.physInfo.rotVel.SetZero ();
 					//!!Assert ((pStaticInfo->nCurPathIndex >= 0) && (pStaticInfo->nCurPathIndex < pStaticInfo->nPathLength);
-					return;
+					LEAVE
 					}
 				}
 			}
@@ -1016,14 +1036,14 @@ while (xDistToGoal < thresholdDistance) {
 			else {
 				//--Int3_if (( (pStaticInfo->nCurPathIndex >= 0) && (pStaticInfo->nCurPathIndex < pStaticInfo->nPathLength));
 				}
-			return;
+			LEAVE
 			}
 		else if (pLocalInfo->mode == AIM_FOLLOW_PATH) {
 			CreatePathToTarget (pObj, 10, 1);
 			if ((pStaticInfo->nHideIndex+pStaticInfo->nPathLength < 1) ||
 				 (pStaticInfo->nHideSegment != gameData.aiData.routeSegs [pStaticInfo->nHideIndex+pStaticInfo->nPathLength - 1].nSegment)) {
 				pLocalInfo->mode = AIM_IDLING;
-				return;
+				LEAVE
 				}
 			else {
 				//--Int3_if (( (pStaticInfo->nCurPathIndex >= 0) && (pStaticInfo->nCurPathIndex < pStaticInfo->nPathLength));
@@ -1038,7 +1058,7 @@ while (xDistToGoal < thresholdDistance) {
 				if (pStaticInfo->nPathLength < 1) {
 					pStaticInfo->behavior = AIB_NORMAL;
 					pLocalInfo->mode = AIM_IDLING;
-					return;
+					LEAVE
 					}
 				}
 			//--Int3_if (( (pStaticInfo->nCurPathIndex >= 0) && (pStaticInfo->nCurPathIndex < pStaticInfo->nPathLength));
@@ -1090,6 +1110,7 @@ while (xDistToGoal < thresholdDistance) {
 	}	//	end while
 //	Set velocity (pObj->mType.physInfo.velocity) and orientation (pObj->info.position.mOrient) for this CObject.
 AIPathSetOrientAndVel (pObj, &vGoalPoint, nTargetVisibility, vecToTarget);
+LEAVE
 }
 
 //	----------------------------------------------------------------------------------------------------------
@@ -1105,6 +1126,7 @@ class CObjPath {
 //	Set orientation matrix and velocity for pObj based on its desire to get to a point.
 void AIPathSetOrientAndVel (CObject *pObj, CFixVector *vGoalPoint, int32_t nTargetVisibility, CFixVector *vecToTarget)
 {
+ENTER (0);
 	CFixVector	vCurVel = pObj->mType.physInfo.velocity;
 	CFixVector	vNormCurVel;
 	CFixVector	vNormToGoal;
@@ -1116,7 +1138,7 @@ void AIPathSetOrientAndVel (CObject *pObj, CFixVector *vGoalPoint, int32_t nTarg
 	tRobotInfo	*pRobotInfo = ROBOTINFO (pObj);
 
 if (!pRobotInfo)
-	return;
+	LEAVE
 //	If evading CPlayerData, use highest difficulty level speed, plus something based on diff level
 xMaxSpeed = FixMul (pObj->MaxSpeed (), 2 * pObj->DriveDamage ());
 if ((gameData.aiData.localInfo [pObj->Index ()].mode == AIM_RUN_FROM_OBJECT) || (pObj->cType.aiInfo.behavior == AIB_SNIPE))
@@ -1158,6 +1180,7 @@ if ((gameData.aiData.localInfo [pObj->Index ()].mode == AIM_RUN_FROM_OBJECT) || 
 	}
 else
 	AITurnTowardsVector (&vNormToGoal, pObj, pRobotInfo->turnTime [gameStates.app.nDifficultyLevel]);
+LEAVE
 }
 
 int32_t	nLastFrameGarbageCollected = 0;
@@ -1166,6 +1189,7 @@ int32_t	nLastFrameGarbageCollected = 0;
 //	Garbage colledion -- Free all unused records in gameData.aiData.routeSegs and compress all paths.
 void AICollectPathGarbage (void)
 {
+ENTER (0);
 #if DBG
 	int32_t					i;
 #endif
@@ -1237,12 +1261,14 @@ FORALL_ROBOT_OBJS (pObj)
 ValidateAllPaths ();
 #	endif
 #endif
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------
 //	Do garbage collection if not been done for awhile, or things getting really critical.
 void MaybeAIPathGarbageCollect (void)
 {
+ENTER (0);
 	int32_t i = gameData.aiData.routeSegs.Index (gameData.aiData.freePointSegs);
 
 if (i > LEVEL_POINT_SEGS - MAX_PATH_LENGTH) {
@@ -1275,6 +1301,7 @@ else if (i > LEVEL_POINT_SEGS / 2) {
 		AICollectPathGarbage ();
 		}
 	}
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------
@@ -1282,6 +1309,7 @@ else if (i > LEVEL_POINT_SEGS / 2) {
 //	Should be called at the start of each level.
 void AIResetAllPaths (void)
 {
+ENTER (0);
 	CObject*	pObj = OBJECTS.Buffer ();
 
 FORALL_OBJS (pObj)
@@ -1290,6 +1318,7 @@ FORALL_OBJS (pObj)
 		pObj->cType.aiInfo.nPathLength = 0;
 		}
 AICollectPathGarbage ();
+LEAVE
 }
 
 //	---------------------------------------------------------------------------------------------------------
@@ -1297,6 +1326,7 @@ AICollectPathGarbage ();
 //	Try to resume path.
 void AttemptToResumePath (CObject *pObj)
 {
+ENTER (0);
 	//int32_t				nObject = pObj->Index ();
 	tAIStaticInfo		*pStaticInfo = &pObj->cType.aiInfo;
 //	int32_t				nGoalSegnum, object_segnum,
@@ -1328,6 +1358,7 @@ else
 		MoveObjectToLegalSpot (pObj, 0);
 	CreatePathToStation (pObj, 15);
 	}
+LEAVE
 }
 
 //	----------------------------------------------------------------------------------------------------------

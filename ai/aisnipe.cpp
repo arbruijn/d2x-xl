@@ -36,6 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void MakeNearbyRobotSnipe (void)
 {
+ENTER (0);
 	CObject		*pObj;
 	int16_t		bfsList [MNRS_SEG_MAX];
 	int32_t		nObject, nBfsLength, i;
@@ -54,35 +55,36 @@ for (i = 0; i < nBfsLength; i++) {
 			continue;
 		pObj->cType.aiInfo.behavior = AIB_SNIPE;
 		gameData.aiData.localInfo [nObject].mode = AIM_SNIPE_ATTACK;
-		return;
-		;
+		LEAVE
 		}
 	}
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------
 
 void DoSnipeWait (CObject *pObj, tAILocalInfo *pLocalInfo)
 {
-	fix xConnectedDist;
-
+ENTER (0);
 if ((gameData.aiData.target.xDist > I2X (50)) && (pLocalInfo->nextActionTime > 0))
-	return;
+	LEAVE
 pLocalInfo->nextActionTime = SNIPE_WAIT_TIME;
-xConnectedDist = simpleRouter [0].PathLength (pObj->info.position.vPos, pObj->info.nSegment, 
-															 gameData.aiData.target.vBelievedPos, gameData.aiData.target.nBelievedSeg, 
-															 30, WID_PASSABLE_FLAG, 1);
+fix xConnectedDist = simpleRouter [0].PathLength (pObj->info.position.vPos, pObj->info.nSegment, 
+																  gameData.aiData.target.vBelievedPos, gameData.aiData.target.nBelievedSeg, 
+															     30, WID_PASSABLE_FLAG, 1);
 if (xConnectedDist < MAX_SNIPE_DIST) {
 	CreatePathToTarget (pObj, 30, 1);
 	pLocalInfo->mode = AIM_SNIPE_ATTACK;
 	pLocalInfo->nextActionTime = SNIPE_ATTACK_TIME;	//	have up to 10 seconds to find player.
 	}
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------
 
 void DoSnipeAttack (CObject *pObj, tAILocalInfo *pLocalInfo)
 {
+ENTER (0);
 if (pLocalInfo->nextActionTime < 0) {
 	pLocalInfo->mode = AIM_SNIPE_RETREAT;
 	pLocalInfo->nextActionTime = SNIPE_WAIT_TIME;
@@ -96,12 +98,14 @@ else {
 	else
 		pLocalInfo->mode = AIM_SNIPE_ATTACK;
 	}
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------
 
 void DoSnipeFire (CObject *pObj, tAILocalInfo *pLocalInfo)
 {
+ENTER (0);
 if (pLocalInfo->nextActionTime < 0) {
 	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
 	CreateNSegmentPath (pObj, 10 + RandShort () / 2048, OBJSEG (TARGETOBJ));
@@ -112,12 +116,14 @@ if (pLocalInfo->nextActionTime < 0) {
 		pLocalInfo->mode = AIM_SNIPE_RETREAT;
 	pLocalInfo->nextActionTime = SNIPE_RETREAT_TIME;
 	}
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------
 
 void DoSnipeRetreat (CObject *pObj, tAILocalInfo *pLocalInfo)
 {
+ENTER (0);
 if (pLocalInfo->nextActionTime < 0) {
 	pLocalInfo->mode = AIM_SNIPE_WAIT;
 	pLocalInfo->nextActionTime = SNIPE_WAIT_TIME;
@@ -130,6 +136,7 @@ else {
 	pLocalInfo->mode = AIM_SNIPE_FIRE;
 	pLocalInfo->nextActionTime = SNIPE_FIRE_TIME/2;
 	}
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------
@@ -145,6 +152,7 @@ pAISnipeHandler aiSnipeHandlers [] = {DoSnipeAttack, DoSnipeFire, DoSnipeRetreat
 
 void DoSnipeFrame (CObject *pObj)
 {
+ENTER (0);
 if (gameData.aiData.target.xDist <= MAX_SNIPE_DIST) {
 	tAILocalInfo		*pLocalInfo = gameData.aiData.localInfo + pObj->Index ();
 	int32_t			i = pLocalInfo->mode;
@@ -157,6 +165,7 @@ if (gameData.aiData.target.xDist <= MAX_SNIPE_DIST) {
 		pLocalInfo->nextActionTime = I2X (1);
 		}
 	}
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------

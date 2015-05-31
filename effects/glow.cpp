@@ -722,6 +722,9 @@ ogl.ChooseDrawBuffer ();
 
 void CGlowRenderer::Done (const int32_t nType)
 {
+#if 1
+End ();
+#else
 if (Available (nType)) {
 #if 1
 	ogl.DrawBuffer ()->SelectColorBuffers (0);
@@ -730,6 +733,7 @@ if (Available (nType)) {
 #endif
 	CCanvas::Current ()->SetViewport ();
 	}	
+#endif
 }
 
 //------------------------------------------------------------------------------
