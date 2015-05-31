@@ -41,6 +41,7 @@ if (ISLOCALPLAYER (nPlayer))
 //returns true if actually picked up
 int32_t PickupPrimary (int32_t nWeaponIndex, int32_t nPlayer)
 {
+ENTER (0);
 	CPlayerData	*pPlayer = gameData.multiplayer.players + nPlayer;
 	//uint16_t oldFlags = LOCALPLAYER.primaryWeaponFlags;
 	uint16_t flag = 1 << nWeaponIndex;
@@ -49,19 +50,19 @@ int32_t PickupPrimary (int32_t nWeaponIndex, int32_t nPlayer)
 
 if (nWeaponIndex == FUSION_INDEX) {
 	if (gameData.multiplayer.weaponStates [nPlayer].nShip == 1)
-		return 0;
+		RETURN (0)
 	if (pPlayer->primaryWeaponFlags & flag) {
 		if (!EGI_FLAG (bTripleFusion, 0, 0, 0)) {
 			HUDInitMessage (TXT_MAXED_OUT, TXT_FUSION);
-			return 0; // tri-fusion not allowed
+			RETURN (0) // tri-fusion not allowed
 			}
 		if (gameData.multiplayer.weaponStates [nPlayer].nShip != 2) {
 			HUDInitMessage (TXT_MAXED_OUT, TXT_FUSION);
-			return 0; // tri-fusion only allowed on heavy fighter
+			RETURN (0) // tri-fusion only allowed on heavy fighter
 			}
 		if (gameData.multiplayer.weaponStates [nPlayer].bTripleFusion) {
 			DuplicateWeaponMsg (nWeaponIndex, nPlayer);
-			return 0; // already has tri-fusion
+			RETURN (0) // already has tri-fusion
 			}
 		if (nPlayer == N_LOCALPLAYER)
    		gameData.weaponData.bTripleFusion = 1;
@@ -72,7 +73,7 @@ if (nWeaponIndex == FUSION_INDEX) {
 else if (nWeaponIndex != LASER_INDEX) {
 	if (pPlayer->primaryWeaponFlags & flag) {
 		DuplicateWeaponMsg (nWeaponIndex, nPlayer);
-		return 0;
+		RETURN (0)
 		}
 	}
 pPlayer->primaryWeaponFlags |= flag;
@@ -89,7 +90,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 	if (nWeaponIndex != LASER_INDEX)
   		HUDInitMessage ("%s!", PRIMARY_WEAPON_NAMES (nWeaponIndex));
 	}
-return 1;
+RETURN (1)
 }
 
 //	---------------------------------------------------------------------
@@ -124,6 +125,7 @@ return nMaxAmount;
 //	Returns true if powerup picked up, else returns false.
 int32_t PickupSecondary (CObject *pObj, int32_t nWeaponIndex, int32_t nAmount, int32_t nPlayer)
 {
+ENTER (0);
 	int32_t		nMaxAmount;
 	int32_t		nPickedUp;
 	int32_t		nCutPoint, bEmpty = 0, bSmokeGrens;
@@ -143,7 +145,7 @@ if (pPlayer->secondaryAmmo [nWeaponIndex] >= nMaxAmount) {
 			TXT_ALREADY_HAVE, 
 			pPlayer->secondaryAmmo [nWeaponIndex],
 			bSmokeGrens ? TXT_SMOKE_GRENADE : SECONDARY_WEAPON_NAMES (nWeaponIndex));
-	return 0;
+	RETURN (0)
 	}
 pPlayer->secondaryWeaponFlags |= (1 << nWeaponIndex);
 pPlayer->secondaryAmmo [nWeaponIndex] += nAmount;
@@ -190,7 +192,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 		HUDInitMessage("%s!", bSmokeGrens ? TXT_SMOKE_GRENADE : SECONDARY_WEAPON_NAMES (nWeaponIndex));
 		}
 	}
-return 1;
+RETURN (1)
 }
 
 //	-----------------------------------------------------------------------------
@@ -199,6 +201,7 @@ return 1;
 //	Returns the amount picked up
 int32_t PickupAmmo (int32_t classFlag, int32_t nWeaponIndex, int32_t ammoCount, const char *pszMsg, int32_t nPlayer)
 {
+ENTER (0);
 	int32_t			nMaxAmmo, nCutPoint, nSupposedWeapon = gameData.weaponData.nPrimary;
 	int32_t			nOldAmmo = classFlag;		//kill warning
 	CPlayerData*	pPlayer = gameData.multiplayer.players + nPlayer;
@@ -209,7 +212,7 @@ if (pPlayer->flags & PLAYER_FLAGS_AMMO_RACK)
 nMaxAmmo -= pPlayer->primaryAmmo [nWeaponIndex];
 if (ammoCount > nMaxAmmo) {
 	if (!nMaxAmmo/* || (nWeaponIndex == VULCAN_INDEX)*/)	// only pick up Vulcan ammo if player can take the entire clip
-		return 0;
+		RETURN (0)
 	ammoCount = nMaxAmmo;
 	}
 nOldAmmo = pPlayer->primaryAmmo [nWeaponIndex];
@@ -225,13 +228,14 @@ if ((nPlayer = N_LOCALPLAYER)) {
 		(POrderList (nWeaponIndex) < POrderList (nSupposedWeapon)))
 		SelectWeapon (nWeaponIndex,0,0,1);
 	}
-return ammoCount;	//return amount used
+RETURN (ammoCount) //return amount used
 }
 
 //------------------------------------------------------------------------------
 
 int32_t PickupVulcanAmmo (CObject *pObj, int32_t nPlayer)
 {
+ENTER (0);
 	int32_t	pwSave = gameData.weaponData.nPrimary;	
 	int32_t	nAmmo = gameStates.app.bNostalgia ? VULCAN_CLIP_CAPACITY : pObj->cType.powerupInfo.nCount; // ammo available in this clip
 	int32_t	nUsed = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, nAmmo, NULL, nPlayer); // what the player actually took this time
@@ -245,7 +249,7 @@ if (nUsed) {
 	pObj->cType.powerupInfo.nCount -= nUsed;
 	MultiSendAmmoUpdate (pObj->Index ());
 	gameData.weaponData.nPrimary = pwSave;
-	return nUsed >= nAmmo;
+	RETURN (nUsed >= nAmmo)
 	} 
 else {
 	int32_t nMaxAmmo = nMaxPrimaryAmmo [VULCAN_INDEX];
@@ -254,7 +258,7 @@ else {
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %d %s!", TXT_ALREADY_HAVE,X2I ((uint32_t) VULCAN_AMMO_SCALE * (uint32_t) nMaxAmmo), TXT_VULCAN_ROUNDS);
 	gameData.weaponData.nPrimary = pwSave;
-	return 0;
+	RETURN (0)
 	}
 }
 
@@ -262,6 +266,7 @@ else {
 
 int32_t PickupLaser (CObject *pObj, int32_t nId, int32_t nPlayer)
 {
+ENTER (0);
 	CPlayerData *pPlayer = gameData.multiplayer.players + nPlayer;
 
 if (pPlayer->AddStandardLaser ()) {
@@ -270,19 +275,20 @@ if (pPlayer->AddStandardLaser ()) {
 	PickupEffect (10, 0, 10, LASER_SCORE, "%s %s %d", TXT_LASER, TXT_BOOSTED_TO, pPlayer->LaserLevel () + 1);
 	cockpit->UpdateLaserWeaponInfo ();
 	PickupPrimary (LASER_INDEX, nPlayer);
-	return 1;
+	RETURN (1)
 	}
 if (nPlayer == N_LOCALPLAYER)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_LASER);
 if (IsMultiGame)
-	return 0;
-return PickupEnergyBoost (pObj, nPlayer);
+	RETURN (0)
+RETURN (PickupEnergyBoost (pObj, nPlayer))
 }
 
 //------------------------------------------------------------------------------
 
 int32_t PickupSuperLaser (CObject *pObj, int32_t nId, int32_t nPlayer)
 {
+ENTER (0);
 	CPlayerData *pPlayer = gameData.multiplayer.players + nPlayer;
 
 if (pPlayer->AddSuperLaser ()) {
@@ -295,52 +301,55 @@ if (pPlayer->AddSuperLaser ()) {
 		if (gameData.weaponData.nPrimary != LASER_INDEX)
 		   CheckToUsePrimary (SUPER_LASER_INDEX);
 		}
-	return 1;
+	RETURN (1)
 	}
 if (nPlayer == N_LOCALPLAYER)
 	HUDInitMessage (TXT_LASER_MAXEDOUT);
 if (IsMultiGame)
-	return 0;
-return PickupEnergyBoost (pObj, nPlayer);
+	RETURN (0)
+RETURN (PickupEnergyBoost (pObj, nPlayer))
 }
 
 //------------------------------------------------------------------------------
 
 int32_t PickupQuadLaser (CObject *pObj, int32_t nId, int32_t nPlayer)
 {
+ENTER (0);
 	CPlayerData *pPlayer = gameData.multiplayer.players + nPlayer;
 
 if (!(pPlayer->flags & PLAYER_FLAGS_QUAD_LASERS)) {
 	pPlayer->flags |= PLAYER_FLAGS_QUAD_LASERS;
 	PickupEffect (15, 15, 7, QUAD_FIRE_SCORE, "%s!", TXT_QUAD_LASERS);
 	cockpit->UpdateLaserWeaponInfo ();
-	return 1;
+	RETURN (1)
 	}
 if (nPlayer == N_LOCALPLAYER)
 	HUDInitMessage ("%s %s!", TXT_ALREADY_HAVE, TXT_QUAD_LASERS);
 if (IsMultiGame)
-	return 0;
-return PickupEnergyBoost (pObj, nPlayer);
+	RETURN (0)
+RETURN (PickupEnergyBoost (pObj, nPlayer))
 }
 
 //------------------------------------------------------------------------------
 
 int32_t PickupGun (CObject *pObj, int32_t nId, int32_t nPlayer)
 {
+ENTER (0);
 if (PickupPrimary (nId, nPlayer)) {
 	if ((nId == OMEGA_INDEX) && (nPlayer == N_LOCALPLAYER))
 		gameData.omegaData.xCharge [IsMultiGame] = pObj->cType.powerupInfo.nCount;
-	return 1;
+	RETURN (1)
 	}
 if (IsMultiGame)
-	return 0;
-return PickupEnergyBoost (NULL, nPlayer);
+	RETURN (0)
+RETURN (PickupEnergyBoost (NULL, nPlayer))
 }
 
 //	-----------------------------------------------------------------------------
 
 int32_t PickupGatlingGun (CObject *pObj, int32_t nId, int32_t nPlayer)
 {
+ENTER (0);
 	int32_t nAmmo = pObj->cType.powerupInfo.nCount;
 	int32_t bPickedUp = PickupPrimary (nId, nPlayer);
 
@@ -356,11 +365,11 @@ if (nAmmo > 0) {
 	if (ISLOCALPLAYER (nPlayer)) {
 		if (!bPickedUp && nAmmoUsed) {
 			PickupEffect (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO);
-			return pObj->cType.powerupInfo.nCount ? -1 : -2;
+			RETURN (pObj->cType.powerupInfo.nCount ? -1 : -2)
 			}
 		}
 	}
-return bPickedUp;
+RETURN (bPickedUp)
 }
 
 //	-----------------------------------------------------------------------------
