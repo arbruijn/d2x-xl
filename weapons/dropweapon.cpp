@@ -36,9 +36,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //this function is based on DropPowerup()
 int32_t SpitPowerup (CObject *pSpitter, uint8_t id, int32_t seed)
 {
-	int16_t		nObject;
-	CObject*		pObj;
-	CFixVector	newVelocity, newPos;
+ENTER (0);
+	int16_t					nObject;
+	CObject*					pObj;
+	CFixVector				newVelocity, newPos;
 	tObjTransformation	*pPos = OBJPOS (pSpitter);
 
 if (seed > 0)
@@ -56,11 +57,11 @@ if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 //the player.
 newPos = pPos->vPos + pPos->mOrient.m.dir.f * pSpitter->info.xSize;
 if (IsMultiGame && (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS))
-	return -1;
+	RETURN (-1)
 nObject = CreatePowerup (id, int16_t (GetTeam (N_LOCALPLAYER) + 1), int16_t (OBJSEG (pSpitter)), newPos, 0);
 pObj = OBJECT (nObject);
 if (!pObj)
-	return -1;
+	RETURN (-1)
 pObj->mType.physInfo.velocity = newVelocity;
 pObj->mType.physInfo.drag = 512;	//1024;
 pObj->mType.physInfo.mass = I2X (1);
@@ -84,7 +85,7 @@ switch (pObj->info.nId) {
 		//	pObj->info.xLifeLeft = (RandShort () + I2X (3)) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
 		break;
 	}
-return nObject;
+RETURN (nObject)
 }
 
 //	-----------------------------------------------------------------------------
@@ -98,6 +99,7 @@ return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMul
 
 void DropCurrentWeapon (void)
 {
+ENTER (0);
 	int32_t	nObject = -1,
 				ammo = 0;
 
@@ -110,7 +112,7 @@ if (gameData.weaponData.nPrimary == 0) {	//special laser drop handling
 		nObject = SpitPowerup (gameData.objData.pConsole, POW_QUADLASER);
 		if (nObject < 0) {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
-			return;
+			LEAVE
 			}
 		HUDInitMessage(TXT_DROP_QLASER);
 		}
@@ -118,7 +120,7 @@ if (gameData.weaponData.nPrimary == 0) {	//special laser drop handling
 		nObject = SpitPowerup (gameData.objData.pConsole, POW_SUPERLASER);
 		if (nObject < 0) {
 			LOCALPLAYER.AddSuperLaser ();
-			return;
+			LEAVE
 			}
 		HUDInitMessage (TXT_DROP_SLASER);
 		}
@@ -126,7 +128,7 @@ if (gameData.weaponData.nPrimary == 0) {	//special laser drop handling
 		nObject = SpitPowerup (gameData.objData.pConsole, POW_LASER);
 		if (nObject < 0) {
 			LOCALPLAYER.AddStandardLaser ();
-			return;
+			LEAVE
 			}
 		HUDInitMessage (TXT_DROP_LASER);
 		}
@@ -143,7 +145,7 @@ else {
 	if (nObject < 0) {	// couldn't drop
 		if (gameData.weaponData.nPrimary) 	//if selected weapon was not the laser
 			LOCALPLAYER.primaryWeaponFlags |= (1 << gameData.weaponData.nPrimary);
-		return;
+		LEAVE
 		}
 	HUDInitMessage (TXT_DROP_WEAPON, PRIMARY_WEAPON_NAMES (gameData.weaponData.nPrimary));
 	}
@@ -166,6 +168,7 @@ if (IsMultiGame)
 	MultiSendDropWeapon (nObject);
 if (gameData.weaponData.nPrimary) //if selected weapon was not the laser
 	AutoSelectWeapon (0, 0);
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------
@@ -174,13 +177,14 @@ extern void DropOrb (void);
 
 void DropSecondaryWeapon (int32_t nWeapon, int32_t nAmount, int32_t bSilent)
 {
+ENTER (0);
 if (nWeapon < 0)
 	nWeapon = gameData.weaponData.nSecondary;
 if ((LOCALPLAYER.secondaryAmmo [nWeapon] == 0) || 
 	 (IsMultiGame && (nWeapon == 0) && (LOCALPLAYER.secondaryAmmo [nWeapon] <= gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles))) {
 	if (!bSilent)
 		HUDInitMessage (TXT_CANT_DROP_SEC);
-	return;
+	LEAVE
 	}
 
 int32_t nPowerup = secondaryWeaponToPowerup [0][nWeapon];
@@ -189,11 +193,11 @@ int32_t bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
 
 if (!bHoardEntropy && bMine && LOCALPLAYER.secondaryAmmo [nWeapon] < 4) {
 	HUDInitMessage(TXT_DROP_NEED4);
-	return;
+	LEAVE
 	}
 if (bHoardEntropy) {
 	DropOrb ();
-	return;
+	LEAVE
 	}
 
 int32_t nItems = nAmount;
@@ -214,7 +218,7 @@ for (int32_t i = 0; i < nItems; i++) {
 			LOCALPLAYER.secondaryAmmo [nWeapon] += 4;
 		else
 			LOCALPLAYER.secondaryAmmo [nWeapon] += nAmount;
-		return;
+		LEAVE
 		}
 	if (!bSilent) {
 		HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weaponData.nSecondary));
@@ -227,6 +231,7 @@ for (int32_t i = 0; i < nItems; i++) {
 		AutoSelectWeapon (1, 0);
 		}
 	}
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------

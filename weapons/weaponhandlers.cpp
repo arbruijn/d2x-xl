@@ -72,7 +72,7 @@ if (nFlags & LASER_QUAD) {
 	if (0 <= LaserPlayerFire (pObj, nLaser, 3, 0, 0, nLightObj))
 		nFired++;
 	}
-if (!nFired && (nLightObj >= 0))
+if (!nFired && OBJECT (nLightObj))
 	OBJECT (nLightObj)->Die ();
 return nFired ? nRoundsPerShot : 0;
 }
@@ -122,7 +122,7 @@ else {
 	}
 if (0 <= LaserPlayerFireSpread (pObj, SPREADFIRE_ID, 6, 0, 0, 1, 0, nLightObj))
 	nFired++;
-if (!nFired && (nLightObj >= 0))
+if (!nFired && OBJECT (nLightObj))
 	OBJECT (nLightObj)->Die ();
 return nFired ? nRoundsPerShot : 0;
 }
@@ -146,7 +146,7 @@ if (nRoundsPerShot > 1) {
 		nFired++;
 	if (0 <= FireWeaponDelayedWithSpread (pObj, PLASMA_ID, 1, 0, 0, gameData.timeData.xFrame / 2, 0, 0, nLightObj))
 		nFired++;
-	if (!nFired && (nLightObj >= 0))
+	if (!nFired && OBJECT (nLightObj))
 		OBJECT (nLightObj)->Die ();
 	}
 return nFired ? nRoundsPerShot : 0;
@@ -170,7 +170,7 @@ if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameData.multiplayer.weaponStates [pObj
 nFlags = int8_t (gameData.FusionCharge () >> 12);
 gameData.SetFusionCharge (0);
 if (!nFired) {
-	if (nLightObj >= 0)
+	if (OBJECT (nLightObj))
 		OBJECT (nLightObj)->Die ();
 	return 0;
 	}
@@ -207,7 +207,7 @@ if (nFlags & LASER_QUAD) {
 	if (0 <= LaserPlayerFire (pObj, nSuperLevel, 3, 0, 0, nLightObj))
 		nFired++;
 	}
-if (!nFired && (nLightObj >= 0))
+if (!nFired && OBJECT (nLightObj))
 	OBJECT (nLightObj)->Die ();
 return nFired ? nRoundsPerShot : 0;
 }
@@ -270,7 +270,7 @@ if (0 <= LaserPlayerFireSpread (pObj, HELIX_ID, 6,  spread.r * 2,  spread.u * 2,
 	nFired++;
 if (0 <= LaserPlayerFireSpread (pObj, HELIX_ID, 6, -spread.r * 2, -spread.u * 2, 0, 0, nLightObj))
 	nFired++;
-if (!nFired && (nLightObj >= 0))
+if (!nFired && OBJECT (nLightObj))
 	OBJECT (nLightObj)->Die ();
 return nFired ? nRoundsPerShot : 0;
 }
@@ -294,7 +294,7 @@ if (nRoundsPerShot > 1) {
 	nFired++;
 	if (0 <= FireWeaponDelayedWithSpread (pObj, PHOENIX_ID, 1, 0, 0, gameData.timeData.xFrame / 2, 0, 0, nLightObj))
 	nFired++;
-	if (!nFired && (nLightObj >= 0))
+	if (!nFired && OBJECT (nLightObj))
 		OBJECT (nLightObj)->Die ();
 	}
 return nFired ? nRoundsPerShot : 0;

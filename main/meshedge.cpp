@@ -25,6 +25,68 @@ bool bPolygonalOutline = false;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+int32_t CEdgeFaceInfo::Visible (void)
+{
+if (m_nWall < 0)
+	return 1;
+#if DBG
+if ((m_nItem == nDbgSeg) && ((nDbgSide < 0) || (m_nFace == nDbgSide)))
+	BRP;
+#endif
+CWall *pWall = WALL (m_nWall);
+if (!pWall)
+	return 1;
+if (pWall->IsInvisible ())
+	return 0;
+if (pWall->IsPassable (NULL, false) & /*WID_NO_WALL*/WID_TRANSPARENT_FLAG)
+	return 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CEdgeFaceInfo::Setup (int16_t nSegment, int16_t nSide)
+{
+#if DBG
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	BRP;
+#endif
+m_nItem = nSegment;
+m_nFace = nSide;
+}
+
+//------------------------------------------------------------------------------
+
+void CEdgeFaceInfo::Setup (void)
+{
+if (!m_bValid) {
+	m_bValid = 1;
+	CSide* pSide = gameData.Segment (m_nItem)->Side (m_nFace);
+	m_vNormal [0] = pSide->Normalf (2);
+	m_vCenter [0].Assign (pSide->Center ());
+	m_nWall = pSide->WallNum ();
+	if (!IS_WALL (m_nWall))
+		m_nWall = -1;
+	#if DBG
+	if ((m_nItem == nDbgSeg) && ((nDbgSide < 0) || (m_nFace == nDbgSide)))
+		BRP;
+	#endif
+	m_nTexture = int32_t (pSide->m_nOvlTex & TEXTURE_ID_MASK);
+	if (m_nTexture) {
+		//LoadTexture (gameData.pigData.tex.pBmIndex [m_nTexture].index, 0, gameStates.app.bD1Mission);
+		CBitmap *pBm = gameData.pigData.tex.pBitmap [gameData.pigData.tex.pBmIndex [m_nTexture].index].Override (-1);
+		if (!pBm || (pBm->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)))
+			m_nTexture = 0;
+		}
+	if (!m_nTexture)
+		m_nTexture = int32_t (pSide->m_nBaseTex & TEXTURE_ID_MASK);
+	}
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 int32_t CMeshEdge::Visibility (void)
 {
 	CFloatVector	vViewDir, vViewer;

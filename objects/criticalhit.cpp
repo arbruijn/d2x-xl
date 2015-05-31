@@ -48,10 +48,11 @@
 
 CFixVector CObject::RegisterHit (CFixVector vHit, int16_t nModel)
 {
+ENTER (0);
 if (gameStates.app.bNostalgia)
-	return vHit;
+	RETURN (vHit)
 if ((info.nType != OBJ_ROBOT) && (info.nType != OBJ_PLAYER) && (info.nType != OBJ_REACTOR))
-	return vHit;
+	RETURN (vHit)
 
 #if 0 //DBG
 HUDMessage (0, "set hit point %d,%d,%d", vHit [0], vHit [1], vHit [2]);
@@ -85,18 +86,18 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks [0] > m_damage
 #endif
 		m_damage.tCritical = gameStates.app.nSDLTicks [0];
 		m_damage.nCritical++;
-		return vHit;
+		RETURN (vHit)
 		}
 	}
 
 // avoid the shield effect lighting up to soon after a critical hit
 #if 1
 if (gameStates.app.nSDLTicks [0] - m_damage.tCritical < SHIELD_EFFECT_TIME / 4)
-	return vHit;
+	RETURN (vHit)
 #else
 if ((gameStates.app.nSDLTicks [0] - m_damage.tShield < SHIELD_EFFECT_TIME * 2) &&
 	 (gameStates.app.nSDLTicks [0] - m_damage.tCritical < SHIELD_EFFECT_TIME / 4))
-	return vHit;
+	RETURN (vHit)
 #endif
 
 vHit = vDir * info.xSize;
@@ -120,7 +121,7 @@ for (int32_t i = 0; i < 3; i++)
 m_hitInfo.v [m_hitInfo.i] = vHit;
 m_hitInfo.t [m_hitInfo.i] = gameStates.app.nSDLTicks [0];
 m_hitInfo.i = (m_hitInfo.i + 1) % 3;
-return m_hitInfo.v [m_hitInfo.i];
+RETURN (m_hitInfo.v [m_hitInfo.i])
 }
 
 //------------------------------------------------------------------------------

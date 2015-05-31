@@ -68,6 +68,7 @@ extern float quadVerts [3][4][2];
 
 int32_t RenderMissileView (void)
 {
+ENTER (0);
 	CObject	*pObj = NULL;
 
 if (GuidedMslView (&pObj)) {
@@ -79,7 +80,7 @@ if (GuidedMslView (&pObj)) {
 		gameStates.render.nRenderingType = 1+ (1 << 4);
 		cockpit->RenderWindow (1, pObj, 0, WBU_GUIDED, "GUIDED");
 	   }
-	return 1;
+	RETURN (1)
 	}
 else {
 	if (pObj) {		//used to be active
@@ -97,7 +98,7 @@ else {
 			//HUDMessage (0, "missile view");
   			gameStates.render.nRenderingType = 2 + (1 << 4);
 			cockpit->RenderWindow (1, gameData.objData.pMissileViewer, 0, WBUMSL, "MISSILE");
-			return 1;
+			RETURN (1)
 			}
 		else {
 			gameData.objData.pMissileViewer = NULL;
@@ -107,7 +108,7 @@ else {
 			}
 		}
 	}
-return 0;
+RETURN (0)
 }
 
 //------------------------------------------------------------------------------
@@ -159,6 +160,7 @@ return 1;
 
 void Draw2DFrameElements (void)
 {
+ENTER (0);
 	fix xStereoSeparation = ogl.StereoSeparation ();
 
 ogl.ColorMask (1,1,1,1,0);
@@ -245,12 +247,14 @@ if (ogl.IsSideBySideDevice ()) {
 	ogl.EndFrame (0);
 	}
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void FlushFrame (fix xStereoSeparation)
 {
+ENTER (0);
 	int32_t i = ogl.StereoDevice ();
 
 if (!(i && xStereoSeparation)) {	//no stereo or shutter glasses or Oculus Rift
@@ -272,6 +276,7 @@ else {
 		ogl.ColorMask (1,1,1,1,0);
 		}
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -329,6 +334,7 @@ extern CBitmap bmBackground;
 
 void RenderFrame (fix xStereoSeparation, int32_t nWindow)
 {
+ENTER (0);
 	int16_t nStartSeg;
 	fix	nEyeOffsetSave = gameStates.render.xStereoSeparation [0];
 
@@ -339,7 +345,7 @@ if (gameStates.app.bEndLevelSequence) {
 	RenderEndLevelFrame (xStereoSeparation, nWindow);
 	gameData.appData.nFrameCount++;
 	gameStates.render.xStereoSeparation [0] = nEyeOffsetSave;
-	return;
+	LEAVE
 	}
 if ((gameData.demoData.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
    if (!gameStates.render.nRenderingType)
@@ -386,14 +392,14 @@ PROF_END(ptAux)
 if (gameStates.render.nShadowMap) {
 	G3EndFrame (transformation, nWindow);
 	gameStates.render.xStereoSeparation [0] = nEyeOffsetSave;
-	return;
+	LEAVE
 	}
 #endif
 
 if (0 > (gameStates.render.nStartSeg = nStartSeg)) {
 	G3EndFrame (transformation, nWindow);
 	gameStates.render.xStereoSeparation [0] = nEyeOffsetSave;
-	return;
+	LEAVE
 	}
 
 
@@ -483,6 +489,7 @@ if (!ShowGameMessage (gameData.messages, -1, -1))
 	ShowGameMessage (gameData.messages + 1, -1, -1);
 PROF_END(ptAux)
 }
+LEAVE
 }
 
 
@@ -490,6 +497,7 @@ PROF_END(ptAux)
 
 void RenderMonoFrame (fix xStereoSeparation = 0)
 {
+ENTER (0);
 gameData.renderData.screen.Activate ("RenderMonoFrame", NULL, true);
 #if MAX_SHADOWMAPS
 RenderShadowMaps (xStereoSeparation);
@@ -521,7 +529,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && gameData.objData.GetGuidedMiss
 		gameStates.render.cockpit.bBigWindowSwitch = 1;
 		gameStates.render.cockpit.bRedraw = 1;
 		cockpit->Activate (CM_STATUS_BAR);
-		return;
+		LEAVE
 		}
   	CObject *pViewerSave = gameData.SetViewer (gameData.objData.GetGuidedMissile (N_LOCALPLAYER));
 	UpdateRenderedData (0, gameData.objData.pViewer, 0, 0);
@@ -543,7 +551,7 @@ else {
 		gameStates.render.cockpit.bRedraw = 1;
 		cockpit->Activate (CM_FULL_COCKPIT);
 		gameStates.render.cockpit.bBigWindowSwitch = 0;
-		return;
+		LEAVE
 		}
 	UpdateRenderedData (0, gameData.objData.pViewer, gameStates.render.bRearView, 0);
 	if ((xStereoSeparation <= 0) && cameraManager.Render ())
@@ -552,6 +560,7 @@ else {
 	cockpit->RenderWindows ();
 	}
 FlushFrame (xStereoSeparation);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -643,9 +652,10 @@ for (y = tileTop;y <= tileBot; y++) {
 
 void UpdateSlidingFaces (void)
 {
-	CSegFace*		pFace;
-	int16_t				nOffset;
-	tTexCoord2f*	pTexCoord, *ovlTexCoordP;
+ENTER (0);
+	CSegFace			*pFace;
+	int16_t			nOffset;
+	tTexCoord2f		* pTexCoord, *ovlTexCoordP;
 	tUVL*				pUVL;
 
 for (pFace = FACES.slidingFaces; pFace; pFace = pFace->nextSlidingFace) {
@@ -676,12 +686,14 @@ for (pFace = FACES.slidingFaces; pFace; pFace = pFace->nextSlidingFace) {
 			}
 		}
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void GameRenderFrame (void)
 {
+ENTER (0);
 if (gameData.segData.nFaceKeys < 0)
 	meshBuilder.ComputeFaceKeys ();
 PROF_START
@@ -711,6 +723,7 @@ else {
 //StartTime (0);
 gameData.appData.nFrameCount++;
 PROF_END (ptRenderFrame)
+LEAVE
 }
 
 //------------------------------------------------------------------------------
