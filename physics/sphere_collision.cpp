@@ -842,23 +842,23 @@ if ((CollisionModel (nCollisionModel) || pThisObj->IsStatic () || pOtherObj->IsS
 	FindPointLineIntersection (vHit, *p0, *p1, vPos, 0);
 	dist = VmLinePointDist (*p0, *p1, OBJPOS (pThisObj)->vPos);
 	if (dist > pThisObj->ModelRadius (0) + pOtherObj->ModelRadius (0))
-		RETURN (0);
+		RETURN (0)
 #endif
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
 #if 1
 		dist = CheckHitboxCollision (vHit, vNormal, pOtherObj, pThisObj, p0, p1, nModel);
 		if ((dist == 0x7fffffff) /*|| (dist > pThisObj->info.xSize)*/)
-			RETURN (0);
+			RETURN (0)
 #else
 		// check whether one object is stuck inside the other
 		if (!(dist = CheckHitboxCollision (vHit, vNormal, pOtherObj, pThisObj, p0, p1, nModel))) {
 			if (!CFixVector::Dist (*p0, *p1))
-				RETURN (0);
+				RETURN (0)
 			// check whether objects collide at all
 			dist = CheckVectorHitboxCollision (vHit, vNormal, p0, p1, NULL, pThisObj, 0, nModel);
 			if ((dist == 0x7fffffff) || (dist > pThisObj->info.xSize))
-				RETURN (0);
+				RETURN (0)
 			}
 		CheckHitboxCollision (vHit, vNormal, pOtherObj, pThisObj, p0, p1, nModel);
 		FindPointLineIntersection (vHit, *p0, *p1, vHit, 1);
@@ -869,7 +869,7 @@ if ((CollisionModel (nCollisionModel) || pThisObj->IsStatic () || pOtherObj->IsS
 			// *pThisObj (stationary) has hitboxes, *pOtherObj (moving) a hit sphere. To detect whether the sphere
 			// intersects with the hitbox, check whether the radius line of *pThisObj intersects any of the hitboxes.
 			if (0x7fffffff == (dist = CheckVectorHitboxCollision (vHit, vNormal, p0, p1, NULL, pThisObj, pOtherObj->info.xSize, nModel)))
-				RETURN (0);
+				RETURN (0)
 			}
 		else {
 			// *pOtherObj (moving) has hitboxes, *pThisObj (stationary) a hit sphere. To detect whether the sphere
@@ -879,13 +879,13 @@ if ((CollisionModel (nCollisionModel) || pThisObj->IsStatic () || pOtherObj->IsS
 			CFixVector::Normalize (vn);
 			v1 = v0 + vn * pThisObj->info.xSize;
 			if (0x7fffffff == (dist = CheckVectorHitboxCollision (vHit, vNormal, &v0, &v0, p1, pOtherObj, pThisObj->info.xSize, nModel)))
-				RETURN (0);
+				RETURN (0)
 			}
 		}
 	}
 else {
 	if (0 > (dist = CheckVectorSphereCollision (vHit, p0, p1, &vPos, size + rad)))
-		RETURN (0);
+		RETURN (0)
 	nModel = 0;
 	vNormal.SetZero ();
 	}
@@ -1478,7 +1478,7 @@ CFloatVector::Normalize (vRay);
 for (;;) {
 	CSegment *pSeg = SEGMENT (nStartSeg);
 	if (!pSeg)
-		RETURN (0);
+		RETURN (0)
 	bVisited [nStartSeg] = bFlag;
 	CSide *pSide = pSeg->Side (0);
 	CWall *pWall;
@@ -1538,14 +1538,14 @@ for (;;) {
 			if (l1 >= 0.001f) 
 				break;
 			if (l1 < 1.0e-10f)
-				RETURN (1);
+				RETURN (1)
 			// end point lies in this face
 			if (nDestSeg < 0)
-				RETURN (1); // any segment acceptable
+				RETURN (1) // any segment acceptable
 			if (nStartSeg == nDestSeg)
-				RETURN (1); // point is in desired segment
+				RETURN (1) // point is in desired segment
 			if ((nChildSeg == nDestSeg) && !((pWall = pSide->Wall ()) && !(pWall->IsVolatile () || (pWall->IsPassable (NULL, false) & WID_TRANSPARENT_FLAG))))
-				RETURN (1); // point at border to destination segment and the portal to that segment is passable
+				RETURN (1) // point at border to destination segment and the portal to that segment is passable
 			nFace = nFaceCount; // no eligible child segment, so try next segment side
 			break; 
 			}
@@ -1556,7 +1556,7 @@ for (;;) {
 		if ((pWall = pSide->Wall ()) && !(pWall->IsVolatile () || (pWall->IsPassable (NULL, false) & WID_TRANSPARENT_FLAG))) // impassable
 			continue;
 		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDestSide, nDepth + 1, nThread))
-			RETURN (1);
+			RETURN (1)
 		}
 #if DBG
 	if (!nDepth)

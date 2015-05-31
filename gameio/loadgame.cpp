@@ -758,7 +758,7 @@ particleImageManager.FreeAll ();
 /*---*/PrintLog (0, "Unloading HUD icons\n");
 hudIcons.Destroy ();
 PrintLog (-1);
-LEAVE;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -947,7 +947,7 @@ SetFreeCam (0);
 StopObserverMode ();
 PrintLog (-1);
 paletteManager.EnableEffect (true);
-LEAVE;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -995,7 +995,7 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 		gameStates.app.bBetweenLevels = 0;
 		missionManager.nCurrentLevel = nCurrentLevel;
 		Warning ("Invalid level number!");
-		RETURN (0);
+		RETURN (0)
 		}
 	nLastMsgYCrd = -1;		//so we don't restore backgound under msg
 	if (!gameStates.app.bProgressBars)
@@ -1041,7 +1041,7 @@ if (nLoadRes) {
 	gameStates.app.bBetweenLevels = 0;
 	missionManager.nCurrentLevel = nCurrentLevel;
 	Warning (TXT_LOAD_ERROR, pszLevelName);
-	RETURN (0);
+	RETURN (0)
 	}
 
 if (!gameStates.app.bPrecomputeLightmaps) {

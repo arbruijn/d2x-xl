@@ -120,14 +120,14 @@ if ((nDbgObj >= 0) && (pLight->info.nObject == nDbgObj))
 #endif
 
 if (pLight->render.bUsed [nThread])
-	RETURN (0);
+	RETURN (0)
 fix xDist;
 if (bForce || pLight->info.bSpot) 
 	xDist = 0;
 else {
 	xDist = (pLight->render.xDistance [nThread] / 2000 + 5) / 10;
 	if (xDist >= MAX_OGL_LIGHTS)
-	RETURN (0);
+	RETURN (0)
 	if (xDist < 0)
 		xDist = 0;
 	}
@@ -140,9 +140,9 @@ else if (!pLight->info.bSpot)
 pActiveLights += xDist;
 while (pActiveLights->nType) {
 	if (pActiveLights->pLight == pLight)
-		RETURN (0);
+		RETURN (0)
 	if (++xDist >= MAX_OGL_LIGHTS)
-		RETURN (0);
+		RETURN (0)
 	pActiveLights++;
 	}
 
@@ -165,7 +165,7 @@ if (pLightIndex->nFirst > xDist)
 	pLightIndex->nFirst = int16_t (xDist);
 if (pLightIndex->nLast < xDist)
 	pLightIndex->nLast = int16_t (xDist);
-RETURN (1);
+RETURN (1)
 }
 
 //------------------------------------------------------------------------------
@@ -273,7 +273,7 @@ if (nVertex == nDbgVertex)
 			}
 		}
 	}
-LEAVE;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -327,7 +327,7 @@ ENTER (nThread);
 if (gameStates.render.nLightingMethod) {
 	CSegment				*pSeg = SEGMENT (nSegment);
 	if (!pSeg)
-		LEAVE;
+		LEAVE
 	int16_t				*pNearestLight = m_data.nearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	int16_t				i, j;
 	CDynLight*			pLight;
@@ -358,7 +358,7 @@ if (gameStates.render.nLightingMethod) {
 		SetActive (pActiveLights, pLight, 3, nThread);
 		}
 	}
-LEAVE;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -487,7 +487,7 @@ if (gameStates.render.nLightingMethod) {
 	CSegment					*pSeg = SEGMENT (nSegment);
 	if (!pSeg) {
 		PrintLog (0, "Error: Invalid segment in \n");
-		RETURN (0);
+		RETURN (0)
 		}
 	int16_t					i, n = m_data.nLights [1];
 	fix						xMaxLightRange = F2X (fLightRad) + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
@@ -568,7 +568,7 @@ if (nSegment == nDbgSeg)
 	BRP;
 #endif
 if (!pSeg)
-	RETURN (0);
+	RETURN (0)
 lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 #if 1
 for (int32_t i = 0; i < 8; i++) {

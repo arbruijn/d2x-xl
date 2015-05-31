@@ -738,7 +738,7 @@ DrawPolyModel (NULL, &vModelPos, &gameData.endLevelData.exit.mOrient, NULL,
 					gameStates.gameplay.bMineDestroyed ? gameData.endLevelData.exit.nDestroyedModel : gameData.endLevelData.exit.nModel,
 					0, I2X (1), NULL, NULL, NULL);
 gameStates.app.bD1Model = 0;
-LEAVE;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -791,7 +791,7 @@ RenderObject (gameData.objData.pConsole, 0, 0);
 gameStates.render.nState = 0;
 transparencyRenderer.Render (0);
 gameStates.render.nLighting = nLighting;
-LEAVE;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -863,7 +863,7 @@ else
 	SetupTransformation (transformation, gameData.renderData.mine.viewer.vPos, gameData.objData.pViewer->info.position.mOrient, gameStates.render.xZoom, 1);
 RenderMine (nStartSeg, xEyeOffset, nWindowNum);
 transparencyRenderer.Render (0);
-LEAVE;
+LEAVE
 }
 
 //-----------------------------------------------------------------------------
@@ -1020,7 +1020,7 @@ if (pExitFlightData->bStart || (UpdateObjectSeg (pObj, false) > 0)) {
 		}
 	}
 pExitFlightData->bStart = 0;
-LEAVE;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -1119,7 +1119,7 @@ ENTER (0, 0, "LoadEndLevelData");
 
 gameStates.app.bEndLevelDataLoaded = 0;		//not loaded yet
 if (!gameOpts->movies.nLevel)
-	LEAVE;
+	LEAVE
 
 try_again:
 
@@ -1139,7 +1139,7 @@ if (!cf.Open (filename, gameFolders.game.szData [0], "rb", gameStates.app.bD1Mis
 			console.printf (CON_DBG, "Cannot load file text\nof binary version of\n'<%s>'\n", filename);
 #endif
 			gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
-			LEAVE;
+			LEAVE
 			}
 		else {
 			nLevel = 1;
@@ -1187,7 +1187,7 @@ while (cf.GetS (line, LINE_LEN)) {
 #endif
 				gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
 				PrintLog (-1);
-				LEAVE;
+				LEAVE
 				}
 			gameData.endLevelData.terrain.pBm = &gameData.endLevelData.terrain.bmInstance;
 			//GrRemapBitmapGood (gameData.endLevelData.terrain.pBm, NULL, iff_transparent_color, -1);
@@ -1223,7 +1223,7 @@ while (cf.GetS (line, LINE_LEN)) {
 				Warning (TXT_SATELLITE, p, iff.ErrorMsg (iffError));
 				gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
 				PrintLog (-1);
-				LEAVE;
+				LEAVE
 				}
 			gameData.endLevelData.satellite.pBm = &gameData.endLevelData.satellite.bmInstance;
 			//GrRemapBitmapGood (gameData.endLevelData.satellite.pBm, NULL, iff_transparent_color, -1);
@@ -1279,7 +1279,7 @@ if (gameData.endLevelData.exit.nSegNum == -1) {
 	Warning (TXT_EXIT_TERRAIN, p ? p : "", cf.Name ());
 #endif
 	gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
-	LEAVE;
+	LEAVE
 	}
 PrintLog (1, "computing endlevel element orientation\n");
 gameData.endLevelData.exit.vMineExit = SEGMENT (gameData.endLevelData.exit.nSegNum)->Center ();
@@ -1305,7 +1305,7 @@ gameData.endLevelData.exit.vGroundExit = gameData.endLevelData.exit.vMineExit + 
 PrintLog (-1);
 cf.Close ();
 gameStates.app.bEndLevelDataLoaded = 1;
-LEAVE;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
