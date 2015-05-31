@@ -63,26 +63,27 @@ if (m_channel > -1) {
 
 bool CSoundObject::Start (void)
 {
+ENTER (0);
 	// start sample structures
 m_channel = -1;
 if (m_volume <= 0)
-	return false;
+	RETURN (false)
 if (gameStates.sound.bDontStartObjects)
-	return false;
+	RETURN (false)
 if ((m_nSound < 0) && !*m_szSound)
-	return false;
+	RETURN (false)
 // only use up to 1/4 the sound channels for "permanent" sounts
 if ((m_flags & SOF_PERMANENT) && (audio.ActiveObjects () >= Max (1, 33 * audio.GetMaxChannels () / 100)) && !audio.SuspendObjectSound (m_volume))
-	return false;
+	RETURN (false)
 // start the sample playing
 m_channel =
 	audio.StartSound (m_nSound, m_soundClass, m_volume, m_pan, (m_flags & SOF_PLAY_FOREVER) != 0, m_nLoopStart, m_nLoopEnd,
 							int32_t (this - audio.Objects ().Buffer ()), I2X (1), m_szSound,
 							(m_flags & SOF_LINK_TO_OBJ) ? &OBJECT (m_linkType.obj.nObject)->info.position.vPos : &m_linkType.pos.position);
 if (m_channel < 0)
-	return false;
+	RETURN (false)
 audio.ActivateObject ();
-return true;
+RETURN (true)
 }
 
 //------------------------------------------------------------------------------
@@ -91,45 +92,48 @@ return true;
 /* Find the sound which actually equates to a sound number */
 int16_t CAudio::XlatSound (int16_t nSound)
 {
+ENTER (0);
 if (nSound < 0)
-	return -1;
+	RETURN (-1)
 if (m_info.bLoMem) {
 	nSound = AltSounds [gameStates.sound.bD1Sound][nSound];
 	if (nSound == 255)
-		return -1;
+		RETURN (-1)
 	}
 //Assert (Sounds [gameStates.sound.bD1Sound][nSound] != 255);	//if hit this, probably using undefined sound
 if (Sounds [gameStates.sound.bD1Sound][nSound] == 255)
-	return -1;
-return Sounds [gameStates.sound.bD1Sound][nSound];
+	RETURN (-1)
+RETURN (Sounds [gameStates.sound.bD1Sound][nSound])
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CAudio::UnXlatSound (int32_t nSound)
 {
+ENTER (0);
 	int32_t i;
 	uint8_t *table = (m_info.bLoMem ? AltSounds [gameStates.sound.bD1Sound] : Sounds [gameStates.sound.bD1Sound]);
 
 if (nSound < 0)
-	return -1;
+	RETURN (-1)
 for (i = 0; i < MAX_SOUNDS; i++)
 	if (table [i] == nSound)
-		return i;
+		RETURN (i)
 Int3 ();
-return 0;
+RETURN (0)
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CAudio::GetSoundByName (const char* pszSound)
 {
+ENTER (0);
 	char	szSound [FILENAME_LEN];
 	int32_t	nSound;
 
 strcpy (szSound, pszSound);
 nSound = PiggyFindSound (szSound);
-return (nSound < 0) ? -1 : CAudio::UnXlatSound (nSound);
+RETURN ((nSound < 0) ? -1 : CAudio::UnXlatSound (nSound))
 }
 
 //------------------------------------------------------------------------------
@@ -141,6 +145,7 @@ return (nSound < 0) ? -1 : CAudio::UnXlatSound (nSound);
 
 int32_t CAudio::Distance (CFixVector& vListenerPos, int16_t nListenerSeg, CFixVector& vSoundPos, int16_t nSoundSeg, fix maxDistance, int32_t nDecay, CFixVector& vecToSound, int32_t nThread)
 {
+ENTER (0);
 #if 0 //DBG
 	static float fCorrFactor = 1.0f;
 	static uint32_t  nRouteCount = 1;
@@ -153,14 +158,14 @@ else
 
 fix distance = CFixVector::NormalizedDir (vecToSound, vSoundPos, vListenerPos);
 if (distance > maxDistance) 
-	return -1;
+	RETURN (-1)
 if (nListenerSeg == nSoundSeg)
-	return distance;
+	RETURN (distance)
 if (!HaveRouter (nThread)) {
 	int32_t nSearchSegs = X2I (maxDistance / 10);
 	if (nSearchSegs < 3)
 		nSearchSegs = 3;
-	return uniDacsRouter [nThread].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
+	RETURN (uniDacsRouter [nThread].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0))
 	}
 
 if (m_nListenerSeg != nListenerSeg) 
@@ -193,7 +198,7 @@ if ((m_nListenerSeg != m_router [nThread].StartSeg ()) || (m_router [nThread].De
 
 fix pathDistance = m_router [nThread].Distance (nSoundSeg);
 if (pathDistance < 0)
-	return -1;
+	RETURN (-1)
 if (gameData.segData.SegVis (nListenerSeg, nSoundSeg))
 	distance += fix (distance * 0.6f * float (distance) / float (maxDistance));
 else {
@@ -213,7 +218,7 @@ else {
 		//++nRouteCount;
 		}
 	}
-return (distance < maxDistance) ? distance : -1;
+RETURN ((distance < maxDistance) ? distance : -1)
 }
 
 //------------------------------------------------------------------------------
@@ -226,13 +231,14 @@ void CAudio::GetVolPan (CFixMatrix& mListener, CFixVector& vListenerPos, int16_t
 								int32_t nThread)
 {
 
+ENTER (0);
 *nVolume = 0;
 *pan = 0;
 
 CFixVector vecToSound;
 fix distance = Distance (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, maxDistance, nDecay, vecToSound, nThread);
 if (distance < 0)
-	return;
+	LEAVE
 
 if (!nDecay)
 	//*nVolume = FixMulDiv (maxVolume, maxDistance - distance, maxDistance);
@@ -256,18 +262,20 @@ else {
 		cosAng = -cosAng;
 	*pan = (cosAng + I2X (1)) / 2;
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CAudio::PlaySound (int16_t nSound, int32_t nSoundClass, fix nVolume, int32_t nPan, int32_t bNoDups, int32_t nLoops, const char* pszWAV, CFixVector* vPos)
 {
+ENTER (0);
 #if 0
 if (vPos && (nVolume < 10))
-	return;
+	LEAVE
 #endif
 if (!nVolume)
-	return -1;
+	RETURN (-1)
 if (!pszWAV) {
 	if (gameData.demoData.nState == ND_STATE_RECORDING) {
 		if (bNoDups)
@@ -277,19 +285,20 @@ if (!pszWAV) {
 		}
 	nSound = (nSound < 0) ? -nSound : CAudio::XlatSound (nSound);
 	if (nSound < 0)
-		return -1;
+		RETURN (-1)
 	int32_t nChannel = FindChannel (nSound);
 	if (nChannel > -1)
 		StopSound (nChannel);
 	}
 // start the sample playing
-return StartSound (nSound, nSoundClass, nVolume, nPan, 0, (nLoops > 0) ? nLoops - 1 : -1, -1, -1, I2X (1), pszWAV, vPos);
+RETURN (StartSound (nSound, nSoundClass, nVolume, nPan, 0, (nLoops > 0) ? nLoops - 1 : -1, -1, -1, I2X (1), pszWAV, vPos))
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::InitSounds (void)
 {
+ENTER (0);
 soundQueue.Init ();
 StopAllChannels ();
 for (uint32_t i = 0; i < m_objects.ToS (); i++) {
@@ -298,6 +307,7 @@ for (uint32_t i = 0; i < m_objects.ToS (); i++) {
 	}
 m_info.nActiveObjects = 0;
 m_info.bInitialized = 1;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -311,17 +321,20 @@ m_info.bInitialized = 1;
 
 void CAudio::StartLoopingSound (void)
 {
+ENTER (0);
 if (m_info.nLoopingSound > -1)
 	m_info.nLoopingChannel  = StartSound (m_info.nLoopingSound, SOUNDCLASS_GENERIC, m_info.nLoopingVolume, DEFAULT_PAN, 1, m_info.nLoopingStart, m_info.nLoopingEnd);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::PlayLoopingSound (int16_t nSound, fix nVolume, int32_t nLoopStart, int32_t nLoopEnd)
 {
+ENTER (0);
 nSound = CAudio::XlatSound (nSound);
 if (nSound < 0)
-	return;
+	LEAVE
 if (m_info.nLoopingChannel > -1)
 	StopSound (m_info.nLoopingChannel);
 m_info.nLoopingSound = (int16_t) nSound;
@@ -329,6 +342,7 @@ m_info.nLoopingVolume = (int16_t) nVolume;
 m_info.nLoopingStart = (int16_t) nLoopStart;
 m_info.nLoopingEnd = (int16_t) nLoopEnd;
 StartLoopingSound ();
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -344,19 +358,23 @@ m_info.nLoopingVolume = (int16_t) nVolume;
 
 void CAudio::StopLoopingSound (void)
 {
+ENTER (0);
 if (m_info.nLoopingChannel > -1)
 	StopSound (m_info.nLoopingChannel);
 m_info.nLoopingChannel = -1;
 m_info.nLoopingSound = -1;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::PauseLoopingSound (void)
 {
+ENTER (0);
 if (m_info.nLoopingChannel > -1)
 	StopSound (m_info.nLoopingChannel);
 m_info.nLoopingChannel = -1;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -372,6 +390,7 @@ StartLoopingSound ();
 
 bool CAudio::SuspendObjectSound (int32_t nThreshold)
 {
+ENTER (0);
 	int32_t	j = -1, nMinVolume = I2X (1000);
 
 for (int32_t i = 0; i < int32_t (m_objects.ToS ()); i++) {
@@ -383,9 +402,9 @@ for (int32_t i = 0; i < int32_t (m_objects.ToS ()); i++) {
 		}
 	}
 if (nMinVolume > nThreshold)
-	return false;
+	RETURN (false)
 m_objects [j].Stop ();
-return true;
+RETURN (true)
 }
 
 //------------------------------------------------------------------------------
@@ -396,21 +415,22 @@ int32_t CAudio::CreateObjectSound (
 	int16_t nOrgSound, int32_t nSoundClass, int16_t nObject, int32_t bForever, fix maxVolume, fix maxDistance,
 	int32_t nLoopStart, int32_t nLoopEnd, const char* pszSound, int32_t nDecay, uint8_t bCustom, int32_t nThread)
 {
+ENTER (0);
 	CObject*			pObj;
 	CSoundObject*	pSoundObj;
 	int16_t			nSound = 0;
 
 if (maxVolume < 0)
-	return -1;
+	RETURN (-1)
 if ((nObject < 0) || (nObject > gameData.objData.nLastObject [0]))
-	return -1;
+	RETURN (-1)
 if (!(pszSound && *pszSound)) {
 	nSound = XlatSound (nOrgSound);
 	if (nSound < 0)
-		return -1;
+		RETURN (-1)
 	if (!gameData.pigData.sound.sounds [gameStates.sound.bD1Sound][nSound].data) {
 		Int3 ();
-		return -1;
+		RETURN (-1)
 		}
 	}
 pObj = OBJECT (nObject);
@@ -420,12 +440,12 @@ if (!bForever) { 	// Hack to keep sounds from building up...
 				  gameData.objData.pViewer->info.nSegment, pObj->info.position.vPos, pObj->info.nSegment, maxVolume, &nVolume, &nPan,
 				  maxDistance, nDecay, nThread);
 	PlaySound (nOrgSound, nSoundClass, nVolume, nPan, 0, -1, pszSound, &pObj->info.position.vPos);
-	return -1;
+	RETURN (-1)
 	}
 if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordCreateObjectSound (nOrgSound, nObject, maxVolume, maxDistance, nLoopStart, nLoopEnd);
 if (!m_objects.Grow ())
-	return -1;
+	RETURN (-1)
 pSoundObj = m_objects.Top ();
 pSoundObj->m_nSignature = m_info.nNextSignature++;
 pSoundObj->m_flags = SOF_USED | SOF_LINK_TO_OBJ;
@@ -461,7 +481,7 @@ else {
 	// just cancel it and be done with it.
 	if ((pSoundObj->m_channel < 0) && (!(pSoundObj->m_flags & SOF_PLAY_FOREVER))) {
 		m_objects.Pop ();
-		return -1;
+		RETURN (-1)
 		}
 	}
 pSoundObj->m_bCustom = bCustom;
@@ -469,14 +489,14 @@ pSoundObj->m_bCustom = bCustom;
 if (nOrgSound == SOUND_AFTERBURNER_IGNITE)
 	nDbgChannel = pSoundObj->m_channel;
 #endif
-return pSoundObj->m_nSignature;
+RETURN (pSoundObj->m_nSignature)
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CAudio::ChangeObjectSound (int32_t nObject, fix nVolume)
 {
-
+ENTER (0);
 	CSoundObject*	pSoundObj = m_objects.Buffer ();
 
 if (gameData.demoData.nState == ND_STATE_RECORDING)
@@ -486,19 +506,20 @@ for (uint32_t i = 0; i < m_objects.ToS (); i++, pSoundObj++) {
 	if ((pSoundObj->m_flags & (SOF_USED | SOF_LINK_TO_OBJ)) == (SOF_USED | SOF_LINK_TO_OBJ)) {
 		if ((pSoundObj->m_linkType.obj.nObject == nObject) && (pSoundObj->m_channel > -1)) {
 			SetVolume (pSoundObj->m_channel, pSoundObj->m_volume = nVolume);
-			return 1;
+			RETURN (1)
 			}
 		}
 	}
-return 0;
+RETURN (0)
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::Cleanup (void)
 {
-	int32_t				h, i;
-	CAudioChannel* pChannel;
+ENTER (0);
+	int32_t			h, i;
+	CAudioChannel	*pChannel;
 
 h = int32_t (m_objects.ToS ());
 
@@ -513,12 +534,14 @@ while (h) {
 	if ((i >= 0) && (m_channels [i].SoundObject () != h))
 		DeleteSoundObject (h);
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::DeleteSoundObject (int32_t i)
 {
+ENTER (0);
 	int32_t	h;
 
 #if DBG
@@ -541,26 +564,29 @@ pSoundObj->m_linkType.obj.nObject = -1;
 pSoundObj->m_linkType.obj.nObjSig = -1;
 pSoundObj->m_flags = 0;	// Mark as dead, so some other sound can use this sound
 m_objects.Delete (i);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CAudio::FindObjectSound (int32_t nObject, int16_t nSound)
 {
+ENTER (0);
 	CSoundObject*	pSoundObj = m_objects.Buffer ();
 
 if (nSound >= 0)
 	nSound = XlatSound (nSound);
 for (uint32_t i = m_objects.ToS (); i; i--, pSoundObj++) 
 	if ((pSoundObj->m_linkType.obj.nObject == nObject) && (pSoundObj->m_nSound == nSound))
-		return int32_t (m_objects.ToS () - i);
-return -1;
+		RETURN (int32_t (m_objects.ToS () - i))
+RETURN (-1)
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CAudio::DestroyObjectSound (int32_t nObject, int16_t nSound)
 {
+ENTER (0);
 	int32_t nKilled = 0;
 
 if ((nObject >= 0) && (gameData.demoData.nState == ND_STATE_RECORDING))
@@ -599,7 +625,7 @@ while (i) {
 		}
 	}
 }
-return (nKilled > 0);
+RETURN (nKilled > 0)
 }
 
 //------------------------------------------------------------------------------
@@ -608,34 +634,34 @@ int32_t CAudio::CreateSegmentSound (
 	int16_t nOrgSound, int16_t nSegment, int16_t nSide, CFixVector& vPos, int32_t bForever,
 	fix maxVolume, fix maxDistance, const char* pszSound)
 {
-
+ENTER (0);
 	int32_t			nSound;
 	CSoundObject*	pSoundObj;
 
 nSound = XlatSound (nOrgSound);
 if (maxVolume < 0)
-	return -1;
+	RETURN (-1)
 //	if (maxVolume > I2X (1)) maxVolume = I2X (1);
 if (nSound < 0)
-	return -1;
+	RETURN (-1)
 if (!gameData.pigData.sound.sounds [gameStates.sound.bD1Sound][nSound].data) {
 	Int3 ();
-	return -1;
+	RETURN (-1)
 	}
 if ((nSegment < 0)|| (nSegment > gameData.segData.nLastSegment))
-	return -1;
+	RETURN (-1)
 if (!bForever) { 	//&& gameData.pigData.sound.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD) {
 	// Hack to keep sounds from building up...
 	int32_t nVolume, nPan;
 	GetVolPan (gameData.objData.pViewer->info.position.mOrient, gameData.objData.pViewer->info.position.vPos, gameData.objData.pViewer->info.nSegment,
 				  vPos, nSegment, maxVolume, &nVolume, &nPan, maxDistance, 0);
 	PlaySound (nOrgSound, SOUNDCLASS_GENERIC, nVolume, nPan, 0, -1, pszSound, &vPos);
-	return -1;
+	RETURN (-1)
 	}
 if (m_objects.ToS () == MAX_SOUND_OBJECTS)
-	return -1;
+	RETURN (-1)
 if (!m_objects.Grow ())
-	return -1;
+	RETURN (-1)
 pSoundObj = m_objects.Top ();
 pSoundObj->m_nSignature = m_info.nNextSignature++;
 pSoundObj->m_flags = SOF_USED | SOF_LINK_TO_POS;
@@ -670,16 +696,17 @@ else {
 	// just cancel it and be done with it.
 	if ((pSoundObj->m_channel < 0) && (!(pSoundObj->m_flags & SOF_PLAY_FOREVER))) {
 		m_objects.Pop ();
-		return -1;
+		RETURN (-1)
 		}
 	}
-return pSoundObj->m_nSignature;
+RETURN (pSoundObj->m_nSignature)
 }
 
 //------------------------------------------------------------------------------
 //if nSound==-1, kill any sound
 int32_t CAudio::DestroySegmentSound (int16_t nSegment, int16_t nSide, int16_t nSound)
 {
+ENTER (0);
 if (nSound != -1)
 	nSound = XlatSound (nSound);
 
@@ -698,13 +725,14 @@ while (i) {
 			}
 		}
 	}
-return (nKilled > 0);
+RETURN (nKilled > 0)
 }
 
 //------------------------------------------------------------------------------
 //	John's new function, 2/22/96.
 void CAudio::RecordSoundObjects (void)
 {
+ENTER (0);
 for (uint32_t i = 0; i < m_objects.ToS (); i++) {
 	if ((m_objects [i].m_flags & (SOF_USED | SOF_LINK_TO_OBJ | SOF_PLAY_FOREVER)) == (SOF_USED | SOF_LINK_TO_OBJ | SOF_PLAY_FOREVER)) {
 		NDRecordCreateObjectSound (UnXlatSound (m_objects [i].m_nSound), m_objects [i].m_linkType.obj.nObject,
@@ -712,14 +740,16 @@ for (uint32_t i = 0; i < m_objects.ToS (); i++) {
 											m_objects [i].m_nLoopEnd);
 		}
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::SyncSounds (void)
 {
+ENTER (0);
 if (!OBJECTS.Buffer ())
-	return;
+	LEAVE
 
 	int32_t			nOldVolume, nNewVolume, nOldPan, 
 						nAudioVolume [2] = {audio.Volume (0), audio.Volume (1)};
@@ -829,12 +859,14 @@ while (i) {
 		}
 	}
 Cleanup ();
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::PauseSounds (void)
 {
+ENTER (0);
 PauseLoopingSound ();
 
 	uint32_t i = m_objects.ToS ();
@@ -854,33 +886,39 @@ while (i) {
 	}
 StopAllChannels (true);
 soundQueue.Pause ();
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::PauseAll (void)
 {
+ENTER (0);
 midi.Pause ();
 StopTriggeredSounds ();
 PauseSounds ();
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::ResumeSounds (void)
 {
+ENTER (0);
 //SetSoundSources ();
 PrintLog (1, "syncing sounds\n");
 SyncSounds ();	//don't think we really need to do this, but can't hurt
 PrintLog (0, "resuming looping sounds\n");
 ResumeLoopingSound ();
 PrintLog (-1);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::ResumeAll (void)
 {
+ENTER (0);
 PrintLog (1, "restarting sounds\n");
 PrintLog (0, "resuming midi system\n");
 midi.Resume ();
@@ -889,6 +927,7 @@ ResumeSounds ();
 PrintLog (0, "starting triggered sounds\n");
 StartTriggeredSounds ();
 PrintLog (-1);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -896,30 +935,36 @@ PrintLog (-1);
 // slot because the sound was done playing.
 void CAudio::EndSoundObject (int32_t i)
 {
+ENTER (0);
 if (m_objects [i].m_flags & SOF_PLAY_FOREVER)
 	m_objects [i].m_channel = -1;
 else
 	DeleteSoundObject (i);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::StopObjectSounds (void)
 {
+ENTER (0);
 	uint32_t i = m_objects.ToS ();
 
 while (i)
 	DeleteSoundObject (--i);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::StopAll (void)
 {
+ENTER (0);
 StopLoopingSound ();
 StopObjectSounds ();
 StopCurrentSong ();
 StopAllChannels ();
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -971,45 +1016,50 @@ soundQueue.m_data.nChannel = -1;
 
 void CSoundQueue::End (void)
 {
+ENTER (0);
 	// Current playing sound is stopped, so take it off the Queue
 if (++m_data.nHead >= MAX_SOUND_QUEUE)
 	m_data.nHead = 0;
 m_data.nSounds--;
 m_data.nChannel = -1;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CSoundQueue::Process (void)
 {
+ENTER (0);
 	fix curtime = TimerGetApproxSeconds ();
 	tSoundQueueEntry *q;
 
 if (m_data.nChannel > -1) {
 	if (audio.ChannelIsPlaying (m_data.nChannel))
-		return;
+		LEAVE
 	End ();
 	}
 while (m_data.nHead != m_data.nTail) {
 	q = m_data.queue + m_data.nHead;
 	if (q->timeAdded + MAX_LIFE > curtime) {
 		m_data.nChannel = audio.StartSound (q->nSound, SOUNDCLASS_GENERIC, I2X (1) + 1);
-		return;
+		LEAVE
 		}
 	End ();
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CSoundQueue::StartSound (int16_t nSound, fix nVolume)
 {
-	int32_t					i;
+ENTER (0);
+	int32_t				i;
 	tSoundQueueEntry *q;
 
 nSound = audio.XlatSound (nSound);
 if (nSound < 0)
-	return;
+	LEAVE
 i = m_data.nTail + 1;
 if (i >= MAX_SOUND_QUEUE)
 	i = 0;
@@ -1024,6 +1074,7 @@ if (i != m_data.nHead) {
 	m_data.nTail = i;
 	}
 Process ();
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -1039,18 +1090,19 @@ gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameOpts->sound.bUseD1S
 
 static int32_t SideIsSoundSource (int16_t nSegment, int16_t nSide)
 {
+ENTER (0);
 CSegment* pSeg = SEGMENT (nSegment);
 if (!(pSeg->IsPassable (nSide, NULL) & WID_VISIBLE_FLAG))
-	return -1;
+	RETURN (-1)
 int16_t nOvlTex = pSeg->m_sides [nSide].m_nOvlTex;
 int16_t nEffect = nOvlTex ? gameData.pigData.tex.pTexMapInfo [nOvlTex].nEffectClip : -1;
 if (nEffect < 0)
 	nEffect = gameData.pigData.tex.pTexMapInfo [pSeg->m_sides [nSide].m_nBaseTex].nEffectClip;
 if (nEffect < 0)
-	return -1;
+	RETURN (-1)
 int32_t nSound = gameData.effectData.pEffect [nEffect].nSound;
 if (nSound == -1)
-	return -1;
+	RETURN (-1)
 int16_t nConnSeg = pSeg->m_children [nSide];
 
 //check for sound on other CSide of CWall.  Don't add on
@@ -1063,9 +1115,9 @@ if (IS_CHILD (nConnSeg) && (nConnSeg < nSegment) &&
 	CSegment* pConnSeg = SEGMENT (pSeg->m_children [nSide]);
 	int16_t nConnSide = pSeg->ConnectedSide (pConnSeg);
 	if (pConnSeg->m_sides [nConnSide].m_nOvlTex == pSeg->m_sides [nSide].m_nOvlTex)
-		return -1;		//skip this one
+		RETURN (-1)		//skip this one
 	}
-return nSound;
+RETURN (nSound)
 }
 
 //------------------------------------------------------------------------------
@@ -1073,6 +1125,7 @@ return nSound;
 //go through this level and start any effect sounds
 void SetSoundSources (void)
 {
+ENTER (0);
 	int16_t		nSegment, nSide;
 	CSegment*	pSeg;
 	CObject*		pObj;
@@ -1127,6 +1180,7 @@ if (0 <= nSound) {
 	}
 //gameStates.sound.bD1Sound = 0;
 gameStates.sound.bDontStartObjects = 0;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
