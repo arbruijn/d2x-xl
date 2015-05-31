@@ -696,7 +696,7 @@ switch (gameStates.app.bEndLevelSequence) {
 //find which CSide to fly out of
 int32_t FindExitSide (CObject *pObj)
 {
-ENTER (0, 0, "FindExitSide");
+ENTER (0);
 	CFixVector	vPreferred, vSegCenter, vSide;
 	fix			d, xBestVal = -I2X (2);
 	int32_t		nBestSide, i;
@@ -720,14 +720,14 @@ for (i = SEGMENT_SIDE_COUNT; --i >= 0;) {
 		}
 	}
 Assert (nBestSide!=-1);
-RETURN (nBestSide);
+RETURN (nBestSide)
 }
 
 //------------------------------------------------------------------------------
 
 void DrawExitModel (void)
 {
-ENTER (0, 0, "DrawExitModel");
+ENTER (0);
 	CFixVector	vModelPos;
 	int32_t		f = 15, u = 0;	//21;
 
@@ -753,7 +753,7 @@ fix xSatelliteSize = I2X (400);
 
 void RenderExternalScene (fix xEyeOffset)
 {
-ENTER (0, 0, "RenderExternalScene");
+ENTER (0);
 	CFixVector		vDelta;
 	CRenderPoint	p, pTop;
 
@@ -837,7 +837,7 @@ for (i = 0; i < MAX_STARS; i++) {
 
 void RenderEndLevelMine (fix xEyeOffset, int32_t nWindowNum)
 {
-ENTER (0, 0, "RenderEndLevelMine");
+ENTER (0);
 	int16_t nStartSeg;
 
 gameData.renderData.mine.viewer.vPos = gameData.objData.pViewer->info.position.vPos;
@@ -919,7 +919,7 @@ return dest;
 
 void DoEndLevelFlyThrough (int32_t n)
 {
-ENTER (0, 0, "DoEndLevelFlyThrough");
+ENTER (0);
 
 	CObject	*pObj;
 	CSegment *pSeg;
@@ -1108,7 +1108,7 @@ extern char szAutoMission [255];
 //called for each level to load & setup the exit sequence
 void LoadEndLevelData (int32_t nLevel)
 {
-ENTER (0, 0, "LoadEndLevelData");
+ENTER (0);
 
 	char			filename [13];
 	char			line [LINE_LEN], *p = NULL;

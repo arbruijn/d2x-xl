@@ -57,7 +57,7 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 
 CRGBColor *AnimationColor (CObject *pObj)
 {
-	CWeaponInfo		*pWeaponInfo;
+	CWeaponInfo		*pWeaponInfo = WEAPONINFO (pObj);
 
 if (!pWeaponInfo)
 	return NULL;
