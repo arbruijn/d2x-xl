@@ -105,6 +105,7 @@ int32_t CObject::Create (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t n
 								 const CFixVector& vPos, const CFixMatrix& mOrient,
 								 fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
 {
+ENTER (0);
 #if DBG
 if (nType == OBJ_WEAPON) {
 	nType = nType;
@@ -118,7 +119,7 @@ if (nType == OBJ_WEAPON) {
 else if (nType == OBJ_ROBOT) {
 #if 0
 	if (ROBOTINFO ((int32_t) nId) && ROBOTINFO ((int32_t) nId)->bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
-		return -1;
+		RETURN (-1)
 #endif
 	}
 else if (nType == OBJ_HOSTAGE)
@@ -139,11 +140,11 @@ else if (nType == OBJ_POWERUP)
 
 SetSegment (FindSegByPos (vPos, nSegment, 1, 0));
 if ((Segment () < 0) || (Segment () > gameData.segData.nLastSegment))
-	return -1;
+	RETURN (-1)
 
 if (nType == OBJ_DEBRIS) {
 	if (!gameOpts->render.effects.nShrapnels && (gameData.objData.nDebris >= gameStates.render.detail.nMaxDebrisObjects))
-		return -1;
+		RETURN (-1)
 	}
 
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
@@ -192,7 +193,7 @@ else if (GetControlType () == CT_EXPLOSION) {
 #endif
 Link ();
 LinkToSeg (nSegment);
-return Key ();
+RETURN (Key ())
 }
 
 //-----------------------------------------------------------------------------
@@ -205,6 +206,7 @@ void UpdateLastObject (int32_t nObject);
 
 int32_t CreateObject (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, const CFixMatrix& mOrient, fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
 {
+ENTER (0);
 	int16_t	nObject;
 	CObject	*pObj;
 
@@ -229,7 +231,7 @@ else if (nType == OBJ_ROBOT) {
 	BRP;
 #if 0
 	if (ROBOTINFO ((int32_t) nId) && ROBOTINFO ((int32_t) nId)->bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
-		return -1;
+		RETURN (-1)
 #endif
 	}
 else if (nType == OBJ_HOSTAGE)
@@ -259,11 +261,11 @@ if (nSegment < -1)
 else
 	nSegment = FindSegByPos (vPos, nSegment, 1, 0);
 if ((nSegment < 0) || (nSegment > gameData.segData.nLastSegment))
-	return -1;
+	RETURN (-1)
 
 if (nType == OBJ_DEBRIS) {
 	if (!gameOpts->render.effects.nShrapnels && (gameData.objData.nDebris >= gameStates.render.detail.nMaxDebrisObjects))
-		return -1;
+		RETURN (-1)
 	}
 
 // Find next free object
@@ -274,7 +276,7 @@ if (!pObj) {
 	if (nObject > -1)
 		UpdateLastObject (0x7fffffff);
 #endif
-	return -1;
+	RETURN (-1)
 	}
 pObj->SetKey (nObject);
 pObj->SetCreationTime ();
@@ -352,27 +354,25 @@ if (IsMultiGame && IsCoopGame &&
 #endif
 pObj->ResetDamage ();
 pObj->SetTarget (NULL);
-return nObject;
+RETURN (nObject)
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CloneObject (CObject *pObj)
 {
-	int16_t	nObject, nSegment;
-	int32_t	nSignature;
-	CObject*	pClone;
-
-if (0 > (nObject = AllocObject ()))
-	return -1;
-pClone = OBJECT (nObject);
-nSignature = pClone->info.nSignature;
+ENTER (0);
+int16_t nObject = AllocObject ();
+CObject *pClone = OBJECT (nObject);
+if (!pClone)
+	RETURN (-1)
+int32_t nSignature = pClone->info.nSignature;
 memcpy (pClone, pObj, sizeof (CObject));
 pClone->info.nSignature = nSignature;
 pClone->info.nCreator = -1;
 pClone->mType.physInfo.thrust.SetZero ();
 pClone->SetCreationTime (gameData.timeData.xGame);
-nSegment = pObj->info.nSegment;
+int16_t nSegment = pObj->info.nSegment;
 pClone->info.nSegment =
 pClone->info.nPrevInSeg =
 pClone->info.nNextInSeg = -1;
@@ -382,25 +382,27 @@ pClone->SetLinkedType (OBJ_NONE);
 #endif
 pObj->Link ();
 pObj->LinkToSeg (nSegment);
-return nObject;
+RETURN (nObject)
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CreateRobot (uint8_t nId, int16_t nSegment, const CFixVector& vPos)
 {
+ENTER (0);
 tRobotInfo* pRobotInfo = ROBOTINFO (nId);
 if (!pRobotInfo) {
 	PrintLog (0, "Trying to create non-existent robot (type %d)\n", nId);
-	return -1;
+	RETURN (-1)
 	}
-return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.modelData.polyModels [0][pRobotInfo->nModel].Rad (), CT_AI, MT_PHYSICS, RT_POLYOBJ);
+RETURN (CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.modelData.polyModels [0][pRobotInfo->nModel].Rad (), CT_AI, MT_PHYSICS, RT_POLYOBJ))
 }
 
 //------------------------------------------------------------------------------
 
 int32_t PowerupsInMine (int32_t nPowerup)
 {
+ENTER (0);
 	int32_t nCount = 0;
 
 if (MultiPowerupIs4Pack (nPowerup))
@@ -433,13 +435,14 @@ else {
 		nCount += (nMines + 3) / 4;
 		}
 	}
-return nCount;
+RETURN (nCount)
 }
 
 //-----------------------------------------------------------------------------
 
 void SetAllowedPowerup (int32_t nPowerup, uint32_t nCount)
 {
+ENTER (0);
 if (nCount && powerupFilter [nPowerup]) {
 #if DBG
 	if (nPowerup == nDbgPowerup)
@@ -457,12 +460,14 @@ if (nCount && powerupFilter [nPowerup]) {
 			gameData.multiplayer.maxPowerupsAllowed [POW_VULCAN_AMMO] = 2 * nCount; // add vulcan ammo for each gatling type gun
 		}
 	}
+LEAVE
 }
 
 //-----------------------------------------------------------------------------
 
 void AddAllowedPowerup (int32_t nPowerup, uint32_t nCount)
 {
+ENTER (0);
 if (nCount && powerupFilter [nPowerup]) {
 #if DBG
 	if (nPowerup == nDbgPowerup)
@@ -478,12 +483,14 @@ if (nCount && powerupFilter [nPowerup]) {
 			gameData.multiplayer.maxPowerupsAllowed [nPowerup + 1] = gameData.multiplayer.maxPowerupsAllowed [nPowerup] / 4;
 		}
 	}
+LEAVE
 }
 
 //-----------------------------------------------------------------------------
 
 void RemoveAllowedPowerup (int32_t nPowerup, uint32_t nCount)
 {
+ENTER (0);
 if (nCount && powerupFilter [nPowerup]) {
 #if DBG
 	if (nPowerup == nDbgPowerup)
@@ -502,12 +509,14 @@ if (nCount && powerupFilter [nPowerup]) {
 			gameData.multiplayer.maxPowerupsAllowed [nPowerup + 1] = gameData.multiplayer.maxPowerupsAllowed [nPowerup] / 4;
 		}
 	}
+LEAVE
 }
 
 //-----------------------------------------------------------------------------
 
 void AddPowerupInMine (int32_t nPowerup, uint32_t nCount, bool bIncreaseLimit)
 {
+ENTER (0);
 if (nCount && powerupFilter [nPowerup]) {
 #if DBG
 	if (nPowerup == nDbgPowerup)
@@ -523,12 +532,14 @@ if (nCount && powerupFilter [nPowerup]) {
 			AddAllowedPowerup (nPowerup, nCount);
 		}
 	}
+LEAVE
 }
 
 //-----------------------------------------------------------------------------
 
 void RemovePowerupInMine (int32_t nPowerup, uint32_t nCount)
 {
+ENTER (0);
 if (nCount && powerupFilter [nPowerup]) {
 #if DBG
 	if (nPowerup == nDbgPowerup)
@@ -545,6 +556,7 @@ if (nCount && powerupFilter [nPowerup]) {
 			gameData.multiplayer.powerupsInMine [nPowerup + 1] = gameData.multiplayer.powerupsInMine [nPowerup] / 4;
 		}	
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -575,11 +587,12 @@ return 1;
 
 int32_t CreatePowerup (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, int32_t bIgnoreLimits, bool bForce)
 {
+ENTER (0);
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
-	return -1;
+	RETURN (-1)
 if (nId >= MAX_POWERUP_TYPES) {
 	PrintLog (0, "Trying to create non-existent powerup (type %d)\n", nId);
-	return -1;
+	RETURN (-1)
 	}
 if (!bIgnoreLimits && TooManyPowerups ((int32_t) nId)) {
 #if 1 //DBG
@@ -590,10 +603,10 @@ if (!bIgnoreLimits && TooManyPowerups ((int32_t) nId)) {
 #endif
 	TooManyPowerups (nId);
 #endif
-	return -2;
+	RETURN (-2)
 	}
 if (gameStates.gameplay.bMineMineCheat && !bForce && (CObject::IsEquipment (nId) < 2))
-	return -1;
+	RETURN (-1)
 int16_t nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objData.pwrUp.info [nId].size, CT_POWERUP, MT_PHYSICS, RT_POWERUP);
 if (nObject >= 0) {
 	if (nId == POW_VULCAN_AMMO)
@@ -601,17 +614,18 @@ if (nObject >= 0) {
 	if (IsMultiGame && PowerupClass (nId))
 		AddPowerupInMine ((int32_t) nId);
 	}
-return nObject;
+RETURN (nObject)
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CreateWeapon (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, fix xSize, uint8_t rType)
 {
+ENTER (0);
 if (rType == 255) {
 	CWeaponInfo *pWeaponInfo = WEAPONINFO (nId);
 	if (!pWeaponInfo)
-		return -1;
+		RETURN (-1)
 	switch (pWeaponInfo->renderType) {
 		case WEAPON_RENDER_BLOB:
 			xSize = pWeaponInfo->xBlobSize;
@@ -631,47 +645,51 @@ if (rType == 255) {
 			break;
 		default:
 			PrintLog (0, "Error: Invalid weapon render nType in CreateNewWeapon\n");
-			return -1;
+			RETURN (-1)
 		}
 	}
-return CreateObject (OBJ_WEAPON, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_WEAPON, MT_PHYSICS, rType);
+RETURN (CreateObject (OBJ_WEAPON, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_WEAPON, MT_PHYSICS, rType))
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CreateFireball (uint8_t nId, int16_t nSegment, const CFixVector& vPos, fix xSize, uint8_t rType)
 {
-return CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_EXPLOSION, MT_NONE, rType);
+ENTER (0);
+RETURN (CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_EXPLOSION, MT_NONE, rType))
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CreateDebris (CObject *pParent, int16_t nSubModel)
 {
-return CreateObject (OBJ_DEBRIS, 0, -1, pParent->info.nSegment, pParent->info.position.vPos, pParent->info.position.mOrient,
-							gameData.modelData.polyModels [0][pParent->ModelId ()].SubModels ().rads [nSubModel],
-							CT_DEBRIS, MT_PHYSICS, RT_POLYOBJ);
+ENTER (0);
+RETURN (CreateObject (OBJ_DEBRIS, 0, -1, pParent->info.nSegment, pParent->info.position.vPos, pParent->info.position.mOrient,
+							 gameData.modelData.polyModels [0][pParent->ModelId ()].SubModels ().rads [nSubModel],
+							 CT_DEBRIS, MT_PHYSICS, RT_POLYOBJ))
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CreateCamera (CObject *pParent)
 {
-return CreateObject (OBJ_CAMERA, 0, -1, pParent->info.nSegment, pParent->info.position.vPos, pParent->info.position.mOrient, 0,
-							CT_NONE, MT_NONE, RT_NONE);
+ENTER (0);
+RETURN (CreateObject (OBJ_CAMERA, 0, -1, pParent->info.nSegment, pParent->info.position.vPos, pParent->info.position.mOrient, 0, CT_NONE, MT_NONE, RT_NONE))
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CreateLight (uint8_t nId, int16_t nSegment, const CFixVector& vPos)
 {
-return CreateObject (OBJ_LIGHT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, 0, CT_LIGHT, MT_NONE, RT_NONE);
+ENTER (0);
+RETURN (CreateObject (OBJ_LIGHT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, 0, CT_LIGHT, MT_NONE, RT_NONE))
 }
 
 //------------------------------------------------------------------------------
 
 void CreateSmallFireballOnObject (CObject *pObj, fix size_scale, int32_t bSound)
 {
+ENTER (0);
 	fix			size;
 	CFixVector	vPos, vRand;
 	int16_t		nSegment;
@@ -685,7 +703,7 @@ nSegment = FindSegByPos (vPos, pObj->info.nSegment, 1, 0);
 if (nSegment != -1) {
 	CObject *pExplObj = CreateExplosion (nSegment, vPos, size, ANIM_SMALL_EXPLOSION);
 	if (!pExplObj)
-		return;
+		LEAVE;
 	AttachObject (pObj, pExplObj);
 	if (bSound || (RandShort () < 8192)) {
 		fix vol = I2X (1) / 2;
@@ -694,12 +712,14 @@ if (nSegment != -1) {
 		audio.CreateObjectSound (SOUND_EXPLODING_WALL, SOUNDCLASS_EXPLOSION, pObj->Index (), 0, vol);
 		}
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CreateVClipOnObject (CObject *pObj, fix xScale, uint8_t nVClip)
 {
+ENTER (0);
 	fix			xSize;
 	CFixVector	vPos, vRand;
 	int16_t		nSegment;
@@ -713,30 +733,32 @@ nSegment = FindSegByPos (vPos, pObj->info.nSegment, 1, 0);
 if (nSegment != -1) {
 	CObject *pExplObj = CreateExplosion (nSegment, vPos, xSize, nVClip);
 	if (!pExplObj)
-		return;
+		LEAVE;
 
 	pExplObj->info.movementType = MT_PHYSICS;
 	pExplObj->mType.physInfo.velocity = pObj->mType.physInfo.velocity * (I2X (1) / 2);
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 //creates a marker CObject in the world.  returns the CObject number
 int32_t DropMarkerObject (CFixVector& vPos, int16_t nSegment, CFixMatrix& orient, uint8_t nMarker)
 {
+ENTER (0);
 	int16_t nObject;
 
 //Assert (gameData.modelData.nMarkerModel != -1);
 nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, vPos, orient,
 								gameData.modelData.polyModels [0][gameData.modelData.nMarkerModel].Rad (), CT_NONE, MT_NONE, RT_POLYOBJ);
-if (nObject >= 0) {
-	CObject *pObj = OBJECT (nObject);
-	pObj->rType.polyObjInfo.nModel = gameData.modelData.nMarkerModel;
-	pObj->mType.spinRate = pObj->info.position.mOrient.m.dir.u * (I2X (1) / 2);
-	//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all OBJECTS.
-	pObj->SetLife (IMMORTAL_TIME);
-	}
-return nObject;
+CObject *pObj = OBJECT (nObject);
+if (!pObj)
+	RETURN (-1)
+pObj->rType.polyObjInfo.nModel = gameData.modelData.nMarkerModel;
+pObj->mType.spinRate = pObj->info.position.mOrient.m.dir.u * (I2X (1) / 2);
+//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all OBJECTS.
+pObj->SetLife (IMMORTAL_TIME);
+RETURN (nObject)
 }
 
 //------------------------------------------------------------------------------

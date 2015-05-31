@@ -32,6 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //fills in gun_point
 int32_t CalcGunPoint (CFixVector *vGunPoint, CObject *pObj, int32_t nGun)
 {
+ENTER (0);
 	CPolyModel*	pm = gameData.modelData.polyModels [0] + pObj->ModelId ();
 	CFixVector*	vGunPoints, vGunPos, vRot;
 	CFixMatrix	m;
@@ -41,9 +42,9 @@ int32_t CalcGunPoint (CFixVector *vGunPoint, CObject *pObj, int32_t nGun)
 
 tRobotInfo*	pRobotInfo = ROBOTINFO (pObj);
 if (!pRobotInfo)
-	return 0;
+	RETURN (0)
 if (!(vGunPoints = GetGunPoints (pObj, nGun)))
-	return 0;
+	RETURN (0)
 vGunPos = vGunPoints [nGun];
 nSubModel = pRobotInfo->gunSubModels [nGun];
 //instance up the tree for this gun
@@ -58,7 +59,7 @@ while (nSubModel != 0) {
 //VmVecInc (&vGunPos, gameData.modelData.offsets + pRobotInfo->nModel);
 *vGunPoint = *pObj->View (0) * vGunPos;
 *vGunPoint += pObj->info.position.vPos;
-return 1;
+RETURN (1)
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -66,9 +67,10 @@ return 1;
 //takes the robot nType (CObject id), gun number, and desired state
 int32_t RobotGetAnimState (tJointPos **jointPosP, int32_t robotType, int32_t nGun, int32_t state)
 {
+ENTER (0);
 tRobotInfo*	pRobotInfo = ROBOTINFO (robotType);
 if (!pRobotInfo)
-	return 0;
+	RETURN (0)
 
 int32_t nJoints = pRobotInfo->animStates [nGun][state].n_joints;
 
@@ -76,7 +78,7 @@ if (nJoints <= 0)
 	memset (jointPosP, 0, sizeof (*jointPosP));
 else
 	*jointPosP = &gameData.botData.joints [pRobotInfo->animStates [nGun][state].offset];
-return nJoints;
+RETURN (nJoints)
 }
 
 
@@ -84,12 +86,13 @@ return nJoints;
 //for test, set a robot to a specific state
 void SetRobotState (CObject *pObj, int32_t state)
 {
+ENTER (0);
 	int32_t		g, j, jo;
 	jointlist*	jl;
 
 tRobotInfo*	pRobotInfo = ROBOTINFO (pObj);
 if (!pRobotInfo)
-	return;
+	LEAVE;
 for (g = 0; g < pRobotInfo->nGuns + 1; g++) {
 	jl = &pRobotInfo->animStates [g][state];
 	jo = jl->offset;
@@ -98,6 +101,7 @@ for (g = 0; g < pRobotInfo->nGuns + 1; g++) {
 		pObj->rType.polyObjInfo.animAngles [jn] = gameData.botData.joints [jo].angles;
 		}
 	}
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -105,7 +109,8 @@ for (g = 0; g < pRobotInfo->nGuns + 1; g++) {
 //be filled in.
 void SetRobotAngles (tRobotInfo *pRobotInfo, CPolyModel* pModel, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS])
 {
-	int32_t m,g,state;
+ENTER (0);
+	int32_t m, g, state;
 	int32_t nGunCounts [MAX_SUBMODELS];			//which gun each submodel is part of
 
 for (m = 0; m < pModel->ModelCount (); m++)
@@ -135,17 +140,19 @@ for (g = 0; g < pRobotInfo->nGuns + 1; g++) {
 			}
 		}
 	}
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
 void InitCamBots (int32_t bReset)
 {
+ENTER (0);
 	tRobotInfo&	camBotInfo = gameData.botData.info [0][gameData.botData.nCamBotId];
 	CObject*		pObj;
 
 if ((gameData.botData.nCamBotId < 0) || gameStates.app.bD1Mission)
-	return;
+	LEAVE;
 camBotInfo.nModel = gameData.botData.nCamBotModel;
 camBotInfo.attackType = 0;
 camBotInfo.containsId = 0;
@@ -182,16 +189,19 @@ FORALL_STATIC_OBJS (pObj)
 		pObj->info.controlType = CT_NONE;
 		pObj->info.movementType = MT_NONE;
 		}
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
 void UnloadCamBot (void)
 {
+ENTER (0);
 if (gameData.botData.nCamBotId >= 0) {
 	gameData.botData.nTypes [0] = gameData.botData.nCamBotId;
 	gameData.botData.nCamBotId = -1;
 	}
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -220,6 +230,7 @@ return i;
  */
 int32_t ReadRobotInfos (CArray<tRobotInfo>& botInfo, int32_t n, CFile& cf, int32_t o)
 {
+ENTER (0);
 	int32_t h, i, j;
 
 for (i = 0; i < n; i++) {
@@ -289,7 +300,7 @@ for (i = 0; i < n; i++) {
 		ReadJointLists (botInfo [h].animStates [j], N_ANIM_STATES, cf);
 	botInfo [h].always_0xabcd = cf.ReadInt ();
 	}
-return i;
+RETURN (i)
 }
 
 //	-----------------------------------------------------------------------------------------------------------
