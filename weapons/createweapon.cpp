@@ -48,13 +48,12 @@ void NDRecordGuidedStart (void);
 //creates a weapon CObject
 int32_t CreateWeaponObject (uint8_t nWeaponType, int16_t nSegment, CFixVector *vPosition, int16_t nParent)
 {
-	int32_t	nObject;
-	CObject	*pObj;
-	CWeaponInfo	*pWeaponInfo = WEAPONINFO (nWeaponType);
+ENTER (0);
 
+	CWeaponInfo	*pWeaponInfo = WEAPONINFO (nWeaponType);
 if (!pWeaponInfo) {
 	Error ("Invalid weapon render nType in CreateNewWeapon\n");
-	return -1;
+	RETURN (-1)
 	}
 
 switch (pWeaponInfo->renderType) {
@@ -66,17 +65,17 @@ switch (pWeaponInfo->renderType) {
 		break;
 	default:
 		Error ("Invalid weapon render nType in CreateNewWeapon\n");
-		return -1;
+		RETURN (-1)
 	}
 
-nObject = CreateWeapon (nWeaponType, nParent, nSegment, *vPosition, 0, 255);
-pObj = OBJECT (nObject);
+int32_t nObject = CreateWeapon (nWeaponType, nParent, nSegment, *vPosition, 0, 255);
+CObject *pObj = OBJECT (nObject);
 if (!pObj) {
 #if DBG
 	if (nObject > -1)
 		BRP;
 #endif
-	return -1;
+	RETURN (-1)
 	}
 #if DBG
 if (nObject == nDbgObj)
@@ -100,19 +99,20 @@ if (pWeaponInfo->bounce == 1)
 	pObj->mType.physInfo.flags |= PF_BOUNCES;
 if ((pWeaponInfo->bounce == 2) || gameStates.app.cheats.bBouncingWeapons)
 	pObj->mType.physInfo.flags |= PF_BOUNCES + PF_BOUNCES_TWICE;
-return nObject;
+RETURN (nObject)
 }
 
 // ---------------------------------------------------------------------------------
 
 int32_t CreateWeaponSpeed (CObject* pWeapon, bool bFix)
 {
+ENTER (0);
 	uint8_t			nWeaponType = pWeapon->Id ();
 	CWeaponInfo	*pWeaponInfo = WEAPONINFO (nWeaponType);
 
 if (!pWeaponInfo) {
 	Error ("Invalid weapon render nType in CreateWeaponSpeed\n");
-	return -1;
+	RETURN (-1)
 	}
 
 	CObject			*pParent = OBJECT (pWeapon->cType.laserInfo.parent.nObject);
@@ -148,7 +148,7 @@ if (!bFix && pParent && (pParent->info.nType == OBJ_PLAYER) && (pWeaponInfo->ren
 		gameData.physicsData.xTime = xTime;
 		if (pWeapon->info.nFlags & OF_SHOULD_BE_DEAD) {
 			ReleaseObject (pWeapon->Index ());
-			return -1;
+			RETURN (-1)
 			}
 		}
 	}
@@ -175,21 +175,22 @@ if (WI_thrust (nWeaponType) != 0) {
 	pWeapon->mType.physInfo.thrust = pWeapon->mType.physInfo.velocity;
 	pWeapon->mType.physInfo.thrust *= FixDiv (WI_thrust (pWeapon->info.nId), xWeaponSpeed + xParentSpeed);
 	}
-return pWeapon->Index ();
+RETURN (pWeapon->Index ())
 }
 
 // ---------------------------------------------------------------------------------
 
 void CreateWeaponSound (CObject* pWeapon, int32_t bMakeSound)
 {
+ENTER (0);
 if (!bMakeSound)
-	return;
+	LEAVE;
 
 	uint8_t			nWeaponType = pWeapon->Id ();
 	CWeaponInfo		*pWeaponInfo = WEAPONINFO (nWeaponType);
 
 if (!pWeaponInfo || (pWeaponInfo->flashSound < 0))
-	return;
+	LEAVE;
 
 	fix				volume = I2X (1);
 	int32_t			nParent = pWeapon->cType.laserInfo.parent.nObject;
@@ -229,6 +230,7 @@ if (gameOpts->sound.bMissiles && CObject::IsMissile (nWeaponType)) {
 	}
 else if (nWeaponType == FLARE_ID)
 	audio.CreateObjectSound (nWeapon, SOUNDCLASS_GENERIC, -1, 0, I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_FLARE));
+LEAVE
 }
 
 // ---------------------------------------------------------------------------------
@@ -237,23 +239,20 @@ else if (nWeaponType == FLARE_ID)
 //	Returns CObject number.
 int32_t CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, int16_t nSegment, int16_t nParent, uint8_t nWeaponType, int32_t bMakeSound)
 {
-	CObject		*pObj, *pParent = OBJECT (nParent);
-
+ENTER (0);
+CObject *pParent = OBJECT (nParent);
 if (!pParent)
-	return -1;
+	RETURN (-1)
 
-	int32_t		nObject, nViewer;
-	CWeaponInfo	*pWeaponInfo = WEAPONINFO (nWeaponType);
-
+CWeaponInfo	*pWeaponInfo = WEAPONINFO (nWeaponType);
 if (!pWeaponInfo)
-	return -1;
+	RETURN (-1)
 
-	CFixVector	vDir = *vDirection;
-
+CFixVector	vDir = *vDirection;
 if (RandShort () > pParent->GunDamage ())
-	return -1;
+	RETURN (-1)
 
-	fix			damage = (I2X (1) / 2 - pParent->AimDamage ()) >> 3;
+fix damage = (I2X (1) / 2 - pParent->AimDamage ()) >> 3;
 
 if (damage > 0) {
 	CAngleVector	v;
@@ -277,11 +276,11 @@ if (pParent->IsRobot ())
 else if (gameStates.app.bD2XLevel &&
 			(pParent == gameData.objData.pConsole) &&
 			(SEGMENT (gameData.objData.pConsole->info.nSegment)->HasNoDamageProp ()))
-	return -1;
+	RETURN (-1)
 #if 1
 if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameData.appData.GameMode (GM_HOARD | GM_ENTROPY))) {
-	nObject = CreatePowerup (POW_HOARD_ORB, -1, nSegment, *vPosition, 0);
-	pObj = OBJECT (nObject);
+	int32_t nObject = CreatePowerup (POW_HOARD_ORB, -1, nSegment, *vPosition, 0);
+	CObject *pObj = OBJECT (nObject);
 	if (pObj) {
 		if (IsMultiGame)
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
@@ -290,17 +289,17 @@ if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameDat
 		pObj->rType.animationInfo.nCurFrame = 0;
 		pObj->info.nCreator = GetTeam (N_LOCALPLAYER) + 1;
 		}
-	return -1;
+	RETURN (-1)
 	}
 #endif
-nObject = CreateWeaponObject (nWeaponType, nSegment, vPosition, -1);
-pObj = OBJECT (nObject);
+int32_t nObject = CreateWeaponObject (nWeaponType, nSegment, vPosition, -1);
+CObject *pObj = OBJECT (nObject);
 if (!pObj) {
 #if DBG
 	if (nObject > -1)
 		BRP;
 #endif
-	return -1;
+	RETURN (-1)
 	}
 #if 0
 if (pParent == gameData.objData.pConsole) {
@@ -344,7 +343,7 @@ else {
 	}
 //	Do the special Omega Cannon stuff.  Then return on account of everything that follows does
 //	not apply to the Omega Cannon.
-nViewer = OBJ_IDX (gameData.objData.pViewer);
+int32_t nViewer = OBJ_IDX (gameData.objData.pViewer);
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
 	int32_t bSpectator = SPECTATOR (pParent);
@@ -356,7 +355,7 @@ if (nWeaponType == OMEGA_ID) {
 			CreateMuzzleFlash (pObj->info.nSegment, pObj->info.position.vPos, pWeaponInfo->xFlashSize, pWeaponInfo->nFlashAnimation);
 		}
 	DoOmegaStuff (OBJECT (nParent), vPosition, pObj);
-	return nObject;
+	RETURN (nObject)
 	}
 else if (nWeaponType == FUSION_ID) {
 	static int32_t nRotDir = 0;
@@ -439,20 +438,20 @@ if (((nParent != nViewer) || SPECTATOR (pParent)) && (pParent->info.nType != OBJ
 	}
 CreateWeaponSound (pObj, bMakeSound);
 if (!CreateWeaponSpeed (pObj))
-	return -1;
+	RETURN (-1)
 if ((pObj->info.nType == OBJ_WEAPON) && (pObj->info.nId == FLARE_ID))
 	pObj->info.xLifeLeft += SRandShort () << 2;		//	add in -2..2 seconds
 
-return nObject;
+RETURN (nObject)
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 //	Calls CreateNewWeapon, but takes care of the CSegment and point computation for you.
 int32_t CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, int16_t parent, uint8_t nWeaponType, int32_t bMakeSound)
 {
+ENTER (0);
 	CHitResult	hitResult;
 	CObject*		pParentObj = OBJECT (parent);
-	int32_t			fate;
 
 	//	Find segment containing laser fire position.  If the robot is straddling a segment, the position from
 	//	which it fires may be in a different segment, which is bad news for FindHitpoint.  So, cast
@@ -462,9 +461,9 @@ int32_t CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, in
 	//	in the same CSegment as the source point.
 
 CHitQuery hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS, &pParentObj->info.position.vPos, vPosition, pParentObj->info.nSegment, OBJ_IDX (pParentObj), 0, 0, ++gameData.physicsData.bIgnoreObjFlag);
-fate = FindHitpoint (hitQuery, hitResult);
+int32_t fate = FindHitpoint (hitQuery, hitResult);
 if ((fate != HIT_NONE)  || (hitResult.nSegment == -1))
-	return -1;
+	RETURN (-1)
 
 #if DBG
 if (!hitResult.nSegment) {
@@ -481,35 +480,36 @@ if (!hitResult.nSegment) {
 	}
 #endif
 
-return CreateNewWeapon (vDirection, &hitResult.vPoint, (int16_t) hitResult.nSegment, parent, nWeaponType, bMakeSound);
+RETURN (CreateNewWeapon (vDirection, &hitResult.vPoint, (int16_t) hitResult.nSegment, parent, nWeaponType, bMakeSound))
 }
 
 // -----------------------------------------------------------------------------
 
 bool FixWeaponObject (CObject* pObj, bool bFixType)
 {
+ENTER (0);
 if (!IsMultiGame)
-	return true;
+	RETURN (true)
 if (!pObj->IsWeapon ()) {
 	if (!bFixType) 
-		return true;
+		RETURN (true)
 	pObj->SetType (OBJ_WEAPON);
 	CreateWeaponSpeed (pObj, true);
 	}
 if (pObj->mType.physInfo.flags & PF_STICK)
-	return true;
+	RETURN (true)
 if (pObj->Velocity ().IsZero ()) {
 	PrintLog (0, "weapon object has invalid velocity\n");
 	CreateWeaponSpeed (pObj, true);
 	if (pObj->Velocity ().IsZero ()) {
 		pObj->Die ();
-		return false;
+		RETURN (false)
 		}
 	}
 if (pObj->LifeLeft () > WI_lifetime (pObj->Id ())) {
 	PrintLog (0, "weapon object has invalid life time\n");
 	pObj->Die ();
-	return false;
+	RETURN (false)
 	}
 
 if (pObj->info.movementType != MT_PHYSICS) {
@@ -520,7 +520,7 @@ if (pObj->info.controlType != CT_WEAPON) {
 	PrintLog (0, "weapon object has invalid control type %s\n", pObj->info.controlType);
 	pObj->info.controlType = CT_WEAPON;
 	}	
-return true;
+RETURN (true)
 }
 
 //	-------------------------------------------------------------------------------------------

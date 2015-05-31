@@ -1378,10 +1378,11 @@ RETURN (curHit.nType);
 //note: gameData.collisionData.nSegsVisited [nThread] must be set to zero before this is called
 int32_t SphereIntersectsWall (CFixVector *vPoint, int16_t nSegment, fix rad)
 {
+ENTER (0);
 CSegment *pSeg = SEGMENT (nSegment);
 if (!pSeg) {
 	PrintLog (0, "Error: Invalid segment in SphereIntersectsWall ()\n");
-	return 0;
+	RETURN (0)
 	}
 
 if ((gameData.collisionData.nSegsVisited [0] < 0) || (gameData.collisionData.nSegsVisited [0] > MAX_SEGS_VISITED))
@@ -1407,16 +1408,16 @@ if (faceMask != 0) {				//on the back of at least one face
 						;
 					if (i == gameData.collisionData.nSegsVisited [0]) {                //haven't visited here yet
 						if (!IS_CHILD (nChild))
-							return 1;
+							RETURN (1)
 						if (SphereIntersectsWall (vPoint, nChild, rad))
-							return 1;
+							RETURN (1)
 						}
 					}
 				}
 			}
 		}
 	}
-return 0;
+RETURN (0)
 }
 
 //	-----------------------------------------------------------------------------
@@ -1427,7 +1428,8 @@ int32_t ObjectIntersectsWall (CObject *pObj)
 if (pObj->Index () == nDbgObj)
 	BRP;
 #endif
-return SphereIntersectsWall (&pObj->info.position.vPos, pObj->info.nSegment, pObj->info.xSize);
+ENTER (0);
+RETURN (SphereIntersectsWall (&pObj->info.position.vPos, pObj->info.nSegment, pObj->info.xSize))
 }
 
 //------------------------------------------------------------------------------
@@ -1562,7 +1564,7 @@ for (;;) {
 	if (!nDepth)
 		BRP;
 #endif
-	RETURN ((nDestSeg < 0) || (nStartSeg == nDestSeg)); // line doesn't intersect any side of this segment -> p1 must be inside segment
+	RETURN ((nDestSeg < 0) || (nStartSeg == nDestSeg)) // line doesn't intersect any side of this segment -> p1 must be inside segment
 	}
 
 #endif
