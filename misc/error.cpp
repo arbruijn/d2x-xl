@@ -57,13 +57,13 @@ int32_t glHWHash = 0;
 
 class CStackFrame {
 	public:
-		char		m_szFunction [128];
-		char		m_szFile [256];
-		int32_t	m_nLine;
-		int32_t	m_nThread;
+		const char	*m_pszFunction;
+		const char	*m_pszFile;
+		int32_t		m_nLine;
+		int32_t		m_nThread;
 
-		inline bool operator== (CStackFrame& other) { return (m_nThread = other.m_nThread) && !strcmp (m_szFunction, other.m_szFunction); }
-		inline void PrintToLog (void) { PrintLog (0, "%s [%d] (%s.%d)\n", m_szFunction, m_nThread, m_szFile, m_nLine); }
+		inline bool operator== (CStackFrame& other) { return (m_nThread == other.m_nThread) && m_pszFunction && other.m_pszFunction && !strcmp (m_pszFunction, other.m_pszFunction); }
+		inline void PrintToLog (void) { PrintLog (0, "%s [%d] (%s.%d)\n", m_pszFunction, m_nThread, m_pszFile, m_nLine); }
 	};
 
 CStack< CStackFrame > callStack;
@@ -540,8 +540,11 @@ if (!callStack.Buffer ())
 	PrintLog (0, "\nCall stack not available\n\n");
 else {
 	PrintLog (0, "\nCall stack:\n\n");
+	int32_t nTraceLevel = gameStates.app.nTraceLevel;
+	gameStates.app.nTraceLevel = -1;
 	for (uint32_t i = 0, h = callStack.ToS (); i < h; i++)
 		callStack [i].PrintToLog ();
+	gameStates.app.nTraceLevel = nTraceLevel;
 	}
 }
 
@@ -550,21 +553,23 @@ else {
 void TraceCallStack (const int32_t nDirection, const char *pszFunction, const int32_t nThread, const char *pszFile, const int32_t nLine)
 {
 #pragma omp critical
-if (!callStack.Buffer ())
-	callStack.Create (100);
-if (callStack.Buffer ()) {
-	CStackFrame	f;
-	strncpy (f.m_szFunction, pszFunction, sizeof (f.m_szFunction));
-	f.m_nThread = nThread;
-	if (nDirection > 0) {
-		strncpy (f.m_szFile, pszFile, sizeof (f.m_szFile));
-		f.m_nLine = nLine;
-		callStack.Push (f);
-		}
-	else {
-		for (int32_t i = int32_t (callStack.ToS ()) - 1; i >= 0; i--)
-			if (callStack [i] == f)
-				callStack.Delete (uint32_t (i));
+if (gameStates.app.nTraceLevel > -1) {
+	if (!callStack.Buffer ())
+		callStack.Create (100);
+	if (callStack.Buffer ()) {
+		CStackFrame	f;
+		f.m_pszFunction = pszFunction;
+		f.m_nThread = nThread;
+		if (nDirection > 0) {
+			f.m_pszFile = pszFile;
+			f.m_nLine = nLine;
+			callStack.Push (f);
+			}
+		else {
+			for (int32_t i = int32_t (callStack.ToS ()) - 1; i >= 0; i--)
+				if (callStack [i] == f)
+					callStack.Delete (uint32_t (i));
+			}
 		}
 	}
 }
