@@ -117,9 +117,10 @@ int32_t sphereEffectShaderProgs [2] = {-1, -1};
 
 int32_t CreateSphereShader (int32_t nShader)
 {
+ENTER (0);
 if (!(ogl.m_features.bShaders && ogl.m_features.bPerPixelLighting.Available ())) {
 	gameStates.render.bPerPixelLighting = 0;
-	return 0;
+	RETURN (0)
 	}
 if (sphereEffectShaderProgs [nShader] < 0) {
 	PrintLog (1, "building sphere shader program for %s effect\n", nShader ? "color" : "hit");
@@ -131,7 +132,7 @@ if (sphereEffectShaderProgs [nShader] < 0) {
 		}
 	PrintLog (-1);
 	}
-return 1;
+RETURN (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -177,12 +178,13 @@ return 0;
 
 int32_t SetupHitEffectShader (CObject* pObj, float alpha)
 {
+ENTER (0);
 	int32_t	nHits = 0;
 
 PROF_START
 if (CreateSphereShader (0) < 1) {
 	PROF_END(ptShaderStates)
-	return 0;
+	RETURN (0)
 	}
 
 	CObjHitInfo	hitInfo = pObj->HitInfo ();
@@ -240,7 +242,7 @@ if (!ogl.UseTransform ()) {
 	}
 
 if (!nHits)
-	return 0;
+	RETURN (0)
 
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (sphereEffectShaderProgs [0]));
 if (shaderProg) {
@@ -255,17 +257,18 @@ if (shaderProg) {
 	}
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
-return shaderManager.Current ();
+RETURN (shaderManager.Current ())
 }
 
 // -----------------------------------------------------------------------------
 
 int32_t SetupColorEffectShader (float fRefY, float fColorScale, int32_t bMovingRing)
 {
+ENTER (0);
 PROF_START
 if (CreateSphereShader (1) < 1) {
 	PROF_END(ptShaderStates)
-	return 0;
+	RETURN (0)
 	}
 
 
@@ -290,7 +293,7 @@ if (shaderProg) {
 	}
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
-return shaderManager.Current ();
+RETURN (shaderManager.Current ())
 }
 
 // -----------------------------------------------------------------------------
@@ -514,6 +517,7 @@ for (int32_t i = 0; i < 2; i++)
 
 int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, float fScale)
 {
+ENTER (0);
 	int32_t	bTextured = m_pBitmap != NULL;
 
 fScale = /*m_pPulse ? m_pPulse->fScale :*/ 1.0f;
@@ -553,13 +557,14 @@ if (alpha < 1.0f) {
 	}
 ogl.SetDepthWrite (false);
 m_color.Set (red, green, blue, alpha);
-return bTextured;
+RETURN (bTextured)
 }
 
 // -----------------------------------------------------------------------------
 
 void CSphere::DrawFaces (int32_t nOffset, int32_t nFaces, int32_t nClientArrays, int32_t nPrimitive, int32_t nState)
 {
+ENTER (0);
 int32_t nVertices = nFaces * FaceNodes ();
 if (nState & 1) {
 	ogl.EnableClientStates ((nClientArrays & 1) != 0, (nClientArrays & 2) != 0, 0, GL_TEXTURE0);
@@ -579,6 +584,7 @@ if (nState & 2) {
 	ogl.DisableClientStates ((nClientArrays & 1) != 0, (nClientArrays & 2) != 0, 0, GL_TEXTURE0);
 	OglCullFace (0);
 	}
+LEAVE
 }
 
 // -----------------------------------------------------------------------------
@@ -604,6 +610,7 @@ if (nState & 2) {
 int32_t CSphere::Render (CObject *pObj, CFloatVector *pvPos, float xScale, float yScale, float zScale,
 								 float red, float green, float blue, float alpha, int32_t nFaces, char bAdditive)
 {
+ENTER (0);
 	float	fScale = 1.0f;
 	int32_t	bTextured = 0;
 	int32_t	bAppearing = pObj->Appearing ();
@@ -624,7 +631,7 @@ if (bAppearing) {
 	}
 else if (WantEffect (pObj)) {
 	if (!NeedEffect (pObj))
-		return 0;
+		RETURN (0)
 	bEffect = 1;
 	}
 
@@ -696,7 +703,7 @@ if (bGlow) {
 		glowRenderer.Done (GLOW_SHIELDS);
 		ogl.SetDepthMode (GL_LEQUAL);
 		transformation.End (__FILE__, __LINE__);
-		return 0;
+		RETURN (0)
 		}
 #if 1
 	red *= 1.0f / 3.0f;
@@ -715,7 +722,7 @@ if (!bEffect)
 else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
 	if (!SetupHitEffectShader (pObj, fabs (alpha))) {
 		transformation.End (__FILE__, __LINE__);
-		return 0;
+		RETURN (0)
 		}
 	}
 
@@ -741,7 +748,7 @@ ogl.ResetClientStates (0);
 gameStates.render.SetCartoonStyle (bCartoonStyle);
 ogl.SetDepthWrite (true);
 //ogl.SetDepthMode (GL_LEQUAL);
-return 1;
+RETURN (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -896,6 +903,7 @@ return 1;
 
 void CTesselatedSphere::RenderOutline (CObject *pObj, float fScale)
 {
+ENTER (0);
 if (m_edges.Buffer ()) {
 	gameData.segData.edgeVertexData [0].m_nVertices = 0;
 	gameData.segData.edgeVertexData [1].m_nVertices = 0;
@@ -912,6 +920,7 @@ if (m_edges.Buffer ()) {
 	RenderMeshOutline (CMeshEdge::DistToScale (X2F (Max (0, CFixVector::Dist (pObj->Position (), gameData.objData.pViewer->Position ()) - pObj->Size ()))));
 	gameOpts->render.effects.bGlow = bGlow;
 	}
+LEAVE
 }
 
 // -----------------------------------------------------------------------------
@@ -935,6 +944,7 @@ static inline float ColorBump (float f) { return pow (f * f, 1.0f / 3.0f); }
 
 int32_t CTesselatedSphere::SetupColor (float fRadius, int32_t bGlow)
 {
+ENTER (0);
 float fRefY = 1.0f - float (SDL_GetTicks () % 3001) / 750.0f;
 
 CSphereVertex	*w = m_worldVerts.Buffer (),
@@ -950,7 +960,7 @@ static int32_t bUseColorEffectShader = 1;
 if (bUseColorEffectShader)
 #endif
 if (SetupColorEffectShader (fRefY, fColorScale, bMovingRing))
-	return 0;
+	RETURN (0)
 
 Transform (fRadius);
 
@@ -1008,7 +1018,7 @@ else
 		w [i].m_c = color;
 		}
 	}
-return 1;
+RETURN (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -1368,18 +1378,19 @@ return j;
 
 int32_t CQuadSphere::CreateBuffers (void)
 {
+ENTER (0);
 m_nFaces = 6 * int32_t (pow (4.0f, float (Quality ())));
 m_nVertices = m_nFaces * 3;
 
 if (m_faces.Create (m_nFaces) && m_quads [0].Create (m_nFaces) && m_quads [1].Create (m_nFaces) && m_worldVerts.Create (m_nVertices) && m_viewVerts.Create (m_nVertices)) 
-	return 1;
+	RETURN (1)
 m_viewVerts.Destroy ();
 m_worldVerts.Destroy ();
 m_quads [1].Destroy ();
 m_quads [0].Destroy ();
 m_faces.Destroy ();
 PrintLog (-1);
-return 0;
+RETURN (0)
 }
 
 // -----------------------------------------------------------------------------
@@ -1448,8 +1459,9 @@ return m_nEdges;
 
 int32_t CQuadSphere::Create (void)
 {
+ENTER (0);
 if (!CreateBuffers ())
-	return 0;
+	RETURN (0)
 
 SetQuality (Quality ());
 
@@ -1466,15 +1478,16 @@ for (int32_t i = 0; i < m_nFaces; i++, pFace++) {
 
 m_quads [0].Destroy ();
 m_quads [1].Destroy ();
-return m_nFaces;
+RETURN (m_nFaces)
 }
 
 // -----------------------------------------------------------------------------
 
 void CQuadSphere::RenderFaces (float fRadius, int32_t nFaces, int32_t bTextured, int32_t bEffect, int32_t bGlow)
 {
+ENTER (0);
 if (!m_worldVerts.Buffer () || !m_viewVerts.Buffer ())
-	return;
+	LEAVE
 
 #if SPHERE_WIREFRAME
 glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -1496,6 +1509,7 @@ else {
 #if SPHERE_WIREFRAME
 glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 #endif
+LEAVE
 }
 
 // -----------------------------------------------------------------------------
@@ -1549,27 +1563,29 @@ return new CQuadSphere ();
 
 int32_t CreateShieldSphere (void)
 {
+ENTER (0);
 if (!shield [0].Load () || !shield [1].Load () || !shield [2].Load ())
-	/*nothing*/; //return 0;
+	/*nothing*/; //RETURN (0)
 if (gameData.renderData.shield) {
 	if (gameData.renderData.shield->HasQuality (gameOpts->render.textures.nQuality + 1))
-		return 1;
+		RETURN (1)
 	delete gameData.renderData.shield;
 	}
 if (!(gameData.renderData.shield = CreateSphere ()))
-	return 0;
+	RETURN (0)
 gameData.renderData.shield->Create ();
 gameData.renderData.shield->SetupPulse (0.02f, 0.5f);
 gameData.renderData.shield->SetPulse (NULL);
-return 1;
+RETURN (1)
 }
 
 // -----------------------------------------------------------------------------
 
 int32_t DrawShieldSphere (CObject *pObj, float red, float green, float blue, float alpha, char bAdditive, fix nSize)
 {
+ENTER (0);
 if (!CreateShieldSphere ())
-	return 0;
+	RETURN (0)
 #if !RINGED_SPHERE
 if (gameData.renderData.shield->m_nFaces > 0)
 #endif
@@ -1592,18 +1608,19 @@ if (gameData.renderData.shield->m_nFaces > 0)
 	else
 		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, pObj, bAdditive, nSize);
 	}
-return 1;
+RETURN (1)
 }
 
 // -----------------------------------------------------------------------------
 
 void DrawMonsterball (CObject *pObj, float red, float green, float blue, float alpha)
 {
+ENTER (0);
 #if !RINGED_SPHERE
 if (!gameData.renderData.monsterball) {
 	gameData.renderData.monsterball = CreateSphere ();
 	if (!gameData.renderData.monsterball)
-		return;
+		LEAVE
 	gameData.renderData.monsterball->SetQuality (3);
 	gameData.renderData.monsterball->Create ();
 	}
@@ -1621,6 +1638,7 @@ if (gameData.renderData.monsterball->m_nFaces > 0)
 		ogl.SetTransform (0);
 		}
 	}
+LEAVE
 }
 
 // -----------------------------------------------------------------------------
