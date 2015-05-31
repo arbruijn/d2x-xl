@@ -564,8 +564,11 @@ if (gameStates.app.nTraceLevel > -1) {
 			f.m_pszFile = pszFile;
 			f.m_nLine = nLine;
 #if DBG
-			if (!callStack.Push (f))
-				BRP;
+			if (!callStack.Push (f)) {
+				PrintCallStack ();
+				callStack.Reset ();
+				callStack.Push (f);
+				}
 #else
 			callStack.Push (f);
 #endif

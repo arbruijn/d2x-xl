@@ -185,7 +185,7 @@ if (SHOW_LIGHTNING (2)) {
 	}
 
 if (xMaxDamage <= 0)
-	return pExplObj;
+	RETURN (pExplObj)
 // -- now legal for xSplashDamage explosions on a CWall. Assert (this != NULL);
 FORALL_OBJS (pObj) {
 	nType = pObj->info.nType;

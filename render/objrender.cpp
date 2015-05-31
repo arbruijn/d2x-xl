@@ -283,15 +283,20 @@ if ((info.nType != OBJ_POWERUP) && (info.nType != OBJ_WEAPON))
 int32_t bHasModel = 0;
 int16_t nId, nModel = PowerupToModel (info.nId);
 
+#if DBG
+if (Index () == nDbgObj)
+	BRP;
+#endif
+
 if (nModel)
 	nId = info.nId;
 else {
 	nId = PowerupToObject (info.nId);
 	if (nId >= 0) {
-		CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
+		CWeaponInfo *pWeaponInfo = WEAPONINFO (nId);
 		if (pWeaponInfo) {
 			nModel = pWeaponInfo->nModel;
-			bHasModel = 1;
+			bHasModel = (nModel >= 0);
 			}
 		}
 	}
@@ -305,6 +310,10 @@ mType.physInfo.rotVel.v.coord.y =
 mType.physInfo.rotVel.v.coord.z = 0;
 #else
 SetupSpin (this, true);
+#endif
+#if DBG
+if (Index () == nDbgObj)
+	BRP;
 #endif
 mType.physInfo.mass = I2X (1);
 mType.physInfo.drag = 512;
