@@ -166,6 +166,7 @@ return nLength;
 
 void CLightning::Setup (bool bInit)
 {
+ENTER (0);
 	CFixVector		vPos, vDir, vRefDir, vDelta [2], v;
 	int32_t			i = 0, l;
 
@@ -224,6 +225,7 @@ for (i = 0; i < m_nNodes; i++) {
 	vPos += vDir;
 	}
 m_nFrames = -abs (m_nFrames);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -234,6 +236,7 @@ void CLightning::Init (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 							  int16_t nSmoothe, char bClamp, char bGlow, char bBlur, char bLight,
 							  char nStyle, float nWidth, CFloatVector *pColor, CLightning *pParent, int16_t nNode)
 {
+ENTER (0);
 	int32_t	bRandom = (vEnd == NULL) || (nAngle > 0);
 
 memset (this, 0, sizeof (*this));
@@ -286,29 +289,31 @@ m_vBase = *vPos;
 m_bLight = bLight;
 m_nStyle = nStyle;
 m_width = nWidth;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 bool CLightning::Create (char nDepth, int32_t nThread)
 {
+ENTER (0);
 if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECT (m_nObject)->info.nSegment)))
-	return NULL;
+	RETURN (false)
 if (!m_nodes.Create (m_nNodes))
-	return false;
+	RETURN (false)
 if (nDepth && (m_bGlow > 0))
 	m_bGlow = 0;
 if (gameOpts->render.lightning.bGlow && m_bGlow) {
 	int32_t h = ((m_bGlow > 0) ? 2 : 1) * (m_nNodes - 1) * 4;
 	if (!m_plasmaTexCoord.Create (h))
-		return false;
+		RETURN (false)
 	if (!m_plasmaVerts.Create (h))
-		return false;
+		RETURN (false)
 	}
 else
 	m_bGlow = 0;
 if (!m_coreVerts.Create ((m_nNodes + 3) * 4))
-	return false;
+	RETURN (false)
 m_nodes.Clear ();
 if (m_bRandom) {
 	m_nTTL = 3 * m_nTTL / 4 + int32_t (RandDouble () * m_nTTL / 2);
@@ -336,18 +341,19 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 				if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, (int32_t) DRound (m_nAmplitude * scale), m_nAngle,
 															 nChildNodes, m_nChildren / 5, nDepth - 1, n, m_nSmoothe, m_bClamp, m_bGlow, m_bBlur, m_bLight,
 															 m_nStyle, m_width, &m_color, this, nNode, nThread))
-					return false;
+					RETURN (false)
 				}
 			}
 		}
 	}
-return true;
+RETURN (true)
 }
 
 //------------------------------------------------------------------------------
 
 void CLightning::DestroyNodes (void)
 {
+ENTER (0);
 	CLightningNode	*pNode = m_nodes.Buffer ();
 
 if (pNode) {
@@ -360,13 +366,16 @@ if (pNode) {
 	m_coreVerts.Destroy ();
 	m_nNodes = 0;
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CLightning::Destroy (void)
 {
+ENTER (0);
 DestroyNodes ();
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -481,6 +490,7 @@ static int32_t octaves = 6;
 
 void CLightning::CreatePath (int32_t nDepth, int32_t nThread)
 {
+ENTER (0);
 	CLightningNode*	plh, * pNode [2];
 	int32_t				h, i, j, nFrames, nStyle, nSmoothe, bClamp, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
 	CFixVector			vPos [2], vBase [2], vPrevOffs [2];
@@ -568,12 +578,14 @@ if (nStyle < 2) {
 	Bump ();
 #endif
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CLightning::Animate (int32_t nDepth, int32_t nThread)
 {
+ENTER (0);
 	CLightningNode*	pNode;
 	int32_t				j;
 	bool					bInit;
@@ -591,12 +603,14 @@ if (m_nNodes > 0) {
 	RenderSetup (nDepth, nThread);
 	(m_iStep)--;
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CLightning::SetLife (void)
 {
+ENTER (0);
 	int32_t	h;
 
 if (m_nTTL <= 0) {
@@ -620,33 +634,35 @@ if (m_nTTL <= 0) {
 		}
 	else {
 		DestroyNodes ();
-		return 0;
+		RETURN (0)
 		}
 	}
-return 1;
+RETURN (1)
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CLightning::Update (int32_t nDepth, int32_t nThread)
 {
+ENTER (0);
 Animate (nDepth, nThread);
 RenderSetup (nDepth, nThread);
-return SetLife ();
+RETURN (SetLife ())
 }
 
 //------------------------------------------------------------------------------
 
 void CLightning::Move (CFixVector vNewPos, CFixVector vNewEnd, int16_t nSegment)
 {
+ENTER (0);
 if (nSegment < 0)
-	return;
+	LEAVE
 if (!m_nodes.Buffer ())
-	return;
+	LEAVE
 if (m_nNodes < 0)
-	return;
+	LEAVE
 if ((vNewPos == m_vPos) && (vNewEnd == m_vEnd))
-	return;
+	LEAVE
 
 	fix					xNewLength = CFixVector::Dist (vNewEnd, vNewPos);
 	float					fScale = X2F (xNewLength) / X2F (m_nLength);
@@ -665,13 +681,16 @@ if (m_nLength < 0)
 	BRP;
 #endif
 m_nSegment = nSegment;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CLightning::Move (CFixVector vNewPos, int16_t nSegment)
 {
+ENTER (0);
 Move (vNewPos, m_vEnd + (vNewPos - m_vPos), nSegment);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -749,11 +768,11 @@ return m_fDistScale = 0.0f; //sqrt (((float) ZRANGE - zPivot - m_fAvgDist)) / ((
 
 void CLightning::ComputeGlow (int32_t nDepth, int32_t nThread)
 {
-
+ENTER (0);
 	CLightningNode*	pNode = m_nodes.Buffer ();
 
 if (!pNode)
-	return;
+	LEAVE
 
 	CFloatVector*		pSrc, * pDest, vEye, vn, vd, 
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
@@ -835,12 +854,14 @@ if (bGlow) {
 #endif
 		}
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CLightning::RenderSetup (int32_t nDepth, int32_t nThread)
 {
+ENTER (0);
 if (m_bGlow && m_plasmaVerts.Buffer ()) {
 	if (m_coreVerts.Buffer ())
 		ComputeCore ();
@@ -849,19 +870,21 @@ if (m_bGlow && m_plasmaVerts.Buffer ()) {
 else if (m_coreVerts.Buffer ())
 	ComputeCore ();
 else
-	return;
+	LEAVE
 if (extraGameInfo [0].bUseLightning > 1)
 	for (int32_t i = 0; i < m_nNodes - m_bRandom; i++)
 		if (m_nodes [i].GetChild ())
 			m_nodes [i].GetChild ()->RenderSetup (nDepth + 1, nThread);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CLightning::RenderGlow (CFloatVector *pColor, int32_t nDepth, int32_t nThread)
 {
+ENTER (0);
 if (!m_plasmaVerts.Buffer ())
-	return;
+	LEAVE
 #if RENDER_LIGHTNING_OUTLINE
 	tTexCoord2f*	pTexCoord;
 	CFloatVector*	pVertex;
@@ -902,12 +925,14 @@ else {
 		}
 	}
 ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CLightning::ComputeCore (void)
 {
+ENTER (0);
 	CFloatVector3	*pVertex, * pvPosf;
 	int32_t			i;
 
@@ -926,18 +951,20 @@ i = m_nNodes - 1;
 *pvPosf /= 100.0f * pvPosf->Mag ();
 *pvPosf += pVertex [i];
 ComputeAvgDist (m_coreVerts.Buffer (), m_nNodes);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CLightning::RenderCore (CFloatVector *pColor, int32_t nDepth, int32_t nThread)
 {
+ENTER (0);
 #if 0 //DBG
 RenderTestImage ();
-return;
+LEAVE
 #endif
 if (!m_coreVerts.Buffer ())
-	return;
+	LEAVE
 ogl.SetBlendMode (OGL_BLEND_ADD);
 ogl.SetLineSmooth (true);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
@@ -977,12 +1004,14 @@ else {
 glLineWidth (GLfloat (1));
 ogl.SetLineSmooth (false);
 ogl.ClearError (0);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CLightning::SetupGlow (void)
 {
+ENTER (0);
 if (gameOpts->render.lightning.bGlow && m_bGlow) {
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.SelectTMU (GL_TEXTURE0, true);
@@ -993,7 +1022,7 @@ if (gameOpts->render.lightning.bGlow && m_bGlow) {
 			glowRenderer.Begin (GLOW_LIGHTNING, 3, false, 1.0f);
 		else
 			glowRenderer.End ();
-		return 1;
+		RETURN (1)
 		}
 	}
 if (m_bBlur)
@@ -1002,7 +1031,7 @@ else
 	glowRenderer.End ();
 ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 ogl.SetTexturing (false);
-return 0;
+RETURN (0)
 }
 
 //------------------------------------------------------------------------------
@@ -1024,8 +1053,9 @@ if (gameStates.app.bMultiThreaded && (nThread > 0)) {	//thread 1 will always ren
 
 void CLightning::Draw (int32_t nDepth, int32_t nThread)
 {
+ENTER (0);
 if (!m_nodes.Buffer () || (m_nNodes <= 0) || (m_nFrames < 0))
-	return;
+	LEAVE
 #if 0 //!USE_OPENMP
 if (gameStates.app.bMultiThreaded && (nThread > 0))
 	tiRender.ti [nThread].bBlock = 1;
@@ -1070,17 +1100,19 @@ if (extraGameInfo [0].bUseLightning > 1)
 				m_nodes [i].GetChild ()->Draw (nDepth + 1, nThread);
 glowRenderer.End (GLOW_LIGHTNING);
 ogl.ClearError (0);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CLightning::Render (int32_t nDepth, int32_t nThread)
 {
+ENTER (0);
 if ((gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) && (nThread >= 0)) {	// not in transparency renderer
 	if ((m_nNodes < 0) || (m_nFrames < 0))
-		return;
+		LEAVE
 	if (!MayBeVisible (nThread))
-		return;
+		LEAVE
 #if 0
 	if (!gameOpts->render.stereo.nGlasses) 
 		RenderSetup (0, nThread);
@@ -1108,19 +1140,21 @@ else {
 	ogl.SetLineSmooth (false);
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CLightning::SetLight (void)
 {
-	int32_t		j, nLights = 0, nStride;
+ENTER (0);
+	int32_t	j, nLights = 0, nStride;
 	double	h, nStep;
 
 if (!m_bLight)
-	return 0;
+	RETURN (0)
 if (!m_nodes.Buffer ())
-	return 0;
+	RETURN (0)
 if (0 < (j = m_nNodes)) {
 	if (!(nStride = (int32_t) DRound ((double (m_nLength) / I2X (20)))))
 		nStride = 1;
@@ -1136,7 +1170,7 @@ if (0 < (j = m_nNodes)) {
 		nLights++;
 		}
 	}
-return nLights;
+RETURN (nLights)
 }
 
 //------------------------------------------------------------------------------
