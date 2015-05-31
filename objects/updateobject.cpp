@@ -472,7 +472,7 @@ if (gameStates.render.bDropAfterburnerBlob) {
 	gameStates.render.bDropAfterburnerBlob = 0;
 	}
 
-if (info.nType !OBJ_WEAPON)
+if (info.nType != OBJ_WEAPON)
 	return;
 
 CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
