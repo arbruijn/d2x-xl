@@ -371,7 +371,7 @@ LOCALPLAYER.flags |= PLAYER_FLAGS_ALL_KEYS;
 void BlueOrbCheat (int32_t bVerbose)
 {
 if (BoostVal (&LOCALPLAYER.shield, LOCALPLAYER.MaxShield ())) {
-	PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.Shield ()));
+	PickupEffect (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.Shield ()));
 	NetworkFlushData (); // will send position, shield and weapon info
 	}
 else if (bVerbose)
@@ -454,7 +454,7 @@ if ((nNewSegSide [0] >= 0) && (nNewSegSide [0] <= gameData.segData.nLastSegment)
 void ElectroCheat (int32_t bVerbose)
 {
 if (BoostVal (&LOCALPLAYER.energy, MAX_ENERGY))
-	 PowerupBasic (15, 15, 7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.Energy ()));
+	 PickupEffect (15, 15, 7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.Energy ()));
 else if (bVerbose)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
 }
@@ -485,7 +485,7 @@ MarkPathToExit ();
 void ExtraLifeCheat (int32_t bVerbose)
 {
 LOCALPLAYER.lives++;
-PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
+PickupEffect (20, 20, 20, 0, TXT_EXTRA_LIFE);
 }
 
 //------------------------------------------------------------------------------

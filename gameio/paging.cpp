@@ -403,7 +403,7 @@ LoadAnimationTextures (&gameData.effects.animations [0][ANIM_POWERUP_DISAPPEARAN
 LoadAddonTextures ();
 #if 0
 if (bBlackScreen) {
-	paletteManager.ClearEffect ();
+	paletteManager.StopEffect ();
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	}
 #endif

@@ -299,7 +299,7 @@ pPlayerObj->info.controlType = CT_NONE;
 if (!gameStates.entropy.bExitSequence) {
 	pPlayerObj->SetShield (I2X (1000));
 	}
-paletteManager.SetEffect (0, 0, 0);
+paletteManager.StopEffect ();
 }
 
 //------------------------------------------------------------------------------

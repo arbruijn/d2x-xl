@@ -110,7 +110,7 @@ void CGenericCockpit::CheckForExtraLife (int32_t nPrevScore)
 {
 if (LOCALPLAYER.score / EXTRA_SHIP_SCORE != nPrevScore / EXTRA_SHIP_SCORE) {
 	LOCALPLAYER.lives += LOCALPLAYER.score / EXTRA_SHIP_SCORE - nPrevScore / EXTRA_SHIP_SCORE;
-	PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
+	PickupEffect (20, 20, 20, 0, TXT_EXTRA_LIFE);
 	int16_t nSound = gameData.objData.pwrUp.info [POW_EXTRA_LIFE].hitSound;
 	if (nSound > -1)
 		audio.PlaySound (nSound);

@@ -2234,7 +2234,7 @@ while (!bDone) {
 			g = NDReadShort ();
 			b = NDReadShort ();
 			CATCH_BAD_READ
-			paletteManager.SetEffect (r, g, b);
+			paletteManager.StartEffect (r, g, b);
 			paletteManager.SetFadeDelay (I2X (1));
 			}
 			break;
@@ -3107,7 +3107,7 @@ if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
 	DoJasonInterpolate (gameData.demo.xRecordedTime);
 gameData.reactor.bDestroyed = 0;
 gameData.reactor.countdown.nSecsLeft = -1;
-paletteManager.SetEffect (0, 0, 0);       //clear flash
+paletteManager.StopEffect ();       //clear flash
 if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 	 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 	level = missionManager.nCurrentLevel;

@@ -240,7 +240,7 @@ int32_t PickupVulcanAmmo (CObject *pObj, int32_t nPlayer)
 // I apologize for this code.  Matthew A. Toschlog
 if (nUsed) {
 	if (ISLOCALPLAYER (nPlayer))
-		PowerupBasic (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO, nPlayer);
+		PickupEffect (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO, nPlayer);
 	MultiSendAmmo ();
 	pObj->cType.powerupInfo.nCount -= nUsed;
 	MultiSendAmmoUpdate (pObj->Index ());
@@ -267,7 +267,7 @@ int32_t PickupLaser (CObject *pObj, int32_t nId, int32_t nPlayer)
 if (pPlayer->AddStandardLaser ()) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordLaserLevel ((int8_t) pPlayer->LaserLevel (0) - 1, (int8_t) pPlayer->LaserLevel (0));
-	PowerupBasic (10, 0, 10, LASER_SCORE, "%s %s %d", TXT_LASER, TXT_BOOSTED_TO, pPlayer->LaserLevel () + 1);
+	PickupEffect (10, 0, 10, LASER_SCORE, "%s %s %d", TXT_LASER, TXT_BOOSTED_TO, pPlayer->LaserLevel () + 1);
 	cockpit->UpdateLaserWeaponInfo ();
 	PickupPrimary (LASER_INDEX, nPlayer);
 	return 1;
@@ -290,7 +290,7 @@ if (pPlayer->AddSuperLaser ()) {
 	if (ISLOCALPLAYER (nPlayer)) {
 		if (gameData.demo.nState == ND_STATE_RECORDING)
 			NDRecordLaserLevel (pPlayer->LaserLevel () - 1, pPlayer->LaserLevel ());
-		PowerupBasic (10, 0, 10, LASER_SCORE, TXT_SUPERBOOST, pPlayer->LaserLevel () + 1, nPlayer);
+		PickupEffect (10, 0, 10, LASER_SCORE, TXT_SUPERBOOST, pPlayer->LaserLevel () + 1, nPlayer);
 		cockpit->UpdateLaserWeaponInfo ();
 		if (gameData.weapons.nPrimary != LASER_INDEX)
 		   CheckToUsePrimary (SUPER_LASER_INDEX);
@@ -312,7 +312,7 @@ int32_t PickupQuadLaser (CObject *pObj, int32_t nId, int32_t nPlayer)
 
 if (!(pPlayer->flags & PLAYER_FLAGS_QUAD_LASERS)) {
 	pPlayer->flags |= PLAYER_FLAGS_QUAD_LASERS;
-	PowerupBasic (15, 15, 7, QUAD_FIRE_SCORE, "%s!", TXT_QUAD_LASERS);
+	PickupEffect (15, 15, 7, QUAD_FIRE_SCORE, "%s!", TXT_QUAD_LASERS);
 	cockpit->UpdateLaserWeaponInfo ();
 	return 1;
 	}
@@ -355,7 +355,7 @@ if (nAmmo > 0) {
 	pObj->cType.powerupInfo.nCount -= nAmmoUsed;
 	if (ISLOCALPLAYER (nPlayer)) {
 		if (!bPickedUp && nAmmoUsed) {
-			PowerupBasic (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO);
+			PickupEffect (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO);
 			return pObj->cType.powerupInfo.nCount ? -1 : -2;
 			}
 		}

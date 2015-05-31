@@ -259,7 +259,7 @@ m_data.nPalettes = 0;
 
 //------------------------------------------------------------------------------
 
-void CPaletteManager::SetEffect (float red, float green, float blue, bool bForce)
+void CPaletteManager::StartEffect (float red, float green, float blue, bool bForce)
 {
 if (m_data.nSuspended)
 	return;
@@ -281,9 +281,9 @@ SetFadeDuration (m_data.bDoEffect ? /*F2X (64.0 / FADE_RATE)*/I2X (1) / 2 : 0);
 
 //------------------------------------------------------------------------------
 
-void CPaletteManager::SetEffect (int32_t red, int32_t green, int32_t blue, bool bForce)
+void CPaletteManager::StartEffect (int32_t red, int32_t green, int32_t blue, bool bForce)
 {
-SetEffect (Clamp (float (red) / 64.0f, 0.0f, 1.0f), 
+StartEffect (Clamp (float (red) / 64.0f, 0.0f, 1.0f), 
 	        Clamp (float (green) / 64.0f, 0.0f, 1.0f), 
 	        Clamp (float (blue) / 64.0f, 0.0f, 1.0f), 
 			  bForce);
@@ -291,19 +291,19 @@ SetEffect (Clamp (float (red) / 64.0f, 0.0f, 1.0f),
 
 //------------------------------------------------------------------------------
 
-void CPaletteManager::ClearEffect (void)
+void CPaletteManager::StopEffect (void)
 {
-SetEffect (0, 0, 0);
+StartEffect (0, 0, 0);
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CPaletteManager::ClearEffect (CPalette* palette)
+int32_t CPaletteManager::StopEffect (CPalette* palette)
 {
 if (m_data.nLastGamma == m_data.nGamma)
 	return 1;
 m_data.nLastGamma = m_data.nGamma;
-SetEffect (0, 0, 0);
+StopEffect ();
 m_data.current = Add (*palette);
 return 1;
 }
@@ -333,9 +333,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CPaletteManager::SetEffect (bool bForce)
+void CPaletteManager::StartEffect (bool bForce)
 {
-SetEffect (m_data.effect.Red (), m_data.effect.Green (), m_data.effect.Blue (), bForce);
+StartEffect (m_data.effect.Red (), m_data.effect.Green (), m_data.effect.Blue (), bForce);
 }
 
 //	------------------------------------------------------------------------------------
@@ -358,7 +358,7 @@ red = Clamp (m_data.effect.Red () * fFade + red, 0.0f, maxVal);
 green = Clamp (m_data.effect.Green () * fFade + green, 0.0f, maxVal);
 blue = Clamp (m_data.effect.Blue () * fFade + blue, 0.0f, maxVal);
 
-SetEffect (Max (red, m_data.effect.Red () * fFade), 
+StartEffect (Max (red, m_data.effect.Red () * fFade), 
 			  Max (green, m_data.effect.Green () * fFade), 
 			  Max (blue, m_data.effect.Blue () * fFade),
 			  true);
@@ -378,7 +378,7 @@ void CPaletteManager::ResumeEffect (bool bCond)
 {
 if (bCond) {
 	m_data.effect = m_data.lastEffect;
-	SetEffect ();
+	StartEffect ();
 	m_data.xFadeDelay = m_data.xLastDelay;
 	m_data.xLastEffectTime = 0;
 	}
@@ -401,7 +401,7 @@ void CPaletteManager::ResetEffect (void)
 {
 m_data.xFadeDelay = 0;
 m_data.xLastEffectTime = 0;
-SetEffect (0, 0, 0);
+StartEffect (0, 0, 0);
 }
 
 //	------------------------------------------------------------------------------------
@@ -414,7 +414,7 @@ if (m_data.bDoEffect) {
 	m_data.flash.Green () = m_data.effect.Green () * fFade;
 	m_data.flash.Blue () = m_data.effect.Blue () * fFade;
 	if (m_data.flash.IsZero ())
-		ClearEffect ();
+		StopEffect ();
 	}
 }
 

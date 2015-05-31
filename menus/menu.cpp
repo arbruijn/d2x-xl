@@ -1606,7 +1606,7 @@ if (bSoundStopped)
 if (gameStates.menus.nInMenu > 0)
 	gameStates.menus.nInMenu--;
 paletteManager.EnableEffect ();
-//paletteManager.SetEffect (0, 0, 0);
+//paletteManager.StopEffect ();
 SDL_EnableKeyRepeat (0, 0);
 if (gameStates.app.bGameRunning && IsMultiGame)
 	MultiSendMsgQuit();

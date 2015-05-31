@@ -224,7 +224,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ PowerupBasic (int32_t redAdd, int32_t greenAdd, int32_t blueAdd, int32_t score, const char *format, ...)
+void _CDECL_ PickupEffect (int32_t redAdd, int32_t greenAdd, int32_t blueAdd, int32_t score, const char *format, ...)
 {
 	char		text[120];
 	va_list	args;
@@ -251,7 +251,7 @@ void DoMegaWowPowerup (int32_t quantity)
 {
 	int32_t i;
 
-PowerupBasic (30, 0, 30, 1, "MEGA-WOWIE-ZOWIE!");
+PickupEffect (30, 0, 30, 1, "MEGA-WOWIE-ZOWIE!");
 LOCALPLAYER.primaryWeaponFlags = 0xffff ^ HAS_FLAG (SUPER_LASER_INDEX);		//no super laser
 LOCALPLAYER.secondaryWeaponFlags = 0xffff;
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
@@ -286,7 +286,7 @@ if (pPlayer->Energy () < pPlayer->MaxEnergy ()) {
 		boost += boost / 2;
 	pPlayer->UpdateEnergy (boost);
 	if (ISLOCALPLAYER (nPlayer))
-		PowerupBasic (15, 7, 0, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (pPlayer->energy));
+		PickupEffect (15, 7, 0, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (pPlayer->energy));
 	return 1;
 	} 
 else if (ISLOCALPLAYER (nPlayer))
@@ -306,7 +306,7 @@ if (pPlayer->Shield () < pPlayer->MaxShield ()) {
 		boost += boost / 2;
 	pPlayer->UpdateShield (boost);
 	if (ISLOCALPLAYER (nPlayer)) {
-		PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (pPlayer->Shield ()));
+		PickupEffect (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (pPlayer->Shield ()));
 		NetworkFlushData (); // will send position, shield and weapon info
 		}
 	OBJECT (nPlayer)->ResetDamage ();
@@ -333,7 +333,7 @@ if (!gameOpts->gameplay.bInventory || (IsMultiGame && !IsCoopGame))
 	return -ApplyCloak (1, nPlayer);
 if (pPlayer->nCloaks < MAX_INV_ITEMS) {
 	pPlayer->nCloaks++;
-	PowerupBasic (15, 0, 15, 0, "%s!", TXT_CLOAKING_DEVICE);
+	PickupEffect (15, 0, 15, 0, "%s!", TXT_CLOAKING_DEVICE);
 	return 1;
 	}
 if (ISLOCALPLAYER (nPlayer))
@@ -351,7 +351,7 @@ if (!gameOpts->gameplay.bInventory || (IsMultiGame && !IsCoopGame))
 	return -ApplyInvul (1, nPlayer);
 if (pPlayer->nInvuls < MAX_INV_ITEMS) {
 	pPlayer->nInvuls++;
-	PowerupBasic (0, 7, 15, 0, "%s!", TXT_INVULNERABILITY);
+	PickupEffect (0, 7, 15, 0, "%s!", TXT_INVULNERABILITY);
 	return 1;
 	}
 if (ISLOCALPLAYER (nPlayer))
@@ -365,7 +365,7 @@ int32_t PickupExtraLife (CObject *pObj, int32_t nPlayer)
 {
 PLAYER (nPlayer).lives++;
 if (nPlayer == N_LOCALPLAYER)
-	PowerupBasic (0, 15, 7, 0, TXT_EXTRA_LIFE);
+	PickupEffect (0, 15, 7, 0, TXT_EXTRA_LIFE);
 return 1;
 }
 
@@ -379,7 +379,7 @@ if (IsHoardGame) {
 	if (pPlayer->secondaryAmmo [PROXMINE_INDEX] < 12) {
 		if (ISLOCALPLAYER (nPlayer)) {
 			MultiSendGotOrb (N_LOCALPLAYER);
-			PowerupBasic (7, 15, 7, 0, "Orb!!!", nPlayer);
+			PickupEffect (7, 15, 7, 0, "Orb!!!", nPlayer);
 			}
 		pPlayer->secondaryAmmo [PROXMINE_INDEX]++;
 		pPlayer->flags |= PLAYER_FLAGS_FLAG;
@@ -398,7 +398,7 @@ else if (IsEntropyGame) {
 				(pPlayer->secondaryAmmo [PROXMINE_INDEX] < pPlayer->secondaryAmmo [SMARTMINE_INDEX])) {
 		if (ISLOCALPLAYER (nPlayer)) {
 			MultiSendGotOrb (N_LOCALPLAYER);
-			PowerupBasic (15, 0, 15, 0, "Virus!!!", nPlayer);
+			PickupEffect (15, 0, 15, 0, "Virus!!!", nPlayer);
 			}
 		pPlayer->secondaryAmmo [PROXMINE_INDEX]++;
 		pPlayer->flags |= PLAYER_FLAGS_FLAG;
@@ -429,7 +429,7 @@ else {
 			id = POW_AFTERBURNER;
 		MultiSendPlaySound (gameData.objData.pwrUp.info [id].hitSound, I2X (1));
 		audio.PlaySound ((int16_t) gameData.objData.pwrUp.info [id].hitSound);
-		PowerupBasic (15, 0, 15, 0, pszGot, nPlayer);
+		PickupEffect (15, 0, 15, 0, pszGot, nPlayer);
 		}
 	bPickedUp = -1;
 	}
@@ -526,7 +526,7 @@ int32_t PickupKey (CObject *pObj, int32_t nKey, const char *pszKey, int32_t nPla
 		audio.PlaySound ((int16_t) gameData.objData.pwrUp.info [pObj->info.nId].hitSound);
 		}
 	pPlayer->flags |= nKey;
-	PowerupBasic (15, 0, 0, ISLOCALPLAYER (nPlayer) ? KEY_SCORE : 0, "%s %s", pszKey, TXT_ACCESS_GRANTED);
+	PickupEffect (15, 0, 0, ISLOCALPLAYER (nPlayer) ? KEY_SCORE : 0, "%s %s", pszKey, TXT_ACCESS_GRANTED);
 	InvalidateEscortGoal ();
 	return IsMultiGame == 0;
 	}
@@ -541,7 +541,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 	CPlayerData	*pPlayer = gameData.multiplayer.players + nPlayer;
 	if (gameData.app.GameMode (GM_CAPTURE)) {
 		if (GetTeam (N_LOCALPLAYER) == nOtherTeam) {
-			PowerupBasic (15, 0, 15, 0, nOtherTeam ? "RED FLAG!" : "BLUE FLAG!", nPlayer);
+			PickupEffect (15, 0, 15, 0, nOtherTeam ? "RED FLAG!" : "BLUE FLAG!", nPlayer);
 			pPlayer->flags |= PLAYER_FLAGS_FLAG;
 			gameData.pig.flags [nThisTeam].path.Reset (10, -1);
 			MultiSendGotFlag (N_LOCALPLAYER);
@@ -596,9 +596,9 @@ if (ISLOCALPLAYER (nPlayer)) {
 	if (IsMultiGame)
 		MultiSendInvul ();
 	if (bInventory)
-		PowerupBasic (7, 14, 21, 0, "");
+		PickupEffect (7, 14, 21, 0, "");
 	else
-		PowerupBasic (7, 14, 21, INVULNERABILITY_SCORE, "%s!", TXT_INVULNERABILITY);
+		PickupEffect (7, 14, 21, INVULNERABILITY_SCORE, "%s!", TXT_INVULNERABILITY);
 	gameData.multiplayer.spherePulse [N_LOCALPLAYER].Setup (0.02f, 0.5f);
 	UsePowerup (-POW_INVUL);
 	}
@@ -628,9 +628,9 @@ if (ISLOCALPLAYER (nPlayer)) {
 	if (IsMultiGame)
 		MultiSendCloak ();
 	if (bInventory)
-		PowerupBasic (-10, -10, -10, 0, "");
+		PickupEffect (-10, -10, -10, 0, "");
 	else
-		PowerupBasic (-10, -10, -10, CLOAK_SCORE, "%s!", TXT_CLOAKING_DEVICE);
+		PickupEffect (-10, -10, -10, CLOAK_SCORE, "%s!", TXT_CLOAKING_DEVICE);
 	UsePowerup (-POW_CLOAK);
 	}
 return 1;

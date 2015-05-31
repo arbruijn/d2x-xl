@@ -1991,7 +1991,7 @@ m_cf.Read (&bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
 m_cf.Read (&bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
 paletteManager.SetFadeDelay (m_cf.ReadFix ());
 paletteManager.SetLastEffectTime (m_cf.ReadFix ());
-paletteManager.SetEffect ((int32_t) m_cf.ReadShort (), (int32_t) m_cf.ReadShort (), (int32_t) m_cf.ReadShort ());
+paletteManager.StartEffect ((int32_t) m_cf.ReadShort (), (int32_t) m_cf.ReadShort (), (int32_t) m_cf.ReadShort ());
 h = (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
 j = Min (h, LEVEL_SEGMENTS);
 gameData.render.lights.subtracted.Read (m_cf, j);
@@ -2297,7 +2297,7 @@ else {
 	m_cf.Read (&bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
 	paletteManager.SetFadeDelay ((fix) m_cf.ReadInt ());
 	paletteManager.SetLastEffectTime ((fix) m_cf.ReadInt ());
-	paletteManager.SetEffect ((int32_t) m_cf.ReadInt (), (int32_t) m_cf.ReadInt (), (int32_t) m_cf.ReadInt ());
+	paletteManager.StartEffect ((int32_t) m_cf.ReadInt (), (int32_t) m_cf.ReadInt (), (int32_t) m_cf.ReadInt ());
 	}
 
 //	Load gameData.render.lights.subtracted

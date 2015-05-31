@@ -49,9 +49,9 @@ class CPalette {
 	private:
 		tPalette			m_data;
 		CComputedColor	m_computedColors [MAX_COMPUTED_COLORS];
-		int16_t				m_nComputedColors;
-		int32_t				m_transparentColor;
-		int32_t				m_superTranspColor;
+		int16_t			m_nComputedColors;
+		int32_t			m_transparentColor;
+		int32_t			m_superTranspColor;
 
 	public:
 		CPalette () : m_transparentColor (-1), m_superTranspColor (-1) {}
@@ -171,17 +171,17 @@ class CPaletteManager {
 		void SaveEffect (void);
 		void SuspendEffect (bool bCond = true);
 		void ResumeEffect (bool bCond = true);
-		void SetEffect (int32_t r, int32_t g, int32_t b, bool bForce = false);
-		void SetEffect (float r, float g, float b, bool bForce = false);
+		void StartEffect (int32_t r, int32_t g, int32_t b, bool bForce = false);
+		void StartEffect (float r, float g, float b, bool bForce = false);
 		void BumpEffect (int32_t r, int32_t g, int32_t b);
 		void BumpEffect (float r, float g, float b);
 		void UpdateEffect (void);
 		inline void SetRedEffect (int32_t color) { m_data.effect.Red () = float (color) / 64.0f; }
 		inline void SetGreenEffect (int32_t color) { m_data.effect.Green () = float (color) / 64.0f; }
 		inline void SetBlueEffect (int32_t color) { m_data.effect.Blue () = float (color) / 64.0f; }
-		void SetEffect (bool bForce = false);
-		void ClearEffect (void);
-		int32_t ClearEffect (CPalette* palette);
+		void StartEffect (bool bForce = false);
+		void StopEffect (void);
+		int32_t StopEffect (CPalette* palette);
 		int32_t EnableEffect (bool bReset = false);
 		int32_t DisableEffect (void);
 		bool EffectEnabled (void) { return m_data.nSuspended <= 0; }

@@ -124,7 +124,7 @@ void diminish_towards_max(void);
 
 void DoMegaWowPowerup(int32_t quantity);
 
-void _CDECL_ PowerupBasic(int32_t redadd, int32_t greenadd, int32_t blueadd, int32_t score, const char *format, ...);
+void _CDECL_ PickupEffect(int32_t redadd, int32_t greenadd, int32_t blueadd, int32_t score, const char *format, ...);
 
 /*
  * reads n tPowerupTypeInfo structs from a CFILE

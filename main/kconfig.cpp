@@ -889,7 +889,7 @@ SDL_ShowCursor (0);
 if (m_bTimeStopped)
 	StartTime (0);
 gameStates.menus.nInMenu--;
-paletteManager.SetEffect (0, 0, 0);
+paletteManager.StopEffect ();
 }
 
 //------------------------------------------------------------------------------
@@ -1431,7 +1431,7 @@ m_nChangeMode = BT_NONE;
 m_bTimeStopped = 0;
 m_bRedraw = 0;
 
-paletteManager.SetEffect (0, 0, 0);
+paletteManager.StopEffect ();
 gameStates.menus.nInMenu++;
 memset (m_startAxis, 0, sizeof (m_startAxis));
 
