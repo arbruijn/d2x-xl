@@ -2843,8 +2843,8 @@ class CWeaponData {
 		void Destroy (void);
 };
 
-#define bLastPrimaryWasSuper (gameData.weaponData.bLastWasSuper [0])
-#define bLastSecondaryWasSuper (gameData.weaponData.bLastWasSuper [1])
+#define bLastPrimaryWasSuper		(gameData.weaponData.bLastWasSuper [0])
+#define bLastSecondaryWasSuper	(gameData.weaponData.bLastWasSuper [1])
 
 //------------------------------------------------------------------------------
 
@@ -4440,11 +4440,11 @@ inline CTrigger* CGameData::ObjTrigger (int32_t nTrigger) {
 	}
 
 inline tRobotInfo* CGameData::RobotInfo (int32_t nId) {
-	return botData.info [gameStates.app.bD1Mission && (nId < botData.nTypes [1])] + nId; 
+	return (nId < 0) ? NULL : botData.info [gameStates.app.bD1Mission && (nId < botData.nTypes [1])] + nId; 
 	}
 
 inline CWeaponInfo* CGameData::WeaponInfo (int32_t nId) {
-	if (nId >= (gameStates.app.bD1Mission ? D1_MAX_WEAPON_TYPES : D2_MAX_WEAPON_TYPES))
+	if ((nId < 0) || (nId >= (gameStates.app.bD1Mission ? D1_MAX_WEAPON_TYPES : D2_MAX_WEAPON_TYPES)))
 		return NULL;
 	return weaponData.info [gameStates.app.bD1Mission] + nId; 
 	}
@@ -4544,6 +4544,11 @@ CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->xDamageRadius : 0;
 }
 
+inline fix WI_blobSize (int32_t nId)	{
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->xBlobSize : 0;
+}
+
 #else
 
 inline int8_t WI_persistent (int32_t nId) {
@@ -4635,6 +4640,11 @@ return pInfo ? pInfo->lifetime : 0;
 inline fix WI_damage_radius (int32_t nId)	{
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->xDamageRadius : 0;
+}
+
+inline fix WI_blobSize (int32_t nId)	{
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->xBlobSize : 0;
 }
 
 #endif

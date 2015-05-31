@@ -57,7 +57,12 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 
 CRGBColor *AnimationColor (CObject *pObj)
 {
-	int32_t			nVClip = gameData.weaponData.info [0][pObj->info.nId].nAnimationIndex;
+	CWeaponInfo		*pWeaponInfo;
+
+if (!pWeaponInfo)
+	return NULL;
+
+	int32_t			nVClip = pWeaponInfo->nAnimationIndex;
 	tBitmapIndex	bmi;
 	CBitmap			*pBm;
 
@@ -66,7 +71,7 @@ if (nVClip) {
 	bmi = pAnimInfo->frames [0];
 	}
 else
-	bmi = gameData.weaponData.info [0][pObj->info.nId].bitmap;
+	bmi = pWeaponInfo->bitmap;
 LoadTexture (bmi.index, 0, 0);
 pBm = gameData.pigData.tex.bitmaps [0] + bmi.index;
 if ((pBm->Type () == BM_TYPE_STD) && pBm->Override ())
@@ -298,14 +303,19 @@ pObj->mType.physInfo.drag = 512;
 
 void ConvertWeaponToVClip (CObject *pObj)
 {
-pObj->rType.animationInfo.nClipIndex = gameData.weaponData.info [0][pObj->info.nId].nAnimationIndex;
+	CWeaponInfo *pWeaponInfo = WEAPONINFO (pObj);
+
+if (!pWeaponInfo)
+	return;
+
+pObj->rType.animationInfo.nClipIndex = pWeaponInfo->nAnimationIndex;
 pObj->rType.animationInfo.xFrameTime = gameData.effectData.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
 pObj->rType.animationInfo.nCurFrame = 0;
 pObj->info.controlType = CT_WEAPON;
 pObj->info.renderType = RT_WEAPON_VCLIP;
-pObj->mType.physInfo.mass = gameData.weaponData.info [0][pObj->info.nId].mass;
-pObj->mType.physInfo.drag = gameData.weaponData.info [0][pObj->info.nId].drag;
-pObj->SetSize (gameData.weaponData.info [0][pObj->info.nId].strength [gameStates.app.nDifficultyLevel] / 10);
+pObj->mType.physInfo.mass = pWeaponInfo->mass;
+pObj->mType.physInfo.drag = pWeaponInfo->drag;
+pObj->SetSize (pWeaponInfo->strength [gameStates.app.nDifficultyLevel] / 10);
 pObj->info.movementType = MT_PHYSICS;
 }
 
@@ -338,11 +348,10 @@ pObj->mType.physInfo.drag = 512;
 pObj->info.renderType = RT_POLYOBJ;
 pObj->info.movementType = MT_PHYSICS;
 pObj->mType.physInfo.flags = PF_BOUNCES | PF_FREE_SPINNING;
-if (0 > (pObj->rType.polyObjInfo.nModel = gameData.weaponData.info [0][pObj->info.nId].nModel))
+CWeaponInfo *pWeaponInfo = WEAPONINFO (pObj);
+pObj->rType.polyObjInfo.nModel = pWeaponInfo ? pWeaponInfo->nModel : -1;
+if (0 > pObj->rType.polyObjInfo.nModel)
 	pObj->rType.polyObjInfo.nModel = nModel;
-#if 0
-pObj->AdjustSize (0, gameData.weaponData.info [0][pObj->info.nId].poLenToWidthRatio);
-#endif
 pObj->rType.polyObjInfo.nTexOverride = -1;
 if (pObj->info.nType == OBJ_POWERUP)
 	pObj->SetLife (IMMORTAL_TIME);
@@ -353,7 +362,10 @@ return 1;
 
 void DrawWeaponVClip (CObject *pObj)
 {
-int32_t nVClip = gameData.weaponData.info [0][pObj->info.nId].nAnimationIndex;
+CWeaponInfo *pWeaponInfo = WEAPONINFO (pObj);
+if (!pWeaponInfo)
+	return;
+int32_t nVClip = pWeaponInfo->nAnimationIndex;
 fix modTime = pObj->info.xLifeLeft;
 fix playTime = gameData.effectData.vClipP [nVClip].xTotalTime;
 if (!playTime)

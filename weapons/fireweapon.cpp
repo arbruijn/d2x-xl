@@ -87,13 +87,19 @@ void RenderLaser (CObject *pObj)
 	}
 #endif
 
-switch (gameData.weaponData.info [0][pObj->info.nId].renderType) {
+CWeaponInfo *pWeaponInfo = WEAPONINFO (pObj);
+
+if (!pWeaponInfo) {
+	Error ("Invalid object type in RenderLaser\n");
+	return;
+	}
+
+switch (pWeaponInfo->renderType) {
 	case WEAPON_RENDER_LASER:
-		Int3 ();	// Not supported anymore!
-					//Laser_draw_one (pObj->Index (), gameData.weaponData.info [0][pObj->info.nId].bitmap);
+		// Not supported
 		break;
 	case WEAPON_RENDER_BLOB:
-		DrawObjectBitmap (pObj, gameData.weaponData.info [0][pObj->info.nId].bitmap.index, gameData.weaponData.info [0][pObj->info.nId].bitmap.index, 0, NULL, 2.0f / 3.0f);
+		DrawObjectBitmap (pObj, pWeaponInfo->bitmap.index, pWeaponInfo->bitmap.index, 0, NULL, 2.0f / 3.0f);
 		break;
 	case WEAPON_RENDER_POLYMODEL:
 		break;
@@ -374,7 +380,7 @@ if (bHarmless)
 if ((nPlayer == N_LOCALPLAYER) && !pWeapon->IsPlayerMine ())
 	gameStates.app.bPlayerFiredLaserThisFrame = nObject;
 
-if (gameStates.app.cheats.bHomingWeapons || gameData.weaponData.info [0][nLaserType].homingFlag) {
+if (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (nLaserType)) {
 	if (nPlayer == N_LOCALPLAYER) {
 		pWeapon->cType.laserInfo.nHomingTarget = pWeapon->FindVisibleHomingTarget (vLaserPos, MAX_THREADS);
 		gameData.multigame.weapon.nTrack = pWeapon->cType.laserInfo.nHomingTarget;
@@ -466,7 +472,7 @@ if (LifeLeft () < 0) {		// We died of old age
 fix xSpeed = mType.physInfo.velocity.Mag ();
 if (!((gameData.appData.nFrameCount ^ info.nSignature) & 3) &&
 		(info.nType == OBJ_WEAPON) && (info.nId != FLARE_ID) &&
-		(gameData.weaponData.info [0][info.nId].speed [gameStates.app.nDifficultyLevel] > 0) &&
+		(WI_speed (info.nId, gameStates.app.nDifficultyLevel) > 0) &&
 		(xSpeed < I2X (2))) {
 	ReleaseObject (Index ());
 	return true;
@@ -520,7 +526,8 @@ for (fix xFrameTime = gameData.laserData.xUpdateTime; xFrameTime >= HOMING_WEAPO
 #endif
 			vNewVel += vVecToObject;
 			//	The boss' smart children track better...
-			if (gameData.weaponData.info [0][info.nId].renderType != WEAPON_RENDER_POLYMODEL)
+			CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
+			if (!pWeaponInfo || (pWeaponInfo->renderType != WEAPON_RENDER_POLYMODEL))
 				vNewVel += vVecToObject;
 			CFixVector::Normalize (vNewVel);
 			//CFixVector vOldVel = mType.physInfo.velocity;
@@ -533,7 +540,7 @@ for (fix xFrameTime = gameData.laserData.xUpdateTime; xFrameTime >= HOMING_WEAPO
 				dot = abs (I2X (1) - dot);
 				info.xLifeLeft -= FixMul (dot * 32, I2X (1) / 40);
 				//	Only polygon OBJECTS have visible orientation, so only they should turn.
-				if (gameData.weaponData.info [0][info.nId].renderType == WEAPON_RENDER_POLYMODEL)
+				if (pWeaponInfo && (pWeaponInfo->renderType == WEAPON_RENDER_POLYMODEL))
 					HomingMissileTurnTowardsVelocity (this, &vNewVel);		//	vNewVel is normalized velocity.
 				}
 			}
@@ -708,12 +715,12 @@ while (gameData.laserData.xNextFireTime <= gameData.timeData.xGame) {
 				MultiSendAmmo ();
 				}
 			else {
-				pPlayer->UpdateEnergy (-(xEnergyUsed * fired) / gameData.weaponData.info [0][nWeaponIndex].fireCount);
+				pPlayer->UpdateEnergy (-(xEnergyUsed * fired) / WI_fireCount (nWeaponIndex));
 				}
 			}
 #else
 		rVal += FireWeapon ((int16_t) LOCALPLAYER.nObject, (uint8_t) gameData.weaponData.nPrimary, nLaserLevel, flags, nRoundsPerShot);
-		pPlayer->UpdateEnergy (-(xEnergyUsed * rVal) / gameData.weaponData.info [0][nWeaponIndex].fireCount);
+		pPlayer->UpdateEnergy (-(xEnergyUsed * rVal) / WI_fireCount (nWeaponIndex));
 		if (rVal && ((gameData.weaponData.nPrimary == VULCAN_INDEX) || (gameData.weaponData.nPrimary == GAUSS_INDEX))) {
 			if (nAmmoUsed > pPlayer->primaryAmmo [VULCAN_INDEX])
 				pPlayer->primaryAmmo [VULCAN_INDEX] = 0;
@@ -779,14 +786,15 @@ else {
 	parent.nObject = 0;
 	}
 
+CWeaponInfo *pWeaponInfo = WEAPONINFO (nObjId);
+
 if (nObjType == OBJ_WEAPON) {
-	if (gameData.weaponData.info [0][nObjId].children < 1)
-	//if ((nObjId == SMARTMSL_ID) || (nObjId == SMARTMINE_ID) || (nObjId == ROBOT_SMARTMINE_ID) || (nObjId == EARTHSHAKER_ID)) &&
+	if (!pWeaponInfo || (pWeaponInfo->children < 1))
 		return;
 	if (nObjId == EARTHSHAKER_ID)
-		BlastNearbyGlass (pObj, gameData.weaponData.info [0][EARTHSHAKER_ID].strength [gameStates.app.nDifficultyLevel]);
+		BlastNearbyGlass (pObj, WI_strength (EARTHSHAKER_ID, gameStates.app.nDifficultyLevel));
 	}
-else if (nObjType != OBJ_ROBOT) // && ((nObjType != OBJ_WEAPON) || (gameData.weaponData.info [0][nObjId].children < 1)))
+else if (nObjType != OBJ_ROBOT) 
 	return;
 
 CObject	*pTarget;
@@ -826,7 +834,9 @@ FORALL_OBJS (pTarget) {
 	}
 //	Get type of weapon for child from parent.
 if (nObjType == OBJ_WEAPON) {
-	nBlobId = gameData.weaponData.info [0][nObjId].children;
+	if (!pWeaponInfo)
+		return;
+	nBlobId = pWeaponInfo->children;
 	}
 else {
 	Assert (nObjType == OBJ_ROBOT);

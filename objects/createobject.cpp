@@ -609,10 +609,13 @@ return nObject;
 int32_t CreateWeapon (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, fix xSize, uint8_t rType)
 {
 if (rType == 255) {
-	switch (gameData.weaponData.info [0][nId].renderType) {
+	CWeaponInfo *pWeaponInfo = WEAPONINFO (nId);
+	if (!pWeaponInfo)
+		return -1;
+	switch (pWeaponInfo->renderType) {
 		case WEAPON_RENDER_BLOB:
+			xSize = pWeaponInfo->xBlobSize;
 			rType = RT_LASER;			// Render as a laser even if blob (see render code above for explanation)
-			xSize = gameData.weaponData.info [0][nId].xBlobSize;
 			break;
 		case WEAPON_RENDER_POLYMODEL:
 			xSize = 0;	//	Filled in below.
@@ -623,8 +626,8 @@ if (rType == 255) {
 			xSize = I2X (1);
 			break;
 		case WEAPON_RENDER_VCLIP:
+			xSize = pWeaponInfo->xBlobSize;
 			rType = RT_WEAPON_VCLIP;
-			xSize = gameData.weaponData.info [0][nId].xBlobSize;
 			break;
 		default:
 			PrintLog (0, "Error: Invalid weapon render nType in CreateNewWeapon\n");

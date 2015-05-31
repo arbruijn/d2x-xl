@@ -139,11 +139,12 @@ CObject* CreateExplosion (CObject* pParent, int16_t nSegment, CFixVector& vPos, 
 								  uint8_t nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, int16_t nParent)
 {
 	int16_t		nObject;
-	CObject*		pExplObj, *pObj;
+	CObject		*pExplObj, *pObj;
 	fix			dist, force, damage;
 	CFixVector	vHit, vForce;
 	int32_t		nType, id;
-	int32_t		flash = pParent ? static_cast<int32_t> (gameData.weaponData.info [0][pParent->info.nId].flash) : 0;
+	CWeaponInfo	*pWeaponInfo = WEAPONINFO (pParent);
+	int32_t		flash = (pParent && pWeaponInfo) ? static_cast<int32_t> (pWeaponInfo->flash) : 0;
 
 nObject = CreateFireball (nVClip, nSegment, vPos, xSize, RT_FIREBALL);
 pExplObj = OBJECT (nObject);
@@ -342,9 +343,12 @@ return pExplObj;
 //return the explosion CObject
 CObject* CObject::ExplodeSplashDamageWeapon (CFixVector& vImpact, CObject* pTarget)
 {
-	CWeaponInfo *wi = &gameData.weaponData.info [0][info.nId];
+	CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
 
-Assert (wi->xDamageRadius);
+if (!pWeaponInfo)
+	return NULL;
+
+Assert (pWeaponInfo->xDamageRadius);
 // adjust the impact location in case it is inside the object
 #if 1
 if (pTarget) {
@@ -369,9 +373,8 @@ else { //make sure explosion center is not behind some wall
 	//VmVecScale (&v, I2X (10));
 	vExplPos += vImpact;
 	}
-return CreateSplashDamageExplosion (this, info.nSegment, vExplPos, vImpact, wi->xImpactSize, wi->nRobotHitAnimation,
-												wi->strength [gameStates.app.nDifficultyLevel], 
-												wi->xDamageRadius, wi->strength [gameStates.app.nDifficultyLevel],
+return CreateSplashDamageExplosion (this, info.nSegment, vExplPos, vImpact, pWeaponInfo->xImpactSize, pWeaponInfo->nRobotHitAnimation,
+												pWeaponInfo->strength [gameStates.app.nDifficultyLevel], pWeaponInfo->xDamageRadius, pWeaponInfo->strength [gameStates.app.nDifficultyLevel],
 												cType.laserInfo.parent.nObject);
 }
 

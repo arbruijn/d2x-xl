@@ -90,17 +90,19 @@ if ((i >= 0) && !bVClipLoaded [i]) {
 
 //------------------------------------------------------------------------------
 
-static void OglCacheWeaponTextures (CWeaponInfo* wi)
+static void OglCacheWeaponTextures (CWeaponInfo* pWeaponInfo)
 {
-OglCacheAnimationTextures (wi->nFlashAnimation, 1);
-OglCacheAnimationTextures (wi->nRobotHitAnimation, 1);
-OglCacheAnimationTextures (wi->nWallHitAnimation, 1);
-if (wi->renderType == WEAPON_RENDER_BLOB)
-	OglCacheTexture (wi->bitmap.index, 1);
-else if (wi->renderType == WEAPON_RENDER_VCLIP)
-	OglCacheAnimationTextures (wi->nAnimationIndex, 3);
-else if (wi->renderType == WEAPON_RENDER_POLYMODEL)
-	OglCachePolyModelTextures (wi->nModel);
+if (pWeaponInfo) {
+	OglCacheAnimationTextures (pWeaponInfo->nFlashAnimation, 1);
+	OglCacheAnimationTextures (pWeaponInfo->nRobotHitAnimation, 1);
+	OglCacheAnimationTextures (pWeaponInfo->nWallHitAnimation, 1);
+	if (pWeaponInfo->renderType == WEAPON_RENDER_BLOB)
+		OglCacheTexture (pWeaponInfo->bitmap.index, 1);
+	else if (pWeaponInfo->renderType == WEAPON_RENDER_VCLIP)
+		OglCacheAnimationTextures (pWeaponInfo->nAnimationIndex, 3);
+	else if (pWeaponInfo->renderType == WEAPON_RENDER_POLYMODEL)
+		OglCachePolyModelTextures (pWeaponInfo->nModel);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -328,7 +330,7 @@ gameStates.render.DisableCartoonStyle ();
 PrintLog (1, "caching weapon sprites\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 5);
 for (i = 0; i < EXTRA_OBJ_IDS; i++)
-	OglCacheWeaponTextures (gameData.weaponData.info [0] + i);
+	OglCacheWeaponTextures (WEAPONINFO (i));
 PrintLog (-1);
 
 gameStates.render.EnableCartoonStyle (0, 0, 1);

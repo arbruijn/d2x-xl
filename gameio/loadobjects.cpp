@@ -156,12 +156,12 @@ else if (Type () == OBJ_WEAPON) {
 		Assert(info.renderType != RT_POLYOBJ);
 		}
 	if (Id () == SMALLMINE_ID) {		//make sure pmines have correct values
-		mType.physInfo.mass = gameData.weaponData.info [0][Id ()].mass;
-		mType.physInfo.drag = gameData.weaponData.info [0][Id ()].drag;
+		mType.physInfo.mass = gameData.weaponData.info [0][SMALLMINE_ID].mass;
+		mType.physInfo.drag = gameData.weaponData.info [0][SMALLMINE_ID].drag;
 		mType.physInfo.flags |= PF_FREE_SPINNING;
 		// Make sure model number & size are correct...	
 		Assert(info.renderType == RT_POLYOBJ);
-		rType.polyObjInfo.nModel = gameData.weaponData.info [0][Id ()].nModel;
+		rType.polyObjInfo.nModel = gameData.weaponData.info [0][SMALLMINE_ID].nModel;
 		AdjustSize ();
 		}
 	}

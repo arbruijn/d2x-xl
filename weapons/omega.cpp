@@ -157,7 +157,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 		pObj->mType.physInfo.velocity = vGoal;
 		//	Only make the last one move fast, else multiple blobs might collide with target.
 		pObj->mType.physInfo.velocity *= (I2X (4));
-		pObj->SetSize (gameData.weaponData.info [0][pObj->info.nId].xBlobSize);
+		pObj->SetSize (WI_blobSize (pObj->info.nId));
 		pObj->info.xShield = FixMul (OMEGA_DAMAGE_SCALE * gameData.timeData.xFrame, WI_strength (pObj->info.nId, gameStates.app.nDifficultyLevel));
 		pObj->cType.laserInfo.parent.nType = pParentObj->info.nType;
 		pObj->cType.laserInfo.parent.nSignature = pParentObj->info.nSignature;
@@ -170,7 +170,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 	//	Make last one move faster, but it's already moving at speed = I2X (4).
 if (nLastCreatedObj != -1) {
 	CObject* pObj = OBJECT (nLastCreatedObj);
-	pObj->mType.physInfo.velocity *= gameData.weaponData.info [0][OMEGA_ID].speed [gameStates.app.nDifficultyLevel] / 4;
+	pObj->mType.physInfo.velocity *= WI_speed (OMEGA_ID, gameStates.app.nDifficultyLevel) / 4;
 	pObj->info.movementType = MT_PHYSICS;
 	}
 }
@@ -272,11 +272,13 @@ if (0 > (nFiringSeg = FindSegByPos (*vMuzzle, nParentSeg, 1, 0))) {
 	return;
 	}
 //	Play sound.
-if (pParentObj == gameData.objData.pViewer)
-	audio.PlaySound (gameData.weaponData.info [0][pWeaponObj->info.nId].flashSound);
-else
-	audio.CreateSegmentSound (gameData.weaponData.info [0][pWeaponObj->info.nId].flashSound,
-									  pWeaponObj->info.nSegment, 0, pWeaponObj->info.position.vPos, 0, I2X (1));
+CWeaponInfo *pWeaponInfo = WEAPONINFO (pWeaponObj);
+if (pWeaponInfo) {
+	if (pParentObj == gameData.objData.pViewer)
+		audio.PlaySound (pWeaponInfo->flashSound);
+	else
+		audio.CreateSegmentSound (pWeaponInfo->flashSound, pWeaponObj->info.nSegment, 0, pWeaponObj->info.position.vPos, 0, I2X (1));
+	}
 //	Delete the original CObject.  Its only purpose in life was to determine which CObject to home in on.
 ReleaseObject (OBJ_IDX (pWeaponObj));
 if (nTargetObj != -1)

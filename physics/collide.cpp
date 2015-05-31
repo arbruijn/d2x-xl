@@ -1502,8 +1502,11 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 			if (nClone != -1) {
 				CObject	*pClone = OBJECT (nClone);
 				if (pWeapon->info.renderType == RT_POLYOBJ) {
-					pClone->rType.polyObjInfo.nModel = gameData.weaponData.info [0][pClone->info.nId].nModel;
-					pClone->AdjustSize (0, gameData.weaponData.info [0][pClone->info.nId].poLenToWidthRatio);
+					CWeaponInfo *pWeaponInfo = WEAPONINFO (pClone);
+					if (pWeaponInfo) {
+						pClone->rType.polyObjInfo.nModel = pWeaponInfo->nModel;
+						pClone->AdjustSize (0, pWeaponInfo->poLenToWidthRatio);
+						}
 					}
 				pClone->mType.physInfo.thrust.SetZero ();
 				pClone->mType.physInfo.mass = WI_mass (pWeapon->info.nType);
@@ -1668,8 +1671,11 @@ if (pRobotInfo && pRobotInfo->energyBlobs && (cType.laserInfo.parent.nType == OB
 			MultiRobotRequestChange (pRobot, pParent->info.nId);
 		if (pRobotInfo && (pRobotInfo->nExp1VClip > -1))
 			pExplObj = CreateExplosion (info.nSegment, vHitPt, (3 * pRobot->info.xSize) / 8, (uint8_t) pRobotInfo->nExp1VClip);
-		else if (gameData.weaponData.info [0][info.nId].nRobotHitAnimation > -1)
-			pExplObj = CreateExplosion (info.nSegment, vHitPt, pWeaponInfo->xImpactSize, (uint8_t) pWeaponInfo->nRobotHitAnimation);
+		else {
+			CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
+			if (pWeaponInfo && (pWeaponInfo->nRobotHitAnimation > -1))
+				pExplObj = CreateExplosion (info.nSegment, vHitPt, pWeaponInfo->xImpactSize, (uint8_t) pWeaponInfo->nRobotHitAnimation);
+			}
 		if (pExplObj)
 			AttachObject (pRobot, pExplObj);
 		if (bDamage && pRobotInfo && (pRobotInfo->nExp1Sound > -1))
@@ -1848,11 +1854,12 @@ xDamage = FixMul (xDamage, cType.laserInfo.xScale);
 if (info.nId == FUSION_ID)
 	xDamage = gameData.FusionDamage (xDamage);
 if (IsMultiGame) {
-	if (gameData.weaponData.info [0][info.nId].xMultiDamageScale <= 0) {
+	CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
+	if (pWeaponInfo && (pWeaponInfo->xMultiDamageScale <= 0)) {
 		PrintLog (0, "invalid multiplayer damage scale for weapon %d!\n", info.nId);
-		gameData.weaponData.info [0][info.nId].xMultiDamageScale = I2X (1);
+		pWeaponInfo->xMultiDamageScale = I2X (1);
 		}
-	xDamage = FixMul (xDamage, gameData.weaponData.info [0][info.nId].xMultiDamageScale);
+	xDamage = FixMul (xDamage, pWeaponInfo->xMultiDamageScale);
 	}
 if (mType.physInfo.flags & PF_PERSISTENT) {
 	if (AddHitObject (this, OBJ_IDX (pPlayerObj)) < 0)
@@ -2022,7 +2029,8 @@ return 1;
 //	Return true if weapon does proximity (as opposed to only contact) damage when it explodes.
 int32_t CObject::MaybeDetonateWeapon (CObject* pOther, CFixVector& vHitPt)
 {
-if (!gameData.weaponData.info [0][info.nId].xDamageRadius)
+CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
+if (!pWeaponInfo || !pWeaponInfo->xDamageRadius)
 	return 0;
 fix xDist = CFixVector::Dist (info.position.vPos, pOther->info.position.vPos);
 if (xDist >= I2X (5))
@@ -2032,7 +2040,7 @@ else {
 	if (info.nFlags & OF_SHOULD_BE_DEAD) {
 		CreateWeaponEffects (0);
 		ExplodeSplashDamageWeapon (vHitPt, pOther);
-		audio.CreateSegmentSound (gameData.weaponData.info [0][info.nId].nRobotHitSound, info.nSegment, 0, vHitPt);
+		audio.CreateSegmentSound (pWeaponInfo->nRobotHitSound, info.nSegment, 0, vHitPt);
 		}
 	}
 return 1;

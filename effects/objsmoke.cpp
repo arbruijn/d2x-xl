@@ -811,11 +811,7 @@ if (!(bGatling || gameOpts->render.particles.bPlasmaTrails)) {
 		KillObjectSmoke (nObject);
 	return;
 	}
-#if 1
 nParts = bGatling ? LASER_MAX_PARTS : 2 * LASER_MAX_PARTS / 3;
-#else
-nParts = gameData.weaponData.info [0][pObj->info.nId].speed [0] / I2X (1);
-#endif
 if (bGatling) {
 	c.Red () = c.Green () = c.Blue () = 2.0f / 3.0f;
 	c.Alpha () = 1.0f / 4.0f;

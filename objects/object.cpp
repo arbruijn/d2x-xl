@@ -1631,7 +1631,8 @@ void ClearTransientObjects (int32_t bClearAll)
 
 for (CWeaponIterator iter (pObj); pObj; pObj = (pPrevObj ? iter.Step () : iter.Start ())) {
 	pPrevObj = pObj;
-	if ((!(gameData.weaponData.info [0][pObj->info.nId].flags & WIF_PLACABLE) && (bClearAll || ((pObj->info.nId != PROXMINE_ID) && (pObj->info.nId != SMARTMINE_ID)))) ||
+	CWeaponInfo *pWeaponInfo = WEAPONINFO (pObj);
+	if ((!(pWeaponInfo && (pWeaponInfo->flags & WIF_PLACABLE)) && (bClearAll || ((pObj->info.nId != PROXMINE_ID) && (pObj->info.nId != SMARTMINE_ID)))) ||
 			pObj->info.nType == OBJ_FIREBALL ||	pObj->info.nType == OBJ_DEBRIS || ((pObj->info.nType != OBJ_NONE) && (pObj->info.nFlags & OF_EXPLODING))) {
 		pPrevObj = iter.Back ();
 		ReleaseObject (pObj->Index ());

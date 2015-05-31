@@ -58,8 +58,9 @@ int16_t PowerupModel (int32_t nId)
 if ((nModel = PowerupToModel (nId)))
 	return nModel;
 if (0 > (nId = PowerupToObject (nId)))
-	return 0;
-return gameData.weaponData.info [0][nId].nModel;
+	return -1;
+CWeaponInfo *pWeaponInfo = WEAPONINFO (nId);
+return pWeaponInfo ? pWeaponInfo->nModel : -1;
 }
 
 //------------------------------------------------------------------------------
@@ -283,8 +284,11 @@ if (nModel)
 else {
 	nId = PowerupToObject (info.nId);
 	if (nId >= 0) {
-		nModel = gameData.weaponData.info [0][nId].nModel;
-		bHasModel = 1;
+		CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
+		if (pWeaponInfo) {
+			nModel = pWeaponInfo->nModel;
+			bHasModel = 1;
+			}
 		}
 	}
 if (!bHasModel && !IsMissile () && !(nModel && HaveReplacementModel (nModel)))
@@ -828,7 +832,8 @@ else {
 				 (gameData.aiData.localInfo [pObj->Index ()].pNextrimaryFire < I2X (1) / 8) &&
 				 (pObj->cType.aiInfo.behavior == AIB_SNIPE))
 				xLight = 2 * xLight + I2X (1);
-			bBlendPolys = bEnergyWeapon && (gameData.weaponData.info [0][id].nInnerModel > -1);
+			CWeaponInfo *pWeaponInfo = WEAPONINFO (id);
+			bBlendPolys = bEnergyWeapon && pWeaponInfo && (pWeaponInfo->nInnerModel > -1);
 			bBrightPolys = bGatling || (bBlendPolys && WI_energy_usage (id));
 			if (bEnergyWeapon) {
 				if (gameOpts->legacy.bRender)
@@ -845,7 +850,7 @@ else {
 #endif
 					bOk = DrawPolyModel (pObj, &pObj->info.position.vPos, &pObj->info.position.mOrient,
 												pObj->rType.polyObjInfo.animAngles,
-												gameData.weaponData.info [0][id].nInnerModel,
+												pWeaponInfo ? pWeaponInfo->nInnerModel : -1,
 												pObj->rType.polyObjInfo.nSubObjFlags,
 												bBrightPolys ? I2X (1) : xLight,
 												xEngineGlow,

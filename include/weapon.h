@@ -156,29 +156,6 @@ class __pack__ CD2D1WeaponInfo {
 		fix				xDamageRadius;				//	Radius of damage caused by weapon, used for missiles (not lasers) to apply to damage to things it did not hit
 	};
 
-#if 0
-
-#define WI_persistent(_i)				(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].persistent : gameData.weaponData.info [0][_i].persistent)
-#define WI_fireCount(_i)				(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].fireCount : gameData.weaponData.info [0][_i].fireCount)
-#define WI_ammo_usage(_i)				(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].nAmmoUsage : gameData.weaponData.info [0][_i].nAmmoUsage)
-#define WI_destructible(_i)			(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].destructible : gameData.weaponData.info [0][_i].destructible)
-#define WI_matter(_i)					(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].matter : gameData.weaponData.info [0][_i].matter)
-#define WI_bounce(_i)					(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].bounce : gameData.weaponData.info [0][_i].bounce)
-#define WI_homingFlag(_i)				(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].homingFlag : gameData.weaponData.info [0][_i].homingFlag)
-#define WI_set_homingFlag(_i,_v)		{ if (gameStates.app.bD1Mission) weaponInfoD2D1 [_i].homingFlag = (_v); else gameData.weaponData.info [0][_i].homingFlag = (_v); }
-#define WI_energy_usage(_i)			(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].xEnergyUsage : gameData.weaponData.info [0][_i].xEnergyUsage)
-#define WI_fire_wait(_i)				(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].xFireWait : gameData.weaponData.info [0][_i].xFireWait)
-#define WI_strength(_i,_j)				(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].strength [_j] : gameData.weaponData.info [0][_i].strength [_j])
-#define WI_speed(_i,_j)					(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].speed [_j] : gameData.weaponData.info [0][_i].speed [_j])
-#define WI_mass(_i)						(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].mass : gameData.weaponData.info [0][_i].mass)
-#define WI_drag(_i)						(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].drag : gameData.weaponData.info [0][_i].drag)
-#define WI_thrust(_i)						(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].thrust : gameData.weaponData.info [0][_i].thrust)
-#define WI_light(_i)						(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].light : gameData.weaponData.info [0][_i].light)
-#define WI_lifetime(_i)					(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].lifetime : gameData.weaponData.info [0][_i].lifetime)
-#define WI_damage_radius(_i)			(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].xDamageRadius : gameData.weaponData.info [0][_i].xDamageRadius)
-
-#endif
-
 #define REARM_TIME                  (I2X (1))
 
 #define WEAPON_DEFAULT_LIFETIME     I2X (12)   // Lifetime of an CObject if a bozo forgets to define it.

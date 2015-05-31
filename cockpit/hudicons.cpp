@@ -319,9 +319,9 @@ return nLvlMap [gameStates.app.bD1Mission][j + (gameStates.app.bD1Mission ? i * 
 
 CBitmap* CHUDIcons::LoadWeaponIcon (int32_t i, int32_t l)
 {
-	CBitmap * pBm, * pBmo;
+	CBitmap		* pBm, * pBmo;
+	int32_t		m = i ? secondaryWeaponToWeaponInfo [l] : primaryWeaponToWeaponInfo [l];
 
-int32_t m = i ? secondaryWeaponToWeaponInfo [l] : primaryWeaponToWeaponInfo [l];
 if ((gameData.pigData.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
 	LoadTexture (gameData.weaponData.info [0][m].hiresPicture.index, 0, 0);
 	pBm = gameData.pigData.tex.bitmaps [0] + gameData.weaponData.info [0][m].hiresPicture.index;

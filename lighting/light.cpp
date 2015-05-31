@@ -510,7 +510,10 @@ switch (nObjType) {
 		break;
 
 	case OBJ_WEAPON: {
-		fix xLight = gameData.weaponData.info [0][pObj->info.nId].light;
+		CWeaponInfo *pWeaponInfo = WEAPONINFO (pObj);
+		if (!pWeaponInfo)
+			return 0;
+		fix xLight = pWeaponInfo->light;
 		if (pObj->IsMissile ())
 			*pColor = missileColor;
 		else if (gameOpts->render.color.nLevel)

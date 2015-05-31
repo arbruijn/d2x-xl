@@ -472,48 +472,58 @@ if (gameStates.render.bDropAfterburnerBlob) {
 	gameStates.render.bDropAfterburnerBlob = 0;
 	}
 
-if ((info.nType == OBJ_WEAPON) && (gameData.weaponData.info [0][info.nId].nAfterburnerSize)) {
-	int32_t	nObject, bSmoke;
-	fix	vel;
-	fix	delay, lifetime, nSize;
+if (info.nType !OBJ_WEAPON)
+	return;
+
+CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
+
+if (!pWeaponInfo)
+	return;
+
+if (!pWeaponInfo->nAfterburnerSize)
+	return;
+
+	int32_t	bSmoke;
+	fix		delay, lifetime, nSize;
 
 #if 1
-	if (IsMissile ()) {
-		if (SHOW_SMOKE && gameOpts->render.particles.bMissiles)
-			return;
-		if ((gameStates.app.bNostalgia || EGI_FLAG (bThrusterFlames, 1, 1, 0)) &&
-			 (info.nId != MERCURYMSL_ID))
-			return;
-		}
+if (IsMissile ()) {
+	if (SHOW_SMOKE && gameOpts->render.particles.bMissiles)
+		return;
+	if ((gameStates.app.bNostalgia || EGI_FLAG (bThrusterFlames, 1, 1, 0)) &&
+			(info.nId != MERCURYMSL_ID))
+		return;
+	}
 #endif
-	if ((vel = mType.physInfo.velocity.Mag()) > I2X (200))
-		delay = I2X (1) / 16;
-	else if (vel > I2X (40))
-		delay = FixDiv (I2X (13), vel);
-	else
-		delay = DEG90;
+fix vel = mType.physInfo.velocity.Mag ();
 
-	if ((bSmoke = SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
-		nSize = I2X (3);
-		lifetime = I2X (1) / 12;
-		delay = 0;
-		}
-	else {
-		nSize = I2X (gameData.weaponData.info [0][info.nId].nAfterburnerSize) / 16;
-		lifetime = 3 * delay / 2;
-		if (!IsMultiGame) {
-			delay /= 2;
-			lifetime *= 2;
-			}
-		}
+if (vel > I2X (200))
+	delay = I2X (1) / 16;
+else if (vel > I2X (40))
+	delay = FixDiv (I2X (13), vel);
+else
+	delay = DEG90;
 
-	nObject = OBJ_IDX (this);
-	if (bSmoke ||
-		 (gameData.objData.xLastAfterburnerTime [nObject] + delay < gameData.timeData.xGame) ||
-		 (gameData.objData.xLastAfterburnerTime [nObject] > gameData.timeData.xGame)) {
-		DropAfterburnerBlobs (this, 1, nSize, lifetime, NULL, bSmoke);
-		gameData.objData.xLastAfterburnerTime [nObject] = gameData.timeData.xGame;
+if ((bSmoke = SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
+	nSize = I2X (3);
+	lifetime = I2X (1) / 12;
+	delay = 0;
+	}
+else {
+	nSize = I2X (pWeaponInfo->nAfterburnerSize) / 16;
+	lifetime = 3 * delay / 2;
+	if (!IsMultiGame) {
+		delay /= 2;
+		lifetime *= 2;
 		}
+	}
+
+int32_t nObject = OBJ_IDX (this);
+if (bSmoke ||
+		(gameData.objData.xLastAfterburnerTime [nObject] + delay < gameData.timeData.xGame) ||
+		(gameData.objData.xLastAfterburnerTime [nObject] > gameData.timeData.xGame)) {
+	DropAfterburnerBlobs (this, 1, nSize, lifetime, NULL, bSmoke);
+	gameData.objData.xLastAfterburnerTime [nObject] = gameData.timeData.xGame;
 	}
 }
 

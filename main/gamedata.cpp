@@ -2720,13 +2720,12 @@ return RobotInfo (pObj->Id (), nChecks, pszFile, nLine);
 
 CWeaponInfo* CGameData::WeaponInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
-int32_t bD1 = gameStates.app.bD1Mission;
-CArray<CWeaponInfo>& a = weaponData.info [bD1];
+CArray<CWeaponInfo>& a = weaponData.info [gameStates.app.bD1Mission];
 if (!a.Buffer ())
 	return (CWeaponInfo*) GameDataError ("weapon info", "buffer", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
 if (nId < 0)
 	return (CWeaponInfo*) GameDataError ("weapon info", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
-if ((uint32_t) nId >= (bD1 ? D1_MAX_WEAPON_TYPES : D2_MAX_WEAPON_TYPES))
+if ((uint32_t) nId >= (gameStates.app.bD1Mission ? D1_MAX_WEAPON_TYPES : D2_MAX_WEAPON_TYPES))
 	return (CWeaponInfo*) GameDataError ("weapon info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
 if (nId >= botData.nTypes [bD1])
 	return (CWeaponInfo*) GameDataError ("weapon info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);

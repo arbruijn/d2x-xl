@@ -114,34 +114,35 @@ for (int32_t h = pModel->TextureCount (), i = 0; i < h; i++, pi++) {
 
 void LoadWeaponTextures (int32_t nWeaponType)
 {
-if ((nWeaponType < 0) || (nWeaponType > gameData.weaponData.nTypes [0])) 
+	CWeaponInfo *pWeaponInfo = WEAPONINFO (nWeaponType);
+if (!pWeaponInfo) 
 	return;
-if (gameData.weaponData.info [0][nWeaponType].picture.index)
-	LoadTexture (gameData.weaponData.info [0][nWeaponType].hiresPicture.index, 0, 0);
-if (gameData.weaponData.info [0][nWeaponType].nFlashAnimation >= 0)
-	LoadAnimationTextures (&gameData.effectData.animations [0][gameData.weaponData.info [0][nWeaponType].nFlashAnimation], 0);
-if (gameData.weaponData.info [0][nWeaponType].nWallHitAnimation >= 0)
-	LoadAnimationTextures (&gameData.effectData.animations [0][gameData.weaponData.info [0][nWeaponType].nWallHitAnimation], 0);
+if (pWeaponInfo->picture.index)
+	LoadTexture (pWeaponInfo->hiresPicture.index, 0, 0);
+if (pWeaponInfo->nFlashAnimation >= 0)
+	LoadAnimationTextures (&gameData.effectData.animations [0][pWeaponInfo->nFlashAnimation], 0);
+if (pWeaponInfo->nWallHitAnimation >= 0)
+	LoadAnimationTextures (&gameData.effectData.animations [0][pWeaponInfo->nWallHitAnimation], 0);
 if (WI_damage_radius (nWeaponType)) {
 	// Robot_hit_vclips are actually badass_vclips
-	if (gameData.weaponData.info [0][nWeaponType].nRobotHitAnimation >= 0)
-		LoadAnimationTextures (&gameData.effectData.animations [0][gameData.weaponData.info [0][nWeaponType].nRobotHitAnimation], 0);
+	if (pWeaponInfo->nRobotHitAnimation >= 0)
+		LoadAnimationTextures (&gameData.effectData.animations [0][pWeaponInfo->nRobotHitAnimation], 0);
 	}
-switch (gameData.weaponData.info [0][nWeaponType].renderType) {
+switch (pWeaponInfo->renderType) {
 	case WEAPON_RENDER_VCLIP:
-		if (gameData.weaponData.info [0][nWeaponType].nAnimationIndex >= 0)
-			LoadAnimationTextures (&gameData.effectData.animations [0][gameData.weaponData.info [0][nWeaponType].nAnimationIndex], 0);
+		if (pWeaponInfo->nAnimationIndex >= 0)
+			LoadAnimationTextures (&gameData.effectData.animations [0][pWeaponInfo->nAnimationIndex], 0);
 		break;
 
 	case WEAPON_RENDER_NONE:
 		break;
 
 	case WEAPON_RENDER_POLYMODEL:
-		LoadModelTextures (gameData.weaponData.info [0][nWeaponType].nModel);
+		LoadModelTextures (pWeaponInfo->nModel);
 		break;
 
 	case WEAPON_RENDER_BLOB:
-		LoadTexture (gameData.weaponData.info [0][nWeaponType].bitmap.index, 0, 0);
+		LoadTexture (pWeaponInfo->bitmap.index, 0, 0);
 		break;
 	}
 }
