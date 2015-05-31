@@ -99,7 +99,7 @@ char powerupToWeaponCount [MAX_POWERUP_TYPES];
 char powerupClass [MAX_POWERUP_TYPES];
 char powerupToObject [MAX_POWERUP_TYPES];
 int16_t powerupToModel [MAX_POWERUP_TYPES];
-int16_t weaponToModel [MAX_WEAPON_TYPES];
+int16_t weaponToModel [D2_MAX_WEAPON_TYPES];
 uint8_t powerupType [MAX_POWERUP_TYPES];
 uint8_t powerupFilter [MAX_POWERUP_TYPES];
 void *pickupHandler [MAX_POWERUP_TYPES];

@@ -150,7 +150,9 @@ if ((nGuns == 0) && (pRobotInfo->nSecWeaponType != -1))
 	nWeaponType = pRobotInfo->nSecWeaponType;
 if (nWeaponType < 0)
 	return 0;
-pWeaponInfo = gameData.weaponData.info + nWeaponType;
+pWeaponInfo = WEAPONINFO (nWeaponType);
+if (!pWeaponInfo)
+	return 0;
 xMaxWeaponSpeed = pWeaponInfo->speed [gameStates.app.nDifficultyLevel];
 if (xMaxWeaponSpeed < I2X (1))
 	return 0;
