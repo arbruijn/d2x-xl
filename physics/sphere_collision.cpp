@@ -802,7 +802,7 @@ return -1;
 //if no intersects, returns 0, else fills in intP and returns dist
 fix CheckVectorObjectCollision (CHitData& hitData, CFixVector *p0, CFixVector *p1, fix rad, CObject *pThisObj, CObject *pOtherObj, int32_t nCollisionModel, bool bCheckVisibility)
 {
-ENTER (0, "CheckVectorObjectCollision");
+ENTER (0);
 
 	fix			size, dist;
 	CFixVector	vHit, vNormal, v0, v1, vn, vPos;
@@ -921,7 +921,7 @@ return (t == nObject);
 
 int32_t ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery, int32_t nCollisionModel, int32_t nThread)
 {
-ENTER (nThread, "ComputeObjectHitpoint");
+ENTER (nThread);
 
 	CObject		* pThisObj = (hitQuery.nObject < 0) ? NULL : OBJECT (hitQuery.nObject),
 			 		* pOtherObj;
@@ -1093,7 +1093,7 @@ return 0;
 
 int32_t ComputeHitpoint (CHitData& hitData, CHitQuery& hitQuery, int16_t* segList, int16_t* nSegments, int32_t nEntrySeg, int32_t nCollisionModel, int32_t nThread)
 {
-ENTER (0, "ComputeHitpoint");
+ENTER (0);
 
 	CHitData		bestHit, curHit;
 	fix			d, dMin = 0x7fffffff;					//distance to hit pRef
@@ -1272,7 +1272,7 @@ RETURN (bestHit.nType);
 //Returns the hitResult->nHitType
 int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult, int32_t nCollisionModel, int32_t nThread)
 {
-ENTER (0, "FindHitPoint");
+ENTER (0);
 
 	CHitData		curHit, newHit;
 	int32_t		i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes; // save value
@@ -1437,7 +1437,7 @@ return SphereIntersectsWall (&pObj->info.position.vPos, pObj->info.nSegment, pOb
 
 int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int8_t nDestSide, int32_t nDepth, int32_t nThread)
 {
-ENTER (nThread, "PointSeesPoint");
+ENTER (nThread);
 
 #if 0
 

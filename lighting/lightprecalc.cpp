@@ -97,7 +97,7 @@ static int32_t nSavedCount = 0;
 
 void ComputeSingleSegmentDistance (int32_t nSegment, int32_t nThread)
 {
-ENTER (nThread, "ComputeSingleSegmentDistance");
+ENTER (nThread);
 
 	fix xMaxDist = 0;
 	float scale = 1.0f;
@@ -214,7 +214,7 @@ return 0;
 
 int32_t ComputeNearestSegmentLights (int32_t i, int32_t nThread)
 {
-ENTER (nThread, "ComputeNearestSegmentLights");
+ENTER (nThread);
 
 	CSegment				*pSeg;
 	CDynLight			*pLight;
@@ -268,7 +268,7 @@ extern int32_t nDbgVertex;
 
 int32_t ComputeNearestVertexLights (int32_t nVertex, int32_t nThread)
 {
-ENTER (nThread, "ComputeNearestVertexLights");
+ENTER (nThread);
 
 	CFixVector*			pVertex;
 	CDynLight*			pLight;
@@ -448,7 +448,7 @@ ogl.EndFrame (-1);
 
 static void ComputeSingleSegmentVisibility (int32_t nThread, int16_t nStartSeg, int16_t nFirstSide, int16_t nLastSide, int32_t bLights)
 {
-ENTER (nThread, "ComputeSingleSegmentVisibility");
+ENTER (nThread);
 
 	CSegment				*pStartSeg;
 	CSide					*pSide;

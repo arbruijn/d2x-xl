@@ -550,23 +550,22 @@ else {
 void TraceCallStack (const int32_t nDirection, const char *pszFunction, const int32_t nThread, const char *pszFile, const int32_t nLine)
 {
 #pragma omp critical
-if (!callStack.Buffer ()) {
+if (!callStack.Buffer ())
 	callStack.Create (100);
-	if (!callStack.Buffer ())
-		return;
-	}
-CStackFrame	f;
-strncpy (f.m_szFunction, pszFunction, sizeof (f.m_szFunction));
-f.m_nThread = nThread;
-if (nDirection > 0) {
-	strncpy (f.m_szFile, pszFile, sizeof (f.m_szFile));
-	f.m_nLine = nLine;
-	callStack.Push (f);
-	}
-else {
-	for (int32_t i = int32_t (callStack.ToS ()) - 1; i >= 0; i--)
-		if (callStack [i] == f)
-			callStack.Delete (uint32_t (i));
+if (callStack.Buffer ()) {
+	CStackFrame	f;
+	strncpy (f.m_szFunction, pszFunction, sizeof (f.m_szFunction));
+	f.m_nThread = nThread;
+	if (nDirection > 0) {
+		strncpy (f.m_szFile, pszFile, sizeof (f.m_szFile));
+		f.m_nLine = nLine;
+		callStack.Push (f);
+		}
+	else {
+		for (int32_t i = int32_t (callStack.ToS ()) - 1; i >= 0; i--)
+			if (callStack [i] == f)
+				callStack.Delete (uint32_t (i));
+		}
 	}
 }
 

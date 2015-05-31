@@ -682,7 +682,7 @@ return (gameStates.app.bAutoRunMission || !missionManager.nSongs) ? szNoSong : m
 
 void UnloadLevelData (int32_t bRestore, bool bQuit)
 {
-ENTER (0, "UnloadLevelData");
+ENTER (0);
 PrintLog (1);
 
 paletteManager.EnableEffect (true);
@@ -765,7 +765,7 @@ LEAVE;
 
 int32_t LoadModData (char* pszLevelName, int32_t bLoadTextures, int32_t nStage)
 {
-ENTER (0, "LoadModData");
+ENTER (0);
 
 	int32_t	nLoadRes = 0;
 	char	szFile [FILENAME_LEN];
@@ -887,7 +887,7 @@ RETURN (nLoadRes);
 
 static void CleanupBeforeGame (int32_t nLevel, int32_t bRestore)
 {
-ENTER (0, "CleanupBeforeGame");
+ENTER (0);
 DestroyRenderThreads ();
 transparencyRenderer.ResetBuffers ();
 gameData.Destroy ();
@@ -957,7 +957,7 @@ extern char szAutoMission [255];
 
 int32_t LoadLevel (int32_t nLevel, bool bLoadTextures, bool bRestore)
 {
-ENTER (0, "LoadLevel");
+ENTER (0);
 
 	char			*pszLevelName;
 	char			szHogName [FILENAME_LEN];
