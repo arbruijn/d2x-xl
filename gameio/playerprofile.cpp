@@ -1729,11 +1729,13 @@ KCSetControls (1);
 //post processing of parameters
 if (gameStates.input.nPlrFileVersion >= 23) {
 	if (gameData.appData.nLifetimeChecksum != GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled)) {
+ 		TextBox (NULL, BG_STANDARD, 1, TXT_PROFILE_DAMAGED, TXT_WARNING);
+#if !DBG
 		networkData.nNetLifeKills =
 		networkData.nNetLifeKilled = 0;
 		gameData.appData.nLifetimeChecksum = 0;
- 		TextBox (NULL, BG_STANDARD, 1, TXT_PROFILE_DAMAGED, TXT_WARNING);
 		bRewriteIt = 1;
+#endif
 		}
 	}
 for (i = 0; i < sizeof (gameData.escortData.szName); i++) {

@@ -563,7 +563,12 @@ if (gameStates.app.nTraceLevel > -1) {
 		if (nDirection > 0) {
 			f.m_pszFile = pszFile;
 			f.m_nLine = nLine;
+#if DBG
+			if (!callStack.Push (f))
+				BRP;
+#else
 			callStack.Push (f);
+#endif
 			}
 		else {
 			for (int32_t i = int32_t (callStack.ToS ()) - 1; i >= 0; i--)
