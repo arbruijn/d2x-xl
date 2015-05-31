@@ -269,7 +269,7 @@ if (vPos && (nVolume < 10))
 if (!nVolume)
 	return -1;
 if (!pszWAV) {
-	if (gameData.demo.nState == ND_STATE_RECORDING) {
+	if (gameData.demoData.nState == ND_STATE_RECORDING) {
 		if (bNoDups)
 			NDRecordSound3DOnce (nSound, nPan, nVolume);
 		else
@@ -408,7 +408,7 @@ if (!(pszSound && *pszSound)) {
 	nSound = XlatSound (nOrgSound);
 	if (nSound < 0)
 		return -1;
-	if (!gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound].data) {
+	if (!gameData.pigData.sound.sounds [gameStates.sound.bD1Sound][nSound].data) {
 		Int3 ();
 		return -1;
 		}
@@ -422,7 +422,7 @@ if (!bForever) { 	// Hack to keep sounds from building up...
 	PlaySound (nOrgSound, nSoundClass, nVolume, nPan, 0, -1, pszSound, &pObj->info.position.vPos);
 	return -1;
 	}
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordCreateObjectSound (nOrgSound, nObject, maxVolume, maxDistance, nLoopStart, nLoopEnd);
 if (!m_objects.Grow ())
 	return -1;
@@ -479,7 +479,7 @@ int32_t CAudio::ChangeObjectSound (int32_t nObject, fix nVolume)
 
 	CSoundObject*	pSoundObj = m_objects.Buffer ();
 
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordDestroySoundObject (nObject);
 
 for (uint32_t i = 0; i < m_objects.ToS (); i++, pSoundObj++) {
@@ -563,7 +563,7 @@ int32_t CAudio::DestroyObjectSound (int32_t nObject, int16_t nSound)
 {
 	int32_t nKilled = 0;
 
-if ((nObject >= 0) && (gameData.demo.nState == ND_STATE_RECORDING))
+if ((nObject >= 0) && (gameData.demoData.nState == ND_STATE_RECORDING))
 	NDRecordDestroySoundObject (nObject);
 
 if (nObject == LOCALPLAYER.nObject)
@@ -618,13 +618,13 @@ if (maxVolume < 0)
 //	if (maxVolume > I2X (1)) maxVolume = I2X (1);
 if (nSound < 0)
 	return -1;
-if (!gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound].data) {
+if (!gameData.pigData.sound.sounds [gameStates.sound.bD1Sound][nSound].data) {
 	Int3 ();
 	return -1;
 	}
 if ((nSegment < 0)|| (nSegment > gameData.segData.nLastSegment))
 	return -1;
-if (!bForever) { 	//&& gameData.pig.sound.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD) {
+if (!bForever) { 	//&& gameData.pigData.sound.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD) {
 	// Hack to keep sounds from building up...
 	int32_t nVolume, nPan;
 	GetVolPan (gameData.objData.pViewer->info.position.mOrient, gameData.objData.pViewer->info.position.vPos, gameData.objData.pViewer->info.nSegment,
@@ -728,7 +728,7 @@ if (!OBJECTS.Buffer ())
 	CFixMatrix		mListenerOrient = gameData.objData.pViewer->info.position.mOrient;
 	int16_t			nListenerSeg = gameData.objData.pViewer->info.nSegment;
 
-if (gameData.demo.nState == ND_STATE_RECORDING) {
+if (gameData.demoData.nState == ND_STATE_RECORDING) {
 	if (!gameStates.sound.bWasRecording)
 		RecordSoundObjects ();
 	gameStates.sound.bWasRecording = 1;
@@ -769,7 +769,7 @@ while (i) {
 				&soundObj.m_volume, &soundObj.m_pan, soundObj.m_maxDistance, soundObj.m_nDecay);
 			}
 		else if (soundObj.m_flags & SOF_LINK_TO_OBJ) {
-			if (gameData.demo.nState == ND_STATE_PLAYBACK) {
+			if (gameData.demoData.nState == ND_STATE_PLAYBACK) {
 				int32_t nObject = NDFindObject (soundObj.m_linkType.obj.nObjSig);
 				pObj = OBJECT (nObject);
 				}
@@ -1043,12 +1043,12 @@ CSegment* pSeg = SEGMENT (nSegment);
 if (!(pSeg->IsPassable (nSide, NULL) & WID_VISIBLE_FLAG))
 	return -1;
 int16_t nOvlTex = pSeg->m_sides [nSide].m_nOvlTex;
-int16_t nEffect = nOvlTex ? gameData.pig.tex.pTexMapInfo [nOvlTex].nEffectClip : -1;
+int16_t nEffect = nOvlTex ? gameData.pigData.tex.pTexMapInfo [nOvlTex].nEffectClip : -1;
 if (nEffect < 0)
-	nEffect = gameData.pig.tex.pTexMapInfo [pSeg->m_sides [nSide].m_nBaseTex].nEffectClip;
+	nEffect = gameData.pigData.tex.pTexMapInfo [pSeg->m_sides [nSide].m_nBaseTex].nEffectClip;
 if (nEffect < 0)
 	return -1;
-int32_t nSound = gameData.effects.pEffect [nEffect].nSound;
+int32_t nSound = gameData.effectData.pEffect [nEffect].nSound;
 if (nSound == -1)
 	return -1;
 int16_t nConnSeg = pSeg->m_children [nSide];

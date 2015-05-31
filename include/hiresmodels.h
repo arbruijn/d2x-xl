@@ -27,10 +27,10 @@ int32_t ReplacementModelCount (void);
 
 static inline ASE::CModel* GetASEModel (int32_t nModel)
 {
-if (gameData.models.modelToASE [1][nModel])
-	return gameData.models.modelToASE [1][nModel];
-if (gameData.models.modelToASE [0][nModel])
-	return gameData.models.modelToASE [0][nModel];
+if (gameData.modelData.modelToASE [1][nModel])
+	return gameData.modelData.modelToASE [1][nModel];
+if (gameData.modelData.modelToASE [0][nModel])
+	return gameData.modelData.modelToASE [0][nModel];
 return NULL;
 }
 
@@ -38,10 +38,10 @@ return NULL;
 
 static inline OOF::CModel* GetOOFModel (int32_t nModel)
 {
-if (gameData.models.modelToOOF [1][nModel])
-	return gameData.models.modelToOOF [1][nModel];
-if (gameData.models.modelToOOF [0][nModel])
-	return gameData.models.modelToOOF [0][nModel];
+if (gameData.modelData.modelToOOF [1][nModel])
+	return gameData.modelData.modelToOOF [1][nModel];
+if (gameData.modelData.modelToOOF [0][nModel])
+	return gameData.modelData.modelToOOF [0][nModel];
 return NULL;
 }
 
@@ -49,8 +49,8 @@ return NULL;
 
 static inline CPolyModel* GetPOLModel (int32_t nModel)
 {
-if (gameData.models.modelToPOL [nModel])
-	return gameData.models.modelToPOL [nModel];
+if (gameData.modelData.modelToPOL [nModel])
+	return gameData.modelData.modelToPOL [nModel];
 return NULL;
 }
 

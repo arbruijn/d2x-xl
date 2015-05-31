@@ -376,7 +376,7 @@ if ((m = menu ["difficulty"])) {
 	v = m->Value ();
 	if (gameStates.app.nDifficultyLevel != v) {
 		gameStates.app.nDifficultyLevel = v;
-		gameData.bosses.InitGateIntervals ();
+		gameData.bossData.InitGateIntervals ();
 		sprintf (m->Text (), TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 		m->Rebuild ();
 		}
@@ -1213,9 +1213,9 @@ else if (m.Available ("launch game") && (choice == m.IndexOf ("launch game")))
 	key = 0;
 else if (choice == m.IndexOf ("more options")) {
 	if (m [nGameTypes + 3].Value ())
-		gameData.app.SetGameMode (GM_MULTI_COOP);
+		gameData.appData.SetGameMode (GM_MULTI_COOP);
 	NetworkMoreGameOptions ();
-	gameData.app.SetGameMode (0);
+	gameData.appData.SetGameMode (0);
 	if (gameStates.multi.nGameType == UDP_GAME) {
 		sprintf (szIpAddr, "Game Host: %d.%d.%d.%d:%d", 
 					ipx_MyAddress.m_address.node.portAddress.ip.octets [0], 

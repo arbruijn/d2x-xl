@@ -1551,16 +1551,16 @@ int32_t CreateShieldSphere (void)
 {
 if (!shield [0].Load () || !shield [1].Load () || !shield [2].Load ())
 	/*nothing*/; //return 0;
-if (gameData.render.shield) {
-	if (gameData.render.shield->HasQuality (gameOpts->render.textures.nQuality + 1))
+if (gameData.renderData.shield) {
+	if (gameData.renderData.shield->HasQuality (gameOpts->render.textures.nQuality + 1))
 		return 1;
-	delete gameData.render.shield;
+	delete gameData.renderData.shield;
 	}
-if (!(gameData.render.shield = CreateSphere ()))
+if (!(gameData.renderData.shield = CreateSphere ()))
 	return 0;
-gameData.render.shield->Create ();
-gameData.render.shield->SetupPulse (0.02f, 0.5f);
-gameData.render.shield->SetPulse (NULL);
+gameData.renderData.shield->Create ();
+gameData.renderData.shield->SetupPulse (0.02f, 0.5f);
+gameData.renderData.shield->SetPulse (NULL);
 return 1;
 }
 
@@ -1571,7 +1571,7 @@ int32_t DrawShieldSphere (CObject *pObj, float red, float green, float blue, flo
 if (!CreateShieldSphere ())
 	return 0;
 #if !RINGED_SPHERE
-if (gameData.render.shield->m_nFaces > 0)
+if (gameData.renderData.shield->m_nFaces > 0)
 #endif
  {
 	if (!nSize) {
@@ -1588,7 +1588,7 @@ if (gameData.render.shield->m_nFaces > 0)
 		}
 	float r = X2F (nSize);
 	if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
-		gameData.render.shield->Render (pObj, NULL, r, r, r, red, green, blue, alpha, 1, bAdditive);
+		gameData.renderData.shield->Render (pObj, NULL, r, r, r, red, green, blue, alpha, 1, bAdditive);
 	else
 		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, pObj, bAdditive, nSize);
 	}
@@ -1600,14 +1600,14 @@ return 1;
 void DrawMonsterball (CObject *pObj, float red, float green, float blue, float alpha)
 {
 #if !RINGED_SPHERE
-if (!gameData.render.monsterball) {
-	gameData.render.monsterball = CreateSphere ();
-	if (!gameData.render.monsterball)
+if (!gameData.renderData.monsterball) {
+	gameData.renderData.monsterball = CreateSphere ();
+	if (!gameData.renderData.monsterball)
 		return;
-	gameData.render.monsterball->SetQuality (3);
-	gameData.render.monsterball->Create ();
+	gameData.renderData.monsterball->SetQuality (3);
+	gameData.renderData.monsterball->Create ();
 	}
-if (gameData.render.monsterball->m_nFaces > 0)
+if (gameData.renderData.monsterball->m_nFaces > 0)
 #endif
 	{
 	if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY)
@@ -1616,7 +1616,7 @@ if (gameData.render.monsterball->m_nFaces > 0)
 		float r = X2F (pObj->info.xSize);
 		CFloatVector p;
 		p.SetZero ();
-		gameData.render.monsterball->Render (pObj, &p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha, 4, 0);
+		gameData.renderData.monsterball->Render (pObj, &p, r, r, r, red, green, blue, gameData.hoardData.monsterball.bm.Buffer () ? 1.0f : alpha, 4, 0);
 		ogl.ResetTransform (1);
 		ogl.SetTransform (0);
 		}
@@ -1627,16 +1627,16 @@ if (gameData.render.monsterball->m_nFaces > 0)
 
 void DestroyShieldSphere (void)
 {
-if (gameData.render.shield)
-	gameData.render.shield->Destroy ();
+if (gameData.renderData.shield)
+	gameData.renderData.shield->Destroy ();
 }
 
 // -----------------------------------------------------------------------------
 
 void DestroyMonsterball (void)
 {
-if (gameData.render.monsterball)
-	gameData.render.monsterball->Destroy ();
+if (gameData.renderData.monsterball)
+	gameData.renderData.monsterball->Destroy ();
 }
 
 // -----------------------------------------------------------------------------

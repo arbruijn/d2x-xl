@@ -79,7 +79,7 @@ void CFpLightath::GetViewPoint (CFixVector* vPos)
 	tPathPoint* p = GetPoint ();
 
 if (!vPos)
-	vPos = &gameData.render.mine.viewer.vPos;
+	vPos = &gameData.renderData.mine.viewer.vPos;
 if (!p)
 	*vPos += gameData.objData.pViewer->info.position.mOrient.m.dir.f * PP_DELTAZ;
 else {

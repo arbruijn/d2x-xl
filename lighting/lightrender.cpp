@@ -238,7 +238,7 @@ if (nVertex == nDbgVertex)
 			continue;
 		if (pLight->render.bUsed [nThread])
 			continue;
-		if (gameData.threads.vertColor.data.bNoShadow && pLight->render.bShadow)
+		if (gameData.threadData.vertColor.data.bNoShadow && pLight->render.bShadow)
 			continue;
 		if (pLight->info.bVariable) {
 			if (!(bVariable && pLight->info.bOn))
@@ -285,11 +285,11 @@ ENTER (2, 0, "CLightManager::SetNearestToFace");
 PROF_START
 #if 0
 	static		int32_t nFrameCount = -1;
-if ((pFace == prevFaceP) && (nFrameCount == gameData.app.nFrameCount))
+if ((pFace == prevFaceP) && (nFrameCount == gameData.appData.nFrameCount))
 	RETURN (m_data.index [0][0].nActive);
 
 prevFaceP = pFace;
-nFrameCount = gameData.app.nFrameCount;
+nFrameCount = gameData.appData.nFrameCount;
 #endif
 	int32_t		i;
 	CFixVector	vNormal;
@@ -341,7 +341,7 @@ if (gameStates.render.nLightingMethod) {
 			break;
 		if (!(pLight = RenderLights (j)))
 			continue;
-		if (gameData.threads.vertColor.data.bNoShadow && pLight->render.bShadow)
+		if (gameData.threadData.vertColor.data.bNoShadow && pLight->render.bShadow)
 			continue;
 		if (pLight->info.bVariable) {
 			if (!pLight->info.bOn)
@@ -396,7 +396,7 @@ if (gameStates.render.nLightingMethod) {
 		if ((nDbgSeg >= 0) && (pLight->info.nSegment == nDbgSeg))
 			BRP;
 #endif
-		if (gameData.threads.vertColor.data.bNoShadow && pLight->render.bShadow)
+		if (gameData.threadData.vertColor.data.bNoShadow && pLight->render.bShadow)
 			continue;
 #if DBG
 		if ((nDbgSeg >= 0) && (pLight->info.nSegment == nDbgSeg))
@@ -411,7 +411,7 @@ if (gameStates.render.nLightingMethod) {
 				continue;
 			}
 		else {
-			if (pLight->info.bPowerup > gameData.render.nPowerupFilter)
+			if (pLight->info.bPowerup > gameData.renderData.nPowerupFilter)
 				continue;
 			if (nType < 2) {	// all light emitting objects scanned
 				if (!bVariable)
@@ -456,7 +456,7 @@ if (gameStates.render.nLightingMethod) {
 				pLight->render.nTarget = -nSegment - 1;
 			else
 				pLight->render.nTarget = nFace + 1;
-			pLight->render.nFrame = gameData.app.nFrameCount;
+			pLight->render.nFrame = gameData.appData.nFrameCount;
 			}
 #else
 		SetActive (pActiveLights, pLight, 1, nThread);
@@ -583,7 +583,7 @@ RETURN (m_data.index [0][0].nActive);
 
 CFaceColor* CLightManager::AvgSgmColor (int32_t nSegment, CFixVector *vPosP, int32_t nThread)
 {
-	CFaceColor	c, *pVertexColor, *pSegColor = gameData.render.color.segments + nSegment;
+	CFaceColor	c, *pVertexColor, *pSegColor = gameData.renderData.color.segments + nSegment;
 	uint16_t		*pv;
 	int32_t		i;
 	CFixVector	vCenter, vVertex;
@@ -593,7 +593,7 @@ CFaceColor* CLightManager::AvgSgmColor (int32_t nSegment, CFixVector *vPosP, int
 if (nSegment == nDbgSeg)
 	BRP;
 #endif
-if (!vPosP && (pSegColor->index == (char) (gameData.app.nFrameCount & 0xff)) && (pSegColor->Red () + pSegColor->Green () + pSegColor->Blue () != 0))
+if (!vPosP && (pSegColor->index == (char) (gameData.appData.nFrameCount & 0xff)) && (pSegColor->Red () + pSegColor->Green () + pSegColor->Blue () != 0))
 	return pSegColor;
 #if DBG
 if (nSegment == nDbgSeg)
@@ -645,7 +645,7 @@ else {
 	for (i = 0; i < 8; i++, pv++) {
 		if (*pv == 0xFFFF)
 			continue;
-		pVertexColor = gameData.render.color.vertices + *pv;
+		pVertexColor = gameData.renderData.color.vertices + *pv;
 		if (vPosP) {
 			vVertex = gameData.segData.vertices [*pv];
 			//transformation.Transform (&vVertex, &vVertex);
@@ -664,7 +664,7 @@ else {
 	c *= 0.125f; // => / 8.0f
 	pSegColor->Assign (c);
 	}
-pSegColor->index = (char) (gameData.app.nFrameCount & 0xff);
+pSegColor->index = (char) (gameData.appData.nFrameCount & 0xff);
 return pSegColor;
 }
 
@@ -673,7 +673,7 @@ return pSegColor;
 void CLightManager::ResetSegmentLights (void)
 {
 for (int16_t i = 0; i < gameData.segData.nSegments; i++)
-	gameData.render.color.segments [i].index = -1;
+	gameData.renderData.color.segments [i].index = -1;
 }
 
 //------------------------------------------------------------------------------

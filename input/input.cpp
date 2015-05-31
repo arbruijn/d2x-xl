@@ -92,10 +92,10 @@ fix Next_toggleTime [3]={0,0,0};
 int32_t CControlsManager::AllowToToggle (int32_t i)
 {
 //used for keeping tabs of when its ok to toggle headlight,primary,and secondary
-if (Next_toggleTime [i] > gameData.time.xGame)
-	if (Next_toggleTime [i] < gameData.time.xGame + (I2X (1)/8))	//	In case time is bogus, never wait > 1 second.
+if (Next_toggleTime [i] > gameData.timeData.xGame)
+	if (Next_toggleTime [i] < gameData.timeData.xGame + (I2X (1)/8))	//	In case time is bogus, never wait > 1 second.
 		return 0;
-Next_toggleTime [i] = gameData.time.xGame + (I2X (1)/8);
+Next_toggleTime [i] = gameData.timeData.xGame + (I2X (1)/8);
 return 1;
 }
 
@@ -865,7 +865,7 @@ if (bGetSlideBank == 2) {
 	else {
 		SDL_GetMouseState (&mouseData.x, &mouseData.y);
 		if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
-			int32_t dx = mouseData.x - gameData.render.screen.Width () / 2;
+			int32_t dx = mouseData.x - gameData.renderData.screen.Width () / 2;
 			int32_t dz = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 			if (dx < 0) {
 				if (dx > -dz)
@@ -874,13 +874,13 @@ if (bGetSlideBank == 2) {
 					dx += dz;
 				}
 			else {
-				//dz = dz * gameData.render.screen.Width () / gameData.render.screen.Height ();
+				//dz = dz * gameData.renderData.screen.Width () / gameData.renderData.screen.Height ();
 				if (dx < dz)
 					dx = 0;
 				else
 					dx -= dz;
 				}
-			dx = 640 * dx / (gameData.render.screen.Width () / gameOpts->input.mouse.sensitivity [0]);
+			dx = 640 * dx / (gameData.renderData.screen.Width () / gameOpts->input.mouse.sensitivity [0]);
 			m_info [3].headingTime += dx; // * gameOpts->input.mouse.sensitivity [0]); // nMouseSensMod;
 			}
 		else {
@@ -901,7 +901,7 @@ if (bGetSlideBank == 2) {
 			}
 		else {
 			if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
-				int32_t	dy = mouseData.y - gameData.render.screen.Height () / 2;
+				int32_t	dy = mouseData.y - gameData.renderData.screen.Height () / 2;
 				int32_t	dz = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 				if (kcMouse [14].value)
 					dy = -dy;
@@ -917,7 +917,7 @@ if (bGetSlideBank == 2) {
 					else
 						dy -= dz;
 					}
-				dy = 480 * dy / (gameData.render.screen.Height () / gameOpts->input.mouse.sensitivity [1]);
+				dy = 480 * dy / (gameData.renderData.screen.Height () / gameOpts->input.mouse.sensitivity [1]);
 				m_info [3].pitchTime += dy; // * gameOpts->input.mouse.sensitivity [1]); // nMouseSensMod;
 				}
 			else {
@@ -968,7 +968,7 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN) {
 
 int32_t CControlsManager::ReadOculusRift (void)
 {
-return transformation.m_info.bUsePlayerHeadAngles = ogl.IsOculusRift () && gameData.render.rift.GetHeadAngles (&transformation.m_info.playerHeadAngles);
+return transformation.m_info.bUsePlayerHeadAngles = ogl.IsOculusRift () && gameData.renderData.rift.GetHeadAngles (&transformation.m_info.playerHeadAngles);
 }
 
 //------------------------------------------------------------------------------
@@ -1002,8 +1002,8 @@ return 1;
 
 void CControlsManager::DoTrackIR (void)
 {
-	int32_t	dx = (int32_t) ((float) tirInfo.fvRot.z * (float) gameData.render.screen.Width () / 16384.0f),
-			dy = (int32_t) ((float) tirInfo.fvRot.y * (float) gameData.render.screen.Height () / 16384.0f),
+	int32_t	dx = (int32_t) ((float) tirInfo.fvRot.z * (float) gameData.renderData.screen.Width () / 16384.0f),
+			dy = (int32_t) ((float) tirInfo.fvRot.y * (float) gameData.renderData.screen.Height () / 16384.0f),
 			dz;
 	int32_t	x, y;
 	float	fDeadzone, fScale;
@@ -1041,8 +1041,8 @@ if (gameOpts->input.trackIR.nMode == 0) {
 		m_info [0].bankTime += (int32_t) (tirInfo.fvRot.x * m_pollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
 	}
 else if (gameOpts->input.trackIR.nMode == 1) {
-	dx = (int32_t) ((float) tirInfo.fvRot.z * (float) gameData.render.screen.Width () / 16384.0f);
-	dy = (int32_t) ((float) tirInfo.fvRot.y * (float) gameData.render.screen.Height () / 16384.0f);
+	dx = (int32_t) ((float) tirInfo.fvRot.z * (float) gameData.renderData.screen.Width () / 16384.0f);
+	dy = (int32_t) ((float) tirInfo.fvRot.y * (float) gameData.renderData.screen.Height () / 16384.0f);
 	dz = 0; //CalcDeadzone (dy, gameOpts->input.trackIR.nDeadzone);
 	if (dx < 0) {
 		if (dx > -dz)
@@ -1072,8 +1072,8 @@ else if (gameOpts->input.trackIR.nMode == 1) {
 #if 0//DBG
 	HUDMessage (0, "%d %d", dx, dy);
 #endif
-	dx = 640 * dx / (gameData.render.screen.Width () / (gameOpts->input.trackIR.sensitivity [0] + 1));
-	dy = 480 * dy / (gameData.render.screen.Height () / (gameOpts->input.trackIR.sensitivity [1] + 1));
+	dx = 640 * dx / (gameData.renderData.screen.Width () / (gameOpts->input.trackIR.sensitivity [0] + 1));
+	dy = 480 * dy / (gameData.renderData.screen.Height () / (gameOpts->input.trackIR.sensitivity [1] + 1));
 	if (gameOpts->input.trackIR.bMove [0]) {
 		m_info [0].headingTime -= dx;
 		m_info [0].pitchTime += dy;
@@ -1170,18 +1170,18 @@ int32_t CControlsManager::CapSampleRate (void)
 
 if (t - m_lastTick < 1000.0f / 30.0f)
 	return 1;
-m_pollTime = time_t (gameData.physics.xTime);
-m_frameTime = float (gameData.physics.xTime);
+m_pollTime = time_t (gameData.physicsData.xTime);
+m_frameTime = float (gameData.physicsData.xTime);
 m_slackTurnRate += m_frameTime;
 m_maxTurnRate = int32_t (m_slackTurnRate);
 m_slackTurnRate -= float (m_maxTurnRate);
 m_lastTick = t;
 return 0;
 #else
-if (gameData.app.bGamePaused)
+if (gameData.appData.bGamePaused)
 	GetSlowTicks ();
 m_frameCount++;
-m_pollTime += gameData.time.xFrame;
+m_pollTime += gameData.timeData.xFrame;
 if (!gameStates.app.tick40fps.bTick)
 	return 1;
 m_frameTime = float (m_pollTime) / m_frameCount;
@@ -1305,7 +1305,7 @@ for (i = 0; i < 3; i++) {
 	}
 if (gameOpts->input.bUseHotKeys)
 	DoD2XKeys (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int32_t*> (&gameStates.input.nCruiseSpeed), i);
-gameData.render.rift.AutoCalibrate ();
+gameData.renderData.rift.AutoCalibrate ();
 if (ReadOculusRift ())
 	DoOculusRift ();
 #ifdef _WIN32
@@ -1400,12 +1400,12 @@ if (N_LOCALPLAYER > -1) {
 		}
 	}
 #endif
-	m_info [0].pitchTime += FixMul (externalControls.m_info->pitchTime,gameData.time.xFrame);
-	m_info [0].verticalThrustTime += FixMul (externalControls.m_info->verticalThrustTime,gameData.time.xFrame);
-	m_info [0].headingTime += FixMul (externalControls.m_info->headingTime,gameData.time.xFrame);
-	m_info [0].sidewaysThrustTime += FixMul (externalControls.m_info->sidewaysThrustTime, gameData.time.xFrame);
-	m_info [0].bankTime += FixMul (externalControls.m_info->bankTime, gameData.time.xFrame);
-	m_info [0].forwardThrustTime += FixMul (externalControls.m_info->forwardThrustTime, gameData.time.xFrame);
+	m_info [0].pitchTime += FixMul (externalControls.m_info->pitchTime,gameData.timeData.xFrame);
+	m_info [0].verticalThrustTime += FixMul (externalControls.m_info->verticalThrustTime,gameData.timeData.xFrame);
+	m_info [0].headingTime += FixMul (externalControls.m_info->headingTime,gameData.timeData.xFrame);
+	m_info [0].sidewaysThrustTime += FixMul (externalControls.m_info->sidewaysThrustTime, gameData.timeData.xFrame);
+	m_info [0].bankTime += FixMul (externalControls.m_info->bankTime, gameData.timeData.xFrame);
+	m_info [0].forwardThrustTime += FixMul (externalControls.m_info->forwardThrustTime, gameData.timeData.xFrame);
 //	m_info [0].rearViewDownCount += externalControls.m_info->rearViewDownCount;
 //	m_info [0].rearViewDownState |= externalControls.m_info->rearViewDownState;
 	m_info [0].firePrimaryDownCount += externalControls.m_info->firePrimaryDownCount;

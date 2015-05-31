@@ -110,7 +110,7 @@ if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bOmega && !gameStates.ren
 	return -1;
 if (m_nHandles < 1)
 	return 0;
-if ((gameData.omega.xCharge [IsMultiGame] >= MAX_OMEGA_CHARGE) && (0 <= (nHandle = Find (LOCALPLAYER.nObject))))
+if ((gameData.omegaData.xCharge [IsMultiGame] >= MAX_OMEGA_CHARGE) && (0 <= (nHandle = Find (LOCALPLAYER.nObject))))
 	Destroy (nHandle);
 int16_t nObject = pParentObj ? OBJ_IDX (pParentObj) : -1;
 if (nObject < 0) {

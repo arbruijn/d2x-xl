@@ -172,7 +172,7 @@ else {
 			break;
 		}
 	}
-pszName = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [nTexture].index].name;
+pszName = gameData.pigData.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pigData.tex.pBmIndex [nTexture].index].name;
 if (strstr (pszName, "metl") || strstr (pszName, "rock") || strstr (pszName, "water"))
 	return 0;
 if (bAdditiveP)
@@ -323,7 +323,7 @@ void CGlareRenderer::RenderSoftGlare (int32_t nTexture, float fIntensity, int32_
 if (!(pBm = (bAdditive ? glare.Bitmap () : corona.Bitmap ())))
 	return;
 if (gameStates.render.bAmbientColor)
-	color = gameData.render.color.textures [nTexture];
+	color = gameData.renderData.color.textures [nTexture];
 else
 	color.Red () = color.Green () = color.Blue () = X2F (IsLight (nTexture)) / 2;
 if (!bColored)
@@ -384,13 +384,13 @@ float CGlareRenderer::Visibility (int32_t nQuery)
 
 if (! (ogl.m_features.bOcclusionQuery && nQuery) || (Style () != 1))
 	return 1;
-if (!(gameStates.render.bQueryCoronas || gameData.render.lights.coronaSamples [nQuery - 1]))
+if (!(gameStates.render.bQueryCoronas || gameData.renderData.lights.coronaSamples [nQuery - 1]))
 	return 0;
 for (;;) {
-	glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
+	glGetQueryObjectiv (gameData.renderData.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
 	if (glGetError ()) {
 #if DBG
-		glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
+		glGetQueryObjectiv (gameData.renderData.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
 		if ((nError = glGetError ()))
 #endif
 			return 0;
@@ -401,7 +401,7 @@ for (;;) {
 		return 0;
 	G3_SLEEP (1);
 	};
-glGetQueryObjectuiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_ARB, &nSamples);
+glGetQueryObjectuiv (gameData.renderData.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_ARB, &nSamples);
 if (glGetError ())
 	return 0;
 if (gameStates.render.bQueryCoronas == 1) {
@@ -409,12 +409,12 @@ if (gameStates.render.bQueryCoronas == 1) {
 	if (!nSamples) {
 		GLint nBits;
 		glGetQueryiv (GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS, &nBits);
-		glGetQueryObjectuiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_ARB, &nSamples);
+		glGetQueryObjectuiv (gameData.renderData.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_ARB, &nSamples);
 		}
 #endif
-	return (float) (gameData.render.lights.coronaSamples [nQuery - 1] = nSamples);
+	return (float) (gameData.renderData.lights.coronaSamples [nQuery - 1] = nSamples);
 	}
-fIntensity = (float) nSamples / (float) gameData.render.lights.coronaSamples [nQuery - 1];
+fIntensity = (float) nSamples / (float) gameData.renderData.lights.coronaSamples [nQuery - 1];
 #if DBG
 if (fIntensity > 1)
 	fIntensity = 1;

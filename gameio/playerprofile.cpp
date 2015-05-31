@@ -311,8 +311,8 @@ for (i = 0; i < 2; i++) {
 	if (i) {	// i == 1: nostalgia/pure D2 mode
 		}
 	else {
-		RP (gameData.render.screen.m_w, 0, 0);
-		RP (gameData.render.screen.m_h, 0, 0);
+		RP (gameData.renderData.screen.m_w, 0, 0);
+		RP (gameData.renderData.screen.m_h, 0, 0);
 		RP (gameStates.app.iDownloadTimeout, 0, 0);
 		RP (gameStates.render.bShowFrameRate, 0, 0);
 		RP (gameStates.render.bShowTime, 0, 1);
@@ -320,10 +320,10 @@ for (i = 0; i < 2; i++) {
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (networkData.nNetLifeKills, 0, 0);
 		RP (networkData.nNetLifeKilled, 0, 0);
-		RP (gameData.app.nLifetimeChecksum, 0, 0);
+		RP (gameData.appData.nLifetimeChecksum, 0, 0);
 		for (j = 0; j < rtTaskCount; j++)
-			RP (gameData.app.bUseMultiThreading [j], j, 0);
-		RP (gameData.escort.szName, 0, 0);
+			RP (gameData.appData.bUseMultiThreading [j], j, 0);
+		RP (gameData.escortData.szName, 0, 0);
 		for (j = 0; j < 4; j++)
 			RP (gameData.multigame.msg.szMacro [j], j, 0);
 
@@ -335,7 +335,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameStates.multi.nConnection, 0, 0);
 		RP (tracker.m_bUse, 0, 0);
 
-		RP (gameData.menu.alpha, 0, 0);
+		RP (gameData.menuData.alpha, 0, 0);
 
 		RP (mpParams.nLevel, 0, 0);
 		RP (mpParams.nGameType, 0, 0);
@@ -820,8 +820,8 @@ typedef struct tParamValue {
 	} tParamValue;
 
 tParamValue defaultParams [] = {
-	 {"gameData.render.screen.CBitmap::m_info.props.w", "640"},
-	 {"gameData.render.screen.CBitmap::m_info.props.h", "480"},
+	 {"gameData.renderData.screen.CBitmap::m_info.props.w", "640"},
+	 {"gameData.renderData.screen.CBitmap::m_info.props.h", "480"},
 	 {"gameStates.app.iDownloadTimeout", "5"},
 	 {"gameStates.render.cockpit.nType", "3"},
 	 {"gameStates.render.bShowFrameRate", "0"},
@@ -831,8 +831,8 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.cockpit.bGuidedInMainView", "1"},
 	 {"networkData.nNetLifeKills", "0"},
 	 {"networkData.nNetLifeKilled", "0"},
-	 {"gameData.app.nLifetimeChecksum", "0"},
-	 {"gameData.escort.szName", "GUIDE-BOT"},
+	 {"gameData.appData.nLifetimeChecksum", "0"},
+	 {"gameData.escortData.szName", "GUIDE-BOT"},
 	 {"gameData.multigame.msg.szMacro[0]", "Why can't we all just get along?"},
 	 {"gameData.multigame.msg.szMacro[1]", "Hey, I got a present for ya"},
 	 {"gameData.multigame.msg.szMacro[2]", "I got a hankerin' for a spankerin'"},
@@ -843,7 +843,7 @@ tParamValue defaultParams [] = {
 	 {"ogl.m_states.nContrast", "8"},
 	 {"gameStates.multi.nConnection", "1"},
 	 {"tracker.m_bUse", "0"},
-	 {"gameData.menu.Alpha ()", "79"},
+	 {"gameData.menuData.Alpha ()", "79"},
 	 {"mpParams.nLevel", "1"},
 	 {"mpParams.nGameType", "3"},
 	 {"mpParams.nGameMode", "3"},
@@ -1425,14 +1425,14 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.weaponIcons.nSort", "1"},
 
 #if 0
-	 {"gameData.app.bUseMultiThreading[0]", "1"},
-	 {"gameData.app.bUseMultiThreading[1]", "1"},
-	 {"gameData.app.bUseMultiThreading[2]", "1"},
-	 {"gameData.app.bUseMultiThreading[3]", "1"},
-	 {"gameData.app.bUseMultiThreading[4]", "1"},
-	 {"gameData.app.bUseMultiThreading[5]", "1"},
-	 {"gameData.app.bUseMultiThreading[6]", "1"},
-	 {"gameData.app.bUseMultiThreading[7]", "1"},
+	 {"gameData.appData.bUseMultiThreading[0]", "1"},
+	 {"gameData.appData.bUseMultiThreading[1]", "1"},
+	 {"gameData.appData.bUseMultiThreading[2]", "1"},
+	 {"gameData.appData.bUseMultiThreading[3]", "1"},
+	 {"gameData.appData.bUseMultiThreading[4]", "1"},
+	 {"gameData.appData.bUseMultiThreading[5]", "1"},
+	 {"gameData.appData.bUseMultiThreading[6]", "1"},
+	 {"gameData.appData.bUseMultiThreading[7]", "1"},
 	 {"extraGameInfo[1].bMouseLook", "0"},
 	 {"extraGameInfo[1].bPowerupLights", "0"},
 	 {"extraGameInfo[1].bKillMissiles", "0"},
@@ -1630,7 +1630,7 @@ strcpy(gameData.multigame.msg.szMacro[2], TXT_HANKERING);
 strcpy(gameData.multigame.msg.szMacro[3], TXT_URANUS);
 networkData.nNetLifeKills = 0;
 networkData.nNetLifeKilled = 0;
-gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
+gameData.appData.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 profile.Setup ();
 return 1;
 }
@@ -1653,8 +1653,8 @@ if (profile.Busy ())
 	int32_t		bRewriteIt = 0;
 	uint32_t		i;
 
-	int16_t gameWindowW = gameData.render.screen.Width ();
-	int16_t	gameWindowH = gameData.render.screen.Height ();
+	int16_t gameWindowW = gameData.renderData.screen.Width ();
+	int16_t	gameWindowH = gameData.renderData.screen.Height ();
 	uint8_t nDisplayMode = gameStates.video.nDefaultDisplayMode;
 
 	char		filename [FILENAME_LEN];
@@ -1706,14 +1706,14 @@ if (!profile.Load (nStage < 2))
 
 if (gameStates.gfx.bOverride) {
 	gameStates.video.nDefaultDisplayMode = nDisplayMode;
-	gameData.render.screen.SetWidth (gameWindowW);
-	gameData.render.screen.SetHeight (gameWindowH);
+	gameData.renderData.screen.SetWidth (gameWindowW);
+	gameData.renderData.screen.SetHeight (gameWindowH);
 	}
 else if (gameStates.video.nDefaultDisplayMode < 0) {
 	gameStates.video.nDefaultDisplayMode = CUSTOM_DISPLAY_MODE;
 	}
 else 
-	gameStates.video.nDefaultDisplayMode = FindDisplayMode (gameData.render.screen.Width (), gameData.render.screen.Height ());
+	gameStates.video.nDefaultDisplayMode = FindDisplayMode (gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
 SetCustomDisplayMode (customDisplayMode.w, customDisplayMode.h, 1);
 SetSideBySideDisplayMode ();
 
@@ -1728,23 +1728,23 @@ if (funcRes != EZERO) {
 KCSetControls (1);
 //post processing of parameters
 if (gameStates.input.nPlrFileVersion >= 23) {
-	if (gameData.app.nLifetimeChecksum != GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled)) {
+	if (gameData.appData.nLifetimeChecksum != GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled)) {
 		networkData.nNetLifeKills =
 		networkData.nNetLifeKilled = 0;
-		gameData.app.nLifetimeChecksum = 0;
+		gameData.appData.nLifetimeChecksum = 0;
  		TextBox (NULL, BG_STANDARD, 1, TXT_PROFILE_DAMAGED, TXT_WARNING);
 		bRewriteIt = 1;
 		}
 	}
-for (i = 0; i < sizeof (gameData.escort.szName); i++) {
-	if (!gameData.escort.szName [i])
+for (i = 0; i < sizeof (gameData.escortData.szName); i++) {
+	if (!gameData.escortData.szName [i])
 		break;
-	if (!isprint (gameData.escort.szName [i])) {
-		strcpy (gameData.escort.szName, "GUIDE-BOT");
+	if (!isprint (gameData.escortData.szName [i])) {
+		strcpy (gameData.escortData.szName, "GUIDE-BOT");
 		break;
 		}
 	}
-strcpy (gameData.escort.szRealName, gameData.escort.szName);
+strcpy (gameData.escortData.szRealName, gameData.escortData.szName);
 mpParams.bDarkness = extraGameInfo [1].bDarkness;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
 mpParams.bEnableCheats = extraGameInfo [1].bEnableCheats;
@@ -1883,7 +1883,7 @@ if (cf.File ()) {
 if (gameStates.video.nDefaultDisplayMode >= CUSTOM_DISPLAY_MODE)
 	gameStates.video.nDefaultDisplayMode = -1;
 customDisplayMode = displayModeInfo [CUSTOM_DISPLAY_MODE];
-gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
+gameData.appData.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 if (!profile.Save ()) {
 	funcRes = errno;
 	InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_WRITING_PLR, strerror (funcRes));

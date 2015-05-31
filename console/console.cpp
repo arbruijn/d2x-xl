@@ -451,7 +451,7 @@ if (m_surface)
 	delete m_surface;
 m_surface = CBitmap::Create (0, w, h, 1);
 m_surface->SetName ("console surface area");
-m_canvas.Setup (&gameData.render.frame, 0, 0, w, h);
+m_canvas.Setup (&gameData.renderData.frame, 0, 0, w, h);
 m_canvas.SetName ("console canvas");
 /* Load the consoles font */
 m_canvas.Activate ("CConsole::Setup");
@@ -795,7 +795,7 @@ if (m_surface)
 	delete m_surface;
 m_surface = CBitmap::Create (0, w, h, 1);
 m_surface->SetName ("console surface area");
-m_canvas.Setup (&gameData.render.frame, 0, 0, w, h);
+m_canvas.Setup (&gameData.renderData.frame, 0, 0, w, h);
 m_canvas.SetFont (font);
 m_canvas.SetName ("console canvas");
 if (m_input)

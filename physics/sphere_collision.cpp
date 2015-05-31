@@ -947,9 +947,9 @@ for (int32_t nSide = 0; nSide < 6; nSide++) {
 	CWall* pWall = pSeg->Wall (nSide);
 	if (pWall && (pWall->IsPassable (NULL) & (WID_TRANSPARENT_WALL | WID_SOLID_WALL)))
 		continue;
-	for (i = 0; i < gameData.collisions.nSegsVisited [nThread] && (nSegment != gameData.collisions.segsVisited [nThread][i]); i++)
+	for (i = 0; i < gameData.collisionData.nSegsVisited [nThread] && (nSegment != gameData.collisionData.segsVisited [nThread][i]); i++)
 		;
-	if (i == gameData.collisions.nSegsVisited [nThread])
+	if (i == gameData.collisionData.nSegsVisited [nThread])
 		nObjSegList [nObjSegs++] = nSegment;
 	}
 #endif
@@ -982,7 +982,7 @@ restart:
 			continue;
 		if (hitQuery.nObject == nObject)
 			continue;
-		if (pOtherObj->Ignored (gameData.physics.bIgnoreObjFlag))
+		if (pOtherObj->Ignored (gameData.physicsData.bIgnoreObjFlag))
 			continue;
 		if (LasersAreRelated (nObject, hitQuery.nObject))
 			continue;
@@ -1023,7 +1023,7 @@ restart:
 			dMin = d;
 			hitData = curHit;
 			hitData.nType = HIT_OBJECT;
-			hitData.nObject = (gameData.collisions.hitResult.nObject = nObject);
+			hitData.nObject = (gameData.collisionData.hitResult.nObject = nObject);
 			Assert (nObject != -1);
 			if (hitQuery.flags & FQ_ANY_OBJECT)
 				RETURN (dMin);
@@ -1100,7 +1100,7 @@ ENTER (1, 0, "ComputeHitpoint");
 	int32_t		nHitNoneSegment = -1;
 	int16_t		hitNoneSegList [MAX_FVI_SEGS];
 	int16_t		nHitNoneSegs = 0;
-	int32_t		nCurNestLevel = gameData.collisions.hitResult.nNestCount;
+	int32_t		nCurNestLevel = gameData.collisionData.hitResult.nNestCount;
 	bool			bCheckVisibility = ((hitQuery.flags & FQ_VISIBILITY) != 0);
 
 bestHit.vPoint.SetZero ();
@@ -1108,7 +1108,7 @@ bestHit.vPoint.SetZero ();
 if (hitQuery.flags & FQ_GET_SEGLIST)
 	*segList = hitQuery.nSegment;
 *nSegments = 1;
-gameData.collisions.hitResult.nNestCount++;
+gameData.collisionData.hitResult.nNestCount++;
 //first, see if vector hit any objects in this CSegment
 #if 1
 if (hitQuery.flags & FQ_CHECK_OBJS) {
@@ -1175,7 +1175,7 @@ if (endMask) { //on the back of at least one face
 				int32_t		i;
 				int16_t		subSegList [MAX_FVI_SEGS];
 				int16_t		nSubSegments;
-				CHitData		subHit, saveHitData = gameData.collisions.hitResult;
+				CHitData		subHit, saveHitData = gameData.collisionData.hitResult;
 				CHitQuery	subHitQuery = hitQuery;
 
 				subHitQuery.nSegment = pSeg->m_children [nSide];
@@ -1183,12 +1183,12 @@ if (endMask) { //on the back of at least one face
 				if (subHitQuery.nSegment == nDbgSeg)
 					BRP;
 #endif
-				for (i = 0; i < gameData.collisions.nSegsVisited [nThread] && (subHitQuery.nSegment != gameData.collisions.segsVisited [nThread][i]); i++)
+				for (i = 0; i < gameData.collisionData.nSegsVisited [nThread] && (subHitQuery.nSegment != gameData.collisionData.segsVisited [nThread][i]); i++)
 					;
-				if (i == gameData.collisions.nSegsVisited [nThread]) {                //haven't visited here yet
-					if (gameData.collisions.nSegsVisited [nThread] >= MAX_SEGS_VISITED)
+				if (i == gameData.collisionData.nSegsVisited [nThread]) {                //haven't visited here yet
+					if (gameData.collisionData.nSegsVisited [nThread] >= MAX_SEGS_VISITED)
 						goto hitPointDone;	//we've looked a long time, so give up
-					gameData.collisions.segsVisited [nThread][gameData.collisions.nSegsVisited [nThread]++] = subHitQuery.nSegment;
+					gameData.collisionData.segsVisited [nThread][gameData.collisionData.nSegsVisited [nThread]++] = subHitQuery.nSegment;
 					subHit.nType = ComputeHitpoint (subHit, subHitQuery, subSegList, &nSubSegments, hitQuery.nSegment, nCollisionModel, nThread);
 					if (subHit.nType != HIT_NONE) {
 						d = CFixVector::Dist (subHit.vPoint, *hitQuery.p0);
@@ -1200,11 +1200,11 @@ if (endMask) { //on the back of at least one face
 							*nSegments += CopySegList (segList, *nSegments, subSegList, nSubSegments, hitQuery.flags);
 							}
 						else {
-							*((CHitData *) &gameData.collisions.hitResult) = saveHitData;    
+							*((CHitData *) &gameData.collisionData.hitResult) = saveHitData;    
  							}
 						}
 					else {
-						*((CHitData *) &gameData.collisions.hitResult) = saveHitData;    
+						*((CHitData *) &gameData.collisionData.hitResult) = saveHitData;    
 						if (subHit.nSegment != -1)
 							nHitNoneSegment = subHit.nSegment;
 						nHitNoneSegs = CopySegList (hitNoneSegList, 0, subSegList, nSubSegments, hitQuery.flags);
@@ -1219,16 +1219,16 @@ if (endMask) { //on the back of at least one face
 						dMin = d;
 						bestHit = curHit;
 						bestHit.nType = HIT_WALL;
-						bestHit.vNormal = gameData.collisions.hitResult.vNormal = pSeg->m_sides [nSide].m_normals [iFace];
-						gameData.collisions.hitResult.nNormals = 1;
+						bestHit.vNormal = gameData.collisionData.hitResult.vNormal = pSeg->m_sides [nSide].m_normals [iFace];
+						gameData.collisionData.hitResult.nNormals = 1;
 						if (!pSeg->Masks (curHit.vPoint, hitQuery.radP1).m_center)
 							bestHit.nSegment = hitQuery.nSegment;             
 						else
-							gameData.collisions.hitResult.nAltSegment = hitQuery.nSegment;
-						gameData.collisions.hitResult.nSegment = bestHit.nSegment;
-						gameData.collisions.hitResult.nSide = nSide;
-						gameData.collisions.hitResult.nFace = iFace;
-						gameData.collisions.hitResult.nSideSegment = hitQuery.nSegment;
+							gameData.collisionData.hitResult.nAltSegment = hitQuery.nSegment;
+						gameData.collisionData.hitResult.nSegment = bestHit.nSegment;
+						gameData.collisionData.hitResult.nSide = nSide;
+						gameData.collisionData.hitResult.nFace = iFace;
+						gameData.collisionData.hitResult.nSideSegment = hitQuery.nSegment;
 						}
 					}
 				}
@@ -1251,8 +1251,8 @@ else {
 	hitData = bestHit;
 	if (hitData.nSegment == -1)
 		hitData.nSegment = 
-			(gameData.collisions.hitResult.nAltSegment != -1) 
-			? gameData.collisions.hitResult.nAltSegment
+			(gameData.collisionData.hitResult.nAltSegment != -1) 
+			? gameData.collisionData.hitResult.nAltSegment
 			: nHitNoneSegment;
 	}
 RETURN (bestHit.nType);
@@ -1277,9 +1277,9 @@ ENTER (1, 0, "FindHitPoint");
 	CHitData		curHit, newHit;
 	int32_t		i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes; // save value
 
-gameData.collisions.hitResult.nAltSegment = -1;
-gameData.collisions.hitResult.vNormal.SetZero ();
-gameData.collisions.hitResult.nNormals = 0;
+gameData.collisionData.hitResult.nAltSegment = -1;
+gameData.collisionData.hitResult.vNormal.SetZero ();
+gameData.collisionData.hitResult.nNormals = 0;
 if ((hitQuery.nSegment > gameData.segData.nLastSegment) || (hitQuery.nSegment < 0)) {
 	hitQuery.nSegment = FindSegByPos (*hitQuery.p0, -1, 1, 0);
 	if (hitQuery.nSegment < 0) {
@@ -1294,9 +1294,9 @@ if ((hitQuery.nSegment > gameData.segData.nLastSegment) || (hitQuery.nSegment < 
 		}
 	}
 
-gameData.collisions.hitResult.nSegment = -1;
-gameData.collisions.hitResult.nSide = -1;
-gameData.collisions.hitResult.nObject = -1;
+gameData.collisionData.hitResult.nSegment = -1;
+gameData.collisionData.hitResult.nSide = -1;
+gameData.collisionData.hitResult.nObject = -1;
 
 //check to make sure start pRef is in seg its supposed to be in
 //Assert(check_point_in_seg(p0, startseg, 0).m_center==0);	//start pRef not in seg
@@ -1316,9 +1316,9 @@ if (masks.m_center) {
 		RETURN (hitResult.nType);
 		}
 	}
-gameData.collisions.segsVisited [nThread][0] = hitQuery.nSegment;
-gameData.collisions.nSegsVisited [nThread] = 1;
-gameData.collisions.hitResult.nNestCount = 0;
+gameData.collisionData.segsVisited [nThread][0] = hitQuery.nSegment;
+gameData.collisionData.nSegsVisited [nThread] = 1;
+gameData.collisionData.hitResult.nNestCount = 0;
 if (hitQuery.flags & FQ_VISIBILITY)
 	extraGameInfo [IsMultiGame].nHitboxes = 0;
 ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2, nCollisionModel, nThread);
@@ -1337,8 +1337,8 @@ if ((curHit.nSegment < 0) || SEGMENT (curHit.nSegment)->Masks (curHit.vPoint, 0)
 
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
 if ((curHit.nType == HIT_WALL) && (curHit.nSegment == -1))
-	if ((gameData.collisions.hitResult.nAltSegment != -1) && !SEGMENT (gameData.collisions.hitResult.nAltSegment)->Masks (curHit.vPoint, 0).m_center)
-		curHit.nSegment = gameData.collisions.hitResult.nAltSegment;
+	if ((gameData.collisionData.hitResult.nAltSegment != -1) && !SEGMENT (gameData.collisionData.hitResult.nAltSegment)->Masks (curHit.vPoint, 0).m_center)
+		curHit.nSegment = gameData.collisionData.hitResult.nAltSegment;
 
 if (curHit.nSegment == -1) {
 	CHitData altHit;
@@ -1366,16 +1366,16 @@ if ((curHit.nSegment != -1) && (hitQuery.flags & FQ_GET_SEGLIST))
 			hitResult.nSegments = i + 1;
 			break;
 		}
-*((CHitInfo *) &hitResult) = gameData.collisions.hitResult;
+*((CHitInfo *) &hitResult) = gameData.collisionData.hitResult;
 *((CHitData *) &hitResult) = curHit;
-if ((curHit.nType == HIT_OBJECT) && (gameData.collisions.hitResult.nObject == -1))
+if ((curHit.nType == HIT_OBJECT) && (gameData.collisionData.hitResult.nObject == -1))
 	curHit.nType = HIT_NONE;
 RETURN (curHit.nType);
 }
 
 //	-----------------------------------------------------------------------------
 //new function for Mike
-//note: gameData.collisions.nSegsVisited [nThread] must be set to zero before this is called
+//note: gameData.collisionData.nSegsVisited [nThread] must be set to zero before this is called
 int32_t SphereIntersectsWall (CFixVector *vPoint, int16_t nSegment, fix rad)
 {
 CSegment *pSeg = SEGMENT (nSegment);
@@ -1384,9 +1384,9 @@ if (!pSeg) {
 	return 0;
 	}
 
-if ((gameData.collisions.nSegsVisited [0] < 0) || (gameData.collisions.nSegsVisited [0] > MAX_SEGS_VISITED))
-	gameData.collisions.nSegsVisited [0] = 0;
-gameData.collisions.segsVisited [0][gameData.collisions.nSegsVisited [0]++] = nSegment;
+if ((gameData.collisionData.nSegsVisited [0] < 0) || (gameData.collisionData.nSegsVisited [0] > MAX_SEGS_VISITED))
+	gameData.collisionData.nSegsVisited [0] = 0;
+gameData.collisionData.segsVisited [0][gameData.collisionData.nSegsVisited [0]++] = nSegment;
 
 int32_t faceMask = pSeg->Masks (*vPoint, rad).m_face;
 
@@ -1403,9 +1403,9 @@ if (faceMask != 0) {				//on the back of at least one face
 				if (nFaceHitType) {            //through this CWall/door
 					//if what we have hit is a door, check the adjoining pSeg
 					nChild = pSeg->m_children [nSide];
-					for (i = 0; (i < gameData.collisions.nSegsVisited [0]) && (nChild != gameData.collisions.segsVisited [0][i]); i++)
+					for (i = 0; (i < gameData.collisionData.nSegsVisited [0]) && (nChild != gameData.collisionData.segsVisited [0][i]); i++)
 						;
-					if (i == gameData.collisions.nSegsVisited [0]) {                //haven't visited here yet
+					if (i == gameData.collisionData.nSegsVisited [0]) {                //haven't visited here yet
 						if (!IS_CHILD (nChild))
 							return 1;
 						if (SphereIntersectsWall (vPoint, nChild, rad))

@@ -160,7 +160,7 @@ networkData.pThislayer.player.computerType = DOS;
 N_LOCALPLAYER = nPlayerSave;         
 MultiNewGame ();
 networkData.bNewGame = 1;
-gameData.reactor.bDestroyed = 0;
+gameData.reactorData.bDestroyed = 0;
 NetworkFlush ();
 netGameInfo.SetMinPPS (mpParams.nMinPPS);
 memcpy (extraGameInfo + 2, extraGameInfo, sizeof (extraGameInfo [0]));
@@ -182,8 +182,8 @@ int32_t NetworkCreateMonitorVector (void)
 	int32_t      h, i, j, k;
 	int32_t      tm, ec;
 
-for (i = 0; i < gameData.effects.nEffects [gameStates.app.bD1Data]; i++) {
-	if ((h = gameData.effects.pEffect [i].destroyed.nTexture) > 0) {
+for (i = 0; i < gameData.effectData.nEffects [gameStates.app.bD1Data]; i++) {
+	if ((h = gameData.effectData.pEffect [i].destroyed.nTexture) > 0) {
 		for (j = 0; j < nBlownBitmaps; j++)
 			if (blownBitmaps [j] == h)
 				break;
@@ -199,8 +199,8 @@ for (i = 0; i <= gameData.segData.nLastSegment; i++, pSeg++) {
 		if (!pSide->FaceCount ())
 			continue;
 		if ((tm = pSide->m_nOvlTex) != 0) {
-			if (((ec = gameData.pig.tex.pTexMapInfo [tm].nEffectClip) != -1) &&
-					(gameData.effects.pEffect[ec].destroyed.nTexture != -1)) {
+			if (((ec = gameData.pigData.tex.pTexMapInfo [tm].nEffectClip) != -1) &&
+					(gameData.effectData.pEffect[ec].destroyed.nTexture != -1)) {
 				nMonitor++;
 				//Assert (nMonitor < 32);
 				}

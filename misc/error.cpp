@@ -241,7 +241,7 @@ Widget XmMessageDialog (const char* pszMsg, int32_t nRows, int32_t nCols, bool b
 // Set up a DialogShell as a popup window. Set the delete window protocol response to XmDESTROY to make sure that
 // the window goes away appropriately. Otherwise, it's XmUNMAP which means it'd be lost forever, since we're not storing
 // the widget globally or statically to this function.
-Widget topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
+Widget topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.appData.argC, gameData.appData.argV, NULL, NULL);
 XtSetArg (args [0], XmNdeleteResponse, XmDESTROY);
 msgBox = XmCreateDialogShell (topWid, bError ? const_cast<char*>("Error") : const_cast<char*>("Warning"), args, 1);
 XtVaGetValues (msgBox, XmNmwmDecorations, &i, NULL);
@@ -348,7 +348,7 @@ nRows = MsgSize (const_cast<char*>(pszMsg), nCols);
 if ((nRows > 3) || (nCols > 360))
 	topWid = XmMessageDialog (pszMsg, nRows, nCols, bError);
 else { // use the built-in message box
-	topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
+	topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.appData.argC, gameData.appData.argV, NULL, NULL);
 	// setup message box text
 	Property args [1];
 	XmString xmString = XmStringCreateLocalized (const_cast<char*>(pszMsg));
@@ -385,8 +385,8 @@ XtDestroyApplicationContext (appShell);
 
 void D2MsgBox (const char *pszMsg, uint32_t nType)
 {
-gameData.app.bGamePaused = 1;
-if (gameData.render.screen.Width () && gameData.render.screen.Height () && pWarnFunc)
+gameData.appData.bGamePaused = 1;
+if (gameData.renderData.screen.Width () && gameData.renderData.screen.Height () && pWarnFunc)
 	(*pWarnFunc)(pszMsg);
 #if defined (_WIN32)
 else
@@ -401,7 +401,7 @@ else
 #elif defined (__macosx__)
 	NativeMacOSXMessageBox (pszMsg);
 #endif
-gameData.app.bGamePaused = 0;
+gameData.appData.bGamePaused = 0;
 }
 
 //------------------------------------------------------------------------------

@@ -121,7 +121,7 @@ else {		//Robots taken care of above
 	if ((info.renderType == RT_POLYOBJ) && (nSavePOFNames > 0)) {
 		char *name = szSavePOFNames [ModelId ()];
 		if (*name) {
-			for (int32_t i = 0; (i < gameData.models.nPolyModels) && (i < nSavePOFNames); i++)
+			for (int32_t i = 0; (i < gameData.modelData.nPolyModels) && (i < nSavePOFNames); i++)
 				if (*name && !stricmp (pofNames [i], name)) {		//found it!
 					rType.polyObjInfo.nModel = i;
 					break;
@@ -151,17 +151,17 @@ if (Type () == OBJ_POWERUP) {
 		}
 	}
 else if (Type () == OBJ_WEAPON) {
-	if (Id () >= gameData.weapons.nTypes [0]) {
+	if (Id () >= gameData.weaponData.nTypes [0]) {
 		SetId (0);
 		Assert(info.renderType != RT_POLYOBJ);
 		}
 	if (Id () == SMALLMINE_ID) {		//make sure pmines have correct values
-		mType.physInfo.mass = gameData.weapons.info [Id ()].mass;
-		mType.physInfo.drag = gameData.weapons.info [Id ()].drag;
+		mType.physInfo.mass = gameData.weaponData.info [0][Id ()].mass;
+		mType.physInfo.drag = gameData.weaponData.info [0][Id ()].drag;
 		mType.physInfo.flags |= PF_FREE_SPINNING;
 		// Make sure model number & size are correct...	
 		Assert(info.renderType == RT_POLYOBJ);
-		rType.polyObjInfo.nModel = gameData.weapons.info [Id ()].nModel;
+		rType.polyObjInfo.nModel = gameData.weaponData.info [0][Id ()].nModel;
 		AdjustSize ();
 		}
 	}
@@ -170,7 +170,7 @@ else if (Type () == OBJ_REACTOR) {
 	info.controlType = CT_CNTRLCEN;
 	if (gameData.segData.nLevelVersion <= 1) { // descent 1 reactor
 		SetId (0);                         // used to be only one kind of reactor
-		rType.polyObjInfo.nModel = gameData.reactor.props [0].nModel;// descent 1 reactor
+		rType.polyObjInfo.nModel = gameData.reactorData.props [0].nModel;// descent 1 reactor
 		}
 	}
 else if (Type () == OBJ_PLAYER) {
@@ -178,7 +178,7 @@ else if (Type () == OBJ_PLAYER) {
 		InitPlayerObject ();
 	else
 		if (info.renderType == RT_POLYOBJ)	//recover from Matt's pof file matchup bug
-			rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
+			rType.polyObjInfo.nModel = gameData.pigData.ship.player->nModel;
 	//Make sure orient matrix is orthogonal
 	gameOpts->render.nMathFormat = 0;
 	info.position.mOrient.CheckAndFix();
@@ -659,12 +659,12 @@ static int32_t AssignProducer (tObjectProducerInfo& producerInfo, int32_t nObjPr
 for (int32_t i = 0, j = gameData.segData.nSegments; i < j; i++, pSeg++) {
 	if ((pSeg->Function () == nFunction) && (pSeg->m_nObjProducer == nObjProducer)) {
 		tObjectProducerInfo& objProducer = (nFunction == SEGMENT_FUNC_ROBOTMAKER) 
-													  ? gameData.producers.robotMakers [nObjProducer] 
-													  : gameData.producers.equipmentMakers [nObjProducer];
+													  ? gameData.producerData.robotMakers [nObjProducer] 
+													  : gameData.producerData.equipmentMakers [nObjProducer];
 		objProducer.nSegment = i;
 		objProducer.nProducer = pSeg->m_value;
 		memcpy (objProducer.objFlags, producerInfo.objFlags, sizeof (objProducer.objFlags));
-		tProducerInfo& producer = gameData.producers.producers [pSeg->m_value];
+		tProducerInfo& producer = gameData.producerData.producers [pSeg->m_value];
 		producer.bFlag &= (pSeg->Function () == SEGMENT_FUNC_ROBOTMAKER) ? ~1 : (pSeg->Function () == SEGMENT_FUNC_EQUIPMAKER) ? ~2 : ~0;
 		return pSeg->m_nObjProducer;
 		}
@@ -678,12 +678,12 @@ if (pSeg->m_function != nFunction)
 	return -1;
 producerInfo.nProducer = pSeg->m_nObjProducer;
 tObjectProducerInfo& objProducer = (nFunction == SEGMENT_FUNC_ROBOTMAKER) 
-											  ? gameData.producers.robotMakers [producerInfo.nProducer] 
-											  : gameData.producers.equipmentMakers [producerInfo.nProducer];
+											  ? gameData.producerData.robotMakers [producerInfo.nProducer] 
+											  : gameData.producerData.equipmentMakers [producerInfo.nProducer];
 if (objProducer.bAssigned)
 	return -1;
 int32_t nProducer = objProducer.nProducer;
-tProducerInfo& producer = gameData.producers.producers [nProducer];
+tProducerInfo& producer = gameData.producerData.producers [nProducer];
 if (!(producer.bFlag & bFlag)) // this segment already has an object producer assigned
 	return -1;
 memcpy (objProducer.objFlags, producerInfo.objFlags, sizeof (objProducer.objFlags));
@@ -695,16 +695,16 @@ return pSeg->m_nObjProducer = producerInfo.nProducer;
 
 if (producerInfo.nProducer < 0) 
 	return -1;
-if (producerInfo.nProducer >= ((nFunction == SEGMENT_FUNC_ROBOTMAKER) ? gameData.producers.nRobotMakers : gameData.producers.nEquipmentMakers))
+if (producerInfo.nProducer >= ((nFunction == SEGMENT_FUNC_ROBOTMAKER) ? gameData.producerData.nRobotMakers : gameData.producerData.nEquipmentMakers))
 	return -1;
 
 tObjectProducerInfo& objProducer = (nFunction == SEGMENT_FUNC_ROBOTMAKER) 
-											  ? gameData.producers.robotMakers [producerInfo.nProducer] 
-											  : gameData.producers.equipmentMakers [producerInfo.nProducer];
+											  ? gameData.producerData.robotMakers [producerInfo.nProducer] 
+											  : gameData.producerData.equipmentMakers [producerInfo.nProducer];
 if (objProducer.bAssigned)
 	return -1;
 int32_t nProducer = objProducer.nProducer;
-tProducerInfo& producer = gameData.producers.producers [nProducer];
+tProducerInfo& producer = gameData.producerData.producers [nProducer];
 if (producer.nSegment < 0)
 	return -1;
 CSegment* pSeg = SEGMENT (producer.nSegment);
@@ -742,7 +742,7 @@ if (gameFileInfo.botGen.offset > -1) {
 #if DBG
 			PrintLog (0, "Invalid robot generator data found\n");
 #endif
-			--gameData.producers.nRobotMakers;
+			--gameData.producerData.nRobotMakers;
 			--gameFileInfo.botGen.count;
 			}
 		}
@@ -771,7 +771,7 @@ if (gameFileInfo.equipGen.offset > -1) {
 #if DBG
 			PrintLog (0, "Invalid equipment generator data found\n");
 #endif
-			--gameData.producers.nEquipmentMakers;
+			--gameData.producerData.nEquipmentMakers;
 			--gameFileInfo.equipGen.count;
 			}
 		}
@@ -786,7 +786,7 @@ void CleanupProducerInfo (void)
 CSegment* pSeg = SEGMENTS.Buffer ();
 for (int32_t i = gameData.segData.nSegments; i; i--, pSeg++) {
 	if (pSeg->m_function == SEGMENT_FUNC_ROBOTMAKER) {
-		tProducerInfo& producer = gameData.producers.producers [pSeg->m_value];
+		tProducerInfo& producer = gameData.producerData.producers [pSeg->m_value];
 		if (producer.bFlag) {
 			producer.bFlag = 0;
 			pSeg->m_function = SEGMENT_FUNC_NONE;
@@ -799,11 +799,11 @@ for (int32_t i = gameData.segData.nSegments; i; i--, pSeg++) {
 
 static int32_t ReadLightDeltaIndexInfo (CFile& cf)
 {
-gameData.render.lights.nStatic = 0;
+gameData.renderData.lights.nStatic = 0;
 if ((gameFileInfo.lightDeltaIndices.offset > -1) && gameFileInfo.lightDeltaIndices.count) {
 	int32_t	i;
 
-	if (!gameData.render.lights.deltaIndices.Resize (gameFileInfo.lightDeltaIndices.count)) {
+	if (!gameData.renderData.lights.deltaIndices.Resize (gameFileInfo.lightDeltaIndices.count)) {
 		Error ("Not enough memory for light delta index data");
 		return -1;
 		}
@@ -811,20 +811,20 @@ if ((gameFileInfo.lightDeltaIndices.offset > -1) && gameFileInfo.lightDeltaIndic
 		Error ("Error seeking to light delta index data\n(file damaged or invalid)");
 		return -1;
 		}
-	gameData.render.lights.nStatic = gameFileInfo.lightDeltaIndices.count;
+	gameData.renderData.lights.nStatic = gameFileInfo.lightDeltaIndices.count;
 	if (gameTopFileInfo.fileinfoVersion < 29) {
 #if TRACE
-		console.printf (CON_DBG, "Warning: Old mine version.  Not reading gameData.render.lights.deltaIndices info.\n");
+		console.printf (CON_DBG, "Warning: Old mine version.  Not reading gameData.renderData.lights.deltaIndices info.\n");
 #endif
 		Int3();	//shouldn't be here!!!
 		return 0;
 		}
 	else {
 		for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
-			gameData.render.lights.deltaIndices [i].Read (cf);
+			gameData.renderData.lights.deltaIndices [i].Read (cf);
 			}
 		}
-	gameData.render.lights.deltaIndices.SortAscending ();
+	gameData.renderData.lights.deltaIndices.SortAscending ();
 	}
 return 0;
 }
@@ -839,7 +839,7 @@ if ((gameFileInfo.lightDeltas.offset > -1) && gameFileInfo.lightDeltas.count) {
 #if TRACE
 	console.printf(CON_DBG, "   loading light data ...\n");
 #endif
-	if (!gameData.render.lights.deltas.Resize (gameFileInfo.lightDeltas.count)) {
+	if (!gameData.renderData.lights.deltas.Resize (gameFileInfo.lightDeltas.count)) {
 		Error ("Not enough memory for light delta data");
 		return -1;
 		}
@@ -849,8 +849,8 @@ if ((gameFileInfo.lightDeltas.offset > -1) && gameFileInfo.lightDeltas.count) {
 		}
 	for (h = i = 0; i < gameFileInfo.lightDeltas.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 29) {
-			gameData.render.lights.deltas [i].Read (cf);
-			h += gameData.render.lights.deltas [i].bValid;
+			gameData.renderData.lights.deltas [i].Read (cf);
+			h += gameData.renderData.lights.deltas [i].bValid;
 			}
 		else {
 #if TRACE
@@ -872,10 +872,10 @@ static int32_t ReadVariableLights (CFile& cf)
 
 if (!nLights)
 	return 0;
-if (!gameData.render.lights.flicker.Create (nLights))
+if (!gameData.renderData.lights.flicker.Create (nLights))
 	return -1;
 for (int32_t i = 0; i < nLights; i++)
-	gameData.render.lights.flicker [i].Read (cf);
+	gameData.renderData.lights.flicker [i].Read (cf);
 return nLights;
 }
 
@@ -1030,7 +1030,7 @@ for (i = 0; i < gameData.trigData.m_nTriggers [0]; i++, pTrigger++) {
 
 void CreateGenerators (void)
 {
-gameData.producers.nRepairCenters = 0;
+gameData.producerData.nRepairCenters = 0;
 for (int32_t i = 0; i < gameData.segData.nSegments; i++) {
 	SEGMENT (i)->CreateGenerator (SEGMENT (i)->m_function);
 	}
@@ -1057,7 +1057,7 @@ if (bFileInfo)
 	return 0;
 
 gameData.objData.nNextSignature = 0;
-gameData.render.lights.nStatic = 0;
+gameData.renderData.lights.nStatic = 0;
 gameData.objData.nInitialRobots = 0;
 nGameSavePlayers = 0;
 if (ReadObjectInfo (cf))
@@ -1092,7 +1092,7 @@ gameData.trigData.m_nTriggers [0] = gameFileInfo.triggers.count;
 gameData.wallData.nWalls = gameFileInfo.walls.count;
 CheckAndFixWalls ();
 CheckAndFixTriggers ();
-gameData.producers.nRobotMakers = gameFileInfo.botGen.count;
+gameData.producerData.nRobotMakers = gameFileInfo.botGen.count;
 FixObjectSegs ();
 if ((gameTopFileInfo.fileinfoVersion < GAME_VERSION) && 
 	 ((gameTopFileInfo.fileinfoVersion != 25) || (GAME_VERSION != 26)))
@@ -1223,9 +1223,9 @@ for (;;) {
 		gameStates.app.nBaseCtrlCenExplTime = DEFAULT_CONTROL_CENTER_EXPLOSION_TIME;
 
 	if (gameData.segData.nLevelVersion >= 4)
-		gameData.reactor.nStrength = cf.ReadInt ();
+		gameData.reactorData.nStrength = cf.ReadInt ();
 	else
-		gameData.reactor.nStrength = -1;  //use old defaults
+		gameData.reactorData.nStrength = -1;  //use old defaults
 
 	if (gameData.segData.nLevelVersion >= 7) {
 	#if TRACE
@@ -1285,7 +1285,7 @@ for (;;) {
 	}
 gameStates.render.nMeshQuality = gameOpts->render.nMeshQuality;
 	/*---*/PrintLog (1, "allocating render buffers\n");
-if (!gameData.render.mine.Create (1)) {
+if (!gameData.renderData.mine.Create (1)) {
 	PrintLog (-1);
 	return 4;
 	}

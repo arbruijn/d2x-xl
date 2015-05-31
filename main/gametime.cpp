@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int32_t MaxFPS (void)
 {
-if (gameData.demo.nState == ND_STATE_RECORDING) 
+if (gameData.demoData.nState == ND_STATE_RECORDING) 
 	return 30;
 if (automap.Active () && !(automap.Radar () || (gameStates.render.bShowFrameRate == 1)))
 	return 40;
@@ -284,12 +284,12 @@ void StopTime (void)
 {
 if (pfnTIRStop)
 	pfnTIRStop ();
-if (++gameData.time.nPaused == 1) {
-	gameData.time.xStopped = SDL_GetTicks ();
+if (++gameData.timeData.nPaused == 1) {
+	gameData.timeData.xStopped = SDL_GetTicks ();
 	fix xTime = TimerGetFixedSeconds ();
-	gameData.time.xSlack = xTime - gameData.time.xLast;
-	if (gameData.time.xSlack < 0)
-		gameData.time.xLast = 0;
+	gameData.timeData.xSlack = xTime - gameData.timeData.xLast;
+	if (gameData.timeData.xSlack < 0)
+		gameData.timeData.xLast = 0;
 	}
 }
 
@@ -297,14 +297,14 @@ if (++gameData.time.nPaused == 1) {
 
 void StartTime (int32_t bReset)
 {
-if (gameData.time.nPaused <= 0)
+if (gameData.timeData.nPaused <= 0)
 	return;
 if (bReset)
-	gameData.time.nPaused = 1;
-if (!--gameData.time.nPaused) {
+	gameData.timeData.nPaused = 1;
+if (!--gameData.timeData.nPaused) {
 	fix xTime = TimerGetFixedSeconds ();
-	gameData.time.xLast = xTime - gameData.time.xSlack;
-	gameData.physics.fLastTick += float (SDL_GetTicks () - gameData.time.xStopped);
+	gameData.timeData.xLast = xTime - gameData.timeData.xSlack;
+	gameData.physicsData.fLastTick += float (SDL_GetTicks () - gameData.timeData.xStopped);
 	}
 if (pfnTIRStart)
 	pfnTIRStart ();
@@ -314,30 +314,30 @@ if (pfnTIRStart)
 
 int32_t TimeStopped (void)
 {
-return gameData.time.nPaused > 0;
+return gameData.timeData.nPaused > 0;
 }
 
 //------------------------------------------------------------------------------
 
 void ResetTime (void)
 {
-gameData.time.SetTime (0);
-gameData.time.xLast = TimerGetFixedSeconds ();
+gameData.timeData.SetTime (0);
+gameData.timeData.xLast = TimerGetFixedSeconds ();
 }
 
 //------------------------------------------------------------------------------
 
 void CalcFrameTime (int32_t fps)
 {
-if (gameData.app.bGamePaused) {
-	gameData.time.xLast = TimerGetFixedSeconds ();
-	gameData.time.SetTime (0);
-	gameData.time.xRealFrame = 0;
+if (gameData.appData.bGamePaused) {
+	gameData.timeData.xLast = TimerGetFixedSeconds ();
+	gameData.timeData.SetTime (0);
+	gameData.timeData.xRealFrame = 0;
 	return;
 	}
 
 fix 	timerValue,
-		xLastFrameTime = gameData.time.xFrame;
+		xLastFrameTime = gameData.timeData.xFrame;
 
 GetSlowTicks ();
 
@@ -355,7 +355,7 @@ else {
 	if (!gameOpts->app.bExpertMode && (gameOpts->render.nMaxFPS > 1))
 		gameOpts->render.nMaxFPS = MAX_FRAMERATE;
 #endif
-	if (!gameData.time.tLast)
+	if (!gameData.timeData.tLast)
 		nDeltaTime = 0;
 	else 
 		CFrameTimeFactory::GetInstance ()->GetTimer ()->Compute (fps);
@@ -368,51 +368,51 @@ timerValue = MSEC2X (gameStates.app.nSDLTicks [0]);
 fix xMinFrameTime = ((fps > 1) ? I2X (1) / fps : 1);
 do {
 	timerValue = TimerGetFixedSeconds ();
-   gameData.time.SetTime (timerValue - gameData.time.xLast);
+   gameData.timeData.SetTime (timerValue - gameData.timeData.xLast);
 	if (fps < 2)
 		break;
 	G3_SLEEP (0);
-	} while (gameData.time.xFrame < xMinFrameTime);
+	} while (gameData.timeData.xFrame < xMinFrameTime);
 
 #endif
 
-gameData.time.SetTime (timerValue - gameData.time.xLast);
-gameData.time.xRealFrame = gameData.time.xFrame;
+gameData.timeData.SetTime (timerValue - gameData.timeData.xLast);
+gameData.timeData.xRealFrame = gameData.timeData.xFrame;
 if (gameStates.app.cheats.bTurboMode)
-	gameData.time.xFrame *= 2;
-gameData.time.xLast = timerValue;
+	gameData.timeData.xFrame *= 2;
+gameData.timeData.xLast = timerValue;
 
 #if EXACT_FRAME_TIME
 #	ifdef _WIN32
-gameData.time.tLast = SDL_GetTicks ();
+gameData.timeData.tLast = SDL_GetTicks ();
 #else
 if (nDeltaTime > 0)
-	gameData.time.tLast += nDeltaTime;
+	gameData.timeData.tLast += nDeltaTime;
 #	endif
 #else
 
-gameData.time.tLast = SDL_GetTicks ();
+gameData.timeData.tLast = SDL_GetTicks ();
 
 #endif
 
-if (gameData.time.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
-	gameData.time.SetTime (xLastFrameTime);	//d:\temp\dm_test.then use time from last frame
+if (gameData.timeData.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
+	gameData.timeData.SetTime (xLastFrameTime);	//d:\temp\dm_test.then use time from last frame
 #if Arcade_mode
-gameData.time.xFrame /= 2;
+gameData.timeData.xFrame /= 2;
 #endif
 //	Set value to determine whether homing missile can see target.
 //	The lower frametime is, the more likely that it can see its target.
 #if 0
 if (gameStates.limitFPS.bHomers)
-	gameData.weapons.xMinTrackableDot = MIN_TRACKABLE_DOT;
-else if (gameData.time.xFrame <= I2X (1)/64)
-	gameData.weapons.xMinTrackableDot = MIN_TRACKABLE_DOT;	// -- 3* (I2X (1) - MIN_TRACKABLE_DOT)/4 + MIN_TRACKABLE_DOT;
-else if (gameData.time.xFrame < I2X (1)/32)
-	gameData.weapons.xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - 2*gameData.time.xFrame;	// -- FixMul (I2X (1) - MIN_TRACKABLE_DOT, I2X (1)-4*gameData.time.xFrame) + MIN_TRACKABLE_DOT;
-else if (gameData.time.xFrame < I2X (1)/4)
-	gameData.weapons.xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - I2X (1)/16 - gameData.time.xFrame;	// -- FixMul (I2X (1) - MIN_TRACKABLE_DOT, I2X (1)-4*gameData.time.xFrame) + MIN_TRACKABLE_DOT;
+	gameData.weaponData.xMinTrackableDot = MIN_TRACKABLE_DOT;
+else if (gameData.timeData.xFrame <= I2X (1)/64)
+	gameData.weaponData.xMinTrackableDot = MIN_TRACKABLE_DOT;	// -- 3* (I2X (1) - MIN_TRACKABLE_DOT)/4 + MIN_TRACKABLE_DOT;
+else if (gameData.timeData.xFrame < I2X (1)/32)
+	gameData.weaponData.xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - 2*gameData.timeData.xFrame;	// -- FixMul (I2X (1) - MIN_TRACKABLE_DOT, I2X (1)-4*gameData.timeData.xFrame) + MIN_TRACKABLE_DOT;
+else if (gameData.timeData.xFrame < I2X (1)/4)
+	gameData.weaponData.xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - I2X (1)/16 - gameData.timeData.xFrame;	// -- FixMul (I2X (1) - MIN_TRACKABLE_DOT, I2X (1)-4*gameData.timeData.xFrame) + MIN_TRACKABLE_DOT;
 else
-	gameData.weapons.xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - I2X (1)/8;
+	gameData.weaponData.xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - I2X (1)/8;
 #endif
 }
 
@@ -420,7 +420,7 @@ else
 
 void GetSlowTicks (void)
 {
-gameData.time.tLast = gameStates.app.nSDLTicks [0];
+gameData.timeData.tLast = gameStates.app.nSDLTicks [0];
 gameStates.app.nSDLTicks [0] = SDL_GetTicks ();
 gameStates.app.tick40fps.nTime = gameStates.app.nSDLTicks [0] - gameStates.app.tick40fps.nLastTick;
 if ((gameStates.app.tick40fps.bTick = (gameStates.app.tick40fps.nTime >= 25)))

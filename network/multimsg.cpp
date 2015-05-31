@@ -373,7 +373,7 @@ if (IsNetworkGame && IsTeamGame) {
 		}
 	for (i = 0; i < N_PLAYERS; i++)
 		if ((!strnicmp (PLAYER (i).callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && (PLAYER (i).connected)) {
-			if ((gameData.app.GameMode (GM_CAPTURE)) && (PLAYER (i).flags & PLAYER_FLAGS_FLAG)) {
+			if ((gameData.appData.GameMode (GM_CAPTURE)) && (PLAYER (i).flags & PLAYER_FLAGS_FLAG)) {
 				HUDInitMessage (TXT_MOVE_FLAG);
 				return 1;
 				}

@@ -641,7 +641,7 @@ strcpy (fn, cfname);
 
 if ((p = strstr (fn, ".bbm")))
 	*p = '\0';
-if (ReadHiresBitmap (&gameData.endLevel.terrain.bmInstance, fn, 0x7FFFFFFF, 1) > 0)
+if (ReadHiresBitmap (&gameData.endLevelData.terrain.bmInstance, fn, 0x7FFFFFFF, 1) > 0)
 	return IFF_NO_ERROR;
 #endif
 int32_t ret = Open (cfname);		//read in entire file

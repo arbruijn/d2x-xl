@@ -681,7 +681,7 @@ inline int32_t CLightning::MayBeVisible (int32_t nThread)
 if (m_nSegment >= 0)
 	return SegmentMayBeVisible (m_nSegment, m_nLength / I2X (20), 3 * m_nLength / 2, nThread);
 if (m_nObject >= 0)
-	return (gameData.render.mine.bObjectRendered [m_nObject] == gameStates.render.nFrameFlipFlop);
+	return (gameData.renderData.mine.bObjectRendered [m_nObject] == gameStates.render.nFrameFlipFlop);
 return 1;
 }
 
@@ -770,7 +770,7 @@ fWidth = m_width * ComputeDistScale (-100.0f) * 0.25f;
 if (nThread < 0)
 	vEye.SetZero ();
 else
-	vEye.Assign (gameData.render.mine.viewer.vPos);
+	vEye.Assign (gameData.renderData.mine.viewer.vPos);
 pDest = m_plasmaVerts.Buffer ();
 pTexCoord = m_plasmaTexCoord.Buffer ();
 for (h = m_nNodes - 1 - m_bRandom, i = 0; i <= h; i++, pNode++) {

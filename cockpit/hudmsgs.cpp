@@ -49,10 +49,10 @@ void ClearBackgroundMessages (void)
 	// That feature has been removed because today's hardware is powerful enough to render Descent,
 	// and since you can run the program in windowed and fullscreen mode at lower than native screen resolution.
 if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && 
-	  (nLastMsgYCrd != -1) && (gameData.render.scene.Top () >= 6)) {
-	gameData.render.frame.Activate ("ClearBackgroundMessages (frame)");
+	  (nLastMsgYCrd != -1) && (gameData.renderData.scene.Top () >= 6)) {
+	gameData.renderData.frame.Activate ("ClearBackgroundMessages (frame)");
 	CopyBackgroundRect (0, nLastMsgYCrd, CCanvas::Current ()->Width (), nLastMsgYCrd + nLastMsgHeight - 1);
-	gameData.render.frame.Deactivate ();
+	gameData.renderData.frame.Deactivate ();
 	nLastMsgYCrd = -1;
 	}
 #endif
@@ -66,7 +66,7 @@ void HUDClearMessages (void)
 	int32_t i, j;
 	CHUDMessage	*pMsgs;
 
-for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
+for (j = 2, pMsgs = gameData.hudData.msgs; j; j--, pMsgs++) {
 	pMsgs->nMessages = 0;
 	pMsgs->nFirst = 
 	pMsgs->nLast = 0;
@@ -90,13 +90,13 @@ if (gameStates.app.bSaveScreenShot)
 	return;
 
 	int32_t		h, i, n, w, y, aw, yStart;
-	CHUDMessage *pMsgs = gameData.hud.msgs + nType;
+	CHUDMessage *pMsgs = gameData.hudData.msgs + nType;
 
 if ((pMsgs->nMessages < 0) || (pMsgs->nMessages > HUD_MAX_MSGS))
 	return; // Get Rob!
 if ((pMsgs->nMessages < 1) && (nModexHUDMsgs == 0))
 	return;
-pMsgs->xTimer -= gameData.time.xFrame;
+pMsgs->xTimer -= gameData.timeData.xFrame;
 if (pMsgs->xTimer < 0) {
 	// Timer expired... get rid of oldest pszMsg...
 	if (pMsgs->nLast != pMsgs->nFirst) {
@@ -122,7 +122,7 @@ if (pMsgs->nMessages > 0) {
 	// Obsolete. You cannot shrink the game's output area below the screen or window size anymore in D2X-XL. 
 	// That feature has been removed because today's hardware is powerful enough to render Descent,
 	// and since you can run the program in windowed and fullscreen mode at lower than native screen resolution.
-	if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && (gameData.render.scene.Top () >= (gameData.render.screen.Height () / 8))) {
+	if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && (gameData.renderData.scene.Top () >= (gameData.renderData.screen.Height () / 8))) {
 		// Only display the most recent pszMsg in this mode
 		int32_t nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
 		char* pszMsg = pMsgs->szMsgs [nMsg];
@@ -206,7 +206,7 @@ if (gameOpts->render.cockpit.bSplitHUDMsgs)
 // (pszMsg might not be drawn if previous pszMsg was same)
 int32_t HUDInitMessageVA (uint8_t nType, const char * format, va_list args)
 {
-	CHUDMessage *pMsgs = gameData.hud.msgs + (gameOpts->render.cockpit.bSplitHUDMsgs ? nType : 0);
+	CHUDMessage *pMsgs = gameData.hudData.msgs + (gameOpts->render.cockpit.bSplitHUDMsgs ? nType : 0);
 	int32_t		temp;
 	char			*pszMsg = NULL, 
 					*pszLastMsg = NULL;
@@ -253,7 +253,7 @@ console.printf (CON_NORMAL, "%s\n", con_message);
 if (IsMultiGame) {
 	if (gameOpts->multi.bNoRedundancy && !strnicmp ("You already", pszMsg, 11))
 		return 0;
-	if (!gameData.hud.bPlayerMessage && FindArg ("-PlayerMessages"))
+	if (!gameData.hudData.bPlayerMessage && FindArg ("-PlayerMessages"))
 		return 0;
 	}
 if (pMsgs->nMessages > 1) {
@@ -276,7 +276,7 @@ if (pszLastMsg && (!strcmp (pszLastMsg, pszMsg))) {
 	}
 pMsgs->nLast = temp;
 // Check if memory has been overwritten at this point.
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordHUDMessage (pszMsg);
 pMsgs->xTimer = I2X (3);		// 1 second per 5 characters
 pMsgs->nMessages++;
@@ -304,7 +304,7 @@ return ret;
 void PlayerDeadMessage (void)
 {
 if (gameOpts->render.cockpit.bHUDMsgs && LOCALPLAYER.m_bExploded) {
-	CHUDMessage	*pMsgs = gameData.hud.msgs;
+	CHUDMessage	*pMsgs = gameData.hudData.msgs;
 
    if (LOCALPLAYER.lives < 2) {
       int32_t x, y, w, h, aw;
@@ -321,9 +321,9 @@ if (gameOpts->render.cockpit.bHUDMsgs && LOCALPLAYER.m_bExploded) {
       GrString (0x8000, (CCanvas::Current ()->Height () - CCanvas::Current ()->Font ()->Height ()) / 2 + h / 8, TXT_GAME_OVER);
 #if 0
       // Automatically exit death after 10 secs
-      if (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (10)) {
+      if (gameData.timeData.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (10)) {
                SetFunctionMode (FMODE_MENU);
-               gameData.app.SetGameMode (GM_GAME_OVER);
+               gameData.appData.SetGameMode (GM_GAME_OVER);
                __asm int32_t 3; longjmp (gameExitPoint, 1);        // Exit out of game loop
 	      }
 #endif

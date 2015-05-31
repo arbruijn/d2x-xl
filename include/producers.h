@@ -75,7 +75,7 @@ void ReadObjectProducerInfo (tObjectProducerInfo *ps, CFile& cf, bool bOldFormat
 void ResetGenerators (void);
 void UpdateAllProducers (void);
 
-#define PRODUCER_IDX(_pProducer)	((int16_t) ((_pProducer) - gameData.producers.producers.Buffer ()))
-#define OBJECT_PRODUCER_IDX(_pProducer)	((int16_t) ((_pObjProducer) - gameData.producers.producers.Buffer ()))
+#define PRODUCER_IDX(_pProducer)	((int16_t) ((_pProducer) - gameData.producerData.producers.Buffer ()))
+#define OBJECT_PRODUCER_IDX(_pProducer)	((int16_t) ((_pObjProducer) - gameData.producerData.producers.Buffer ()))
 
 #endif

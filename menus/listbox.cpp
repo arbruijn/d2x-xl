@@ -94,7 +94,7 @@ fontManager.SetCurrent (NORMAL_FONT);
 GrString (0x8000, m_nTitleHeight, m_props.pszTitle);
 
 CCanvas textArea;
-textArea.Setup (&gameData.render.frame, m_nOffset, m_nOffset + m_nTitleHeight, m_nWidth, m_nHeight, true);
+textArea.Setup (&gameData.renderData.frame, m_nOffset, m_nOffset + m_nTitleHeight, m_nWidth, m_nHeight, true);
 textArea.Activate ("CListbox::Render (textArea)", &m_background);
 
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
@@ -144,7 +144,7 @@ m_callback = NULL;
 
 gameStates.input.keys.bRepeat = 1;
 SetPopupScreenMode ();
-gameData.render.frame.Activate ("CListBox::ListBox (frame)");
+gameData.renderData.frame.Activate ("CListBox::ListBox (frame)");
 fontManager.SetCurrent (SUBTITLE_FONT);
 
 m_nWidth = 0;
@@ -389,7 +389,7 @@ while (!m_bDone) {
 FadeOut ();
 gameStates.input.keys.bRepeat = bKeyRepeat;
 backgroundManager.Draw ();
-gameData.render.frame.Deactivate ();
+gameData.renderData.frame.Deactivate ();
 SDL_EnableKeyRepeat(0, 0);
 return m_nChoice;
 }

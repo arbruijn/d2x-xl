@@ -130,22 +130,22 @@ if (m_szId) {
 int16_t CMenuItem::SetColor (int32_t bIsCurrent, int32_t bTiny) 
 {
 if (bTiny) {
-	if (!gameData.menu.bValid) {
-		gameData.menu.warnColor = RED_RGBA;
-		gameData.menu.keyColor = RGB_PAL (57, 49, 20);
-		gameData.menu.tabbedColor = WHITE_RGBA;
-		gameData.menu.tinyColors [0][0] = RGB_PAL (29, 29, 47);
-		gameData.menu.tinyColors [0][1] = RED_RGBA;
-		gameData.menu.tinyColors [1][0] = RGB_PAL (57, 49, 20);
-		gameData.menu.tinyColors [1][1] = ORANGE_RGBA;
-		gameData.menu.bValid = 1;
+	if (!gameData.menuData.bValid) {
+		gameData.menuData.warnColor = RED_RGBA;
+		gameData.menuData.keyColor = RGB_PAL (57, 49, 20);
+		gameData.menuData.tabbedColor = WHITE_RGBA;
+		gameData.menuData.tinyColors [0][0] = RGB_PAL (29, 29, 47);
+		gameData.menuData.tinyColors [0][1] = RED_RGBA;
+		gameData.menuData.tinyColors [1][0] = RGB_PAL (57, 49, 20);
+		gameData.menuData.tinyColors [1][1] = ORANGE_RGBA;
+		gameData.menuData.bValid = 1;
 		}
-	if (gameData.menu.colorOverride)
-		fontManager.SetColorRGBi (gameData.menu.colorOverride, 1, 0, 0);
+	if (gameData.menuData.colorOverride)
+		fontManager.SetColorRGBi (gameData.menuData.colorOverride, 1, 0, 0);
 	else if (m_text [0] == '\t')
-		fontManager.SetColorRGBi (gameData.menu.tabbedColor, 1, 0, 0);
+		fontManager.SetColorRGBi (gameData.menuData.tabbedColor, 1, 0, 0);
 	else 
-		fontManager.SetColorRGBi (gameData.menu.tinyColors [bIsCurrent][m_bUnavailable], 1, 0, 0);
+		fontManager.SetColorRGBi (gameData.menuData.tinyColors [bIsCurrent][m_bUnavailable], 1, 0, 0);
 	}
 else {
 	if (bIsCurrent)
@@ -186,7 +186,7 @@ if (m_color)
 else
 	SetColor (bIsCurrent, bTiny);
 if (bCreateTextBms && FAST_MENUS && 
-	 (pBm || (pBm = CreateStringBitmap (m_text, MENU_KEY (m_nKey, - 1), gameData.menu.keyColor, nTabs, m_bCentered, m_w, bTiny * 2, 0)))) {
+	 (pBm || (pBm = CreateStringBitmap (m_text, MENU_KEY (m_nKey, - 1), gameData.menuData.keyColor, nTabs, m_bCentered, m_w, bTiny * 2, 0)))) {
 	float	fScale = fontManager.Scale ();
 	pBm->Render (NULL, gameData.X (m_x), m_y, int32_t (pBm->Width () * fScale), int32_t (pBm->Height () * fScale), 
 					 0, 0, pBm->Width (), pBm->Height (), 1, gameStates.app.bDemoData ? -1 : 0);
@@ -457,7 +457,7 @@ if (w1 < w) {
 CCanvas::Current ()->SetColorRGB (200, 0, 0, 255);
 if (w1)
 	OglDrawFilledRect (x, y, x + w1, y + h - 1);
-glLineWidth (sqrt (float (gameData.render.screen.Width ()) / 640.0f));
+glLineWidth (sqrt (float (gameData.renderData.screen.Width ()) / 640.0f));
 OglDrawEmptyRect (x, y, x + w - 1, y + h - 1);
 glLineWidth (1);
 }
@@ -469,10 +469,10 @@ void CMenuItem::ShowHelp (void)
 if (m_szHelp && *m_szHelp) {
 	int32_t nInMenu = gameStates.menus.nInMenu;
 	gameStates.menus.nInMenu = 0;
-	gameData.menu.helpColor = RGB_PAL (47, 47, 47);
-	gameData.menu.colorOverride = gameData.menu.helpColor;
+	gameData.menuData.helpColor = RGB_PAL (47, 47, 47);
+	gameData.menuData.colorOverride = gameData.menuData.helpColor;
 	TextBox ("D2X - XL online help", BG_STANDARD, -3, m_szHelp, " ", TXT_CLOSE);
-	gameData.menu.colorOverride = 0;
+	gameData.menuData.colorOverride = 0;
 	gameStates.menus.nInMenu = nInMenu;
 	}
 }

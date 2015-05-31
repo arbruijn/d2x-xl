@@ -33,10 +33,10 @@
 #define PPL_DIFFUSE_LIGHT	0.7f
 
 #if 1
-#define GEO_LIN_ATT	(gameData.render.fAttScale [0] * 0.25f)
-#define GEO_QUAD_ATT	(gameData.render.fAttScale [1] * 0.25f)
-#define OBJ_LIN_ATT	(gameData.render.fAttScale [0] * 0.25f)
-#define OBJ_QUAD_ATT	(gameData.render.fAttScale [1] * 0.25f)
+#define GEO_LIN_ATT	(gameData.renderData.fAttScale [0] * 0.25f)
+#define GEO_QUAD_ATT	(gameData.renderData.fAttScale [1] * 0.25f)
+#define OBJ_LIN_ATT	(gameData.renderData.fAttScale [0] * 0.25f)
+#define OBJ_QUAD_ATT	(gameData.renderData.fAttScale [1] * 0.25f)
 #else
 #define GEO_LIN_ATT	0.05f
 #define GEO_QUAD_ATT	0.005f
@@ -1106,9 +1106,9 @@ if (!ogl.m_states.iLight) {
 	if (ogl.m_states.nLights > gameStates.render.nMaxLightsPerFace)
 		ogl.m_states.nLights = gameStates.render.nMaxLightsPerFace;
 	ogl.m_states.nFirstLight = sli.nFirst;
-	gameData.render.nTotalLights += ogl.m_states.nLights;
-	if (gameData.render.nMaxLights < ogl.m_states.nLights)
-		gameData.render.nMaxLights = ogl.m_states.nLights;
+	gameData.renderData.nTotalLights += ogl.m_states.nLights;
+	if (gameData.renderData.nMaxLights < ogl.m_states.nLights)
+		gameData.renderData.nMaxLights = ogl.m_states.nLights;
 #if DBG
 	if (pFace && (pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 		HUDMessage (0, "%d lights", ogl.m_states.nLights);
@@ -1233,7 +1233,7 @@ if (!nType)
 	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&pFace->m_info.color));
 glUniform1i (glGetUniformLocation (shaderProg, "nType"), GLint (nType));
 glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
-glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"), (nLights ? GLfloat (nLights) / GLfloat (ogl.m_states.nLights) : 1.0f) * gameData.render.fBrightness);
+glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"), (nLights ? GLfloat (nLights) / GLfloat (ogl.m_states.nLights) : 1.0f) * gameData.renderData.fBrightness);
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType];

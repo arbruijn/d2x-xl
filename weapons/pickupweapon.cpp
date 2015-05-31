@@ -45,7 +45,7 @@ int32_t PickupPrimary (int32_t nWeaponIndex, int32_t nPlayer)
 	//uint16_t oldFlags = LOCALPLAYER.primaryWeaponFlags;
 	uint16_t flag = 1 << nWeaponIndex;
 	int32_t nCutPoint;
-	int32_t nSupposedWeapon = gameData.weapons.nPrimary;
+	int32_t nSupposedWeapon = gameData.weaponData.nPrimary;
 
 if (nWeaponIndex == FUSION_INDEX) {
 	if (gameData.multiplayer.weaponStates [nPlayer].nShip == 1)
@@ -64,7 +64,7 @@ if (nWeaponIndex == FUSION_INDEX) {
 			return 0; // already has tri-fusion
 			}
 		if (nPlayer == N_LOCALPLAYER)
-   		gameData.weapons.bTripleFusion = 1;
+   		gameData.weaponData.bTripleFusion = 1;
 		else
 			gameData.multiplayer.weaponStates [nPlayer].bTripleFusion = 1;
 		}
@@ -79,7 +79,7 @@ pPlayer->primaryWeaponFlags |= flag;
 
 if (ISLOCALPLAYER (nPlayer)) {
 	nCutPoint = POrderList (255);
-	if ((gameData.weapons.nPrimary == LASER_INDEX) && pPlayer->HasSuperLaser ())
+	if ((gameData.weaponData.nPrimary == LASER_INDEX) && pPlayer->HasSuperLaser ())
 		nSupposedWeapon = SUPER_LASER_INDEX;  // allotment for stupid way of doing super laser
 	if ((gameOpts->gameplay.nAutoSelectWeapon == 2) && 
 		 (POrderList (nWeaponIndex) < nCutPoint) && 
@@ -160,20 +160,20 @@ if (pPlayer->secondaryAmmo [nWeaponIndex] > nMaxAmount) {
 	}
 if (ISLOCALPLAYER (nPlayer)) {
 	nCutPoint = SOrderList (255);
-	bEmpty = pPlayer->secondaryAmmo [gameData.weapons.nSecondary] == 0;
+	bEmpty = pPlayer->secondaryAmmo [gameData.weaponData.nSecondary] == 0;
 	if (gameOpts->gameplay.nAutoSelectWeapon) {
 		if (gameOpts->gameplay.nAutoSelectWeapon == 1) {
 			if (bEmpty)
 				SelectWeapon (nWeaponIndex, 1, 0, 1);
 			}
 		else if ((SOrderList (nWeaponIndex) < nCutPoint) && 
-					(bEmpty || (SOrderList (nWeaponIndex) < SOrderList (gameData.weapons.nSecondary))))
+					(bEmpty || (SOrderList (nWeaponIndex) < SOrderList (gameData.weaponData.nSecondary))))
 			SelectWeapon (nWeaponIndex,1, 0, 1);
 		else {
 			//if we don't auto-select this weapon, but it's a proxbomb or smart mine,
 			//we want to do a mini-auto-selection that applies to the drop bomb key
 			if ((nWeaponIndex == PROXMINE_INDEX || nWeaponIndex == SMARTMINE_INDEX) &&
-				!(gameData.weapons.nSecondary == PROXMINE_INDEX || gameData.weapons.nSecondary == SMARTMINE_INDEX)) {
+				!(gameData.weaponData.nSecondary == PROXMINE_INDEX || gameData.weaponData.nSecondary == SMARTMINE_INDEX)) {
 				int32_t cur = bLastSecondaryWasSuper [PROXMINE_INDEX] ? PROXMINE_INDEX : SMARTMINE_INDEX;
 				if (SOrderList (nWeaponIndex) < SOrderList (cur))
 					bLastSecondaryWasSuper [PROXMINE_INDEX] = (nWeaponIndex == SMARTMINE_INDEX);
@@ -199,7 +199,7 @@ return 1;
 //	Returns the amount picked up
 int32_t PickupAmmo (int32_t classFlag, int32_t nWeaponIndex, int32_t ammoCount, const char *pszMsg, int32_t nPlayer)
 {
-	int32_t			nMaxAmmo, nCutPoint, nSupposedWeapon = gameData.weapons.nPrimary;
+	int32_t			nMaxAmmo, nCutPoint, nSupposedWeapon = gameData.weaponData.nPrimary;
 	int32_t			nOldAmmo = classFlag;		//kill warning
 	CPlayerData*	pPlayer = gameData.multiplayer.players + nPlayer;
 
@@ -216,10 +216,10 @@ nOldAmmo = pPlayer->primaryAmmo [nWeaponIndex];
 pPlayer->primaryAmmo [nWeaponIndex] += ammoCount;
 if ((nPlayer = N_LOCALPLAYER)) {
 	nCutPoint = POrderList (255);
-	if ((gameData.weapons.nPrimary == LASER_INDEX) && pPlayer->HasSuperLaser ())
+	if ((gameData.weaponData.nPrimary == LASER_INDEX) && pPlayer->HasSuperLaser ())
 		nSupposedWeapon = SUPER_LASER_INDEX;  // allotment for stupid way of doing super laser
 	if ((pPlayer->primaryWeaponFlags & (1<<nWeaponIndex)) && 
-		(nWeaponIndex > gameData.weapons.nPrimary) && 
+		(nWeaponIndex > gameData.weaponData.nPrimary) && 
 		(nOldAmmo == 0) &&
 		(POrderList (nWeaponIndex) < nCutPoint) && 
 		(POrderList (nWeaponIndex) < POrderList (nSupposedWeapon)))
@@ -232,7 +232,7 @@ return ammoCount;	//return amount used
 
 int32_t PickupVulcanAmmo (CObject *pObj, int32_t nPlayer)
 {
-	int32_t	pwSave = gameData.weapons.nPrimary;	
+	int32_t	pwSave = gameData.weaponData.nPrimary;	
 	int32_t	nAmmo = gameStates.app.bNostalgia ? VULCAN_CLIP_CAPACITY : pObj->cType.powerupInfo.nCount; // ammo available in this clip
 	int32_t	nUsed = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, nAmmo, NULL, nPlayer); // what the player actually took this time
 
@@ -244,7 +244,7 @@ if (nUsed) {
 	MultiSendAmmo ();
 	pObj->cType.powerupInfo.nCount -= nUsed;
 	MultiSendAmmoUpdate (pObj->Index ());
-	gameData.weapons.nPrimary = pwSave;
+	gameData.weaponData.nPrimary = pwSave;
 	return nUsed >= nAmmo;
 	} 
 else {
@@ -253,7 +253,7 @@ else {
 		nMaxAmmo *= 2;
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %d %s!", TXT_ALREADY_HAVE,X2I ((uint32_t) VULCAN_AMMO_SCALE * (uint32_t) nMaxAmmo), TXT_VULCAN_ROUNDS);
-	gameData.weapons.nPrimary = pwSave;
+	gameData.weaponData.nPrimary = pwSave;
 	return 0;
 	}
 }
@@ -265,7 +265,7 @@ int32_t PickupLaser (CObject *pObj, int32_t nId, int32_t nPlayer)
 	CPlayerData *pPlayer = gameData.multiplayer.players + nPlayer;
 
 if (pPlayer->AddStandardLaser ()) {
-	if (gameData.demo.nState == ND_STATE_RECORDING)
+	if (gameData.demoData.nState == ND_STATE_RECORDING)
 		NDRecordLaserLevel ((int8_t) pPlayer->LaserLevel (0) - 1, (int8_t) pPlayer->LaserLevel (0));
 	PickupEffect (10, 0, 10, LASER_SCORE, "%s %s %d", TXT_LASER, TXT_BOOSTED_TO, pPlayer->LaserLevel () + 1);
 	cockpit->UpdateLaserWeaponInfo ();
@@ -288,11 +288,11 @@ int32_t PickupSuperLaser (CObject *pObj, int32_t nId, int32_t nPlayer)
 if (pPlayer->AddSuperLaser ()) {
 	bLastPrimaryWasSuper [LASER_INDEX] = 1;
 	if (ISLOCALPLAYER (nPlayer)) {
-		if (gameData.demo.nState == ND_STATE_RECORDING)
+		if (gameData.demoData.nState == ND_STATE_RECORDING)
 			NDRecordLaserLevel (pPlayer->LaserLevel () - 1, pPlayer->LaserLevel ());
 		PickupEffect (10, 0, 10, LASER_SCORE, TXT_SUPERBOOST, pPlayer->LaserLevel () + 1, nPlayer);
 		cockpit->UpdateLaserWeaponInfo ();
-		if (gameData.weapons.nPrimary != LASER_INDEX)
+		if (gameData.weaponData.nPrimary != LASER_INDEX)
 		   CheckToUsePrimary (SUPER_LASER_INDEX);
 		}
 	return 1;
@@ -329,7 +329,7 @@ int32_t PickupGun (CObject *pObj, int32_t nId, int32_t nPlayer)
 {
 if (PickupPrimary (nId, nPlayer)) {
 	if ((nId == OMEGA_INDEX) && (nPlayer == N_LOCALPLAYER))
-		gameData.omega.xCharge [IsMultiGame] = pObj->cType.powerupInfo.nCount;
+		gameData.omegaData.xCharge [IsMultiGame] = pObj->cType.powerupInfo.nCount;
 	return 1;
 	}
 if (IsMultiGame)

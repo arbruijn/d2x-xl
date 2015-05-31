@@ -121,7 +121,7 @@ CCanvas::Current ()->SetColorRGB (color.Red (), color.Green (), color.Blue (), 2
 
 static inline void SetBoxFillColor (CRGBColor& color)
 {
-CCanvas::Current ()->SetColorRGB (color.Red (), color.Green (), color.Blue (), gameData.menu.alpha);
+CCanvas::Current ()->SetColorRGB (color.Red (), color.Green (), color.Blue (), gameData.menuData.alpha);
 }
 
 //------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ SetBoxFillColor (boxColor);
 ogl.SetTexturing (false);
 OglDrawFilledRect (0, 0, canvas.Width (), canvas.Height ());
 SetBoxBorderColor (boxColor);
-float flw = GLfloat (gameData.menu.nLineWidth) * sqrt (GLfloat (gameData.render.frame.Width ()) / 640.0f);
+float flw = GLfloat (gameData.menuData.nLineWidth) * sqrt (GLfloat (gameData.renderData.frame.Width ()) / 640.0f);
 glLineWidth (flw);
 int32_t lw = int32_t (ceil (flw));
 OglDrawEmptyRect (lw - 1, lw - 1, canvas.Width () - lw, canvas.Height () - lw);
@@ -171,7 +171,7 @@ Init ();
 void CBackground::Setup (int32_t width, int32_t height)
 {
 SetupCanvasses ();
-CCanvas::Setup (&gameData.render.screen, (gameData.render.frame.Width () - width) / 2, (gameData.render.frame.Height () - height) / 2, width, height, true);
+CCanvas::Setup (&gameData.renderData.screen, (gameData.renderData.frame.Width () - width) / 2, (gameData.renderData.frame.Height () - height) / 2, width, height, true);
 }
 
 //------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ void CBackground::Activate (void)
 {
 int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 CViewport::SetLeft (CViewport::Left () - CScreen::Unscaled (gameData.StereoOffset2D ()));
-CCanvas::Activate ("CBackground::Activate", &gameData.render.frame);
+CCanvas::Activate ("CBackground::Activate", &gameData.renderData.frame);
 gameData.SetStereoOffsetType (nOffsetSave);
 }
 
@@ -217,7 +217,7 @@ void CBackground::Draw (bool bUpdate)
 {
 if (m_nType == BG_WALLPAPER) {
 	if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameStates.app.bNostalgia))) {
-		gameData.render.frame.Activate ("CBackGround::Draw (frame)");
+		gameData.renderData.frame.Activate ("CBackGround::Draw (frame)");
 		int32_t bCartoonize;
 		if (gameOptions [0].menus.altBg.bCartoonize)
 			bCartoonize = gameStates.render.SetCartoonStyle (-1);
@@ -227,7 +227,7 @@ if (m_nType == BG_WALLPAPER) {
 		if (gameOptions [0].menus.altBg.bCartoonize)
 			gameStates.render.SetCartoonStyle (bCartoonize);
 		PrintVersionInfo ();
-		gameData.render.frame.Deactivate ();
+		gameData.renderData.frame.Deactivate ();
 		}
 	}
 else if (m_nType == BG_SUBMENU) {
@@ -390,8 +390,8 @@ void CBackgroundManager::DrawBox (int32_t left, int32_t top, int32_t right, int3
 	CCanvas		canvas;
 	CRGBColor	boxColor;
 	
-canvas.Setup (&gameData.render.frame, left - gameData.StereoOffset2D (), top, right - left + 1, bottom - top + 1, true);
-canvas.Activate ("CBackgroundManager::DrawBox", &gameData.render.frame);
+canvas.Setup (&gameData.renderData.frame, left - gameData.StereoOffset2D (), top, right - left + 1, bottom - top + 1, true);
+canvas.Activate ("CBackgroundManager::DrawBox", &gameData.renderData.frame);
 boxColor.Set (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38));
 ::DrawBox (canvas, boxColor);
 canvas.Deactivate ();

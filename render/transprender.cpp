@@ -358,7 +358,7 @@ else {
 if (bAdditive & 3)
 	glowRenderer.Done (GLOW_FACES);
 ogl.ResetTransform (pFace != NULL);
-gameData.render.nTotalFaces++;
+gameData.renderData.nTotalFaces++;
 
 #if TI_POLY_OFFSET
 if (pFace->m_info.nSegColor) {
@@ -377,9 +377,9 @@ void CTranspObject::Render (void)
 #if TRANSP_OBJECTS
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
-gameData.models.vScale = vScale;
+gameData.modelData.vScale = vScale;
 DrawPolygonObject (pObj, 1);
-gameData.models.vScale.SetZero ();
+gameData.modelData.vScale.SetZero ();
 transparencyRenderer.ResetBitmaps ();
 #endif
 }
@@ -523,7 +523,7 @@ void CTranspSphere::Render (void)
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1, true);
 if (nType == riSphereShield) {
-	gameData.render.shield->SetupSurface (pPulse, pBitmap);
+	gameData.renderData.shield->SetupSurface (pPulse, pBitmap);
 	DrawShieldSphere (pObj, color.Red (), color.Green (), color.Blue (), color.Alpha (), bAdditive, nSize);
 	}
 else if (nType == riMonsterball) {
@@ -554,7 +554,7 @@ if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, bullet->m_nSegme
 	o.rType.polyObjInfo.nModel = BULLET_MODEL;
 	o.rType.polyObjInfo.nTexOverride = -1;
 	DrawPolygonObject (&o, 1);
-	gameData.models.vScale.SetZero ();
+	gameData.modelData.vScale.SetZero ();
 	transparencyRenderer.ResetBitmaps ();
 	}
 #endif
@@ -627,7 +627,7 @@ void CTranspThruster::Render (void)
 shaderManager.Deploy (-1, true);
 ogl.ResetClientStates ();
 thrusterFlames.Render (pObj, &info, nThruster);
-gameData.models.vScale.SetZero ();
+gameData.modelData.vScale.SetZero ();
 transparencyRenderer.ResetBitmaps ();
 #endif
 }
@@ -811,7 +811,7 @@ if (m_data.bAllowAdd > 0)
 		m_data.zScale = 1.0;
 	else if (m_data.zScale > 1.0)
 		m_data.zScale = 1.0;
-	m_data.vViewer [0] = gameData.render.mine.viewer.vPos;
+	m_data.vViewer [0] = gameData.renderData.mine.viewer.vPos;
 	transformation.Transform (m_data.vViewer [1], m_data.vViewer [0]);
 	m_data.vViewerf [0].Assign (m_data.vViewer [0]);
 	m_data.vViewerf [1].Assign (m_data.vViewer [1]);
@@ -1021,7 +1021,7 @@ if (gameStates.render.nShadowMap)
 if (pObj->info.nType == 255)
 	return 0;
 item.pObj = pObj;
-item.vScale = gameData.models.vScale;
+item.vScale = gameData.modelData.vScale;
 if (pObj->Cloaked ())
 	m_data.bRenderGlow = 1;
 //transformation.Transform (vPos, OBJPOS (pObj)->vPos, 0);
@@ -1244,8 +1244,8 @@ item.color.Alpha () = alpha;
 item.nSize = nSize;
 item.bAdditive = bAdditive;
 item.pObj = pObj;
-item.pPulse = gameData.render.shield->GetPulse ();
-item.pBitmap = gameData.render.shield->GetBitmap ();
+item.pPulse = gameData.renderData.shield->GetPulse ();
+item.pBitmap = gameData.renderData.shield->GetBitmap ();
 if (nType != riMonsterball)
 	m_data.bRenderGlow = 1;
 //transformation.Transform (vPos, pObj->info.position.vPos, 0);
@@ -1380,7 +1380,7 @@ if (pBm) {
 	ogl.SetTexturing (true);
 #endif
 	if ((pBm != m_data.pBm [bDecal]) || ((nFrame = BitmapFrame (pBm, nTexture, pFace ? pFace->m_info.nSegment : -1, nFrame)) != m_data.nFrame) || (nWrap != m_data.nWrap)) {
-		gameData.render.nStateChanges++;
+		gameData.renderData.nStateChanges++;
 		if (pBm) {
 			if (pBm->Bind (1)) {
 				ResetBitmaps ();

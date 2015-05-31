@@ -358,9 +358,9 @@ for (;;) {
 
 	CFrameController fc;
 	for (fc.Begin (); fc.Continue (); fc.End ()) {
-		gameData.render.scene.Activate ("CCreditsRenderer::Show (scene)");
+		gameData.renderData.scene.Activate ("CCreditsRenderer::Show (scene)");
 		Render ();
-		gameData.render.scene.Deactivate ();
+		gameData.renderData.scene.Deactivate ();
 		}
 	ogl.Update (0);
 

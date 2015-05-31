@@ -59,7 +59,7 @@ if ((nModel = PowerupToModel (nId)))
 	return nModel;
 if (0 > (nId = PowerupToObject (nId)))
 	return 0;
-return gameData.weapons.info [nId].nModel;
+return gameData.weaponData.info [0][nId].nModel;
 }
 
 //------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ void ConvertWeaponToPowerup (CObject *pObj)
 {
 if (!InitAddonPowerup (pObj)) {
 	pObj->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [pObj->info.nId].nClipIndex;
-	pObj->rType.animationInfo.xFrameTime = gameData.effects.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
+	pObj->rType.animationInfo.xFrameTime = gameData.effectData.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
 	pObj->rType.animationInfo.nCurFrame = 0;
 	pObj->SetSizeFromPowerup ();
 	}
@@ -127,7 +127,7 @@ return 1;
 int32_t ConvertModelToHostage (CObject *pObj)
 {
 pObj->rType.animationInfo.nClipIndex = nHostageVClips [0];
-pObj->rType.animationInfo.xFrameTime = gameData.effects.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
+pObj->rType.animationInfo.xFrameTime = gameData.effectData.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
 pObj->rType.animationInfo.nCurFrame = 0;
 pObj->SetSize (289845);
 pObj->info.controlType = CT_POWERUP;
@@ -144,7 +144,7 @@ void SetupSpin (CObject *pObj, bool bOrient)
 if (gameOpts->render.bPowerupSpinType)
 	pObj->mType.physInfo.rotVel.SetZero ();
 else {
-	if (bOrient && (gameData.demo.nState != ND_STATE_PLAYBACK)) {
+	if (bOrient && (gameData.demoData.nState != ND_STATE_PLAYBACK)) {
 		if (gameData.objData.pViewer)
 			pObj->info.position.mOrient = gameData.objData.pViewer->Orientation ();
 		else {
@@ -283,7 +283,7 @@ if (nModel)
 else {
 	nId = PowerupToObject (info.nId);
 	if (nId >= 0) {
-		nModel = gameData.weapons.info [nId].nModel;
+		nModel = gameData.weaponData.info [0][nId].nModel;
 		bHasModel = 1;
 		}
 	}
@@ -424,7 +424,7 @@ switch (pObj->Id ()) {
 
 static int32_t DrawPowerupSphere (CObject* pObj, CBitmap *pBm, CFloatVector& color)
 {
-if (!gameData.render.shield)
+if (!gameData.renderData.shield)
 	return 0;
 
 	static CPulseData powerupPulse;
@@ -434,7 +434,7 @@ if ((pObj->mType.physInfo.velocity.IsZero ()) && (pObj->info.movementType != MT_
 	pObj->mType.spinRate = pObj->info.position.mOrient.m.dir.u * (I2X (1) / 8);
 	}
 //the actual shield in the sprite texture has 3/4 of the textures size
-gameData.render.shield->SetupSurface (&powerupPulse, ((pObj->Id () == POW_SHIELD_BOOST) && !SHOW_LIGHTNING (3)) ? shield [1].Bitmap () : shield [2].Bitmap ());
+gameData.renderData.shield->SetupSurface (&powerupPulse, ((pObj->Id () == POW_SHIELD_BOOST) && !SHOW_LIGHTNING (3)) ? shield [1].Bitmap () : shield [2].Bitmap ());
 #if ICON_IN_FRONT
 if (pBm)
 	transparencyRenderer.AddSprite (pBm, pObj->Position (), &color, 2 * pObj->info.xSize / 3, 2 * pObj->info.xSize / 3, 0, 0, 0.0f);
@@ -504,15 +504,15 @@ else {
 	}
 
 if (bmi < 0) {
-	if (-bmi - 1 >= int32_t (gameData.pig.tex.addonBitmaps.Length ()))
+	if (-bmi - 1 >= int32_t (gameData.pigData.tex.addonBitmaps.Length ()))
 		return;
-	pBm = &gameData.pig.tex.addonBitmaps [-bmi - 1];
+	pBm = &gameData.pigData.tex.addonBitmaps [-bmi - 1];
 	pBm = pBm->SetCurFrame (iFrame);
 	}
 else {
 	CBitmap* pBmo;
 
-	pBm = gameData.pig.tex.bitmaps [0] + bmi;
+	pBm = gameData.pigData.tex.bitmaps [0] + bmi;
 	if ((pBm->Type () == BM_TYPE_STD) && (pBmo = pBm->Override ()))
 		pBm = pBmo->SetCurFrame (iFrame);
 	}
@@ -526,7 +526,7 @@ bool b3DShield = ((pObj->Type () == OBJ_POWERUP) &&
 ObjectBlobColor (pObj, pBm, &color, b3DShield ? 0.75f : 0.0f);
 if (pColor /*&& (bmi >= 0)*/)
 	*pColor = color;
-	//memcpy (pColor, gameData.pig.tex.bitmapColors + bmi, sizeof (CFloatVector));
+	//memcpy (pColor, gameData.pigData.tex.bitmapColors + bmi, sizeof (CFloatVector));
 
 xSize = pObj->info.xSize;
 
@@ -562,7 +562,7 @@ else {
 		else
 			ogl.RenderBitmap (pBm, pObj->info.position.vPos, FixMulDiv (xSize, pBm->Width (), pBm->Height ()), xSize, NULL, fAlpha, bAdditive);
 		}
-	gameData.render.nTotalSprites++;
+	gameData.renderData.nTotalSprites++;
 	}
 
 }
@@ -598,12 +598,12 @@ if (!xCloakStartTime && !xCloakEndTime) {
 		}
 	else if (pObj->info.nType == OBJ_ROBOT) {
 		if (!pObj->IsBoss ()) {
-			xCloakStartTime = gameData.time.xGame - I2X (10);
-			xCloakEndTime = gameData.time.xGame + I2X (10);
+			xCloakStartTime = gameData.timeData.xGame - I2X (10);
+			xCloakEndTime = gameData.timeData.xGame + I2X (10);
 			}
-		else if (0 <= (i = gameData.bosses.Find (pObj->Index ()))) {
-			xCloakStartTime = gameData.bosses [i].m_nCloakStartTime;
-			xCloakEndTime = gameData.bosses [i].m_nCloakEndTime;
+		else if (0 <= (i = gameData.bossData.Find (pObj->Index ()))) {
+			xCloakStartTime = gameData.bossData [i].m_nCloakStartTime;
+			xCloakEndTime = gameData.bossData [i].m_nCloakEndTime;
 			}
 		}
 	}
@@ -611,7 +611,7 @@ if (!xCloakStartTime && !xCloakEndTime) {
 if (xCloakStartTime != 0x7fffffff)
 	ci.xTotalTime = xCloakEndTime - xCloakStartTime;
 else
-	ci.xTotalTime = gameData.time.xGame;
+	ci.xTotalTime = gameData.timeData.xGame;
 if (pObj->info.nType == OBJ_PLAYER) {
 	ci.xFadeinDuration = CLOAK_FADEIN_DURATION_PLAYER;
 	ci.xFadeoutDuration = CLOAK_FADEOUT_DURATION_PLAYER;
@@ -623,7 +623,7 @@ else if (pObj->info.nType == OBJ_ROBOT) {
 else
 	return 0;
 
-ci.xDeltaTime = (xCloakStartTime == 0x7fffffff) ? gameData.time.xGame : gameData.time.xGame - xCloakStartTime;
+ci.xDeltaTime = (xCloakStartTime == 0x7fffffff) ? gameData.timeData.xGame : gameData.timeData.xGame - xCloakStartTime;
 
 // only decrease light during first half of cloak initiation time
 if (ci.xDeltaTime < ci.xFadeinDuration / 2) {
@@ -632,12 +632,12 @@ if (ci.xDeltaTime < ci.xFadeinDuration / 2) {
 	}
 else if (ci.xDeltaTime < ci.xFadeinDuration) // make object transparent during second half
 	ci.nFadeValue = X2I (FixDiv (ci.xDeltaTime - ci.xFadeinDuration / 2, ci.xFadeinDuration / 2) * CLOAKED_FADE_LEVEL);
-else if ((xCloakStartTime == 0x7fffffff) || (gameData.time.xGame < xCloakEndTime - ci.xFadeoutDuration)) { // fully cloaked
+else if ((xCloakStartTime == 0x7fffffff) || (gameData.timeData.xGame < xCloakEndTime - ci.xFadeoutDuration)) { // fully cloaked
 	static int32_t nCloakDelta = 0, nCloakDir = 1;
 	static fix xCloakTimer = 0;
 
 	//note, if more than one cloaked CObject is visible at once, the pulse rate will change!
-	xCloakTimer -= gameData.time.xFrame;
+	xCloakTimer -= gameData.timeData.xFrame;
 	while (xCloakTimer < 0) {
 		xCloakTimer += ci.xFadeoutDuration / 12;
 		nCloakDelta += nCloakDir;
@@ -646,7 +646,7 @@ else if ((xCloakStartTime == 0x7fffffff) || (gameData.time.xGame < xCloakEndTime
 		}
 	ci.nFadeValue = CLOAKED_FADE_LEVEL - nCloakDelta;
 	}
-else if (gameData.time.xGame < xCloakEndTime - ci.xFadeoutDuration / 2)
+else if (gameData.timeData.xGame < xCloakEndTime - ci.xFadeoutDuration / 2)
 	ci.nFadeValue = X2I (FixDiv (ci.xTotalTime - ci.xFadeoutDuration / 2 - ci.xDeltaTime, ci.xFadeoutDuration / 2) * CLOAKED_FADE_LEVEL);
 else {
 	ci.xLightScale = (fix) ((float) (ci.xFadeoutDuration / 2 - (ci.xTotalTime - ci.xDeltaTime) / (float) (ci.xFadeoutDuration / 2)));
@@ -674,12 +674,12 @@ if (GetCloakInfo (pObj, xCloakStartTime, xCloakEndTime, &ci) != 0) {
 	xNewLight = FixMul (light, ci.xLightScale);
 	xSaveGlow = glow [0];
 	glow [0] = FixMul (glow [0], ci.xLightScale);
-	gameData.models.nLightScale = ci.xLightScale;
+	gameData.modelData.nLightScale = ci.xLightScale;
 	bOk = DrawPolyModel (pObj, &pPos->vPos, &pPos->mOrient,
 								reinterpret_cast<CAngleVector*> (&pObj->rType.polyObjInfo.animAngles),
 								pObj->ModelId (true), pObj->rType.polyObjInfo.nSubObjFlags,
 								xNewLight, glow, altTextures, NULL);
-	gameData.models.nLightScale = 0;
+	gameData.modelData.nLightScale = 0;
 	glow [0] = xSaveGlow;
 	}
 else {
@@ -731,7 +731,7 @@ else
 	nModel = pObj->ModelId ();
 if (!(po = GetOOFModel (nModel)))
 	return 0;
-if (gameData.models.renderModels [1][nModel].m_bValid >= 0)
+if (gameData.modelData.renderModels [1][nModel].m_bValid >= 0)
 	return 0;
 //G3RenderModel (pObj, nModel, NULL, NULL, NULL, xLight, NULL, color);
 fLight [0] = xLight / 65536.0f;
@@ -788,9 +788,9 @@ else {
 	}
 if (pObj->rType.polyObjInfo.nTexOverride != -1) {
 #if DBG
-	CPolyModel* pm = gameData.models.polyModels [0] + pObj->ModelId ();
+	CPolyModel* pm = gameData.modelData.polyModels [0] + pObj->ModelId ();
 #endif
-	tBitmapIndex	bm = gameData.pig.tex.bmIndex [0][pObj->rType.polyObjInfo.nTexOverride],
+	tBitmapIndex	bm = gameData.pigData.tex.bmIndex [0][pObj->rType.polyObjInfo.nTexOverride],
 						pBmIndex [MAX_MODEL_TEXTURES];
 
 #if DBG
@@ -814,9 +814,9 @@ else {
 			bOk = DrawCloakedObject (pObj, xLight, xEngineGlow, PLAYER (id).cloakTime, PLAYER (id).cloakTime + CLOAK_TIME_MAX);
 		else if ((pObj->info.nType == OBJ_ROBOT) && ROBOTINFO (id)) {
 			if (!ROBOTINFO (id)->bossFlag)
-				bOk = DrawCloakedObject (pObj, xLight, xEngineGlow, gameData.time.xGame - I2X (10), gameData.time.xGame + I2X (10));
-			else if (0 <= (i = gameData.bosses.Find (pObj->Index ())))
-				bOk = DrawCloakedObject (pObj, xLight, xEngineGlow, gameData.bosses [i].m_nCloakStartTime, gameData.bosses [i].m_nCloakEndTime);
+				bOk = DrawCloakedObject (pObj, xLight, xEngineGlow, gameData.timeData.xGame - I2X (10), gameData.timeData.xGame + I2X (10));
+			else if (0 <= (i = gameData.bossData.Find (pObj->Index ())))
+				bOk = DrawCloakedObject (pObj, xLight, xEngineGlow, gameData.bossData [i].m_nCloakStartTime, gameData.bossData [i].m_nCloakEndTime);
 			}
 		}
 	else {
@@ -825,10 +825,10 @@ else {
 		//	Snipers get bright when they fire.
 		if (!gameStates.render.bBuildModels) {
 			if ((pObj->info.nType == OBJ_ROBOT) &&
-				 (gameData.ai.localInfo [pObj->Index ()].pNextrimaryFire < I2X (1) / 8) &&
+				 (gameData.aiData.localInfo [pObj->Index ()].pNextrimaryFire < I2X (1) / 8) &&
 				 (pObj->cType.aiInfo.behavior == AIB_SNIPE))
 				xLight = 2 * xLight + I2X (1);
-			bBlendPolys = bEnergyWeapon && (gameData.weapons.info [id].nInnerModel > -1);
+			bBlendPolys = bEnergyWeapon && (gameData.weaponData.info [0][id].nInnerModel > -1);
 			bBrightPolys = bGatling || (bBlendPolys && WI_energy_usage (id));
 			if (bEnergyWeapon) {
 				if (gameOpts->legacy.bRender)
@@ -841,11 +841,11 @@ else {
 			if (bBlendPolys) {
 #if 0
 				fix xDistToEye = CFixVector::Dist(gameData.objData.pViewer->info.position.vPos, pObj->info.position.vPos);
-				if (xDistToEye < gameData.models.nSimpleModelThresholdScale * I2X (2))
+				if (xDistToEye < gameData.modelData.nSimpleModelThresholdScale * I2X (2))
 #endif
 					bOk = DrawPolyModel (pObj, &pObj->info.position.vPos, &pObj->info.position.mOrient,
 												pObj->rType.polyObjInfo.animAngles,
-												gameData.weapons.info [id].nInnerModel,
+												gameData.weaponData.info [0][id].nInnerModel,
 												pObj->rType.polyObjInfo.nSubObjFlags,
 												bBrightPolys ? I2X (1) : xLight,
 												xEngineGlow,
@@ -864,7 +864,7 @@ else {
 									(bGatling || bBrightPolys) ? I2X (1) : xLight,
 									xEngineGlow,
 									bmiAltTex,
-									(bGatling || bEnergyWeapon) ? gameData.weapons.color + id : NULL);
+									(bGatling || bEnergyWeapon) ? gameData.weaponData.color + id : NULL);
 		if (!gameStates.render.bBuildModels) {
 			if (!gameOpts->legacy.bRender)
 				ogl.SetBlendMode (OGL_BLEND_ALPHA);
@@ -896,13 +896,13 @@ if (bSpectate) {
 	}
 	if (pObj->Appearing ()) {
 		fix xScale = F2X (Min (1.0f, (float) pow (1.0f - pObj->AppearanceScale (), 0.25f)));
-		gameData.models.vScale.Set (xScale, xScale, xScale);
+		gameData.modelData.vScale.Set (xScale, xScale, xScale);
 		}
 if (!DrawPolygonObject (pObj, 0)) {
-	gameData.models.vScale.SetZero ();
+	gameData.modelData.vScale.SetZero ();
 	return 0;
 	}
-gameData.models.vScale.SetZero ();
+gameData.modelData.vScale.SetZero ();
 gameOpts->ogl.bLightObjects = (gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
 thrusterFlames.Render (pObj);
 RenderPlayerShield (pObj);
@@ -919,7 +919,7 @@ static int32_t RenderRobotModel (CObject* pObj, int32_t bSpectate)
 {
 if (automap.Active () && !AM_SHOW_ROBOTS)
 	return 0;
-gameData.models.vScale.SetZero ();
+gameData.modelData.vScale.SetZero ();
 #if DBG
 if (pObj->Index () == nDbgObj)
 	BRP;
@@ -967,12 +967,12 @@ if (!(gameStates.app.bNostalgia || gameOpts->Use3DPowerups ()) && pObj->IsMine (
 else {
 	if (pObj->IsMissile ()) {	//make missiles smaller during launch
 		if ((pObj->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
-			 (gameData.models.renderModels [1][pObj->ModelId ()].m_bValid > 0)) {	//hires player ship
-			float dt = X2F (gameData.time.xGame - pObj->CreationTime ());
+			 (gameData.modelData.renderModels [1][pObj->ModelId ()].m_bValid > 0)) {	//hires player ship
+			float dt = X2F (gameData.timeData.xGame - pObj->CreationTime ());
 
 			if (dt < 1) {
 				fix xScale = (fix) (I2X (1) + I2X (1) * dt * dt) / 2;
-				gameData.models.vScale.Set (xScale, xScale, xScale);
+				gameData.modelData.vScale.Set (xScale, xScale, xScale);
 				}
 			}
 		//DoObjectSmoke (pObj);
@@ -986,7 +986,7 @@ else {
 #endif
 			thrusterFlames.Render (pObj);
 			}
-		gameData.models.vScale.SetZero ();
+		gameData.modelData.vScale.SetZero ();
 		}
 	else {
 #if RENDER_HITBOX
@@ -1007,7 +1007,7 @@ else {
 				if (SHOW_OBJ_FX && extraGameInfo [0].bTracers) {
 					//RenderLightTrail (pObj);
 					CFixVector vSavedPos = pObj->info.position.vPos;
-					gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (3) / 2);
+					gameData.modelData.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (3) / 2);
 					pObj->info.position.vPos += pObj->info.position.mOrient.m.dir.f;
 					DrawPolygonObject (pObj, 0);
 					pObj->info.position.vPos = vSavedPos;
@@ -1018,7 +1018,7 @@ else {
 					RenderLightTrail (pObj);
 				DrawPolygonObject (pObj, 0);
 				}
-			gameData.models.vScale.SetZero ();
+			gameData.modelData.vScale.SetZero ();
 			}
 		}
 	}
@@ -1049,7 +1049,7 @@ if (!gameStates.app.bNostalgia && gameOpts->Use3DPowerups ()) {
 #if DBG
 	RenderRobotShield (pObj);
 #endif
-	gameData.models.vScale.SetZero ();
+	gameData.modelData.vScale.SetZero ();
 	}
 else
 	ConvertWeaponToPowerup (pObj);
@@ -1343,15 +1343,15 @@ switch (pObj->info.renderType) {
 	}
 
 if (pObj->info.renderType != RT_NONE)
-	if (gameData.demo.nState == ND_STATE_RECORDING) {
-		if (!gameData.demo.bWasRecorded [nObject]) {
+	if (gameData.demoData.nState == ND_STATE_RECORDING) {
+		if (!gameData.demoData.bWasRecorded [nObject]) {
 			NDRecordRenderObject (pObj);
-			gameData.demo.bWasRecorded [nObject] = 1;
+			gameData.demoData.bWasRecorded [nObject] = 1;
 		}
 	}
 
 gameStates.render.detail.nMaxLinearDepth = mldSave;
-gameData.render.nTotalObjects++;
+gameData.renderData.nTotalObjects++;
 ogl.ClearError (0);
 return 1;
 }

@@ -330,12 +330,12 @@ pObj->mType.physInfo.thrust.SetZero ();
 pObj->mType.physInfo.rotVel.SetZero ();
 pObj->mType.physInfo.rotThrust.SetZero ();
 pObj->mType.physInfo.brakes = pObj->mType.physInfo.turnRoll = 0;
-pObj->mType.physInfo.mass = gameData.pig.ship.player->mass;
-pObj->mType.physInfo.drag = gameData.pig.ship.player->drag;
+pObj->mType.physInfo.mass = gameData.pigData.ship.player->mass;
+pObj->mType.physInfo.drag = gameData.pigData.ship.player->drag;
 pObj->mType.physInfo.flags |= PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST;
 //Init render info
 pObj->info.renderType = (pObj->info.nType == OBJ_GHOST) ? RT_NONE : RT_POLYOBJ;
-pObj->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;		//what model is this?
+pObj->rType.polyObjInfo.nModel = gameData.pigData.ship.player->nModel;		//what model is this?
 pObj->rType.polyObjInfo.nSubObjFlags = 0;		//zero the flags
 pObj->rType.polyObjInfo.nTexOverride = -1;		//no tmap override!
 for (int32_t i = 0; i < MAX_SUBMODELS; i++)
@@ -380,7 +380,7 @@ void InitPlayerObject (void)
 gameData.objData.pConsole->SetType (OBJ_PLAYER, false);
 gameData.objData.pConsole->info.nId = 0;					//no sub-types for player
 gameData.objData.pConsole->info.nSignature = 0;			//player has zero, others start at 1
-gameData.objData.pConsole->SetSize (gameData.models.polyModels [0][gameData.pig.ship.player->nModel].Rad ());
+gameData.objData.pConsole->SetSize (gameData.modelData.polyModels [0][gameData.pigData.ship.player->nModel].Rad ());
 gameData.objData.pConsole->info.controlType = CT_SLEW;			//default is player slewing
 gameData.objData.pConsole->info.movementType = MT_PHYSICS;		//change this sometime
 gameData.objData.pConsole->SetLife (IMMORTAL_TIME);
@@ -1246,7 +1246,7 @@ if (!pObj->IsInList (gameData.objData.lists.all, 0))
 pObj->RequestEffects (DESTROY_SMOKE | DESTROY_LIGHTNING);
 
 if (pObj->info.nType == OBJ_WEAPON) {
-	if (gameData.demo.nVcrState != ND_STATE_PLAYBACK)
+	if (gameData.demoData.nVcrState != ND_STATE_PLAYBACK)
 		RespawnDestroyedWeapon (nObject);
 	CObject* pParent = OBJECT (pObj->cType.laserInfo.parent.nObject);
 	if (pParent) {
@@ -1255,7 +1255,7 @@ if (pObj->info.nType == OBJ_WEAPON) {
 		if (pObj->info.nId == GUIDEDMSL_ID) {
 			if (pParent->info.nId != N_LOCALPLAYER)
 				gameData.objData.SetGuidedMissile (pParent->info.nId, NULL);
-			else if (gameData.demo.nState == ND_STATE_RECORDING)
+			else if (gameData.demoData.nState == ND_STATE_RECORDING)
 				NDRecordGuidedEnd ();
 			}
 		}
@@ -1475,12 +1475,12 @@ void AdjustMineSpawn (void)
 {
 if (!IsNetworkGame)
 	return;  // No need for this function in any other mode
-if (!(gameData.app.GameMode (GM_HOARD | GM_ENTROPY)))
-	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] += gameData.laser.nProximityDropped;
+if (!(gameData.appData.GameMode (GM_HOARD | GM_ENTROPY)))
+	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] += gameData.laserData.nProximityDropped;
 if (!IsEntropyGame)
-	LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX] += gameData.laser.nSmartMinesDropped;
-gameData.laser.nProximityDropped = 0;
-gameData.laser.nSmartMinesDropped = 0;
+	LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX] += gameData.laserData.nSmartMinesDropped;
+gameData.laserData.nProximityDropped = 0;
+gameData.laserData.nSmartMinesDropped = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1529,7 +1529,7 @@ for (i = 0; i < nObjects; i++, pObj++)
 	if (pObj->info.nType != OBJ_DEBRIS)
 		pObj->rType.polyObjInfo.nSubObjFlags = 0;
 for (; i < LEVEL_OBJECTS; i++, pObj++) {
-	if ((gameData.demo.nState == ND_STATE_PLAYBACK) && ((pObj->info.nType == OBJ_CAMBOT) || (pObj->info.nType == OBJ_EFFECT)))
+	if ((gameData.demoData.nState == ND_STATE_PLAYBACK) && ((pObj->info.nType == OBJ_CAMBOT) || (pObj->info.nType == OBJ_EFFECT)))
 		continue;
 	gameData.objData.freeList [i] = i;
 	pObj->info.nType = OBJ_NONE;
@@ -1631,7 +1631,7 @@ void ClearTransientObjects (int32_t bClearAll)
 
 for (CWeaponIterator iter (pObj); pObj; pObj = (pPrevObj ? iter.Step () : iter.Start ())) {
 	pPrevObj = pObj;
-	if ((!(gameData.weapons.info [pObj->info.nId].flags & WIF_PLACABLE) && (bClearAll || ((pObj->info.nId != PROXMINE_ID) && (pObj->info.nId != SMARTMINE_ID)))) ||
+	if ((!(gameData.weaponData.info [0][pObj->info.nId].flags & WIF_PLACABLE) && (bClearAll || ((pObj->info.nId != PROXMINE_ID) && (pObj->info.nId != SMARTMINE_ID)))) ||
 			pObj->info.nType == OBJ_FIREBALL ||	pObj->info.nType == OBJ_DEBRIS || ((pObj->info.nType != OBJ_NONE) && (pObj->info.nFlags & OF_EXPLODING))) {
 		pPrevObj = iter.Back ();
 		ReleaseObject (pObj->Index ());
@@ -2166,7 +2166,7 @@ if (info.renderType != RT_POLYOBJ)
 int32_t nId = ModelId ();
 if (nId < 0)
 	return info.xSize;
-return gameData.models.polyModels [0][nId].Rad (i);
+return gameData.modelData.polyModels [0][nId].Rad (i);
 }
 
 //------------------------------------------------------------------------------
@@ -2545,7 +2545,7 @@ fix CObject::FoV (void)
 if (IsPlayer ())
 	return F2X (cos (gameStates.render.glFOV * PI / 360.0f));
 if (IsMissile ())
-	return gameData.weapons.xMinTrackableDot;
+	return gameData.weaponData.xMinTrackableDot;
 if (IsRobot ()) {
 	tRobotInfo *pRobotInfo = ROBOTINFO (Id ());
 	if (pRobotInfo)

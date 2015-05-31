@@ -204,7 +204,7 @@ if (NetworkSelectPlayers (bAutoRun)) {
 	return 1;
 	}
 else {
-	gameData.app.SetGameMode (GM_GAME_OVER);
+	gameData.appData.SetGameMode (GM_GAME_OVER);
 	PrintLog (-1);
 	return 0;
 	}
@@ -253,7 +253,7 @@ if (bDisconnect) {
 	}
 CONNECT (N_LOCALPLAYER, CONNECT_DISCONNECTED);
 NetworkSendEndLevelPacket ();
-gameData.app.SetGameMode (GM_GAME_OVER);
+gameData.appData.SetGameMode (GM_GAME_OVER);
 IpxHandleLeaveGame ();
 NetworkFlush ();
 ChangePlayerNumTo (0);
@@ -471,7 +471,7 @@ if (!bSending) {
 	++m_nPackets; 
 	networkData.bD2XData = 0;
 	networkData.xLastSendTime = 0;
-	if (gameData.reactor.bDestroyed) {
+	if (gameData.reactorData.bDestroyed) {
 		if (gameStates.app.bPlayerIsDead)
 			CONNECT (N_LOCALPLAYER, CONNECT_DIED_IN_MINE);
 		if (toEndLevel.Expired ())
@@ -509,7 +509,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	mineSyncData.Flush ();
 	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds () > (networkData.refuse.xTimeLimit + (I2X (12))))
 		networkData.refuse.bWaitForAnswer = 0;
-	networkData.xLastSendTime += gameData.time.xFrame;
+	networkData.xLastSendTime += gameData.timeData.xFrame;
 	if ((networkData.xLastSendTime >= SyncTimeout ())
 #if DBG
 		 || ((networkData.xLastSendTime >= I2X (1) / MAX_PPS) && (bFlush || gameData.multigame.weapon.bFired || networkData.bPacketUrgent))
@@ -527,7 +527,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	}
 NetworkListen ();
 #if 0
-if ((networkData.syncInfo [0].nPlayer != -1) && !(gameData.app.nFrameCount & 63))
+if ((networkData.syncInfo [0].nPlayer != -1) && !(gameData.appData.nFrameCount & 63))
 	ResendSyncDueToPacketLoss (); // This will resend to network_player_rejoining
 #endif
 XMLGameInfoHandler ();

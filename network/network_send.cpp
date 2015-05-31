@@ -82,7 +82,7 @@ void NetworkSendRejoinSync (int32_t nPlayer, tNetworkSyncInfo *pSyncInfo)
 
 CONNECT (nPlayer, CONNECT_PLAYING); // connect the new guy
 ResetPlayerTimeout (nPlayer, -1);
-if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
+if (gameStates.app.bEndLevelSequence || gameData.reactorData.bDestroyed) {
 	// Endlevel started before we finished sending the goods, we'll
 	// have to stop and try again after the level.
 
@@ -261,8 +261,8 @@ if (PLAYER (nPlayer).Connected (CONNECT_PLAYING)) {// Still playing
 	BRP;
 #endif
 #if 0
-	Assert (gameData.reactor.bDestroyed);
-	*end.SecondsLeft () = gameData.reactor.countdown.nSecsLeft;
+	Assert (gameData.reactorData.bDestroyed);
+	*end.SecondsLeft () = gameData.reactorData.countdown.nSecsLeft;
 #endif
 	}
 for (i = 0; i < N_PLAYERS; i++) {       
@@ -310,7 +310,7 @@ if ((gameStates.multi.nGameType == UDP_GAME) && (nSrcPlayer != N_LOCALPLAYER) &&
 eli.nType = PID_ENDLEVEL_SHORT;
 eli.nPlayer = nSrcPlayer;
 eli.connected = PLAYER (nSrcPlayer).connected;
-eli.secondsLeft = gameData.reactor.countdown.nSecsLeft;
+eli.secondsLeft = gameData.reactorData.countdown.nSecsLeft;
 networkThread.Send (
 	reinterpret_cast<uint8_t*> (&eli), sizeof (tEndLevelInfoShort), 
 	NETPLAYER (nDestPlayer).network.Network (), 
@@ -337,7 +337,7 @@ netPlayers [0].m_info.nType = PID_PLAYERSINFO;
 netPlayers [0].m_info.nSecurity = netGameInfo.m_info.nSecurity;
 netGameInfo.m_info.versionMajor = D2X_MAJOR;
 netGameInfo.m_info.versionMinor = D2X_MINOR;
-if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
+if (gameStates.app.bEndLevelSequence || gameData.reactorData.bDestroyed)
 	netGameInfo.m_info.gameStatus = NETSTAT_ENDLEVEL;
 if ((timevar = I2X (netGameInfo.GetPlayTimeAllowed () * 5 * 60))) {
 	i = X2I (timevar - gameStates.app.xThisLevelTime);
@@ -433,11 +433,11 @@ NetworkUpdateNetGame (); // Update the values in the netgame struct
 oldType = netGameInfo.m_info.nType;
 oldStatus = netGameInfo.m_info.gameStatus;
 netGameInfo.m_info.nType = PID_LITE_INFO;
-if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
+if (gameStates.app.bEndLevelSequence || gameData.reactorData.bDestroyed)
 	netGameInfo.m_info.gameStatus = NETSTAT_ENDLEVEL;
 // If hoard mode, make this game look closed even if it isn't
 if (HoardEquipped ()) {
-	if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) {
+	if (gameData.appData.GameMode (GM_HOARD | GM_ENTROPY)) {
 		char oldStatus = netGameInfo.m_info.gameStatus;
 		netGameInfo.m_info.gameStatus = NETSTAT_ENDLEVEL;
 		netGameInfo.m_info.gameMode = NETGAME_CAPTURE_FLAG;
@@ -455,10 +455,10 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	}  
 //  Restore the pre-hoard mode
 if (HoardEquipped ()) {
-	if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL)) {
+	if (gameData.appData.GameMode (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL)) {
 		if (IsEntropyGame)
  			netGameInfo.m_info.gameMode = NETGAME_ENTROPY;
-		else if (gameData.app.GameMode (GM_MONSTERBALL))
+		else if (gameData.appData.GameMode (GM_MONSTERBALL))
  			netGameInfo.m_info.gameMode = NETGAME_MONSTERBALL;
 		else if (IsTeamGame)
  			netGameInfo.m_info.gameMode = NETGAME_TEAM_HOARD;
@@ -484,7 +484,7 @@ NetworkUpdateNetGame (); // Update the values in the netgame struct
 oldType = netGameInfo.m_info.nType;
 oldStatus = netGameInfo.m_info.gameStatus;
 netGameInfo.m_info.nType = PID_GAME_UPDATE;
-if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
+if (gameStates.app.bEndLevelSequence || gameData.reactorData.bDestroyed)
 	netGameInfo.m_info.gameStatus = NETSTAT_ENDLEVEL;
 PrintLog (1, "sending netgame update:\n");
 for (i = 0; i < N_PLAYERS; i++) {
@@ -623,8 +623,8 @@ if (bUrgent)
 void NetworkSendSmashedLights (int32_t nPlayer) 
 {
 for (int32_t i = 0; i <= gameData.segData.nLastSegment; i++)
-	if (gameData.render.lights.subtracted [i])
-		MultiSendLightSpecific (nPlayer, i, gameData.render.lights.subtracted [i]);
+	if (gameData.renderData.lights.subtracted [i])
+		MultiSendLightSpecific (nPlayer, i, gameData.renderData.lights.subtracted [i]);
 }
 
 //------------------------------------------------------------------------------

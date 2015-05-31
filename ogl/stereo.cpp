@@ -98,14 +98,14 @@ static bool RiftWarpFrame (const OVR::Util::Render::DistortionConfig* pDistortio
 {
 	OVR::Util::Render::DistortionConfig distortion;
 
-distortion = (gameData.render.rift.Available () && pDistortion) ? *pDistortion : defaultDistortion;
+distortion = (gameData.renderData.rift.Available () && pDistortion) ? *pDistortion : defaultDistortion;
 
-float w = float (gameData.render.frame.Width ()) / float (gameData.render.screen.Width ()),
-      h = float (gameData.render.frame.Height ()) / float (gameData.render.screen.Height ()),
-      x = float (gameData.render.frame.Left ()) / float (gameData.render.screen.Width ()),
-      y = float (gameData.render.frame.Top ()) / float (gameData.render.screen.Height ());
+float w = float (gameData.renderData.frame.Width ()) / float (gameData.renderData.screen.Width ()),
+      h = float (gameData.renderData.frame.Height ()) / float (gameData.renderData.screen.Height ()),
+      x = float (gameData.renderData.frame.Left ()) / float (gameData.renderData.screen.Width ()),
+      y = float (gameData.renderData.frame.Top ()) / float (gameData.renderData.screen.Height ());
 
-float as = float (gameData.render.frame.Width ()) / float(gameData.render.frame.Height ());
+float as = float (gameData.renderData.frame.Width ()) / float(gameData.renderData.frame.Height ());
 
 GLhandleARB warpProg = GLhandleARB (shaderManager.Deploy (riftWarpShaderProg [gameOpts->render.stereo.bChromAbCorr]));
 if (!warpProg)
@@ -157,7 +157,7 @@ static bool bWarpFrame = true;
 bool RiftWarpScene (void)
 {
 #if !DBG
-if (!gameData.render.rift.Available ())
+if (!gameData.renderData.rift.Available ())
 	return false;
 #endif
 #if OCULUS_RIFT
@@ -169,7 +169,7 @@ if (!gameStates.render.textures.bHaveRiftWarpShader)
 for (int32_t i = 0; i < 2; i++) {
 	gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 	SetupCanvasses ();
-	gameData.render.frame.Activate ("RiftWarpScene (frame)");
+	gameData.renderData.frame.Activate ("RiftWarpScene (frame)");
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
@@ -178,11 +178,11 @@ for (int32_t i = 0; i < 2; i++) {
 		OglDrawArrays (GL_QUADS, 0, 4);
 	else
 #endif
-	if (!RiftWarpFrame (gameData.render.rift.m_eyes [i].pDistortion, i)) {
-		gameData.render.frame.Deactivate ();
+	if (!RiftWarpFrame (gameData.renderData.rift.m_eyes [i].pDistortion, i)) {
+		gameData.renderData.frame.Deactivate ();
 		return false;
 		}
-	gameData.render.frame.Deactivate ();
+	gameData.renderData.frame.Deactivate ();
 	}	
 
 #endif

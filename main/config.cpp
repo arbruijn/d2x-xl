@@ -295,8 +295,8 @@ sprintf (str, "%s=%d\n", pszStereoRev, gameConfig.bReverseChannels);
 cf.PutS (str);
 sprintf (str, "%s=%d\n", pszGammaLevel, gamma);
 cf.PutS (str);
-if (bExitProgram && (gameData.time.xGameTotal > 0) && (gameConfig.nTotalTime >= 0))
-	gameConfig.nTotalTime += gameData.time.xGameTotal / 60;
+if (bExitProgram && (gameData.timeData.xGameTotal > 0) && (gameConfig.nTotalTime >= 0))
+	gameConfig.nTotalTime += gameData.timeData.xGameTotal / 60;
 sprintf (str, "%s=%d\n", pszTotalGameTime, gameConfig.nTotalTime);
 cf.PutS (str);
 if (gameStates.app.nDetailLevel == NUM_DETAIL_LEVELS-1)

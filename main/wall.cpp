@@ -123,7 +123,7 @@ int32_t WallEffectFrameCount (tWallEffect *anim)
 {
 	int32_t	n;
 
-CBitmap *pBm = gameData.pig.tex.pBitmap + gameData.pig.tex.pBmIndex [anim->frames [0]].index;
+CBitmap *pBm = gameData.pigData.tex.pBitmap + gameData.pigData.tex.pBmIndex [anim->frames [0]].index;
 if (pBm->Override ())
 	pBm = pBm->Override ();
 n = (pBm->Type () == BM_TYPE_ALT) ? pBm->FrameCount () : anim->nFrameCount;
@@ -455,7 +455,7 @@ if (nDoor < -1)
 	return false;
 pDoor = gameData.wallData.activeDoors + nDoor;
 for (i = 0; i < pDoor->nPartCount; i++) {
-	pDoor->time += gameData.time.xFrame;
+	pDoor->time += gameData.timeData.xFrame;
 	nWall = pDoor->nFrontWall [i];
 	if (!IS_WALL (nWall)) {
 		PrintLog (0, "Trying to open non existent door\n");
@@ -534,12 +534,12 @@ for (i = 0; i < pDoor->nPartCount; i++) {
 					 pSeg->WallNum (nSide), pWall->nSegment, nSide, pSeg->m_children [nSide]);
 		continue;
 		}
-	if ((gameData.demo.nState != ND_STATE_PLAYBACK) && !(i || pDoor->time)) {
+	if ((gameData.demoData.nState != ND_STATE_PLAYBACK) && !(i || pDoor->time)) {
 		if (gameData.wallData.pAnim [pWall->nClip].closeSound  > -1)
 			audio.CreateSegmentSound ((int16_t) gameData.wallData.pAnim [pSeg->Wall (nSide)->nClip].closeSound,
 											  pWall->nSegment, nSide, SEGMENT (pWall->nSegment)->SideCenter (nSide), 0, I2X (1));
 		}
-	pDoor->time += gameData.time.xFrame;
+	pDoor->time += gameData.timeData.xFrame;
 	bFlags &= pSeg->AnimateClosingDoor (nSide, pDoor->time);
 	if (pConnSeg->IsWall (nConnSide))
 		bFlags &= pConnSeg->AnimateClosingDoor (nConnSide, pDoor->time);
@@ -694,12 +694,12 @@ bool DoCloakingWallFrame (int32_t nCloakingWall)
 	CWall*			pFrontWall,*pBackWall;
 	bool				bDeleted = false;
 
-if (gameData.demo.nState == ND_STATE_PLAYBACK)
+if (gameData.demoData.nState == ND_STATE_PLAYBACK)
 	return false;
 pCloakWall = gameData.wallData.cloaking + nCloakingWall;
 pFrontWall = WALL (pCloakWall->nFrontWall);
 pBackWall = IS_WALL (pCloakWall->nBackWall) ? WALL (pCloakWall->nBackWall) : NULL;
-pCloakWall->time += gameData.time.xFrame;
+pCloakWall->time += gameData.timeData.xFrame;
 if (pCloakWall->time > CLOAKING_WALL_TIME) {
 	pFrontWall->nType = WALL_OPEN;
 	if (SHOW_DYN_LIGHT)
@@ -746,7 +746,7 @@ else {		//fading out
 		if (pBackWall)
 			SEGMENT (pBackWall->nSegment)->m_sides [pBackWall->nSide].m_uvls [i].l = FixMul (pCloakWall->back_ls [i], xLightScale);
 		}
-	if (gameData.demo.nState == ND_STATE_RECORDING) {
+	if (gameData.demoData.nState == ND_STATE_RECORDING) {
 		tUVL *pUVL = SEGMENT (pFrontWall->nSegment)->m_sides [pFrontWall->nSide].m_uvls;
 		NDRecordCloakingWall (pCloakWall->nFrontWall, pCloakWall->nBackWall, pFrontWall->nType, pFrontWall->state, pFrontWall->cloakValue,
 									 pUVL [0].l, pUVL [1].l, pUVL [2].l, pUVL [3].l);
@@ -759,14 +759,14 @@ return bDeleted;
 
 void DoDecloakingWallFrame (int32_t nCloakingWall)
 {
-if (gameData.demo.nState == ND_STATE_PLAYBACK)
+if (gameData.demoData.nState == ND_STATE_PLAYBACK)
 	return;
 
 CCloakingWall* pCloakWall = gameData.wallData.cloaking + nCloakingWall;
 CWall* pFrontWall = WALL (pCloakWall->nFrontWall);
 CWall* pBackWall = IS_WALL (pCloakWall->nBackWall) ? WALL (pCloakWall->nBackWall) : NULL;
 
-pCloakWall->time += gameData.time.xFrame;
+pCloakWall->time += gameData.timeData.xFrame;
 if (pCloakWall->time > CLOAKING_WALL_TIME) {
 	pFrontWall->state = WALL_DOOR_CLOSED;
 	if (pBackWall)
@@ -802,7 +802,7 @@ else {		//cloaking in
 		pBackWall->nType = WALL_CLOAKED;
 		}
 	}
-if (gameData.demo.nState == ND_STATE_RECORDING) {
+if (gameData.demoData.nState == ND_STATE_RECORDING) {
 	tUVL *pUVL = SEGMENT (pFrontWall->nSegment)->m_sides [pFrontWall->nSide].m_uvls;
 	NDRecordCloakingWall (pCloakWall->nFrontWall, pCloakWall->nBackWall, pFrontWall->nType, pFrontWall->state, pFrontWall->cloakValue,
 								 pUVL [0].l, pUVL [1].l, pUVL [2].l, pUVL [3].l);
@@ -831,7 +831,7 @@ for (i = 0; i < gameData.wallData.activeDoors.ToS (); i++) {
 			i--;	// active door has been deleted - account for it
 		}
 	else if (pWall->state == WALL_DOOR_WAITING) {
-		pDoor->time += gameData.time.xFrame;
+		pDoor->time += gameData.timeData.xFrame;
 
 		//set flags to fix occatsional netgame problem where door is
 		//waiting to close but open flag isn't set
@@ -909,7 +909,7 @@ void RemoveObsoleteStuckObjects (void)
 //	Safety and efficiency code.  If no stuck OBJECTS, should never get inside the IF, but this is faster.
 if (!nStuckObjects)
 	return;
-int16_t nObject = gameData.app.nFrameCount % MAX_STUCK_OBJECTS;
+int16_t nObject = gameData.appData.nFrameCount % MAX_STUCK_OBJECTS;
 tStuckObject *pStuckObj = stuckObjects + nObject;
 CObject *pObj = OBJECT (pStuckObj->nObject);
 CWall* pWall = WALL (pStuckObj->nWall);
@@ -1007,12 +1007,12 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 
 	//	Process only walls which have glass.
 	if ((tm = pSeg->m_sides [nSide].m_nOvlTex)) {
-		int32_t ec = gameData.pig.tex.pTexMapInfo [tm].nEffectClip;
-		tEffectInfo* pEffectInfo = (ec < 0) ? NULL : gameData.effects.pEffect + ec;
+		int32_t ec = gameData.pigData.tex.pTexMapInfo [tm].nEffectClip;
+		tEffectInfo* pEffectInfo = (ec < 0) ? NULL : gameData.effectData.pEffect + ec;
 		int32_t db = pEffectInfo ? pEffectInfo->destroyed.nTexture : -1;
 
 		if (((ec != -1) && (db != -1) && !(pEffectInfo->flags & EF_ONE_SHOT)) ||
-		 	 ((ec == -1) && (gameData.pig.tex.pTexMapInfo [tm].destroyed != -1))) {
+		 	 ((ec == -1) && (gameData.pigData.tex.pTexMapInfo [tm].destroyed != -1))) {
 			pnt = pSeg->SideCenter (nSide);
 			dist = CFixVector::Dist(pnt, pObj->info.position.vPos);
 			if (dist < damage / 2) {
@@ -1417,7 +1417,7 @@ for (uint32_t i = 0; i < gameData.wallData.exploding.ToS (); ) {
 	fix oldfrac, newfrac;
 	int32_t oldCount, newCount, e;		//n,
 	oldfrac = FixDiv (gameData.wallData.exploding [i].time, EXPL_WALL_TIME);
-	gameData.wallData.exploding [i].time += gameData.time.xFrame;
+	gameData.wallData.exploding [i].time += gameData.timeData.xFrame;
 	if (gameData.wallData.exploding [i].time > EXPL_WALL_TIME)
 		gameData.wallData.exploding [i].time = EXPL_WALL_TIME;
 	else if (gameData.wallData.exploding [i].time > 3 * EXPL_WALL_TIME / 4) {

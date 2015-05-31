@@ -99,7 +99,7 @@ void FlashFrame (void)
 
 if (automap.Active ())
 	return;
-if (!(gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)) {
+if (!(gameData.reactorData.bDestroyed || gameStates.gameplay.seismic.nMagnitude)) {
 	gameStates.render.nFlashScale = 0;
 	return;
 	}
@@ -107,17 +107,17 @@ if (gameStates.app.bEndLevelSequence)
 	return;
 if (paletteManager.BlueEffect () > 10)		//whiting out
 	return;
-//	flashAngle += FixMul(FLASH_CYCLE_RATE, gameData.time.xFrame);
+//	flashAngle += FixMul(FLASH_CYCLE_RATE, gameData.timeData.xFrame);
 if (gameStates.gameplay.seismic.nMagnitude) {
 	fix xAddedFlash = abs(gameStates.gameplay.seismic.nMagnitude);
 	if (xAddedFlash < I2X (1))
 		xAddedFlash *= 16;
-	flashAngle += (fixang) FixMul (gameStates.render.nFlashRate, FixMul(gameData.time.xFrame, xAddedFlash+I2X (1)));
+	flashAngle += (fixang) FixMul (gameStates.render.nFlashRate, FixMul(gameData.timeData.xFrame, xAddedFlash+I2X (1)));
 	FixFastSinCos (flashAngle, &gameStates.render.nFlashScale, NULL);
 	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + I2X (3)) / 4;	//	gets in range 0.5 to 1.0
 	}
 else {
-	flashAngle += (fixang) FixMul (gameStates.render.nFlashRate, gameData.time.xFrame);
+	flashAngle += (fixang) FixMul (gameStates.render.nFlashRate, gameData.timeData.xFrame);
 	FixFastSinCos (flashAngle, &gameStates.render.nFlashScale, NULL);
 	gameStates.render.nFlashScale = (gameStates.render.nFlashScale + I2X (1)) / 2;
 	if (gameStates.app.nDifficultyLevel == 0)
@@ -134,7 +134,7 @@ if (!(IsMultiGame || gameOpts->render.debug.bObjects))
 	return;
 #endif
 #if 0 //DBG
-if (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameCount) 
+if (gameData.renderData.mine.bObjectRendered [nObject] == gameStates.render.nFrameCount) 
 	return;
 #endif
 
@@ -149,7 +149,7 @@ if (nWindow && (pObj->info.nType == OBJ_WEAPON))
 	BRP;
 #endif
 
-if (gameData.demo.nState == ND_STATE_PLAYBACK) {
+if (gameData.demoData.nState == ND_STATE_PLAYBACK) {
 	if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && pObj->info.nType == OBJ_PLAYER) {
   		return;
 		}
@@ -157,7 +157,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 
 if (RenderObject (pObj, nWindow, 0)) {
 #if 0 //DBG
-	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameCount;
+	gameData.renderData.mine.bObjectRendered [nObject] = gameStates.render.nFrameCount;
 #endif
 	if (!gameStates.render.cameras.bActive) {
 		tWindowRenderedData*	wrd = windowRenderedData + nWindow;
@@ -225,8 +225,8 @@ int32_t SortObjList (int32_t nSegment)
 
 if (nSegment < 0)
 	nSegment = -nSegment - 1;
-for (i = gameData.render.mine.objRenderList.ref [nSegment], j = 0; i >= 0; i = pi->nNextItem) {
-	pi = gameData.render.mine.objRenderList.objs + i;
+for (i = gameData.renderData.mine.objRenderList.ref [nSegment], j = 0; i >= 0; i = pi->nNextItem) {
+	pi = gameData.renderData.mine.objRenderList.objs + i;
 	objRenderList [j++] = *pi;
 #if DBG
 	if (OBJECT (pi->nObject)->info.nSegment != nSegment)
@@ -247,12 +247,12 @@ static int32_t nDbgListPos = -1;
 void RenderObjList (int32_t nListPos, int32_t nWindow)
 {
 #if DBG
-if ((nListPos < 0) || (nListPos >= gameData.render.mine.nObjRenderSegs)) {
+if ((nListPos < 0) || (nListPos >= gameData.renderData.mine.nObjRenderSegs)) {
 	//PrintLog (0, "invalid object render list index!\n");
 	BRP;
 	return;
 	}
-if ((gameData.render.mine.objRenderSegList [nListPos] < 0) || (gameData.render.mine.objRenderSegList [nListPos] >= gameData.segData.nSegments)) {
+if ((gameData.renderData.mine.objRenderSegList [nListPos] < 0) || (gameData.renderData.mine.objRenderSegList [nListPos] >= gameData.segData.nSegments)) {
 	//PrintLog (0, "invalid segment at object render list [%d]!\n", nListPos);
 	BRP;
 	return;
@@ -265,7 +265,7 @@ PROF_START
 
 nDbgListPos = nListPos;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
-for (i = 0, j = SortObjList (gameData.render.mine.objRenderSegList [nListPos]); i < j; i++)
+for (i = 0, j = SortObjList (gameData.renderData.mine.objRenderSegList [nListPos]); i < j; i++)
 	DoRenderObject (objRenderList [i].nObject, nWindow);	// note link to above else
 gameStates.render.detail.nMaxLinearDepth = saveLinDepth;
 PROF_END(ptRenderObjects)
@@ -305,8 +305,8 @@ void RenderObjectsST (void)
 {
 	int16_t nSegment;
 
-for (int32_t i = 0; i < gameData.render.mine.nObjRenderSegs; i++) {
-	nSegment = gameData.render.mine.objRenderSegList [i];
+for (int32_t i = 0; i < gameData.renderData.mine.nObjRenderSegs; i++) {
+	nSegment = gameData.renderData.mine.objRenderSegList [i];
 #if DBG
 	if (nSegment == nDbgSeg)
 		BRP;
@@ -428,7 +428,7 @@ if (!m_bInited) {
 for (int32_t i = 0; i < m_nRenderThreads; i++)
 	m_threads [i] = SDL_CreateThread (LightObjectsThread, m_nThreadIds + i);
 #endif
-m_nRenderThreads = Min (gameData.render.mine.nObjRenderSegs, gameStates.app.nThreads);
+m_nRenderThreads = Min (gameData.renderData.mine.nObjRenderSegs, gameStates.app.nThreads);
 m_nActiveThreads = m_nRenderThreads;
 }
 
@@ -453,8 +453,8 @@ for (;;) {
 		BRP;
 #	endif
 #endif
-	for (int32_t i = nThread; i < gameData.render.mine.nObjRenderSegs; i += m_nRenderThreads) {
-		nSegment = gameData.render.mine.objRenderSegList [i];
+	for (int32_t i = nThread; i < gameData.renderData.mine.nObjRenderSegs; i += m_nRenderThreads) {
+		nSegment = gameData.renderData.mine.objRenderSegList [i];
 		if (gameStates.render.bApplyDynLight) {
 			lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
 			lightManager.SetNearestStatic (nSegment, 1, nThread);
@@ -547,8 +547,8 @@ lightManager.SetThreadId (-1);
 
 static inline int32_t VerifyObjectRenderSegment (int16_t nSegment)
 {
-for (int32_t i = 0; i < gameData.render.mine.nObjRenderSegs; i++)
-	if (gameData.render.mine.objRenderSegList [i] == nSegment)
+for (int32_t i = 0; i < gameData.renderData.mine.nObjRenderSegs; i++)
+	if (gameData.renderData.mine.objRenderSegList [i] == nSegment)
 		return -1;
 return nSegment;
 }
@@ -564,15 +564,15 @@ return nSegment;
 
 static int32_t ObjectRenderSegment (int32_t i)
 {
-if (i >= gameData.render.mine.visibility [0].nSegments)
+if (i >= gameData.renderData.mine.visibility [0].nSegments)
 	return -1;
-int16_t nSegment = gameData.render.mine.visibility [0].segments [i];
+int16_t nSegment = gameData.renderData.mine.visibility [0].segments [i];
 if (nSegment < 0) {
 	if (nSegment == -0x7fff)
 		return -1;
 	nSegment = -nSegment - 1;
 	}
-if (0 > gameData.render.mine.objRenderList.ref [nSegment])
+if (0 > gameData.renderData.mine.objRenderList.ref [nSegment])
 	return -1;
 if (!automap.Active ())
 	return VerifyObjectRenderSegment (nSegment);
@@ -581,8 +581,8 @@ if (extraGameInfo [IsMultiGame].bPowerupsOnRadar && extraGameInfo [IsMultiGame].
 
 tObjRenderListItem* pi;
 
-for (i = gameData.render.mine.objRenderList.ref [nSegment]; i >= 0; i = pi->nNextItem) {
-	pi = gameData.render.mine.objRenderList.objs + i;
+for (i = gameData.renderData.mine.objRenderList.ref [nSegment]; i >= 0; i = pi->nNextItem) {
+	pi = gameData.renderData.mine.objRenderList.objs + i;
 	int32_t nType = OBJECT (pi->nObject)->info.nType;
 	if (nType == OBJ_POWERUP) {
 		if (extraGameInfo [IsMultiGame].bPowerupsOnRadar)
@@ -619,10 +619,10 @@ gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->o
 	int32_t	i;
 	int16_t nSegment;
 
-gameData.render.mine.nObjRenderSegs = 0;
-for (i = 0; i < gameData.render.mine.visibility [0].nSegments; i++)
+gameData.renderData.mine.nObjRenderSegs = 0;
+for (i = 0; i < gameData.renderData.mine.visibility [0].nSegments; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
-		gameData.render.mine.objRenderSegList [gameData.render.mine.nObjRenderSegs++] = nSegment;
+		gameData.renderData.mine.objRenderSegList [gameData.renderData.mine.nObjRenderSegs++] = nSegment;
 
 #if 0
 
@@ -630,7 +630,7 @@ RenderObjectsST ();
 
 #else
 
-if (!gameStates.app.bMultiThreaded || (gameStates.render.nShadowPass == 2) || (gameStates.app.nThreads < 2) || (gameData.render.mine.nObjRenderSegs < 2/*gameStates.app.nThreads - 1*/))
+if (!gameStates.app.bMultiThreaded || (gameStates.render.nShadowPass == 2) || (gameStates.app.nThreads < 2) || (gameData.renderData.mine.nObjRenderSegs < 2/*gameStates.app.nThreads - 1*/))
 	RenderObjectsST ();
 else
 #if USE_OPENMP // > 1
@@ -660,7 +660,7 @@ if (gameStates.render.nShadowMap == 0)
 #else
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
 #endif
-	gameData.render.mine.visibility [0].BumpVisitedFlag ();
+	gameData.renderData.mine.visibility [0].BumpVisitedFlag ();
 
 #if DBG
 if ((nType == RENDER_TYPE_GEOMETRY) && (gameOpts->render.debug.bWireFrame & 1)) {
@@ -748,15 +748,15 @@ if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_CO
 	ogl.SetTransform (1);
 	CFixVector vOffset = /*OBJECT (0)->Orientation ().m.dir.f * F2X (xOffset) +*/ OBJECT (0)->Orientation ().m.dir.u * F2X (yOffset);
 	OBJECT (0)->Position () -= vOffset;
-	gameData.render.scene.Activate ("RenderCockpitModel (scene)");
-	gameData.models.vScale.Set (F2X (float (gameData.render.screen.Width ()) / float (gameData.render.screen.Height ()) * 0.75f), I2X (1), I2X (1));
-	bHave3DCockpit = (G3RenderModel (OBJECT (0), COCKPIT_MODEL, -1, NULL, gameData.models.textures, NULL, NULL, 0, NULL, NULL) > 0);
-	gameData.models.vScale.Set (I2X (1), I2X (1), I2X (1));
+	gameData.renderData.scene.Activate ("RenderCockpitModel (scene)");
+	gameData.modelData.vScale.Set (F2X (float (gameData.renderData.screen.Width ()) / float (gameData.renderData.screen.Height ()) * 0.75f), I2X (1), I2X (1));
+	bHave3DCockpit = (G3RenderModel (OBJECT (0), COCKPIT_MODEL, -1, NULL, gameData.modelData.textures, NULL, NULL, 0, NULL, NULL) > 0);
+	gameData.modelData.vScale.Set (I2X (1), I2X (1), I2X (1));
 	CCanvas::Current ()->SetViewport ();
 	OBJECT (0)->Position () += vOffset;
 	ogl.SetTransform (0);
 	gameStates.render.bFullBright = bFullBright;
-	gameData.render.scene.Deactivate ();
+	gameData.renderData.scene.Deactivate ();
 	}
 }
 
@@ -812,8 +812,8 @@ if (!m_bValid) {
 	#endif
 	m_nTexture = int32_t (pSide->m_nOvlTex & TEXTURE_ID_MASK);
 	if (m_nTexture) {
-		//LoadTexture (gameData.pig.tex.pBmIndex [m_nTexture].index, 0, gameStates.app.bD1Mission);
-		CBitmap *pBm = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [m_nTexture].index].Override (-1);
+		//LoadTexture (gameData.pigData.tex.pBmIndex [m_nTexture].index, 0, gameStates.app.bD1Mission);
+		CBitmap *pBm = gameData.pigData.tex.pBitmap [gameData.pigData.tex.pBmIndex [m_nTexture].index].Override (-1);
 		if (!pBm || (pBm->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)))
 			m_nTexture = 0;
 		}
@@ -885,7 +885,7 @@ for (int32_t i = gameData.segData.nEdges; i; i--, pEdge++) {
 #endif
 		if (nSegment < 0)
 			continue;
-		if (gameData.render.mine.visibility [0].Visible (nSegment))
+		if (gameData.renderData.mine.visibility [0].Visible (nSegment))
 			nVisible |= 1 << j;
 		}
 	if (!nVisible)
@@ -1031,7 +1031,7 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
 #	endif
 #endif
 gameStates.render.DisableCartoonStyle ();
-gameData.app.nMineRenderCount++;
+gameData.appData.nMineRenderCount++;
 PROF_END(ptRenderMine);
 }
 

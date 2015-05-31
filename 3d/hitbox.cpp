@@ -171,7 +171,7 @@ int32_t hitboxFaceVerts [6][4] = {
 
 void ComputeHitbox (int32_t nModel, int32_t iHitbox)
 {
-	tHitbox			*phb = gameData.models.hitboxes [nModel].hitboxes + iHitbox;
+	tHitbox			*phb = gameData.modelData.hitboxes [nModel].hitboxes + iHitbox;
 	CFixVector		vMin = phb->vMin;
 	CFixVector		vMax = phb->vMax;
 	CFixVector		vOffset = phb->vOffset;
@@ -203,7 +203,7 @@ for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
 
 void TransformHitboxes (CObject *pObj, CFixVector *vPos, tBox *phb)
 {
-	tHitbox		*pmhb = gameData.models.hitboxes [pObj->ModelId ()].hitboxes;
+	tHitbox		*pmhb = gameData.modelData.hitboxes [pObj->ModelId ()].hitboxes;
 	tQuad			*pf;
 	CFixVector	rotVerts [8];
 	int32_t		i, j, iModel, nModels;
@@ -214,7 +214,7 @@ if (CollisionModel () == 1) {
 	}
 else {
 	iModel = 1;
-	nModels = gameData.models.hitboxes [pObj->ModelId ()].nSubModels;
+	nModels = gameData.modelData.hitboxes [pObj->ModelId ()].nSubModels;
 	}
 transformation.Begin (vPos ? vPos : &pObj->info.position.vPos, &pObj->info.position.mOrient, __FILE__, __LINE__);
 for (; iModel <= nModels; iModel++, phb++, pmhb++) {
@@ -234,12 +234,12 @@ transformation.End (__FILE__, __LINE__);
 tHitbox* TransformHitboxes (CObject *pObj, CFixVector *vPos)
 {
 	int32_t			nId = pObj->ModelId ();
-	tHitbox*		hb = &gameData.models.hitboxes [nId].hitboxes [0];
+	tHitbox*		hb = &gameData.modelData.hitboxes [nId].hitboxes [0];
 
 #if !DBG
-if (gameData.models.hitboxes [nId].nFrame == gameData.objData.nFrameCount)
+if (gameData.modelData.hitboxes [nId].nFrame == gameData.objData.nFrameCount)
 	return hb;
-gameData.models.hitboxes [nId].nFrame = gameData.objData.nFrameCount;
+gameData.modelData.hitboxes [nId].nFrame = gameData.objData.nFrameCount;
 #endif
 	tQuad*		pf;
 	CFixVector	rotVerts [8];
@@ -252,7 +252,7 @@ if (CollisionModel () == 1) {
 	}
 else {
 	iBox = 1;
-	nBoxes = gameData.models.hitboxes [pObj->ModelId ()].nHitboxes;
+	nBoxes = gameData.modelData.hitboxes [pObj->ModelId ()].nHitboxes;
 	}
 if (!vPos)
 	vPos = &pObj->info.position.vPos;

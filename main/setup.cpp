@@ -521,10 +521,10 @@ if (nResult) {
 			strcat (szMsg, " - http://www.gog.com (buy the game here for little money)\n");
 #if 0
 		if (InitGraphics (false)) {
-			gameData.menu.helpColor = RGB_PAL (47, 47, 47);
-			gameData.menu.colorOverride = gameData.menu.helpColor;
+			gameData.menuData.helpColor = RGB_PAL (47, 47, 47);
+			gameData.menuData.colorOverride = gameData.menuData.helpColor;
 			InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, -3, szMsg, " ", TXT_CLOSE);
-			gameData.menu.colorOverride = 0;
+			gameData.menuData.colorOverride = 0;
 			}
 		else
 #endif
@@ -542,10 +542,10 @@ if (nResult) {
 			strcat (szMsg, "Additional sound effects will be unavailable.\n");
 #if 0
 		if (InitGraphics (false)) {
-			gameData.menu.helpColor = RGB_PAL (47, 47, 47);
-			gameData.menu.colorOverride = gameData.menu.helpColor;
+			gameData.menuData.helpColor = RGB_PAL (47, 47, 47);
+			gameData.menuData.colorOverride = gameData.menuData.helpColor;
 			InfoBox (TXT_WARNING, (pMenuCallback) NULL, BG_STANDARD, -3, szMsg, " ", TXT_CLOSE);
-			gameData.menu.colorOverride = 0;
+			gameData.menuData.colorOverride = 0;
 			}
 		else
 #endif

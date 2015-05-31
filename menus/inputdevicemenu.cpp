@@ -760,7 +760,7 @@ do {
 	if (gameStates.input.nJoysticks)
 		m.AddMenu ("joystick options", TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
 #endif
-	if (!gameStates.app.bNostalgia && gameData.render.rift.Available ()) 
+	if (!gameStates.app.bNostalgia && gameData.renderData.rift.Available ()) 
 		m.AddMenu ("oculus rift options", TXT_RIFTCFG_MENUCALL, KEY_I, HTX_RIFT_CONFIG);
 	if (!gameStates.app.bNostalgia && gameStates.input.bHaveTrackIR) 
 		m.AddMenu ("trackir options", TXT_TRACKIRCFG_MENUCALL, KEY_I, HTX_TRACKIR_CONFIG);

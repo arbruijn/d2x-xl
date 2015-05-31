@@ -121,7 +121,7 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 	for (int32_t nJoint = 0; nJoint < nJointPositions; nJoint++) {
 		int32_t				jointnum = jointPositions [nJoint].jointnum;
 
-		if (jointnum >= gameData.models.polyModels [0][pObj->ModelId ()].ModelCount ())
+		if (jointnum >= gameData.modelData.polyModels [0][pObj->ModelId ()].ModelCount ())
 			continue;
 
 		CAngleVector*	jointAngles = &jointPositions [nJoint].angles;
@@ -131,7 +131,7 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 			if (jointAngles->v.vec [nAngle] != objAngles->v.vec [nAngle]) {
 				if (nGun == 0)
 					at_goal = 0;
-				gameData.ai.localInfo [nObject].goalAngles [jointnum].v.vec [nAngle] = jointAngles->v.vec [nAngle];
+				gameData.aiData.localInfo [nObject].goalAngles [jointnum].v.vec [nAngle] = jointAngles->v.vec [nAngle];
 				fix delta2, deltaAngle = jointAngles->v.vec [nAngle] - objAngles->v.vec [nAngle];
 				if (deltaAngle >= I2X (1) / 2)
 					delta2 = -ANIM_RATE;
@@ -143,13 +143,13 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 					delta2 = ANIM_RATE;
 				if (nFlinchAttackScale != 1)
 					delta2 *= nFlinchAttackScale;
-				gameData.ai.localInfo [nObject].deltaAngles [jointnum].v.vec [nAngle] = delta2 / DELTA_ANG_SCALE;		// complete revolutions per second
+				gameData.aiData.localInfo [nObject].deltaAngles [jointnum].v.vec [nAngle] = delta2 / DELTA_ANG_SCALE;		// complete revolutions per second
 				}
 			}
 		}
 
 	if (at_goal) {
-		tAILocalInfo* pLocalInfo = &gameData.ai.localInfo [pObj->Index ()];
+		tAILocalInfo* pLocalInfo = &gameData.aiData.localInfo [pObj->Index ()];
 		pLocalInfo->achievedState [nGun] = pLocalInfo->goalState [nGun];
 		if (pLocalInfo->achievedState [nGun] == AIS_RECOVER)
 			pLocalInfo->goalState [nGun] = AIS_FIRE;
@@ -172,14 +172,14 @@ void AIFrameAnimation (CObject *pObj)
 {
 	int32_t	nObject = pObj->Index ();
 	int32_t	nJoint;
-	int32_t	nJoints = gameData.models.polyModels [0][pObj->ModelId ()].ModelCount ();
+	int32_t	nJoints = gameData.modelData.polyModels [0][pObj->ModelId ()].ModelCount ();
 
 for (nJoint = 1; nJoint < nJoints; nJoint++) {
 	fix				deltaToGoal;
 	fix				scaledDeltaAngle;
 	CAngleVector*	pCurAngle = &pObj->rType.polyObjInfo.animAngles [nJoint];
-	CAngleVector*	pGoalAngle = &gameData.ai.localInfo [nObject].goalAngles [nJoint];
-	CAngleVector*	pDeltaAngle = &gameData.ai.localInfo [nObject].deltaAngles [nJoint];
+	CAngleVector*	pGoalAngle = &gameData.aiData.localInfo [nObject].goalAngles [nJoint];
+	CAngleVector*	pDeltaAngle = &gameData.aiData.localInfo [nObject].deltaAngles [nJoint];
 
 	Assert (nObject >= 0);
 	for (int32_t nAngle = 0; nAngle < 3; nAngle++) {
@@ -190,7 +190,7 @@ for (nJoint = 1; nJoint < nJoints; nJoint++) {
 			deltaToGoal += deltaToGoal;
 
 		if (deltaToGoal) {
-			scaledDeltaAngle = FixMul (pDeltaAngle->v.vec [nAngle], gameData.time.xFrame) * DELTA_ANG_SCALE;
+			scaledDeltaAngle = FixMul (pDeltaAngle->v.vec [nAngle], gameData.timeData.xFrame) * DELTA_ANG_SCALE;
 			pCurAngle->v.vec [nAngle] += (fixang) scaledDeltaAngle;
 			if (abs (deltaToGoal) < abs (scaledDeltaAngle))
 				pCurAngle->v.vec [nAngle] = pGoalAngle->v.vec [nAngle];
@@ -212,18 +212,18 @@ int32_t DoRobotDyingFrame (CObject *pObj, fix StartTime, fix xRollDuration, int8
 if (!xRollDuration)
 	xRollDuration = I2X (1)/4;
 
-xRollVal = FixDiv (gameData.time.xGame - StartTime, xRollDuration);
+xRollVal = FixDiv (gameData.timeData.xGame - StartTime, xRollDuration);
 
 FixSinCos (FixMul (xRollVal, xRollVal), &temp, &pObj->mType.physInfo.rotVel.v.coord.x);
 FixSinCos (xRollVal, &temp, &pObj->mType.physInfo.rotVel.v.coord.y);
 FixSinCos (xRollVal-I2X (1)/8, &temp, &pObj->mType.physInfo.rotVel.v.coord.z);
 
-temp = gameData.time.xGame - StartTime;
+temp = gameData.timeData.xGame - StartTime;
 pObj->mType.physInfo.rotVel.v.coord.x = temp / 9;
 pObj->mType.physInfo.rotVel.v.coord.y = temp / 5;
 pObj->mType.physInfo.rotVel.v.coord.z = temp / 7;
 if (gameOpts->sound.audioSampleRate) {
-	pSound = gameData.pig.sound.pSound + audio.XlatSound (deathSound);
+	pSound = gameData.pigData.sound.pSound + audio.XlatSound (deathSound);
 	xSoundDuration = FixDiv (pSound->nLength [pSound->bHires], gameOpts->sound.audioSampleRate);
 	if (!xSoundDuration)
 		xSoundDuration = I2X (1);
@@ -231,7 +231,7 @@ if (gameOpts->sound.audioSampleRate) {
 else
 	xSoundDuration = I2X (1);
 
-if (StartTime + xRollDuration - xSoundDuration < gameData.time.xGame) {
+if (StartTime + xRollDuration - xSoundDuration < gameData.timeData.xGame) {
 	if (!*bDyingSoundPlaying) {
 #if TRACE
 		console.printf (CON_DBG, "Starting death sound!\n");
@@ -239,14 +239,14 @@ if (StartTime + xRollDuration - xSoundDuration < gameData.time.xGame) {
 		*bDyingSoundPlaying = 1;
 		audio.CreateObjectSound (deathSound, SOUNDCLASS_ROBOT, pObj->Index (), 0, xSoundScale, xSoundScale * 256);	//	I2X (5)12 means play twice as loud
 		}
-	else if (RandShort () < gameData.time.xFrame * 16) {
-		CreateSmallFireballOnObject (pObj, (I2X (1) + RandShort ()) * (16 * xExplScale/I2X (1)) / 8, RandShort () < gameData.time.xFrame * 2);
+	else if (RandShort () < gameData.timeData.xFrame * 16) {
+		CreateSmallFireballOnObject (pObj, (I2X (1) + RandShort ()) * (16 * xExplScale/I2X (1)) / 8, RandShort () < gameData.timeData.xFrame * 2);
 		}
 	}
-else if (RandShort () < gameData.time.xFrame * 8) {
-	CreateSmallFireballOnObject (pObj, (I2X (1)/2 + RandShort ()) * (16 * xExplScale / I2X (1)) / 8, RandShort () < gameData.time.xFrame);
+else if (RandShort () < gameData.timeData.xFrame * 8) {
+	CreateSmallFireballOnObject (pObj, (I2X (1)/2 + RandShort ()) * (16 * xExplScale / I2X (1)) / 8, RandShort () < gameData.timeData.xFrame);
 	}
-return (StartTime + xRollDuration < gameData.time.xGame);
+return (StartTime + xRollDuration < gameData.timeData.xGame);
 }
 
 //	----------------------------------------------------------------------
@@ -254,7 +254,7 @@ return (StartTime + xRollDuration < gameData.time.xGame);
 void StartRobotDeathSequence (CObject *pObj)
 {
 if (!pObj->cType.aiInfo.xDyingStartTime) { // if not already dying
-	pObj->cType.aiInfo.xDyingStartTime = gameData.time.xGame;
+	pObj->cType.aiInfo.xDyingStartTime = gameData.timeData.xGame;
 	pObj->cType.aiInfo.bDyingSoundPlaying = 0;
 	pObj->cType.aiInfo.SKIP_AI_COUNT = 0;
 	}

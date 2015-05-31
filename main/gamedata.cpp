@@ -133,7 +133,7 @@ if (!bForce && (gameStates.render.nWindow [0] != 0))
 	return 0;
 
 	float scale [2];
-	float w = (float) gameData.render.frame.Width ();
+	float w = (float) gameData.renderData.frame.Width ();
 	float s = X2F (ogl.StereoSeparation ());
 
 if (ogl.IsOculusRift ()) 
@@ -598,7 +598,7 @@ bPlayerMessage = 1;
 bool CRiftData::Create (void)
 {
 #if OCULUS_RIFT
-gameData.render.rift.m_bAvailable = 0;
+gameData.renderData.rift.m_bAvailable = 0;
 if (gameOpts->render.bUseRift) {
 	OVR::System::Init (OVR::Log::ConfigureDefaultLog (OVR::LogMask_All));
 	m_pManager = *OVR::DeviceManager::Create();
@@ -771,7 +771,7 @@ if (m_pSensorFusion) {
 bool CRenderData::Create (void)
 {
 Destroy ();
-CREATE (gameData.render.faceList, LEVEL_FACES, 0);
+CREATE (gameData.renderData.faceList, LEVEL_FACES, 0);
 Init ();
 return true;
 }
@@ -781,7 +781,7 @@ return true;
 void CRenderData::Destroy (void)
 {
 rift.Destroy ();
-DESTROY (gameData.render.faceList);
+DESTROY (gameData.renderData.faceList);
 faceIndex.Destroy ();
 }
 
@@ -1015,7 +1015,7 @@ return true; //faces.Create ();
 
 bool CSegmentData::Resize (void)
 {
-return gameData.render.mine.Resize () &&
+return gameData.renderData.mine.Resize () &&
 		 gameData.segData.vertices.Resize (LEVEL_VERTICES) &&
 		 gameData.segData.fVertices.Resize (LEVEL_VERTICES) &&
 		 gameData.segData.vertexOwners.Resize (LEVEL_VERTICES);
@@ -1393,7 +1393,7 @@ altBitmaps [0].ShareBuffer (pAltBitmap);
 bmIndex [0].ShareBuffer (pBmIndex);
 bitmapFiles [0].ShareBuffer (pBitmapFile);
 tMapInfo [0].ShareBuffer (pTexMapInfo);
-gameData.pig.tex.nFirstMultiBitmap = -1;
+gameData.pigData.tex.nFirstMultiBitmap = -1;
 nObjBitmaps = 0;
 bPageFlushed = 0;
 nExtraBitmaps = 0;
@@ -1556,8 +1556,8 @@ for (h = 0; h < 2; h++) {
 			BRP;
 #endif
 		renderModels [h][i].Destroy ();
-		gameData.models.pofData [h][0][i].Destroy ();
-		gameData.models.pofData [h][1][i].Destroy ();
+		gameData.modelData.pofData [h][0][i].Destroy ();
+		gameData.modelData.pofData [h][1][i].Destroy ();
 		}
 	}
 PrintLog (-1);
@@ -1567,7 +1567,7 @@ PrintLog (-1);
 
 CMorphData::CMorphData ()
 {
-gameData.render.morph.xRate = MORPH_RATE;
+gameData.renderData.morph.xRate = MORPH_RATE;
 }
 
 // ----------------------------------------------------------------------------
@@ -1690,7 +1690,7 @@ CREATE (gameData.objData.viewData, LEVEL_OBJECTS, (char) 0xFF);
 CREATE (gameData.objData.bWantEffect, LEVEL_OBJECTS, (char) 0);
 InitFreeList ();
 memset (&gameData.objData.lists, 0, sizeof (gameData.objData.lists));
-return gameData.render.mine.Create (0) && lightClusterManager.Init () && shrapnelManager.Init ();
+return gameData.renderData.mine.Create (0) && lightClusterManager.Init () && shrapnelManager.Init ();
 }
 
 // ----------------------------------------------------------------------------
@@ -1895,7 +1895,7 @@ nPrimary = 0;
 nSecondary = 0;
 nOverridden = 0;
 bTripleFusion = 0;
-gameData.weapons.xMinTrackableDot = MIN_TRACKABLE_DOT;
+gameData.weaponData.xMinTrackableDot = MIN_TRACKABLE_DOT;
 CLEAR (firing);
 CLEAR (nTypes);
 }
@@ -2000,15 +2000,15 @@ DESTROY (gameData.multigame.nObjOwner);   // Who created each CObject in my univ
 
 CAIData::CAIData ()
 {
-gameData.ai.bInitialized = 0;
-gameData.ai.bEvaded = 0;
-gameData.ai.bEnableAnimation = 1;
-gameData.ai.bInfoEnabled = 0;
-gameData.ai.nAwarenessEvents = 0;
-gameData.ai.target.nDistToLastPosFiredAt = 0;
+gameData.aiData.bInitialized = 0;
+gameData.aiData.bEvaded = 0;
+gameData.aiData.bEnableAnimation = 1;
+gameData.aiData.bInfoEnabled = 0;
+gameData.aiData.nAwarenessEvents = 0;
+gameData.aiData.target.nDistToLastPosFiredAt = 0;
 cloakInfo.Create (MAX_AI_CLOAK_INFO);
 awarenessEvents.Create (MAX_AWARENESS_EVENTS);
-gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
+gameData.aiData.freePointSegs = gameData.aiData.routeSegs.Buffer ();
 nHitSeg = -1;
 nHitType = -1;
 bObjAnimates = 0;
@@ -2022,7 +2022,7 @@ nTargetVisibility = 0;
 
 bool CAIData::Create (void)
 {
-CREATE (gameData.ai.localInfo, LEVEL_OBJECTS, 0);
+CREATE (gameData.aiData.localInfo, LEVEL_OBJECTS, 0);
 CREATE (routeSegs, LEVEL_POINT_SEGS, 0);
 return true;
 }
@@ -2031,7 +2031,7 @@ return true;
 
 void CAIData::Destroy (void)
 {
-DESTROY (gameData.ai.localInfo);
+DESTROY (gameData.aiData.localInfo);
 DESTROY (routeSegs);
 }
 
@@ -2039,8 +2039,8 @@ DESTROY (routeSegs);
 
 bool CDemoData::Create (void)
 {
-CREATE (gameData.demo.bWasRecorded,  LEVEL_OBJECTS, 0);
-CREATE (gameData.demo.bViewWasRecorded, LEVEL_OBJECTS, 0);
+CREATE (gameData.demoData.bWasRecorded,  LEVEL_OBJECTS, 0);
+CREATE (gameData.demoData.bViewWasRecorded, LEVEL_OBJECTS, 0);
 return true;
 }
 
@@ -2048,8 +2048,8 @@ return true;
 
 void CDemoData::Destroy (void)
 {
-DESTROY (gameData.demo.bWasRecorded);
-DESTROY (gameData.demo.bViewWasRecorded);
+DESTROY (gameData.demoData.bWasRecorded);
+DESTROY (gameData.demoData.bViewWasRecorded);
 }
 
 // ----------------------------------------------------------------------------
@@ -2082,8 +2082,8 @@ nChampion = -1;
 CTimeData::CTimeData ()
 {
 memset (this, 0, sizeof (*this));
-gameData.time.xMaxOnline = 180000;
-gameData.time.xGameStart = -gameData.time.xMaxOnline;
+gameData.timeData.xMaxOnline = 180000;
+gameData.timeData.xGameStart = -gameData.timeData.xMaxOnline;
 xFrame = 0x1000;
 xLastThiefHitTime = 0;
 }
@@ -2155,22 +2155,22 @@ bool CGameData::Create (int32_t nSegments, int32_t nVertices)
 {
 if (!(gameData.segData.Create (nSegments, nVertices) &&
 		gameData.objData.Create () &&
-		gameData.render.color.Create () &&
-		gameData.render.lights.Create () &&
-		gameData.render.shadows.Create () &&
-		gameData.weapons.Create () &&
-		gameData.physics.Create () &&
-		gameData.ai.Create () &&
+		gameData.renderData.color.Create () &&
+		gameData.renderData.lights.Create () &&
+		gameData.renderData.shadows.Create () &&
+		gameData.weaponData.Create () &&
+		gameData.physicsData.Create () &&
+		gameData.aiData.Create () &&
 		gameData.multiplayer.Create () &&
 		gameData.multigame.Create () &&
-		gameData.demo.Create ()))
+		gameData.demoData.Create ()))
 	return false;
 particleManager.Init ();
 particleManager.SetLastType (-1);
 lightningManager.Init ();
 markerManager.Init ();
-gameData.physics.Init ();
-gameData.bosses.Create ();
+gameData.physicsData.Init ();
+gameData.bossData.Create ();
 gameData.wallData.Reset ();
 return true;
 }
@@ -2183,17 +2183,17 @@ gameData.segData.Destroy ();
 gameData.objData.Destroy ();
 gameData.wallData.Destroy ();
 gameData.trigData.Destroy ();
-gameData.render.color.Destroy ();
-gameData.render.lights.Destroy ();
-gameData.render.shadows.Destroy ();
-gameData.render.Destroy ();
-gameData.weapons.Destroy ();
-gameData.physics.Destroy ();
-gameData.ai.Destroy ();
+gameData.renderData.color.Destroy ();
+gameData.renderData.lights.Destroy ();
+gameData.renderData.shadows.Destroy ();
+gameData.renderData.Destroy ();
+gameData.weaponData.Destroy ();
+gameData.physicsData.Destroy ();
+gameData.aiData.Destroy ();
 gameData.multiplayer.Destroy ();
 gameData.multigame.Destroy ();
-gameData.demo.Destroy ();
-gameData.bosses.Destroy ();
+gameData.demoData.Destroy ();
+gameData.bossData.Destroy ();
 particleManager.Shutdown ();
 lightningManager.Shutdown (1);
 cameraManager.Destroy ();
@@ -2215,14 +2215,14 @@ void SetDataVersion (int32_t v)
 {
 gameStates.app.bD1Data = (v < 0) ? gameStates.app.bD1Mission && gameStates.app.bHaveD1Data : v;
 PrintLog (0, "Setting data version %d (D%d) (D1 mission = %d, have D1 data = %d)\n", v, 2 - gameStates.app.bD1Data, gameStates.app.bD1Mission, gameStates.app.bHaveD1Data);
-gameData.pig.tex.bitmaps [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.pBitmap);
-gameData.pig.tex.altBitmaps [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.pAltBitmap);
-gameData.pig.tex.bmIndex [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.pBmIndex);
-gameData.pig.tex.bitmapFiles [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.pBitmapFile);
-gameData.pig.tex.tMapInfo [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.pTexMapInfo);
-gameData.pig.sound.sounds [gameStates.app.bD1Data].ShareBuffer (gameData.pig.sound.pSound);
-gameData.effects.effects [gameStates.app.bD1Data].ShareBuffer (gameData.effects.pEffect);
-gameData.effects.animations [gameStates.app.bD1Data].ShareBuffer (gameData.effects.vClipP);
+gameData.pigData.tex.bitmaps [gameStates.app.bD1Data].ShareBuffer (gameData.pigData.tex.pBitmap);
+gameData.pigData.tex.altBitmaps [gameStates.app.bD1Data].ShareBuffer (gameData.pigData.tex.pAltBitmap);
+gameData.pigData.tex.bmIndex [gameStates.app.bD1Data].ShareBuffer (gameData.pigData.tex.pBmIndex);
+gameData.pigData.tex.bitmapFiles [gameStates.app.bD1Data].ShareBuffer (gameData.pigData.tex.pBitmapFile);
+gameData.pigData.tex.tMapInfo [gameStates.app.bD1Data].ShareBuffer (gameData.pigData.tex.pTexMapInfo);
+gameData.pigData.sound.sounds [gameStates.app.bD1Data].ShareBuffer (gameData.pigData.sound.pSound);
+gameData.effectData.effects [gameStates.app.bD1Data].ShareBuffer (gameData.effectData.pEffect);
+gameData.effectData.animations [gameStates.app.bD1Data].ShareBuffer (gameData.effectData.vClipP);
 gameData.wallData.anims [gameStates.app.bD1Data].ShareBuffer (gameData.wallData.pAnim);
 gameData.botData.info [gameStates.app.bD1Data].ShareBuffer (gameData.botData.pInfo);
 }
@@ -2716,6 +2716,35 @@ if ((nChecks & GAMEDATA_ERRLOG_TYPE) && !pObj->IsRobot () && !pObj->IsReactor ()
 	return (tRobotInfo*) GameDataError ("robot info", "object type", nChecks, pszFile, nLine);
 return RobotInfo (pObj->Id (), nChecks, pszFile, nLine);
 }
+
+
+CWeaponInfo* CGameData::WeaponInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine) 
+{
+int32_t bD1 = gameStates.app.bD1Mission;
+CArray<CWeaponInfo>& a = weaponData.info [bD1];
+if (!a.Buffer ())
+	return (CWeaponInfo*) GameDataError ("weapon info", "buffer", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
+if (nId < 0)
+	return (CWeaponInfo*) GameDataError ("weapon info", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
+if ((uint32_t) nId >= (bD1 ? D1_MAX_WEAPON_TYPES : D2_MAX_WEAPON_TYPES))
+	return (CWeaponInfo*) GameDataError ("weapon info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
+if (nId >= botData.nTypes [bD1])
+	return (CWeaponInfo*) GameDataError ("weapon info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
+return a + nId; 
+}
+
+
+CWeaponInfo* CGameData::WeaponInfo (CObject* pObj, int32_t nChecks, const char* pszFile, int32_t nLine) 
+{
+if (!pObj || !Object (pObj->Index (), GAMEDATA_ERRLOG_ALL, pszFile, nLine))
+	 return (CWeaponInfo*) GameDataError ("weapon info", "object buffer", nChecks, pszFile, nLine);
+if ((nChecks & GAMEDATA_ERRLOG_TYPE) && !pObj->IsWeapon ())
+	return (CWeaponInfo*) GameDataError ("weapon info", "object type", nChecks, pszFile, nLine);
+return WeaponInfo (pObj->Id (), nChecks, pszFile, nLine);
+}
+
+
+
 
 #endif
 

@@ -1112,7 +1112,7 @@ if ((gameStates.render.bPerPixelLighting || gameStates.app.bPrecomputeLightmaps)
 		int32_t nSaturation = gameOpts->render.color.nSaturation;
 		gameOpts->render.color.nSaturation = 1;
 		gameStates.render.bHaveLightmaps = 1;
-		//gameData.render.fAttScale [0] = 2.0f;
+		//gameData.renderData.fAttScale [0] = 2.0f;
 		lightManager.Index (0,0).nFirst = MAX_OGL_LIGHTS;
 		lightManager.Index (0,0).nLast = 0;
 		gameStates.render.bSpecularColor = 0;
@@ -1143,7 +1143,7 @@ if ((gameStates.render.bPerPixelLighting || gameStates.app.bPrecomputeLightmaps)
 		gameStates.render.bBuildLightmaps = 0;
 		//PLANE_DIST_TOLERANCE = DEFAULT_PLANE_DIST_TOLERANCE;
 		//SetupSegments (); // standard face setup (triangles or quads)
-		//gameData.render.fAttScale [0] = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
+		//gameData.renderData.fAttScale [0] = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
 		gameStates.render.bSpecularColor = 1;
 		gameStates.render.bHaveLightmaps = 0;
 		gameStates.render.nState = 0;
@@ -1205,7 +1205,7 @@ ogl.SelectTMU (GL_TEXTURE0, true);
 ogl.SetTexturing (true);
 //glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 ogl.BindTexture (h);
-gameData.render.nStateChanges++;
+gameData.renderData.nStateChanges++;
 return 1;
 }
 

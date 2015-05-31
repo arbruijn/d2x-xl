@@ -89,7 +89,7 @@ if (!SHOW_OBJ_FX)
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 if (gameOpts->render.coronas.bShots && glare.Load ()) {
-	tHitbox*			phb = &gameData.models.hitboxes [pObj->ModelId ()].hitboxes [0];
+	tHitbox*			phb = &gameData.modelData.hitboxes [pObj->ModelId ()].hitboxes [0];
 	float				fLength = X2F (phb->vMax.v.coord.z - phb->vMin.v.coord.z) / 2;
 	CFloatVector	color;
 
@@ -151,7 +151,7 @@ else if (gameOpts->render.coronas.bShots && corona.Load ()) {
 	xSize = (fix) (WeaponBlobSize (pObj->info.nId) * F2X (fScale));
 	if (xOffset) {
 		if (bViewerOffset) {
-			CFixVector o = gameData.render.mine.viewer.vPos - vPos;
+			CFixVector o = gameData.renderData.mine.viewer.vPos - vPos;
 			CFixVector::Normalize (o);
 			vPos += o * xOffset;
 			}
@@ -194,7 +194,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 
 bGatling = pObj->IsGatlingRound ();
 if (pObj->info.renderType == RT_POLYOBJ)
-	pColor = gameData.weapons.color + pObj->info.nId;
+	pColor = gameData.weaponData.color + pObj->info.nId;
 else {
 	CRGBColor* pClipColor = AnimationColor (pObj);
 	color.Set (pClipColor->r, pClipColor->g, pClipColor->b);
@@ -222,7 +222,7 @@ if (pObj->HasLightTrail () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
 		vCenter.Assign (pObj->info.position.vPos);
 		vOffs.Assign (pObj->info.position.mOrient.m.dir.f);
 		if (pObj->info.renderType == RT_POLYOBJ) {
-			tHitbox*	phb = &gameData.models.hitboxes [pObj->ModelId ()].hitboxes [0];
+			tHitbox*	phb = &gameData.modelData.hitboxes [pObj->ModelId ()].hitboxes [0];
 			l = X2F (phb->vMax.v.coord.z - phb->vMin.v.coord.z);
 			dx = X2F (phb->vMax.v.coord.x - phb->vMin.v.coord.x);
 			dy = X2F (phb->vMax.v.coord.y - phb->vMin.v.coord.y);

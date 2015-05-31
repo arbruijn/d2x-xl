@@ -216,7 +216,7 @@ while (nSegment == -1) {
 		while ((count < N_PLAYERS) &&	// make sure player is not the local player or on his team
 				 (!PLAYER (nPlayer).connected ||
 				  (nPlayer == N_LOCALPLAYER) ||
-				  ((gameData.app.GameMode (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && (GetTeam (nPlayer) == GetTeam (N_LOCALPLAYER))))) {
+				  ((gameData.appData.GameMode (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && (GetTeam (nPlayer) == GetTeam (N_LOCALPLAYER))))) {
 			nPlayer = (nPlayer + 1) % N_PLAYERS;
 			count++;
 			}
@@ -385,7 +385,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 			return 0;
 		}
 #endif
-	if (gameData.reactor.bDestroyed || gameStates.app.bEndLevelSequence)
+	if (gameData.reactorData.bDestroyed || gameStates.app.bEndLevelSequence)
 		return 0;
 	gameData.multigame.create.nCount = 0;
 	
@@ -603,7 +603,7 @@ switch (nType) {
 		xOldMag = vInitVel.Mag ();
 
 		//	We want powerups to move more in network mode.
-		if (IsMultiGame && !gameData.app.GameMode (GM_MULTI_ROBOTS)) {
+		if (IsMultiGame && !gameData.appData.GameMode (GM_MULTI_ROBOTS)) {
 			nRandScale = 4;
 			//	extra life powerups are converted to invulnerability in multiplayer, for what is an extra life, anyway?
 			if (nId == POW_EXTRA_LIFE)
@@ -644,7 +644,7 @@ switch (nType) {
 		pObj->mType.physInfo.mass = I2X (1);
 		pObj->mType.physInfo.flags = PF_BOUNCES;
 		pObj->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [pObj->info.nId].nClipIndex;
-		pObj->rType.animationInfo.xFrameTime = gameData.effects.animations [0][pObj->rType.animationInfo.nClipIndex].xFrameTime;
+		pObj->rType.animationInfo.xFrameTime = gameData.effectData.animations [0][pObj->rType.animationInfo.nClipIndex].xFrameTime;
 		pObj->rType.animationInfo.nCurFrame = 0;
 
 		switch (pObj->info.nId) {
@@ -690,13 +690,13 @@ switch (nType) {
 			pObj->mType.physInfo.flags |= (PF_LEVELLING);
 			pObj->SetShield (pRobotInfo->strength);
 			pObj->cType.aiInfo.behavior = AIB_NORMAL;
-			gameData.ai.localInfo [nObject].targetAwarenessType = WEAPON_ROBOT_COLLISION;
-			gameData.ai.localInfo [nObject].targetAwarenessTime = I2X (3);
+			gameData.aiData.localInfo [nObject].targetAwarenessType = WEAPON_ROBOT_COLLISION;
+			gameData.aiData.localInfo [nObject].targetAwarenessTime = I2X (3);
 			pObj->cType.aiInfo.CURRENT_STATE = AIS_LOCK;
 			pObj->cType.aiInfo.GOAL_STATE = AIS_LOCK;
 			pObj->cType.aiInfo.REMOTE_OWNER = -1;
 			if (pObj->IsBoss ())
-				gameData.bosses.Add (nObject);
+				gameData.bossData.Add (nObject);
 			}
 
 			// At JasenW's request, robots which contain robots sometimes drop shield.
@@ -807,7 +807,7 @@ for (i = 0; i < nThrusters; i++) {
 		continue;
 	if (xLifeTime != -1) {
 		pBlobObj->rType.animationInfo.xTotalTime = xLifeTime;
-		pBlobObj->rType.animationInfo.xFrameTime = FixMulDiv (gameData.effects.animations [0][ANIM_AFTERBURNER_BLOB].xFrameTime,
+		pBlobObj->rType.animationInfo.xFrameTime = FixMulDiv (gameData.effectData.animations [0][ANIM_AFTERBURNER_BLOB].xFrameTime,
 																		  xLifeTime, pBlobObj->info.xLifeLeft);
 		pBlobObj->SetLife (xLifeTime);
 		}
@@ -826,8 +826,8 @@ int32_t MaybeDropPrimaryWeaponEgg (CObject *pPlayerObj, int32_t nWeapon)
 
 if (!(PLAYER (pPlayerObj->info.nId).primaryWeaponFlags & nWeaponFlag))
 	return -1;
-if ((nWeapon == 4) && gameData.weapons.bTripleFusion)
-	gameData.weapons.bTripleFusion = 0;
+if ((nWeapon == 4) && gameData.weaponData.bTripleFusion)
+	gameData.weaponData.bTripleFusion = 0;
 else if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & nWeaponFlag))
 	return -1;
 return PrepareObjectCreateEgg (pPlayerObj, 1, OBJ_POWERUP, primaryWeaponToPowerup [nWeapon]);
@@ -988,11 +988,11 @@ if (pPlayerObj && ((pPlayerObj->info.nType == OBJ_PLAYER) || (pPlayerObj->info.n
 	pPlayer->nInvuls =
 	pPlayer->nCloaks = 0;
 	pPlayer->flags &= ~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED);
-	if ((gameData.app.GameMode (GM_CAPTURE)) && (pPlayer->flags & PLAYER_FLAGS_FLAG))
+	if ((gameData.appData.GameMode (GM_CAPTURE)) && (pPlayer->flags & PLAYER_FLAGS_FLAG))
 		PrepareObjectCreateEgg (pPlayerObj, 1, OBJ_POWERUP, (GetTeam (nPlayer) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG);
 
 #if !DBG
-	if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY))
+	if (gameData.appData.GameMode (GM_HOARD | GM_ENTROPY))
 #endif
 	if (IsHoardGame || (IsEntropyGame && extraGameInfo [1].entropy.nVirusStability)) {
 		// Drop hoard orbs
@@ -1039,7 +1039,7 @@ if (pPlayerObj && ((pPlayerObj->info.nType == OBJ_PLAYER) || (pPlayerObj->info.n
 	//	Drop the rest of the primary weapons
 	MaybeDropPrimaryWeaponEgg (pPlayerObj, SPREADFIRE_INDEX);
 	MaybeDropPrimaryWeaponEgg (pPlayerObj, PLASMA_INDEX);
-	if (gameData.weapons.bTripleFusion)
+	if (gameData.weaponData.bTripleFusion)
 		MaybeDropPrimaryWeaponEgg (pPlayerObj, FUSION_INDEX);
 	MaybeDropPrimaryWeaponEgg (pPlayerObj, FUSION_INDEX);
 	MaybeDropPrimaryWeaponEgg (pPlayerObj, HELIX_INDEX);
@@ -1047,10 +1047,10 @@ if (pPlayerObj && ((pPlayerObj->info.nType == OBJ_PLAYER) || (pPlayerObj->info.n
 	nObject = MaybeDropPrimaryWeaponEgg (pPlayerObj, OMEGA_INDEX);
 	if (nObject >= 0)
 		OBJECT (nObject)->cType.powerupInfo.nCount =
-			(pPlayerObj->info.nId == N_LOCALPLAYER) ? gameData.omega.xCharge [IsMultiGame] : DEFAULT_MAX_OMEGA_CHARGE;
+			(pPlayerObj->info.nId == N_LOCALPLAYER) ? gameData.omegaData.xCharge [IsMultiGame] : DEFAULT_MAX_OMEGA_CHARGE;
 	//	Drop the secondary weapons
 	//	Note, proximity weapon only comes in packets of 4.  So drop n/2, but a max of 3 (handled inside maybe_drop..)  Make sense?
-	if (!(gameData.app.GameMode (GM_HOARD | GM_ENTROPY)))
+	if (!(gameData.appData.GameMode (GM_HOARD | GM_ENTROPY)))
 		MaybeDropSecondaryWeaponEgg (pPlayerObj, PROXMINE_INDEX, (pPlayer->secondaryAmmo [PROXMINE_INDEX])/4);
 	MaybeDropSecondaryWeaponEgg (pPlayerObj, SMART_INDEX, pPlayer->secondaryAmmo [SMART_INDEX]);
 	MaybeDropSecondaryWeaponEgg (pPlayerObj, MEGA_INDEX, pPlayer->secondaryAmmo [MEGA_INDEX]);

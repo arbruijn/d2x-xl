@@ -129,14 +129,14 @@ int32_t do_slew_movement(CObject *pObj, int32_t check_keys, int32_t check_joy )
 
 		if (btns) {
 			if (!rotang.v.coord.p)
-				rotang.v.coord.p = (fixang) FixMul (-joy_y * 512,gameData.time.xFrame);
+				rotang.v.coord.p = (fixang) FixMul (-joy_y * 512,gameData.timeData.xFrame);
 			}
 		else {
 			if (joyy_moved) 
 				pObj->mType.physInfo.velocity.v.coord.z = -joy_y * 8192;
 			}
 		if (!rotang.v.coord.h)
-			rotang.v.coord.h = (fixang) FixMul(joy_x * 512,gameData.time.xFrame);
+			rotang.v.coord.h = (fixang) FixMul(joy_x * 512,gameData.timeData.xFrame);
 
 		if (joyx_moved) old_joy_x = joy_x;
 		if (joyy_moved) old_joy_y = joy_y;
@@ -152,7 +152,7 @@ int32_t do_slew_movement(CObject *pObj, int32_t check_keys, int32_t check_joy )
 	moved |= pObj->mType.physInfo.velocity.v.coord.x | pObj->mType.physInfo.velocity.v.coord.y | pObj->mType.physInfo.velocity.v.coord.z;
 
 	svel = pObj->mType.physInfo.velocity;
-	svel *= gameData.time.xFrame;		//movement in this frame
+	svel *= gameData.timeData.xFrame;		//movement in this frame
 	movement = new_pm * svel;
 
 //	pObj->info.vLastPos = pObj->info.position.vPos;

@@ -970,10 +970,10 @@ if (!m_bActive)
 
 LockThread ();
 int32_t nTimedOut = 0;
-//if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) 
+//if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactorData.bDestroyed) 
 static CTimeout to (UPDATE_TIMEOUT);
 int32_t s = -1;
-if (to.Expired () /*&& !gameData.reactor.bDestroyed*/) 
+if (to.Expired () /*&& !gameData.reactorData.bDestroyed*/) 
 	{
 	int32_t t = SDL_GetTicks ();
 	for (int32_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {

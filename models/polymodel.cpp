@@ -448,7 +448,7 @@ m_info.nSimplerModel = 0;
 fix CPolyModel::Size (void)
 {
 	int32_t			i, nSubModels;
-	tHitbox*		phb = &gameData.models.hitboxes [m_info.nId].hitboxes [0];
+	tHitbox*		phb = &gameData.modelData.hitboxes [m_info.nId].hitboxes [0];
 	CFixVector	hv;
 	double		dx, dy, dz;
 
@@ -487,7 +487,7 @@ dz = (phb [0].vMax.v.coord.z - phb [0].vMin.v.coord.z) / 2;
 phb [0].vSize.v.coord.x = (fix) dx;
 phb [0].vSize.v.coord.y = (fix) dy;
 phb [0].vSize.v.coord.z = (fix) dz;
-gameData.models.hitboxes [m_info.nId].nHitboxes = nSubModels;
+gameData.modelData.hitboxes [m_info.nId].nHitboxes = nSubModels;
 for (i = 0; i <= nSubModels; i++)
 	ComputeHitbox (m_info.nId, i);
 return (fix) (sqrt (dx * dx + dy * dy + dz + dz) /** 1.33*/);
@@ -650,18 +650,18 @@ int32_t CPolyModel::LoadTextures (tBitmapIndex*	altTextures)
 
 if (altTextures) {
 	for (i = 0; i < nTextures; i++) {
-		gameData.models.textureIndex [i] = altTextures [i];
-		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + altTextures [i].index;
+		gameData.modelData.textureIndex [i] = altTextures [i];
+		gameData.modelData.textures [i] = gameData.pigData.tex.bitmaps [gameStates.app.bD1Model] + altTextures [i].index;
 		if (gameStates.render.bBuildModels)
 			LoadTexture (altTextures [i].index, 0, gameStates.app.bD1Model);
 		}
 	}
 else {
 	for (i = 0, j = m_info.nFirstTexture; i < nTextures; i++, j++) {
-		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [j]];
-		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + gameData.models.textureIndex [i].index;
+		gameData.modelData.textureIndex [i] = gameData.pigData.tex.objBmIndex [gameData.pigData.tex.pObjBmIndex [j]];
+		gameData.modelData.textures [i] = gameData.pigData.tex.bitmaps [gameStates.app.bD1Model] + gameData.modelData.textureIndex [i].index;
 		if (gameStates.render.bBuildModels)
-			LoadTexture (gameData.models.textureIndex [i].index, 0, gameStates.app.bD1Model);
+			LoadTexture (gameData.modelData.textureIndex [i].index, 0, gameStates.app.bD1Model);
 		}
 	}
 #if DBG
@@ -669,18 +669,18 @@ if (m_info.nId == nDbgModel)
 	BRP;
 #endif
 // Make sure the textures for this CObject are paged in...
-gameData.pig.tex.bPageFlushed = 0;
+gameData.pigData.tex.bPageFlushed = 0;
 for (i = 0; i < nTextures; i++)
-	LoadTexture (gameData.models.textureIndex [i].index, 0, gameStates.app.bD1Model);
+	LoadTexture (gameData.modelData.textureIndex [i].index, 0, gameStates.app.bD1Model);
 // Hmmm... cache got flushed in the middle of paging all these in,
 // so we need to reread them all in.
-if (gameData.pig.tex.bPageFlushed) {
-	gameData.pig.tex.bPageFlushed = 0;
+if (gameData.pigData.tex.bPageFlushed) {
+	gameData.pigData.tex.bPageFlushed = 0;
 	for (i = 0; i < nTextures; i++)
-		LoadTexture (gameData.models.textureIndex [i].index, 0, gameStates.app.bD1Model);
+		LoadTexture (gameData.modelData.textureIndex [i].index, 0, gameStates.app.bD1Model);
 }
 // Make sure that they can all fit in memory.
-Assert (gameData.pig.tex.bPageFlushed == 0);
+Assert (gameData.pigData.tex.bPageFlushed == 0);
 return nTextures;
 }
 
@@ -747,16 +747,16 @@ return i;
 
 int32_t LoadPolyModel (const char* filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo *pRobotInfo)
 {
-Assert (gameData.models.nPolyModels < MAX_POLYGON_MODELS);
+Assert (gameData.modelData.nPolyModels < MAX_POLYGON_MODELS);
 Assert (nTextures < MAX_POLYOBJ_TEXTURES);
 #if TRACE
-if (gameData.models.nPolyModels > MAX_POLYGON_MODELS - 10)
-	console.printf (CON_VERBOSE, "Used %d/%d polygon model slots\n", gameData.models.nPolyModels+1, MAX_POLYGON_MODELS);
+if (gameData.modelData.nPolyModels > MAX_POLYGON_MODELS - 10)
+	console.printf (CON_VERBOSE, "Used %d/%d polygon model slots\n", gameData.modelData.nPolyModels+1, MAX_POLYGON_MODELS);
 #endif
 Assert (strlen (filename) <= 12);
-strcpy (pofNames [gameData.models.nPolyModels], filename);
-gameData.models.polyModels [0][gameData.models.nPolyModels++].Load (filename, nTextures, nFirstTexture, pRobotInfo);
-return gameData.models.nPolyModels - 1;
+strcpy (pofNames [gameData.modelData.nPolyModels], filename);
+gameData.modelData.polyModels [0][gameData.modelData.nPolyModels++].Load (filename, nTextures, nFirstTexture, pRobotInfo);
+return gameData.modelData.nPolyModels - 1;
 }
 
 //------------------------------------------------------------------------------

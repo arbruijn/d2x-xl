@@ -196,7 +196,7 @@ int32_t IsOpaqueDoor (int32_t i)
 
 if (i >= 0)
 	for (p = d2OpaqueDoors; *p >= 0; p++)
-		if (i == gameData.pig.tex.pBmIndex [*p].index)
+		if (i == gameData.pigData.tex.pBmIndex [*p].index)
 			return 1;
 return 0;
 }
@@ -283,10 +283,10 @@ return 1;
 
 int32_t FindTextureByIndex (int32_t nIndex)
 {
-	int32_t	i, j = gameData.pig.tex.nBitmaps [gameStates.app.bD1Mission];
+	int32_t	i, j = gameData.pigData.tex.nBitmaps [gameStates.app.bD1Mission];
 
 for (i = 0; i < j; i++)
-	if (gameData.pig.tex.pBmIndex [i].index == nIndex)
+	if (gameData.pigData.tex.pBmIndex [i].index == nIndex)
 		return i;
 return -1;
 }
@@ -304,12 +304,12 @@ tEffectInfo *FindEffect (tEffectInfo *pEffectInfo, int32_t nTexture)
 	tBitmapIndex*	pFrame;
 
 if (pEffectInfo)
-	i = (int32_t) (++pEffectInfo - gameData.effects.pEffect);
+	i = (int32_t) (++pEffectInfo - gameData.effectData.pEffect);
 else {
-	pEffectInfo = gameData.effects.pEffect.Buffer ();
+	pEffectInfo = gameData.effectData.pEffect.Buffer ();
 	i = 0;
 	}
-for (h = gameData.effects.nEffects [gameStates.app.bD1Data]; i < h; i++, pEffectInfo++) {
+for (h = gameData.effectData.nEffects [gameStates.app.bD1Data]; i < h; i++, pEffectInfo++) {
 	for (j = pEffectInfo->animationInfo.nFrameCount, pFrame = pEffectInfo->animationInfo.frames; j > 0; j--, pFrame++)
 		if (pFrame->index == nTexture) {
 #if 0
@@ -328,9 +328,9 @@ return NULL;
 tAnimationInfo *FindAnimation (int32_t nTexture)
 {
 	int32_t	h, i, j;
-	tAnimationInfo *pAnimInfo = gameData.effects.animations [0].Buffer ();
+	tAnimationInfo *pAnimInfo = gameData.effectData.animations [0].Buffer ();
 
-for (i = gameData.effects.nClips [0]; i; i--, pAnimInfo++) {
+for (i = gameData.effectData.nClips [0]; i; i--, pAnimInfo++) {
 	for (h = pAnimInfo->nFrameCount, j = 0; j < h; j++)
 		if (pAnimInfo->frames [j].index == nTexture) {
 			return pAnimInfo;
@@ -348,7 +348,7 @@ tWallEffect *FindWallEffect (int32_t nTexture)
 
 for (i = gameData.wallData.nAnims [gameStates.app.bD1Data]; i; i--, pWallEffect++)
 	for (h = pWallEffect->nFrameCount, j = 0; j < h; j++)
-		if (gameData.pig.tex.pBmIndex [pWallEffect->frames [j]].index == nTexture)
+		if (gameData.pigData.tex.pBmIndex [pWallEffect->frames [j]].index == nTexture)
 			return pWallEffect;
 return NULL;
 }
@@ -358,8 +358,8 @@ return NULL;
 void UnloadHiresAnimations (void)
 {
 for (int32_t bD1 = 0; bD1 < 2; bD1++) {
-	CBitmap*	pBm = gameData.pig.tex.bitmaps [bD1].Buffer ();
-	for (int32_t i = gameData.pig.tex.nBitmaps [bD1]; i; i--, pBm++) {
+	CBitmap*	pBm = gameData.pigData.tex.bitmaps [bD1].Buffer ();
+	for (int32_t i = gameData.pigData.tex.nBitmaps [bD1]; i; i--, pBm++) {
 		pBm->FreeHiresAnimation (bD1);
 		}
 	}
@@ -375,13 +375,13 @@ void UnloadTextures (void)
 #if TRACE
 console.printf (CON_VERBOSE, "Unloading textures\n");
 #endif
-gameData.pig.tex.bPageFlushed++;
+gameData.pigData.tex.bPageFlushed++;
 TexMergeClose ();
 RLECacheFlush ();
 for (bD1 = 0; bD1 < 2; bD1++) {
 	bitmapCacheNext [bD1] = 0;
-	for (i = 0, pBm = gameData.pig.tex.bitmaps [bD1].Buffer ();
-		  i < gameData.pig.tex.nBitmaps [bD1];
+	for (i = 0, pBm = gameData.pigData.tex.bitmaps [bD1].Buffer ();
+		  i < gameData.pigData.tex.nBitmaps [bD1];
 		  i++, pBm++) {
 #if DBG
 		if (i == nDbgTexture)
@@ -389,12 +389,12 @@ for (bD1 = 0; bD1 < 2; bD1++) {
 #endif
 		if (bitmapOffsets [bD1][i] > 0) { // only page out bitmaps read from disk
 			pBm->AddFlags (BM_FLAG_PAGED_OUT);
-			gameData.pig.tex.bitmaps [bD1][i].Unload (i, bD1);
+			gameData.pigData.tex.bitmaps [bD1][i].Unload (i, bD1);
 			}
 		}
 	}
 for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
-	gameData.pig.tex.addonBitmaps [i].Unload (i, 0);
+	gameData.pigData.tex.addonBitmaps [i].Unload (i, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -407,8 +407,8 @@ void ResetTextureFlags (void)
 console.printf (CON_VERBOSE, "Resetting texture flags\n");
 #endif
 for (bD1 = 0; bD1 < 2; bD1++)
-	for (i = 0; i < gameData.pig.tex.nBitmaps [bD1]; i++)
-		gameData.pig.tex.bitmapFlags [bD1][i] &= ~BM_FLAG_TGA;
+	for (i = 0; i < gameData.pigData.tex.nBitmaps [bD1]; i++)
+		gameData.pigData.tex.bitmapFlags [bD1][i] &= ~BM_FLAG_TGA;
 }
 
 //------------------------------------------------------------------------------
@@ -424,11 +424,11 @@ else if (strstr (bmName, "flag02#0") == bmName)
 	i = 1;
 else
 	return;
-pf = gameData.pig.flags + i;
+pf = gameData.pigData.flags + i;
 pf->bmi.index = nIndex;
 pf->pAnimInfo = FindAnimation (nIndex);
 pf->animState.nClipIndex = gameData.objData.pwrUp.info [46 + i].nClipIndex;	//46 is the blue flag powerup
-pf->animState.xFrameTime = gameData.effects.animations [0][pf->animState.nClipIndex].xFrameTime;
+pf->animState.xFrameTime = gameData.effectData.animations [0][pf->animState.nClipIndex].xFrameTime;
 pf->animState.nCurFrame = 0;
 }
 
@@ -436,7 +436,7 @@ pf->animState.nCurFrame = 0;
 
 int32_t IsAnimatedTexture (int16_t nTexture)
 {
-return (nTexture > 0) && (strchr (gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [nTexture].index].name, '#') != NULL);
+return (nTexture > 0) && (strchr (gameData.pigData.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pigData.tex.pBmIndex [nTexture].index].name, '#') != NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -527,7 +527,7 @@ if (pFile->Seek (nOffset, SEEK_SET))
 pBm->CreateBuffer ();
 if (!pBm->Buffer () || (bitmapCacheUsed > bitmapCacheSize))
 	throw (EX_OUT_OF_MEMORY);
-pBm->SetFlags (gameData.pig.tex.bitmapFlags [bD1][nIndex]);
+pBm->SetFlags (gameData.pigData.tex.bitmapFlags [bD1][nIndex]);
 if (0 > ReadBitmap (pFile, pBm, pBm->FrameSize (), bD1 != 0)) 
 	throw (EX_IO_ERROR);
 UseBitmapCache (pBm, int32_t (pBm->FrameSize ()));
@@ -785,11 +785,11 @@ if (nFile < 2)	//was level specific mod folder
 
 CBitmap*	pAltBm;
 if (nIndex < 0) 
-	pAltBm = &gameData.pig.tex.addonBitmaps [-nIndex - 1];
+	pAltBm = &gameData.pigData.tex.addonBitmaps [-nIndex - 1];
 else if (nIndex == 0x7FFFFFFF)
 	pAltBm = pBm;
 else
-	pAltBm = &gameData.pig.tex.altBitmaps [bD1][nIndex];
+	pAltBm = &gameData.pigData.tex.altBitmaps [bD1][nIndex];
 
 CTGA tga (pAltBm);
 
@@ -968,7 +968,7 @@ if (bmi < 1)
 	return 0;
 if (bmi >= MAX_BITMAP_FILES)
 	return 0;
-if (bmi >= gameData.pig.tex.nBitmaps [bD1])
+if (bmi >= gameData.pigData.tex.nBitmaps [bD1])
 	return 0;
 if (bitmapOffsets [bD1][bmi] == 0)
 	return 0;		// A read-from-disk bmi!!!
@@ -977,14 +977,14 @@ if (bitmapOffsets [bD1][bmi] == 0)
 if (bmi == nDbgTexture)
 	BRP;
 #endif
-pBm = &gameData.pig.tex.bitmaps [bD1][bmi];
+pBm = &gameData.pigData.tex.bitmaps [bD1][bmi];
 if ((pBmo = pBm->Override ()))
 	pBm = pBmo;
-while (0 > (i = PageInBitmap (pBm, gameData.pig.tex.bitmapFiles [bD1][bmi].name, bmi, bD1, bHires)))
+while (0 > (i = PageInBitmap (pBm, gameData.pigData.tex.bitmapFiles [bD1][bmi].name, bmi, bD1, bHires)))
 	G3_SLEEP (0);
 if (!i)
 	return 0;
-gameData.pig.tex.bitmaps [bD1][bmi].DelFlags (BM_FLAG_PAGED_OUT);
+gameData.pigData.tex.bitmaps [bD1][bmi].DelFlags (BM_FLAG_PAGED_OUT);
 return 1;
 }
 
@@ -992,8 +992,8 @@ return 1;
 
 int32_t PiggyBitmapExistsSlow (char * name)
 {
-for (int32_t i = 0, j = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]; i < j; i++)
-	if (!strcmp (gameData.pig.tex.pBitmapFile [i].name, name))
+for (int32_t i = 0, j = gameData.pigData.tex.nBitmaps [gameStates.app.bD1Data]; i < j; i++)
+	if (!strcmp (gameData.pigData.tex.pBitmapFile [i].name, name))
 		return 1;
 return 0;
 }
@@ -1104,30 +1104,30 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 #endif
 			bm.SetKey (j);
 			bm.RLEExpand (NULL, 0);
-			*bm.Props () = *gameData.pig.tex.pBitmap [j].Props ();
+			*bm.Props () = *gameData.pigData.tex.pBitmap [j].Props ();
 			bm.SetPalette (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			}
 #if DBG
 		if (j == nDbgTexture)
 			BRP;
 #endif
-		gameData.pig.tex.pBitmap [j].Unload (j, 0);
+		gameData.pigData.tex.pBitmap [j].Unload (j, 0);
 		bm.SetFromPog (1);
 		char szName [20];
-		if (*gameData.pig.tex.pBitmap [j].Name ())
-			sprintf (szName, "[%s]", gameData.pig.tex.pBitmap [j].Name ());
+		if (*gameData.pigData.tex.pBitmap [j].Name ())
+			sprintf (szName, "[%s]", gameData.pigData.tex.pBitmap [j].Name ());
 		else
 			sprintf (szName, "POG#%04d", j);
 		bm.SetName (szName);
-		gameData.pig.tex.pAltBitmap [j] = bm;
-		gameData.pig.tex.pAltBitmap [j].SetBuffer (bm.Buffer (), 0, bm.Length ());
+		gameData.pigData.tex.pAltBitmap [j] = bm;
+		gameData.pigData.tex.pAltBitmap [j].SetBuffer (bm.Buffer (), 0, bm.Length ());
 		bm.SetBuffer (NULL);
-		gameData.pig.tex.pBitmap [j].SetOverride (gameData.pig.tex.pAltBitmap + j);
-		CBitmap* pBm = gameData.pig.tex.pAltBitmap + j;
+		gameData.pigData.tex.pBitmap [j].SetOverride (gameData.pigData.tex.pAltBitmap + j);
+		CBitmap* pBm = gameData.pigData.tex.pAltBitmap + j;
 		CFloatVector3 color;
 		if (0 <= pBm->AvgColor (&color))
 			pBm->SetAvgColorIndex (pBm->Palette ()->ClosestColor (&color));
-		UseBitmapCache (gameData.pig.tex.pAltBitmap + j, (int32_t) bm.Width () * (int32_t) bm.RowSize ());
+		UseBitmapCache (gameData.pigData.tex.pAltBitmap + j, (int32_t) bm.Width () * (int32_t) bm.RowSize ());
 		}
 	delete[] indices;
 	delete[] bmh;
@@ -1151,7 +1151,7 @@ PrintLog (1, "loading texture colors\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".clr");
 if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 	if (!pColor)
-		pColor = gameData.render.color.textures.Buffer ();
+		pColor = gameData.renderData.color.textures.Buffer ();
 	for (i = MAX_WALL_TEXTURES; i; i--, pColor++) {
 		ReadColor (cf, pColor, 0, 0);
 		pColor->index = 0;
@@ -1165,15 +1165,15 @@ PrintLog (-1);
 
 bool BitmapLoaded (int32_t bmi, int32_t nFrame, int32_t bD1)
 {
-	CBitmap*		pBmo, * pBm = gameData.pig.tex.bitmaps [bD1] + bmi;
+	CBitmap*		pBmo, * pBm = gameData.pigData.tex.bitmaps [bD1] + bmi;
 	CTexture*	pTexture;
 
 if (!pBm)
 	return false;
 #if 1
-if (nFrame && gameData.pig.tex.bitmaps [bD1][bmi - nFrame].Override ()) {
+if (nFrame && gameData.pigData.tex.bitmaps [bD1][bmi - nFrame].Override ()) {
 	pBm->DelFlags (BM_FLAG_PAGED_OUT);
-	pBm->SetOverride (gameData.pig.tex.bitmaps [bD1][bmi - nFrame].Override ());
+	pBm->SetOverride (gameData.pigData.tex.bitmaps [bD1][bmi - nFrame].Override ());
 	return true;
 	}
 #endif

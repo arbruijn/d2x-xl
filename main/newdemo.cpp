@@ -72,7 +72,7 @@ PrintLog (0, "Error in demo playback\n");
 
 #define ND_EVENT_EOF                0   // EOF
 #define ND_EVENT_START_DEMO         1   // Followed by 16 character, NULL terminated filename of .SAV file to use
-#define ND_EVENT_START_FRAME        2   // Followed by integer frame number, then a fix gameData.time.xFrame
+#define ND_EVENT_START_FRAME        2   // Followed by integer frame number, then a fix gameData.timeData.xFrame
 #define ND_EVENT_VIEWER_OBJECT      3   // Followed by an CObject structure
 #define ND_EVENT_RENDER_OBJECT      4   // Followed by an CObject structure
 #define ND_EVENT_SOUND              5   // Followed by int32_t soundum
@@ -156,25 +156,25 @@ return 1;
 
 void InitDemoData (void)
 {
-gameData.demo.bAuto = 0;
-gameData.demo.nState = 0;
-gameData.demo.nVcrState = 0;
-gameData.demo.nStartFrame = -1;
-gameData.demo.bInterpolate = 0; // 1
-gameData.demo.bWarningGiven = 0;
-gameData.demo.bCtrlcenDestroyed = 0;
-gameData.demo.nFrameBytesWritten = 0;
-gameData.demo.bFirstTimePlayback = 1;
-gameData.demo.xJasonPlaybackTotal = 0;
+gameData.demoData.bAuto = 0;
+gameData.demoData.nState = 0;
+gameData.demoData.nVcrState = 0;
+gameData.demoData.nStartFrame = -1;
+gameData.demoData.bInterpolate = 0; // 1
+gameData.demoData.bWarningGiven = 0;
+gameData.demoData.bCtrlcenDestroyed = 0;
+gameData.demoData.nFrameBytesWritten = 0;
+gameData.demoData.bFirstTimePlayback = 1;
+gameData.demoData.xJasonPlaybackTotal = 0;
 }
 
 //	-----------------------------------------------------------------------------
 
 float NDGetPercentDone (void) 
 {
-if (gameData.demo.nState == ND_STATE_PLAYBACK)
-	return float (ndInFile.Tell ()) * 100.0f / float (gameData.demo.nSize);
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_PLAYBACK)
+	return float (ndInFile.Tell ()) * 100.0f / float (gameData.demoData.nSize);
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	return float (ndOutFile.Tell ());
 return 0;
 }
@@ -229,7 +229,7 @@ return -1;
 void CHK (void)
 {
 Assert (&ndOutFile.File () != NULL);
-if (gameData.demo.nWritten >= 750)
+if (gameData.demoData.nWritten >= 750)
 	BRP;
 }
 
@@ -245,16 +245,16 @@ int32_t NDWrite (void *buffer, int32_t elsize, int32_t nelem)
 {
 	int32_t nWritten, nTotalSize = elsize * nelem;
 
-gameData.demo.nFrameBytesWritten += nTotalSize;
-gameData.demo.nWritten += nTotalSize;
+gameData.demoData.nFrameBytesWritten += nTotalSize;
+gameData.demoData.nWritten += nTotalSize;
 Assert (&ndOutFile.File () != NULL);
 CHK();
 nWritten = (int32_t) ndOutFile.Write (buffer, elsize, nelem);
-if ((bRevertFormat < 1) && (gameData.demo.nWritten > gameData.demo.nSize) && !gameData.demo.bNoSpace)
-	gameData.demo.bNoSpace = 1;
-if ((nWritten == nelem) && !gameData.demo.bNoSpace)
+if ((bRevertFormat < 1) && (gameData.demoData.nWritten > gameData.demoData.nSize) && !gameData.demoData.bNoSpace)
+	gameData.demoData.bNoSpace = 1;
+if ((nWritten == nelem) && !gameData.demoData.bNoSpace)
 	return nWritten;
-gameData.demo.bNoSpace = 2;
+gameData.demoData.bNoSpace = 2;
 NDStopRecording ();
 return -1;
 }
@@ -269,8 +269,8 @@ return -1;
 
 static inline void NDWriteByte (int8_t b)
 {
-gameData.demo.nFrameBytesWritten += sizeof (b);
-gameData.demo.nWritten += sizeof (b);
+gameData.demoData.nFrameBytesWritten += sizeof (b);
+gameData.demoData.nWritten += sizeof (b);
 CHK();
 ndOutFile.WriteByte (b);
 }
@@ -279,8 +279,8 @@ ndOutFile.WriteByte (b);
 
 static inline void NDWriteShort (int16_t s)
 {
-gameData.demo.nFrameBytesWritten += sizeof (s);
-gameData.demo.nWritten += sizeof (s);
+gameData.demoData.nFrameBytesWritten += sizeof (s);
+gameData.demoData.nWritten += sizeof (s);
 CHK();
 ndOutFile.WriteShort (s);
 }
@@ -289,8 +289,8 @@ ndOutFile.WriteShort (s);
 
 static void NDWriteInt (int32_t i)
 {
-gameData.demo.nFrameBytesWritten += sizeof (i);
-gameData.demo.nWritten += sizeof (i);
+gameData.demoData.nFrameBytesWritten += sizeof (i);
+gameData.demoData.nWritten += sizeof (i);
 CHK();
 ndOutFile.WriteInt (i);
 }
@@ -309,8 +309,8 @@ NDWrite (str, (int32_t) l, 1);
 
 static inline void NDWriteFix (fix f)
 {
-gameData.demo.nFrameBytesWritten += sizeof (f);
-gameData.demo.nWritten += sizeof (f);
+gameData.demoData.nFrameBytesWritten += sizeof (f);
+gameData.demoData.nWritten += sizeof (f);
 CHK();
 ndOutFile.WriteFix (f);
 }
@@ -319,8 +319,8 @@ ndOutFile.WriteFix (f);
 
 static inline void NDWriteFixAng (fixang f)
 {
-gameData.demo.nFrameBytesWritten += sizeof (f);
-gameData.demo.nWritten += sizeof (f);
+gameData.demoData.nFrameBytesWritten += sizeof (f);
+gameData.demoData.nWritten += sizeof (f);
 ndOutFile.WriteFixAng (f);
 }
 
@@ -328,8 +328,8 @@ ndOutFile.WriteFixAng (f);
 
 static inline void NDWriteVector (const CFixVector& v)
 {
-gameData.demo.nFrameBytesWritten += sizeof (v);
-gameData.demo.nWritten += sizeof (v);
+gameData.demoData.nFrameBytesWritten += sizeof (v);
+gameData.demoData.nWritten += sizeof (v);
 CHK();
 ndOutFile.WriteVector (v);
 }
@@ -338,8 +338,8 @@ ndOutFile.WriteVector (v);
 
 static inline void NDWriteAngVec (const CAngleVector& v)
 {
-gameData.demo.nFrameBytesWritten += sizeof (v);
-gameData.demo.nWritten += sizeof (v);
+gameData.demoData.nFrameBytesWritten += sizeof (v);
+gameData.demoData.nWritten += sizeof (v);
 CHK();
 ndOutFile.WriteAngVec (v);
 }
@@ -348,8 +348,8 @@ ndOutFile.WriteAngVec (v);
 
 static inline void NDWriteMatrix (const CFixMatrix& m)
 {
-gameData.demo.nFrameBytesWritten += sizeof (m);
-gameData.demo.nWritten += sizeof (m);
+gameData.demoData.nFrameBytesWritten += sizeof (m);
+gameData.demoData.nWritten += sizeof (m);
 CHK();
 ndOutFile.WriteMatrix(m);
 }
@@ -510,13 +510,13 @@ if (bRevertFormat > 0)
 renderType = pObj->info.renderType;
 if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == RT_MORPH) || 
 	 (pObj->info.nType == OBJ_CAMERA) ||
-	 ((renderType == RT_POWERUP) && (gameData.demo.nVersion > DEMO_VERSION + 1))) {
-	if (gameData.demo.bUseShortPos)
+	 ((renderType == RT_POWERUP) && (gameData.demoData.nVersion > DEMO_VERSION + 1))) {
+	if (gameData.demoData.bUseShortPos)
 		NDRead (sp.orient, sizeof (sp.orient [0]), sizeof (sp.orient) / sizeof (sp.orient [0]));
 	else
 		ndInFile.ReadMatrix(pObj->info.position.mOrient);
 	}
-if (gameData.demo.bUseShortPos) {
+if (gameData.demoData.bUseShortPos) {
 	sp.pos [0] = NDReadShort ();
 	sp.pos [1] = NDReadShort ();
 	sp.pos [2] = NDReadShort ();
@@ -565,8 +565,8 @@ if (!bRevertFormat) {
 	else {
 		bSkip = 1;
 		ndOutFile.Seek (-1, SEEK_CUR);
-		gameData.demo.nFrameBytesWritten--;
-		gameData.demo.nWritten--;
+		gameData.demoData.nFrameBytesWritten--;
+		gameData.demoData.nWritten--;
 		}
 	}
 pObj->info.nType = NDReadByte ();
@@ -576,7 +576,7 @@ if ((pObj->info.renderType == RT_NONE) && (pObj->info.nType != OBJ_CAMERA)) {
 	return;
 	}
 pObj->info.nId = NDReadByte ();
-if (gameData.demo.nVersion > DEMO_VERSION + 1) {
+if (gameData.demoData.nVersion > DEMO_VERSION + 1) {
 	if (bRevertFormat > 0)
 		bRevertFormat = 0;
 	pObj->SetShield (NDReadFix ());
@@ -621,7 +621,7 @@ switch (pObj->info.nType) {
 	case OBJ_PLAYER:
 		pObj->info.controlType = CT_NONE;
 		pObj->info.movementType = MT_PHYSICS;
-		pObj->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
+		pObj->rType.polyObjInfo.nModel = gameData.pigData.ship.player->nModel;
 		pObj->AdjustSize ();
 		pObj->rType.polyObjInfo.nSubObjFlags = 0;
 		break;
@@ -727,7 +727,7 @@ switch (pObj->info.renderType) {
 			pObj->rType.polyObjInfo.nSubObjFlags = NDReadInt ();
 			}
 		if ((pObj->info.nType != OBJ_PLAYER) && (pObj->info.nType != OBJ_DEBRIS))
-		for (i = 0; i < gameData.models.polyModels [0][pObj->ModelId ()].ModelCount (); i++)
+		for (i = 0; i < gameData.modelData.polyModels [0][pObj->ModelId ()].ModelCount (); i++)
 			NDReadAngVec (pObj->rType.polyObjInfo.animAngles[i]);
 		tmo = NDReadInt ();
 		pObj->rType.polyObjInfo.nTexOverride = tmo;
@@ -775,7 +775,7 @@ switch (pObj->info.renderType) {
 		pObj->rType.lightningInfo.nNodes = NDReadShort ();
 		pObj->rType.lightningInfo.nChildren = NDReadShort ();
 		pObj->rType.lightningInfo.nFrames = NDReadShort ();
-		pObj->rType.lightningInfo.nWidth = (gameData.demo.nVersion <= 19) ? 3 : NDReadByte ();
+		pObj->rType.lightningInfo.nWidth = (gameData.demoData.nVersion <= 19) ? 3 : NDReadByte ();
 		pObj->rType.lightningInfo.nAngle = NDReadByte ();
 		pObj->rType.lightningInfo.nStyle = NDReadByte ();
 		pObj->rType.lightningInfo.nSmoothe = NDReadByte ();
@@ -814,8 +814,8 @@ void NDSetPowerupClip (CObject *pObj)
 //if (gameStates.app.tick40fps.bTick) 
 tAnimationState	*pState = &pObj->rType.animationInfo;
 if (pState->nClipIndex >= 0) {
-	tAnimationInfo	*pAnimInfo = gameData.effects.animations [0] + pState->nClipIndex;
-	pState->nCurFrame = pAnimInfo->xFrameTime ? ((gameData.time.xGame - gameData.demo.xStartTime) / pAnimInfo->xFrameTime) % pAnimInfo->nFrameCount : 0;
+	tAnimationInfo	*pAnimInfo = gameData.effectData.animations [0] + pState->nClipIndex;
+	pState->nCurFrame = pAnimInfo->xFrameTime ? ((gameData.timeData.xGame - gameData.demoData.xStartTime) / pAnimInfo->xFrameTime) % pAnimInfo->nFrameCount : 0;
 	}
 }
 
@@ -871,10 +871,10 @@ else {
 	}
 if (o.info.nType == OBJ_ROBOT) {
 	if (ROBOTINFO (o.info.nId) && ROBOTINFO (o.info.nId)->bossFlag) {
-		int32_t i = gameData.bosses.Find (pObj->Index ());
+		int32_t i = gameData.bossData.Find (pObj->Index ());
 		if ((i >= 0) &&
-			 (gameData.time.xGame > gameData.bosses [i].m_nCloakStartTime) && 
-			 (gameData.time.xGame < gameData.bosses [i].m_nCloakEndTime))
+			 (gameData.timeData.xGame > gameData.bossData [i].m_nCloakStartTime) && 
+			 (gameData.timeData.xGame < gameData.bossData [i].m_nCloakEndTime))
 			NDWriteByte (1);
 		else
 			NDWriteByte (0);
@@ -946,7 +946,7 @@ switch (o.info.renderType) {
 			for (i = 0; i < MAX_SUBMODELS; i++)
 				NDWriteAngVec (o.polyObjInfo.animAngles + i);
 #endif
-		for (i = 0; i < gameData.models.polyModels [0][o.ModelId ()].ModelCount (); i++)
+		for (i = 0; i < gameData.modelData.polyModels [0][o.ModelId ()].ModelCount (); i++)
 			NDWriteAngVec (o.rType.polyObjInfo.animAngles[i]);
 		NDWriteInt (o.rType.polyObjInfo.nTexOverride);
 		break;
@@ -1034,12 +1034,12 @@ StopTime ();
 NDWriteByte (ND_EVENT_START_DEMO);
 NDWriteByte ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat) ? DEMO_VERSION : DEMO_VERSION_D2X);
 NDWriteByte (DEMO_GAME_TYPE);
-NDWriteFix (gameData.time.xGame);
+NDWriteFix (gameData.timeData.xGame);
 if (IsMultiGame)
-	NDWriteInt (gameData.app.nGameMode | (N_LOCALPLAYER << 16));
+	NDWriteInt (gameData.appData.nGameMode | (N_LOCALPLAYER << 16));
 else
 	// NOTE LINK TO ABOVE!!!
-	NDWriteInt (gameData.app.nGameMode);
+	NDWriteInt (gameData.appData.nGameMode);
 if (IsTeamGame) {
 	NDWriteByte (int8_t (netGameInfo.m_info.GetTeamVector ()));
 	NDWriteString (netGameInfo.m_info.szTeamName [0]);
@@ -1071,9 +1071,9 @@ NDWriteString (gameStates.app.szCurrentMissionFile);
 NDWriteByte ((int8_t) (X2IR (LOCALPLAYER.Energy ())));
 NDWriteByte ((int8_t) (X2IR (LOCALPLAYER.Shield ())));
 NDWriteInt (LOCALPLAYER.flags);        // be sure players flags are set
-NDWriteByte ((int8_t)gameData.weapons.nPrimary);
-NDWriteByte ((int8_t)gameData.weapons.nSecondary);
-gameData.demo.nStartFrame = gameData.app.nFrameCount;
+NDWriteByte ((int8_t)gameData.weaponData.nPrimary);
+NDWriteByte ((int8_t)gameData.weaponData.nSecondary);
+gameData.demoData.nStartFrame = gameData.appData.nFrameCount;
 bJustStartedRecording = 1;
 NDSetNewLevel (missionManager.nCurrentLevel);
 StartTime (0);
@@ -1085,19 +1085,19 @@ void NDRecordStartFrame (int32_t nFrameNumber, fix xFrameTime)
 {
 if (gameStates.render.cameras.bActive)
 	return;
-if (gameData.demo.bNoSpace) {
+if (gameData.demoData.bNoSpace) {
 	NDStopPlayback ();
 	return;
 	}
 StopTime ();
-gameData.demo.bWasRecorded.Clear ();
-gameData.demo.bViewWasRecorded.Clear ();
-memset (gameData.demo.bRenderingWasRecorded, 0, sizeof (gameData.demo.bRenderingWasRecorded));
-nFrameNumber -= gameData.demo.nStartFrame;
+gameData.demoData.bWasRecorded.Clear ();
+gameData.demoData.bViewWasRecorded.Clear ();
+memset (gameData.demoData.bRenderingWasRecorded, 0, sizeof (gameData.demoData.bRenderingWasRecorded));
+nFrameNumber -= gameData.demoData.nStartFrame;
 Assert (nFrameNumber >= 0);
 NDWriteByte (ND_EVENT_START_FRAME);
-NDWriteShort ((int16_t) (gameData.demo.nFrameBytesWritten - 1));        // from previous frame
-gameData.demo.nFrameBytesWritten = 3;
+NDWriteShort ((int16_t) (gameData.demoData.nFrameBytesWritten - 1));        // from previous frame
+gameData.demoData.nFrameBytesWritten = 3;
 NDWriteInt (nFrameNumber);
 NDWriteInt (xFrameTime);
 StartTime (0);
@@ -1109,7 +1109,7 @@ void NDRecordRenderObject (CObject * pObj)
 {
 if (gameStates.render.cameras.bActive)
 	return;
-if (gameData.demo.bViewWasRecorded [pObj->Index ()])
+if (gameData.demoData.bViewWasRecorded [pObj->Index ()])
 	return;
 //if (obj==LOCALOBJECT && !gameStates.app.bPlayerIsDead)
 //	return;
@@ -1128,16 +1128,16 @@ if (gameStates.render.cameras.bActive)
 	return;
 
 	int32_t	i = pObj->Index ();
-	int32_t	h = gameData.demo.bViewWasRecorded [i];
+	int32_t	h = gameData.demoData.bViewWasRecorded [i];
 
 if (h && (h - 1 == gameStates.render.nRenderingType))
 	return;
-//if (gameData.demo.bWasRecorded [pObj->Index ()])
+//if (gameData.demoData.bWasRecorded [pObj->Index ()])
 //	return;
-if (gameData.demo.bRenderingWasRecorded [gameStates.render.nRenderingType])
+if (gameData.demoData.bRenderingWasRecorded [gameStates.render.nRenderingType])
 	return;
-gameData.demo.bViewWasRecorded [i] = gameStates.render.nRenderingType + 1;
-gameData.demo.bRenderingWasRecorded [gameStates.render.nRenderingType] = 1;
+gameData.demoData.bViewWasRecorded [i] = gameStates.render.nRenderingType + 1;
+gameData.demoData.bRenderingWasRecorded [gameStates.render.nRenderingType] = 1;
 StopTime ();
 NDWriteByte (ND_EVENT_VIEWER_OBJECT);
 NDWriteByte (gameStates.render.nRenderingType);
@@ -1336,7 +1336,7 @@ if (gameStates.render.cameras.bActive)
 	return;
 StopTime ();
 NDWriteByte (ND_EVENT_CONTROL_CENTER_DESTROYED);
-NDWriteInt (gameData.reactor.countdown.nSecsLeft);
+NDWriteInt (gameData.reactorData.countdown.nSecsLeft);
 StartTime (0);
 }
 
@@ -1426,9 +1426,9 @@ NDWriteByte (ND_EVENT_PLAYER_WEAPON);
 NDWriteByte ((int8_t)nWeaponType);
 NDWriteByte ((int8_t)weapon_num);
 if (nWeaponType)
-	NDWriteByte ((int8_t)gameData.weapons.nSecondary);
+	NDWriteByte ((int8_t)gameData.weaponData.nSecondary);
 else
-	NDWriteByte ((int8_t)gameData.weapons.nPrimary);
+	NDWriteByte ((int8_t)gameData.weaponData.nPrimary);
 StartTime (0);
 }
 
@@ -1788,9 +1788,9 @@ if ((c != ND_EVENT_START_DEMO) || bNDBadRead) {
 	}
 if (bRevertFormat > 0)
 	bRevertFormat = 0;
-gameData.demo.nVersion = NDReadByte ();
+gameData.demoData.nVersion = NDReadByte ();
 if (gameOpts->demo.bRevertFormat && !bRevertFormat) {
-	if (gameData.demo.nVersion == DEMO_VERSION)
+	if (gameData.demoData.nVersion == DEMO_VERSION)
 		bRevertFormat = -1;
 	else {
 		NDWriteByte (DEMO_VERSION);
@@ -1806,24 +1806,24 @@ if (gameType != DEMO_GAME_TYPE) {
 	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_RECORDED);
 	return NDErrorMsg (szMsg, "   In Unknown Descent version", NULL);
 	}
-if (gameData.demo.nVersion < DEMO_VERSION) {
+if (gameData.demoData.nVersion < DEMO_VERSION) {
 	if (bRandom)
 		return 1;
 	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_DEMO_OLD);
 	return NDErrorMsg (szMsg, NULL, NULL);
 	}
-gameData.demo.bUseShortPos = (gameData.demo.nVersion == DEMO_VERSION);
-gameData.time.xGame = NDReadFix ();
-gameData.bosses.ResetCloakTimes ();
-gameData.demo.xJasonPlaybackTotal = 0;
-gameData.demo.nGameMode = NDReadInt ();
-ChangePlayerNumTo ((gameData.demo.nGameMode >> 16) & 0x7);
-if (gameData.demo.nGameMode & GM_TEAM) {
+gameData.demoData.bUseShortPos = (gameData.demoData.nVersion == DEMO_VERSION);
+gameData.timeData.xGame = NDReadFix ();
+gameData.bossData.ResetCloakTimes ();
+gameData.demoData.xJasonPlaybackTotal = 0;
+gameData.demoData.nGameMode = NDReadInt ();
+ChangePlayerNumTo ((gameData.demoData.nGameMode >> 16) & 0x7);
+if (gameData.demoData.nGameMode & GM_TEAM) {
 	netGameInfo.m_info.SetTeamVector (NDReadByte ());
 	NDReadString (netGameInfo.m_info.szTeamName [0]);
 	NDReadString (netGameInfo.m_info.szTeamName [1]);
 	}
-if (gameData.demo.nGameMode & GM_MULTI) {
+if (gameData.demoData.nGameMode & GM_MULTI) {
 	MultiNewGame ();
 	N_PLAYERS = int32_t (NDReadByte ());
 	// changed this to above two lines -- breaks on the mac because of
@@ -1841,9 +1841,9 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 			PLAYER (i).netKillsTotal = NDReadShort ();
 			}
 		}
-	gameData.app.SetGameMode (gameData.demo.nGameMode);
+	gameData.appData.SetGameMode (gameData.demoData.nGameMode);
 	MultiSortKillList ();
-	gameData.app.SetGameMode (GM_NORMAL);
+	gameData.appData.SetGameMode (GM_NORMAL);
 	}
 else
 	LOCALPLAYER.score = NDReadInt ();      // Note link to above if!
@@ -1868,19 +1868,19 @@ if (!i) {
 	sprintf (szMsg, TXT_NOMISSION4DEMO, szCurrentMission);
 	return NDErrorMsg (szMsg, NULL, NULL);
 	}
-gameData.demo.xRecordedTotal = 0;
-gameData.demo.xPlaybackTotal = 0;
+gameData.demoData.xRecordedTotal = 0;
+gameData.demoData.xPlaybackTotal = 0;
 energy = NDReadByte ();
 shield = NDReadByte ();
 LOCALPLAYER.flags = NDReadInt ();
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
-	LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
-	gameData.demo.bPlayersCloaked |= (1 << N_LOCALPLAYER);
+	LOCALPLAYER.cloakTime = gameData.timeData.xGame - (CLOAK_TIME_MAX / 2);
+	gameData.demoData.bPlayersCloaked |= (1 << N_LOCALPLAYER);
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
-	LOCALPLAYER.invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
-gameData.weapons.nPrimary = NDReadByte ();
-gameData.weapons.nSecondary = NDReadByte ();
+	LOCALPLAYER.invulnerableTime = gameData.timeData.xGame - (INVULNERABLE_TIME_MAX / 2);
+gameData.weaponData.nPrimary = NDReadByte ();
+gameData.weaponData.nSecondary = NDReadByte ();
 // Next bit of code to fix problem that I introduced between 1.0 and 1.1
 // check the next byte -- it _will_ be a load_newLevel event.  If it is
 // not, then we must shift all bytes up by one.
@@ -1898,9 +1898,9 @@ void NDPopCtrlCenTriggers ()
 	int16_t		side, nConnSide;
 	CSegment *pSeg, *pConnSeg;
 
-for (i = 0; i < gameData.reactor.triggers.m_nLinks; i++) {
-	pSeg = SEGMENT (gameData.reactor.triggers.m_segments [i]);
-	side = gameData.reactor.triggers.m_sides [i];
+for (i = 0; i < gameData.reactorData.triggers.m_nLinks; i++) {
+	pSeg = SEGMENT (gameData.reactorData.triggers.m_segments [i]);
+	side = gameData.reactorData.triggers.m_sides [i];
 	pConnSeg = SEGMENT (pSeg->m_children [side]);
 	nConnSide = pSeg->ConnectedSide (pConnSeg);
 	anim_num = pSeg->Wall (side)->nClip;
@@ -1962,7 +1962,7 @@ for (int32_t nObject = 1; nObject < gameData.objData.nLastObject [0]; nObject++)
 	if ((OBJECT (nObject)->info.nType != OBJ_NONE) && (OBJECT (nObject)->info.nType != OBJ_EFFECT))
 		ReleaseObject (nObject);
 #else
-if (gameData.demo.nVcrState != ND_STATE_PAUSED)
+if (gameData.demoData.nVcrState != ND_STATE_PAUSED)
 	ResetSegObjLists ();
 ResetObjects (1);
 #endif
@@ -1976,22 +1976,22 @@ while (!bDone) {
 	nTag = NDReadByte ();
 	CATCH_BAD_READ
 	switch (nTag) {
-		case ND_EVENT_START_FRAME: {        // Followed by an integer frame number, then a fix gameData.time.xFrame
+		case ND_EVENT_START_FRAME: {        // Followed by an integer frame number, then a fix gameData.timeData.xFrame
 			bDone = 1;
 			if (bRevertFormat > 0)
 				bRevertFormat = 0;
 			NDReadShort ();
 			if (!bRevertFormat) {
-				NDWriteShort (gameData.demo.nFrameBytesWritten - 1);
+				NDWriteShort (gameData.demoData.nFrameBytesWritten - 1);
 				bRevertFormat = 1;
 				}
 			if (bRevertFormat > 0)
-				gameData.demo.nFrameBytesWritten = 3;
-			gameData.demo.nFrameCount = NDReadInt ();
-			gameData.demo.xRecordedTime = NDReadInt ();
-			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
-				gameData.demo.xRecordedTotal += gameData.demo.xRecordedTime;
-			gameData.demo.nFrameCount--;
+				gameData.demoData.nFrameBytesWritten = 3;
+			gameData.demoData.nFrameCount = NDReadInt ();
+			gameData.demoData.xRecordedTime = NDReadInt ();
+			if (gameData.demoData.nVcrState == ND_STATE_PLAYBACK)
+				gameData.demoData.xRecordedTotal += gameData.demoData.xRecordedTime;
+			gameData.demoData.nFrameCount--;
 			CATCH_BAD_READ
 			break;
 			}
@@ -2000,7 +2000,7 @@ while (!bDone) {
 			WhichWindow = NDReadByte ();
 			if (WhichWindow&15) {
 				NDReadObject (&extraobj);
-				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
+				if (gameData.demoData.nVcrState != ND_STATE_PAUSED) {
 					CATCH_BAD_READ
 					NDRenderExtras (WhichWindow, &extraobj);
 					}
@@ -2008,7 +2008,7 @@ while (!bDone) {
 			else {
 				gameData.SetViewer (OBJECTS.Buffer ());
 				NDReadObject (gameData.objData.pViewer);
-				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
+				if (gameData.demoData.nVcrState != ND_STATE_PAUSED) {
 					CATCH_BAD_READ
 					nSegment = gameData.objData.pViewer->info.nSegment;
 					gameData.objData.pViewer->info.nNextInSeg = 
@@ -2040,7 +2040,7 @@ while (!bDone) {
 			CATCH_BAD_READ
 			if (pObj->info.controlType == CT_POWERUP)
 				pObj->DoPowerupFrame ();
-			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED) {
 				nSegment = pObj->info.nSegment;
 				pObj->info.nNextInSeg = pObj->info.nPrevInSeg = pObj->info.nSegment = -1;
 				// HACK HACK HACK -- don't render OBJECTS is segments greater than gameData.segData.nLastSegment
@@ -2048,15 +2048,15 @@ while (!bDone) {
 				if (nSegment > gameData.segData.nLastSegment)
 					break;
 				pObj->LinkToSeg (nSegment);
-				if ((pObj->info.nType == OBJ_PLAYER) && (gameData.demo.nGameMode & GM_MULTI)) {
-					int32_t nPlayer = (gameData.demo.nGameMode & GM_TEAM) ? GetTeam (pObj->info.nId) : (pObj->info.nId % MAX_PLAYER_COLORS) + 1;
+				if ((pObj->info.nType == OBJ_PLAYER) && (gameData.demoData.nGameMode & GM_MULTI)) {
+					int32_t nPlayer = (gameData.demoData.nGameMode & GM_TEAM) ? GetTeam (pObj->info.nId) : (pObj->info.nId % MAX_PLAYER_COLORS) + 1;
 					if (nPlayer == 0)
 						break;
 					nPlayer--;
 					for (i = 0; i < N_PLAYER_SHIP_TEXTURES; i++)
-						mpTextureIndex [nPlayer][i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.models.polyModels [0][pObj->ModelId ()].FirstTexture () + i]];
-					mpTextureIndex [nPlayer][4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap + nPlayer * 2]];
-					mpTextureIndex [nPlayer][5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap + nPlayer * 2 + 1]];
+						mpTextureIndex [nPlayer][i] = gameData.pigData.tex.objBmIndex [gameData.pigData.tex.pObjBmIndex [gameData.modelData.polyModels [0][pObj->ModelId ()].FirstTexture () + i]];
+					mpTextureIndex [nPlayer][4] = gameData.pigData.tex.objBmIndex [gameData.pigData.tex.pObjBmIndex [gameData.pigData.tex.nFirstMultiBitmap + nPlayer * 2]];
+					mpTextureIndex [nPlayer][5] = gameData.pigData.tex.objBmIndex [gameData.pigData.tex.pObjBmIndex [gameData.pigData.tex.nFirstMultiBitmap + nPlayer * 2 + 1]];
 					pObj->rType.polyObjInfo.nAltTextures = nPlayer+1;
 					}
 				}
@@ -2065,14 +2065,14 @@ while (!bDone) {
 		case ND_EVENT_SOUND:
 			soundno = NDReadInt ();
 			CATCH_BAD_READ
-			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
+			if (gameData.demoData.nVcrState == ND_STATE_PLAYBACK)
 				audio.PlaySound ((int16_t) soundno);
 			break;
 
 			//--unused		case ND_EVENT_SOUND_ONCE:
 			//--unused			NDReadInt (&soundno);
 			//--unused			if (bNDBadRead) { bDone = -1; break; }
-			//--unused			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
+			//--unused			if (gameData.demoData.nVcrState == ND_STATE_PLAYBACK)
 			//--unused				audio.PlaySound (soundno);
 			//--unused			break;
 
@@ -2081,7 +2081,7 @@ while (!bDone) {
 			angle = NDReadInt ();
 			volume = NDReadInt ();
 			CATCH_BAD_READ
-			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
+			if (gameData.demoData.nVcrState == ND_STATE_PLAYBACK)
 				audio.PlaySound ((int16_t) soundno, SOUNDCLASS_GENERIC, volume, angle);
 			break;
 
@@ -2090,7 +2090,7 @@ while (!bDone) {
 			angle = NDReadInt ();
 			volume = NDReadInt ();
 			CATCH_BAD_READ
-			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
+			if (gameData.demoData.nVcrState == ND_STATE_PLAYBACK)
 				audio.PlaySound ((int16_t) soundno, SOUNDCLASS_GENERIC, volume, angle, 1);
 			break;
 
@@ -2129,7 +2129,7 @@ while (!bDone) {
 			damage = NDReadFix ();
 			player = NDReadInt ();
 			CATCH_BAD_READ
-			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED)
 				SEGMENT (nSegment)->ProcessWallHit ((int16_t) nSide, damage, player, OBJECT (0));
 			break;
 		}
@@ -2140,7 +2140,7 @@ while (!bDone) {
 			nObject = NDReadInt ();
 			bShot = NDReadInt ();
 			CATCH_BAD_READ
-			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED) {
 				CSegment*	pSeg = SEGMENT (nSegment);
 				CTrigger*	pTrigger = pSeg->Trigger (nSide);
 				if (pTrigger && (pTrigger->m_info.nType == TT_SECRET_EXIT)) {
@@ -2162,7 +2162,7 @@ while (!bDone) {
 
 			hostage_number = NDReadInt ();
 			CATCH_BAD_READ
-			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED)
 				RescueHostage (hostage_number);
 			}
 			break;
@@ -2174,9 +2174,9 @@ while (!bDone) {
 			pObj = OBJECT (nObject);
 			NDReadObject (pObj);
 			pObj->info.renderType = RT_POLYOBJ;
-			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED) {
 				CATCH_BAD_READ
-				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
+				if (gameData.demoData.nVcrState != ND_STATE_PAUSED) {
 					nSegment = pObj->info.nSegment;
 					pObj->info.nNextInSeg = pObj->info.nPrevInSeg = pObj->info.nSegment = -1;
 					pObj->LinkToSeg (nSegment);
@@ -2189,17 +2189,17 @@ while (!bDone) {
 			nSegment = NDReadInt ();
 			nSide = NDReadInt ();
 			CATCH_BAD_READ
-			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED)
 				SEGMENT (nSegment)->ToggleWall (nSide);
 			break;
 
 		case ND_EVENT_CONTROL_CENTER_DESTROYED:
-			gameData.reactor.countdown.nSecsLeft = NDReadInt ();
-			gameData.reactor.bDestroyed = 1;
+			gameData.reactorData.countdown.nSecsLeft = NDReadInt ();
+			gameData.reactorData.bDestroyed = 1;
 			CATCH_BAD_READ
-			if (!gameData.demo.bCtrlcenDestroyed) {
+			if (!gameData.demoData.bCtrlcenDestroyed) {
 				NDPopCtrlCenTriggers ();
-				gameData.demo.bCtrlcenDestroyed = 1;
+				gameData.demoData.bCtrlcenDestroyed = 1;
 				//DoReactorDestroyedStuff (NULL);
 				}
 			break;
@@ -2214,17 +2214,17 @@ while (!bDone) {
 			break;
 
 		case ND_EVENT_START_GUIDED:
-			gameData.demo.bFlyingGuided=1;
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.demo.bFlyingGuided = 0;
+			gameData.demoData.bFlyingGuided=1;
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+				gameData.demoData.bFlyingGuided = 0;
 			break;
 
 		case ND_EVENT_END_GUIDED:
-			gameData.demo.bFlyingGuided=0;
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.demo.bFlyingGuided = 1;
+			gameData.demoData.bFlyingGuided=0;
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+				gameData.demoData.bFlyingGuided = 1;
 			break;
 
 		case ND_EVENT_PALETTE_EFFECT: {
@@ -2246,12 +2246,12 @@ while (!bDone) {
 			old_energy = NDReadByte ();
 			energy = NDReadByte ();
 			CATCH_BAD_READ
-			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+			if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+				 (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
 				LOCALPLAYER.SetEnergy (I2X (energy));
-			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+			else if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (old_energy != 255)
 					LOCALPLAYER.SetEnergy (I2X (old_energy));
 				}
@@ -2265,14 +2265,14 @@ while (!bDone) {
 			old_afterburner = NDReadByte ();
 			afterburner = NDReadByte ();
 			CATCH_BAD_READ
-			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.physics.xAfterburnerCharge = afterburner<<9;
-			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+			if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+				 (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+				gameData.physicsData.xAfterburnerCharge = afterburner<<9;
+			else if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (old_afterburner != 255)
-					gameData.physics.xAfterburnerCharge = old_afterburner<<9;
+					gameData.physicsData.xAfterburnerCharge = old_afterburner<<9;
 				}
 			break;
 		}
@@ -2284,12 +2284,12 @@ while (!bDone) {
 			old_shield = NDReadByte ();
 			shield = NDReadByte ();
 			CATCH_BAD_READ
-			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+			if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+				 (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
 				LOCALPLAYER.SetShield (I2X (shield));
-			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+			else if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (old_shield != 255)
 					LOCALPLAYER.SetShield (I2X (old_shield));
 				}
@@ -2304,33 +2304,33 @@ while (!bDone) {
 			oflags = LOCALPLAYER.flags >> 16;
 			LOCALPLAYER.flags &= 0xffff;
 
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 ((gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD) && (oflags != 0xffff))) {
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 ((gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD) && (oflags != 0xffff))) {
 				if (!(oflags & PLAYER_FLAGS_CLOAKED) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 					LOCALPLAYER.cloakTime = 0;
-					gameData.demo.bPlayersCloaked &= ~ (1 << N_LOCALPLAYER);
+					gameData.demoData.bPlayersCloaked &= ~ (1 << N_LOCALPLAYER);
 					}
 				if ((oflags & PLAYER_FLAGS_CLOAKED) && !(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
-					LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
-					gameData.demo.bPlayersCloaked |= (1 << N_LOCALPLAYER);
+					LOCALPLAYER.cloakTime = gameData.timeData.xGame - (CLOAK_TIME_MAX / 2);
+					gameData.demoData.bPlayersCloaked |= (1 << N_LOCALPLAYER);
 					}
 				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
 					LOCALPLAYER.invulnerableTime = 0;
 				if ((oflags & PLAYER_FLAGS_INVULNERABLE) && !(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
-					LOCALPLAYER.invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
+					LOCALPLAYER.invulnerableTime = gameData.timeData.xGame - (INVULNERABLE_TIME_MAX / 2);
 				LOCALPLAYER.flags = oflags;
 				}
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				if (!(oflags & PLAYER_FLAGS_CLOAKED) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
-					LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
-					gameData.demo.bPlayersCloaked |= (1 << N_LOCALPLAYER);
+					LOCALPLAYER.cloakTime = gameData.timeData.xGame - (CLOAK_TIME_MAX / 2);
+					gameData.demoData.bPlayersCloaked |= (1 << N_LOCALPLAYER);
 					}
 				if ((oflags & PLAYER_FLAGS_CLOAKED) && !(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 					LOCALPLAYER.cloakTime = 0;
-					gameData.demo.bPlayersCloaked &= ~ (1 << N_LOCALPLAYER);
+					gameData.demoData.bPlayersCloaked &= ~ (1 << N_LOCALPLAYER);
 					}
 				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
-					LOCALPLAYER.invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
+					LOCALPLAYER.invulnerableTime = gameData.timeData.xGame - (INVULNERABLE_TIME_MAX / 2);
 				if ((oflags & PLAYER_FLAGS_INVULNERABLE) && !(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
 					LOCALPLAYER.invulnerableTime = 0;
 				}
@@ -2345,20 +2345,20 @@ while (!bDone) {
 			nWeaponType = NDReadByte ();
 			weapon_num = NDReadByte ();
 			old_weapon = NDReadByte ();
-			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+			if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+				 (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				if (nWeaponType == 0)
-					gameData.weapons.nPrimary = (int32_t)weapon_num;
+					gameData.weaponData.nPrimary = (int32_t)weapon_num;
 				else
-					gameData.weapons.nSecondary = (int32_t)weapon_num;
+					gameData.weaponData.nSecondary = (int32_t)weapon_num;
 				}
-			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+			else if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (nWeaponType == 0)
-					gameData.weapons.nPrimary = (int32_t)old_weapon;
+					gameData.weaponData.nPrimary = (int32_t)old_weapon;
 				else
-					gameData.weapons.nSecondary = (int32_t)old_weapon;
+					gameData.weaponData.nSecondary = (int32_t)old_weapon;
 				}
 			}
 			break;
@@ -2376,7 +2376,7 @@ while (!bDone) {
 			nSegment = NDReadShort ();
 			nSide = NDReadByte ();
 			NDReadVector (pnt);
-			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED)
 				SEGMENT (nSegment)->BlowupTexture (nSide, pnt, &dummy, 0);
 			}
 			break;
@@ -2391,14 +2391,14 @@ while (!bDone) {
 			break;
 
 		case ND_EVENT_LETTERBOX:
-			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+			if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+				 (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				saved_letter_cockpit = gameStates.render.cockpit.nType;
 				cockpit->Activate (CM_LETTERBOX);
 				}
-			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+			else if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
 				cockpit->Activate (saved_letter_cockpit);
 			break;
 
@@ -2411,16 +2411,16 @@ while (!bDone) {
 			break;
 
 		case ND_EVENT_REARVIEW:
-			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+			if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+				 (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				saved_rearview_cockpit = gameStates.render.cockpit.nType;
 				if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
 					cockpit->Activate (CM_REAR_VIEW);
 				gameStates.render.bRearView=1;
 				}
-			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+			else if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (saved_rearview_cockpit == CM_REAR_VIEW)     // hack to be sure we get a good cockpit on restore
 					saved_rearview_cockpit = CM_FULL_COCKPIT;
 				cockpit->Activate (saved_rearview_cockpit);
@@ -2429,29 +2429,29 @@ while (!bDone) {
 			break;
 
 		case ND_EVENT_RESTORE_COCKPIT:
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				saved_letter_cockpit = gameStates.render.cockpit.nType;
 				cockpit->Activate (CM_LETTERBOX);
 				}
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
 				cockpit->Activate (saved_letter_cockpit);
 			break;
 
 
 		case ND_EVENT_RESTORE_REARVIEW:
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				saved_rearview_cockpit = gameStates.render.cockpit.nType;
 				if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
 					cockpit->Activate (CM_REAR_VIEW);
 				gameStates.render.bRearView=1;
 				}
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				if (saved_rearview_cockpit == CM_REAR_VIEW)     // hack to be sure we get a good cockpit on restore
 					saved_rearview_cockpit = CM_FULL_COCKPIT;
 				cockpit->Activate (saved_rearview_cockpit);
@@ -2469,17 +2469,17 @@ while (!bDone) {
 			nSide = NDReadByte ();
 			nConnSeg = NDReadShort ();
 			nConnSide = NDReadByte ();
-			if (gameData.demo.nVersion < 18)
+			if (gameData.demoData.nVersion < 18)
 				tmap = NDReadShort ();
 			else {
 				nAnim = NDReadShort ();
 				nFrame = NDReadShort ();
 				}
 			if ((nConnSeg >= 0) &&
-				 (gameData.demo.nVcrState != ND_STATE_PAUSED) && 
-				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
-				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
-				if (gameData.demo.nVersion >= 18)
+				 (gameData.demoData.nVcrState != ND_STATE_PAUSED) && 
+				 (gameData.demoData.nVcrState != ND_STATE_REWINDING) &&
+				 (gameData.demoData.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
+				if (gameData.demoData.nVersion >= 18)
 					SEGMENT (nSegment)->SetTexture (nSide, SEGMENT (nConnSeg), nConnSide, nAnim, nFrame);
 				else
 					SEGMENT (nSegment)->m_sides [nSide].m_nBaseTex = SEGMENT (nConnSeg)->m_sides [nConnSide].m_nBaseTex = tmap;
@@ -2496,17 +2496,17 @@ while (!bDone) {
 			nSide = NDReadByte ();
 			nConnSeg = NDReadShort ();
 			nConnSide = NDReadByte ();
-			if (gameData.demo.nVersion < 18)
+			if (gameData.demoData.nVersion < 18)
 				tmap = NDReadShort ();
 			else {
 				nAnim = NDReadShort ();
 				nFrame = NDReadShort ();
 				}
-			if ((gameData.demo.nVcrState != ND_STATE_PAUSED) &&
-				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
-				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
+			if ((gameData.demoData.nVcrState != ND_STATE_PAUSED) &&
+				 (gameData.demoData.nVcrState != ND_STATE_REWINDING) &&
+				 (gameData.demoData.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
 				Assert (tmap!=0 && SEGMENT (nSegment)->m_sides [nSide].m_nOvlTex!=0);
-				if (gameData.demo.nVersion >= 18)
+				if (gameData.demoData.nVersion >= 18)
 					SEGMENT (nSegment)->SetTexture (nSide, SEGMENT (nConnSeg), nConnSide, nAnim, nFrame);
 				else {
 					SEGMENT (nSegment)->m_sides [nSide].m_nOvlTex = tmap & 0x3fff;
@@ -2522,48 +2522,48 @@ while (!bDone) {
 
 		case ND_EVENT_MULTI_CLOAK: {
 			int8_t nPlayer = NDReadByte ();
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				PLAYER (nPlayer).flags &= ~PLAYER_FLAGS_CLOAKED;
 				PLAYER (nPlayer).cloakTime = 0;
-				gameData.demo.bPlayersCloaked &= ~(1 << nPlayer);
+				gameData.demoData.bPlayersCloaked &= ~(1 << nPlayer);
 				}
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				PLAYER (nPlayer).flags |= PLAYER_FLAGS_CLOAKED;
-				PLAYER (nPlayer).cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
-				gameData.demo.bPlayersCloaked |= (1 << nPlayer);
+				PLAYER (nPlayer).cloakTime = gameData.timeData.xGame  - (CLOAK_TIME_MAX / 2);
+				gameData.demoData.bPlayersCloaked |= (1 << nPlayer);
 				}
 			}
 			break;
 
 		case ND_EVENT_MULTI_DECLOAK: {
 			int8_t nPlayer = NDReadByte ();
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				PLAYER (nPlayer).flags |= PLAYER_FLAGS_CLOAKED;
-				PLAYER (nPlayer).cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
-				gameData.demo.bPlayersCloaked |= (1 << nPlayer);
+				PLAYER (nPlayer).cloakTime = gameData.timeData.xGame  - (CLOAK_TIME_MAX / 2);
+				gameData.demoData.bPlayersCloaked |= (1 << nPlayer);
 				}
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				PLAYER (nPlayer).flags &= ~PLAYER_FLAGS_CLOAKED;
 				PLAYER (nPlayer).cloakTime = 0;
-				gameData.demo.bPlayersCloaked &= ~(1 << nPlayer);
+				gameData.demoData.bPlayersCloaked &= ~(1 << nPlayer);
 				}
 			}
 			break;
 
 		case ND_EVENT_MULTI_DEATH: {
 			int8_t nPlayer = NDReadByte ();
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
 				PLAYER (nPlayer).netKilledTotal--;
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
 				PLAYER (nPlayer).netKilledTotal++;
 			}
 			break;
@@ -2571,22 +2571,22 @@ while (!bDone) {
 		case ND_EVENT_MULTI_KILL: {
 			int8_t nPlayer = NDReadByte ();
 			int8_t kill = NDReadByte ();
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				PLAYER (nPlayer).netKillsTotal -= kill;
-				if (gameData.demo.nGameMode & GM_TEAM)
+				if (gameData.demoData.nGameMode & GM_TEAM)
 					gameData.multigame.score.nTeam [GetTeam (nPlayer)] -= kill;
 				}
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				PLAYER (nPlayer).netKillsTotal += kill;
-				if (gameData.demo.nGameMode & GM_TEAM)
+				if (gameData.demoData.nGameMode & GM_TEAM)
 					gameData.multigame.score.nTeam [GetTeam (nPlayer)] += kill;
 				}
-			gameData.app.SetGameMode (gameData.demo.nGameMode);
+			gameData.appData.SetGameMode (gameData.demoData.nGameMode);
 			MultiSortKillList ();
-			gameData.app.SetGameMode (GM_NORMAL);
+			gameData.appData.SetGameMode (GM_NORMAL);
 			}
 			break;
 
@@ -2603,8 +2603,8 @@ while (!bDone) {
 				killsTotal = NDReadInt ();
 				}
 			NDReadString (pszNewCallsign);
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				CONNECT (nPlayer, CONNECT_DISCONNECTED);
 				if (!nNewPlayer) {
 					memcpy (PLAYER (nPlayer).callsign, old_callsign, CALLSIGN_LEN+1);
@@ -2614,9 +2614,9 @@ while (!bDone) {
 				else
 					N_PLAYERS--;
 				}
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				CONNECT (nPlayer, CONNECT_PLAYING);
 				PLAYER (nPlayer).netKillsTotal = 0;
 				PLAYER (nPlayer).netKilledTotal = 0;
@@ -2629,24 +2629,24 @@ while (!bDone) {
 
 		case ND_EVENT_MULTI_RECONNECT: {
 			int8_t nPlayer = NDReadByte ();
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
 				CONNECT (nPlayer, CONNECT_DISCONNECTED);
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
 				CONNECT (nPlayer, CONNECT_PLAYING);
 			}
 			break;
 
 		case ND_EVENT_MULTI_DISCONNECT: {
 			int8_t nPlayer = NDReadByte ();
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
 				CONNECT (nPlayer, CONNECT_PLAYING);
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
 				CONNECT (nPlayer, CONNECT_DISCONNECTED);
 			}
 			break;
@@ -2654,27 +2654,27 @@ while (!bDone) {
 		case ND_EVENT_MULTI_SCORE: {
 			int8_t nPlayer = NDReadByte ();
 			int32_t score = NDReadInt ();
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
 				PLAYER (nPlayer).score -= score;
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
 				PLAYER (nPlayer).score += score;
-			gameData.app.SetGameMode (gameData.demo.nGameMode);
+			gameData.appData.SetGameMode (gameData.demoData.nGameMode);
 			MultiSortKillList ();
-			gameData.app.SetGameMode (GM_NORMAL);
+			gameData.appData.SetGameMode (GM_NORMAL);
 			}
 			break;
 
 		case ND_EVENT_PLAYER_SCORE: {
 			int32_t score = NDReadInt ();
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
 				LOCALPLAYER.score -= score;
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
 				LOCALPLAYER.score += score;
 			}
 			break;
@@ -2682,34 +2682,34 @@ while (!bDone) {
 		case ND_EVENT_PRIMARY_AMMO: {
 			int16_t nOldAmmo = NDReadShort ();
 			int16_t nNewAmmo = NDReadShort ();
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] = nOldAmmo;
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] = nNewAmmo;
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+				LOCALPLAYER.primaryAmmo [gameData.weaponData.nPrimary] = nOldAmmo;
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+				LOCALPLAYER.primaryAmmo [gameData.weaponData.nPrimary] = nNewAmmo;
 			}
 			break;
 
 		case ND_EVENT_SECONDARY_AMMO: {
 			int16_t nOldAmmo = NDReadShort ();
 			int16_t nNewAmmo = NDReadShort ();
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] = nOldAmmo;
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] = nNewAmmo;
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+				LOCALPLAYER.secondaryAmmo [gameData.weaponData.nSecondary] = nOldAmmo;
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+				LOCALPLAYER.secondaryAmmo [gameData.weaponData.nSecondary] = nNewAmmo;
 			}
 			break;
 
 		case ND_EVENT_DOOR_OPENING: {
 			int16_t nSegment = NDReadShort ();
 			uint8_t nSide = NDReadByte ();
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				int32_t anim_num;
 				int32_t nConnSide;
 				CSegment *pSeg, *pOppSeg;
@@ -2735,14 +2735,14 @@ while (!bDone) {
 
 			oldLevel = (int8_t) NDReadByte ();
 			newLevel = (int8_t) NDReadByte ();
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				LOCALPLAYER.ComputeLaserLevels (oldLevel);
 				cockpit->UpdateLaserWeaponInfo ();
 				}
-			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
-						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
-						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				LOCALPLAYER.ComputeLaserLevels (newLevel);
 				cockpit->UpdateLaserWeaponInfo ();
 				}
@@ -2790,11 +2790,11 @@ while (!bDone) {
 
 			newLevel = NDReadByte ();
 			oldLevel = NDReadByte ();
-			if (gameData.demo.nVcrState == ND_STATE_PAUSED)
+			if (gameData.demoData.nVcrState == ND_STATE_PAUSED)
 				break;
 			StopTime ();
-			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
 				loadedLevel = oldLevel;
 			else {
 				loadedLevel = newLevel;
@@ -2811,12 +2811,12 @@ while (!bDone) {
 			if (LoadLevel ((int32_t) loadedLevel, true, false) <= 0)
 				return -1;
 			meshBuilder.ComputeFaceKeys ();
-			gameData.demo.bCtrlcenDestroyed = 0;
+			gameData.demoData.bCtrlcenDestroyed = 0;
 			if (bJustStartedPlayback) {
 				gameData.wallData.nWalls = NDReadInt ();
 				for (i = 0; i < gameData.wallData.nWalls; i++) {   // restore the walls
 					WALL (i)->nType = NDReadByte ();
-					if (gameData.demo.nVersion < 19)
+					if (gameData.demoData.nVersion < 19)
 						WALL (i)->flags = uint16_t (NDReadByte ());
 					else
 						WALL (i)->flags = uint16_t (NDReadShort ());
@@ -2828,7 +2828,7 @@ while (!bDone) {
 					pSeg->m_sides [nSide].m_nOvlTex = nTexture & 0x3fff;
 					pSeg->m_sides [nSide].m_nOvlOrient = (nTexture >> 14) & 3;
 					}
-				if (gameData.demo.nGameMode & GM_CAPTURE)
+				if (gameData.demoData.nGameMode & GM_CAPTURE)
 					MultiApplyGoalTextures ();
 				bJustStartedPlayback = 0;
 				}
@@ -2840,15 +2840,15 @@ while (!bDone) {
 		case ND_EVENT_EOF:
 			bDone = -1;
 			ndInFile.Seek (-1, SEEK_CUR);        // get back to the EOF marker
-			gameData.demo.bEof = 1;
-			gameData.demo.nFrameCount++;
+			gameData.demoData.bEof = 1;
+			gameData.demoData.nFrameCount++;
 			break;
 
 		default:
 			bDone = -1;
 			ndInFile.Seek (-1, SEEK_CUR);        // get back to the EOF marker
-			gameData.demo.bEof = 1;
-			gameData.demo.nFrameCount++;
+			gameData.demoData.bEof = 1;
+			gameData.demoData.nFrameCount++;
 			break;
 		}
 	}
@@ -2864,15 +2864,15 @@ return bDone;
 void NDGotoBeginning ()
 {
 ndInFile.Seek (0, SEEK_SET);
-gameData.demo.nVcrState = ND_STATE_PLAYBACK;
+gameData.demoData.nVcrState = ND_STATE_PLAYBACK;
 if (NDReadDemoStart (0))
 	NDStopPlayback ();
 if (NDReadFrameInfo () == -1)
 	NDStopPlayback ();
 if (NDReadFrameInfo () == -1)
 	NDStopPlayback ();
-gameData.demo.nVcrState = ND_STATE_PAUSED;
-gameData.demo.bEof = 0;
+gameData.demoData.nVcrState = ND_STATE_PAUSED;
+gameData.demoData.bEof = 0;
 }
 
 //	-----------------------------------------------------------------------------
@@ -2899,8 +2899,8 @@ ndInFile.Seek (-2 - byteCount, SEEK_CUR);
 
 nFrameLength = NDReadShort ();
 loc = (int32_t) ndInFile.Tell ();
-if (gameData.demo.nGameMode & GM_MULTI)
-	gameData.demo.bPlayersCloaked = NDReadByte ();
+if (gameData.demoData.nGameMode & GM_MULTI)
+	gameData.demoData.bPlayersCloaked = NDReadByte ();
 else
 	 NDReadByte ();
 NDReadByte ();
@@ -2912,13 +2912,13 @@ LOCALPLAYER.SetEnergy (I2X (energy));
 LOCALPLAYER.SetShield (I2X (shield));
 LOCALPLAYER.flags = NDReadInt ();
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
-	LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
-	gameData.demo.bPlayersCloaked |= (1 << N_LOCALPLAYER);
+	LOCALPLAYER.cloakTime = gameData.timeData.xGame - (CLOAK_TIME_MAX / 2);
+	gameData.demoData.bPlayersCloaked |= (1 << N_LOCALPLAYER);
 	}
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
-	LOCALPLAYER.invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
-gameData.weapons.nPrimary = NDReadByte ();
-gameData.weapons.nSecondary = NDReadByte ();
+	LOCALPLAYER.invulnerableTime = gameData.timeData.xGame - (INVULNERABLE_TIME_MAX / 2);
+gameData.weaponData.nPrimary = NDReadByte ();
+gameData.weaponData.nSecondary = NDReadByte ();
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 	LOCALPLAYER.primaryAmmo [i] = NDReadShort ();
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
@@ -2928,7 +2928,7 @@ if (laserLevel != LOCALPLAYER.LaserLevel ()) {
 	LOCALPLAYER.ComputeLaserLevels (laserLevel);
 	cockpit->UpdateLaserWeaponInfo ();
 	}
-if (gameData.demo.nGameMode & GM_MULTI) {
+if (gameData.demoData.nGameMode & GM_MULTI) {
 	c = NDReadByte ();
 	N_PLAYERS = (int32_t)c;
 	// see newdemo_read_start_demo for explanation of
@@ -2948,12 +2948,12 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 else
 	LOCALPLAYER.score = NDReadInt ();
 ndInFile.Seek (loc - nFrameLength, SEEK_SET);
-gameData.demo.nFrameCount = NDReadInt ();            // get the frame count
-gameData.demo.nFrameCount--;
+gameData.demoData.nFrameCount = NDReadInt ();            // get the frame count
+gameData.demoData.nFrameCount--;
 ndInFile.Seek (4, SEEK_CUR);
-gameData.demo.nVcrState = ND_STATE_PLAYBACK;
+gameData.demoData.nVcrState = ND_STATE_PLAYBACK;
 NDReadFrameInfo ();           // then the frame information
-gameData.demo.nVcrState = ND_STATE_PAUSED;
+gameData.demoData.nVcrState = ND_STATE_PAUSED;
 return;
 }
 
@@ -2976,12 +2976,12 @@ void NDBackFrames (int32_t nFrames)
 
 for (i = nFrames; i; i--) {
 	NDBackOneFrame ();
-	if (!gameData.demo.bEof && (NDReadFrameInfo () == -1)) {
+	if (!gameData.demoData.bEof && (NDReadFrameInfo () == -1)) {
 		NDStopPlayback ();
 		return;
 		}
-	if (gameData.demo.bEof)
-		gameData.demo.bEof = 0;
+	if (gameData.demoData.bEof)
+		gameData.demoData.bEof = 0;
 	NDBackOneFrame ();
 	}
 }
@@ -2993,7 +2993,7 @@ for (i = nFrames; i; i--) {
  *  stored in the gameData.objData.pViewer CObject.  Save this position, and read the next
  *  frame to get all OBJECTS read in.  Calculate the delta playback and
  *  the delta recording frame times between the two frames, then intepolate
- *  the viewers position accordingly.  gameData.demo.xRecordedTime is the time that it
+ *  the viewers position accordingly.  gameData.demoData.xRecordedTime is the time that it
  *  took the recording to render the frame that we are currently looking
  *  at.
 */
@@ -3020,7 +3020,7 @@ memcpy (curObjs, OBJECTS.Buffer (), OBJECTS.Size ());
 for (i = 0; i <= nCurObjs; i++)
 	memcpy (&(curObjs [i]), OBJECT (i), sizeof (CObject));
 #endif
-gameData.demo.nVcrState = ND_STATE_PAUSED;
+gameData.demoData.nVcrState = ND_STATE_PAUSED;
 if (NDReadFrameInfo () == -1) {
 	NDStopPlayback ();
 	return;
@@ -3082,7 +3082,7 @@ NDBackFrames (1);
 NDBackFrames (1);
 if (NDReadFrameInfo () == -1)
 	NDStopPlayback ();
-gameData.demo.nVcrState = ND_STATE_PLAYBACK;
+gameData.demoData.nVcrState = ND_STATE_PLAYBACK;
 OBJECTS = curObjs;
 gameData.objData.nLastObject [0] = nCurObjs;
 }
@@ -3097,45 +3097,45 @@ void NDPlayBackOneFrame (void)
 
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 for (i = 0; i < MAX_PLAYERS; i++)
-	if (gameData.demo.bPlayersCloaked &(1 << i))
-		PLAYER (i).cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
+	if (gameData.demoData.bPlayersCloaked &(1 << i))
+		PLAYER (i).cloakTime = gameData.timeData.xGame - (CLOAK_TIME_MAX / 2);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
-	LOCALPLAYER.invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
-if (gameData.demo.nVcrState == ND_STATE_PAUSED)       // render a frame or not
+	LOCALPLAYER.invulnerableTime = gameData.timeData.xGame - (INVULNERABLE_TIME_MAX / 2);
+if (gameData.demoData.nVcrState == ND_STATE_PAUSED)       // render a frame or not
 	return;
-if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
-	DoJasonInterpolate (gameData.demo.xRecordedTime);
-gameData.reactor.bDestroyed = 0;
-gameData.reactor.countdown.nSecsLeft = -1;
+if (gameData.demoData.nVcrState == ND_STATE_PLAYBACK)
+	DoJasonInterpolate (gameData.demoData.xRecordedTime);
+gameData.reactorData.bDestroyed = 0;
+gameData.reactorData.countdown.nSecsLeft = -1;
 paletteManager.StopEffect ();       //clear flash
-if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-	 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+	 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 	level = missionManager.nCurrentLevel;
-	if (gameData.demo.nFrameCount == 0)
+	if (gameData.demoData.nFrameCount == 0)
 		return;
-	else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) && (gameData.demo.nFrameCount < 10)) {
+	else if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) && (gameData.demoData.nFrameCount < 10)) {
 		NDGotoBeginning ();
 		return;
 		}
-	nFramesBack = (gameData.demo.nVcrState == ND_STATE_REWINDING) ? 10 : 1;
-	if (gameData.demo.bEof) {
+	nFramesBack = (gameData.demoData.nVcrState == ND_STATE_REWINDING) ? 10 : 1;
+	if (gameData.demoData.bEof) {
 		ndInFile.Seek (11, SEEK_CUR);
 		}
 	NDBackFrames (nFramesBack);
 	if (level != missionManager.nCurrentLevel)
 		NDPopCtrlCenTriggers ();
-	if (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD) {
+	if (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD) {
 		if (level != missionManager.nCurrentLevel)
 			NDBackFrames (1);
-		gameData.demo.nVcrState = ND_STATE_PAUSED;
+		gameData.demoData.nVcrState = ND_STATE_PAUSED;
 		}
 	}
-else if (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) {
-	if (!gameData.demo.bEof) {
+else if (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) {
+	if (!gameData.demoData.bEof) {
 		for (i = 0; i < 10; i++) {
 			if (NDReadFrameInfo () == -1) {
-				if (gameData.demo.bEof)
-					gameData.demo.nVcrState = ND_STATE_PAUSED;
+				if (gameData.demoData.bEof)
+					gameData.demoData.nVcrState = ND_STATE_PAUSED;
 				else
 					NDStopPlayback ();
 				break;
@@ -3143,51 +3143,51 @@ else if (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) {
 			}
 		}
 	else
-		gameData.demo.nVcrState = ND_STATE_PAUSED;
+		gameData.demoData.nVcrState = ND_STATE_PAUSED;
 	}
-else if (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD) {
-	if (!gameData.demo.bEof) {
+else if (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD) {
+	if (!gameData.demoData.bEof) {
 		level = missionManager.nCurrentLevel;
 		if (NDReadFrameInfo () == -1) {
-			if (!gameData.demo.bEof)
+			if (!gameData.demoData.bEof)
 				NDStopPlayback ();
 			}
 		if (level != missionManager.nCurrentLevel) {
 			if (NDReadFrameInfo () == -1) {
-				if (!gameData.demo.bEof)
+				if (!gameData.demoData.bEof)
 					NDStopPlayback ();
 				}
 			}
-		gameData.demo.nVcrState = ND_STATE_PAUSED;
+		gameData.demoData.nVcrState = ND_STATE_PAUSED;
 		} 
 	else
-		gameData.demo.nVcrState = ND_STATE_PAUSED;
+		gameData.demoData.nVcrState = ND_STATE_PAUSED;
 	}
 else {
 	//  First, uptate the total playback time to date.  Then we check to see
 	//  if we need to change the playback style to interpolate frames or
 	//  skip frames based on where the playback time is relative to the
 	//  recorded time.
-	if (gameData.demo.nFrameCount <= 0)
-		gameData.demo.xPlaybackTotal = gameData.demo.xRecordedTotal;      // baseline total playback time
+	if (gameData.demoData.nFrameCount <= 0)
+		gameData.demoData.xPlaybackTotal = gameData.demoData.xRecordedTotal;      // baseline total playback time
 	else
-		gameData.demo.xPlaybackTotal += gameData.time.xFrame;
-	if ((gameData.demo.nPlaybackStyle == NORMAL_PLAYBACK) && (gameData.demo.nFrameCount > 10))
-		if ((gameData.demo.xPlaybackTotal * INTERPOL_FACTOR) < gameData.demo.xRecordedTotal) {
-			gameData.demo.nPlaybackStyle = INTERPOLATE_PLAYBACK;
-			gameData.demo.xPlaybackTotal = gameData.demo.xRecordedTotal + gameData.time.xFrame;  // baseline playback time
-			base_interpolTime = gameData.demo.xRecordedTotal;
-			d_recorded = gameData.demo.xRecordedTime;                      // baseline delta recorded
+		gameData.demoData.xPlaybackTotal += gameData.timeData.xFrame;
+	if ((gameData.demoData.nPlaybackStyle == NORMAL_PLAYBACK) && (gameData.demoData.nFrameCount > 10))
+		if ((gameData.demoData.xPlaybackTotal * INTERPOL_FACTOR) < gameData.demoData.xRecordedTotal) {
+			gameData.demoData.nPlaybackStyle = INTERPOLATE_PLAYBACK;
+			gameData.demoData.xPlaybackTotal = gameData.demoData.xRecordedTotal + gameData.timeData.xFrame;  // baseline playback time
+			base_interpolTime = gameData.demoData.xRecordedTotal;
+			d_recorded = gameData.demoData.xRecordedTime;                      // baseline delta recorded
 			}
-	if ((gameData.demo.nPlaybackStyle == NORMAL_PLAYBACK) && (gameData.demo.nFrameCount > 10))
-		if (gameData.demo.xPlaybackTotal > gameData.demo.xRecordedTotal)
-			gameData.demo.nPlaybackStyle = SKIP_PLAYBACK;
-	if ((gameData.demo.nPlaybackStyle == INTERPOLATE_PLAYBACK) && gameData.demo.bInterpolate) {
+	if ((gameData.demoData.nPlaybackStyle == NORMAL_PLAYBACK) && (gameData.demoData.nFrameCount > 10))
+		if (gameData.demoData.xPlaybackTotal > gameData.demoData.xRecordedTotal)
+			gameData.demoData.nPlaybackStyle = SKIP_PLAYBACK;
+	if ((gameData.demoData.nPlaybackStyle == INTERPOLATE_PLAYBACK) && gameData.demoData.bInterpolate) {
 		fix d_play = 0;
 
-		if (gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal < gameData.time.xFrame) {
-			d_recorded = gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal;
-			while (gameData.demo.xRecordedTotal - gameData.demo.xPlaybackTotal < gameData.time.xFrame) {
+		if (gameData.demoData.xRecordedTotal - gameData.demoData.xPlaybackTotal < gameData.timeData.xFrame) {
+			d_recorded = gameData.demoData.xRecordedTotal - gameData.demoData.xPlaybackTotal;
+			while (gameData.demoData.xRecordedTotal - gameData.demoData.xPlaybackTotal < gameData.timeData.xFrame) {
 				CObject *curObjs, *pObj;
 				int32_t i, j, nObjects, nLevel, nSig;
 
@@ -3224,11 +3224,11 @@ else {
 						}
 					}
 				delete[] curObjs;
-				d_recorded += gameData.demo.xRecordedTime;
-				base_interpolTime = gameData.demo.xPlaybackTotal - gameData.time.xFrame;
+				d_recorded += gameData.demoData.xRecordedTime;
+				base_interpolTime = gameData.demoData.xPlaybackTotal - gameData.timeData.xFrame;
 				}
 			}
-		d_play = gameData.demo.xPlaybackTotal - base_interpolTime;
+		d_play = gameData.demoData.xPlaybackTotal - base_interpolTime;
 		NDInterpolateFrame (d_play, d_recorded);
 		return;
 		}
@@ -3237,8 +3237,8 @@ else {
 			NDStopPlayback ();
 			return;
 			}
-		if (gameData.demo.nPlaybackStyle == SKIP_PLAYBACK) {
-			while (gameData.demo.xPlaybackTotal > gameData.demo.xRecordedTotal) {
+		if (gameData.demoData.nPlaybackStyle == SKIP_PLAYBACK) {
+			while (gameData.demoData.xPlaybackTotal > gameData.demoData.xRecordedTotal) {
 				if (NDReadFrameInfo () == -1) {
 					NDStopPlayback ();
 					return;
@@ -3254,17 +3254,17 @@ else {
 void NDStartRecording (void)
 {
 // free disk space shouldn't be an issue these days ...
-gameData.demo.nSize = FreeDiskSpace (gameFolders.user.szDemos) - 1000000;
-if (gameData.demo.nSize <= 1000000) {
+gameData.demoData.nSize = FreeDiskSpace (gameFolders.user.szDemos) - 1000000;
+if (gameData.demoData.nSize <= 1000000) {
 	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_DEMO_NO_SPACE);
 	return;
 	}
 
 InitDemoData ();
-gameData.demo.nWritten = 0;
-gameData.demo.bNoSpace = 0;
-gameData.demo.xStartTime = gameData.time.xGame;
-gameData.demo.nState = ND_STATE_RECORDING;
+gameData.demoData.nWritten = 0;
+gameData.demoData.bNoSpace = 0;
+gameData.demoData.xStartTime = gameData.timeData.xGame;
+gameData.demoData.nState = ND_STATE_RECORDING;
 ndOutFile.Open (DEMO_FILENAME, gameFolders.user.szDemos, "wb", 0);
 #ifndef _WIN32_WCE
 if (!ndOutFile.File () && (errno == ENOENT)) {   //dir doesn't exist?
@@ -3276,7 +3276,7 @@ if (&ndOutFile.File ()) {                      //dir doesn't exist and no errno 
 	}
 if (!ndOutFile.File ()) {
 	TextBox (NULL, BG_STANDARD, 1, TXT_OK, "Cannot open demo temp file");
-	gameData.demo.nState = ND_STATE_NORMAL;
+	gameData.demoData.nState = ND_STATE_NORMAL;
 	}
 else
 	NDRecordStartDemo ();
@@ -3291,8 +3291,8 @@ void NDFinishRecording (void)
 	int32_t l;
 
 NDWriteByte (ND_EVENT_EOF);
-NDWriteShort ((int16_t) (gameData.demo.nFrameBytesWritten - 1));
-if (gameData.demo.nGameMode & GM_MULTI) {
+NDWriteShort ((int16_t) (gameData.demoData.nFrameBytesWritten - 1));
+if (gameData.demoData.nGameMode & GM_MULTI) {
 	for (l = 0; l < N_PLAYERS; l++) {
 		if (PLAYER (l).flags & PLAYER_FLAGS_CLOAKED)
 			cloaked |= (1 << l);
@@ -3305,12 +3305,12 @@ else {
 	}
 NDWriteShort (ND_EVENT_EOF);
 NDWriteInt (ND_EVENT_EOF);
-byteCount += 10;       // from gameData.demo.nFrameBytesWritten
+byteCount += 10;       // from gameData.demoData.nFrameBytesWritten
 NDWriteByte ((int8_t) (X2IR (LOCALPLAYER.Energy ())));
 NDWriteByte ((int8_t) (X2IR (LOCALPLAYER.Shield ())));
 NDWriteInt (LOCALPLAYER.flags);        // be sure players flags are set
-NDWriteByte ((int8_t)gameData.weapons.nPrimary);
-NDWriteByte ((int8_t)gameData.weapons.nSecondary);
+NDWriteByte ((int8_t)gameData.weaponData.nPrimary);
+NDWriteByte ((int8_t)gameData.weaponData.nSecondary);
 byteCount += 8;
 for (l = 0; l < MAX_PRIMARY_WEAPONS; l++)
 	NDWriteShort ((int16_t)LOCALPLAYER.primaryAmmo [l]);
@@ -3319,7 +3319,7 @@ for (l = 0; l < MAX_SECONDARY_WEAPONS; l++)
 byteCount += (sizeof (int16_t) * (MAX_PRIMARY_WEAPONS + MAX_SECONDARY_WEAPONS));
 NDWriteByte (LOCALPLAYER.LaserLevel ());
 byteCount++;
-if (gameData.demo.nGameMode & GM_MULTI) {
+if (gameData.demoData.nGameMode & GM_MULTI) {
 	NDWriteByte ((int8_t)N_PLAYERS);
 	byteCount++;
 	for (l = 0; l < N_PLAYERS; l++) {
@@ -3344,7 +3344,7 @@ else {
 NDWriteShort (byteCount);
 NDWriteByte ((int8_t) missionManager.nCurrentLevel);
 NDWriteByte (ND_EVENT_EOF);
-gameData.demo.nState = ND_STATE_NORMAL;
+gameData.demoData.nState = ND_STATE_NORMAL;
 ndOutFile.Close ();
 }
 
@@ -3389,7 +3389,7 @@ m.AddInput ("", szSaveName, 8);
 
 do {
 	do {
-		nChoice = m.Menu (NULL, demoMenuTitles [gameData.demo.bNoSpace]);
+		nChoice = m.Menu (NULL, demoMenuTitles [gameData.demoData.bNoSpace]);
 
 		if (nChoice != 0) {
 			CFile::Delete (DEMO_FILENAME, gameFolders.user.szDemos);
@@ -3417,7 +3417,7 @@ do {
 
 	} while (!*szSaveName);
 
-gameData.demo.nState = ND_STATE_NORMAL;
+gameData.demoData.nState = ND_STATE_NORMAL;
 if (CFile::Exist (szFullSaveName, gameFolders.user.szDemos, 0))
 	CFile::Delete (szFullSaveName, gameFolders.user.szDemos);
 CFile::Rename (DEMO_FILENAME, szFullSaveName, gameFolders.user.szDemos);
@@ -3465,8 +3465,8 @@ void NDStartPlayback (char * filename)
 ChangePlayerNumTo (0);
 *filename2 = '\0';
 InitDemoData ();
-gameData.demo.bFirstTimePlayback = 1;
-gameData.demo.xJasonPlaybackTotal = 0;
+gameData.demoData.bFirstTimePlayback = 1;
+gameData.demoData.xJasonPlaybackTotal = 0;
 if (!filename) {
 	// Randomly pick a filename
 	int32_t nFiles = 0, nRandFiles;
@@ -3523,7 +3523,7 @@ else
 	ndOutFile.File () = NULL;
 bNDBadRead = 0;
 ChangePlayerNumTo (0);                 // force playernum to 0
-strncpy (gameData.demo.callSignSave, LOCALPLAYER.callsign, CALLSIGN_LEN);
+strncpy (gameData.demoData.callSignSave, LOCALPLAYER.callsign, CALLSIGN_LEN);
 gameData.SetViewer (gameData.objData.pConsole = OBJECTS.Buffer ());   // play properly as if console player
 if (NDReadDemoStart (bRandom)) {
 	ndInFile.Close ();
@@ -3534,16 +3534,16 @@ if (gameOpts->demo.bRevertFormat && ndOutFile.File () && (bRevertFormat < 0)) {
 	ndOutFile.Close ();
 	CFile::Delete (filename2, gameFolders.user.szDemos);
 	}
-gameData.app.SetGameMode (GM_NORMAL);
-gameData.demo.nState = ND_STATE_PLAYBACK;
-gameData.demo.nVcrState = ND_STATE_PLAYBACK;
-gameData.demo.nOldCockpit = gameStates.render.cockpit.nType;
-gameData.demo.nSize = (int32_t) ndInFile.Length ();
+gameData.appData.SetGameMode (GM_NORMAL);
+gameData.demoData.nState = ND_STATE_PLAYBACK;
+gameData.demoData.nVcrState = ND_STATE_PLAYBACK;
+gameData.demoData.nOldCockpit = gameStates.render.cockpit.nType;
+gameData.demoData.nSize = (int32_t) ndInFile.Length ();
 bNDBadRead = 0;
-gameData.demo.bEof = 0;
-gameData.demo.nFrameCount = 0;
-gameData.demo.bPlayersCloaked = 0;
-gameData.demo.nPlaybackStyle = NORMAL_PLAYBACK;
+gameData.demoData.bEof = 0;
+gameData.demoData.nFrameCount = 0;
+gameData.demoData.bPlayersCloaked = 0;
+gameData.demoData.nPlaybackStyle = NORMAL_PLAYBACK;
 SetFunctionMode (FMODE_GAME);
 gameStates.render.cockpit.n3DView [0] = CV_NONE;       //turn off 3d views on cockpit
 gameStates.render.cockpit.n3DView [1] = CV_NONE;       //turn off 3d views on cockpit
@@ -3563,7 +3563,7 @@ if (bRevertFormat > 0) {
 	if (p) {
 		bRevertFormat = 0;
 		NDRead (p, h, 1);
-		NDWriteShort ((int16_t) (gameData.demo.nFrameBytesWritten - 1));
+		NDWriteShort ((int16_t) (gameData.demoData.nFrameBytesWritten - 1));
 		NDWrite (p + 3, h - 3, 1);
 		delete[] p;
 		}
@@ -3571,11 +3571,11 @@ if (bRevertFormat > 0) {
 	bRevertFormat = -1;
 	}
 ndInFile.Close ();
-gameData.demo.nState = ND_STATE_NORMAL;
+gameData.demoData.nState = ND_STATE_NORMAL;
 ChangePlayerNumTo (0);             //this is reality
-strncpy (LOCALPLAYER.callsign, gameData.demo.callSignSave, CALLSIGN_LEN);
-cockpit->Activate (gameData.demo.nOldCockpit);
-gameData.app.SetGameMode (GM_GAME_OVER);
+strncpy (LOCALPLAYER.callsign, gameData.demoData.callSignSave, CALLSIGN_LEN);
+cockpit->Activate (gameData.demoData.nOldCockpit);
+gameData.appData.SetGameMode (GM_GAME_OVER);
 SetFunctionMode (FMODE_MENU);
 SDL_ShowCursor (1);
 longjmp (gameExitPoint, 0);               // Exit game loop
@@ -3685,27 +3685,27 @@ void DoJasonInterpolate (fix xRecordedTime)
 {
 	fix xDelay;
 
-gameData.demo.xJasonPlaybackTotal += gameData.time.xFrame;
-if (!gameData.demo.bFirstTimePlayback) {
+gameData.demoData.xJasonPlaybackTotal += gameData.timeData.xFrame;
+if (!gameData.demoData.bFirstTimePlayback) {
 	// get the difference between the recorded time and the playback time
-	xDelay = (xRecordedTime - gameData.time.xFrame);
+	xDelay = (xRecordedTime - gameData.timeData.xFrame);
 	if (xDelay >= 0) {
 		StopTime ();
 		TimerDelay (xDelay);
 		StartTime (0);
 		}
 	else {
-		while (gameData.demo.xJasonPlaybackTotal > gameData.demo.xRecordedTotal)
+		while (gameData.demoData.xJasonPlaybackTotal > gameData.demoData.xRecordedTotal)
 			if (NDReadFrameInfo () == -1) {
 				NDStopPlayback ();
 				return;
 				}
-		//xDelay = gameData.demo.xRecordedTotal - gameData.demo.xJasonPlaybackTotal;
+		//xDelay = gameData.demoData.xRecordedTotal - gameData.demoData.xJasonPlaybackTotal;
 		//if (xDelay > 0)
 		//	TimerDelay (xDelay);
 		}
 	}
-gameData.demo.bFirstTimePlayback = 0;
+gameData.demoData.bFirstTimePlayback = 0;
 }
 
 //	-----------------------------------------------------------------------------

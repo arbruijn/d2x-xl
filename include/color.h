@@ -156,7 +156,7 @@ class CStaticCanvasColor : public CCanvasColor {
 
 #endif
 
-#define TRANSPARENCY_COLOR			gameData.render.transpColor // palette entry of transparency color -- 255 on the PC
+#define TRANSPARENCY_COLOR			gameData.renderData.transpColor // palette entry of transparency color -- 255 on the PC
 #define SUPER_TRANSP_COLOR			254   // palette entry of super transparency color
 
 #define RGBA(_r,_g,_b,_a)			((uint32_t (_r) << 24) | (uint32_t (_g) << 16) | (uint32_t (_b) << 8) | (uint32_t (_a)))

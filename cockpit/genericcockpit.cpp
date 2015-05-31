@@ -238,8 +238,8 @@ ogl.SetStereoSeparation (xStereoSeparation);
 transformation.Pop ();
 if (ogl.StereoDevice () < 0)
 	ogl.ChooseDrawBuffer ();
-//gameData.render.frame.SetViewport ();
-gameData.render.window.Activate ("GenericCockpit::RenderWindow", gameData.render.window.Parent ());
+//gameData.renderData.frame.SetViewport ();
+gameData.renderData.window.Activate ("GenericCockpit::RenderWindow", gameData.renderData.window.Parent ());
 
 //	HACK!If guided missile, wake up robots as necessary.
 if (pViewer->info.nType == OBJ_WEAPON) 
@@ -256,7 +256,7 @@ if (nUser == WBU_GUIDED)
 
 if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
-	glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
+	glLineWidth (float (gameData.renderData.screen.Width ()) / 640.0f);
 	OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height ());
 	glLineWidth (1);
 #if 0
@@ -266,17 +266,17 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 
 	//if the window only partially overlaps the big 3d window, copy
 	//the extra part to the visible screen
-	bigWindowBottom = gameData.render.scene.Top () + gameData.render.scene.Height () - 1;
+	bigWindowBottom = gameData.renderData.scene.Top () + gameData.renderData.scene.Height () - 1;
 	if (x > bigWindowBottom) {
 		//the small window is completely outside the big 3d window, so
 		//copy it to the visible screen
-		gameData.render.scene.BlitClipped (y, x);
+		gameData.renderData.scene.BlitClipped (y, x);
 		bOverlapDirty [nWindow] = 1;
 		}
 	else {
-		smallWindowBottom = x + gameData.render.scene.Height () - 1;
+		smallWindowBottom = x + gameData.renderData.scene.Height () - 1;
 		if (0 < (extraPartHeight = smallWindowBottom - bigWindowBottom)) {
-			gameData.render.scene.SetupPane (&overlapCanv, 0, gameData.render.scene.Height ()-extraPartHeight, gameData.render.scene.Width (), extraPartHeight);
+			gameData.renderData.scene.SetupPane (&overlapCanv, 0, gameData.renderData.scene.Height ()-extraPartHeight, gameData.renderData.scene.Width (), extraPartHeight);
 			overlapCanv.BlitClipped (y, bigWindowBottom + 1);
 			bOverlapDirty [nWindow] = 1;
 			}
@@ -288,7 +288,7 @@ m_history [0].weapon [nWindow] = m_history [0].ammo [nWindow] = -1;
 
 gameData.SetViewer (pViewerSave);
 ogl.SetDepthTest (true);
-gameData.render.window.Deactivate ();
+gameData.renderData.window.Deactivate ();
 gameStates.render.bRearView = bRearViewSave;
 }
 
@@ -300,10 +300,10 @@ if (ogl.IsOculusRift ())
 	return;
 
 	int32_t		bDidMissileView = 0;
-	int32_t		saveNewDemoState = gameData.demo.nState;
+	int32_t		saveNewDemoState = gameData.demoData.nState;
 	int32_t		w;
 
-if (gameData.demo.nState == ND_STATE_PLAYBACK) {
+if (gameData.demoData.nState == ND_STATE_PLAYBACK) {
    if (nDemoDoLeft) {
       if (nDemoDoLeft == 3)
 			cockpit->RenderWindow (0, gameData.objData.pConsole, 1, WBU_REAR, "REAR");
@@ -352,7 +352,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 				}
 			else {
 				gameStates.render.nRenderingType = 4+ (w<<4);
-				cockpit->RenderWindow (w, buddy, 0, WBU_ESCORT, gameData.escort.szName);
+				cockpit->RenderWindow (w, buddy, 0, WBU_ESCORT, gameData.escortData.szName);
 				}
 			break;
 			}
@@ -395,7 +395,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 		}
 	}
 gameStates.render.nRenderingType = 0;
-gameData.demo.nState = saveNewDemoState;
+gameData.demoData.nState = saveNewDemoState;
 }
 
 //	-----------------------------------------------------------------------------
@@ -405,18 +405,18 @@ void CGenericCockpit::SetupSceneCenter (CCanvas* refCanv, int32_t& w, int32_t& h
 if (ogl.IsOculusRift ()) {
 	w = refCanv->Width (false) / 2;
 	h = refCanv->Height (false) * w / refCanv->Width (false);
-	gameData.render.window.Setup (refCanv, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
-	gameData.render.window.Activate (refCanv->Id (), refCanv);
+	gameData.renderData.window.Setup (refCanv, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.renderData.screen.Height (false) - h) / 2, w, h); 
+	gameData.renderData.window.Activate (refCanv->Id (), refCanv);
 	}
 else {
 	w = refCanv->Width (false) - 3 * abs (gameData.StereoOffset2D ());
 	int32_t d = abs (gameData.StereoOffset2D ());
-	gameData.render.window.Setup (refCanv, (ogl.StereoSeparation () < 0) ? 2 * d : d, 0, w, refCanv->Height (false)); 
-	gameData.render.window.Activate (refCanv->Id (), refCanv);
+	gameData.renderData.window.Setup (refCanv, (ogl.StereoSeparation () < 0) ? 2 * d : d, 0, w, refCanv->Height (false)); 
+	gameData.renderData.window.Activate (refCanv->Id (), refCanv);
 	}
 #if 0 //DBG
 CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
-glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
+glLineWidth (float (gameData.renderData.screen.Width ()) / 640.0f);
 OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 glLineWidth (1);
 #endif
@@ -459,8 +459,8 @@ m_info.fontWidth = CCanvas::Current ()->Font ()->Width ();
 m_info.fontHeight = CCanvas::Current ()->Font ()->Height ();
 m_info.xStereoSeparation = xStereoSeparation;
 #if 0
-m_info.xScale = gameData.render.scene.XScale ();
-m_info.yScale = gameData.render.scene.YScale ();
+m_info.xScale = gameData.renderData.scene.XScale ();
+m_info.yScale = gameData.renderData.scene.YScale ();
 #else
 m_info.xScale = Canvas ()->XScale ();
 m_info.yScale = Canvas ()->YScale ();
@@ -479,7 +479,7 @@ m_info.nDamage [0] = gameData.objData.pConsole->AimDamage ();
 m_info.nDamage [1] = gameData.objData.pConsole->DriveDamage ();
 m_info.nDamage [2] = gameData.objData.pConsole->GunDamage ();
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
-m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
+m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.modelData.nCockpits / 2 : 0;
 m_info.nEnergy = LOCALPLAYER.EnergyLevel ();
 if (m_info.nEnergy < 0)
 	m_info.nEnergy  = 0;
@@ -487,7 +487,7 @@ m_info.nShield = LOCALPLAYER.ShieldLevel ();
 if (m_info.nShield < 0)
 	m_info.nShield  = 0;
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
-m_info.tInvul = (LOCALPLAYER.invulnerableTime == 0x7fffffff) ? LOCALPLAYER.invulnerableTime : LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame;
+m_info.tInvul = (LOCALPLAYER.invulnerableTime == 0x7fffffff) ? LOCALPLAYER.invulnerableTime : LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.timeData.xGame;
 m_info.nColor = WHITE_RGBA;
 
 if (gameOpts->render.cockpit.bScaleGauges) {
@@ -501,15 +501,15 @@ else
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 
-//gameData.render.scene.Activate ("Scene");
+//gameData.renderData.scene.Activate ("Scene");
 DrawReticle (ogl.StereoDevice () < 0);
-//gameData.render.scene.Deactivate ();
+//gameData.renderData.scene.Deactivate ();
 
 if (!GuidedMissileActive () && ((gameOpts->render.cockpit.bHUD > 1) || (gameStates.render.cockpit.nType < CM_FULL_SCREEN)) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
 	if (ogl.IsOculusRift () && !transformation.HaveHeadAngles ()) {
 		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 		int32_t w, h;
-		SetupSceneCenter (&gameData.render.frame, w, h);
+		SetupSceneCenter (&gameData.renderData.frame, w, h);
 
 		DrawEnergyLevels ();
 		DrawModuleDamage ();
@@ -523,22 +523,22 @@ if (!GuidedMissileActive () && ((gameOpts->render.cockpit.bHUD > 1) || (gameStat
 		DrawHomingWarning ();
 
 		gameData.SetStereoOffsetType (nOffsetSave);
-		gameData.render.window.Deactivate ();
-		h = 4 * gameData.render.screen.Height (false) / 9; 
-		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
-		gameData.render.window.Activate ("CGenericCockpit::Render (window, 1)", &gameData.render.frame);
+		gameData.renderData.window.Deactivate ();
+		h = 4 * gameData.renderData.screen.Height (false) / 9; 
+		gameData.renderData.window.Setup (&gameData.renderData.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.renderData.screen.Height (false) - h) / 2, w, h); 
+		gameData.renderData.window.Activate ("CGenericCockpit::Render (window, 1)", &gameData.renderData.frame);
 		hudIcons.Render ();
-		gameData.render.window.Deactivate ();
+		gameData.renderData.window.Deactivate ();
 		}
 	else {
 		int32_t bStereoOffset = ogl.IsSideBySideDevice () && ((gameStates.render.cockpit.nType == CM_FULL_SCREEN) || (gameStates.render.cockpit.nType == CM_LETTERBOX));
 		if (bStereoOffset) {
 			nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 			int32_t w, h;
-			SetupSceneCenter (&gameData.render.scene, w, h);
+			SetupSceneCenter (&gameData.renderData.scene, w, h);
 			}
-		if ((gameData.demo.nState == ND_STATE_PLAYBACK))
-			gameData.app.SetGameMode (gameData.demo.nGameMode);
+		if ((gameData.demoData.nState == ND_STATE_PLAYBACK))
+			gameData.appData.SetGameMode (gameData.demoData.nGameMode);
 
 		bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0));
 
@@ -580,17 +580,17 @@ if (!GuidedMissileActive () && ((gameOpts->render.cockpit.bHUD > 1) || (gameStat
 			DrawPlayerShip ();
 			}
 		if (!bStereoOffset)
-			gameData.render.scene.Activate ("CGenericCockpit::Render (scene, 2)");
+			gameData.renderData.scene.Activate ("CGenericCockpit::Render (scene, 2)");
 		hudIcons.Render ();
 		if (!bStereoOffset)
-			gameData.render.scene.Deactivate ();
+			gameData.renderData.scene.Deactivate ();
 		if (bExtraInfo) {
 			DrawCountdown ();
 			DrawRecording ();
 			}
 
-		if ((gameData.demo.nState == ND_STATE_PLAYBACK))
-			gameData.app.SetGameMode (GM_NORMAL);
+		if ((gameData.demoData.nState == ND_STATE_PLAYBACK))
+			gameData.appData.SetGameMode (GM_NORMAL);
 
 		if (gameStates.app.bPlayerIsDead)
 			PlayerDeadMessage ();
@@ -600,10 +600,10 @@ if (!GuidedMissileActive () && ((gameOpts->render.cockpit.bHUD > 1) || (gameStat
 		else if (gameStates.render.cockpit.nType != CM_REAR_VIEW) {
 			HUDRenderMessageFrame ();
 			SetFontColor (GREEN_RGBA);
-			DrawHUDText (NULL, 0x8000, (gameData.demo.nState == ND_STATE_PLAYBACK) ? -14 : -10, TXT_REAR_VIEW);
+			DrawHUDText (NULL, 0x8000, (gameData.demoData.nState == ND_STATE_PLAYBACK) ? -14 : -10, TXT_REAR_VIEW);
 			}
 		if (bStereoOffset)
-			gameData.render.window.Deactivate ();
+			gameData.renderData.window.Deactivate ();
 		}
 	}
 DemoRecording ();
@@ -618,11 +618,11 @@ bool CGenericCockpit::Setup (bool bScene, bool bRebuild)
 {
 if (gameStates.video.nScreenMode != SCREEN_GAME)
 	return false;
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordCockpitChange (gameStates.render.cockpit.nType);
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nType = CM_FULL_SCREEN;
-gameData.render.scene.Setup (&gameData.render.frame); // OpenGL viewport must be properly set here
+gameData.renderData.scene.Setup (&gameData.renderData.frame); // OpenGL viewport must be properly set here
 fontManager.SetCurrent (GAME_FONT);
 SetFontScale (1.0f);
 SetFontColor (GREEN_RGBA);
@@ -653,7 +653,7 @@ else
 	return;
 gameStates.render.cockpit.nType = nType;
 gameStates.zoom.nFactor = float (gameStates.zoom.nMinFactor);
-m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
+m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.modelData.nCockpits / 2 : 0;
 gameStates.render.cockpit.nNextType = -1;
 cockpit->Setup (false, false);
 if (bClearMessages)

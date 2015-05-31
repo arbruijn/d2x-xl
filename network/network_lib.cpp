@@ -262,26 +262,26 @@ void NetworkSetGameMode (int32_t gameMode)
 if (gameMode == NETGAME_ANARCHY)
 	;
 else if (gameMode == NETGAME_TEAM_ANARCHY)
-	gameData.app.SetGameMode (GM_TEAM);
+	gameData.appData.SetGameMode (GM_TEAM);
 else if (gameMode == NETGAME_ROBOT_ANARCHY)
-	gameData.app.SetGameMode (GM_MULTI_ROBOTS);
+	gameData.appData.SetGameMode (GM_MULTI_ROBOTS);
 else if (gameMode == NETGAME_COOPERATIVE)
-	gameData.app.SetGameMode (GM_MULTI_COOP | GM_MULTI_ROBOTS);
+	gameData.appData.SetGameMode (GM_MULTI_COOP | GM_MULTI_ROBOTS);
 else if (gameMode == NETGAME_CAPTURE_FLAG)
-		gameData.app.SetGameMode (GM_TEAM | GM_CAPTURE);
+		gameData.appData.SetGameMode (GM_TEAM | GM_CAPTURE);
 else if (HoardEquipped ()) {
 	if (gameMode == NETGAME_HOARD)
-		gameData.app.SetGameMode (GM_HOARD);
+		gameData.appData.SetGameMode (GM_HOARD);
 	else if (gameMode == NETGAME_TEAM_HOARD)
-		gameData.app.SetGameMode (GM_HOARD | GM_TEAM);
+		gameData.appData.SetGameMode (GM_HOARD | GM_TEAM);
 	else if (gameMode == NETGAME_ENTROPY)
-		gameData.app.SetGameMode (GM_ENTROPY | GM_TEAM);
+		gameData.appData.SetGameMode (GM_ENTROPY | GM_TEAM);
 	else if (gameMode == NETGAME_MONSTERBALL)
-		gameData.app.SetGameMode (GM_MONSTERBALL | GM_TEAM);
+		gameData.appData.SetGameMode (GM_MONSTERBALL | GM_TEAM);
 	}
 else
 	Int3 ();
-gameData.app.SetGameMode (gameData.app.GameMode () | GM_NETWORK);
+gameData.appData.SetGameMode (gameData.appData.GameMode () | GM_NETWORK);
 if (IsTeamGame)
 	gameData.multigame.score.bShowList = 3;
 }
@@ -422,7 +422,7 @@ void StopObserverMode (void);
 void ObserverFrame (void)
 {
 if (OBSERVING) {
-	if ((LOCALPLAYER.ObservedPlayer () == N_LOCALPLAYER) || gameData.reactor.bDestroyed) {
+	if ((LOCALPLAYER.ObservedPlayer () == N_LOCALPLAYER) || gameData.reactorData.bDestroyed) {
 		StopObserverMode ();
 		StartLevel (0x7fffffff, 1);
 		}

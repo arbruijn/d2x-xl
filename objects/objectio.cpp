@@ -237,7 +237,7 @@ switch (info.renderType) {
 		rType.animationInfo.nCurFrame	= cf.ReadByte ();
 		if ((rType.animationInfo.nClipIndex < 0) || (rType.animationInfo.nClipIndex >= MAX_ANIMATIONS_D2)) {
 			rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [info.nId].nClipIndex;
-			rType.animationInfo.xFrameTime = gameData.effects.vClipP [rType.animationInfo.nClipIndex].xFrameTime;
+			rType.animationInfo.xFrameTime = gameData.effectData.vClipP [rType.animationInfo.nClipIndex].xFrameTime;
 			rType.animationInfo.nCurFrame = 0;
 			}
 		break;

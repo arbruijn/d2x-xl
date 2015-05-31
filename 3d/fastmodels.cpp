@@ -100,7 +100,7 @@ for (i = iFaceVerts, h = iFaceVerts, pmv = pModel->m_faceVerts + iFaceVerts; i <
 
 void G3LightModel (CObject *pObj, int32_t nModel, fix xModelLight, fix *xGlowValues, int32_t bHires)
 {
-	RenderModel::CModel*		pModel = gameData.models.renderModels [bHires] + nModel;
+	RenderModel::CModel*		pModel = gameData.modelData.renderModels [bHires] + nModel;
 	RenderModel::CVertex*	pmv;
 	RenderModel::CFace*		pmf;
 	CFloatVector				baseColor, *pColor;
@@ -183,16 +183,16 @@ else {
 
 void G3ScaleModel (int32_t nModel, int32_t bHires)
 {
-	RenderModel::CModel	*pModel = gameData.models.renderModels [bHires] + nModel;
+	RenderModel::CModel	*pModel = gameData.modelData.renderModels [bHires] + nModel;
 	CFloatVector			fScale;
 	int32_t					i;
 	CFloatVector3			*pv;
 	RenderModel::CVertex	*pmv;
 
-if (gameData.models.vScale.IsZero ())
+if (gameData.modelData.vScale.IsZero ())
 	fScale.Create (1,1,1);
 else
-	fScale.Assign (gameData.models.vScale);
+	fScale.Assign (gameData.modelData.vScale);
 if (pModel->m_fScale == fScale)
 	return;
 fScale /= pModel->m_fScale;
@@ -213,17 +213,17 @@ pModel->m_fScale *= fScale;
 void G3GetThrusterPos (CObject *pObj, int16_t nModel, RenderModel::CFace *pmf, CFixVector *pvOffset,
 							  CFixVector *vNormal, int32_t nRad, int32_t bHires, uint8_t nType = 255)
 {
-	RenderModel::CModel*		pModel = gameData.models.renderModels [bHires] + nModel;
+	RenderModel::CModel*		pModel = gameData.modelData.renderModels [bHires] + nModel;
 	RenderModel::CVertex*	pModelVertex = NULL;
 	CFloatVector3				v = CFloatVector3::ZERO, vn, vo, vForward = CFloatVector3::Create(0,0,1);
-	CModelThrusters*			pThruster = gameData.models.thrusters + nModel;
+	CModelThrusters*			pThruster = gameData.modelData.thrusters + nModel;
 	int32_t						i, j = 0, nCount = -pThruster->nCount;
 	float							h, nSize;
 
 if (!pObj)
 	return;
 if (nCount < 0) {
-	if (pModel->m_bRendered && gameData.models.vScale.IsZero ())
+	if (pModel->m_bRendered && gameData.modelData.vScale.IsZero ())
 		return;
 	nCount = 0;
 	}	
@@ -401,7 +401,7 @@ if ((pSubModel->m_bThruster & (REAR_THRUSTER | FRONTAL_THRUSTER)) == (REAR_THRUS
 else {
 	nTimeout = 25 * gameStates.gameplay.slowmo [0].fSpeed;
 	pFiringData = gameData.multiplayer.weaponStates [pObj->info.nId].firing;
-	if (gameData.weapons.nPrimary == VULCAN_INDEX)
+	if (gameData.weaponData.nPrimary == VULCAN_INDEX)
 		nTimeout /= 2;
 	if (pFiringData->nStop > 0) {
 		nDelay = gameStates.app.nSDLTicks [0] - pFiringData->nStop;
@@ -446,7 +446,7 @@ return 1;
 void G3TransformSubModel (CObject *pObj, int16_t nModel, int16_t nSubModel, CAngleVector *animAnglesP, CFixVector *pvOffset, 
 								  int32_t bHires, int32_t nGunId, int32_t nBombId, int32_t nMissileId, int32_t nMissiles, int32_t bEdges)
 {
-	RenderModel::CModel*		pModel = gameData.models.renderModels [bHires] + nModel;
+	RenderModel::CModel*		pModel = gameData.modelData.renderModels [bHires] + nModel;
 	RenderModel::CSubModel*	pSubModel = pModel->m_subModels + nSubModel;
 	CAngleVector				va = animAnglesP ? animAnglesP [pSubModel->m_nAngles] : CAngleVector::ZERO;
 	CFixVector					vo;
@@ -457,8 +457,8 @@ if (pSubModel->m_bThruster)
 if (G3FilterSubModel (pObj, pSubModel, nGunId, nBombId, nMissileId, nMissiles))
 	return;
 vo = pSubModel->m_vOffset;
-if (!gameData.models.vScale.IsZero ())
-	vo *= gameData.models.vScale;
+if (!gameData.modelData.vScale.IsZero ())
+	vo *= gameData.modelData.vScale;
 #if 1
 if (pvOffset) {
 	transformation.Begin (vo, va, __FILE__, __LINE__);
@@ -494,7 +494,7 @@ void G3DrawSubModel (CObject *pObj, int16_t nModel, int16_t nSubModel, int16_t n
 						   CAngleVector *animAnglesP, CFixVector *pvOffset, int32_t bHires, int32_t bUseVBO, int32_t nPass, int32_t bTranspFilter,
 							int32_t nGunId, int32_t nBombId, int32_t nMissileId, int32_t nMissiles, int32_t bEdges, int32_t bBlur)
 {
-	RenderModel::CModel*		pModel = gameData.models.renderModels [bHires] + nModel;
+	RenderModel::CModel*		pModel = gameData.modelData.renderModels [bHires] + nModel;
 	RenderModel::CSubModel*	pSubModel = pModel->m_subModels + nSubModel;
 	CBitmap*						pBm = NULL;
 	CAngleVector				va = animAnglesP ? animAnglesP [pSubModel->m_nAngles] : CAngleVector::ZERO;
@@ -534,8 +534,8 @@ if (G3FilterSubModel (pObj, pSubModel, nGunId, nBombId, nMissileId, nMissiles))
 	return;
 
 vo = pSubModel->m_vOffset;
-if (!gameData.models.vScale.IsZero ())
-	vo *= gameData.models.vScale;
+if (!gameData.modelData.vScale.IsZero ())
+	vo *= gameData.modelData.vScale;
 
 if (pvOffset && (nExclusive < 0)) {
 	transformation.Begin (vo, va, __FILE__, __LINE__);
@@ -742,7 +742,7 @@ void G3DrawModel (CObject *pObj, int16_t nModel, int16_t nSubModel, CArray<CBitm
 	int32_t					bEmissive = !bEdges && pObj && (pObj->IsProjectile ());
 	int32_t					bLighting = !bEdges && SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && (bTranspFilter < 2) && !(gameStates.render.bCloaked || bEmissive || bBright) && !(gameOpts->render.debug.bWireFrame & 2);
 	GLenum					hLight;
-	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
+	float						fBrightness, fLightScale = gameData.modelData.nLightScale ? X2F (gameData.modelData.nLightScale) : 1.0f;
 	CFloatVector			color;
 	CDynLightIndex*		pLightIndex = bLighting ? &lightManager.Index (0,0) : NULL;
 	CActiveDynLight*		pActiveLights = pLightIndex ? lightManager.Active (0) + pLightIndex->nFirst : NULL;
@@ -854,7 +854,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 
 	transformation.Begin (pPos->vPos, pPos->mOrient, __FILE__, __LINE__);
 
-	pModel = gameData.models.renderModels [bHires] + nModel;
+	pModel = gameData.modelData.renderModels [bHires] + nModel;
 	if (bEdges) {
 		if (bHires) {
 		for (int32_t i = 0; i < pModel->m_nSubModels; i++)
@@ -913,11 +913,11 @@ if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage))
 	CFixVector					vo;
 	int32_t						i, j;
 
-pModel = gameData.models.renderModels [bHires] + nModel;
+pModel = gameData.modelData.renderModels [bHires] + nModel;
 if (pModel->m_bValid < 1) {
 	if (!bHires)
 		return;
-	pModel = gameData.models.renderModels [0] + nModel;
+	pModel = gameData.modelData.renderModels [0] + nModel;
 	if (pModel->m_bValid < 1)
 		return;
 	}
@@ -927,8 +927,8 @@ if (!pObj || (pObj->Damage () > 0.5f))
 	return;
 // set the translation
 vo = pSubModel->m_vOffset;
-if (!gameData.models.vScale.IsZero ())
-	vo *= gameData.models.vScale;
+if (!gameData.modelData.vScale.IsZero ())
+	vo *= gameData.modelData.vScale;
 if (pvOffset) {
 	transformation.Begin (vo, *va, __FILE__, __LINE__);
 	vo += *pvOffset;
@@ -960,7 +960,7 @@ if (pObj && (pObj->info.nType == OBJ_PLAYER) && (nModel > 0) && (nModel != COCKP
 			nGunId, nBombId, nMissileId, nMissiles;
 
 nModel = abs (nModel);
-RenderModel::CModel*	pModel = gameData.models.renderModels [bHires] + nModel;
+RenderModel::CModel*	pModel = gameData.modelData.renderModels [bHires] + nModel;
 
 if (!pObj)
 	return 0;
@@ -998,7 +998,7 @@ if (bHires) {
 	}
 
 if (!bHires) {
-	pModel = gameData.models.renderModels [0] + nModel;
+	pModel = gameData.modelData.renderModels [0] + nModel;
 	if (pModel->m_bValid < 0)
 		return 0;
 	if (bUseVBO && pModel->m_bValid && !(pModel->m_vboDataHandle && pModel->m_vboIndexHandle))
@@ -1054,7 +1054,7 @@ G3ScaleModel (nModel);
 #else
 #	if 0
 if (bHires)
-	gameData.models.vScale.SetZero ();
+	gameData.modelData.vScale.SetZero ();
 #	endif
 #endif
 if (!(gameOpts->ogl.bObjLighting || gameStates.render.bCloaked))
@@ -1085,9 +1085,9 @@ nBombId = EquippedPlayerBomb (pObj);
 nMissileId = EquippedPlayerMissile (pObj, &nMissiles);
 if (!bHires && (pObj->info.nType == OBJ_POWERUP)) {
 	if ((pObj->info.nId == POW_SMARTMINE) || (pObj->info.nId == POW_PROXMINE))
-		gameData.models.vScale.Set (I2X (2), I2X (2), I2X (2));
+		gameData.modelData.vScale.Set (I2X (2), I2X (2), I2X (2));
 	else
-		gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
+		gameData.modelData.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
 	}
 
 #if DBG
@@ -1121,8 +1121,8 @@ if (bRenderTransparency) {
 else {
 	G3DrawModel (pObj, nModel, nSubModel, modelBitmaps, animAnglesP, pvOffset, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 0, bBlur);
 	pModel->m_bRendered = 1;
-	if (gameData.models.thrusters [nModel].nCount < 0)
-		gameData.models.thrusters [nModel].nCount = -gameData.models.thrusters [nModel].nCount;
+	if (gameData.modelData.thrusters [nModel].nCount < 0)
+		gameData.modelData.thrusters [nModel].nCount = -gameData.modelData.thrusters [nModel].nCount;
 	if ((pObj->info.nType != OBJ_DEBRIS) && bHires && pModel->m_bHasTransparency)
 		transparencyRenderer.AddObject (pObj);
 	}
@@ -1144,13 +1144,13 @@ if (gameStates.render.CartoonStyle () && !gameStates.render.bCloaked && !bRender
 #if 1 //!DBG
 if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) {
 	if (pObj && ((pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_ROBOT) || (pObj->info.nType == OBJ_REACTOR))) {
-		RenderModel::CModel*	pModel = gameData.models.renderModels [bHires] + nModel;
+		RenderModel::CModel*	pModel = gameData.modelData.renderModels [bHires] + nModel;
 
 		if (pModel->m_bValid < 1) {
 			if (!bHires)
 				pModel = NULL;
 			else {
-				pModel = gameData.models.renderModels [0] + nModel;
+				pModel = gameData.modelData.renderModels [0] + nModel;
 				if (pModel->m_bValid < 1)
 					pModel = NULL;
 				}

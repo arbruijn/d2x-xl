@@ -245,7 +245,7 @@ do {
 if (Current ())
 	Current ()->Reactivate ();
 else
-	gameData.render.frame.Activate ("Deactivate (frame)");
+	gameData.renderData.frame.Activate ("Deactivate (frame)");
 }
 
 //	-----------------------------------------------------------------------------
@@ -255,19 +255,19 @@ else
 void SetupCanvasses (float scale)
 {
 if (scale != 0.0f)
-	gameData.render.screen.SetScale ((scale < 0.0f) ? ogl.IsOculusRift () ? 1.25f : 1.0f : scale);
+	gameData.renderData.screen.SetScale ((scale < 0.0f) ? ogl.IsOculusRift () ? 1.25f : 1.0f : scale);
 
 if (!ogl.IsSideBySideDevice ())
-	gameData.render.frame.Setup (&gameData.render.screen);
+	gameData.renderData.frame.Setup (&gameData.renderData.screen);
 else {
 	if (ogl.StereoSeparation () < 0)
-		gameData.render.frame.Setup (&gameData.render.screen, 0, 0, gameData.render.screen.Width (false) / 2, gameData.render.screen.Height (false));
+		gameData.renderData.frame.Setup (&gameData.renderData.screen, 0, 0, gameData.renderData.screen.Width (false) / 2, gameData.renderData.screen.Height (false));
 	else
-		gameData.render.frame.Setup (&gameData.render.screen, gameData.render.screen.Width (false) / 2, 0, gameData.render.screen.Width (false) / 2, gameData.render.screen.Height (false));
+		gameData.renderData.frame.Setup (&gameData.renderData.screen, gameData.renderData.screen.Width (false) / 2, 0, gameData.renderData.screen.Width (false) / 2, gameData.renderData.screen.Height (false));
 	}
-gameData.render.scene.Setup (&gameData.render.frame);
-gameData.render.window.Setup (&gameData.render.scene);
-//gameData.render.screen.SetScale (1.0f);
+gameData.renderData.scene.Setup (&gameData.renderData.frame);
+gameData.renderData.window.Setup (&gameData.renderData.scene);
+//gameData.renderData.screen.SetScale (1.0f);
 }
 
 //	-----------------------------------------------------------------------------

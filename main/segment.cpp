@@ -532,7 +532,7 @@ return false;
 int32_t CSegment::Physics (fix& xDamage)
 {
 if (HasLavaProp ()) {
-	xDamage = gameData.pig.tex.tMapInfo [0][404].damage / 2;
+	xDamage = gameData.pigData.tex.tMapInfo [0][404].damage / 2;
 	return 1;
 	}
 if (HasWaterProp ()) {
@@ -551,12 +551,12 @@ void CSegment::SetTexture (int32_t nSide, CSegment *pConnSeg, int16_t nConnSide,
 	CBitmap*			pBm;
 	int32_t			nFrames;
 
-//if (gameData.demo.nState == ND_STATE_PLAYBACK)
+//if (gameData.demoData.nState == ND_STATE_PLAYBACK)
 //	return;
 if (nConnSide < 0)
 	pConnSeg = NULL;
 if (pAnim->flags & WCF_ALTFMT) {
-	if (gameData.demo.nState == ND_STATE_RECORDING)
+	if (gameData.demoData.nState == ND_STATE_RECORDING)
 		NDRecordWallSetTMapNum1 (SEG_IDX (this), (uint8_t) nSide, (int16_t) (pConnSeg ? SEG_IDX (pConnSeg) : -1), (uint8_t) nConnSide, nTexture, nAnim, nFrame);
 	nFrames = pAnim->nFrameCount;
 	pBm = SetupHiresAnim (reinterpret_cast<int16_t*> (pAnim->frames), nFrames, -1, 1, 0, &nFrames);
@@ -571,7 +571,7 @@ if (pAnim->flags & WCF_ALTFMT) {
 			pAnim->flags &= ~WCF_ALTFMT;
 		else {
 			pAnim->flags |= WCF_INITIALIZED;
-			if (gameData.demo.nState == ND_STATE_RECORDING) {
+			if (gameData.demoData.nState == ND_STATE_RECORDING) {
 				pBm->SetTranspType (3);
 				pBm->SetupTexture (1, 1);
 				}
@@ -587,14 +587,14 @@ else if ((pAnim->flags & WCF_TMAP1) || !m_sides [nSide].m_nOvlTex) {
 	m_sides [nSide].m_nBaseTex = nTexture;
 	if (pConnSeg)
 		pConnSeg->m_sides [nConnSide].m_nBaseTex = nTexture;
-	if (gameData.demo.nState == ND_STATE_RECORDING)
+	if (gameData.demoData.nState == ND_STATE_RECORDING)
 		NDRecordWallSetTMapNum1 (SEG_IDX (this), (uint8_t) nSide, (int16_t) (pConnSeg ? SEG_IDX (pConnSeg) : -1), (uint8_t) nConnSide, nTexture, nAnim, nFrame);
 	}
 else {
 	m_sides [nSide].m_nOvlTex = nTexture;
 	if (pConnSeg)
 		pConnSeg->m_sides [nConnSide].m_nOvlTex = nTexture;
-	if (gameData.demo.nState == ND_STATE_RECORDING)
+	if (gameData.demoData.nState == ND_STATE_RECORDING)
 		NDRecordWallSetTMapNum2 (SEG_IDX (this), (uint8_t) nSide, (int16_t) (pConnSeg ? SEG_IDX (pConnSeg) : -1), (uint8_t) nConnSide, nTexture, nAnim, nFrame);
 	}
 m_sides [nSide].m_nFrame = -nFrame;
@@ -779,7 +779,7 @@ else {
 pDoor->nFrontWall [0] = WallNum (nSide);
 pDoor->nBackWall [0] = nConnWall;
 Assert(SEG_IDX (this) != -1);
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordDoorOpening (SEG_IDX (this), nSide);
 if (IS_WALL (pWall->nLinkedWall) && IS_WALL (nConnWall) && (pWall->nLinkedWall == nConnWall)) {
 	CWall *pLinkedWall = WALL (pWall->nLinkedWall);
@@ -794,7 +794,7 @@ if (IS_WALL (pWall->nLinkedWall) && IS_WALL (nConnWall) && (pWall->nLinkedWall =
 	}
 else
 	pDoor->nPartCount = 1;
-if (gameData.demo.nState != ND_STATE_PLAYBACK) {
+if (gameData.demoData.nState != ND_STATE_PLAYBACK) {
 	if ((pWall->nClip >= 0) && (gameData.wallData.pAnim [pWall->nClip].openSound > -1))
 		CreateSound (gameData.wallData.pAnim [pWall->nClip].openSound, nSide);
 	}
@@ -831,7 +831,7 @@ if (IS_WALL (nConnWall))
 pDoor->nFrontWall [0] = WallNum (nSide);
 pDoor->nBackWall [0] = nConnWall;
 Assert(SEG_IDX (this) != -1);
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordDoorOpening (SEG_IDX (this), nSide);
 #if 0
 if (IS_WALL (pWall->nLinkedWall))
@@ -839,7 +839,7 @@ if (IS_WALL (pWall->nLinkedWall))
 else
 #endif
 	pDoor->nPartCount = 1;
-if (gameData.demo.nState != ND_STATE_PLAYBACK) {
+if (gameData.demoData.nState != ND_STATE_PLAYBACK) {
 	if (gameData.wallData.pAnim [pWall->nClip].openSound > -1)
 		CreateSound (gameData.wallData.pAnim [pWall->nClip].openSound, nSide);
 	}
@@ -850,7 +850,7 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 // start the transition from closed -> open CWall
 void CSegment::StartCloak (int32_t nSide)
 {
-if (gameData.demo.nState == ND_STATE_PLAYBACK)
+if (gameData.demoData.nState == ND_STATE_PLAYBACK)
 	return;
 
 CWall* pWall = Wall (nSide);
@@ -884,7 +884,7 @@ pCloakWall->nFrontWall = WallNum (nSide);
 pCloakWall->nBackWall = nConnWall;
 Assert(SEG_IDX (this) != -1);
 //Assert(!IS_WALL (pWall->nLinkedWall));
-if (gameData.demo.nState != ND_STATE_PLAYBACK) {
+if (gameData.demoData.nState != ND_STATE_PLAYBACK) {
 	CreateSound (SOUND_WALL_CLOAK_ON, nSide);
 	}
 for (i = 0; i < 4; i++) {
@@ -898,7 +898,7 @@ for (i = 0; i < 4; i++) {
 // start the transition from open -> closed CWall
 void CSegment::StartDecloak (int32_t nSide)
 {
-if (gameData.demo.nState == ND_STATE_PLAYBACK)
+if (gameData.demoData.nState == ND_STATE_PLAYBACK)
 	return;
 	CWall				*pWall;
 
@@ -925,7 +925,7 @@ if ((pWall = pConnSeg->Wall (nConnSide)))
 	pWall->state = WALL_DOOR_DECLOAKING;
 pCloakWall->nFrontWall = WallNum (nSide);
 pCloakWall->nBackWall = pConnSeg->WallNum (nConnSide);
-if (gameData.demo.nState != ND_STATE_PLAYBACK) {
+if (gameData.demoData.nState != ND_STATE_PLAYBACK) {
 	CreateSound (SOUND_WALL_CLOAK_OFF, nSide);
 	}
 for (i = 0; i < 4; i++) {
@@ -1021,7 +1021,7 @@ void CSegment::ToggleWall (int32_t nSide)
 CWall	*pWall = Wall (nSide);
 if (!pWall)
 	return;
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordWallToggle (SEG_IDX (this), nSide);
 if (pWall->nType == WALL_BLASTABLE)
 	DestroyWall (nSide);
@@ -1043,7 +1043,7 @@ int32_t CSegment::ProcessWallHit (int32_t nSide, fix damage, int32_t nPlayer, CO
 if (!pWall)
 	return WHP_NOT_SPECIAL;
 
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordWallHitProcess (SEG_IDX (this), nSide, damage, nPlayer);
 
 if (pWall->nType == WALL_BLASTABLE) {
@@ -1076,7 +1076,7 @@ if (pObj
 	 : pTrigger->Operate (-1, -1, bShot, 0)
 	)
 	return;
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordTrigger (Index (), nSide, pObj->Index (), bShot);
 if (IsMultiGame && !pTrigger->ClientOnly ())
 	MultiSendTrigger (Index (), pObj->Index ());
@@ -1095,17 +1095,17 @@ pTexProps->nOvlTex = m_sides [nSide].m_nOvlTex;
 if (!pTexProps->nOvlTex)
 	return 0;
 pTexProps->nOvlOrient = m_sides [nSide].m_nOvlOrient;	//nOvlTex flags
-pTexProps->nEffect = gameData.pig.tex.pTexMapInfo [pTexProps->nOvlTex].nEffectClip;
+pTexProps->nEffect = gameData.pigData.tex.pTexMapInfo [pTexProps->nOvlTex].nEffectClip;
 if (pTexProps->nEffect < 0) {
 	if (IsMultiGame && netGameInfo.m_info.bIndestructibleLights)
 		return 0;
-	pTexProps->nBitmap = gameData.pig.tex.pTexMapInfo [pTexProps->nOvlTex].destroyed;
+	pTexProps->nBitmap = gameData.pigData.tex.pTexMapInfo [pTexProps->nOvlTex].destroyed;
 	if (pTexProps->nBitmap < 0)
 		return 0;
 	pTexProps->nSwitchType = 0;
 	}
 else {
-	tEffectInfo* pEffectInfo = gameData.effects.pEffect + pTexProps->nEffect;
+	tEffectInfo* pEffectInfo = gameData.effectData.pEffect + pTexProps->nEffect;
 	if (pEffectInfo->flags & EF_ONE_SHOT)
 		return 0;
 	pTexProps->nBitmap = pEffectInfo->destroyed.nTexture;
@@ -1142,7 +1142,7 @@ if (pParent) {
 if (!TextureIsDestructable (nSide, &dtp))
 	return 0;
 //check if it's an animation (monitor) or casts light
-LoadTexture (gameData.pig.tex.pBmIndex [dtp.nOvlTex].index, 0, gameStates.app.bD1Data);
+LoadTexture (gameData.pigData.tex.pBmIndex [dtp.nOvlTex].index, 0, gameStates.app.bD1Data);
 //this can be blown up...did we hit it?
 if (!bForceBlowup) {
 	HitPointUV (nSide, &u, &v, NULL, vHit, 0);	//evil: always say face zero
@@ -1157,10 +1157,10 @@ if (!bForceBlowup)
 bPermaTrigger = (pTrigger = Trigger (nSide)) && pTrigger->Flagged (TF_PERMANENT);
 if (!bPermaTrigger)
 	SubtractLight (Index (), nSide);
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordEffectBlowup (Index (), nSide, vHit);
 if (dtp.nSwitchType) {
-	pEffectInfo = gameData.effects.pEffect + dtp.nEffect;
+	pEffectInfo = gameData.effectData.pEffect + dtp.nEffect;
 	xDestroyedSize = pEffectInfo->destroyed.xSize;
 	vc = pEffectInfo->destroyed.nAnimation;
 	}
@@ -1171,12 +1171,12 @@ else {
 
 CreateExplosion (int16_t (Index ()), vHit, xDestroyedSize, vc);
 if (dtp.nSwitchType) {
-	if ((nSound = gameData.effects.vClipP [vc].nSound) != -1)
+	if ((nSound = gameData.effectData.vClipP [vc].nSound) != -1)
 		audio.CreateSegmentSound (nSound, Index (), 0, vHit);
 	if ((nSound = pEffectInfo->nSound) != -1)		//kill sound
 		audio.DestroySegmentSound (Index (), nSide, nSound);
-	if (!bPermaTrigger && (pEffectInfo->destroyed.nEffect != -1) && (gameData.effects.pEffect [pEffectInfo->destroyed.nEffect].nSegment == -1)) {
-		tEffectInfo	*pNewEffect = gameData.effects.pEffect + pEffectInfo->destroyed.nEffect;
+	if (!bPermaTrigger && (pEffectInfo->destroyed.nEffect != -1) && (gameData.effectData.pEffect [pEffectInfo->destroyed.nEffect].nSegment == -1)) {
+		tEffectInfo	*pNewEffect = gameData.effectData.pEffect + pEffectInfo->destroyed.nEffect;
 		int32_t nNewBm = pNewEffect->changing.nWallTexture;
 		if (ChangeTextures (-1, nNewBm, nSide)) {
 			pNewEffect->xTimeLeft = EffectFrameTime (pNewEffect);
@@ -1198,7 +1198,7 @@ if (dtp.nSwitchType) {
 	}
 else {
 	if (!bPermaTrigger)
-		m_sides [nSide].m_nOvlTex = gameData.pig.tex.pTexMapInfo [dtp.nOvlTex].destroyed;
+		m_sides [nSide].m_nOvlTex = gameData.pigData.tex.pTexMapInfo [dtp.nOvlTex].destroyed;
 	//assume this is a light, and play light sound
 	audio.CreateSegmentSound (SOUND_LIGHT_BLOWNUP, Index (), 0, vHit);
 	}

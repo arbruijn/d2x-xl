@@ -130,9 +130,9 @@ return 0;
 int32_t SegmentIsVisible (CSegment *pSeg, CTransformation& transformation, int32_t nThread)
 {
 #if DBG
-	CArray<CRenderPoint>& points = gameData.render.mine.visibility [nThread].points;
+	CArray<CRenderPoint>& points = gameData.renderData.mine.visibility [nThread].points;
 #else
-	CRenderPoint* points = gameData.render.mine.visibility [nThread].points.Buffer ();
+	CRenderPoint* points = gameData.renderData.mine.visibility [nThread].points.Buffer ();
 #endif
 	uint8_t code = 0xFF;
 
@@ -244,7 +244,7 @@ void ComputeDynamicFaceLight (int32_t nStart, int32_t nEnd, int32_t nThread)
 
 for (i = 0; i < 3; i++)
 	faceColor [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
-//memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
+//memset (&gameData.renderData.lights.dynamic.shader.index, 0, sizeof (gameData.renderData.lights.dynamic.shader.index));
 ogl.SetTransform (1);
 gameStates.render.nState = 0;
 #	if GPGPU_VERTEX_LIGHTING
@@ -289,10 +289,10 @@ for (i = nStart; i < nEnd; i++) {
 			if (nVertex == nDbgVertex)
 				BRP;
 #endif
-			CFaceColor *pVertexColor = gameData.render.color.vertices + nVertex;
+			CFaceColor *pVertexColor = gameData.renderData.color.vertices + nVertex;
 			if (UpdateColor (pVertexColor)) {
 				if (nLights + lightManager.VariableVertLights (nVertex) == 0) {
-					*pVertexColor = gameData.render.color.ambient [nVertex];
+					*pVertexColor = gameData.renderData.color.ambient [nVertex];
 					pVertexColor->index = gameStates.render.nFrameFlipFlop + 1;
 					}
 				else {
@@ -300,7 +300,7 @@ for (i = nStart; i < nEnd; i++) {
 					if (nVertex == nDbgVertex)
 						BRP;
 #endif
-					GetVertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &gameData.render.color.ambient [nVertex], 1, 0, nThread);
+					GetVertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &gameData.renderData.color.ambient [nVertex], 1, 0, nThread);
 					lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 					lightManager.ResetNearestToVertex (nVertex, nThread);
 					}
@@ -390,7 +390,7 @@ bSemaphore [nThread] = 1;
 	static		CStaticFaceColor<127,127,127,127> brightColor2;
 	static		CFaceColor* brightColors [2] = {&brightColor1, &brightColor2};
 
-//memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
+//memset (&gameData.renderData.lights.dynamic.shader.index, 0, sizeof (gameData.renderData.lights.dynamic.shader.index));
 for (i = 0; i < 3; i++)
 	faceColor [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
 ogl.SetTransform (1);
@@ -400,12 +400,12 @@ if (ogl.m_states.bVertexLighting)
 	ogl.m_states.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
 #endif
 for (i = nStart; i < nEnd; i++) {
-	if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
+	if (0 > (nSegment = gameData.renderData.mine.visibility [0].segments [i]))
 		continue;
 	pSeg = SEGMENT (nSegment);
 	pSegFace = SEGFACES + nSegment;
 	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (pSeg))) {
-		gameData.render.mine.visibility [0].segments [i] = -gameData.render.mine.visibility [0].segments [i];
+		gameData.renderData.mine.visibility [0].segments [i] = -gameData.renderData.mine.visibility [0].segments [i];
 		continue;
 		}
 #if DBG
@@ -445,14 +445,14 @@ for (i = nStart; i < nEnd; i++) {
 				if (nVertex == nDbgVertex)
 					BRP;
 #endif
-				CFaceColor *pVertexColor = gameData.render.color.vertices + nVertex;
+				CFaceColor *pVertexColor = gameData.renderData.color.vertices + nVertex;
 				if (UpdateColor (pVertexColor)) {
 #if DBG
 					if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 						BRP;
 #endif
 					if (nLights + lightManager.VariableVertLights (nVertex) == 0) {
-						*pVertexColor = gameData.render.color.ambient [nVertex];
+						*pVertexColor = gameData.renderData.color.ambient [nVertex];
 						pVertexColor->index = gameStates.render.nFrameFlipFlop + 1;
 						}
 					else {
@@ -460,7 +460,7 @@ for (i = nStart; i < nEnd; i++) {
 						if (nVertex == nDbgVertex)
 							BRP;
 #endif
-						GetVertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &gameData.render.color.ambient [nVertex], 1, 0, nThread);
+						GetVertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &gameData.renderData.color.ambient [nVertex], 1, 0, nThread);
 						lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 						lightManager.ResetNearestToVertex (nVertex, nThread);
 						}
@@ -506,9 +506,9 @@ void ComputeDynamicTriangleLight (int32_t nStart, int32_t nEnd, int32_t nThread)
 	int32_t			h, i, j, k, nIndex, nColor, nLights = 0;
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 #if DBG
-	CShortArray& visibleSegs = gameData.render.mine.visibility [0].segments;
+	CShortArray& visibleSegs = gameData.renderData.mine.visibility [0].segments;
 #else
-	int16_t*		visibleSegs = gameData.render.mine.visibility [0].segments.Buffer ();
+	int16_t*		visibleSegs = gameData.renderData.mine.visibility [0].segments.Buffer ();
 #endif
 	static		CStaticFaceColor<255,255,255,255> brightColor1;
 	static		CStaticFaceColor<127,127,127,127> brightColor2;
@@ -570,14 +570,14 @@ for (i = nStart; i < nEnd; i++) {
 					*pColor = nColor ? faceColor [nColor] : *brightColors [gameStates.render.bFullBright - 1];
 				else {
 					if (gameStates.render.bPerPixelLighting == 2)
-						*pColor = *brightColors [0]; //gameData.render.color.ambient [nVertex];
+						*pColor = *brightColors [0]; //gameData.renderData.color.ambient [nVertex];
 					else {
 						nVertex = pTriangle->index [h];
 #if DBG
 						if (nVertex == nDbgVertex)
 							BRP;
 #endif
-						CFaceColor *pVertexColor = gameData.render.color.vertices + nVertex;
+						CFaceColor *pVertexColor = gameData.renderData.color.vertices + nVertex;
 #if LIGHTING_QUALITY == 1
 						WaitWithUpdate (pVertexColor);
 #else
@@ -589,7 +589,7 @@ for (i = nStart; i < nEnd; i++) {
 								BRP;
 #endif
 							if (nLights + lightManager.VariableVertLights (nVertex) == 0) { // no dynamic lights => only ambient light contribution
-								*pVertexColor = gameData.render.color.ambient [nVertex];
+								*pVertexColor = gameData.renderData.color.ambient [nVertex];
 								pVertexColor->index = gameStates.render.nFrameFlipFlop + 1;
 								}
 							else {
@@ -655,12 +655,12 @@ for (i = 0; i < 3; i++)
 ogl.SetTransform (1);
 gameStates.render.nState = 0;
 for (i = nStart; i < nEnd; i++) {
-	if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
+	if (0 > (nSegment = gameData.renderData.mine.visibility [0].segments [i]))
 		continue;
 	pSeg = SEGMENT (nSegment);
 	pSegFace = SEGFACES + nSegment;
 	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (pSeg))) {
-		gameData.render.mine.visibility [0].segments [i] = -gameData.render.mine.visibility [0].segments [i] - 1;
+		gameData.renderData.mine.visibility [0].segments [i] = -gameData.renderData.mine.visibility [0].segments [i] - 1;
 		continue;
 		}
 	for (j = pSegFace->nFaces, pFace = pSegFace->pFace; j; j--, pFace++) {
@@ -712,19 +712,19 @@ int32_t CountRenderFaces (void)
 	int32_t		h, i, j, nFaces, nSegments;
 
 ogl.m_states.bUseTransform = 1; // prevent vertex transformation from setting FVERTICES!
-for (i = nSegments = nFaces = 0; i < gameData.render.mine.visibility [0].nSegments; i++) {
-	pSeg = SEGMENT (gameData.render.mine.visibility [0].segments [i]);
+for (i = nSegments = nFaces = 0; i < gameData.renderData.mine.visibility [0].nSegments; i++) {
+	pSeg = SEGMENT (gameData.renderData.mine.visibility [0].segments [i]);
 	if (SegmentIsVisible (pSeg)) {
 		nSegments++;
 		nFaces += SEGFACES [i].nFaces;
 		}
 	else
-		gameData.render.mine.visibility [0].segments [i] = -gameData.render.mine.visibility [0].segments [i] - 1;
+		gameData.renderData.mine.visibility [0].segments [i] = -gameData.renderData.mine.visibility [0].segments [i] - 1;
 	}
 tiRender.nMiddle = 0;
 if (nFaces) {
-	for (h = nFaces / 2, i = j = 0; i < gameData.render.mine.visibility [0].nSegments; i++) {
-		if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
+	for (h = nFaces / 2, i = j = 0; i < gameData.renderData.mine.visibility [0].nSegments; i++) {
+		if (0 > (nSegment = gameData.renderData.mine.visibility [0].segments [i]))
 			continue;
 		j += SEGFACES [nSegment].nFaces;
 		if (j > h) {

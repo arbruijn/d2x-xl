@@ -454,7 +454,7 @@ return m_info.nLength = j;
 
 inline int32_t CAudio::ALError (void)
 {
-return alcGetError (gameData.pig.sound.openAL.device) != AL_NO_ERROR;
+return alcGetError (gameData.pigData.sound.openAL.device) != AL_NO_ERROR;
 }
 
 #endif
@@ -494,9 +494,9 @@ int32_t CAudioChannel::Start (int16_t nSound, int32_t nSoundClass, fix nVolume, 
 if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
 	if (nSound < 0)
 		return -1;
-	if (!gameData.pig.sound.nSoundFiles [gameStates.sound.bD1Sound])
+	if (!gameData.pigData.sound.nSoundFiles [gameStates.sound.bD1Sound])
 		return -1;
-	pSound = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound % gameData.pig.sound.nSoundFiles [gameStates.sound.bD1Sound];
+	pSound = gameData.pigData.sound.sounds [gameStates.sound.bD1Sound] + nSound % gameData.pigData.sound.nSoundFiles [gameStates.sound.bD1Sound];
 	if (!(pSound->data [pSound->bCustom].Buffer () && pSound->nLength [pSound->bCustom]))
 		return -1;
 	}
@@ -763,14 +763,14 @@ if (gameStates.app.bDemoData)
 	gameOpts->sound.audioSampleRate = SAMPLE_RATE_11K;
 #if USE_OPENAL
 if (gameOpts->sound.bUseOpenAL) {
-	gameData.pig.sound.openAL.device = alcOpenDevice (NULL);
-	if (!gameData.pig.sound.openAL.device)
+	gameData.pigData.sound.openAL.device = alcOpenDevice (NULL);
+	if (!gameData.pigData.sound.openAL.device)
 		gameOpts->sound.bUseOpenAL = 0;
 	else {
-		gameData.pig.sound.openAL.context = alcCreateContext (gameData.pig.sound.openAL.device, NULL);
-		alcMakeContextCurrent (gameData.pig.sound.openAL.context);
+		gameData.pigData.sound.openAL.context = alcCreateContext (gameData.pigData.sound.openAL.device, NULL);
+		alcMakeContextCurrent (gameData.pigData.sound.openAL.context);
 		}
-	alcGetError (gameData.pig.sound.openAL.device);
+	alcGetError (gameData.pigData.sound.openAL.device);
 	}
 if (!gameOpts->sound.bUseOpenAL)
 #endif
@@ -858,9 +858,9 @@ SDL_Delay (500); // CloseAudio hangs if it's called too soon after opening?
 #if USE_OPENAL
 if (gameOpts->sound.bUseOpenAL) {
 	alcMakeContextCurrent (NULL);
-	alcDestroyContext (gameData.pig.sound.openAL.context);
-	alcCloseDevice (gameData.pig.sound.openAL.device);
-	gameData.pig.sound.openAL.device = NULL;
+	alcDestroyContext (gameData.pigData.sound.openAL.context);
+	alcCloseDevice (gameData.pigData.sound.openAL.device);
+	gameData.pigData.sound.openAL.device = NULL;
 	}
 else
 #endif
@@ -953,7 +953,7 @@ lightningManager.Mute ();
 for (int32_t i = 0; i < m_info.nMaxChannels; i++)
 	audio.StopSound (i);
 gameData.multiplayer.bMoving = -1;
-gameData.weapons.firing [0].bSound = 0;
+gameData.weaponData.firing [0].bSound = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1029,7 +1029,7 @@ if (!m_info.bAvailable)
 	return -1;
 if (nSound < 0)
 	return -1;
-CSoundSample *pSound = &gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound];
+CSoundSample *pSound = &gameData.pigData.sound.sounds [gameStates.sound.bD1Sound][nSound];
 if (!pSound->data [pSound->bCustom].Buffer ()) {
 	Int3 ();
 	return -1;

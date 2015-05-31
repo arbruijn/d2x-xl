@@ -107,7 +107,7 @@ int32_t StartSoundThread (tSoundTask nTask)
 #if 1
 if (tiSound.pThread) {
 #else
-if (tiSound.pThread && gameData.app.bUseMultiThreading [rtSound]) {
+if (tiSound.pThread && gameData.appData.bUseMultiThreading [rtSound]) {
 #endif
 	WaitForSoundThread ();
 	tiSound.nTask = nTask;

@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 inline int32_t CurFrame (CObject *pObj, int32_t nClip, fix timeToLive, int32_t nFrames = -1)
 {
-tAnimationInfo	*pAnimInfo = gameData.effects.animations [0] + nClip;
+tAnimationInfo	*pAnimInfo = gameData.effectData.animations [0] + nClip;
 if (nFrames < 0)
 	nFrames = pAnimInfo->nFrameCount;
 //	iFrame = (nFrames - X2I (FixDiv ((nFrames - 1) * timeToLive, pAnimInfo->xTotalTime))) - 1;
@@ -57,18 +57,18 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 
 CRGBColor *AnimationColor (CObject *pObj)
 {
-	int32_t			nVClip = gameData.weapons.info [pObj->info.nId].nAnimationIndex;
+	int32_t			nVClip = gameData.weaponData.info [0][pObj->info.nId].nAnimationIndex;
 	tBitmapIndex	bmi;
 	CBitmap			*pBm;
 
 if (nVClip) {
-	tAnimationInfo *pAnimInfo = gameData.effects.animations [0] + nVClip;
+	tAnimationInfo *pAnimInfo = gameData.effectData.animations [0] + nVClip;
 	bmi = pAnimInfo->frames [0];
 	}
 else
-	bmi = gameData.weapons.info [pObj->info.nId].bitmap;
+	bmi = gameData.weaponData.info [0][pObj->info.nId].bitmap;
 LoadTexture (bmi.index, 0, 0);
-pBm = gameData.pig.tex.bitmaps [0] + bmi.index;
+pBm = gameData.pigData.tex.bitmaps [0] + bmi.index;
 if ((pBm->Type () == BM_TYPE_STD) && pBm->Override ())
 	pBm = pBm->Override ();
 pBm->AvgColor (NULL, false);
@@ -83,7 +83,7 @@ int32_t SetupHiresVClip (tAnimationInfo *pAnimInfo, tAnimationState *pState, CBi
 
 if (pAnimInfo->flags & WCF_ALTFMT) {
 	if (pAnimInfo->flags & WCF_INITIALIZED) {
-		pBm = gameData.pig.tex.bitmaps [0][pAnimInfo->frames [0].index].Override ();
+		pBm = gameData.pigData.tex.bitmaps [0][pAnimInfo->frames [0].index].Override ();
 		nFrames = ((pBm->Type () != BM_TYPE_ALT) && pBm->Parent ()) ? pBm->Parent ()->FrameCount () : pBm->FrameCount ();
 		}
 	else {
@@ -111,7 +111,7 @@ return nFrames;
 void DrawVClipObject (CObject *pObj, fix timeToLive, int32_t bLit, int32_t nVClip, CFloatVector *color)
 {
 	double		ta = 0, alpha = 0;
-	tAnimationInfo*	pAnimInfo = gameData.effects.animations [0] + nVClip;
+	tAnimationInfo*	pAnimInfo = gameData.effectData.animations [0] + nVClip;
 	int32_t		nFrames = SetupHiresVClip (pAnimInfo, &pObj->rType.animationInfo);
 	int32_t		iFrame = CurFrame (pObj, nVClip, timeToLive, nFrames);
 	int32_t		bThruster = (pObj->info.renderType == RT_THRUSTER) && (pObj->mType.physInfo.flags & PF_WIGGLE);
@@ -285,7 +285,7 @@ transparencyRenderer.AddPoly (NULL, NULL, pBm, vertices, 4, texCoord, &color, NU
 void ConvertPowerupToVClip (CObject *pObj)
 {
 pObj->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [pObj->info.nId].nClipIndex;
-pObj->rType.animationInfo.xFrameTime = gameData.effects.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
+pObj->rType.animationInfo.xFrameTime = gameData.effectData.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
 pObj->rType.animationInfo.nCurFrame = 0;
 pObj->SetSizeFromPowerup ();
 pObj->info.controlType = CT_POWERUP;
@@ -298,14 +298,14 @@ pObj->mType.physInfo.drag = 512;
 
 void ConvertWeaponToVClip (CObject *pObj)
 {
-pObj->rType.animationInfo.nClipIndex = gameData.weapons.info [pObj->info.nId].nAnimationIndex;
-pObj->rType.animationInfo.xFrameTime = gameData.effects.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
+pObj->rType.animationInfo.nClipIndex = gameData.weaponData.info [0][pObj->info.nId].nAnimationIndex;
+pObj->rType.animationInfo.xFrameTime = gameData.effectData.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
 pObj->rType.animationInfo.nCurFrame = 0;
 pObj->info.controlType = CT_WEAPON;
 pObj->info.renderType = RT_WEAPON_VCLIP;
-pObj->mType.physInfo.mass = gameData.weapons.info [pObj->info.nId].mass;
-pObj->mType.physInfo.drag = gameData.weapons.info [pObj->info.nId].drag;
-pObj->SetSize (gameData.weapons.info [pObj->info.nId].strength [gameStates.app.nDifficultyLevel] / 10);
+pObj->mType.physInfo.mass = gameData.weaponData.info [0][pObj->info.nId].mass;
+pObj->mType.physInfo.drag = gameData.weaponData.info [0][pObj->info.nId].drag;
+pObj->SetSize (gameData.weaponData.info [0][pObj->info.nId].strength [gameStates.app.nDifficultyLevel] / 10);
 pObj->info.movementType = MT_PHYSICS;
 }
 
@@ -338,10 +338,10 @@ pObj->mType.physInfo.drag = 512;
 pObj->info.renderType = RT_POLYOBJ;
 pObj->info.movementType = MT_PHYSICS;
 pObj->mType.physInfo.flags = PF_BOUNCES | PF_FREE_SPINNING;
-if (0 > (pObj->rType.polyObjInfo.nModel = gameData.weapons.info [pObj->info.nId].nModel))
+if (0 > (pObj->rType.polyObjInfo.nModel = gameData.weaponData.info [0][pObj->info.nId].nModel))
 	pObj->rType.polyObjInfo.nModel = nModel;
 #if 0
-pObj->AdjustSize (0, gameData.weapons.info [pObj->info.nId].poLenToWidthRatio);
+pObj->AdjustSize (0, gameData.weaponData.info [0][pObj->info.nId].poLenToWidthRatio);
 #endif
 pObj->rType.polyObjInfo.nTexOverride = -1;
 if (pObj->info.nType == OBJ_POWERUP)
@@ -353,9 +353,9 @@ return 1;
 
 void DrawWeaponVClip (CObject *pObj)
 {
-int32_t nVClip = gameData.weapons.info [pObj->info.nId].nAnimationIndex;
+int32_t nVClip = gameData.weaponData.info [0][pObj->info.nId].nAnimationIndex;
 fix modTime = pObj->info.xLifeLeft;
-fix playTime = gameData.effects.vClipP [nVClip].xTotalTime;
+fix playTime = gameData.effectData.vClipP [nVClip].xTotalTime;
 if (!playTime)
 	return;
 //	Special values for modTime were causing enormous slowdown for omega blobs.
@@ -379,7 +379,7 @@ else {
 if (ConvertVClipToPolymodel (pObj))
 	DrawPolygonObject (pObj, 0);
 else
-	DrawVClipObject (pObj, modTime, 0, nVClip, gameData.weapons.color + pObj->info.nId);
+	DrawVClipObject (pObj, modTime, 0, nVClip, gameData.weaponData.color + pObj->info.nId);
 }
 
 //------------------------------------------------------------------------------

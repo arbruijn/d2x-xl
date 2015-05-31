@@ -130,7 +130,7 @@ cutpoint = POrderList (255);
 if (!(oldFlags & flag) && 
 	 (gameOpts->gameplay.nAutoSelectWeapon == 2) &&
 	 (POrderList (nWeaponIndex) < cutpoint) && 
-	 (POrderList (nWeaponIndex) < POrderList (gameData.weapons.nPrimary))) {
+	 (POrderList (nWeaponIndex) < POrderList (gameData.weaponData.nPrimary))) {
 	if (nWeaponIndex==SUPER_LASER_INDEX)
 		SelectWeapon (LASER_INDEX, 0, 0, 1);
 	else

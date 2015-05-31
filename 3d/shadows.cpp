@@ -804,8 +804,8 @@ void RenderShadowVolumeFace (CFloatVector *pv)
 	CFloatVector	v [4];
 
 memcpy (v, pv, 2 * sizeof (CFloatVector));
-v [3] = v [0] - gameData.render.shadows.vLightPos;
-v [2] = v [1] - gameData.render.shadows.vLightPos;
+v [3] = v [0] - gameData.renderData.shadows.vLightPos;
+v [2] = v [1] - gameData.renderData.shadows.vLightPos;
 #if NORM_INF
 v [3] *= fInf / v [3].Mag ();
 v [2] *= fInf / v [2].Mag ();
@@ -1225,19 +1225,19 @@ int32_t _CDECL_ ClipDistThread (void *pThreadId)
 	int32_t		nId = *reinterpret_cast<int32_t*> (pThreadId);
 
 while (!gameStates.app.bExit) {
-	while (!gameData.threads.clipDist.info [nId].bExec)
+	while (!gameData.threadData.clipDist.info [nId].bExec)
 		G3_SLEEP (0);
-	gameData.threads.clipDist.data.fClipDist [nId] =
-		G3ClipDistByFaceCenters (gameData.threads.clipDist.data.pObj,
-										 gameData.threads.clipDist.data.po,
-										 gameData.threads.clipDist.data.pso, nId, 2);
+	gameData.threadData.clipDist.data.fClipDist [nId] =
+		G3ClipDistByFaceCenters (gameData.threadData.clipDist.data.pObj,
+										 gameData.threadData.clipDist.data.po,
+										 gameData.threadData.clipDist.data.pso, nId, 2);
 	if (gameOpts->render.shadows.nClip == 3)
-		gameData.threads.clipDist.data.fClipDist [nId] =
-			G3ClipDistByLitVerts (gameData.threads.clipDist.data.pObj,
-										 gameData.threads.clipDist.data.po,
-										 gameData.threads.clipDist.data.fClipDist [nId],
+		gameData.threadData.clipDist.data.fClipDist [nId] =
+			G3ClipDistByLitVerts (gameData.threadData.clipDist.data.pObj,
+										 gameData.threadData.clipDist.data.po,
+										 gameData.threadData.clipDist.data.fClipDist [nId],
 										 nId, 2);
-	gameData.threads.clipDist.info [nId].bExec = 0;
+	gameData.threadData.clipDist.info [nId].bExec = 0;
 	}
 return 0;
 }
@@ -1280,16 +1280,16 @@ m_bCalcClipDist = 0;
 #endif
 #if MULTI_THREADED_SHADOWS
 	if (gameStates.app.bMultiThreaded) {
-	gameData.threads.clipDist.data.BRP;
-	gameData.threads.clipDist.data.po = po;
-	gameData.threads.clipDist.data.pso = pso;
+	gameData.threadData.clipDist.data.BRP;
+	gameData.threadData.clipDist.data.po = po;
+	gameData.threadData.clipDist.data.pso = pso;
 	G3GetLitVertices (po, pso);
-	SDL_SemPost (gameData.threads.clipDist.info [0].exec);
-	SDL_SemPost (gameData.threads.clipDist.info [1].exec);
-	SDL_SemWait (gameData.threads.clipDist.info [0].done);
-	SDL_SemWait (gameData.threads.clipDist.info [1].done);
-	fMaxDist = (gameData.threads.clipDist.data.fClipDist [0] > gameData.threads.clipDist.data.fClipDist [1]) ?
-					gameData.threads.clipDist.data.fClipDist [0] : gameData.threads.clipDist.data.fClipDist [1];
+	SDL_SemPost (gameData.threadData.clipDist.info [0].exec);
+	SDL_SemPost (gameData.threadData.clipDist.info [1].exec);
+	SDL_SemWait (gameData.threadData.clipDist.info [0].done);
+	SDL_SemWait (gameData.threadData.clipDist.info [1].done);
+	fMaxDist = (gameData.threadData.clipDist.data.fClipDist [0] > gameData.threadData.clipDist.data.fClipDist [1]) ?
+					gameData.threadData.clipDist.data.fClipDist [0] : gameData.threadData.clipDist.data.fClipDist [1];
 	}
 else
 #endif
@@ -1443,7 +1443,7 @@ int32_t G3DrawPolyModelShadow (CObject *pObj, void *modelDataP, CAngleVector *an
 	CFixVector	v, vLightDir;
 	int16_t*		nearestLightP;
 	int32_t			h, i, j;
-	CModel*		po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
+	CModel*		po = gameData.modelData.pofData [gameStates.app.bD1Mission][1] + nModel;
 
 Assert (pObj->info.nId < MAX_ROBOT_TYPES);
 if (!gameStates.render.nShadowMap) {
@@ -1454,26 +1454,26 @@ ogl.SelectTMU (GL_TEXTURE0);
 ogl.SetTexturing (false);
 ogl.EnableClientState (GL_VERTEX_ARRAY);
 nearestLightP = lightManager.NearestSegLights () + pObj->info.nSegment * MAX_NEAREST_LIGHTS;
-gameData.render.shadows.nLight = 0;
+gameData.renderData.shadows.nLight = 0;
 if (FAST_SHADOWS) {
-	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*nearestLightP >= 0); i++, nearestLightP++) {
-		gameData.render.shadows.pLight = lightManager.RenderLights (*nearestLightP);
-		if (!gameData.render.shadows.pLight->info.bState)
+	for (i = 0; (gameData.renderData.shadows.nLight < gameOpts->render.shadows.nLights) && (*nearestLightP >= 0); i++, nearestLightP++) {
+		gameData.renderData.shadows.pLight = lightManager.RenderLights (*nearestLightP);
+		if (!gameData.renderData.shadows.pLight->info.bState)
 			continue;
-		if (!CanSeePoint (pObj, &pObj->info.position.vPos, &gameData.render.shadows.pLight->info.vPos, pObj->info.nSegment, 0, -1.0f, 0))
+		if (!CanSeePoint (pObj, &pObj->info.position.vPos, &gameData.renderData.shadows.pLight->info.vPos, pObj->info.nSegment, 0, -1.0f, 0))
 			continue;
-		vLightDir = pObj->info.position.vPos - gameData.render.shadows.pLight->info.vPos;
+		vLightDir = pObj->info.position.vPos - gameData.renderData.shadows.pLight->info.vPos;
 		CFixVector::Normalize (vLightDir);
-		if (gameData.render.shadows.nLight) {
-			for (j = 0; j < gameData.render.shadows.nLight; j++)
-				if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir [j])) > I2X (2) / 3) // 60 deg
+		if (gameData.renderData.shadows.nLight) {
+			for (j = 0; j < gameData.renderData.shadows.nLight; j++)
+				if (abs (CFixVector::Dot (vLightDir, gameData.renderData.shadows.vLightDir [j])) > I2X (2) / 3) // 60 deg
 					break;
-			if (j < gameData.render.shadows.nLight)
+			if (j < gameData.renderData.shadows.nLight)
 				continue;
 			}
-		gameData.render.shadows.vLightDir [gameData.render.shadows.nLight++] = vLightDir;
+		gameData.renderData.shadows.vLightDir [gameData.renderData.shadows.nLight++] = vLightDir;
 		gameStates.render.bRendering = 1;
-		transformation.Transform (vLightPos, gameData.render.shadows.pLight->info.vPos, 0);
+		transformation.Transform (vLightPos, gameData.renderData.shadows.pLight->info.vPos, 0);
 		vLightPosf.Assign (vLightPos);
 		if (gameOpts->render.shadows.nClip) {
 			// get a default clipping distance using the model position as fall back
@@ -1494,13 +1494,13 @@ if (FAST_SHADOWS) {
 	}
 else {
 	h = pObj->Index ();
-	j = int32_t (gameData.render.shadows.pLight - lightManager.Lights ());
-	nearestLightP = gameData.render.shadows.objLights + h * MAX_SHADOW_LIGHTS;
+	j = int32_t (gameData.renderData.shadows.pLight - lightManager.Lights ());
+	nearestLightP = gameData.renderData.shadows.objLights + h * MAX_SHADOW_LIGHTS;
 	for (i = 0; i < gameOpts->render.shadows.nLights; i++, nearestLightP++) {
 		if (*nearestLightP < 0)
 			break;
 		if (*nearestLightP == j) {
-			vLightPosf = gameData.render.shadows.vLightPos;
+			vLightPosf = gameData.renderData.shadows.vLightPos;
 			po->VertsToFloat ();
 			transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient, __FILE__, __LINE__);
 			po->m_litFaces.Reset ();
@@ -1523,7 +1523,7 @@ if (pObj->IsStatic ())
 	CFixVector	v;
 	int16_t*		nearestLightP;
 	int32_t		h, i, j, nShadowQuality = gameOpts->render.ShadowQuality () - 1;
-	CModel*		po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
+	CModel*		po = gameData.modelData.pofData [gameStates.app.bD1Mission][1] + nModel;
 	CObject*		pLightObj = NULL;
 
 Assert (pObj->info.nId < MAX_ROBOT_TYPES);
@@ -1535,7 +1535,7 @@ ogl.SelectTMU (GL_TEXTURE0);
 ogl.SetTexturing (false);
 ogl.EnableClientState (GL_VERTEX_ARRAY);
 nearestLightP = lightManager.NearestSegLights () + pObj->info.nSegment * MAX_NEAREST_LIGHTS;
-gameData.render.shadows.nLight = 0;
+gameData.renderData.shadows.nLight = 0;
 if (FAST_SHADOWS) {
 	int16_t nLights = lightManager.SetNearestToSegment (pObj->Segment (), -1, 0, 0, 0);	//only get light emitting objects here
 	if (nLights > 0) {
@@ -1545,16 +1545,16 @@ if (FAST_SHADOWS) {
 		CActiveDynLight* pActiveLights = lightManager.Active (0) + pLightIndex->nFirst;
 		int32_t i = pLightIndex->nLast - pLightIndex->nFirst + 1;
 		for (; (i > 0) && (nLights > 0); pActiveLights++, i--) {
-			if ((gameData.render.shadows.pLight = pActiveLights->pLight)) {
+			if ((gameData.renderData.shadows.pLight = pActiveLights->pLight)) {
 				--nLights;
-				if (gameData.render.shadows.pLight->info.nType < 2)
+				if (gameData.renderData.shadows.pLight->info.nType < 2)
 					continue;
-				if (gameData.render.shadows.pLight->info.nType == 3) {
-					pLightObj = PLAYEROBJECT (gameData.render.shadows.pLight->info.nPlayer);
+				if (gameData.renderData.shadows.pLight->info.nType == 3) {
+					pLightObj = PLAYEROBJECT (gameData.renderData.shadows.pLight->info.nPlayer);
 					}
-				else if (gameData.render.shadows.pLight->info.nType == 2) {
-					if (gameData.render.shadows.pLight->info.nObject >= 0) {
-						pLightObj = OBJECT (gameData.render.shadows.pLight->info.nObject);
+				else if (gameData.renderData.shadows.pLight->info.nType == 2) {
+					if (gameData.renderData.shadows.pLight->info.nObject >= 0) {
+						pLightObj = OBJECT (gameData.renderData.shadows.pLight->info.nObject);
 						int32_t nType = pLightObj->Type ();
 						if ((nType != OBJ_FIREBALL) && (nType != OBJ_FLARE) && (nType != OBJ_LIGHT) && !pLightObj->IsEnergyProjectile ())
 							continue;
@@ -1564,24 +1564,24 @@ if (FAST_SHADOWS) {
 					}
 				else if (!nShadowQuality)
 					continue;
-				if (!gameData.render.shadows.pLight->info.bState)
+				if (!gameData.renderData.shadows.pLight->info.bState)
 					continue;
-				if (!CanSeePoint (pObj, &pObj->info.position.vPos, &gameData.render.shadows.pLight->info.vPos, pObj->info.nSegment, 0, -1.0f, 0))
+				if (!CanSeePoint (pObj, &pObj->info.position.vPos, &gameData.renderData.shadows.pLight->info.vPos, pObj->info.nSegment, 0, -1.0f, 0))
 					continue;
-				vLightDir = pObj->info.position.vPos - gameData.render.shadows.pLight->info.vPos;
+				vLightDir = pObj->info.position.vPos - gameData.renderData.shadows.pLight->info.vPos;
 				CFixVector::Normalize (vLightDir);
-				if ((gameData.render.shadows.pLight->info.bSpot) && (!pLightObj || (CFixVector::Dot (vLightDir, pLightObj->Orientation ().m.dir.f) < 0.6666667f)))
+				if ((gameData.renderData.shadows.pLight->info.bSpot) && (!pLightObj || (CFixVector::Dot (vLightDir, pLightObj->Orientation ().m.dir.f) < 0.6666667f)))
 					continue;
-				if (gameData.render.shadows.nLight) {
-					for (j = 0; j < gameData.render.shadows.nLight; j++)
-						if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir [j])) > I2X (2) / 3) // 60 deg
+				if (gameData.renderData.shadows.nLight) {
+					for (j = 0; j < gameData.renderData.shadows.nLight; j++)
+						if (abs (CFixVector::Dot (vLightDir, gameData.renderData.shadows.vLightDir [j])) > I2X (2) / 3) // 60 deg
 							break;
-					if (j < gameData.render.shadows.nLight)
+					if (j < gameData.renderData.shadows.nLight)
 						continue;
 					}
-				gameData.render.shadows.vLightDir [gameData.render.shadows.nLight++] = vLightDir;
+				gameData.renderData.shadows.vLightDir [gameData.renderData.shadows.nLight++] = vLightDir;
 				gameStates.render.bRendering = 1;
-				transformation.Transform (vLightPos, gameData.render.shadows.pLight->info.vPos, 0);
+				transformation.Transform (vLightPos, gameData.renderData.shadows.pLight->info.vPos, 0);
 				vLightPosf.Assign (vLightPos);
 				if (gameOpts->render.shadows.nClip) {
 					// get a default clipping distance using the model position as fall back
@@ -1618,13 +1618,13 @@ if (FAST_SHADOWS) {
 	}
 else {
 	h = pObj->Index ();
-	j = int32_t (gameData.render.shadows.pLight - lightManager.Lights ());
-	nearestLightP = gameData.render.shadows.objLights + h * MAX_SHADOW_LIGHTS;
+	j = int32_t (gameData.renderData.shadows.pLight - lightManager.Lights ());
+	nearestLightP = gameData.renderData.shadows.objLights + h * MAX_SHADOW_LIGHTS;
 	for (i = 0; i < gameOpts->render.shadows.nLights; i++, nearestLightP++) {
 		if (*nearestLightP < 0)
 			break;
 		if (*nearestLightP == j) {
-			vLightPosf = gameData.render.shadows.vLightPos;
+			vLightPosf = gameData.renderData.shadows.vLightPos;
 			po->VertsToFloat ();
 			transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient, __FILE__, __LINE__);
 			po->m_litFaces.Reset ();

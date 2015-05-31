@@ -164,8 +164,8 @@ if (!IsMultiGame || IsCoopGame) {
 	if (gameOpts->render.cockpit.bPlayerStats)
 		y += 2 * m_nLineSpacing;
 
-	x0 = gameData.render.scene.Width ();
-	if ((extraGameInfo [0].nWeaponIcons >= 3) && (gameData.render.scene.Height () < 670))
+	x0 = gameData.renderData.scene.Width ();
+	if ((extraGameInfo [0].nWeaponIcons >= 3) && (gameData.renderData.scene.Height () < 670))
 		x0 -= HUD_LHX (20);
 	cockpit->SetFontColor (GREEN_RGBA);
 	t = gameStates.app.nSDLTicks [0];
@@ -246,7 +246,7 @@ else if (ammoType [i][l]) {
 	bAvailable = (nAmmo > 0);
 	}
 else {
-	bAvailable = (LOCALPLAYER.Energy () > gameData.weapons.info [l].xEnergyUsage);
+	bAvailable = (LOCALPLAYER.Energy () > gameData.weaponData.info [0][l].xEnergyUsage);
 	}
 if (i && !bAvailable)
 	bHave = 0;
@@ -255,17 +255,17 @@ if (!bHave)
 	bActive = 0;
 else if (i) {
 	if (j < 8)
-		bActive = (l == gameData.weapons.nSecondary);
+		bActive = (l == gameData.weaponData.nSecondary);
 	else
 		bActive = (j == 8) == (bLastSecondaryWasSuper [PROXMINE_INDEX] != 0);
 	}
 else {
 	if (l == 5)
-		bActive = (bHave && (0 == gameData.weapons.nPrimary));
+		bActive = (bHave && (0 == gameData.weaponData.nPrimary));
 	else if (l)
-		bActive = (l == gameData.weapons.nPrimary);
+		bActive = (l == gameData.weaponData.nPrimary);
 	else
-		bActive = (bHave && (l == gameData.weapons.nPrimary));
+		bActive = (bHave && (l == gameData.weaponData.nPrimary));
 	}
 
 return 1;
@@ -322,13 +322,13 @@ CBitmap* CHUDIcons::LoadWeaponIcon (int32_t i, int32_t l)
 	CBitmap * pBm, * pBmo;
 
 int32_t m = i ? secondaryWeaponToWeaponInfo [l] : primaryWeaponToWeaponInfo [l];
-if ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
-	LoadTexture (gameData.weapons.info [m].hiresPicture.index, 0, 0);
-	pBm = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].hiresPicture.index;
+if ((gameData.pigData.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
+	LoadTexture (gameData.weaponData.info [0][m].hiresPicture.index, 0, 0);
+	pBm = gameData.pigData.tex.bitmaps [0] + gameData.weaponData.info [0][m].hiresPicture.index;
 	}
 else {
-	pBm = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].picture.index;
-	LoadTexture (gameData.weapons.info [m].picture.index, 0, 0);
+	pBm = gameData.pigData.tex.bitmaps [0] + gameData.weaponData.info [0][m].picture.index;
+	LoadTexture (gameData.weaponData.info [0][m].picture.index, 0, 0);
 	}
 
 if ((pBmo = pBm->HasOverride ()))
@@ -394,8 +394,8 @@ void CHUDIcons::DrawWeapons (void)
 	int32_t	ox = 6, 
 			oy = 6, 
 			x = 0, dx = 0, y = 0, dy = 0;
-	//float	fLineWidth = (gameData.render.scene.Width () >= 1200) ? 2.0f : 1.0f;
-	float	fLineWidth = float (gameData.render.scene.Width ()) / 640.0f;
+	//float	fLineWidth = (gameData.renderData.scene.Width () >= 1200) ? 2.0f : 1.0f;
+	float	fLineWidth = float (gameData.renderData.scene.Width ()) / 640.0f;
 	uint8_t	alpha = gameOpts->render.weaponIcons.alpha;
 	uint32_t	nAmmoColor;
 	char	szAmmo [10];
@@ -413,19 +413,19 @@ if (gameOpts->render.weaponIcons.bShowAmmo) {
 	}
 dx = (int32_t) (10 * m_xScale);
 if (ogl.IsOculusRift ()) {
-	//dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
-	//y = 3 * gameData.render.frame.Height () / 4 - dy - 4 * oy;
+	//dy = (gameData.renderData.frame.Height () - gameData.renderData.scene.Height ());
+	//y = 3 * gameData.renderData.frame.Height () / 4 - dy - 4 * oy;
 	//dy = 0;
 	y = CCanvas::Current ()->Height () - oy;
 	}
 else if (nWeaponIcons < 3) {
-	//dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
+	//dy = (gameData.renderData.frame.Height () - gameData.renderData.scene.Height ());
 	y = nIconPos ? CCanvas::Current ()->Height () - dy - oy : oy + hIcon + 12;
 	}
 if (extraGameInfo [0].nWeaponIcons == 1)
-	; //y += gameData.render.scene.Top ();
+	; //y += gameData.renderData.scene.Top ();
 else if (extraGameInfo [0].nWeaponIcons == 2) {
-	//y += gameData.render.scene.Top ();
+	//y += gameData.renderData.scene.Top ();
 	if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
 		y -= cockpit->LHX (10);
 	}
@@ -448,9 +448,9 @@ for (int32_t i = 0; i < 2; i++) {
 		}
 	else {
 		int32_t h = 0;
-		y = (gameData.render.scene.Height () - h - n * (hIcon + oy)) / 2 + hIcon;
+		y = (gameData.renderData.scene.Height () - h - n * (hIcon + oy)) / 2 + hIcon;
 		x = i ? CCanvas::Current ()->Width () - wIcon - ox : ox;
-		//y += gameData.render.scene.Top ();
+		//y += gameData.renderData.scene.Top ();
 		}
 
 	for (int32_t j = 0; j < n; j++) {
@@ -558,7 +558,7 @@ int32_t CHUDIcons::EquipmentActive (int32_t bFlag)
 {
 switch (bFlag) {
 	case PLAYER_FLAGS_AFTERBURNER:
-		return (gameData.physics.xAfterburnerCharge && controls [0].afterburnerState);
+		return (gameData.physicsData.xAfterburnerCharge && controls [0].afterburnerState);
 	case PLAYER_FLAGS_CONVERTER:
 		return gameStates.app.bUsingConverter;
 	case PLAYER_FLAGS_HEADLIGHT:
@@ -608,7 +608,7 @@ if (ogl.IsOculusRift ())
 									 && ((gameStates.app.nSDLTicks [0] - LOCALOBJECT->TimeLastRepaired () > 3000) || 
 									     gameData.objData.pConsole->CriticalDamage ()))) ? 80 : 0;
 #endif
-	float		fLineWidth = float (gameData.render.scene.Width ()) / 640.0f;
+	float		fLineWidth = float (gameData.renderData.scene.Width ()) / 640.0f;
 	uint8_t		alpha = gameOpts->render.weaponIcons.alpha;
 
 	static int32_t nInvFlags [NUM_INV_ITEMS] = {
@@ -626,7 +626,7 @@ if (ogl.IsOculusRift ())
 	static int32_t nEnergyType [NUM_INV_ITEMS] = {I2X (1), I2X (100), 0, I2X (1), 0, I2X (1), 0, 0, I2X (1), I2X (1)};
 	static int32_t nIdItems [NUM_INV_ITEMS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-dy = 0; //(gameData.render.frame.Height () - gameData.render.scene.Height ());
+dy = 0; //(gameData.renderData.frame.Height () - gameData.renderData.scene.Height ());
 #if 1
 	y = nIconPos ? CCanvas::Current ()->Height () - dy - oy : oy + hIcon + 12;
 #else
@@ -640,7 +640,7 @@ firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
 x = (CCanvas::Current ()->Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox - nDmgIconWidth) / 2;
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons & 1))
 	y -= cockpit->LHX (10);
-//y += gameData.render.scene.Top ();
+//y += gameData.renderData.scene.Top ();
 for (j = firstItem; j < n; j++) {
 	int32_t bHave, bAvailable, bActive = EquipmentActive (nInvFlags [j]);
 	pBm = bmInvItems + j;

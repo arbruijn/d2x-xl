@@ -528,7 +528,7 @@ if (*m_info.szBitmapName) {
 	tBitmapIndex bmi = PiggyFindBitmap (m_info.szBitmapName, gameStates.app.bD1Mission);
 	if (0 > int16_t (bmi.index))
 		return;
-	m_bitmap = gameData.pig.tex.bitmaps [gameStates.app.bD1Mission] + bmi.index;
+	m_bitmap = gameData.pigData.tex.bitmaps [gameStates.app.bD1Mission] + bmi.index;
 
 	LoadTexture (bmi.index, 0, gameStates.app.bD1Mission);
 	m_bitmap->SetStatic (1);
@@ -626,9 +626,9 @@ void CBriefing::SetupAnimationCanvas (CCanvas* baseCanv)
 {
 int32_t x, y, w, h;
 if (ogl.IsOculusRift ()) {
-	y = gameData.render.window.Height (false) / 3;
-	w = gameData.render.window.Height (false) - y;
-	x = gameData.render.window.Width (false) - w;
+	y = gameData.renderData.window.Height (false) / 3;
+	w = gameData.renderData.window.Height (false) - y;
+	x = gameData.renderData.window.Width (false) - w;
 	h = w = 9 * w / 10;
 	}
 else {
@@ -661,11 +661,11 @@ CFrameController fc;
 for (fc.Begin (); fc.Continue (); fc.End ()) {
 	CCanvas* baseCanv;
 	if (!ogl.IsOculusRift ()) 
-		baseCanv = &gameData.render.frame;
+		baseCanv = &gameData.renderData.frame;
 	else {
 		int32_t w, h;
-		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
-		baseCanv = &gameData.render.window;
+		cockpit->SetupSceneCenter (&gameData.renderData.frame, w, h);
+		baseCanv = &gameData.renderData.window;
 		}
 
 	baseCanv->Activate ("CBriefing::RenderElement");
@@ -1600,7 +1600,7 @@ if (gameOpts->gameplay.bSkipBriefingScreens) {
 if (gameStates.app.bD1Mission) {
 	int32_t pcxResult = RenderImage (briefingScreens [nScreen % MAX_BRIEFING_SCREENS].szName);
 	if (pcxResult != PCX_ERROR_NONE) {
-		console.printf (CON_DBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing gameData.render.screen.  Does this cause you pain?)\n", 
+		console.printf (CON_DBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing gameData.renderData.screen.  Does this cause you pain?)\n", 
 							 briefingScreens [nScreen % MAX_BRIEFING_SCREENS].szName, PcxErrorMsg (pcxResult), pcxResult);
 		Int3 ();
 		return 0;

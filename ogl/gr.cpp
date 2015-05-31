@@ -74,28 +74,28 @@ if (mode <= 0)
 w = SM_W (mode);
 h = SM_H (mode);
 nCurrentVGAMode = mode;
-gameData.render.screen.Destroy ();
-gameData.render.screen.Init ();
-gameData.render.screen.SetMode (mode);
-gameData.render.screen.Setup (NULL, 0, 0, w, h);
-gameData.render.screen.SetWidth (w);
-gameData.render.screen.SetHeight (h);
-gameData.render.screen.Setup (&gameData.render.screen);
+gameData.renderData.screen.Destroy ();
+gameData.renderData.screen.Init ();
+gameData.renderData.screen.SetMode (mode);
+gameData.renderData.screen.Setup (NULL, 0, 0, w, h);
+gameData.renderData.screen.SetWidth (w);
+gameData.renderData.screen.SetHeight (h);
+gameData.renderData.screen.Setup (&gameData.renderData.screen);
 SetupCanvasses ();
-//gameData.render.screen.Aspect () = FixDiv(gameData.render.screen.Width ()*3,gameData.render.screen.Height ()*4);
-gameData.render.screen.SetAspect (FixDiv (gameData.render.screen.Width (), (fix) (gameData.render.screen.Height () * ((double) w / (double) h))));
-gameData.render.screen.CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);
-gameData.render.screen.CreateBuffer ();
-gameData.render.screen.CCanvas::SetPalette (paletteManager.Default ()); //just need some valid palette here
-//gameData.render.screen.props.rowSize = screen->pitch;
-//gameData.render.screen.Buffer () = reinterpret_cast<uint8_t*> (screen->pixels);
+//gameData.renderData.screen.Aspect () = FixDiv(gameData.renderData.screen.Width ()*3,gameData.renderData.screen.Height ()*4);
+gameData.renderData.screen.SetAspect (FixDiv (gameData.renderData.screen.Width (), (fix) (gameData.renderData.screen.Height () * ((double) w / (double) h))));
+gameData.renderData.screen.CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);
+gameData.renderData.screen.CreateBuffer ();
+gameData.renderData.screen.CCanvas::SetPalette (paletteManager.Default ()); //just need some valid palette here
+//gameData.renderData.screen.props.rowSize = screen->pitch;
+//gameData.renderData.screen.Buffer () = reinterpret_cast<uint8_t*> (screen->pixels);
 /***/PrintLog (1, "initializing OpenGL window\n");
 i = SdlGlInitWindow (w, h, 0);	//platform specific code
 PrintLog (-1);
 if (!i)
 	return 0;
 /***/PrintLog (1, "initializing OpenGL view port\n");
-gameData.render.screen.Activate ("GetScreenMode (screen)", NULL, true);
+gameData.renderData.screen.Activate ("GetScreenMode (screen)", NULL, true);
 CCanvas::Current ()->SetFont (fontManager.Current ());
 PrintLog (-1);
 /***/PrintLog (1, "initializing OpenGL screen mode\n");
@@ -286,7 +286,7 @@ else
 /***/PrintLog (0, "initializing texture manager\n");
 textureManager.Init ();
 /***/PrintLog (0, "allocating screen buffer\n");
-gameData.render.screen.SetBuffer (NULL);
+gameData.renderData.screen.SetBuffer (NULL);
 
 CreateDisplayModeInfoTable ();
 // Set the mode.
@@ -325,7 +325,7 @@ void _CDECL_ GrClose (void)
 {
 PrintLog (1, "shutting down graphics subsystem\n");
 SdlGlClose ();//platform specific code
-gameData.render.screen.Destroy ();
+gameData.renderData.screen.Destroy ();
 #ifdef OGL_RUNTIME_LOAD
 if (ogl_rt_loaded)
 	OpenGL_LoadLibrary(false);
@@ -403,7 +403,7 @@ return nMode;
 int32_t SetSideBySideDisplayMode (void)
 {
 if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT)
-	SetCustomDisplayMode (gameData.render.rift.HResolution (), gameData.render.rift.VResolution (), 0);
+	SetCustomDisplayMode (gameData.renderData.rift.HResolution (), gameData.renderData.rift.VResolution (), 0);
 else if (gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_HDMI)
 	SetCustomDisplayMode (1920, 1080, 0);
 else
@@ -441,8 +441,8 @@ gameStates.menus.bHires = gameStates.menus.bHiresAvailable;		//do highres if we 
 nMenuMode = gameStates.gfx.bOverride 
 		? gameStates.gfx.nStartScrSize
 		: gameStates.menus.bHires 
-			? (gameData.render.screen.Area () >= 640 * 480) 
-				? gameData.render.screen.Scalar ()
+			? (gameData.renderData.screen.Area () >= 640 * 480) 
+				? gameData.renderData.screen.Scalar ()
 				: SM (800, 600)
 			: SM (320, 200);
 gameStates.video.nLastScreenMode = -1;
@@ -463,8 +463,8 @@ return 1;
 
 int32_t SetGameScreenMode (uint32_t sm)
 {
-if (nCurrentVGAMode != gameData.render.screen.Scalar ()) {
-	if (GrSetMode (gameData.render.screen.Scalar ())) {
+if (nCurrentVGAMode != gameData.renderData.screen.Scalar ()) {
+	if (GrSetMode (gameData.renderData.screen.Scalar ())) {
 		Error ("Cannot set desired screen mode for game!");
 		//we probably should do something else here, like select a standard mode
 		}
@@ -473,16 +473,16 @@ if (nCurrentVGAMode != gameData.render.screen.Scalar ()) {
 		JoyDefsCalibrate ();
 #endif
 	}
-if (!gameData.render.frame.Height () || (gameData.render.frame.Height () > gameData.render.screen.Height ()) || 
-	 !gameData.render.frame.Width () || (gameData.render.frame.Width () > gameData.render.screen.Width ())) {
-	gameData.render.frame.SetWidth (gameData.render.screen.Width ());
-	gameData.render.frame.SetHeight (gameData.render.screen.Height ());
+if (!gameData.renderData.frame.Height () || (gameData.renderData.frame.Height () > gameData.renderData.screen.Height ()) || 
+	 !gameData.renderData.frame.Width () || (gameData.renderData.frame.Width () > gameData.renderData.screen.Width ())) {
+	gameData.renderData.frame.SetWidth (gameData.renderData.screen.Width ());
+	gameData.renderData.frame.SetHeight (gameData.renderData.screen.Height ());
 	}
 //	Define screen pages for game mode
 // If we designate through screenFlags to use paging, then do so.
-gameData.render.frame.Setup (&gameData.render.screen);
+gameData.renderData.frame.Setup (&gameData.renderData.screen);
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && (gameStates.menus.bHires = (gameStates.video.nDisplayMode > 1));
-console.Resize (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height () / 2);
+console.Resize (0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height () / 2);
 return 1;
 }
 
@@ -496,8 +496,8 @@ int32_t SetScreenMode (uint32_t sm)
 	GLint nError = glGetError ();
 #endif
 if ((gameStates.video.nScreenMode == sm) && 
-	 (nCurrentVGAMode == gameData.render.screen.Scalar ()) && 
-	 (gameData.render.screen.Mode () == gameData.render.screen.Scalar ())) {
+	 (nCurrentVGAMode == gameData.renderData.screen.Scalar ()) && 
+	 (gameData.renderData.screen.Mode () == gameData.renderData.screen.Scalar ())) {
 	ogl.SetScreenMode ();
 	return 1;
 	}

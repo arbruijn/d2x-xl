@@ -96,12 +96,12 @@ modelPointList = pointlist;
 void RotatePointList (CRenderPoint *dest, CFixVector *src, CRenderNormal *norms, int32_t n, int32_t o)
 {
 PROF_START
-	CFloatVector	*pfv = gameData.models.fPolyModelVerts + o;
+	CFloatVector	*pfv = gameData.modelData.fPolyModelVerts + o;
 	CFloatVector	fScale;
 	bool				bScale;
 
-if ((bScale = !gameData.models.vScale.IsZero ()))
-	fScale.Assign (gameData.models.vScale);
+if ((bScale = !gameData.modelData.vScale.IsZero ()))
+	fScale.Assign (gameData.modelData.vScale);
 
 dest += o;
 if (norms)
@@ -128,9 +128,9 @@ while (n--) {
 			pfv->Scale (fScale);
 		}
 	else {
-		if (!gameData.models.vScale.IsZero ()) {
+		if (!gameData.modelData.vScale.IsZero ()) {
 			CFixVector v = *src;
-			v *= gameData.models.vScale;
+			v *= gameData.modelData.vScale;
 #if 1
 			transformation.Transform (dest->ViewPos (), v, 0);
 #else
@@ -332,14 +332,14 @@ void GetThrusterPos (int32_t nModel, CFixVector *vNormal, CFixVector *vOffset, C
 {
 	int32_t				h, i, nSize;
 	CFixVector			v, vForward = CFixVector::Create(0,0,I2X (1));
-	CModelThrusters	*pThruster = gameData.models.thrusters + nModel;
+	CModelThrusters	*pThruster = gameData.modelData.thrusters + nModel;
 
 if (pThruster->nCount >= 2)
 	return;
 if (pBm) {
-	if (!gameData.pig.tex.bitmaps [0].IsElement (pBm))
+	if (!gameData.pigData.tex.bitmaps [0].IsElement (pBm))
 		return;
-	i = (int32_t) (pBm - gameData.pig.tex.bitmaps [0]);
+	i = (int32_t) (pBm - gameData.pigData.tex.bitmaps [0]);
 	if ((i != 24) && ((i < 1741) || (i > 1745)))
 		return;
 	}
@@ -413,7 +413,7 @@ nDepth++;
 G3CheckAndSwap (modelDataP);
 if (SHOW_DYN_LIGHT &&
 	!nDepth && !po && pObj && ((pObj->info.nType == OBJ_ROBOT) || (pObj->info.nType == OBJ_PLAYER))) {
-	po = gameData.models.pofData [gameStates.app.bD1Mission][0] + nModel;
+	po = gameData.modelData.pofData [gameStates.app.bD1Mission][0] + nModel;
 	POFGatherPolyModelItems (pObj, modelDataP, pAnimAngles, po, 0);
 	}
 nGlow = -1;		//glow off by default
@@ -543,8 +543,8 @@ for (;;) {
 
 		va = pAnimAngles ? pAnimAngles [WORDVAL (p+2)] : CAngleVector::ZERO;
 		vo = *VECPTR (p+4);
-		if (!gameData.models.vScale.IsZero ())
-			vo *= gameData.models.vScale;
+		if (!gameData.modelData.vScale.IsZero ())
+			vo *= gameData.modelData.vScale;
 		transformation.Begin (vo, va, __FILE__, __LINE__);
 		if (vOffset)
 			vo += *vOffset;
@@ -681,8 +681,8 @@ for (;;) {
 		case OP_SUBCALL: {
 			const CAngleVector	*va = pAnimAngles ? &pAnimAngles [WORDVAL (p+2)] : &CAngleVector::ZERO;
 			CFixVector	vo = *VECPTR (p+4);
-			if (!gameData.models.vScale.IsZero ())
-				vo *= gameData.models.vScale;
+			if (!gameData.modelData.vScale.IsZero ())
+				vo *= gameData.modelData.vScale;
 			transformation.Begin (vo, *va, __FILE__, __LINE__);
 			if (vOffset)
 				vo += *vOffset;

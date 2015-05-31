@@ -428,7 +428,7 @@ if (ogl.m_features.bRenderToTexture.Available ()) {
 	// glPushMatrix ();
 	glLoadIdentity ();//clear matrix
 	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-	ogl.SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
+	ogl.SetViewport (0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
 
 	ogl.ChooseDrawBuffer ();
 #if 0

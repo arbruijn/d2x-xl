@@ -256,11 +256,11 @@ if (oppSideTable [c0] == c1)
 	return 0;
 //find normals of adjoining sides
 FindAdjacentSideNorms (pSeg, c0, c1, s);
-temp = gameData.render.mine.viewer.vPos - *s [0].facePortal;
+temp = gameData.renderData.mine.viewer.vPos - *s [0].facePortal;
 d0 = CFixVector::Dot (s [0].n [0], temp);
 if (s [0].t != 1)	// triangularized face -> 2 different normals
 	d0 |= CFixVector::Dot (s [0].n [1], temp);	// we only need the sign, so a bitwise or does the trick
-temp = gameData.render.mine.viewer.vPos - *s [1].facePortal;
+temp = gameData.renderData.mine.viewer.vPos - *s [1].facePortal;
 d1 = CFixVector::Dot (s [1].n [0], temp);
 if (s [1].t != 1)
 	d1 |= CFixVector::Dot (s [1].n [1], temp);
@@ -367,7 +367,7 @@ return count;
 void UpdateRenderedData (int32_t nWindow, CObject *viewer, int32_t rearViewFlag, int32_t user)
 {
 Assert(nWindow < MAX_RENDERED_WINDOWS);
-windowRenderedData [nWindow].nFrame = gameData.app.nFrameCount;
+windowRenderedData [nWindow].nFrame = gameData.appData.nFrameCount;
 windowRenderedData [nWindow].pViewer = viewer;
 windowRenderedData [nWindow].bRearView = rearViewFlag;
 windowRenderedData [nWindow].nUser = user;
@@ -377,7 +377,7 @@ windowRenderedData [nWindow].nUser = user;
 
 void AddObjectToSegList (int16_t nObject, int16_t nSegment)
 {
-	tObjRenderListItem *pi = gameData.render.mine.objRenderList.objs + gameData.render.mine.objRenderList.nUsed;
+	tObjRenderListItem *pi = gameData.renderData.mine.objRenderList.objs + gameData.renderData.mine.objRenderList.nUsed;
 
 #if DBG
 if (nObject == nDbgObj)
@@ -385,11 +385,11 @@ if (nObject == nDbgObj)
 #endif
 CObject *pObj = OBJECT (nObject);
 if (pObj) {
-	pi->nNextItem = gameData.render.mine.objRenderList.ref [nSegment];
-	gameData.render.mine.objRenderList.ref [nSegment] = gameData.render.mine.objRenderList.nUsed++;
+	pi->nNextItem = gameData.renderData.mine.objRenderList.ref [nSegment];
+	gameData.renderData.mine.objRenderList.ref [nSegment] = gameData.renderData.mine.objRenderList.nUsed++;
 	pi->nObject = nObject;
-	pi->xDist = CFixVector::Dist (pObj->Position (), gameData.render.mine.viewer.vPos);
-	pObj->SetFrame (gameData.app.nFrameCount);
+	pi->xDist = CFixVector::Dist (pObj->Position (), gameData.renderData.mine.viewer.vPos);
+	pObj->SetFrame (gameData.appData.nFrameCount);
 	}
 }
 
@@ -419,7 +419,7 @@ while (head != tail) {
 		CSegMasks mask = SEGMENT (info.nSegment)->Masks (Position (), info.xSize);
 		if (!(mask.m_side & (1 << i)))
 			continue;
-		if (gameData.render.mine.Visible (nSegment))
+		if (gameData.renderData.mine.Visible (nSegment))
 			return nSegment;
 		segList [tail++] = nSegment;
 		bVisited [nSegment] = 1;
@@ -440,7 +440,7 @@ FORALL_OBJS (pObj) {
 		continue;
 	if (pObj->Segment () < 0)
 		continue;
-	if (pObj->Frame () == gameData.app.nFrameCount)
+	if (pObj->Frame () == gameData.appData.nFrameCount)
 		continue;
 	int16_t nSegment = pObj->Visible ();
 	if (nSegment < 0)
@@ -461,11 +461,11 @@ PROF_START
 	int32_t			nListPos;
 	int16_t			nObject;
 
-gameData.render.mine.objRenderList.ref.Clear (char (0xff));
-gameData.render.mine.objRenderList.nUsed = 0;
+gameData.renderData.mine.objRenderList.ref.Clear (char (0xff));
+gameData.renderData.mine.objRenderList.nUsed = 0;
 
 for (nListPos = 0; nListPos < nSegCount; nListPos++) {
-	nSegment = gameData.render.mine.visibility [nThread].segments [nListPos];
+	nSegment = gameData.renderData.mine.visibility [nThread].segments [nListPos];
 	if (nSegment == -0x7fff)
 		continue;
 #if DBG
@@ -491,7 +491,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 						continue;
 					if (pNewSeg->IsPassable (nSide, NULL) & WID_PASSABLE_FLAG) {	//can explosion migrate through
 						nChild = pNewSeg->m_children [nSide];
-						if (gameData.render.mine.Visible (nChild, nThread)) {
+						if (gameData.renderData.mine.Visible (nChild, nThread)) {
 							nNewSeg = nChild;	// only migrate to segment in render list
 #if DBG
 							if (nNewSeg == nDbgSeg)
@@ -525,26 +525,26 @@ fix d2 = CFixVector::Dist (v, vCenter);
 if (d1 < d2)
 	d1 = d2;
 fix r = gameData.segData.segRads [1][gameData.objData.pViewer->info.nSegment];
-gameData.render.zMin = 0;
-gameData.render.zMax = vCenter.v.coord.z + d1 + r;
+gameData.renderData.zMin = 0;
+gameData.renderData.zMax = vCenter.v.coord.z + d1 + r;
 }
 
 //------------------------------------------------------------------------------
 
 void GetMaxDepth (void)
 {
-gameData.render.zMax = 0;
+gameData.renderData.zMax = 0;
 for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
-	if (gameData.render.zMax < tiRender.zMax [i])
-		gameData.render.zMax = tiRender.zMax [i];
-	if (gameData.render.zMin > tiRender.zMin [i])
-		gameData.render.zMin = tiRender.zMin [i];
+	if (gameData.renderData.zMax < tiRender.zMax [i])
+		gameData.renderData.zMax = tiRender.zMax [i];
+	if (gameData.renderData.zMin > tiRender.zMin [i])
+		gameData.renderData.zMin = tiRender.zMin [i];
 	}
 }
 
 //------------------------------------------------------------------------------
 //build a list of segments to be rendered
-//fills in gameData.render.mine.renderSegList & gameData.render.mine.visibility [0].nSegments
+//fills in gameData.renderData.mine.renderSegList & gameData.renderData.mine.visibility [0].nSegments
 
 //static tSegZRef zRef [2][MAX_SEGMENTS_D2X];
 
@@ -586,7 +586,7 @@ void CVisibilityData::InitZRef (int32_t i, int32_t j, int32_t nThread)
 	int32_t				r, z, zMin = 0x7fffffff, zMax = -0x7fffffff;
 	CSegment*		pSeg;
 
-vViewer.Assign (gameData.render.mine.viewer.vPos);
+vViewer.Assign (gameData.renderData.mine.viewer.vPos);
 for (; i < j; i++, ps++) {
 	pSeg = SEGMENT (segments [i]);
 #if TRANSP_DEPTH_HASH
@@ -648,8 +648,8 @@ if (nSegments < 2)
 
 if (gameStates.app.nThreads < 2) {
 	InitZRef (0, nSegments, 0);
-	gameData.render.zMin = tiRender.zMin [0];
-	gameData.render.zMax = tiRender.zMax [0];
+	gameData.renderData.zMin = tiRender.zMin [0];
+	gameData.renderData.zMax = tiRender.zMax [0];
 	QSortZRef (0, nSegments - 1);
 	}
 else {
@@ -664,9 +664,9 @@ GetMaxDepth ();
 if (RunRenderThreads (rtInitSegZRef)) 
 	GetMaxDepth ();
 else {
-	InitZRef (0, gameData.render.mine.visibility [0].nSegments, 0);
-	gameData.render.zMin = tiRender.zMin [0];
-	gameData.render.zMax = tiRender.zMax [0];
+	InitZRef (0, gameData.renderData.mine.visibility [0].nSegments, 0);
+	gameData.renderData.zMin = tiRender.zMin [0];
+	gameData.renderData.zMax = tiRender.zMax [0];
 	}
 #endif
 }
@@ -722,8 +722,8 @@ void CVisibilityData::BuildSegList (CTransformation& transformation, int16_t nSt
 
 viewDir = transformation.m_info.view [0].m.dir.f;
 pViewos = transformation.m_info.pos;
-gameData.render.zMin = 0x7fffffff;
-gameData.render.zMax = -0x7fffffff;
+gameData.renderData.zMin = 0x7fffffff;
+gameData.renderData.zMax = -0x7fffffff;
 bCullIfBehind = !SHOW_SHADOWS || (gameStates.render.nShadowPass == 1);
 position.Clear (char (0xff));
 BumpVisitedFlag ();
@@ -875,16 +875,16 @@ for (l = 0; l < nRenderDepth; l++) {
 				nChildSeg = nChildSeg;
 #endif
 #if 1
-			if ((facePortal.right < 0) || (facePortal.bot < 0) || (facePortal.left >= gameData.render.screen.Width ()) || (facePortal.top >= gameData.render.screen.Height ()))
+			if ((facePortal.right < 0) || (facePortal.bot < 0) || (facePortal.left >= gameData.renderData.screen.Width ()) || (facePortal.top >= gameData.renderData.screen.Height ()))
 				continue;
 			if (facePortal.left < 0)
 				facePortal.left = 0;
-			if (facePortal.right >= gameData.render.screen.Width ())
-				facePortal.right = gameData.render.screen.Width () - 1;
+			if (facePortal.right >= gameData.renderData.screen.Width ())
+				facePortal.right = gameData.renderData.screen.Width () - 1;
 			if (facePortal.top < 0)
 				facePortal.top = 0;
-			if (facePortal.bot >= gameData.render.screen.Height ())
-				facePortal.bot = gameData.render.screen.Height () - 1;
+			if (facePortal.bot >= gameData.renderData.screen.Height ())
+				facePortal.bot = gameData.renderData.screen.Height () - 1;
 			if (offScreenFlags)
 				continue;
 #endif
@@ -994,7 +994,7 @@ if (gameStates.render.nShadowMap) {
 
 void BuildRenderSegList (int16_t nStartSeg, int32_t nWindow, bool bIgnoreDoors, int32_t nThread)
 {
-return gameData.render.mine.visibility [nThread].BuildSegList (transformation, nStartSeg, nWindow, bIgnoreDoors);
+return gameData.renderData.mine.visibility [nThread].BuildSegList (transformation, nStartSeg, nWindow, bIgnoreDoors);
 }
 
 //------------------------------------------------------------------------------

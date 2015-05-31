@@ -288,7 +288,7 @@ int16_t nId = 0;
 #if 0
 if (gameStates.render.nMeshQuality) {
 	i = LEVEL_VERTICES + ((FACES.nTriangles ? FACES.nTriangles / 2 : FACES.nFaces) << (abs (gameStates.render.nMeshQuality)));
-	if (!(gameData.segData.fVertices.Resize (i) && gameData.segData.vertices.Resize (i) && gameData.render.mine.Resize (i)))
+	if (!(gameData.segData.fVertices.Resize (i) && gameData.segData.vertices.Resize (i) && gameData.renderData.mine.Resize (i)))
 		return 0;
 	}
 #endif
@@ -429,7 +429,7 @@ memcpy (verts, pEdge->verts, sizeof (verts));
 int32_t i = gameData.segData.fVertices.Length ();
 if (gameData.segData.nVertices >= i) {
 	i *= 2;
-	if (!(gameData.segData.fVertices.Resize (i) && gameData.segData.vertices.Resize (i) && gameData.segData.vertexOwners.Resize (i) && gameData.render.mine.Resize (i)))
+	if (!(gameData.segData.fVertices.Resize (i) && gameData.segData.vertices.Resize (i) && gameData.segData.vertexOwners.Resize (i) && gameData.renderData.mine.Resize (i)))
 		return 0;
 	}
 gameData.segData.fVertices [gameData.segData.nVertices] = CFloatVector::Avg (gameData.segData.fVertices [verts [0]], gameData.segData.fVertices [verts [1]]);
@@ -874,7 +874,7 @@ if (bOk) {
 	pBuffer += nSize;
 	VERTEX_OWNERS.Resize (mdh.nVertices);
 	memcpy (VERTEX_OWNERS.Buffer (), pBuffer, nSize = sizeof (VERTEX_OWNERS [0]) * mdh.nVertices);
-	gameData.render.mine.Resize (mdh.nVertices);
+	gameData.renderData.mine.Resize (mdh.nVertices);
 	}
 if (ioBuffer) {
 	delete[] ioBuffer;
@@ -968,7 +968,7 @@ if ((gameStates.render.bTriangleMesh > 0) && !SplitTriangles ()) {
 
 if ((m_nTriangles > (LEVEL_FACES << gameStates.render.nMeshQuality)) && !gameData.segData.faces.Resize ()) {
 	gameData.segData.faces.Destroy ();
-	gameData.render.Destroy ();
+	gameData.renderData.Destroy ();
 	PrintLog (-1, "Not enough memory to create mesh data in requested quality\n");
 	return 0;
 	}
@@ -1048,7 +1048,7 @@ void CQuadMeshBuilder::InitTexturedFace (void)
 m_pFace->m_info.nBaseTex = m_pSide->m_nBaseTex;
 if ((m_pFace->m_info.nOvlTex = m_pSide->m_nOvlTex))
 	m_nOvlTexCount++;
-m_pFace->m_info.bSlide = (gameData.pig.tex.pTexMapInfo [m_pFace->m_info.nBaseTex].slide_u || gameData.pig.tex.pTexMapInfo [m_pFace->m_info.nBaseTex].slide_v);
+m_pFace->m_info.bSlide = (gameData.pigData.tex.pTexMapInfo [m_pFace->m_info.nBaseTex].slide_u || gameData.pigData.tex.pTexMapInfo [m_pFace->m_info.nBaseTex].slide_v);
 m_pFace->m_info.nCamera = IsMonitorFace (m_pFace->m_info.nSegment, m_pFace->m_info.nSide, 1);
 m_pFace->m_info.bIsLight = IsLight (m_pFace->m_info.nBaseTex) || (m_pFace->m_info.nOvlTex && IsLight (m_pFace->m_info.nOvlTex));
 m_pFace->m_info.nOvlOrient = (uint8_t) m_pSide->m_nOvlOrient;
@@ -1056,7 +1056,7 @@ m_pFace->m_info.bTextured = 1;
 m_pFace->m_info.bTransparent = 0;
 int32_t nTexture = m_pFace->m_info.nOvlTex ? m_pFace->m_info.nOvlTex : m_pFace->m_info.nBaseTex;
 char *pszName = (nTexture < MAX_WALL_TEXTURES)
-					 ? gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [nTexture].index].name
+					 ? gameData.pigData.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pigData.tex.pBmIndex [nTexture].index].name
 					 : szEmpty;
 if (strstr (pszName, "misc17") != NULL)
 	m_pFace->m_info.bSparks = (nTexture == m_pFace->m_info.nBaseTex) ? 1 : 2;
@@ -1147,7 +1147,7 @@ for (i = 0; i < 4; i++) {
 	m_pTexCoord++;
 	m_pOvlTexCoord++;
 	if (!gameStates.app.bNostalgia)
-		*m_pFaceColor = gameData.render.color.ambient [h];
+		*m_pFaceColor = gameData.renderData.color.ambient [h];
 	else {
 		m_pFaceColor->Red () = 
 		m_pFaceColor->Green () = 
@@ -1196,7 +1196,7 @@ for (i = 0; i < h; i++, m_pFaceTriangle++) {
 		m_pTexCoord++;
 		m_pOvlTexCoord++;
 		m_pLightmapTexCoord++;
-		m_pColor = gameData.render.color.ambient + v;
+		m_pColor = gameData.renderData.color.ambient + v;
 		m_pFaceColor->Assign (*m_pColor);
 		++m_pFaceColor;
 		}
@@ -1269,7 +1269,7 @@ for (i = 0; i < FACES.nFaces; i++, pFace++) {
 	pFace->m_info.nKey = gameData.segData.nFaceKeys;
 	}
 ++gameData.segData.nFaceKeys;
-gameData.render.faceIndex.Create ();
+gameData.renderData.faceIndex.Create ();
 }
 
 //------------------------------------------------------------------------------
@@ -1332,7 +1332,7 @@ for (i = 0; i < 4; i++) {
 	texCoord.v.v += X2F (m_pSide->m_uvls [i].v + m_pSide->m_uvls [j].v) / 8;
 	h = m_sideVerts [i];
 	k = m_sideVerts [j];
-	color += (gameData.render.color.ambient [h] + gameData.render.color.ambient [k]) * 0.125f;
+	color += (gameData.renderData.color.ambient [h] + gameData.renderData.color.ambient [k]) * 0.125f;
 	}
 vSide [0] = CFloatVector::Avg (gameData.segData.fVertices [m_sideVerts [0]], gameData.segData.fVertices [m_sideVerts [1]]);
 vSide [2] = CFloatVector::Avg (gameData.segData.fVertices [m_sideVerts [2]], gameData.segData.fVertices [m_sideVerts [3]]);
@@ -1363,7 +1363,7 @@ for (i = 0; i < 4; i++, m_pFaceTriangle++) {
 		else {
 			m_pTexCoord [j].v.u = X2F (m_pSide->m_uvls [k].u);
 			m_pTexCoord [j].v.v = X2F (m_pSide->m_uvls [k].v);
-			m_pColor = gameData.render.color.ambient + v;
+			m_pColor = gameData.renderData.color.ambient + v;
 			m_pFaceColor [j] = *m_pColor;
 			}
 		RotateTexCoord2f (*m_pOvlTexCoord, m_pTexCoord [j], (uint8_t) m_pSide->m_nOvlOrient);
@@ -1510,9 +1510,9 @@ for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, m_pSeg++) 
 	}
 
 gameData.segData.nFaces = FACES.nFaces;
-if (!(gameData.segData.faces.Create () && gameData.render.Create ())) {
+if (!(gameData.segData.faces.Create () && gameData.renderData.Create ())) {
 	gameData.segData.faces.Destroy ();
-	gameData.render.Destroy ();
+	gameData.renderData.Destroy ();
 	PrintLog (-1, "Not enough memory for mesh data\n");
 	return 0;
 	}
@@ -1525,7 +1525,7 @@ m_pTexCoord = FACES.texCoord.Buffer ();
 m_pOvlTexCoord = FACES.ovlTexCoord.Buffer ();
 m_pLightmapTexCoord = FACES.lMapTexCoord.Buffer ();
 m_pFaceColor = FACES.color.Buffer ();
-m_pColor = gameData.render.color.ambient.Buffer ();
+m_pColor = gameData.renderData.color.ambient.Buffer ();
 m_pSeg = SEGMENTS.Buffer ();
 m_pSegFace = SEGFACES.Buffer ();
 FACES.slidingFaces = NULL;
@@ -1539,7 +1539,7 @@ PrintLog (1, "Creating face list\n");
 // the mesh builder can theoretically add one vertex per side, so resize the vertex buffers
 gameData.segData.vertices.Resize (4 * FACES.nFaces /*LEVEL_VERTICES + LEVEL_SIDES*/);
 gameData.segData.fVertices.Resize (4 * FACES.nFaces /*LEVEL_VERTICES + LEVEL_SIDES*/);
-gameData.render.mine.Resize (4 * FACES.nFaces /*LEVEL_VERTICES + LEVEL_SIDES*/);
+gameData.renderData.mine.Resize (4 * FACES.nFaces /*LEVEL_VERTICES + LEVEL_SIDES*/);
 
 FACES.nFaces = 0;
 for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, m_pSeg++, m_pSegFace++) {
@@ -1609,12 +1609,12 @@ for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, m_pSeg++, 
 	}
 #if 1
 // any additional vertices have been stored, so prune the buffers to the minimally required size
-if (!(gameData.segData.Resize () && gameData.render.lights.Resize () && gameData.render.color.Resize ())) {
+if (!(gameData.segData.Resize () && gameData.renderData.lights.Resize () && gameData.renderData.color.Resize ())) {
 	PrintLog (-1);
 	return 0;
 	}
 #endif
-for (m_pColor = gameData.render.color.ambient.Buffer (), i = gameData.segData.nVertices; i; i--, m_pColor++)
+for (m_pColor = gameData.renderData.color.ambient.Buffer (), i = gameData.segData.nVertices; i; i--, m_pColor++)
 	if (m_pColor->Alpha () > 1) {
 		m_pColor->Red () /= m_pColor->Alpha ();
 		m_pColor->Green () /= m_pColor->Alpha ();
@@ -1626,7 +1626,7 @@ if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel, gameStat
 	return 0;
 	}
 #if 1
-if (!(gameData.render.lights.Resize () && gameData.render.color.Resize ())) {
+if (!(gameData.renderData.lights.Resize () && gameData.renderData.color.Resize ())) {
 	PrintLog (-1);
 	return 0;
 	}

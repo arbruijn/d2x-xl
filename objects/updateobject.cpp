@@ -87,8 +87,8 @@ void StopPlayerMovement (void)
 {
 if (OBJECTS.Buffer () && !(gameData.objData.speedBoost.Buffer () && gameData.objData.speedBoost [OBJ_IDX (gameData.objData.pConsole)].bBoosted)) {
 	StopObjectMovement (OBJECT (LOCALPLAYER.nObject));
-	memset (&gameData.physics.playerThrust, 0, sizeof (gameData.physics.playerThrust));
-//	gameData.time.SetTime (I2X (1));
+	memset (&gameData.physicsData.playerThrust, 0, sizeof (gameData.physicsData.playerThrust));
+//	gameData.timeData.SetTime (I2X (1));
 	gameData.objData.speedBoost [OBJ_IDX (gameData.objData.pConsole)].bBoosted = 0;
 	}
 }
@@ -140,9 +140,9 @@ void CObject::Spin (void)
 	CFixMatrix mRot, mOrient;
 
 Assert (info.movementType == MT_SPINNING);
-vRot = CAngleVector::Create ((fixang) FixMul (mType.spinRate.v.coord.x, gameData.time.xFrame),
-									  (fixang) FixMul (mType.spinRate.v.coord.y, gameData.time.xFrame),
-									  (fixang) FixMul (mType.spinRate.v.coord.z, gameData.time.xFrame));
+vRot = CAngleVector::Create ((fixang) FixMul (mType.spinRate.v.coord.x, gameData.timeData.xFrame),
+									  (fixang) FixMul (mType.spinRate.v.coord.y, gameData.timeData.xFrame),
+									  (fixang) FixMul (mType.spinRate.v.coord.z, gameData.timeData.xFrame));
 mRot = CFixMatrix::Create (vRot);
 mOrient = info.position.mOrient * mRot;
 info.position.mOrient = mOrient;
@@ -234,7 +234,7 @@ if ((info.nType == OBJ_PLAYER) && (N_LOCALPLAYER == info.nId)) {
 	CSegment*		pSeg = SEGMENT (info.nSegment);
 	CPlayerData*	pPlayer = gameData.multiplayer.players + N_LOCALPLAYER;
 
-   if (gameData.app.GameMode (GM_CAPTURE))
+   if (gameData.appData.GameMode (GM_CAPTURE))
 		 pSeg->CheckForGoal ();
    else if (IsHoardGame)
 		 pSeg->CheckForHoardGoal ();
@@ -421,21 +421,21 @@ int32_t CObject::CheckTriggerHits (int16_t nPrevSegment)
 if ((info.movementType != MT_PHYSICS) || (nPrevSegment == info.nSegment))
 	return 0;
 nOldLevel = missionManager.nCurrentLevel;
-for (i = 0; i < gameData.physics.nSegments - 1; i++) {
-	if (gameData.physics.segments [i] < 0)
+for (i = 0; i < gameData.physicsData.nSegments - 1; i++) {
+	if (gameData.physicsData.segments [i] < 0)
 		continue;
-	if (gameData.physics.segments [i + 1] < 0)
+	if (gameData.physicsData.segments [i + 1] < 0)
 		continue;
 #if DBG
-	if (gameData.physics.segments [i] > gameData.segData.nLastSegment)
-		PrintLog (0, "invalid segment in gameData.physics.segments\n");
+	if (gameData.physicsData.segments [i] > gameData.segData.nLastSegment)
+		PrintLog (0, "invalid segment in gameData.physicsData.segments\n");
 #endif
-	nConnSide = SEGMENT (gameData.physics.segments [i + 1])->ConnectedSide (SEGMENT (gameData.physics.segments [i]));
+	nConnSide = SEGMENT (gameData.physicsData.segments [i + 1])->ConnectedSide (SEGMENT (gameData.physicsData.segments [i]));
 	if (nConnSide != -1)
-		SEGMENT (gameData.physics.segments [i])->OperateTrigger (nConnSide, this, 0);
+		SEGMENT (gameData.physicsData.segments [i])->OperateTrigger (nConnSide, this, 0);
 #if DBG
 	else	// segments are not directly connected, so do binary subdivision until you find connected segments.
-		PrintLog (0, "Unconnected segments %d, %d\n", gameData.physics.segments [i + 1], gameData.physics.segments [i]);
+		PrintLog (0, "Unconnected segments %d, %d\n", gameData.physicsData.segments [i + 1], gameData.physicsData.segments [i]);
 #endif
 	//maybe we've gone on to the next level.  if so, bail!
 	if (missionManager.nCurrentLevel != nOldLevel)
@@ -472,7 +472,7 @@ if (gameStates.render.bDropAfterburnerBlob) {
 	gameStates.render.bDropAfterburnerBlob = 0;
 	}
 
-if ((info.nType == OBJ_WEAPON) && (gameData.weapons.info [info.nId].nAfterburnerSize)) {
+if ((info.nType == OBJ_WEAPON) && (gameData.weaponData.info [0][info.nId].nAfterburnerSize)) {
 	int32_t	nObject, bSmoke;
 	fix	vel;
 	fix	delay, lifetime, nSize;
@@ -499,7 +499,7 @@ if ((info.nType == OBJ_WEAPON) && (gameData.weapons.info [info.nId].nAfterburner
 		delay = 0;
 		}
 	else {
-		nSize = I2X (gameData.weapons.info [info.nId].nAfterburnerSize) / 16;
+		nSize = I2X (gameData.weaponData.info [0][info.nId].nAfterburnerSize) / 16;
 		lifetime = 3 * delay / 2;
 		if (!IsMultiGame) {
 			delay /= 2;
@@ -509,10 +509,10 @@ if ((info.nType == OBJ_WEAPON) && (gameData.weapons.info [info.nId].nAfterburner
 
 	nObject = OBJ_IDX (this);
 	if (bSmoke ||
-		 (gameData.objData.xLastAfterburnerTime [nObject] + delay < gameData.time.xGame) ||
-		 (gameData.objData.xLastAfterburnerTime [nObject] > gameData.time.xGame)) {
+		 (gameData.objData.xLastAfterburnerTime [nObject] + delay < gameData.timeData.xGame) ||
+		 (gameData.objData.xLastAfterburnerTime [nObject] > gameData.timeData.xGame)) {
 		DropAfterburnerBlobs (this, 1, nSize, lifetime, NULL, bSmoke);
-		gameData.objData.xLastAfterburnerTime [nObject] = gameData.time.xGame;
+		gameData.objData.xLastAfterburnerTime [nObject] = gameData.timeData.xGame;
 		}
 	}
 }
@@ -593,10 +593,10 @@ if (info.nType == OBJ_ROBOT) {
 	}
 RepairDamage ();
 HandleSegmentFunction ();
-if ((info.xLifeLeft != IMMORTAL_TIME) && (info.xLifeLeft != ONE_FRAME_TIME) && (gameData.physics.xTime > 0))
-	info.xLifeLeft -= (fix) (gameData.physics.xTime / gameStates.gameplay.slowmo [0].fSpeed);		//...inevitable countdown towards death
+if ((info.xLifeLeft != IMMORTAL_TIME) && (info.xLifeLeft != ONE_FRAME_TIME) && (gameData.physicsData.xTime > 0))
+	info.xLifeLeft -= (fix) (gameData.physicsData.xTime / gameStates.gameplay.slowmo [0].fSpeed);		//...inevitable countdown towards death
 gameStates.render.bDropAfterburnerBlob = 0;
-if ((gameData.physics.xTime > 0) && UpdateMovement ()) {
+if ((gameData.physicsData.xTime > 0) && UpdateMovement ()) {
 	UpdateEffects ();
 	return 1;
 	}
@@ -635,9 +635,9 @@ if (gameOpts->gameplay.nAutoLeveling)
 	gameData.objData.pConsole->mType.physInfo.flags |= PF_LEVELLING;
 else
 	gameData.objData.pConsole->mType.physInfo.flags &= ~PF_LEVELLING;
-gameData.physics.xTime = gameData.time.xFrame;
-gameData.laser.xUpdateTime %= HOMING_WEAPON_FRAMETIME;
-gameData.laser.xUpdateTime += gameData.time.xFrame;
+gameData.physicsData.xTime = gameData.timeData.xFrame;
+gameData.laserData.xUpdateTime %= HOMING_WEAPON_FRAMETIME;
+gameData.laserData.xUpdateTime += gameData.timeData.xFrame;
 // Move all OBJECTS
 gameStates.entropy.bConquering = 0;
 UpdatePlayerOrient ();
@@ -683,22 +683,22 @@ return 1;
 void WakeupRenderedObjects (CObject *pViewer, int32_t nWindow)
 {
 //	Make sure that we are processing current data.
-if (gameData.app.nFrameCount != windowRenderedData [nWindow].nFrame) {
+if (gameData.appData.nFrameCount != windowRenderedData [nWindow].nFrame) {
 #if TRACE
 		console.printf (1, "Warning: Called WakeupRenderedObjects with a bogus window.\n");
 #endif
 	return;
 	}
 
-gameData.ai.nLastMissileCamera = OBJ_IDX (pViewer);
-int32_t frameFilter = gameData.app.nFrameCount & 3;
+gameData.aiData.nLastMissileCamera = OBJ_IDX (pViewer);
+int32_t frameFilter = gameData.appData.nFrameCount & 3;
 for (int32_t i = windowRenderedData [nWindow].nObjects; i; ) {
 	int32_t nObject = windowRenderedData [nWindow].renderedObjects [--i];
 	if ((nObject & 3) == frameFilter) {
 		CObject* pObj = OBJECT (nObject);
 		if (pObj->info.nType == OBJ_ROBOT) {
 			if (CFixVector::Dist (pViewer->info.position.vPos, pObj->info.position.vPos) < I2X (100)) {
-				tAILocalInfo* pLocalInfo = gameData.ai.localInfo + nObject;
+				tAILocalInfo* pLocalInfo = gameData.aiData.localInfo + nObject;
 				if (pLocalInfo->targetAwarenessType == 0) {
 					pObj->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
 					pLocalInfo->targetAwarenessType = WEAPON_ROBOT_COLLISION;

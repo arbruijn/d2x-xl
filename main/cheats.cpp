@@ -302,7 +302,7 @@ if (!gameStates.app.bD1Mission) {
 		PLAYER_FLAGS_CONVERTER |
 		PLAYER_FLAGS_SLOWMOTION |
 		PLAYER_FLAGS_BULLETTIME;
-	gameData.physics.xAfterburnerCharge = I2X (1);
+	gameData.physicsData.xAfterburnerCharge = I2X (1);
 	}
 if (bVerbose)
 	HUDInitMessage (TXT_ACCESSORIES);
@@ -384,14 +384,14 @@ void BuddyDudeCheat (int32_t bVerbose)
 {
 gameStates.app.cheats.bMadBuddy = !gameStates.app.cheats.bMadBuddy;
 if (gameStates.app.cheats.bMadBuddy) {
-	strcpy (gameData.escort.szName, "Wingnut");
+	strcpy (gameData.escortData.szName, "Wingnut");
 	if (bVerbose)
-		HUDInitMessage (TXT_GB_ANGRY, gameData.escort.szName);
+		HUDInitMessage (TXT_GB_ANGRY, gameData.escortData.szName);
 	}
 else {
-	strcpy (gameData.escort.szName, gameData.escort.szRealName);
+	strcpy (gameData.escortData.szName, gameData.escortData.szRealName);
 	if (bVerbose)
-		HUDInitMessage (TXT_GB_CALM, gameData.escort.szName);
+		HUDInitMessage (TXT_GB_CALM, gameData.escortData.szName);
 	}
 }
 
@@ -426,7 +426,7 @@ else if (LOCALPLAYER.cloakTime == 0x7fffffff)
 bCloaked = (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0;
 if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_CLOAKED, bCloaked ? TXT_ON : TXT_OFF);
-LOCALPLAYER.cloakTime = bCloaked ? 0x7fffffff : 0; //gameData.time.xGame + I2X (1000);
+LOCALPLAYER.cloakTime = bCloaked ? 0x7fffffff : 0; //gameData.timeData.xGame + I2X (1000);
 audio.PlaySound (int16_t (gameData.objData.pwrUp.info [POW_CLOAK].hitSound));
 }
 
@@ -562,7 +562,7 @@ else if (LOCALPLAYER.invulnerableTime == 0x7fffffff)
 bInvul = (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) != 0;
 if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_INVULNERABILITY, bInvul ? TXT_ON : TXT_OFF);
-LOCALPLAYER.invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + I2X (1000);
+LOCALPLAYER.invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.timeData.xGame + I2X (1000);
 audio.PlaySound (int16_t (gameData.objData.pwrUp.info [POW_INVUL].hitSound));
 gameData.multiplayer.spherePulse [N_LOCALPLAYER].Setup (0.02f, 0.5f);
 }
@@ -714,7 +714,7 @@ void TriFusionCheat (int32_t bVerbose)
 if (gameData.multiplayer.weaponStates [N_LOCALPLAYER].bTripleFusion)
 	return;
 pPlayer->primaryWeaponFlags |= 1 << FUSION_INDEX;
-gameData.weapons.bTripleFusion = 1;
+gameData.weaponData.bTripleFusion = 1;
 SelectWeapon (4, 0, 1, 1);
 DoCheatPenalty ();
 }
@@ -766,7 +766,7 @@ if (gameStates.app.bD1Mission) {
 		LOCALPLAYER.secondaryAmmo [i] = nMaxSecondaryAmmo [i];
 	}
 else {
-	if (gameData.pig.tex.nHamFileVersion < 3) {// SHAREWARE
+	if (gameData.pigData.tex.nHamFileVersion < 3) {// SHAREWARE
 		LOCALPLAYER.primaryWeaponFlags = ~ ((1<<PHOENIX_INDEX) | (1<<OMEGA_INDEX) | (1<<FUSION_INDEX) | HAS_FLAG (SUPER_LASER_INDEX));
 		LOCALPLAYER.secondaryWeaponFlags = ~ ((1<<MERCURY_INDEX) | (1<<MEGA_INDEX) | (1<<EARTHSHAKER_INDEX));
 		}
@@ -781,7 +781,7 @@ else {
 		LOCALPLAYER.secondaryAmmo [i] = nMaxSecondaryAmmo [i] * h;
 	if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 		LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;
-	if (gameData.pig.tex.nHamFileVersion < 3) {// SHAREWARE
+	if (gameData.pigData.tex.nHamFileVersion < 3) {// SHAREWARE
 		LOCALPLAYER.secondaryAmmo [MERCURY_INDEX] = 0;
 		LOCALPLAYER.secondaryAmmo [EARTHSHAKER_INDEX] = 0;
 		LOCALPLAYER.secondaryAmmo [MEGA_INDEX] = 0;
@@ -795,7 +795,7 @@ else {
 		}
 	}
 bLastSecondaryWasSuper [PROXMINE_INDEX] = 1;
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordLaserLevel (LOCALPLAYER.LaserLevel (), MAX_LASER_LEVEL);
 
 LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield (), false);
@@ -805,7 +805,7 @@ if (gameStates.app.bD1Mission)
 else
 	LOCALPLAYER.ComputeLaserLevels (MAX_SUPERLASER_LEVEL);
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
-gameData.physics.xAfterburnerCharge = I2X (1);
+gameData.physicsData.xAfterburnerCharge = I2X (1);
 SetMaxOmegaCharge ();
 cockpit->UpdateLaserWeaponInfo ();
 if (bInitialize)
@@ -841,7 +841,7 @@ else {
 	LOCALPLAYER.cloakTime = 0x7fffffff;
 	gameStates.app.cheats.bSpeed = 1;
 	LOCALPLAYER.primaryWeaponFlags |= 1 << FUSION_INDEX;
-	gameData.weapons.bTripleFusion = 1;
+	gameData.weaponData.bTripleFusion = 1;
 	gameStates.gameplay.bMineMineCheat = 1;
 	gameData.multiplayer.spherePulse [N_LOCALPLAYER].Setup (0.02f, 0.5f);
 	}
@@ -1050,7 +1050,7 @@ void DoCheatMenu ()
 	if (mmn > -1)  {
 		if (m [0].Value ()) {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-			LOCALPLAYER.invulnerableTime = gameData.time.xGame+I2X (1000);
+			LOCALPLAYER.invulnerableTime = gameData.timeData.xGame+I2X (1000);
 		} else
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_INVULNERABLE;
 		if (m [1].Value ()) {
@@ -1058,7 +1058,7 @@ void DoCheatMenu ()
 			if (IsMultiGame)
 				MultiSendCloak ();
 			AIDoCloakStuff ();
-			LOCALPLAYER.cloakTime = gameData.time.xGame;
+			LOCALPLAYER.cloakTime = gameData.timeData.xGame;
 		}
 		else
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_CLOAKED;

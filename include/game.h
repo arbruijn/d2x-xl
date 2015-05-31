@@ -63,13 +63,13 @@ extern int32_t ft_preference;
 #define GM_NORMAL       0       // You are in normal play mode, no multiplayer stuff
 #define GM_MULTI        (GM_SERIAL | GM_NETWORK | GM_MODEM)      // You are in some nType of multiplayer game
 
-#define IsNetworkGame	(gameData.app.GameMode (GM_NETWORK) != 0)
-#define IsMultiGame		(gameData.app.GameMode (GM_MULTI) != 0)
-#define IsTeamGame		(gameData.app.GameMode (GM_TEAM) != 0)
-#define IsCoopGame		(gameData.app.GameMode (GM_MULTI_COOP) != 0)
-#define IsRobotGame		(!IsMultiGame || (gameData.app.GameMode (GM_MULTI_ROBOTS | GM_MULTI_COOP) != 0))
-#define IsHoardGame		(gameData.app.GameMode (GM_HOARD) != 0)
-#define IsEntropyGame	(gameData.app.GameMode (GM_ENTROPY) != 0)
+#define IsNetworkGame	(gameData.appData.GameMode (GM_NETWORK) != 0)
+#define IsMultiGame		(gameData.appData.GameMode (GM_MULTI) != 0)
+#define IsTeamGame		(gameData.appData.GameMode (GM_TEAM) != 0)
+#define IsCoopGame		(gameData.appData.GameMode (GM_MULTI_COOP) != 0)
+#define IsRobotGame		(!IsMultiGame || (gameData.appData.GameMode (GM_MULTI_ROBOTS | GM_MULTI_COOP) != 0))
+#define IsHoardGame		(gameData.appData.GameMode (GM_HOARD) != 0)
+#define IsEntropyGame	(gameData.appData.GameMode (GM_ENTROPY) != 0)
 // Examples:
 // Deathmatch mode on a network is GM_NETWORK
 // Deathmatch mode via modem with robots is GM_MODEM | GM_MULTI_ROBOTS

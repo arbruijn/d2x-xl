@@ -95,7 +95,7 @@ nSegment = ChooseThiefRecreationSegment ();
 vCenter = SEGMENT (nSegment)->Center ();
 pNewObj = CreateMorphRobot( SEGMENT (nSegment), &vCenter, pObj->info.nId);
 InitAIObject (OBJ_IDX (pNewObj), AIB_SNIPE, -1);
-gameData.thief.xReInitTime = gameData.time.xGame + I2X (10);		//	In 10 seconds, re-initialize thief.
+gameData.thiefData.xReInitTime = gameData.timeData.xGame + I2X (10);		//	In 10 seconds, re-initialize thief.
 }
 
 //	----------------------------------------------------------------------------
@@ -103,21 +103,21 @@ gameData.thief.xReInitTime = gameData.time.xGame + I2X (10);		//	In 10 seconds, 
 void DoThiefFrame (CObject *pObj)
 {
 	int32_t			nObject = pObj->Index ();
-	tAILocalInfo*	pLocalInfo = gameData.ai.localInfo + nObject;
+	tAILocalInfo*	pLocalInfo = gameData.aiData.localInfo + nObject;
 	fix				connectedDistance;
 
-if ((missionManager.nCurrentLevel < 0) && (gameData.thief.xReInitTime < gameData.time.xGame)) {
-	if (gameData.thief.xReInitTime > gameData.time.xGame - I2X (2))
+if ((missionManager.nCurrentLevel < 0) && (gameData.thiefData.xReInitTime < gameData.timeData.xGame)) {
+	if (gameData.thiefData.xReInitTime > gameData.timeData.xGame - I2X (2))
 		InitThiefForLevel();
-	gameData.thief.xReInitTime = 0x3f000000;
+	gameData.thiefData.xReInitTime = 0x3f000000;
 	}
 
-if ((gameData.ai.target.xDist > I2X (500)) && (pLocalInfo->nextActionTime > 0))
+if ((gameData.aiData.target.xDist > I2X (500)) && (pLocalInfo->nextActionTime > 0))
 	return;
 if (pObj->Disarmed () || pObj->Reprogrammed ())
 	return;
 
-gameData.ai.target.pObj = gameData.objData.pConsole;
+gameData.aiData.target.pObj = gameData.objData.pConsole;
 if (gameStates.app.bPlayerIsDead)
 	pLocalInfo->mode = AIM_THIEF_RETREAT;
 
@@ -130,16 +130,16 @@ switch (pLocalInfo->mode) {
 			pLocalInfo->nextActionTime = THIEF_ATTACK_TIME/2;
 			return;
 			}
-		if (gameData.ai.nTargetVisibility) {
+		if (gameData.aiData.nTargetVisibility) {
 			CreateNSegmentPath (pObj, 15, gameData.objData.pConsole->info.nSegment);
 			pLocalInfo->mode = AIM_THIEF_RETREAT;
 			return;
 			}
-		if ((gameData.ai.target.xDist > I2X (50)) && (pLocalInfo->nextActionTime > 0))
+		if ((gameData.aiData.target.xDist > I2X (50)) && (pLocalInfo->nextActionTime > 0))
 			return;
-		pLocalInfo->nextActionTime = gameData.thief.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
+		pLocalInfo->nextActionTime = gameData.thiefData.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
 		connectedDistance = simpleRouter [0].PathLength (pObj->info.position.vPos, pObj->info.nSegment, 
-																		 gameData.ai.target.vBelievedPos, gameData.ai.target.nBelievedSeg, 
+																		 gameData.aiData.target.vBelievedPos, gameData.aiData.target.nBelievedSeg, 
 																		 30, WID_PASSABLE_FLAG, 1);
 		if (connectedDistance < I2X (500)) {
 			CreatePathToTarget (pObj, 30, 1);
@@ -151,11 +151,11 @@ switch (pLocalInfo->mode) {
 	case AIM_THIEF_RETREAT:
 		if (pLocalInfo->nextActionTime < 0) {
 			pLocalInfo->mode = AIM_THIEF_WAIT;
-			pLocalInfo->nextActionTime = gameData.thief.xWaitTimes [gameStates.app.nDifficultyLevel];
+			pLocalInfo->nextActionTime = gameData.thiefData.xWaitTimes [gameStates.app.nDifficultyLevel];
 			}
-		else if ((gameData.ai.target.xDist < I2X (100)) || gameData.ai.nTargetVisibility || (pLocalInfo->targetAwarenessType >= PA_PLAYER_COLLISION)) {
-			AIFollowPath (pObj, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.target.vDir);
-			if ((gameData.ai.target.xDist < I2X (100)) || (pLocalInfo->targetAwarenessType >= PA_PLAYER_COLLISION)) {
+		else if ((gameData.aiData.target.xDist < I2X (100)) || gameData.aiData.nTargetVisibility || (pLocalInfo->targetAwarenessType >= PA_PLAYER_COLLISION)) {
+			AIFollowPath (pObj, gameData.aiData.nTargetVisibility, gameData.aiData.nTargetVisibility, &gameData.aiData.target.vDir);
+			if ((gameData.aiData.target.xDist < I2X (100)) || (pLocalInfo->targetAwarenessType >= PA_PLAYER_COLLISION)) {
 				tAIStaticInfo* pStaticInfo = &pObj->cType.aiInfo;
 				if (((pStaticInfo->nCurPathIndex <= 1) && (pStaticInfo->PATH_DIR == -1)) || ((pStaticInfo->nCurPathIndex >= pStaticInfo->nPathLength-1) && (pStaticInfo->PATH_DIR == 1))) {
 					pLocalInfo->targetAwarenessType = 0;
@@ -188,8 +188,8 @@ switch (pLocalInfo->mode) {
 			pLocalInfo->targetAwarenessType = 0;
 			if (RandShort () > 8192) {
 				CreateNSegmentPath (pObj, 10, gameData.objData.pConsole->info.nSegment);
-				gameData.ai.localInfo [pObj->Index ()].nextActionTime = gameData.thief.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
-				gameData.ai.localInfo [pObj->Index ()].mode = AIM_THIEF_RETREAT;
+				gameData.aiData.localInfo [pObj->Index ()].nextActionTime = gameData.thiefData.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
+				gameData.aiData.localInfo [pObj->Index ()].mode = AIM_THIEF_RETREAT;
 				}
 			} 
 		else if (pLocalInfo->nextActionTime < 0) {
@@ -199,25 +199,25 @@ switch (pLocalInfo->mode) {
 			pLocalInfo->mode = AIM_THIEF_ATTACK;
 			}
 		else {
-			if (gameData.ai.nTargetVisibility && (gameData.ai.target.xDist < I2X (100))) {
+			if (gameData.aiData.nTargetVisibility && (gameData.aiData.target.xDist < I2X (100))) {
 				//	If the player is close to looking at the thief, thief shall run away.
 				//	No more stupid thief trying to sneak up on you when you're looking right at him!
-				if (gameData.ai.target.xDist > I2X (60)) {
-					fix dot = CFixVector::Dot (gameData.ai.target.vDir, OBJPOS (gameData.objData.pConsole)->mOrient.m.dir.f);
+				if (gameData.aiData.target.xDist > I2X (60)) {
+					fix dot = CFixVector::Dot (gameData.aiData.target.vDir, OBJPOS (gameData.objData.pConsole)->mOrient.m.dir.f);
 					if (dot < -I2X (1)/2) {	//	Looking at least towards thief, so thief will run!
 						CreateNSegmentPath (pObj, 10, gameData.objData.pConsole->info.nSegment);
-						gameData.ai.localInfo [pObj->Index ()].nextActionTime = gameData.thief.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
-						gameData.ai.localInfo [pObj->Index ()].mode = AIM_THIEF_RETREAT;
+						gameData.aiData.localInfo [pObj->Index ()].nextActionTime = gameData.thiefData.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
+						gameData.aiData.localInfo [pObj->Index ()].mode = AIM_THIEF_RETREAT;
 						}
 					}
-				AITurnTowardsVector (&gameData.ai.target.vDir, pObj, I2X (1)/4);
-				MoveTowardsPlayer (pObj, &gameData.ai.target.vDir);
+				AITurnTowardsVector (&gameData.aiData.target.vDir, pObj, I2X (1)/4);
+				MoveTowardsPlayer (pObj, &gameData.aiData.target.vDir);
 				}
 			else {
 				tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
 				//	If path length == 0, then he will keep trying to create path, but he is probably stuck in his closet.
-				if ((pStaticInfo->nPathLength > 1) || ((gameData.app.nFrameCount & 0x0f) == 0)) {
-					AIFollowPath (pObj, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.target.vDir);
+				if ((pStaticInfo->nPathLength > 1) || ((gameData.appData.nFrameCount & 0x0f) == 0)) {
+					AIFollowPath (pObj, gameData.aiData.nTargetVisibility, gameData.aiData.nTargetVisibility, &gameData.aiData.target.vDir);
 					pLocalInfo->mode = AIM_THIEF_ATTACK;
 					}
 				}
@@ -282,7 +282,7 @@ if (PLAYER (nPlayer).flags & deviceFlag) {
 		   	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 				break;
 			}
-		gameData.thief.stolenItems [gameData.thief.nStolenItem] = nPowerup;
+		gameData.thiefData.stolenItems [gameData.thiefData.nStolenItem] = nPowerup;
 		audio.PlaySound (SOUND_WEAPON_STOLEN);
 		return 1;
 		}
@@ -302,7 +302,7 @@ if ((PLAYER (nPlayer).secondaryWeaponFlags & HAS_FLAG(nWeapon)) && PLAYER (nPlay
 		PLAYER (nPlayer).secondaryAmmo [nWeapon]--;
 		//	Smart mines and proxbombs don't get dropped because they only come in 4 packs.
 		if ((nWeapon != PROXMINE_INDEX) && (nWeapon != SMARTMINE_INDEX)) {
-			gameData.thief.stolenItems [gameData.thief.nStolenItem] = secondaryWeaponToPowerup [0][nWeapon];
+			gameData.thiefData.stolenItems [gameData.thiefData.nStolenItem] = secondaryWeaponToPowerup [0][nWeapon];
 			}
 		ThiefMessage (TXT_WPN_STOLEN, baseGameTexts [114+nWeapon][0]);		//	Danger! Danger! Use of literal!  Danger!
 		if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0)
@@ -325,10 +325,10 @@ if ((PLAYER (nPlayer).primaryWeaponFlags & HAS_FLAG (nWeapon)) &&
 		if (nWeapon == 0) {
 			if (PLAYER (nPlayer).laserLevel > 0) {
 				if (PLAYER (nPlayer).laserLevel > 3) {
-					gameData.thief.stolenItems [gameData.thief.nStolenItem] = POW_SUPERLASER;
+					gameData.thiefData.stolenItems [gameData.thiefData.nStolenItem] = POW_SUPERLASER;
 				} 
 				else {
-					gameData.thief.stolenItems [gameData.thief.nStolenItem] = primaryWeaponToPowerup [nWeapon];
+					gameData.thiefData.stolenItems [gameData.thiefData.nStolenItem] = primaryWeaponToPowerup [nWeapon];
 					}
 				ThiefMessage (TXT_LVL_DECREASED, baseGameTexts [104+nWeapon][0]);		//	Danger! Danger! Use of literal!  Danger!
 				PLAYER (nPlayer).laserLevel--;
@@ -338,7 +338,7 @@ if ((PLAYER (nPlayer).primaryWeaponFlags & HAS_FLAG (nWeapon)) &&
 			} 
 		else if (PLAYER (nPlayer).primaryWeaponFlags & (1 << nWeapon)) {
 			PLAYER (nPlayer).primaryWeaponFlags &= ~(1 << nWeapon);
-			gameData.thief.stolenItems [gameData.thief.nStolenItem] = primaryWeaponToPowerup [nWeapon];
+			gameData.thiefData.stolenItems [gameData.thiefData.nStolenItem] = primaryWeaponToPowerup [nWeapon];
 			ThiefMessage (TXT_WPN_STOLEN, baseGameTexts [104+nWeapon][0]);		//	Danger! Danger! Use of literal!  Danger!
 			AutoSelectWeapon (0, 0);
 			audio.PlaySound(SOUND_WEAPON_STOLEN);
@@ -353,27 +353,27 @@ return 0;
 //	Called for a thief-nType robot.
 //	If a item successfully stolen, returns true, else returns false.
 //	If a wapon successfully stolen, do everything, removing it from player,
-//	updating gameData.thief.stolenItems information, deselecting, etc.
+//	updating gameData.thiefData.stolenItems information, deselecting, etc.
 int32_t AttemptToStealItem3(CObject *pObj, int32_t nPlayer)
 {
 	int32_t i;
 	static int32_t nDevices [] = {PLAYER_FLAGS_INVULNERABLE, PLAYER_FLAGS_CLOAKED, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER, 
 											PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_HEADLIGHT, PLAYER_FLAGS_FULLMAP, -1};
 
-if (gameData.ai.localInfo [pObj->Index ()].mode != AIM_THIEF_ATTACK)
+if (gameData.aiData.localInfo [pObj->Index ()].mode != AIM_THIEF_ATTACK)
 	return 0;
 //	First, try to steal equipped items.
 if (MaybeStealDevice (nPlayer, PLAYER_FLAGS_INVULNERABLE))
 	return 1;
 //	If primary weapon = laser, first try to rip away those nasty quad lasers!
-if (gameData.weapons.nPrimary == 0)
+if (gameData.weaponData.nPrimary == 0)
 	if (MaybeStealDevice (nPlayer, PLAYER_FLAGS_QUAD_LASERS))
 		return 1;
 //	Makes it more likely to steal primary than secondary.
 for (i = 0; i < 2; i++)
-	if (MaybeStealPrimaryWeapon (nPlayer, gameData.weapons.nPrimary))
+	if (MaybeStealPrimaryWeapon (nPlayer, gameData.weaponData.nPrimary))
 		return 1;
-if (MaybeStealSecondaryWeapon (nPlayer, gameData.weapons.nSecondary))
+if (MaybeStealSecondaryWeapon (nPlayer, gameData.weaponData.nSecondary))
 	return 1;
 //	See what the player has and try to snag something.
 //	Try best things first.
@@ -407,9 +407,9 @@ int32_t AttemptToStealItem2(CObject *pObj, int32_t nPlayer)
 {
 int32_t rval = AttemptToStealItem3 (pObj, nPlayer);
 if (rval) {
-	gameData.thief.nStolenItem = (gameData.thief.nStolenItem + 1) % MAX_STOLEN_ITEMS;
+	gameData.thiefData.nStolenItem = (gameData.thiefData.nStolenItem + 1) % MAX_STOLEN_ITEMS;
 	if (RandShort () > 20000)	//	Occasionally, boost the value again
-		gameData.thief.nStolenItem = (gameData.thief.nStolenItem + 1) % MAX_STOLEN_ITEMS;
+		gameData.thiefData.nStolenItem = (gameData.thiefData.nStolenItem + 1) % MAX_STOLEN_ITEMS;
 	}
 return rval;
 }
@@ -418,7 +418,7 @@ return rval;
 //	Called for a thief-nType robot.
 //	If a item successfully stolen, returns true, else returns false.
 //	If a wapon successfully stolen, do everything, removing it from player,
-//	updating gameData.thief.stolenItems information, deselecting, etc.
+//	updating gameData.thiefData.stolenItems information, deselecting, etc.
 int32_t AttemptToStealItem (CObject *pObj, int32_t nPlayer)
 {
 	int32_t	i;
@@ -434,8 +434,8 @@ for (i = 0; i < 3; i++) {
 	rval += AttemptToStealItem2 (pObj, nPlayer);
 	} 
 CreateNSegmentPath (pObj, 10, gameData.objData.pConsole->info.nSegment);
-gameData.ai.localInfo [pObj->Index ()].nextActionTime = gameData.thief.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
-gameData.ai.localInfo [pObj->Index ()].mode = AIM_THIEF_RETREAT;
+gameData.aiData.localInfo [pObj->Index ()].nextActionTime = gameData.thiefData.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
+gameData.aiData.localInfo [pObj->Index ()].mode = AIM_THIEF_RETREAT;
 if (rval) {
 	paletteManager.BumpEffect (30, 15, -20);
 	cockpit->UpdateLaserWeaponInfo ();
@@ -449,14 +449,14 @@ return rval;
 //	Indicate no items have been stolen.
 void InitThiefForLevel(void)
 {
-gameData.thief.stolenItems.Clear (char (0xff));
+gameData.thiefData.stolenItems.Clear (char (0xff));
 Assert (MAX_STOLEN_ITEMS >= 3*2);	//	Oops!  Loop below will overwrite memory!
 if (!IsMultiGame)
 	for (int32_t i = 0; i < 3; i++) {
-		gameData.thief.stolenItems [2 * i] = POW_SHIELD_BOOST;
-		gameData.thief.stolenItems [2 * i + 1] = POW_ENERGY;
+		gameData.thiefData.stolenItems [2 * i] = POW_SHIELD_BOOST;
+		gameData.thiefData.stolenItems [2 * i + 1] = POW_ENERGY;
 		}
-gameData.thief.nStolenItem = 0;
+gameData.thiefData.nStolenItem = 0;
 }
 
 // --------------------------------------------------------------------------------------------------------------
@@ -467,9 +467,9 @@ if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return;
 
 for (int32_t i = 0; i < MAX_STOLEN_ITEMS; i++) 
-	if (gameData.thief.stolenItems [i] != 255) {
-		DropPowerup (OBJ_POWERUP, gameData.thief.stolenItems [i], -1, 0, pObj->mType.physInfo.velocity, pObj->info.position.vPos, pObj->info.nSegment);
-		gameData.thief.stolenItems [i] = 255;
+	if (gameData.thiefData.stolenItems [i] != 255) {
+		DropPowerup (OBJ_POWERUP, gameData.thiefData.stolenItems [i], -1, 0, pObj->mType.physInfo.velocity, pObj->info.position.vPos, pObj->info.nSegment);
+		gameData.thiefData.stolenItems [i] = 255;
 		}
 }
 

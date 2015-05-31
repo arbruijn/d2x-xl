@@ -43,9 +43,9 @@ int32_t PixelTranspType (int16_t nTexture, int16_t nOrient, int16_t nFrame, fix 
 #if 0
 	tBitmapIndex *pBmIndex;
 
-pBmIndex = gameData.pig.tex.pBmIndex + (nTexture);
+pBmIndex = gameData.pigData.tex.pBmIndex + (nTexture);
 LoadTexture (*pBmIndex, 0, gameStates.app.bD1Data);
-pBm = BmOverride (gameData.pig.tex.pBitmap + pBmIndex->index);
+pBm = BmOverride (gameData.pigData.tex.pBitmap + pBmIndex->index);
 #else
 pBm = LoadFaceBitmap (nTexture, nFrame);
 if (!pBm->Buffer ())
@@ -160,7 +160,7 @@ int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs, int32_t nThread)
 								 gameData.objData.pViewer->info.nSegment,
 								 gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objData.pViewer),
 								 0, 0,
-								 ++gameData.physics.bIgnoreObjFlag
+								 ++gameData.physicsData.bIgnoreObjFlag
 								);
 	CHitResult		hitResult;
 
@@ -224,7 +224,7 @@ CHitQuery hitQuery (FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TR
 						  gameData.objData.pViewer->info.nSegment,
 						  OBJ_IDX (gameData.objData.pViewer),
 						  0, 0,
-						  ++gameData.physics.bIgnoreObjFlag
+						  ++gameData.physicsData.bIgnoreObjFlag
 						  );
 
 int32_t nHitType = FindHitpoint (hitQuery, hitResult);

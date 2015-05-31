@@ -235,7 +235,7 @@ int32_t nInfoType;
 
 if (!(gameStates.app.bGameRunning || gameStates.app.bBetweenLevels))
 	nInfoType = 0;
-else if (gameStates.app.bSaveScreenShot || (gameData.demo.nState == ND_STATE_PLAYBACK))
+else if (gameStates.app.bSaveScreenShot || (gameData.demoData.nState == ND_STATE_PLAYBACK))
 	nInfoType = 1;
 else
 	return;
@@ -245,7 +245,7 @@ else
 	int32_t y, w, ws, h, hs, aw;
 	float grAlpha = gameStates.render.grAlpha;
 
-gameData.render.frame.Activate ("PrintVersionInfo (frame)");
+gameData.renderData.frame.Activate ("PrintVersionInfo (frame)");
 
 gameStates.render.grAlpha = 1.0f;
 if (gameStates.menus.bHires) {
@@ -336,7 +336,7 @@ else {
 fontManager.SetCurrent (NORMAL_FONT);
 fontManager.SetColorRGBi (RGB_PAL (6, 6, 6), 1, 0, 0);
 gameStates.render.grAlpha = grAlpha;
-gameData.render.frame.Deactivate ();
+gameData.renderData.frame.Deactivate ();
 }
 
 // ----------------------------------------------------------------------------
@@ -374,7 +374,7 @@ if (!FindArg ("-nojoystick")) {
 void DoSelectPlayer (void)
 {
 LOCALPLAYER.callsign[0] = '\0';
-if (!gameData.demo.bAuto)  {
+if (!gameData.demoData.bAuto)  {
 	KeyFlush ();
 	//now, before we bring up the register player menu, we need to
 	//do some stuff to make sure the palette is ok.  First, we need to
@@ -498,9 +498,9 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 				if (gameStates.app.nFunctionMode == FMODE_GAME)
 					break;
 				}
-			if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
+			if (gameData.demoData.bAuto && !gameOpts->demo.bRevertFormat) {
 				NDStartPlayback (NULL);		// Randomly pick a file
-				if (gameData.demo.nState != ND_STATE_PLAYBACK)
+				if (gameData.demoData.nState != ND_STATE_PLAYBACK)
 				Error ("No demo files were found for autodemo mode!");
 				}
 			else {
@@ -541,34 +541,34 @@ if (gameStates.app.bMultiThreaded) {
 	int32_t	i;
 	for (i = 0; i < 2; i++) {
 #if MULTI_THREADED_LIGHTS
-		gameData.threads.vertColor.info [i].done = SDL_CreateSemaphore (0);
-		gameData.threads.vertColor.info [i].exec = SDL_CreateSemaphore (0);
-		gameData.threads.vertColor.info [i].bDone =
-		gameData.threads.vertColor.info [i].bExec =
-		gameData.threads.vertColor.info [i].bQuit = 0;
-		gameData.threads.vertColor.info [i].nId = i;
-		gameData.threads.vertColor.info [i].pThread = SDL_CreateThread (VertexColorThread, &gameData.threads.vertColor.info [i].nId);
+		gameData.threadData.vertColor.info [i].done = SDL_CreateSemaphore (0);
+		gameData.threadData.vertColor.info [i].exec = SDL_CreateSemaphore (0);
+		gameData.threadData.vertColor.info [i].bDone =
+		gameData.threadData.vertColor.info [i].bExec =
+		gameData.threadData.vertColor.info [i].bQuit = 0;
+		gameData.threadData.vertColor.info [i].nId = i;
+		gameData.threadData.vertColor.info [i].pThread = SDL_CreateThread (VertexColorThread, &gameData.threadData.vertColor.info [i].nId);
 #endif
 #if MULTI_THREADED_SHADOWS
-		gameData.threads.clipDist.info [i].done = SDL_CreateSemaphore (0);
-		gameData.threads.clipDist.info [i].exec = SDL_CreateSemaphore (0);
-		gameData.threads.clipDist.info [i].nId = i;
-		gameData.threads.clipDist.info [i].pThread = SDL_CreateThread (ClipDistThread, &gameData.threads.clipDist.info [i].nId);
+		gameData.threadData.clipDist.info [i].done = SDL_CreateSemaphore (0);
+		gameData.threadData.clipDist.info [i].exec = SDL_CreateSemaphore (0);
+		gameData.threadData.clipDist.info [i].nId = i;
+		gameData.threadData.clipDist.info [i].pThread = SDL_CreateThread (ClipDistThread, &gameData.threadData.clipDist.info [i].nId);
 #endif
 		}
 	}
-gameData.render.vertColor.matAmbient.Red () =
-gameData.render.vertColor.matAmbient.Green () =
-gameData.render.vertColor.matAmbient.Blue () = 0.3f; //1.0f - DIFFUSE_LIGHT; //AMBIENT_LIGHT;
-gameData.render.vertColor.matAmbient.Alpha () = 1.0f;
-gameData.render.vertColor.matDiffuse.Red () =
-gameData.render.vertColor.matDiffuse.Green () =
-gameData.render.vertColor.matDiffuse.Blue () = 0.7f; //DIFFUSE_LIGHT;
-gameData.render.vertColor.matDiffuse.Alpha () = 1.0f;
-gameData.render.vertColor.matSpecular.Red () =
-gameData.render.vertColor.matSpecular.Green () =
-gameData.render.vertColor.matSpecular.Blue () = 0.0f;
-gameData.render.vertColor.matSpecular.Alpha () = 1.0f;
+gameData.renderData.vertColor.matAmbient.Red () =
+gameData.renderData.vertColor.matAmbient.Green () =
+gameData.renderData.vertColor.matAmbient.Blue () = 0.3f; //1.0f - DIFFUSE_LIGHT; //AMBIENT_LIGHT;
+gameData.renderData.vertColor.matAmbient.Alpha () = 1.0f;
+gameData.renderData.vertColor.matDiffuse.Red () =
+gameData.renderData.vertColor.matDiffuse.Green () =
+gameData.renderData.vertColor.matDiffuse.Blue () = 0.7f; //DIFFUSE_LIGHT;
+gameData.renderData.vertColor.matDiffuse.Alpha () = 1.0f;
+gameData.renderData.vertColor.matSpecular.Red () =
+gameData.renderData.vertColor.matSpecular.Green () =
+gameData.renderData.vertColor.matSpecular.Blue () = 0.0f;
+gameData.renderData.vertColor.matSpecular.Alpha () = 1.0f;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -649,7 +649,7 @@ if ((t = GrInit ())) {		//doesn't do much
 	Error (TXT_CANT_INIT_GFX, t);
 	return 0;
 	}
-gameData.render.rift.Create ();
+gameData.renderData.rift.Create ();
 /*---*/PrintLog (1, "Initializing render buffers\n");
 PrintLog (-1);
 if (bFull) {
@@ -816,9 +816,9 @@ PrintLog (-1);
 int32_t Initialize (int32_t argc, char *argv[])
 {
 /*---*/PrintLog (1, "Initializing data\n");
-gameData.time.xGameTotal = 0;
-gameData.app.argC = argc;
-gameData.app.argV = reinterpret_cast<char**>(argv);
+gameData.timeData.xGameTotal = 0;
+gameData.appData.argC = argc;
+gameData.appData.argV = reinterpret_cast<char**>(argv);
 signal (SIGABRT, D2SignalHandler);
 signal (SIGFPE, D2SignalHandler);
 signal (SIGILL, D2SignalHandler);
@@ -870,7 +870,7 @@ ReadConfigFile ();
 if (!InitGraphics ())
 	return 1;
 backgroundManager.Rebuild ();
-console.Setup (SMALL_FONT, &gameData.render.screen, CON_NUM_LINES, 0, 0, gameData.render.screen.Width (), gameData.render.screen.Height () / 2);
+console.Setup (SMALL_FONT, &gameData.renderData.screen, CON_NUM_LINES, 0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height () / 2);
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	InitializeGauge ();
 else {
@@ -1095,9 +1095,9 @@ DoSelectPlayer ();
 CreateSoundThread (); //needs to be repeated here due to dependency on data read in DoSelectPlayer()
 paletteManager.DisableEffect ();
 // handle automatic launch of a demo playback
-if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
-	NDStartPlayback (gameData.demo.fnAuto);
-	if (gameData.demo.nState == ND_STATE_PLAYBACK)
+if (gameData.demoData.bAuto && !gameOpts->demo.bRevertFormat) {
+	NDStartPlayback (gameData.demoData.fnAuto);
+	if (gameData.demoData.nState == ND_STATE_PLAYBACK)
 		SetFunctionMode (FMODE_GAME);
 	}
 //do this here because the demo code can do a __asm int32_t 3; longjmp when trying to
@@ -1158,7 +1158,7 @@ void ShowOrderForm (void)
 {
 	char	szExitScreen [16];
 
-gameData.render.frame.Activate ("ShowOrderForm (frame)");
+gameData.renderData.frame.Activate ("ShowOrderForm (frame)");
 KeyFlush ();
 strcpy (szExitScreen, gameStates.menus.bHires ? "ordrd2ob.pcx" : "ordrd2o.pcx"); // OEM
 if (! CFile::Exist (szExitScreen, gameFolders.game.szData [0], 0))
@@ -1177,7 +1177,7 @@ if (pcxResult == PCX_ERROR_NONE) {
 		;
 	}
 KeyFlush ();
-gameData.render.frame.Deactivate ();
+gameData.renderData.frame.Deactivate ();
 }
 
 // ----------------------------------------------------------------------------

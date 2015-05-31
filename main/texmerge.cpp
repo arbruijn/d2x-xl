@@ -107,8 +107,8 @@ CBitmap * TexMergeGetCachedBitmap (int32_t tMapBot, int32_t tMapTop, int32_t nOr
 
 nLRU = 0;
 nLowestFrame = texCache [0].nLastFrameUsed;
-bmTop = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [tMapTop].index].Override (-1);
-bmBot = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [tMapBot].index].Override (-1);
+bmTop = gameData.pigData.tex.pBitmap [gameData.pigData.tex.pBmIndex [tMapTop].index].Override (-1);
+bmBot = gameData.pigData.tex.pBitmap [gameData.pigData.tex.pBmIndex [tMapBot].index].Override (-1);
 
 for (i = 0, pCache = &texCache [0]; i < nCacheEntries; i++, pCache++) {
 #if 1//!DBG
@@ -118,7 +118,7 @@ for (i = 0, pCache = &texCache [0]; i < nCacheEntries; i++, pCache++) {
 		 (pCache->nOrient == nOrient) &&
 		  pCache->bitmap) {
 		nCacheHits++;
-		pCache->nLastFrameUsed = gameData.app.nFrameCount;
+		pCache->nLastFrameUsed = gameData.appData.nFrameCount;
 		return pCache->bitmap;
 	}
 #endif
@@ -130,18 +130,18 @@ for (i = 0, pCache = &texCache [0]; i < nCacheEntries; i++, pCache++) {
 //---- Page out the LRU bitmap;
 nCacheMisses++;
 // Make sure the bitmaps are paged in...
-gameData.pig.tex.bPageFlushed = 0;
-LoadTexture (gameData.pig.tex.pBmIndex [tMapTop].index, 0, gameStates.app.bD1Mission);
-LoadTexture (gameData.pig.tex.pBmIndex [tMapBot].index, 0, gameStates.app.bD1Mission);
-if (gameData.pig.tex.bPageFlushed) {	// If cache got flushed, re-read 'em.
-	gameData.pig.tex.bPageFlushed = 0;
-	LoadTexture (gameData.pig.tex.pBmIndex [tMapTop].index, 0, gameStates.app.bD1Mission);
-	LoadTexture (gameData.pig.tex.pBmIndex [tMapBot].index, 0, gameStates.app.bD1Mission);
+gameData.pigData.tex.bPageFlushed = 0;
+LoadTexture (gameData.pigData.tex.pBmIndex [tMapTop].index, 0, gameStates.app.bD1Mission);
+LoadTexture (gameData.pigData.tex.pBmIndex [tMapBot].index, 0, gameStates.app.bD1Mission);
+if (gameData.pigData.tex.bPageFlushed) {	// If cache got flushed, re-read 'em.
+	gameData.pigData.tex.bPageFlushed = 0;
+	LoadTexture (gameData.pigData.tex.pBmIndex [tMapTop].index, 0, gameStates.app.bD1Mission);
+	LoadTexture (gameData.pigData.tex.pBmIndex [tMapBot].index, 0, gameStates.app.bD1Mission);
 	}
-Assert (gameData.pig.tex.bPageFlushed == 0);
+Assert (gameData.pigData.tex.bPageFlushed == 0);
 
-bmTop = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [tMapTop].index].Override (-1);
-bmBot = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [tMapBot].index].Override (-1);
+bmTop = gameData.pigData.tex.pBitmap [gameData.pigData.tex.pBmIndex [tMapTop].index].Override (-1);
+bmBot = gameData.pigData.tex.pBitmap [gameData.pigData.tex.pBmIndex [tMapBot].index].Override (-1);
 if (!bmTop->Palette ())
 	bmTop->SetPalette (paletteManager.Game ());
 if (!bmBot->Palette ())
@@ -184,7 +184,7 @@ if (!gameOpts->ogl.bGlTexMerge) {
 pCache->bitmap = pBm;
 pCache->bmTop = bmTop;
 pCache->bmBot = bmBot;
-pCache->nLastFrameUsed = gameData.app.nFrameCount;
+pCache->nLastFrameUsed = gameData.appData.nFrameCount;
 pCache->nOrient = nOrient;
 pBm->SetStatic (1);
 pBm->SetTranspType ((pBm->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);

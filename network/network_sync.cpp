@@ -250,7 +250,7 @@ else if (pSyncInfo->nExtras == 2)
 else if (pSyncInfo->nExtras == 3)
 	NetworkSendMarkers ();
 else if (pSyncInfo->nExtras == 4) {
-	if (gameData.app.GameMode (GM_MULTI_ROBOTS))
+	if (gameData.appData.GameMode (GM_MULTI_ROBOTS))
 		MultiSendStolenItems ();
 	}
 else if (pSyncInfo->nExtras == 5) {
@@ -340,11 +340,11 @@ for (i = 0; i < N_PLAYERS; i++)
 		netGameInfo.m_info.nConnected++;
 
 // This is great: D2 1.0 and 1.1 ignore upper part of the gameFlags field of
-//	the tNetGameInfoLite struct when you're sitting on the join netgame gameData.render.screen.  We can
+//	the tNetGameInfoLite struct when you're sitting on the join netgame gameData.renderData.screen.  We can
 //	"sneak" Hoard information into this field.  This is better than sending 
 //	another packet that could be lost in transit.
 if (HoardEquipped ()) {
-	if (gameData.app.GameMode (GM_MONSTERBALL))
+	if (gameData.appData.GameMode (GM_MONSTERBALL))
 		netGameInfo.m_info.gameFlags |= NETGAME_FLAG_MONSTERBALL;
 	else if (IsEntropyGame)
 		netGameInfo.m_info.gameFlags |= NETGAME_FLAG_ENTROPY;
@@ -506,7 +506,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetPlayerSyncData (me, NETPLAYER (0).network.Network (), NETPLAYER (0).network.Node ());
 }
 SetFunctionMode (FMODE_MENU);
-gameData.app.SetGameMode (GM_GAME_OVER);
+gameData.appData.SetGameMode (GM_GAME_OVER);
 return -1;     // they cancelled               
 }
 

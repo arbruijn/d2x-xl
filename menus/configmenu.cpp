@@ -60,18 +60,18 @@
 void MultiThreadingOptionsMenu (void)
 {
 	CMenu	m (10);
-	int32_t	h, i, bSound = gameData.app.bUseMultiThreading [rtSound], choice = 0;
+	int32_t	h, i, bSound = gameData.appData.bUseMultiThreading [rtSound], choice = 0;
 
 	static int32_t	menuToTask [rtTaskCount] = {0, 1, 1, 2, 2, 3, 4, 5};	//map menu entries to tasks
 	static int32_t	taskToMenu [6] = {0, 1, 3, 5, 6, 7};	//map tasks to menu entries
 
 h = gameStates.app.bMultiThreaded ? 6 : 1;
 for (i = 0; i < h; i++)
-	m.AddCheck (GT (1060 + i), gameData.app.bUseMultiThreading [taskToMenu [i]], -1, HT (359 + i));
+	m.AddCheck (GT (1060 + i), gameData.appData.bUseMultiThreading [taskToMenu [i]], -1, HT (359 + i));
 i = m.Menu (NULL, TXT_MT_MENU_TITLE, NULL, &choice);
 h = gameStates.app.bMultiThreaded ? rtTaskCount : rtSound + 1;
 for (i = rtSound; i < h; i++)
-	gameData.app.bUseMultiThreading [i] = (m [menuToTask [i]].m_value != 0);
+	gameData.appData.bUseMultiThreading [i] = (m [menuToTask [i]].m_value != 0);
 if (gameStates.app.bGameRunning) {
 	ControlRenderThreads ();
 	ControlSoundThread ();

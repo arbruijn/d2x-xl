@@ -67,8 +67,8 @@ CONNECT (nPlayer, eli.Connected ());
 memcpy (&gameData.multigame.score.matrix [nPlayer][0], eli.ScoreMatrix (), MAX_NUM_NET_PLAYERS * sizeof (int16_t));
 PLAYER (nPlayer).netKillsTotal = *eli.Kills ();
 PLAYER (nPlayer).netKilledTotal = *eli.Killed ();
-if ((PLAYER (nPlayer).connected == 1) && (*eli.SecondsLeft () < gameData.reactor.countdown.nSecsLeft))
-	gameData.reactor.countdown.nSecsLeft = *eli.SecondsLeft ();
+if ((PLAYER (nPlayer).connected == 1) && (*eli.SecondsLeft () < gameData.reactorData.countdown.nSecsLeft))
+	gameData.reactorData.countdown.nSecsLeft = *eli.SecondsLeft ();
 ResetPlayerTimeout (nPlayer, -1);
 }
 
@@ -98,8 +98,8 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && (eli->connected != 0)) {
 	return; // Only accept disconnect packets if we're not out of the level yet
 	}
 CONNECT (nPlayer, eli->connected);
-if ((PLAYER (nPlayer).connected == 1) && (eli->secondsLeft < gameData.reactor.countdown.nSecsLeft))
-	gameData.reactor.countdown.nSecsLeft = eli->secondsLeft;
+if ((PLAYER (nPlayer).connected == 1) && (eli->secondsLeft < gameData.reactorData.countdown.nSecsLeft))
+	gameData.reactorData.countdown.nSecsLeft = eli->secondsLeft;
 ResetPlayerTimeout (nPlayer, -1);
 }
 
@@ -366,7 +366,7 @@ if (!PLAYER (nPlayer).connected) {
 	if (PLAYER (nPlayer).HasLeft ())
 		return;
 	CONNECT (nPlayer, CONNECT_PLAYING);
-	if (gameData.demo.nState == ND_STATE_RECORDING)
+	if (gameData.demoData.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nPlayer);
 	MultiTurnGhostToPlayer (nPlayer);
 	OBJECT (nObject)->CreateAppearanceEffect ();
@@ -485,7 +485,7 @@ if (!PLAYER (nPlayer).connected) {
 	if (PLAYER (nPlayer).HasLeft ())
 		return;
 	CONNECT (nPlayer, CONNECT_PLAYING);
-	if (gameData.demo.nState == ND_STATE_RECORDING)
+	if (gameData.demoData.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nPlayer);
 	MultiTurnGhostToPlayer (nPlayer);
 	OBJECT (nObject)->CreateAppearanceEffect ();
@@ -518,7 +518,7 @@ int32_t NetworkVerifyPlayers (void)
 for (j = 0, pPlayer = gameData.multiplayer.players; j < MAX_PLAYERS; j++, pPlayer++)
 	nPlayerObjs [j] = pPlayer->connected ? pPlayer->nObject : -1;
 #if 0
-if (gameData.app.GameMode (GM_MULTI_ROBOTS))
+if (gameData.appData.GameMode (GM_MULTI_ROBOTS))
 #endif
 nPlayers = 0;
 FORALL_OBJS (pObj) {
@@ -736,8 +736,8 @@ if (pObj->info.nType != OBJ_NONE) {
 		gameData.multigame.m_nObjOwner [m_nLocalObj] = -1;
 #endif
 	if (pObj->Type () == OBJ_MONSTERBALL) {
-		gameData.hoard.pMonsterBall = pObj;
-		gameData.hoard.nMonsterballSeg = nSegment;
+		gameData.hoardData.pMonsterBall = pObj;
+		gameData.hoardData.nMonsterballSeg = nSegment;
 		}
 	}
 return 1;

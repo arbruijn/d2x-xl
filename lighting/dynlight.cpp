@@ -222,7 +222,7 @@ void CLightManager::Register (CFaceColor *pColor, int16_t nSegment, int16_t nSid
 {
 #if 0
 if (!pColor || pColor->index) {
-	tLightInfo	*pli = gameData.render.shadows.lightInfo + gameData.render.shadows.nLights++;
+	tLightInfo	*pli = gameData.renderData.shadows.lightInfo + gameData.renderData.shadows.nLights++;
 #if DBG
 	CAngleVector	vec;
 #endif
@@ -248,7 +248,7 @@ if ((nSegment < 0) || (nSide < 0))
 
 	CTrigger*	pTrigger;
 	int32_t			i = 0;
-	bool			bForceField = (gameData.pig.tex.pTexMapInfo [SEGMENT (nSegment)->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0;
+	bool			bForceField = (gameData.pigData.tex.pTexMapInfo [SEGMENT (nSegment)->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0;
 
 while ((i = FindTriggerTarget (nSegment, nSide, i))) {
 	if (i < 0)
@@ -274,8 +274,8 @@ int32_t CLightManager::IsFlickering (int16_t nSegment, int16_t nSide)
 {
 	CVariableLight* pLight;
 
-if ((pLight = gameData.render.lights.flicker.Buffer ()))
-	for (int32_t l = gameData.render.lights.flicker.Length (); l; l--, pLight++)
+if ((pLight = gameData.renderData.lights.flicker.Buffer ()))
+	for (int32_t l = gameData.renderData.lights.flicker.Length (); l; l--, pLight++)
 		if ((pLight->m_nSegment == nSegment) && (pLight->m_nSide == nSide))
 			return 1;
 return 0;
@@ -289,12 +289,12 @@ if (!nTexture)
 	return 0;
 if (IsMultiGame && netGameInfo.m_info.bIndestructibleLights)
 	return 0;
-int16_t nClip = gameData.pig.tex.pTexMapInfo [nTexture].nEffectClip;
-tEffectInfo	*pEffectInfo = (nClip < 0) ? NULL : gameData.effects.pEffect + nClip;
+int16_t nClip = gameData.pigData.tex.pTexMapInfo [nTexture].nEffectClip;
+tEffectInfo	*pEffectInfo = (nClip < 0) ? NULL : gameData.effectData.pEffect + nClip;
 int16_t	nDestBM = pEffectInfo ? pEffectInfo->destroyed.nTexture : -1;
 uint8_t	bOneShot = pEffectInfo ? (pEffectInfo->flags & EF_ONE_SHOT) != 0 : 0;
 if (nClip == -1)
-	return gameData.pig.tex.pTexMapInfo [nTexture].destroyed != -1;
+	return gameData.pigData.tex.pTexMapInfo [nTexture].destroyed != -1;
 return (nDestBM != -1) && !bOneShot;
 }
 
@@ -404,7 +404,7 @@ if (nObject >= 0) {
 		else
 			light.info.bPowerup = 2;
 #if 0
-		if (light.info.bPowerup > gameData.render.nPowerupFilter)
+		if (light.info.bPowerup > gameData.renderData.nPowerupFilter)
 			RETURN (-1);
 #endif
 		}
@@ -919,12 +919,12 @@ for (nTexture = 0; nTexture < 910; nTexture++)
 gameStates.render.bHaveDynLights = 1;
 #if 0
 if (gameStates.app.bD1Mission)
-	gameData.render.fAttScale [0] *= 2;
+	gameData.renderData.fAttScale [0] *= 2;
 #endif
 ogl.m_states.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 m_headlights.Init ();
 if (gameStates.render.nLightingMethod)
-	gameData.render.color.vertices.Clear ();
+	gameData.renderData.color.vertices.Clear ();
 m_data.Init ();
 for (nFace = FACES.nFaces, pFace = FACES.faces.Buffer (); nFace; nFace--, pFace++) {
 	nSegment = pFace->m_info.nSegment;
@@ -942,7 +942,7 @@ for (nFace = FACES.nFaces, pFace = FACES.faces.Buffer (); nFace; nFace--, pFace+
 	nTexture = pFace->m_info.nBaseTex;
 	if ((nTexture < 0) || (nTexture >= MAX_WALL_TEXTURES))
 		continue;
-	pColor = gameData.render.color.textures + nTexture;
+	pColor = gameData.renderData.color.textures + nTexture;
 	if ((nLight = IsLight (nTexture)))
 		Add (pFace, pColor, nLight, (int16_t) nSegment, (int16_t) nSide, -1, nTexture, NULL, 1);
 	pFace->m_info.nOvlTex = SEGMENT (pFace->m_info.nSegment)->Side (pFace->m_info.nSide)->m_nOvlTex;
@@ -951,8 +951,8 @@ for (nFace = FACES.nFaces, pFace = FACES.faces.Buffer (); nFace; nFace--, pFace+
 	if (gameStates.app.bD1Mission && (nTexture == 289)) //empty, light
 		continue;
 #endif
-	if ((nTexture > 0) && (nTexture < MAX_WALL_TEXTURES) && (nLight = IsLight (nTexture)) /*gameData.pig.tex.info.fBrightness [nTexture]*/) {
-		pColor = gameData.render.color.textures + nTexture;
+	if ((nTexture > 0) && (nTexture < MAX_WALL_TEXTURES) && (nLight = IsLight (nTexture)) /*gameData.pigData.tex.info.fBrightness [nTexture]*/) {
+		pColor = gameData.renderData.color.textures + nTexture;
 		Add (pFace, pColor, nLight, (int16_t) nSegment, (int16_t) nSide, -1, nTexture, NULL);
 		}
 	//if (m_data.nLights [0])
@@ -971,7 +971,7 @@ LEAVE;
 void CLightManager::GatherStaticVertexLights (int32_t nVertex, int32_t nMax, int32_t nThread)
 {
 ENTER (0, 0, "CLightManager::GatherStaticVertexLights");
-	CFaceColor*		pf = gameData.render.color.ambient + nVertex;
+	CFaceColor*		pf = gameData.renderData.color.ambient + nVertex;
 	CFloatVector	vVertex;
 	int32_t			bColorize = !gameStates.render.nLightingMethod;
 
@@ -984,7 +984,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 	lightManager.ResetActive (nThread, 0);
 	lightManager.ResetAllUsed (0, nThread);
 	lightManager.SetNearestToVertex (-1, -1, nVertex, NULL, 1, 1, bColorize, nThread);
-	gameData.render.color.vertices [nVertex].index = 0;
+	gameData.renderData.color.vertices [nVertex].index = 0;
 	GetVertexColor (-1, -1, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), vVertex.XYZ (), pf, NULL, 1, 0, nThread);
 	}
 LEAVE;
@@ -1002,7 +1002,7 @@ ENTER (0, 0, "CLightManager::GatherStaticLights");
 
 int32_t i, j, bColorize = !gameStates.render.nLightingMethod;
 
-gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
+gameData.renderData.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 gameStates.render.nState = 0;
 m_data.renderLights.Clear ();
 for (i = 0; i < MAX_THREADS; i++)
@@ -1015,12 +1015,12 @@ for (i = 0; i < gameData.segData.nVertices; i++) {
 #endif
 	m_data.variableVertLights [i] = VariableVertexLights (i);
 	if (gameStates.render.nLightingMethod)
-		gameData.render.color.ambient [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
+		gameData.renderData.color.ambient [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
 	}
 if (gameStates.render.bPerPixelLighting/* && lightmapManager.HaveLightmaps ()*/)
 	LEAVE;
 if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
-	CFaceColor*	pf = gameData.render.color.ambient.Buffer ();
+	CFaceColor*	pf = gameData.renderData.color.ambient.Buffer ();
 	memset (pf, 0, gameData.segData.nVertices * sizeof (*pf));
 #if USE_OPENMP // > 1
 	if (gameStates.app.bMultiThreaded) {
@@ -1036,7 +1036,7 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 	//if (!RunRenderThreads (rtStaticVertLight))
 #endif
 		lightManager.GatherStaticVertexLights (0, gameData.segData.nVertices, 0);
-	pf = gameData.render.color.ambient.Buffer ();
+	pf = gameData.renderData.color.ambient.Buffer ();
 	CSegment* pSeg = SEGMENTS.Buffer ();
 	for (i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 		if (pSeg->m_function == SEGMENT_FUNC_SKYBOX) {
@@ -1095,7 +1095,7 @@ int32_t CLightManager::Setup (int32_t nLevel)
 {
 ENTER (0, 0, "CLightManager::Setup");
 SetMethod ();
-gameData.render.fBrightness = 1.0f;
+gameData.renderData.fBrightness = 1.0f;
 if (!gameStates.app.bPrecomputeLightmaps)
 	messageBox.Show (TXT_PREPARING);
 lightManager.AddGeometryLights ();

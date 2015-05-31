@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 //	Amount of time since the current robot was last processed for things such as movement.
-//	It is not valid to use gameData.time.xFrame because robots do not get moved every frame.
+//	It is not valid to use gameData.timeData.xFrame because robots do not get moved every frame.
 
 // ---------------------------------------------------------
 //	On entry, gameData.botData.nTypes had darn sure better be set.
@@ -73,7 +73,7 @@ void InitAIObject (int16_t nObject, int16_t behavior, int16_t nHideSegment)
 {
 	CObject			*pObj = OBJECT (nObject);
 	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
-	tAILocalInfo	*pLocalInfo = gameData.ai.localInfo + nObject;
+	tAILocalInfo	*pLocalInfo = gameData.aiData.localInfo + nObject;
 	tRobotInfo		*pRobotInfo = ROBOTINFO (pObj);
 
 #if DBG
@@ -105,7 +105,7 @@ else if (!((pStaticInfo->behavior >= MIN_BEHAVIOR) && (pStaticInfo->behavior <= 
 	}
 if (pRobotInfo->companion) {
 	pLocalInfo->mode = AIM_GOTO_PLAYER;
-	gameData.escort.nKillObject = -1;
+	gameData.escortData.nKillObject = -1;
 	}
 if (pRobotInfo->thief) {
 	pStaticInfo->behavior = AIB_SNIPE;
@@ -121,9 +121,9 @@ pLocalInfo->targetAwarenessTime = 0;
 pLocalInfo->targetAwarenessType = 0;
 pStaticInfo->GOAL_STATE = AIS_SEARCH;
 pStaticInfo->CURRENT_STATE = AIS_REST;
-pLocalInfo->timeTargetSeen = gameData.time.xGame;
-pLocalInfo->nextMiscSoundTime = gameData.time.xGame;
-pLocalInfo->timeTargetSoundAttacked = gameData.time.xGame;
+pLocalInfo->timeTargetSeen = gameData.timeData.xGame;
+pLocalInfo->nextMiscSoundTime = gameData.timeData.xGame;
+pLocalInfo->timeTargetSoundAttacked = gameData.timeData.xGame;
 if ((behavior == AIB_SNIPE) || (behavior == AIB_STATION) || (behavior == AIB_RUN_FROM) || (behavior == AIB_FOLLOW)) {
 	pStaticInfo->nHideSegment = nHideSegment;
 	pLocalInfo->nGoalSegment = nHideSegment;
@@ -147,26 +147,26 @@ void InitAIObjects (void)
 	int16_t		nBosses = 0;
 	CObject		*pObj;
 
-gameData.ai.target.pObj = NULL;
-gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
+gameData.aiData.target.pObj = NULL;
+gameData.aiData.freePointSegs = gameData.aiData.routeSegs.Buffer ();
 FORALL_OBJS (pObj) {
 	if (pObj->IsRobot ()) {
 		if (pObj->info.controlType == CT_AI)
 			InitAIObject (pObj->Index (), pObj->cType.aiInfo.behavior, pObj->cType.aiInfo.nHideSegment);
 		if (pObj->IsBoss ()) {
-			if (nBosses < (int32_t) gameData.bosses.ToS () || gameData.bosses.Grow ())
-				gameData.bosses [nBosses++].Setup (pObj->Index ());
+			if (nBosses < (int32_t) gameData.bossData.ToS () || gameData.bossData.Grow ())
+				gameData.bossData [nBosses++].Setup (pObj->Index ());
 			}
 		}
 	}
 
-int32_t i = gameData.bosses.Count () - nBosses;
+int32_t i = gameData.bossData.Count () - nBosses;
 if (0 < i) {
-	gameData.bosses.Shrink (uint32_t (i));
+	gameData.bossData.Shrink (uint32_t (i));
 	extraGameInfo [0].nBossCount [0] -= i;
 	extraGameInfo [0].nBossCount [1] -= i;
 	}
-gameData.ai.bInitialized = 1;
+gameData.aiData.bInitialized = 1;
 AIDoCloakStuff ();
 InitBuddyForLevel ();
 }
@@ -219,14 +219,14 @@ gameStates.app.nDifficultyLevel = nDiffSave;
 void InitAIForShip (void)
 {
 for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
-	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
+	gameData.aiData.cloakInfo [i].lastTime = gameData.timeData.xGame;
 	if (gameData.objData.pConsole) {
-		gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objData.pConsole);
-		gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objData.pConsole)->vPos;
+		gameData.aiData.cloakInfo [i].nLastSeg = OBJSEG (gameData.objData.pConsole);
+		gameData.aiData.cloakInfo [i].vLastPos = OBJPOS (gameData.objData.pConsole)->vPos;
 		}
 	else {
-		gameData.ai.cloakInfo [i].nLastSeg = -1;
-		gameData.ai.cloakInfo [i].vLastPos = CFixVector::ZERO;
+		gameData.aiData.cloakInfo [i].nLastSeg = -1;
+		gameData.aiData.cloakInfo [i].vLastPos = CFixVector::ZERO;
 		}
 	}
 }
@@ -235,13 +235,13 @@ for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 // Initializations to be performed for all robots for a new level.
 void InitRobotsForLevel (void)
 {
-gameData.ai.nOverallAgitation = 0;
+gameData.aiData.nOverallAgitation = 0;
 gameStates.gameplay.bFinalBossIsDead = 0;
-gameData.escort.nObjNum = 0;
-gameData.escort.bMayTalk = 0;
-gameData.physics.xBossInvulDot = I2X (1)/4 - I2X (gameStates.app.nDifficultyLevel)/8;
-for (uint32_t i = 0; i < gameData.bosses.Count (); i++)
-	gameData.bosses [i].m_nDyingStartTime = 0;
+gameData.escortData.nObjNum = 0;
+gameData.escortData.bMayTalk = 0;
+gameData.physicsData.xBossInvulDot = I2X (1)/4 - I2X (gameStates.app.nDifficultyLevel)/8;
+for (uint32_t i = 0; i < gameData.bossData.Count (); i++)
+	gameData.bossData [i].m_nDyingStartTime = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -250,18 +250,18 @@ void InitAIFrame (void)
 {
 	int32_t abState;
 
-if (gameData.ai.nMaxAwareness < PA_PLAYER_COLLISION)
-	gameData.ai.target.vLastPosFiredAt.SetZero ();
-if (!gameData.ai.target.vLastPosFiredAt.IsZero ())
-	gameData.ai.target.nDistToLastPosFiredAt =
-		CFixVector::Dist (gameData.ai.target.vLastPosFiredAt, gameData.ai.target.vBelievedPos);
+if (gameData.aiData.nMaxAwareness < PA_PLAYER_COLLISION)
+	gameData.aiData.target.vLastPosFiredAt.SetZero ();
+if (!gameData.aiData.target.vLastPosFiredAt.IsZero ())
+	gameData.aiData.target.nDistToLastPosFiredAt =
+		CFixVector::Dist (gameData.aiData.target.vLastPosFiredAt, gameData.aiData.target.vBelievedPos);
 else
-	gameData.ai.target.nDistToLastPosFiredAt = I2X (10000);
-abState = gameData.physics.xAfterburnerCharge && controls [0].afterburnerState &&
+	gameData.aiData.target.nDistToLastPosFiredAt = I2X (10000);
+abState = gameData.physicsData.xAfterburnerCharge && controls [0].afterburnerState &&
 			  (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER);
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || HeadlightIsOn (-1) || abState)
 	AIDoCloakStuff ();
-gameData.ai.nMaxAwareness = 0;
+gameData.aiData.nMaxAwareness = 0;
 }
 
 //	---------------------------------------------------------------

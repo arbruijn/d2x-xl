@@ -243,7 +243,7 @@ void CMarkerManager::DropForGuidebot (CObject *pObj)
 //	Find spare marker slot.  "if" code below should be an assert, but what if someone changes NUM_MARKERS or MAX_CROP_SINGLE and it never gets hit?
 if (nMarker > NUM_MARKERS - 1)
 	nMarker = NUM_MARKERS - 1;
-sprintf (m_data.szMessage [nMarker], "RIP: %s",gameData.escort.szName);
+sprintf (m_data.szMessage [nMarker], "RIP: %s",gameData.escortData.szName);
 m_data.position [nMarker] = pObj->info.position.vPos;
 if ((m_data.objects [nMarker] != -1) && (m_data.objects [nMarker] != 0))
 	ReleaseObject (m_data.objects [nMarker]);

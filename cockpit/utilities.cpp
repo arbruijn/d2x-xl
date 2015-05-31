@@ -95,11 +95,11 @@ if (LOCALPLAYER.homingObjectDist >= 0) {
 		xBeepDelay = I2X (1);
 	else if (xBeepDelay < I2X (1)/8)
 		xBeepDelay = I2X (1)/8;
-	if (m_info.lastWarningBeepTime [0] > gameData.time.xGame)
+	if (m_info.lastWarningBeepTime [0] > gameData.timeData.xGame)
 		m_info.lastWarningBeepTime [0] = 0;
-	if (gameData.time.xGame - m_info.lastWarningBeepTime [0] > xBeepDelay / 2) {
+	if (gameData.timeData.xGame - m_info.lastWarningBeepTime [0] > xBeepDelay / 2) {
 		audio.PlaySound (SOUND_HOMING_WARNING);
-		m_info.lastWarningBeepTime [0] = gameData.time.xGame;
+		m_info.lastWarningBeepTime [0] = gameData.timeData.xGame;
 		}
 	}
 }
@@ -134,7 +134,7 @@ if (IsMultiGame && !IsCoopGame)
 	return;
 nPrevScore = LOCALPLAYER.score;
 LOCALPLAYER.score += points;
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordPlayerScore (points);
 if (IsCoopGame)
 	MultiSendScore ();
@@ -152,7 +152,7 @@ if (!points || gameStates.app.cheats.bEnabled)
 	return;
 nPrevScore = LOCALPLAYER.score;
 LOCALPLAYER.score += points;
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordPlayerScore (points);
 if (!IsMultiGame)
 	CheckForExtraLife (nPrevScore);
@@ -187,7 +187,7 @@ if (!OBJECT (nObject))
 							  gameData.objData.pViewer->info.nSegment,
 							  gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objData.pViewer),
 							  0, 0,
-							  ++gameData.physics.bIgnoreObjFlag
+							  ++gameData.physicsData.bIgnoreObjFlag
 							 );
 
 	CHitResult hitResult;
@@ -200,7 +200,7 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) :
 
 void CGenericCockpit::DemoRecording (void)
 {
-if (gameData.demo.nState == ND_STATE_RECORDING) {
+if (gameData.demoData.nState == ND_STATE_RECORDING) {
 	if (LOCALPLAYER.homingObjectDist >= 0)
 		NDRecordHomingDistance (LOCALPLAYER.homingObjectDist);
 
@@ -209,9 +209,9 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 		m_history [0].energy = m_info.nEnergy;
 		}
 
-	if (gameData.physics.xAfterburnerCharge != m_history [0].afterburner) {
-		NDRecordPlayerAfterburner (m_history [0].afterburner, gameData.physics.xAfterburnerCharge);
-		m_history [0].afterburner = gameData.physics.xAfterburnerCharge;
+	if (gameData.physicsData.xAfterburnerCharge != m_history [0].afterburner) {
+		NDRecordPlayerAfterburner (m_history [0].afterburner, gameData.physicsData.xAfterburnerCharge);
+		m_history [0].afterburner = gameData.physicsData.xAfterburnerCharge;
 		}
 
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)

@@ -279,8 +279,8 @@ if (!ogl.SelectGlowBuffer ()) {
 #endif
 	return 0;
 	}
-//gameData.render.frame.Activate ("StartFrame (frame)");
-//gameData.render.frame.Deactivate ();
+//gameData.renderData.frame.Activate ("StartFrame (frame)");
+//gameData.renderData.frame.Deactivate ();
 CCanvas::Current ()->SetViewport ();
 ClearDrawBuffer (m_nType);
 return 1;
@@ -314,12 +314,12 @@ return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ?
 
 inline int32_t ScreenWidth (void)
 {
-return gameData.render.screen.Width ();
+return gameData.renderData.screen.Width ();
 }
 
 inline int32_t ScreenHeight (void)
 {
-return gameData.render.screen.Height ();
+return gameData.renderData.screen.Height ();
 }
 
 #else
@@ -622,8 +622,8 @@ float w, h, l, r, b, t;
 int32_t bHaveViewport = UseViewport () && (m_bViewport > 0);
 
 if (bHaveViewport) {
-	w = (float) gameData.render.scene.Width ();
-	h = (float) gameData.render.scene.Height ();
+	w = (float) gameData.renderData.scene.Width ();
+	h = (float) gameData.renderData.scene.Height ();
 
 	m_renderMin.x = Clamp (m_renderMin.x, 0, CCanvas::Current ()->Width ());
 	m_renderMax.x = Clamp (m_renderMax.x, 0, CCanvas::Current ()->Width ());
@@ -653,8 +653,8 @@ if (bHaveViewport) {
 	verts [1][3][0] = ScreenCoord (r, w);
 	verts [1][3][1] = ScreenCoord (t, h);
 
-	w = (float) gameData.render.screen.Width ();
-	h = (float) gameData.render.screen.Height ();
+	w = (float) gameData.renderData.screen.Width ();
+	h = (float) gameData.renderData.screen.Height ();
 
 	l += (float) CCanvas::Current ()->Left ();
 	r += (float) CCanvas::Current ()->Left ();
@@ -666,8 +666,8 @@ if (bHaveViewport) {
 		Swap (b, t);
 	}
 else {
-	w = (float) gameData.render.screen.Width ();
-	h = (float) gameData.render.screen.Height ();
+	w = (float) gameData.renderData.screen.Width ();
+	h = (float) gameData.renderData.screen.Height ();
 	l = (float) CCanvas::Current ()->Left ();
 	r = (float) CCanvas::Current ()->Right ();
 	t = h - (float) CCanvas::Current ()->Top ();
@@ -766,10 +766,10 @@ else
 #endif
 #if 1
 	if (gameStates.render.nWindow [0])
-		gameData.render.window.Activate ("CGlowRenderer::End");
+		gameData.renderData.window.Activate ("CGlowRenderer::End");
 	else
 #endif
-		gameData.render.scene.Activate ("CGlowRenderer::End");
+		gameData.renderData.scene.Activate ("CGlowRenderer::End");
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix

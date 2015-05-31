@@ -212,7 +212,7 @@ if (gameOpts->render.ship.bBullets) {
 		int32_t	bHires = G3HaveModel (nModel) - 1;
 
 	if (bHires >= 0) {
-		RenderModel::CModel	*pm = gameData.models.renderModels [bHires] + nModel;
+		RenderModel::CModel	*pm = gameData.modelData.renderModels [bHires] + nModel;
 
 		if (pm->m_bBullets) {
 				int32_t	nPlayer = pObj->info.nId;
@@ -272,7 +272,7 @@ void DoGatlingSmoke (CObject *pObj)
 	int32_t	bHires = G3HaveModel (nModel) - 1;
 
 if (bHires >= 0) {
-	RenderModel::CModel	*pm = gameData.models.renderModels [bHires] + nModel;
+	RenderModel::CModel	*pm = gameData.modelData.renderModels [bHires] + nModel;
 
 	if (pm->m_bBullets) {
 			int32_t	nPlayer = pObj->info.nId;
@@ -588,7 +588,7 @@ else {
 	}
 if (nParts) {
 	CFixVector vPos = pObj->Orientation ().m.dir.f;
-	tHitbox&	hb = gameData.models.hitboxes [pObj->ModelId (true)].hitboxes [0];
+	tHitbox&	hb = gameData.modelData.hitboxes [pObj->ModelId (true)].hitboxes [0];
 	int32_t l = labs (hb.vMax.v.coord.z - hb.vMin.v.coord.z);
 	vPos *= l / -5/*(gameOpts->render.particles.bDisperse ? -2 : -2) * l / 10*/;
 	vPos += pObj->Position (); 
@@ -814,16 +814,16 @@ if (!(bGatling || gameOpts->render.particles.bPlasmaTrails)) {
 #if 1
 nParts = bGatling ? LASER_MAX_PARTS : 2 * LASER_MAX_PARTS / 3;
 #else
-nParts = gameData.weapons.info [pObj->info.nId].speed [0] / I2X (1);
+nParts = gameData.weaponData.info [0][pObj->info.nId].speed [0] / I2X (1);
 #endif
 if (bGatling) {
 	c.Red () = c.Green () = c.Blue () = 2.0f / 3.0f;
 	c.Alpha () = 1.0f / 4.0f;
 	}
 else {
-	c.Red () = (float) gameData.weapons.color [pObj->info.nId].Red ();
-	c.Green () = (float) gameData.weapons.color [pObj->info.nId].Green ();
-	c.Blue () = (float) gameData.weapons.color [pObj->info.nId].Blue ();
+	c.Red () = (float) gameData.weaponData.color [pObj->info.nId].Red ();
+	c.Green () = (float) gameData.weaponData.color [pObj->info.nId].Green ();
+	c.Blue () = (float) gameData.weaponData.color [pObj->info.nId].Blue ();
 	c.Alpha () = 0.5f;
 	}
 if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {

@@ -140,7 +140,7 @@ CFixVector vTracker = OBJPOS (this)->mOrient.m.dir.f;
 CFixVector vTarget = pTarget->Position () - Position ();
 CFixVector::Normalize (vTarget);
 xDot = CFixVector::Dot (vTarget, vTracker);
-if ((xDot < gameData.weapons.xMinTrackableDot) && (xDot > I2X (9) / 10)) {
+if ((xDot < gameData.weaponData.xMinTrackableDot) && (xDot > I2X (9) / 10)) {
 	CFixVector::Normalize (vTarget);
 	xDot = CFixVector::Dot (vTarget, vTracker);
 	}
@@ -173,7 +173,7 @@ return FindAnyHomingTarget (vTrackerPos, OBJ_PLAYER, (pParent && (pParent->Targe
 int32_t CObject::FindTargetWindow (void)
 {
 for (int32_t i = 0; i < MAX_RENDERED_WINDOWS; i++)
-	if ((windowRenderedData [i].nFrame >= gameData.app.nFrameCount - 1) &&
+	if ((windowRenderedData [i].nFrame >= gameData.appData.nFrameCount - 1) &&
 		 ((windowRenderedData [i].pViewer == gameData.objData.pConsole) || (this == GuidedInMainView ())) &&
 		 !windowRenderedData [i].bRearView) {
 		return i;
@@ -316,7 +316,7 @@ int32_t CObject::UpdateHomingTarget (int32_t nTarget, fix& dot, int32_t nThread)
 
 //if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
 	//	Every 8 frames for each CObject, scan all OBJECTS.
-nFrame = OBJ_IDX (this) ^ gameData.app.nFrameCount;
+nFrame = OBJ_IDX (this) ^ gameData.appData.nFrameCount;
 if (ObjectIsTrackable (nTarget, dot, nThread) && (!gameOpts->legacy.bHomers || (nFrame % 8)))
 	return nTarget;
 
@@ -328,7 +328,7 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 			if (IsMultiGame) {
 				if (IsCoopGame)
 					rVal = FindAnyHomingTarget (Position (), OBJ_ROBOT, -1, nThread);
-				else if (gameData.app.GameMode (GM_MULTI_ROBOTS))		//	Not cooperative, if robots, track either robot or player
+				else if (gameData.appData.GameMode (GM_MULTI_ROBOTS))		//	Not cooperative, if robots, track either robot or player
 					rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, OBJ_ROBOT, nThread);
 				else		//	Not cooperative and no robots, track only a player
 					rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, -1, nThread);

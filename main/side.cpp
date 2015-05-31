@@ -1405,11 +1405,11 @@ if (!bSolid) {
 	if (!pWall || (pWall->nType != WALL_ILLUSION) || (pWall->flags & WALL_ILLUSION_OFF))
 		return 0;
 	}
-if (gameData.pig.tex.pTexMapInfo [m_nBaseTex].damage) {
-	damage = gameData.pig.tex.pTexMapInfo [m_nBaseTex].damage;
+if (gameData.pigData.tex.pTexMapInfo [m_nBaseTex].damage) {
+	damage = gameData.pigData.tex.pTexMapInfo [m_nBaseTex].damage;
 	return 3;
 	}
-if (gameData.pig.tex.pTexMapInfo [m_nBaseTex].flags & TMI_WATER)
+if (gameData.pigData.tex.pTexMapInfo [m_nBaseTex].flags & TMI_WATER)
 	return bSolid ? 2 : 4;
 return 0;
 }
@@ -1421,13 +1421,13 @@ int32_t CSide::CheckTransparency (void)
 	CBitmap	*pBm;
 
 if (m_nOvlTex) {
-	pBm = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [m_nOvlTex].index].Override (-1);
+	pBm = gameData.pigData.tex.pBitmap [gameData.pigData.tex.pBmIndex [m_nOvlTex].index].Override (-1);
 	if (pBm->Flags () & BM_FLAG_SUPER_TRANSPARENT)
 		return 1;
 	if (!(pBm->Flags () & BM_FLAG_TRANSPARENT))
 		return 0;
 	}
-pBm = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [m_nBaseTex].index].Override (-1);
+pBm = gameData.pigData.tex.pBitmap [gameData.pigData.tex.pBmIndex [m_nBaseTex].index].Override (-1);
 if (pBm->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
 if (gameStates.app.bD2XLevel && IS_WALL (m_nWall)) {
@@ -1509,8 +1509,8 @@ else {
 		uint16_t l = cf.ReadUShort ();
 		m_uvls [i].l = fix (l) << 1;
 		float fBrightness = X2F (m_uvls [i].l);
-		if ((i < m_nCorners) && (gameData.render.color.vertBright [sideVerts [i]] < fBrightness))
-			gameData.render.color.vertBright [sideVerts [i]] = fBrightness;
+		if ((i < m_nCorners) && (gameData.renderData.color.vertBright [sideVerts [i]] < fBrightness))
+			gameData.renderData.color.vertBright [sideVerts [i]] = fBrightness;
 		}
 	}
 		

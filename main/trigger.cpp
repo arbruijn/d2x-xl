@@ -236,10 +236,10 @@ if (m_nLinks) {
 		pObj->info.position.vPos = SEGMENT (nSegment)->Center ();
 		pObj->RelinkToSeg (nSegment);
 		if (pObj->IsBoss ()) {
-			int32_t i = gameData.bosses.Find (pObj->Index ());
+			int32_t i = gameData.bossData.Find (pObj->Index ());
 
 			if (i >= 0)
-				gameData.bosses [i].Setup (pObj->Index ());
+				gameData.bossData [i].Setup (pObj->Index ());
 			}
 		}
 	}
@@ -266,7 +266,7 @@ for (int32_t i = 0; i < m_nLinks; i++) {
 	nSide = m_sides [i];
 	//check if tmap2 casts light before turning the light on.  This
 	//is to keep us from turning on blown-out lights
-	if (gameData.pig.tex.pTexMapInfo [SEGMENT (nSegment)->m_sides [nSide].m_nOvlTex].lighting) {
+	if (gameData.pigData.tex.pTexMapInfo [SEGMENT (nSegment)->m_sides [nSide].m_nOvlTex].lighting) {
 		ret |= AddLight (nSegment, nSide); 		//any light sets flag
 		EnableVariableLight (nSegment, nSide);
 		}
@@ -287,7 +287,7 @@ for (int32_t i = 0; i < m_nLinks; i++) {
 	nSide = m_sides [i];
 	//check if tmap2 casts light before turning the light off.  This
 	//is to keep us from turning off blown-out lights
-	if (gameData.pig.tex.pTexMapInfo [SEGMENT (nSegment)->m_sides [nSide].m_nOvlTex].lighting) {
+	if (gameData.pigData.tex.pTexMapInfo [SEGMENT (nSegment)->m_sides [nSide].m_nOvlTex].lighting) {
 		ret |= SubtractLight (nSegment, nSide); 	//any light sets flag
 		DisableVariableLight (nSegment, nSide);
 		}
@@ -515,7 +515,7 @@ return 1;
 
 int32_t CTrigger::DoPlaySound (int16_t nObject)
 {
-	tTextIndex	*pIndex = FindTextData (&gameData.sounds, X2I (GetValue ()));
+	tTextIndex	*pIndex = FindTextData (&gameData.soundData, X2I (GetValue ()));
 
 if (!pIndex)
 	return 0;
@@ -526,7 +526,7 @@ if (GetTime (0) < 0) {
 	if (m_info.nChannel >= 0)
 		SetFlags (TF_PLAYING_SOUND);
 	}
-else if (/*(GetTime (1) > 0) &&*/ (gameData.time.xGame - m_info.tOperated > GetTime (1))) {
+else if (/*(GetTime (1) > 0) &&*/ (gameData.timeData.xGame - m_info.tOperated > GetTime (1))) {
 	m_info.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 0, 0, GetTime (0) - 1, -1, I2X (1), pIndex->pszText);
 	if (m_info.nChannel >= 0) {
 		SetTime (1, audio.Channel (m_info.nChannel)->Duration () * GetTime (0));
@@ -534,7 +534,7 @@ else if (/*(GetTime (1) > 0) &&*/ (gameData.time.xGame - m_info.tOperated > GetT
 		}
 #if DBG
 	else
-		pIndex = FindTextData (&gameData.sounds, X2I (GetValue ()));
+		pIndex = FindTextData (&gameData.soundData, X2I (GetValue ()));
 #endif
 	}
 else
@@ -589,7 +589,7 @@ for (int32_t i = 0; i < m_nLinks; i++) {
 			break;
 		}
 
-	bForceField = ((gameData.pig.tex.pTexMapInfo [pSeg->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0);
+	bForceField = ((gameData.pigData.tex.pTexMapInfo [pSeg->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0);
 	if (!(pWall = pSeg->Wall (nSide))) {
 #if DBG
 		PrintLog (0, "WARNING: Wall trigger %d targets non-existent wall @ %d,%d\n", Index (), pSeg->Index (), nSide);
@@ -1024,22 +1024,22 @@ if (IsMultiGame) {
 
 bool bDisabled = PSecretLevelDestroyed () == 1;
 
-if (gameData.demo.nState == ND_STATE_RECORDING)			// record whether we're really going to the secret level
+if (gameData.demoData.nState == ND_STATE_RECORDING)			// record whether we're really going to the secret level
 	NDRecordSecretExitBlown (bDisabled);
 
-if (bDisabled && (gameData.demo.nState != ND_STATE_PLAYBACK)) {
+if (bDisabled && (gameData.demoData.nState != ND_STATE_PLAYBACK)) {
 	HUDInitMessage (TXT_SECRET_DESTROYED);
 	audio.PlaySound (SOUND_BAD_SELECTION);
 	return false;
 }
 
-if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
-	gameData.demo.nState = ND_STATE_PAUSED;
+if (gameData.demoData.nState == ND_STATE_RECORDING)		// stop demo recording
+	gameData.demoData.nState = ND_STATE_PAUSED;
 audio.StopAll ();		//kill the sounds
 audio.PlaySound (SOUND_SECRET_EXIT);
 paletteManager.DisableEffect ();
 EnterSecretLevel ();
-gameData.reactor.bDestroyed = 0;
+gameData.reactorData.bDestroyed = 0;
 return true;
 }
 
@@ -1048,7 +1048,7 @@ return true;
 int32_t CTrigger::WallIsForceField (void)
 {
 for (int32_t i = 0; i < m_nLinks; i++)
-	if ((gameData.pig.tex.pTexMapInfo [SEGMENT (m_segments [i])->m_sides [m_sides [i]].m_nBaseTex].flags & TMI_FORCE_FIELD))
+	if ((gameData.pigData.tex.pTexMapInfo [SEGMENT (m_segments [i])->m_sides [m_sides [i]].m_nBaseTex].flags & TMI_FORCE_FIELD))
 		return 1;
 return 0;
 }
@@ -1183,7 +1183,7 @@ if (!nDepth && !bObjTrigger && (Type () != TT_TELEPORT) && (Type () != TT_SPEEDB
 	}
 
 if (m_info.tOperated < 0) {
-	m_info.tOperated = gameData.time.xGame;
+	m_info.tOperated = gameData.timeData.xGame;
 	m_info.nObject = nObject;
 	m_info.nPlayer = nPlayer;
 	m_info.bShot = bShot;
@@ -1264,7 +1264,7 @@ switch (Type ()) {
 		break;
 
 	case TT_OBJECT_PRODUCER:
-		if (!IsMultiGame || gameData.app.GameMode (GM_MULTI_ROBOTS))
+		if (!IsMultiGame || gameData.appData.GameMode (GM_MULTI_ROBOTS))
 			DoObjectProducer (nPlayer == N_LOCALPLAYER);
 		break;
 
@@ -1372,7 +1372,7 @@ switch (Type ()) {
 
 	case TT_SOUND:
 		if (DoPlaySound (nObject))
-			m_info.tOperated = gameData.time.xGame;
+			m_info.tOperated = gameData.timeData.xGame;
 		break;
 
 	case TT_MASTER:
@@ -1447,7 +1447,7 @@ int32_t CTrigger::Delay (void)
 { 
 if (!IsDelayed ())
 	return -1;
-return gameData.time.xGame - m_info.tOperated < MSEC2X (GetTime (1));
+return gameData.timeData.xGame - m_info.tOperated < MSEC2X (GetTime (1));
 }
 
 //------------------------------------------------------------------------------
@@ -1624,7 +1624,7 @@ for (i = gameData.trigData.m_nTriggers [0]; i > 0; i--, pTrigger++) {
 	if ((pTrigger->Type () == TT_SOUND) && 
 		 (pTrigger->Flagged (TF_PLAYING_SOUND)) && 
 		 (pTrigger->GetTime (1) > 0) &&
-		 (gameData.time.xGame - pTrigger->m_info.tOperated > pTrigger->GetTime (1))) {
+		 (gameData.timeData.xGame - pTrigger->m_info.tOperated > pTrigger->GetTime (1))) {
 		pTrigger->ClearFlags (TF_PLAYING_SOUND);
 		if ((pTrigger->IsFlyThrough () ? !pTrigger->Flagged (TF_ONE_SHOT) : pTrigger->Flagged (TF_PERMANENT))) 
 			pTrigger->SetFlags (TF_DISABLED); // sound has been played; make sure it doesn't get played again when laoading a save game that may subsequently be now
@@ -1744,13 +1744,13 @@ for (; i < gameData.trigData.m_nTriggers [0]; i++) {
 	nOvlTex = SEGMENT (nSegSide / 65536)->m_sides [nSegSide & 0xffff].m_nOvlTex;
 	if (nOvlTex <= 0)
 		continue;
-	ec = gameData.pig.tex.pTexMapInfo [nOvlTex].nEffectClip;
+	ec = gameData.pigData.tex.pTexMapInfo [nOvlTex].nEffectClip;
 	if (ec < 0) {
-		if (gameData.pig.tex.pTexMapInfo [nOvlTex].destroyed == -1)
+		if (gameData.pigData.tex.pTexMapInfo [nOvlTex].destroyed == -1)
 			continue;
 		}
 	else {
-		tEffectInfo *pEffectInfo = gameData.effects.pEffect + ec;
+		tEffectInfo *pEffectInfo = gameData.effectData.pEffect + ec;
 		if (pEffectInfo->flags & EF_ONE_SHOT)
 			continue;
 		if (pEffectInfo->destroyed.nTexture < 0)

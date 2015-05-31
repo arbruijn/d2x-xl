@@ -87,19 +87,19 @@ fix newdemo_single_frameTime;
 
 void UpdateVCRState(void)
 {
-if (gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION))
+if (gameOpts->demo.bRevertFormat && (gameData.demoData.nVersion > DEMO_VERSION))
 	return;
 if ((gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT]) && gameStates.input.keys.pressed [KEY_RIGHT])
-	gameData.demo.nVcrState = ND_STATE_FASTFORWARD;
+	gameData.demoData.nVcrState = ND_STATE_FASTFORWARD;
 else if ((gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT]) && gameStates.input.keys.pressed [KEY_LEFT])
-	gameData.demo.nVcrState = ND_STATE_REWINDING;
+	gameData.demoData.nVcrState = ND_STATE_REWINDING;
 else if (!(gameStates.input.keys.pressed [KEY_LCTRL] || gameStates.input.keys.pressed [KEY_RCTRL]) && gameStates.input.keys.pressed [KEY_RIGHT] && ((TimerGetFixedSeconds () - newdemo_single_frameTime) >= I2X (1)))
-	gameData.demo.nVcrState = ND_STATE_ONEFRAMEFORWARD;
+	gameData.demoData.nVcrState = ND_STATE_ONEFRAMEFORWARD;
 else if (!(gameStates.input.keys.pressed [KEY_LCTRL] || gameStates.input.keys.pressed [KEY_RCTRL]) && gameStates.input.keys.pressed [KEY_LEFT] && ((TimerGetFixedSeconds () - newdemo_single_frameTime) >= I2X (1)))
-	gameData.demo.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
+	gameData.demoData.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
 #if 0
-else if ((gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demo.nVcrState == ND_STATE_REWINDING))
-	gameData.demo.nVcrState = ND_STATE_PLAYBACK;
+else if ((gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demoData.nVcrState == ND_STATE_REWINDING))
+	gameData.demoData.nVcrState = ND_STATE_PLAYBACK;
 #endif
 }
 
@@ -180,7 +180,7 @@ if (gameStates.app.bDeathSequenceAborted)
 
 void HandleDemoKey (int32_t key)
 {
-if ((gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION)) || OBSERVING)
+if ((gameOpts->demo.bRevertFormat && (gameData.demoData.nVersion > DEMO_VERSION)) || OBSERVING)
 	return;
 switch (key) {
 	case KEY_F3:
@@ -190,14 +190,14 @@ switch (key) {
 
 	case KEY_SHIFTED + KEY_MINUS:
 	case KEY_MINUS:
-		if (gameData.render.rift.m_ipd > RIFT_MIN_IPD)
-			gameData.render.rift.m_ipd--;
+		if (gameData.renderData.rift.m_ipd > RIFT_MIN_IPD)
+			gameData.renderData.rift.m_ipd--;
 		break;
 
 	case KEY_SHIFTED + KEY_EQUALS:
 	case KEY_EQUALS:
-		if (gameData.render.rift.m_ipd < RIFT_MAX_IPD)
-			gameData.render.rift.m_ipd++;
+		if (gameData.renderData.rift.m_ipd < RIFT_MAX_IPD)
+			gameData.renderData.rift.m_ipd++;
 		break;
 
 	case KEY_F2:
@@ -205,7 +205,7 @@ switch (key) {
 		break;
 
 	case KEY_F7:
-		gameData.multigame.score.bShowList = (gameData.multigame.score.bShowList+1) % ((gameData.demo.nGameMode & GM_TEAM) ? 4 : 3);
+		gameData.multigame.score.bShowList = (gameData.multigame.score.bShowList+1) % ((gameData.demoData.nGameMode & GM_TEAM) ? 4 : 3);
 		break;
 
 	case KEY_CTRLED + KEY_F7:
@@ -218,21 +218,21 @@ switch (key) {
 		break;
 
 	case KEY_UP:
-		gameData.demo.nVcrState = ND_STATE_PLAYBACK;
+		gameData.demoData.nVcrState = ND_STATE_PLAYBACK;
 		break;
 
 	case KEY_DOWN:
-		gameData.demo.nVcrState = ND_STATE_PAUSED;
+		gameData.demoData.nVcrState = ND_STATE_PAUSED;
 		break;
 
 	case KEY_LEFT:
 		newdemo_single_frameTime = TimerGetFixedSeconds ();
-		gameData.demo.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
+		gameData.demoData.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
 		break;
 
 	case KEY_RIGHT:
 		newdemo_single_frameTime = TimerGetFixedSeconds ();
-		gameData.demo.nVcrState = ND_STATE_ONEFRAMEFORWARD;
+		gameData.demoData.nVcrState = ND_STATE_ONEFRAMEFORWARD;
 		break;
 
 	case KEY_CTRLED + KEY_RIGHT:
@@ -251,12 +251,12 @@ switch (key) {
 
 	case KEY_COMMAND + KEY_SHIFTED + KEY_P:
 	case KEY_PRINT_SCREEN: {
-		int32_t oldState = gameData.demo.nVcrState;
-		gameData.demo.nVcrState = ND_STATE_PRINTSCREEN;
+		int32_t oldState = gameData.demoData.nVcrState;
+		gameData.demoData.nVcrState = ND_STATE_PRINTSCREEN;
 		//RenderMonoFrame ();
 		gameStates.app.bSaveScreenShot = 1;
 		//SaveScreenShot (NULL, 0);
-		gameData.demo.nVcrState = oldState;
+		gameData.demoData.nVcrState = oldState;
 		break;
 		}
 	}
@@ -299,8 +299,8 @@ int32_t HandleSystemKey (int32_t key)
 if (!gameStates.app.bPlayerIsDead)
 	switch (key) {
 		case KEY_ESC:
-			if (gameData.app.bGamePaused)
-				gameData.app.bGamePaused = 0;
+			if (gameData.appData.bGamePaused)
+				gameData.appData.bGamePaused = 0;
 			else {
 				gameStates.app.bGameAborted = 1;
 				SetFunctionMode (FMODE_MENU);
@@ -383,15 +383,15 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 
 		case KEY_SHIFTED + KEY_MINUS:
 		case KEY_MINUS:
-			if (gameData.render.rift.m_ipd > RIFT_MIN_IPD)
-				gameData.render.rift.m_ipd--;
+			if (gameData.renderData.rift.m_ipd > RIFT_MIN_IPD)
+				gameData.renderData.rift.m_ipd--;
 			bScreenChanged = 1;
 			break;
 
 		case KEY_SHIFTED + KEY_EQUALS:
 		case KEY_EQUALS:
-			if (gameData.render.rift.m_ipd < RIFT_MAX_IPD)
-				gameData.render.rift.m_ipd++;
+			if (gameData.renderData.rift.m_ipd < RIFT_MAX_IPD)
+				gameData.renderData.rift.m_ipd++;
 			bScreenChanged = 1;
 			break;
 
@@ -404,11 +404,11 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			break;
 
 		case KEY_F5:
-			if (gameData.demo.nState == ND_STATE_RECORDING) {
+			if (gameData.demoData.nState == ND_STATE_RECORDING) {
 				NDStopRecording ();
 				}
-			else if (gameData.demo.nState == ND_STATE_NORMAL)
-				if (!gameData.app.bGamePaused)		//can't start demo while paused
+			else if (gameData.demoData.nState == ND_STATE_NORMAL)
+				if (!gameData.appData.bGamePaused)		//can't start demo while paused
 					NDStartRecording ();
 			break;
 
@@ -428,8 +428,8 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			break;
 
 		case KEY_CTRLED + KEY_F8:
-			gameData.stats.nDisplayMode = (gameData.stats.nDisplayMode + 1) % 5;
-			gameOpts->render.cockpit.bPlayerStats = gameData.stats.nDisplayMode != 0;
+			gameData.statsData.nDisplayMode = (gameData.statsData.nDisplayMode + 1) % 5;
+			gameOpts->render.cockpit.bPlayerStats = gameData.statsData.nDisplayMode != 0;
 			break;
 
 		case KEY_F8:
@@ -452,7 +452,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 #endif
 			gameData.trackIR.x =
 			gameData.trackIR.y = 0;
-			gameData.render.rift.SetCenter ();
+			gameData.renderData.rift.SetCenter ();
 			break;
 
 		case KEY_ALTED + KEY_F12:
@@ -480,7 +480,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			if (!gameStates.app.bPlayerIsDead && (!IsMultiGame || IsCoopGame)) {
 				paletteManager.SuspendEffect ();
 				int32_t bLoaded = saveGameManager.Load (1, 0, 0, NULL);
-				if (gameData.app.bGamePaused)
+				if (gameData.appData.bGamePaused)
 					DoGamePause ();
 				paletteManager.ResumeEffect (!bLoaded);
 			}
@@ -597,7 +597,7 @@ switch (key) {
 
 	case KEY_ALTED + KEY_P:
 #if PROFILING
-		gameData.profiler.bToggle = !gameData.profiler.bToggle;
+		gameData.profilerData.bToggle = !gameData.profilerData.bToggle;
 #endif
 		break;
 
@@ -750,7 +750,7 @@ void HandleTestKey(int32_t key)
 					if (IsMultiGame)
 						MultiSendCloak ();
 					AIDoCloakStuff ();
-					LOCALPLAYER.cloakTime = gameData.time.xGame;
+					LOCALPLAYER.cloakTime = gameData.timeData.xGame;
 #if TRACE
 					console.printf (CON_DBG, "You are cloaked!\n");
 #endif
@@ -879,9 +879,9 @@ void HandleTestKey(int32_t key)
 		}
 
 		case KEYDBGGED + KEY_ALTED + KEY_F5:
-			gameData.time.xGame = I2X(0x7fff - 840);		//will overflow in 14 minutes
+			gameData.timeData.xGame = I2X(0x7fff - 840);		//will overflow in 14 minutes
 #if TRACE
-			console.printf (CON_DBG, "gameData.time.xGame bashed to %d secs\n", X2I(gameData.time.xGame));
+			console.printf (CON_DBG, "gameData.timeData.xGame bashed to %d secs\n", X2I(gameData.timeData.xGame));
 #endif
 			break;
 
@@ -908,7 +908,7 @@ void ReadControls (void)
 
 gameStates.app.bPlayerFiredLaserThisFrame = -1;
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
-		if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (markerManager.DefiningMsg ())
+		if ((gameData.demoData.nState == ND_STATE_PLAYBACK) || (markerManager.DefiningMsg ())
 			|| gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining
 			)	 // WATCH OUT!!! WEIRD CODE ABOVE!!!
 			controls.Reset ();
@@ -919,7 +919,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 	if (controls [0].automapDownCount &&
 		 !LOCALOBJECT->Appearing (false) &&
 		 !gameData.objData.speedBoost [OBJ_IDX (gameData.objData.pConsole)].bBoosted &&
-		 !(IsMultiGame && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
+		 !(IsMultiGame && gameData.reactorData.bDestroyed && (gameData.reactorData.countdown.nSecsLeft < 10)))
 		automap.SetActive (-1);
 	DoWeaponStuff ();
 	hudIcons.ToggleWeaponIcons ();
@@ -944,7 +944,7 @@ if (LOCALPLAYER.m_bExploded) { //gameStates.app.bPlayerIsDead && (gameData.objDa
 else {
 	explodingFlag = 0;
 	}
-if (gameData.demo.nState == ND_STATE_PLAYBACK)
+if (gameData.demoData.nState == ND_STATE_PLAYBACK)
 	UpdateVCRState ();
 
 while ((key = KeyInKeyTime (&keyTime)) != 0) {
@@ -970,7 +970,7 @@ while ((key = KeyInKeyTime (&keyTime)) != 0) {
 		HandleDeathKey (key);
 	if (gameStates.app.bEndLevelSequence)
 		HandleEndlevelKey (key);
-	else if (gameData.demo.nState == ND_STATE_PLAYBACK) {
+	else if (gameData.demoData.nState == ND_STATE_PLAYBACK) {
 		HandleDemoKey (key);
 #if DBG
 		HandleTestKey (key);

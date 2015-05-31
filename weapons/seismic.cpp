@@ -58,9 +58,9 @@ int32_t rz = (fix) FRound (SRandShort () * fScale);
 gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.x += rx;
 gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.z += rz;
 //	Shake the buddy!
-if (gameData.escort.nObjNum != -1) {
-	OBJECT (gameData.escort.nObjNum)->mType.physInfo.rotVel.v.coord.x += rx * 4;
-	OBJECT (gameData.escort.nObjNum)->mType.physInfo.rotVel.v.coord.z += rz * 4;
+if (gameData.escortData.nObjNum != -1) {
+	OBJECT (gameData.escortData.nObjNum)->mType.physInfo.rotVel.v.coord.x += rx * 4;
+	OBJECT (gameData.escortData.nObjNum)->mType.physInfo.rotVel.v.coord.z += rz * 4;
 	}
 //	Shake a guided missile!
 gameStates.gameplay.seismic.nMagnitude += rx;
@@ -75,11 +75,11 @@ void RockTheMineFrame (void)
 {
 for (int32_t i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 	if (eshakerDetonateTimes [i] != 0) {
-		fix deltaTime = gameData.time.xGame - eshakerDetonateTimes [i];
+		fix deltaTime = gameData.timeData.xGame - eshakerDetonateTimes [i];
 		if (!gameStates.gameplay.seismic.bSound) {
 			audio.PlayLoopingSound ((int16_t) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
 			gameStates.gameplay.seismic.bSound = 1;
-			gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + RandShort () / 2;
+			gameStates.gameplay.seismic.nNextSoundTime = gameData.timeData.xGame + RandShort () / 2;
 			}
 		if (deltaTime >= ESHAKER_SHAKE_TIME) {
 			eshakerDetonateTimes [i] = 0;
@@ -108,9 +108,9 @@ for (int32_t i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.x += rx;
 			gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.z += rz;
 			//	Shake the buddy!
-			if (gameData.escort.nObjNum != -1) {
-				OBJECT (gameData.escort.nObjNum)->mType.physInfo.rotVel.v.coord.x += rx * 4;
-				OBJECT (gameData.escort.nObjNum)->mType.physInfo.rotVel.v.coord.z += rz * 4;
+			if (gameData.escortData.nObjNum != -1) {
+				OBJECT (gameData.escortData.nObjNum)->mType.physInfo.rotVel.v.coord.x += rx * 4;
+				OBJECT (gameData.escortData.nObjNum)->mType.physInfo.rotVel.v.coord.z += rz * 4;
 				}
 			//	Shake a guided missile!
 			gameStates.gameplay.seismic.nMagnitude += rx;
@@ -145,17 +145,17 @@ int32_t StartSeismicDisturbance (void)
 if (gameStates.gameplay.seismic.nShakeDuration < 1)
 	return 0;
 #if 0
-int32_t rval = (2 * FixMul (RandShort (), gameStates.gameplay.seismic.nShakeFrequency)) < gameData.time.xFrame;
+int32_t rval = (2 * FixMul (RandShort (), gameStates.gameplay.seismic.nShakeFrequency)) < gameData.timeData.xFrame;
 if (rval) 
 #endif
 	{
-	gameStates.gameplay.seismic.nStartTime = gameData.time.xGame;
-	gameStates.gameplay.seismic.nEndTime = gameData.time.xGame + gameStates.gameplay.seismic.nShakeDuration;
+	gameStates.gameplay.seismic.nStartTime = gameData.timeData.xGame;
+	gameStates.gameplay.seismic.nEndTime = gameData.timeData.xGame + gameStates.gameplay.seismic.nShakeDuration;
 	gameStates.gameplay.seismic.nShakeDuration = 0;
 	if (!gameStates.gameplay.seismic.bSound) {
 		audio.PlayLoopingSound ((int16_t) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
 		gameStates.gameplay.seismic.bSound = 1;
-		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + RandShort () / 2;
+		gameStates.gameplay.seismic.nNextSoundTime = gameData.timeData.xGame + RandShort () / 2;
 		}
 	if (IsMultiGame)
 		MultiSendSeismic (gameStates.gameplay.seismic.nStartTime, gameStates.gameplay.seismic.nEndTime);
@@ -168,8 +168,8 @@ return 1/*rval*/;
 void SeismicDisturbanceFrame (void)
 {
 if (gameStates.gameplay.seismic.nShakeFrequency) {
-	if (((gameStates.gameplay.seismic.nStartTime < gameData.time.xGame) && (gameStates.gameplay.seismic.nEndTime > gameData.time.xGame)) || StartSeismicDisturbance ()) {
-		fix	deltaTime = gameData.time.xGame - gameStates.gameplay.seismic.nStartTime;
+	if (((gameStates.gameplay.seismic.nStartTime < gameData.timeData.xGame) && (gameStates.gameplay.seismic.nEndTime > gameData.timeData.xGame)) || StartSeismicDisturbance ()) {
+		fix	deltaTime = gameData.timeData.xGame - gameStates.gameplay.seismic.nStartTime;
 #if 1
 		RockPlayerShip (abs (deltaTime - (gameStates.gameplay.seismic.nEndTime - gameStates.gameplay.seismic.nStartTime) / 2), X2F (gameStates.gameplay.seismic.nShakeFrequency));
 #else
@@ -189,9 +189,9 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 		gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.x += rx;
 		gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.z += rz;
 		//	Shake the buddy!
-		if (gameData.escort.nObjNum != -1) {
-			OBJECT (gameData.escort.nObjNum)->mType.physInfo.rotVel.v.coord.x += rx * 4;
-			OBJECT (gameData.escort.nObjNum)->mType.physInfo.rotVel.v.coord.z += rz * 4;
+		if (gameData.escortData.nObjNum != -1) {
+			OBJECT (gameData.escortData.nObjNum)->mType.physInfo.rotVel.v.coord.x += rx * 4;
+			OBJECT (gameData.escortData.nObjNum)->mType.physInfo.rotVel.v.coord.z += rz * 4;
 			}
 		//	Shake a guided missile!
 		gameStates.gameplay.seismic.nMagnitude += rx;
@@ -209,7 +209,7 @@ void ShakerRockStuff (CFixVector* vPos)
 	int32_t	i;
 
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
-	if (eshakerDetonateTimes [i] + ESHAKER_SHAKE_TIME < gameData.time.xGame)
+	if (eshakerDetonateTimes [i] + ESHAKER_SHAKE_TIME < gameData.timeData.xGame)
 		eshakerDetonateTimes [i] = 0;
 
 float fScale;
@@ -222,7 +222,7 @@ else {
 
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 	if (eshakerDetonateTimes [i] == 0) {
-		eshakerDetonateTimes [i] = gameData.time.xGame;
+		eshakerDetonateTimes [i] = gameData.timeData.xGame;
 		eshakerDetonateScales [i] = fScale;
 		//HUDMessage (0, "shaker rock scale %d: %1.2f (dist %1.2f)", i, fScale, fDist);
 		break;
@@ -248,12 +248,12 @@ if (nVolume != 0) {
 		gameStates.gameplay.seismic.bSound = 0;
 		}
 
-	if ((gameData.time.xGame > gameStates.gameplay.seismic.nNextSoundTime) && gameStates.gameplay.seismic.nVolume) {
+	if ((gameData.timeData.xGame > gameStates.gameplay.seismic.nNextSoundTime) && gameStates.gameplay.seismic.nVolume) {
 		int32_t volume = gameStates.gameplay.seismic.nVolume * 2048;
 		if (volume > I2X (1))
 			volume = I2X (1);
 		audio.ChangeLoopingVolume (volume);
-		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + RandShort () / 4 + 8192;
+		gameStates.gameplay.seismic.nNextSoundTime = gameData.timeData.xGame + RandShort () / 4 + 8192;
 		}
 	}
 }

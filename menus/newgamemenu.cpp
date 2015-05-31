@@ -238,7 +238,7 @@ if ((m = menu ["difficulty"])) {
 	v = m->Value ();
 	if (gameStates.app.nDifficultyLevel != v) {
 		gameStates.app.nDifficultyLevel = v;
-		gameData.bosses.InitGateIntervals ();
+		gameData.bossData.InitGateIntervals ();
 		sprintf (m->Text (), TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 		m->Rebuild ();
 		}
@@ -414,7 +414,7 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 	i = m.Value ("difficulty");
 	if (gameStates.app.nDifficultyLevel != i) {
 		gameStates.app.nDifficultyLevel = i;
-		gameData.bosses.InitGateIntervals ();
+		gameData.bossData.InitGateIntervals ();
 		}
 	GetShipSelection (m, optShip);
 	SavePlayerProfile ();
@@ -499,7 +499,7 @@ else if ((nChoice == m.IndexOf ("start mcast4 game")) || (nChoice == m.IndexOf (
 	gameStates.multi.nGameType = IPX_GAME;
 	IpxSetDriver (IPX_DRIVER_MCAST4); 
 	}
-gameData.app.SetGameMode (GM_MULTI);
+gameData.appData.SetGameMode (GM_MULTI);
 
 if (bStart ? NetworkStartGame () : NetworkBrowseGames ()) {
 	if (gameData.multiplayer.autoNG.bValid > 0)
@@ -507,7 +507,7 @@ if (bStart ? NetworkStartGame () : NetworkBrowseGames ()) {
 	return 1;
 	}
 networkThread.Stop ();
-gameData.app.SetGameMode (0);
+gameData.appData.SetGameMode (0);
 IpxClose ();
 gameData.multiplayer.autoNG.bValid = 0;
 return 0;
@@ -528,7 +528,7 @@ if ((gameStates.app.bNostalgia < 2) && (gameData.multiplayer.autoNG.bValid > 0))
 	}
 
 do {
-	nOldGameMode = gameData.app.nGameMode;
+	nOldGameMode = gameData.appData.nGameMode;
 	m.Destroy ();
 	m.Create (15);
 	if (DBG || gameStates.app.bNostalgia < 2) {
@@ -571,7 +571,7 @@ do {
 			}
 		ExecMultiMenuOption (m, i);
 		}
-	if (nOldGameMode != gameData.app.nGameMode)
+	if (nOldGameMode != gameData.appData.nGameMode)
 		break;          // leave menu
 	} while (i > -1);
 return 0;

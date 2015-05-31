@@ -59,10 +59,10 @@ CSegment *pSeg = SEGMENT (nSegment);
 CSide *pSide = pSeg->m_sides + nSide;
 CFixVector v;
 if (pSide->m_nType == SIDE_IS_QUAD) {
-	v = gameData.render.mine.viewer.vPos - pSeg->SideCenter (nSide); //gameData.segData.vertices + pSeg->m_vertices [sideVertIndex [nSide][0]]);
+	v = gameData.renderData.mine.viewer.vPos - pSeg->SideCenter (nSide); //gameData.segData.vertices + pSeg->m_vertices [sideVertIndex [nSide][0]]);
 	return CFixVector::Dot (pSide->m_normals [0], v) >= 0;
 	}
-v = gameData.render.mine.viewer.vPos - VERTICES [pSide->m_vertices [(pSide->m_nType == SIDE_IS_TRI_13) ? 3 : 0]];
+v = gameData.renderData.mine.viewer.vPos - VERTICES [pSide->m_vertices [(pSide->m_nType == SIDE_IS_TRI_13) ? 3 : 0]];
 return (CFixVector::Dot (pSide->m_normals [0], v) >= 0) || (CFixVector::Dot (pSide->m_normals [1], v) >= 0);
 #else
 return 1;
@@ -307,16 +307,16 @@ if (nVertex == nDbgVertex)
 #endif
 if (gameStates.render.bAmbientColor) { 
 	if (bBlend == 1)
-		*pColor *= gameData.render.color.ambient [nVertex];
+		*pColor *= gameData.renderData.color.ambient [nVertex];
 	else if (bBlend == 2) {
-		CFaceColor* pVertexColor = &gameData.render.color.ambient [nVertex];
+		CFaceColor* pVertexColor = &gameData.renderData.color.ambient [nVertex];
 		float a = pColor->v.color.a, da = 1.0f - a;
 		pColor->v.color.r = pColor->v.color.r * a + pVertexColor->v.color.r * da;
 		pColor->v.color.g = pColor->v.color.g * a + pVertexColor->v.color.g * da;
 		pColor->v.color.b = pColor->v.color.b * a + pVertexColor->v.color.b * da;
 		}
 	else
-		*pColor += gameData.render.color.ambient [nVertex];
+		*pColor += gameData.renderData.color.ambient [nVertex];
 	}
 return 1;
 }
@@ -356,17 +356,17 @@ else {
 #if LMAP_LIGHTADJUST
 	if (USE_LIGHTMAPS) {
 		else {
-			light = I2X (1) / 2 + gameData.render.lights.segDeltas [nSegment * 6 + nSide];
+			light = I2X (1) / 2 + gameData.renderData.lights.segDeltas [nSegment * 6 + nSide];
 			if (light < 0)
 				light = 0;
 			}
 		}
 #endif
-	if (gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)	//make lights flash
+	if (gameData.reactorData.bDestroyed || gameStates.gameplay.seismic.nMagnitude)	//make lights flash
 		light = FixMul (gameStates.render.nFlashScale, light);
 	}
 //add in dynamic light (from explosions, etc.)
-dynLight = gameData.render.lights.dynamicLight [nVertex];
+dynLight = gameData.renderData.lights.dynamicLight [nVertex];
 fl = X2F (light);
 dl = X2F (dynLight);
 light += dynLight;
@@ -375,18 +375,18 @@ if (nVertex == nDbgVertex)
 	BRP;
 #endif
 if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
-	if (gameData.render.lights.bGotDynColor [nVertex]) {
+	if (gameData.renderData.lights.bGotDynColor [nVertex]) {
 #if DBG
 		if (nVertex == nDbgVertex)
 			BRP;
 #endif
 		CFloatVector dynColor;
-		dynColor.Assign (gameData.render.lights.dynamicColor [nVertex]);
+		dynColor.Assign (gameData.renderData.lights.dynamicColor [nVertex]);
 		if (gameOpts->render.color.bMix) {
 			if (gameOpts->render.color.nLevel) {
 				if (gameStates.render.bAmbientColor) {
-					if ((fl != 0) && gameData.render.color.vertBright [nVertex]) {
-						hl = fl / gameData.render.color.vertBright [nVertex];
+					if ((fl != 0) && gameData.renderData.color.vertBright [nVertex]) {
+						hl = fl / gameData.renderData.color.vertBright [nVertex];
 						*pColor *= hl;
 						*pColor += dynColor * dl;
 						ScaleColor (pColor, fl + dl);
@@ -431,8 +431,8 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 else {
 	ScaleColor (pColor, fl + dl);
 	}
-*pColor *= gameData.render.fBrightness;
-light = fix (light * gameData.render.fBrightness);
+*pColor *= gameData.renderData.fBrightness;
+light = fix (light * gameData.renderData.fBrightness);
 //saturate at max value
 if (light > MAX_LIGHT)
 	light = MAX_LIGHT;
@@ -585,7 +585,7 @@ if (bHaveMonitorBg) {
 #else
 		pFace->bmTop = pCamera;
 		for (i = 0; i < 4; i++)
-			gameData.render.color.vertices [pFace->m_info.index [i]].Alpha () = 0.7f;
+			gameData.renderData.color.vertices [pFace->m_info.index [i]].Alpha () = 0.7f;
 #endif
 		}
 	else if (/*gameOpts->render.cameras.bFitToWall ||*/ (pFace->m_info.nOvlTex == 0) || !pFace->bmBot)
@@ -732,7 +732,7 @@ return nVisible;
 
 int32_t CVisibilityData::SegmentMayBeVisible (int16_t nStartSeg, int32_t nRadius, int32_t nMaxDist)
 {
-if (gameData.render.mine.Visible (nStartSeg))
+if (gameData.renderData.mine.Visible (nStartSeg))
 	return 1;
 
 	uint8_t*		visitedP = bVisited.Buffer ();
@@ -766,7 +766,7 @@ return 0;
 
 int32_t SegmentMayBeVisible (int16_t nStartSeg, int32_t nRadius, int32_t nMaxDist, int32_t nThread)
 {
-return gameData.render.mine.visibility [nThread + 2].SegmentMayBeVisible (nStartSeg, nRadius, nMaxDist);
+return gameData.renderData.mine.visibility [nThread + 2].SegmentMayBeVisible (nStartSeg, nRadius, nMaxDist);
 }
 
 //------------------------------------------------------------------------------
@@ -783,14 +783,14 @@ if ((gameStates.render.bRearView = bOn)) {
 		CGenericCockpit::Save ();
 		cockpit->Activate (CM_REAR_VIEW);
 		}
-	if (gameData.demo.nState == ND_STATE_RECORDING)
+	if (gameData.demoData.nState == ND_STATE_RECORDING)
 		NDRecordRearView ();
 
 	}
 else {
 	if (gameStates.render.cockpit.nType == CM_REAR_VIEW)
 		CGenericCockpit::Restore ();
-	if (gameData.demo.nState == ND_STATE_RECORDING)
+	if (gameData.demoData.nState == ND_STATE_RECORDING)
 		NDRecordRestoreRearView ();
 	}
 return 1;
@@ -839,7 +839,7 @@ return SetRearView (!gameStates.render.bRearView);
 void ResetRearView (void)
 {
 if (gameStates.render.bRearView) {
-	if (gameData.demo.nState == ND_STATE_RECORDING)
+	if (gameData.demoData.nState == ND_STATE_RECORDING)
 		NDRecordRestoreRearView ();
 	}
 gameStates.render.bRearView = 0;
@@ -957,7 +957,7 @@ void HandleZoom (void)
 if (extraGameInfo [IsMultiGame].nZoomMode == 0)
 	return;
 
-	bool bAllow = (gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX);
+	bool bAllow = (gameData.weaponData.nPrimary == VULCAN_INDEX) || (gameData.weaponData.nPrimary == GAUSS_INDEX);
 
 if (extraGameInfo [IsMultiGame].nZoomMode == 1) {
 	if (!gameStates.zoom.nState) {

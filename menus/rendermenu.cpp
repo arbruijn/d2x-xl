@@ -467,7 +467,7 @@ pszStereoDevice [2] = TXT_SHUTTER_HDMI;
 stereoDeviceMap [2] = GLASSES_SHUTTER_HDMI;
 nStereoDeviceCount = 3;
 #if !DBG
-if (gameData.render.rift.Available ()) 
+if (gameData.renderData.rift.Available ()) 
 #endif
 	{
 	pszStereoDevice [nStereoDeviceCount] = TXT_OCULUS_RIFT;
@@ -772,7 +772,7 @@ if (gameOpts->render.stereo.nGlasses == 1)
 gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
 #if 0
 if (ogl.IsOculusRift ())
-	gameData.render.rift.m_magCalTO.Start (-1, true);
+	gameData.renderData.rift.m_magCalTO.Start (-1, true);
 #endif
 lightManager.SetMethod ();
 DefaultRenderSettings (false);

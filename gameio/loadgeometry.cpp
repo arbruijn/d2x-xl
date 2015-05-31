@@ -168,7 +168,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------------------------------------
 /* Converts descent 1 texture numbers to descent 2 texture numbers.
- * gameData.pig.tex.bmIndex from d1 which are unique to d1 have extra spaces around "return".
+ * gameData.pigData.tex.bmIndex from d1 which are unique to d1 have extra spaces around "return".
  * If we can load the original d1 pig, we make sure this function is bijective.
  * This function was updated using the file config/convtabl.ini from devil 2.2.
  */
@@ -465,7 +465,7 @@ for (; nSegment < nLastSeg; nSegment++) {
 
 void LoadExtSegmentsCompiled (CFile& cf)
 {
-gameData.producers.nRepairCenters = 0;
+gameData.producerData.nRepairCenters = 0;
 for (int32_t i = 0; i < gameData.segData.nSegments; i++) {
 	if (gameData.segData.nLevelVersion > 5)
 		SEGMENT (i)->ReadExtras (cf);
@@ -490,7 +490,7 @@ void LoadVertLightsCompiled (int32_t i, CFile& cf)
 {
 	int32_t	j;
 
-gameData.render.shadows.nLights = 0;
+gameData.renderData.shadows.nLights = 0;
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, gameData.segData.nVertices);
 	for (; i < j; i++) {
@@ -498,7 +498,7 @@ if (gameStates.app.bD2XLevel) {
 		if (i == nDbgVertex)
 			BRP;
 #endif
-		ReadColor (cf, gameData.render.color.ambient + i, gameData.segData.nLevelVersion <= 14, 1);
+		ReadColor (cf, gameData.renderData.color.ambient + i, gameData.segData.nLevelVersion <= 14, 1);
 		}
 	}
 }
@@ -508,7 +508,7 @@ if (gameStates.app.bD2XLevel) {
 int32_t HasColoredLight (void)
 {
 	int32_t			i, bColored = 0;
-	CFaceColor	*pvc = gameData.render.color.ambient.Buffer ();
+	CFaceColor	*pvc = gameData.renderData.color.ambient.Buffer ();
 
 if (!gameStates.app.bD2XLevel)
 	return 0;
@@ -533,7 +533,7 @@ return bColored;
 void InitTexColors (void)
 {
 	int32_t			i;
-	CFaceColor	*pf = gameData.render.color.textures.Buffer ();
+	CFaceColor	*pf = gameData.renderData.color.textures.Buffer ();
 	int32_t			bBW = gameStates.app.bNostalgia; // || (gameOpts->render.color.nLevel < 2);
 
 for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
@@ -555,7 +555,7 @@ void LoadTexColorsCompiled (int32_t i, CFile& cf)
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, MAX_WALL_TEXTURES);
 	for (; i < j; i++)
-		ReadColor (cf, gameData.render.color.textures + i, gameData.segData.nLevelVersion <= 15,
+		ReadColor (cf, gameData.renderData.color.textures + i, gameData.segData.nLevelVersion <= 15,
 					  gameStates.render.nLightingMethod);
 	}
 }
@@ -567,10 +567,10 @@ void LoadSideLightsCompiled (int32_t i, CFile& cf)
 	CFaceColor	*pColor;
 	int32_t			j;
 
-gameData.render.shadows.nLights = 0;
+gameData.renderData.shadows.nLights = 0;
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, gameData.segData.nSegments * 6);
-	pColor = gameData.render.color.lights + i;
+	pColor = gameData.renderData.color.lights + i;
 	for (; i < j; i++, pColor++) {
 		ReadColor (cf, pColor, gameData.segData.nLevelVersion <= 13, 1);
 		}

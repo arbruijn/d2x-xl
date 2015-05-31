@@ -319,7 +319,7 @@ else
 
 void CBitmap::SetSuperTransparent (int32_t bTransparent)
 {
-if (gameData.pig.tex.textureIndex [0][m_info.nId] >= 0) {
+if (gameData.pigData.tex.textureIndex [0][m_info.nId] >= 0) {
 	if (bTransparent)
 		SetFlags (m_info.props.flags | BM_FLAG_SUPER_TRANSPARENT);
 	else
@@ -453,15 +453,15 @@ if (!(pBuffer = Buffer ())) {
 	m_info.avgColor.Blue () = 0;
 	return -1;
 	}
-if (gameData.pig.tex.pBitmap.IsElement (this))
-	h = int32_t (this - gameData.pig.tex.pBitmap);
-else if (gameData.pig.tex.pAltBitmap.IsElement (this))
-	h = int32_t (this - gameData.pig.tex.pAltBitmap);
-else if (gameData.pig.tex.bitmaps [0].IsElement (this))
-	h = int32_t (this - gameData.pig.tex.bitmaps [0]);
+if (gameData.pigData.tex.pBitmap.IsElement (this))
+	h = int32_t (this - gameData.pigData.tex.pBitmap);
+else if (gameData.pigData.tex.pAltBitmap.IsElement (this))
+	h = int32_t (this - gameData.pigData.tex.pAltBitmap);
+else if (gameData.pigData.tex.bitmaps [0].IsElement (this))
+	h = int32_t (this - gameData.pigData.tex.bitmaps [0]);
 else
 	return -1;
-color = gameData.pig.tex.bitmapColors + h;
+color = gameData.pigData.tex.bitmapColors + h;
 if (!(h = (int32_t) ((color->Red () + color->Green () + color->Blue ()) * 255.0f))) {
 	m_info.avgColor.Red () = 
 	m_info.avgColor.Green () =
@@ -641,7 +641,7 @@ if ((mask = Mask ())) {
 int32_t CBitmap::FreeHiresFrame (int32_t bD1)
 {
 if (m_info.nId < 0x8000)
-	gameData.pig.tex.bitmaps [bD1][m_info.nId].SetOverride (NULL);
+	gameData.pigData.tex.bitmaps [bD1][m_info.nId].SetOverride (NULL);
 ReleaseTexture ();
 FreeMask ();
 SetType (0);
@@ -689,7 +689,7 @@ m_info.bSetup = false;
 m_info.nMasks = 0;
 m_info.nTranspType = 0;
 if (i < 0)
-	i = int32_t (this - gameData.pig.tex.bitmaps [bD1]);
+	i = int32_t (this - gameData.pigData.tex.bitmaps [bD1]);
 FreeMask ();
 if (!FreeHiresAnimation (bD1))
 	ReleaseTexture ();

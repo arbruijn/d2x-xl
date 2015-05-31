@@ -242,7 +242,7 @@ return true;
 // Sets up the canvases we will be rendering to (NORMAL VERSION)
 void GameInitRenderBuffers (int32_t nScreenSize, int32_t render_w, int32_t render_h, int32_t render_method, int32_t flags)
 {
-gameData.render.screen.Set (nScreenSize);
+gameData.renderData.screen.Set (nScreenSize);
 SetupCanvasses ();
 }
 
@@ -268,7 +268,7 @@ void DoCloakStuff (void)
 {
 for (int32_t i = 0; i < N_PLAYERS; i++) {
 	if (gameData.multiplayer.players[i].flags & PLAYER_FLAGS_CLOAKED) {
-		if (gameData.time.xGame - PLAYER (i).cloakTime > CLOAK_TIME_MAX) {
+		if (gameData.timeData.xGame - PLAYER (i).cloakTime > CLOAK_TIME_MAX) {
 			gameData.multiplayer.players[i].flags &= ~PLAYER_FLAGS_CLOAKED;
 			if (i == N_LOCALPLAYER) {
 				audio.PlaySound (SOUND_CLOAK_OFF);
@@ -290,7 +290,7 @@ void DoInvulnerableStuff (void)
 {
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	 (LOCALPLAYER.invulnerableTime != 0x7fffffff)) {
-	if (gameData.time.xGame - LOCALPLAYER.invulnerableTime > INVULNERABLE_TIME_MAX) {
+	if (gameData.timeData.xGame - LOCALPLAYER.invulnerableTime > INVULNERABLE_TIME_MAX) {
 		LOCALPLAYER.flags ^= PLAYER_FLAGS_INVULNERABLE;
 		if (!bFakingInvul) {
 			audio.PlaySound (SOUND_INVULNERABILITY_OFF);
@@ -309,8 +309,8 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 //@@{
 //@@	int32_t	rx, rz;
 //@@
-//@@	rx = (abScale * FixMul (SRandShort (), I2X (1)/8 + (((gameData.time.xGame + 0x4000)*4) & 0x3fff)))/16;
-//@@	rz = (abScale * FixMul (SRandShort (), I2X (1)/2 + ((gameData.time.xGame*4) & 0xffff)))/16;
+//@@	rx = (abScale * FixMul (SRandShort (), I2X (1)/8 + (((gameData.timeData.xGame + 0x4000)*4) & 0x3fff)))/16;
+//@@	rz = (abScale * FixMul (SRandShort (), I2X (1)/2 + ((gameData.timeData.xGame*4) & 0xffff)))/16;
 //@@
 //@@	gameData.objData.pConsole->mType.physInfo.rotVel.x += rx;
 //@@	gameData.objData.pConsole->mType.physInfo.rotVel.z += rz;
@@ -327,15 +327,15 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 void DoAfterburnerStuff (void)
 {
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
-	gameData.physics.xAfterburnerCharge = 0;
+	gameData.physicsData.xAfterburnerCharge = 0;
 if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
 	if (audio.DestroyObjectSound (LOCALPLAYER.nObject))
 		MultiSendSoundFunction (0,0);
 	}
 else /*if ((gameStates.gameplay.xLastAfterburnerCharge && (controls [0].afterburnerState != gameStates.gameplay.bLastAfterburnerState)) || 
-	 		(gameStates.gameplay.bLastAfterburnerState && (gameStates.gameplay.xLastAfterburnerCharge && !gameData.physics.xAfterburnerCharge)))*/ {
+	 		(gameStates.gameplay.bLastAfterburnerState && (gameStates.gameplay.xLastAfterburnerCharge && !gameData.physicsData.xAfterburnerCharge)))*/ {
 	int32_t nSoundObj = audio.FindObjectSound (LOCALPLAYER.nObject, SOUND_AFTERBURNER_IGNITE);
-	if (gameData.physics.xAfterburnerCharge && controls [0].afterburnerState && (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
+	if (gameData.physicsData.xAfterburnerCharge && controls [0].afterburnerState && (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
 		if (nSoundObj < 0) {
 			audio.CreateObjectSound ((int16_t) SOUND_AFTERBURNER_IGNITE, SOUNDCLASS_PLAYER, (int16_t) LOCALPLAYER.nObject, 
 											 1, I2X (1), I2X (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
@@ -356,7 +356,7 @@ else /*if ((gameStates.gameplay.xLastAfterburnerCharge && (controls [0].afterbur
 		}
 	}
 gameStates.gameplay.bLastAfterburnerState = controls [0].afterburnerState;
-gameStates.gameplay.xLastAfterburnerCharge = gameData.physics.xAfterburnerCharge;
+gameStates.gameplay.xLastAfterburnerCharge = gameData.physicsData.xAfterburnerCharge;
 }
 
 //------------------------------------------------------------------------------
@@ -472,7 +472,7 @@ networkThread.Stop ();
 importantMessages [0].Destroy ();
 importantMessages [1].Destroy ();
 songManager.DestroyPlaylists ();
-gameData.time.xGameTotal = (SDL_GetTicks () - gameData.time.xGameStart) / 1000;
+gameData.timeData.xGameTotal = (SDL_GetTicks () - gameData.timeData.xGameStart) / 1000;
 gameStates.render.bRenderIndirect = 0;
 G3EndFrame (transformation, 0);
 audio.StopAll ();
@@ -481,11 +481,11 @@ if (gameStates.sound.bD1Sound) {
 	//audio.Shutdown ();
 	//audio.Setup ();
 	}
-if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
+if ((gameData.demoData.nState == ND_STATE_RECORDING) || (gameData.demoData.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
 if (bHaveLevel)
 	MultiLeaveGame ();
-if (gameData.demo.nState == ND_STATE_PLAYBACK)
+if (gameData.demoData.nState == ND_STATE_PLAYBACK)
 	NDStopPlayback ();
 gameData.Destroy ();
 postProcessManager.Destroy ();
@@ -522,9 +522,9 @@ int32_t GameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t fps)
 if (bRenderFrame)
 	DoRenderFrame ();
 
-	fix		xFrameTime = gameData.time.xFrame; 
+	fix		xFrameTime = gameData.timeData.xFrame; 
 	float		physicsFrameTime = 1000.0f / float (PHYSICS_FPS);
-	float		t = float (SDL_GetTicks ()), dt = t - gameData.physics.fLastTick;
+	float		t = float (SDL_GetTicks ()), dt = t - gameData.physicsData.fLastTick;
 	int32_t		h = 1, i = 0;
 
 while (dt >= physicsFrameTime) {
@@ -532,9 +532,9 @@ while (dt >= physicsFrameTime) {
 	i++;
 	}
 if (i) {
-	gameData.physics.fLastTick = t - dt;
-	gameData.time.SetTime (I2X (1) / PHYSICS_FPS);
-	gameData.physics.xTime = gameData.time.xFrame; 
+	gameData.physicsData.fLastTick = t - dt;
+	gameData.timeData.SetTime (I2X (1) / PHYSICS_FPS);
+	gameData.physicsData.xTime = gameData.timeData.xFrame; 
 	gameStates.app.nSDLTicks [0] = gameStates.app.nSDLTicks [1];
 	if (bReadControls > 0)
 		ReadControls ();
@@ -607,7 +607,7 @@ FreeStringPool ();
 PrintLog (-1);
 PrintLog (1, "unloading level messages\n");
 FreeTextData (gameData.messages);
-FreeTextData (&gameData.sounds);
+FreeTextData (&gameData.soundData);
 PrintLog (-1);
 PrintLog (1, "unloading hires animations\n");
 UnloadHiresAnimations ();
@@ -617,7 +617,7 @@ PrintLog (1, "freeing sound buffers\n");
 FreeSoundReplacements ();
 PrintLog (-1);
 PrintLog (1, "unloading auxiliary poly model data\n");
-gameData.models.Destroy ();
+gameData.modelData.Destroy ();
 PrintLog (-1);
 PrintLog (1, "unloading hires models\n");
 FreeHiresModels (0);
@@ -632,15 +632,15 @@ PrintLog (1, "unloading particle data\n");
 particleManager.Shutdown ();
 PrintLog (-1);
 PrintLog (1, "unloading shield sphere data\n");
-if (gameData.render.shield) {
-	gameData.render.shield->Destroy ();
-	delete gameData.render.shield;
-	gameData.render.shield = NULL;
+if (gameData.renderData.shield) {
+	gameData.renderData.shield->Destroy ();
+	delete gameData.renderData.shield;
+	gameData.renderData.shield = NULL;
 	}
-if (gameData.render.monsterball) {
-	gameData.render.monsterball->Destroy ();
-	delete gameData.render.monsterball;
-	gameData.render.monsterball = NULL;
+if (gameData.renderData.monsterball) {
+	gameData.renderData.monsterball->Destroy ();
+	delete gameData.renderData.monsterball;
+	gameData.renderData.monsterball = NULL;
 	}	
 PrintLog (-1);
 PrintLog (1, "unloading HUD icons\n");
@@ -688,7 +688,7 @@ if (fLog) {
 
 CCanvas* CurrentGameScreen (void)
 {
-return &gameData.render.scene;
+return &gameData.renderData.scene;
 }
 
 //-----------------------------------------------------------------------------
@@ -728,7 +728,7 @@ else if (bWater)						//just water
 	nSound = SOUND_AMBIENT_WATER;
 else
 	return;
-if (((RandShort () << 3) < gameData.time.xFrame))	//play the nSound
+if (((RandShort () << 3) < gameData.timeData.xFrame))	//play the nSound
 	audio.PlaySound (nSound, SOUNDCLASS_GENERIC, (fix) (RandShort () + I2X (1) / 2));
 }
 
@@ -913,15 +913,15 @@ FlyInit (gameData.objData.pConsole);
 if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
 	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
 ResetTime ();
-gameData.time.SetTime (0);			//make first frame zero
+gameData.timeData.SetTime (0);			//make first frame zero
 GameFlushInputs ();
 lightManager.SetMethod ();
 gameStates.app.nSDLTicks [0] = 
 gameStates.app.nSDLTicks [1] = 
-gameData.time.xGameStart = SDL_GetTicks ();
-gameData.physics.fLastTick = float (gameData.time.xGameStart);
+gameData.timeData.xGameStart = SDL_GetTicks ();
+gameData.physicsData.fLastTick = float (gameData.timeData.xGameStart);
 ogl.m_features.bShaders.Available (gameOpts->render.bUseShaders);
-gameData.render.rift.SetCenter ();
+gameData.renderData.rift.SetCenter ();
 if (pfnTIRStart)
 	pfnTIRStart ();
 }
@@ -989,17 +989,17 @@ PROF_START
 DeadPlayerFrame ();
 ObserverFrame ();
 LOCALPLAYER.Recharge ();
-if (gameData.demo.nState != ND_STATE_PLAYBACK) 
+if (gameData.demoData.nState != ND_STATE_PLAYBACK) 
 	DoReactorDeadFrame ();
 ProcessSmartMinesFrame ();
 DoSeismicStuff ();
 DoAmbientSounds ();
 DropPowerups ();
-gameData.time.xGame += gameData.time.xFrame;
-if ((gameData.time.xGame < 0) || (gameData.time.xGame > I2X (0x7fff - 600))) 
-	gameData.time.xGame = gameData.time.xFrame;	//wrap when goes negative, or gets within 10 minutes
+gameData.timeData.xGame += gameData.timeData.xFrame;
+if ((gameData.timeData.xGame < 0) || (gameData.timeData.xGame > I2X (0x7fff - 600))) 
+	gameData.timeData.xGame = gameData.timeData.xFrame;	//wrap when goes negative, or gets within 10 minutes
 if (IsMultiGame && netGameInfo.GetPlayTimeAllowed ())
-	gameStates.app.xThisLevelTime += gameData.time.xFrame;
+	gameStates.app.xThisLevelTime += gameData.timeData.xFrame;
 audio.SyncSounds ();
 PROF_END (ptGameStates)
 
@@ -1011,14 +1011,14 @@ if (gameStates.app.bEndLevelSequence) {
 	}
 
 PROF_CONT
-if (gameData.demo.nState != ND_STATE_PLAYBACK) 
+if (gameData.demoData.nState != ND_STATE_PLAYBACK) 
 	DoExplodingWallFrame ();
-if ((gameData.demo.nState != ND_STATE_PLAYBACK) || (gameData.demo.nVcrState != ND_STATE_PAUSED)) {
+if ((gameData.demoData.nState != ND_STATE_PLAYBACK) || (gameData.demoData.nVcrState != ND_STATE_PAUSED)) {
 	DoSpecialEffects ();
 	WallFrameProcess ();
 	TriggersFrameProcess ();
 	}
-if (gameData.reactor.bDestroyed && (gameData.demo.nState == ND_STATE_RECORDING)) 
+if (gameData.reactorData.bDestroyed && (gameData.demoData.nState == ND_STATE_RECORDING)) 
 	NDRecordControlCenterDestroyed ();
 UpdateFlagClips ();
 MultiSetFlagPos ();
@@ -1026,9 +1026,9 @@ UpdatePlayerPaths ();
 FlashFrame ();
 PROF_END (ptGameStates)
 
-if (gameData.demo.nState == ND_STATE_PLAYBACK) {
+if (gameData.demoData.nState == ND_STATE_PLAYBACK) {
 	NDPlayBackOneFrame ();
-	if (gameData.demo.nState != ND_STATE_PLAYBACK)
+	if (gameData.demoData.nState != ND_STATE_PLAYBACK)
 		longjmp (gameExitPoint, 0);		// Go back to menu
 	}
 else { // Note the link to above!
@@ -1045,10 +1045,10 @@ else { // Note the link to above!
 		FireGun ();				// Fire Laser!
 	if (!FusionBump ())
 		return 1;
-	if (gameData.laser.nGlobalFiringCount)
-		gameData.laser.nGlobalFiringCount -= LocalPlayerFireGun ();	
-	if (gameData.laser.nGlobalFiringCount < 0)
-		gameData.laser.nGlobalFiringCount = 0;
+	if (gameData.laserData.nGlobalFiringCount)
+		gameData.laserData.nGlobalFiringCount -= LocalPlayerFireGun ();	
+	if (gameData.laserData.nGlobalFiringCount < 0)
+		gameData.laserData.nGlobalFiringCount = 0;
 	PROF_END (ptGameStates)
 	}
 
@@ -1058,7 +1058,7 @@ if (gameStates.render.bDoAppearanceEffect) {
 	gameStates.render.bDoAppearanceEffect = 0;
 	if (IsMultiGame && netGameInfo.m_info.invul) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-		LOCALPLAYER.invulnerableTime = gameData.time.xGame - I2X (27);
+		LOCALPLAYER.invulnerableTime = gameData.timeData.xGame - I2X (27);
 		bFakingInvul = 1;
 		gameData.multiplayer.spherePulse [N_LOCALPLAYER].Setup (0.02f, 0.5f);
 		}
@@ -1134,8 +1134,8 @@ if (gameStates.app.bConfigMenu)
 	ConfigMenu ();
 
 if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
-		gameData.demo.bAuto && !gameOpts->demo.bRevertFormat &&
-		(gameData.demo.nState != ND_STATE_NORMAL)) {
+		gameData.demoData.bAuto && !gameOpts->demo.bRevertFormat &&
+		(gameData.demoData.nState != ND_STATE_NORMAL)) {
 	int32_t choice, fmode;
 	fmode = gameStates.app.nFunctionMode;
 	SetFunctionMode (FMODE_GAME);
@@ -1144,14 +1144,14 @@ if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
 	if (choice)
 		SetFunctionMode (FMODE_GAME);
 	else {
-		gameData.demo.bAuto = 0;
+		gameData.demoData.bAuto = 0;
 		NDStopPlayback ();
 		SetFunctionMode (FMODE_MENU);
 		}
 	}
 
 if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
-		(gameData.demo.nState != ND_STATE_PLAYBACK) &&
+		(gameData.demoData.nState != ND_STATE_PLAYBACK) &&
 		(gameStates.app.nFunctionMode != FMODE_EDITOR) &&
 		!gameStates.multi.bIWasKicked) {
 	if (QuitSaveLoadMenu ())
@@ -1192,14 +1192,14 @@ if (m_lock) {
 void CGameLoop::HandleAutomap (void)
 {
 if (automap.Active ()) {
-	int32_t	save_w = gameData.render.frame.Width (),
-				save_h = gameData.render.frame.Height ();
+	int32_t	save_w = gameData.renderData.frame.Width (),
+				save_h = gameData.renderData.frame.Height ();
 	automap.DoFrame (0, 0);
 	gameStates.app.bEnterGame = 1;
 	gameStates.video.nScreenMode = -1;
 	SetScreenMode (SCREEN_GAME);
-	gameData.render.frame.SetWidth (save_w);
-	gameData.render.frame.SetHeight (save_h);
+	gameData.renderData.frame.SetWidth (save_w);
+	gameData.renderData.frame.SetHeight (save_h);
 	cockpit->Init ();
 	}
 }
@@ -1314,7 +1314,7 @@ for (nSegment = 0; nSegment <= gameData.segData.nLastSegment; nSegment++, pSeg++
 		if (!pSeg->Side (nSide)->FaceCount ())
 			continue;
 		nTexture = pSeg->m_sides [nSide].m_nBaseTex;
-		if (gameData.pig.tex.pTexMapInfo [nTexture].slide_u  || gameData.pig.tex.pTexMapInfo [nTexture].slide_v) {
+		if (gameData.pigData.tex.pTexMapInfo [nTexture].slide_u  || gameData.pigData.tex.pTexMapInfo [nTexture].slide_v) {
 			if (!bIsSlideSeg) {
 				bIsSlideSeg = 1;
 				gameData.segData.slideSegs [gameData.segData.nSlideSegs].nSegment = nSegment;
@@ -1350,8 +1350,8 @@ for (h = 0; h < gameData.segData.nSlideSegs; h++) {
 		if (!(pSeg->Side (nSide)->FaceCount () && (sides & (1 << nSide))))
 			continue;
 		tmn = pSide->m_nBaseTex;
-		slideU = (fix) gameData.pig.tex.pTexMapInfo [tmn].slide_u;
-		slideV = (fix) gameData.pig.tex.pTexMapInfo [tmn].slide_v;
+		slideU = (fix) gameData.pigData.tex.pTexMapInfo [tmn].slide_u;
+		slideV = (fix) gameData.pigData.tex.pTexMapInfo [tmn].slide_v;
 		if (!(slideU || slideV))
 			continue;
 #if DBG
@@ -1359,8 +1359,8 @@ for (h = 0; h < gameData.segData.nSlideSegs; h++) {
 				BRP;
 #endif
 		i = (pSeg->m_function == SEGMENT_FUNC_SKYBOX) ? 3 : 8;
-		slideU = FixMul (gameData.time.xFrame, slideU << i);
-		slideV = FixMul (gameData.time.xFrame, slideV << i);
+		slideU = FixMul (gameData.timeData.xFrame, slideU << i);
+		slideV = FixMul (gameData.timeData.xFrame, slideV << i);
 		for (i = 0, pUVL = pSide->m_uvls; i < 4; i++) {
 			pUVL [i].u += slideU;
 			if (pUVL [i].u > I2X (2)) {
@@ -1445,15 +1445,15 @@ int32_t MarkPlayerPathToSegment (int32_t nSegment)
 if (nLastLevelPathCreated == missionManager.nCurrentLevel)
 	return 0;
 nLastLevelPathCreated = missionManager.nCurrentLevel;
-if (CreatePathPoints (pObj, pObj->info.nSegment, nSegment, gameData.ai.freePointSegs, &playerPathLength, 100, 0, 0, -1) == -1) {
+if (CreatePathPoints (pObj, pObj->info.nSegment, nSegment, gameData.aiData.freePointSegs, &playerPathLength, 100, 0, 0, -1) == -1) {
 #if TRACE
 	//console.printf (CON_DBG, "Unable to form path of length %i for myself\n", 100);
 #endif
 	return 0;
 	}
-playerHideIndex = int32_t (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs));
-gameData.ai.freePointSegs += playerPathLength;
-if (int32_t (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)) + MAX_PATH_LENGTH * 2 > MAX_POINT_SEGS) {
+playerHideIndex = int32_t (gameData.aiData.routeSegs.Index (gameData.aiData.freePointSegs));
+gameData.aiData.freePointSegs += playerPathLength;
+if (int32_t (gameData.aiData.routeSegs.Index (gameData.aiData.freePointSegs)) + MAX_PATH_LENGTH * 2 > MAX_POINT_SEGS) {
 #if TRACE
 	//console.printf (1, "Can't create path.  Not enough tPointSegs.\n");
 #endif
@@ -1465,11 +1465,11 @@ for (i = 1; i < playerPathLength; i++) {
 	CFixVector	vSegCenter;
 	CObject		*pObj;
 
-	nSegment = gameData.ai.routeSegs [playerHideIndex + i].nSegment;
+	nSegment = gameData.aiData.routeSegs [playerHideIndex + i].nSegment;
 #if TRACE
 	//console.printf (CON_DBG, "%3i ", nSegment);
 #endif
-	vSegCenter = gameData.ai.routeSegs[playerHideIndex+i].point;
+	vSegCenter = gameData.aiData.routeSegs[playerHideIndex+i].point;
 	nObject = CreatePowerup (POW_ENERGY, -1, nSegment, vSegCenter, 1);
 	if (nObject == -1) {
 		Int3 ();		//	Unable to drop energy powerup for path
@@ -1477,7 +1477,7 @@ for (i = 1; i < playerPathLength; i++) {
 		}
 	pObj = OBJECT (nObject);
 	pObj->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [pObj->info.nId].nClipIndex;
-	pObj->rType.animationInfo.xFrameTime = gameData.effects.animations [0][pObj->rType.animationInfo.nClipIndex].xFrameTime;
+	pObj->rType.animationInfo.xFrameTime = gameData.effectData.animations [0][pObj->rType.animationInfo.nClipIndex].xFrameTime;
 	pObj->rType.animationInfo.nCurFrame = 0;
 	pObj->SetLife (I2X (100) + RandShort () * 4);
 	pObj->Ignore (1, 1);
@@ -1502,7 +1502,7 @@ return 0;
 
 void ShowInGameWarning (const char *s)
 {
-if (gameData.render.screen.Width () && gameData.render.screen.Height ()) {
+if (gameData.renderData.screen.Width () && gameData.renderData.screen.Height ()) {
 	const char	*hs, *ps = strstr (s, "Error");
 
 	if (ps > s) {	//skip trailing non alphanum chars
@@ -1513,8 +1513,8 @@ if (gameData.render.screen.Width () && gameData.render.screen.Height ()) {
 		}
 	if (!(IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME)))
 		StopTime ();
-	gameData.menu.warnColor = RED_RGBA;
-	gameData.menu.colorOverride = gameData.menu.warnColor;
+	gameData.menuData.warnColor = RED_RGBA;
+	gameData.menuData.colorOverride = gameData.menuData.warnColor;
 	if (!ps)
 		InfoBox (TXT_WARNING, (pMenuCallback) NULL, BG_STANDARD, -3, s, " ", TXT_OK, "");
 	else {
@@ -1522,7 +1522,7 @@ if (gameData.render.screen.Width () && gameData.render.screen.Height ()) {
 			;
 		InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, -3, ps, " ", TXT_OK, "");
 		}
-	gameData.menu.colorOverride = 0;
+	gameData.menuData.colorOverride = 0;
 	if (!(IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME)))
 		StartTime (0);
 	}

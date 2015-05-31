@@ -188,7 +188,7 @@ if (xStereoSeparation >= 0) {
 #endif
 
 console.Draw ();
-if (gameStates.app.bShowVersionInfo || gameStates.app.bSaveScreenShot || (gameData.demo.nState == ND_STATE_PLAYBACK))
+if (gameStates.app.bShowVersionInfo || gameStates.app.bSaveScreenShot || (gameData.demoData.nState == ND_STATE_PLAYBACK))
 	PrintVersionInfo ();
 if (CMenu::Active ()) {
 #if DBG
@@ -260,11 +260,11 @@ if (!(i && xStereoSeparation)) {	//no stereo or shutter glasses or Oculus Rift
 	}
 else {
 	if ((i < 0) || (xStereoSeparation > 0)) {
-		gameData.render.scene.SetViewport (&gameData.render.screen);
+		gameData.renderData.scene.SetViewport (&gameData.renderData.screen);
 		if (i < 0)
 			Draw2DFrameElements ();
 		if (xStereoSeparation > 0) {
-			gameData.render.screen.SetViewport ();
+			gameData.renderData.screen.SetViewport ();
 			ogl.SwapBuffers (0, 0);
 			}
 		}
@@ -337,13 +337,13 @@ gameStates.render.SetRenderWindow (nWindow);
 gameStates.render.SetStereoSeparation (xStereoSeparation);
 if (gameStates.app.bEndLevelSequence) {
 	RenderEndLevelFrame (xStereoSeparation, nWindow);
-	gameData.app.nFrameCount++;
+	gameData.appData.nFrameCount++;
 	gameStates.render.xStereoSeparation [0] = nEyeOffsetSave;
 	return;
 	}
-if ((gameData.demo.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
+if ((gameData.demoData.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
    if (!gameStates.render.nRenderingType)
-   	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
+   	NDRecordStartFrame (gameData.appData.nFrameCount, gameData.timeData.xFrame);
    if (gameStates.render.nRenderingType != 255)
    	NDRecordViewerObject (gameData.objData.pViewer);
 	}
@@ -359,9 +359,9 @@ PROF_START
 G3StartFrame (transformation, 0, (nWindow || gameStates.render.cameras.bActive) ? 0 : 1, nWindow ? nEyeOffsetSave : xStereoSeparation);
 ogl.SetStereoSeparation (xStereoSeparation);
 if (!nWindow) {
-	//gameData.render.scene.Activate ();
+	//gameData.renderData.scene.Activate ();
 	fontManager.SetCurrent (GAME_FONT);
-	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
+	gameData.renderData.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
 	}
 SetupRenderView (xStereoSeparation, &nStartSeg, 1);
 transformation.ComputeFrustum ();
@@ -490,7 +490,7 @@ PROF_END(ptAux)
 
 void RenderMonoFrame (fix xStereoSeparation = 0)
 {
-gameData.render.screen.Activate ("RenderMonoFrame", NULL, true);
+gameData.renderData.screen.Activate ("RenderMonoFrame", NULL, true);
 #if MAX_SHADOWMAPS
 RenderShadowMaps (xStereoSeparation);
 #endif
@@ -556,19 +556,19 @@ FlushFrame (xStereoSeparation);
 
 //------------------------------------------------------------------------------
 
-#define WINDOW_W_DELTA	 ((gameData.render.frame.Width () / 16) & ~1)	//24	//20
-#define WINDOW_H_DELTA	 ((gameData.render.frame.Height () / 16) & ~1)	//12	//10
+#define WINDOW_W_DELTA	 ((gameData.renderData.frame.Width () / 16) & ~1)	//24	//20
+#define WINDOW_H_DELTA	 ((gameData.renderData.frame.Height () / 16) & ~1)	//12	//10
 
-#define WINDOW_MIN_W		 ((gameData.render.frame.Width () * 10) / 22)	//160
-#define WINDOW_MIN_H		 ((gameData.render.frame.Height () * 10) / 22)
+#define WINDOW_MIN_W		 ((gameData.renderData.frame.Width () * 10) / 22)	//160
+#define WINDOW_MIN_H		 ((gameData.renderData.frame.Height () * 10) / 22)
 
 void GrowWindow (void)
 {
 #if 0
 StopTime ();
 if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
-	gameData.render.screen.SetHeight (gameData.render.screen.Height ());
-	gameData.render.screen.SetWidth (gameData.render.screen.Width ());
+	gameData.renderData.screen.SetHeight (gameData.renderData.screen.Height ());
+	gameData.renderData.screen.SetWidth (gameData.renderData.screen.Width ());
 	cockpit->Toggle ();
 	HUDInitMessage (TXT_COCKPIT_F3);
 	StartTime (0);
@@ -580,21 +580,21 @@ if (gameStates.render.cockpit.nType != CM_STATUS_BAR) {
 	return;
 	}
 
-if ((gameData.render.screen.Height () >= gameData.render.screen.Height ()) || (gameData.render.screen.Width () >= gameData.render.screen.Width ())) {
-	//gameData.render.screen.Width () = gameData.render.screen.Width ();
-	//screen[HA] = gameData.render.screen.Height ();
+if ((gameData.renderData.screen.Height () >= gameData.renderData.screen.Height ()) || (gameData.renderData.screen.Width () >= gameData.renderData.screen.Width ())) {
+	//gameData.renderData.screen.Width () = gameData.renderData.screen.Width ();
+	//screen[HA] = gameData.renderData.screen.Height ();
 	cockpit->Activate (CM_FULL_SCREEN);
 	}
 else {
 	//int32_t x, y;
-	gameData.render.screen.SetWidth (gameData.render.screen.Width () + WINDOW_W_DELTA);
-	gameData.render.screen.SetHeight (gameData.render.screen.Height () + WINDOW_H_DELTA);
-	if (gameData.render.screen.Height () > gameData.render.screen.Height ())
-		gameData.render.screen.SetHeight (gameData.render.screen.Height ());
-	if (gameData.render.screen.Width () > gameData.render.screen.Width ())
-		gameData.render.screen.SetWidth (gameData.render.screen.Width ());
-	gameData.render.screen.SetLeft ((gameData.render.screen.Width () - gameData.render.screen.Width ()) / 2);
-	gameData.render.screen.SetTop ((gameData.render.screen.Height () - gameData.render.screen.Height ()) / 2);
+	gameData.renderData.screen.SetWidth (gameData.renderData.screen.Width () + WINDOW_W_DELTA);
+	gameData.renderData.screen.SetHeight (gameData.renderData.screen.Height () + WINDOW_H_DELTA);
+	if (gameData.renderData.screen.Height () > gameData.renderData.screen.Height ())
+		gameData.renderData.screen.SetHeight (gameData.renderData.screen.Height ());
+	if (gameData.renderData.screen.Width () > gameData.renderData.screen.Width ())
+		gameData.renderData.screen.SetWidth (gameData.renderData.screen.Width ());
+	gameData.renderData.screen.SetLeft ((gameData.renderData.screen.Width () - gameData.renderData.screen.Width ()) / 2);
+	gameData.renderData.screen.SetTop ((gameData.renderData.screen.Height () - gameData.renderData.screen.Height ()) / 2);
 	}
 HUDClearMessages ();	//	@mk, 11/11/94
 SavePlayerProfile ();
@@ -688,7 +688,7 @@ PROF_START
 UpdateSlidingFaces ();
 PROF_END(ptAux);
 SetScreenMode (SCREEN_GAME);
-if (!ogl.StereoDevice () || !(gameData.app.nFrameCount & 1)) {
+if (!ogl.StereoDevice () || !(gameData.appData.nFrameCount & 1)) {
 	cockpit->PlayHomingWarning ();
 	transparencyRenderer.Reset ();
 	}
@@ -709,7 +709,7 @@ else {
 //if (!gameStates.menus.nInMenu)
 //	paletteManager.EnableEffect ();
 //StartTime (0);
-gameData.app.nFrameCount++;
+gameData.appData.nFrameCount++;
 PROF_END (ptRenderFrame)
 }
 

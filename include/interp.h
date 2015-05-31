@@ -126,9 +126,9 @@ static inline void RotatePointListToVec (CFixVector *dest, CFixVector *src, int3
 
 static inline int32_t G3HaveModel (int32_t nModel)
 {
-if (gameData.models.renderModels [0][nModel].m_bValid)
+if (gameData.modelData.renderModels [0][nModel].m_bValid)
 	return 1;
-if (gameData.models.renderModels [1][nModel].m_bValid)
+if (gameData.modelData.renderModels [1][nModel].m_bValid)
 	return 2;
 return 0;
 }

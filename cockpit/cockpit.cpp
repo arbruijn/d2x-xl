@@ -137,7 +137,7 @@ CGenericCockpit::DrawFlag (4 * m_info.fontWidth, 2 * m_info.nLineSpacing);
 
 void CCockpit::DrawHomingWarning (void)
 {
-m_info.bLastHomingWarningDrawn [0] = (LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000);
+m_info.bLastHomingWarningDrawn [0] = (LOCALPLAYER.homingObjectDist >= 0) && (gameData.timeData.xGame & 0x4000);
 BitBlt (m_info.bLastHomingWarningDrawn [0] ? GAUGE_HOMING_WARNING_ON : GAUGE_HOMING_WARNING_OFF, 
 		  HOMING_WARNING_X, HOMING_WARNING_Y);
 }
@@ -199,7 +199,7 @@ void CCockpit::DrawShieldText (void)
 CBitmap* pBm = BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
 #else
 PageInGauge (GAUGE_NUMERICAL);
-CBitmap* pBm = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
+CBitmap* pBm = gameData.pigData.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
 #endif
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 sprintf (szShield, "%d", (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
@@ -223,7 +223,7 @@ void CCockpit::DrawEnergyText (void)
 CBitmap* pBm = BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
 #else
 PageInGauge (GAUGE_NUMERICAL);
-CBitmap* pBm = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
+CBitmap* pBm = gameData.pigData.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
 #endif
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 sprintf (szEnergy, "%d", (int32_t) FRound (m_info.nEnergy * LOCALPLAYER.EnergyScale ()));
@@ -417,12 +417,12 @@ void CCockpit::DrawAfterburnerBar (void)
 #if 1
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
-if (!gameData.physics.xAfterburnerCharge)
+if (!gameData.physicsData.xAfterburnerCharge)
 	return;
 #endif
 //CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
 BitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
-int32_t yMax = FixMul (I2X (1) - gameData.physics.xAfterburnerCharge, AFTERBURNER_GAUGE_H);
+int32_t yMax = FixMul (I2X (1) - gameData.physicsData.xAfterburnerCharge, AFTERBURNER_GAUGE_H);
 if (yMax) {
 	int32_t		x [4], y [4];
 	uint8_t*	tableP = gameStates.video.nDisplayMode ? afterburnerBarTableHires : afterburnerBarTable;
@@ -531,9 +531,9 @@ void CCockpit::DrawInvul (void)
 	static fix time = 0;
 
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
-	 ((m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.time.xGame & 0x8000)))) {
+	 ((m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.timeData.xGame & 0x8000)))) {
 	BitBlt (GAUGE_INVULNERABLE + m_info.nInvulnerableFrame, SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
-	time += gameData.time.xFrame;
+	time += gameData.timeData.xFrame;
 	while (time > INV_FRAME_TIME) {
 		time -= INV_FRAME_TIME;
 		if (++m_info.nInvulnerableFrame == N_INVULNERABLE_FRAMES)
@@ -554,11 +554,11 @@ CGenericCockpit::DrawCockpit (m_info.nCockpit, 0, bAlphaTest);
 void CCockpit::SetupWindow (int32_t nWindow)
 {
 tGaugeBox* pHudArea = hudWindowAreas + COCKPIT_PRIMARY_BOX + nWindow;
-gameData.render.window.Setup (&gameData.render.frame, 
-										gameData.render.frame.Left (false) + ScaleX (pHudArea->left),
-										gameData.render.frame.Top (false) + ScaleY (pHudArea->top),
+gameData.renderData.window.Setup (&gameData.renderData.frame, 
+										gameData.renderData.frame.Left (false) + ScaleX (pHudArea->left),
+										gameData.renderData.frame.Top (false) + ScaleY (pHudArea->top),
 										ScaleX (pHudArea->right - pHudArea->left + 1), ScaleY (pHudArea->bot - pHudArea->top + 1));
-gameData.render.window.Activate ("HUD Window (window)", &gameData.render.frame);
+gameData.renderData.window.Activate ("HUD Window (window)", &gameData.renderData.frame);
 }
 
 //	-----------------------------------------------------------------------------
@@ -570,11 +570,11 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
-*((CViewport*) &gameData.render.scene) += CViewport (0, 0, 0, -gameData.render.frame.Height (false) / 3);
+*((CViewport*) &gameData.renderData.scene) += CViewport (0, 0, 0, -gameData.renderData.frame.Height (false) / 3);
 if (bScene)
-	gameData.render.scene.Activate ("CCockpit::Setup (scene)");
+	gameData.renderData.scene.Activate ("CCockpit::Setup (scene)");
 else
-	gameData.render.frame.Activate ("CCockpit::Setup (frame)");
+	gameData.renderData.frame.Activate ("CCockpit::Setup (frame)");
 return true;
 }
 
@@ -595,12 +595,12 @@ if (bRebuild && !m_info.bRebuild)
 	return true;
 if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
-*((CViewport*) &gameData.render.scene) += CViewport (0, 0, 0, -gameData.render.frame.Height (false) / 3);
+*((CViewport*) &gameData.renderData.scene) += CViewport (0, 0, 0, -gameData.renderData.frame.Height (false) / 3);
 if (bScene)
-	gameData.render.scene.Activate ("CCockpit::Setup (scene)");
+	gameData.renderData.scene.Activate ("CCockpit::Setup (scene)");
 else
-	gameData.render.frame.Activate ("CCockpit::Setup (frame)");
-//*Canvas () += CViewport (0, 0, 0, -gameData.render.frame.Height (false) / 3);
+	gameData.renderData.frame.Activate ("CCockpit::Setup (frame)");
+//*Canvas () += CViewport (0, 0, 0, -gameData.renderData.frame.Height (false) / 3);
 //Canvas ()->Activate ("CRearView::Setup");
 return true;
 }

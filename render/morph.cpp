@@ -30,14 +30,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //returns ptr to data for this CObject, or NULL if none
 tMorphInfo *MorphFindData (CObject *pObj)
 {
-if (gameData.demo.nState == ND_STATE_PLAYBACK) {
-	gameData.render.morph.objects [0].pObj = pObj;
-	return &gameData.render.morph.objects [0];
+if (gameData.demoData.nState == ND_STATE_PLAYBACK) {
+	gameData.renderData.morph.objects [0].pObj = pObj;
+	return &gameData.renderData.morph.objects [0];
 	}
 
 for (int32_t i = 0; i < MAX_MORPH_OBJECTS; i++)
-	if (gameData.render.morph.objects [i].pObj == pObj)
-		return gameData.render.morph.objects + i;
+	if (gameData.renderData.morph.objects [i].pObj == pObj)
+		return gameData.renderData.morph.objects + i;
 return NULL;
 }
 
@@ -123,10 +123,10 @@ while (nVerts--) {
 		k = 0;
 	pMorphInfo->vecs[i] = *vp * k;
 	dist = CFixVector::NormalizedDir(pMorphInfo->deltas[i], *vp, pMorphInfo->vecs[i]);
-	pMorphInfo->times [i] = FixDiv (dist, gameData.render.morph.xRate);
+	pMorphInfo->times [i] = FixDiv (dist, gameData.renderData.morph.xRate);
 	if (pMorphInfo->times [i] != 0)
 		pMorphInfo->nMorphingPoints [nSubModel]++;
-		pMorphInfo->deltas [i] *= gameData.render.morph.xRate;
+		pMorphInfo->deltas [i] *= gameData.renderData.morph.xRate;
 	vp++;
 	i++;
 	}
@@ -161,13 +161,13 @@ else
 vp = reinterpret_cast<CFixVector*> (data);
 while (nVerts--) {
 	if (pMorphInfo->times [i]) {		//not done yet
-		if ((pMorphInfo->times [i] -= gameData.time.xFrame) <= 0) {
+		if ((pMorphInfo->times [i] -= gameData.timeData.xFrame) <= 0) {
 			 pMorphInfo->vecs [i] = *vp;
 			 pMorphInfo->times [i] = 0;
 			 pMorphInfo->nMorphingPoints [nSubModel]--;
 			}
 		else
-			pMorphInfo->vecs[i] += pMorphInfo->deltas[i] * gameData.time.xFrame;
+			pMorphInfo->vecs[i] += pMorphInfo->deltas[i] * gameData.timeData.xFrame;
 		}
 	vp++;
 	i++;
@@ -189,7 +189,7 @@ if (!(pMorphInfo = MorphFindData (this))) {	//maybe loaded half-morphed from dis
 	Die ();	//so kill it
 	return;
 	}
-pModel = gameData.models.polyModels [0] + pMorphInfo->pObj->ModelId ();
+pModel = gameData.modelData.polyModels [0] + pMorphInfo->pObj->ModelId ();
 G3CheckAndSwap (reinterpret_cast<void*> (pModel->Data ()));
 for (i = 0; i < pModel->ModelCount (); i++)
 	if (pMorphInfo->submodelActive [i] == 1) {
@@ -223,7 +223,7 @@ void MorphInit ()
 	int32_t i;
 
 for (i = 0; i < MAX_MORPH_OBJECTS; i++)
-	gameData.render.morph.objects [i].pObj = NULL;
+	gameData.renderData.morph.objects [i].pObj = NULL;
 }
 
 
@@ -235,7 +235,7 @@ void CObject::MorphStart (void)
 	CFixVector pmmin, pmmax;
 	CFixVector vBoxSize;
 	int32_t i;
-	tMorphInfo *pMorphInfo = &gameData.render.morph.objects [0];
+	tMorphInfo *pMorphInfo = &gameData.renderData.morph.objects [0];
 
 for (i = 0; i < MAX_MORPH_OBJECTS; i++, pMorphInfo++)
 	if (pMorphInfo->pObj == NULL ||
@@ -257,7 +257,7 @@ info.controlType = CT_MORPH;
 info.renderType = RT_MORPH;
 info.movementType = MT_PHYSICS;		//RT_NONE;
 mType.physInfo.rotVel = morph_rotvel;
-pModel = gameData.models.polyModels [0] + ModelId ();
+pModel = gameData.modelData.polyModels [0] + ModelId ();
 if (!pModel->Data ())
 	return;
 G3CheckAndSwap (reinterpret_cast<void*> (pModel->Data ()));
@@ -301,27 +301,27 @@ for (i = m; i < n; i++) {
 	if (m == nSubModel) {
 		h = pModel->TextureCount ();
 		for (j = 0; j < h; j++) {
-			gameData.models.textureIndex [j] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [pModel->FirstTexture () + j]];
-			gameData.models.textures [j] = gameData.pig.tex.bitmaps [0] + /*gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [pModel->FirstTexture ()+j]]*/gameData.models.textureIndex [j].index;
+			gameData.modelData.textureIndex [j] = gameData.pigData.tex.objBmIndex [gameData.pigData.tex.pObjBmIndex [pModel->FirstTexture () + j]];
+			gameData.modelData.textures [j] = gameData.pigData.tex.bitmaps [0] + /*gameData.pigData.tex.objBmIndex [gameData.pigData.tex.pObjBmIndex [pModel->FirstTexture ()+j]]*/gameData.modelData.textureIndex [j].index;
 			}
 
 		// Make sure the textures for this CObject are paged in..
-		gameData.pig.tex.bPageFlushed = 0;
+		gameData.pigData.tex.bPageFlushed = 0;
 		for (j = 0; j < h; j++)
-			LoadTexture (gameData.models.textureIndex [j].index, 0, 0);
+			LoadTexture (gameData.modelData.textureIndex [j].index, 0, 0);
 		// Hmmm.. cache got flushed in the middle of paging all these in,
 		// so we need to reread them all in.
-		if (gameData.pig.tex.bPageFlushed) {
-			gameData.pig.tex.bPageFlushed = 0;
+		if (gameData.pigData.tex.bPageFlushed) {
+			gameData.pigData.tex.bPageFlushed = 0;
 			for (int32_t j = 0; j < h; j++)
-				LoadTexture (gameData.models.textureIndex [j].index, 0, 0);
+				LoadTexture (gameData.modelData.textureIndex [j].index, 0, 0);
 			}
 			// Make sure that they can all fit in memory.
-		Assert (gameData.pig.tex.bPageFlushed == 0);
+		Assert (gameData.pigData.tex.bPageFlushed == 0);
 
 		G3DrawMorphingModel (
 			pModel->Data () + pModel->SubModels ().ptrs [nSubModel],
-			gameData.models.textures,
+			gameData.modelData.textures,
 			animAngles, NULL, light,
 			pMorphInfo->vecs + pMorphInfo->submodelStartPoints [nSubModel], nModel);
 		}
@@ -346,19 +346,19 @@ void CObject::MorphDraw (void)
 
 pMorphInfo = MorphFindData (this);
 Assert (pMorphInfo != NULL);
-Assert (ModelId () < gameData.models.nPolyModels);
-pModel = gameData.models.polyModels [0] + ModelId ();
+Assert (ModelId () < gameData.modelData.nPolyModels);
+pModel = gameData.modelData.polyModels [0] + ModelId ();
 if (!pModel->Data ())
 	return;
 light = ComputeObjectLight (this, NULL);
 transformation.Begin (info.position.vPos, info.position.mOrient, __FILE__, __LINE__);
-G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
-gameData.render.pVertex = gameData.models.fPolyModelVerts.Buffer ();
+G3SetModelPoints (gameData.modelData.polyModelPoints.Buffer ());
+gameData.renderData.pVertex = gameData.modelData.fPolyModelVerts.Buffer ();
 MorphDrawModel (pModel, 0, rType.polyObjInfo.animAngles, light, pMorphInfo, ModelId ());
-gameData.render.pVertex = NULL;
+gameData.renderData.pVertex = NULL;
 transformation.End (__FILE__, __LINE__);
 
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordMorphFrame (pMorphInfo);
 }
 

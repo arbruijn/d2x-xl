@@ -128,12 +128,12 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 
 int32_t CModel::BuildFromOOF (CObject *pObj, int32_t nModel)
 {
-	OOF::CModel*	po = gameData.models.modelToOOF [1][nModel];
+	OOF::CModel*	po = gameData.modelData.modelToOOF [1][nModel];
 	CBitmap*			pBm;
 	int32_t				i;
 
 if (!po) {
-	po = gameData.models.modelToOOF [0][nModel];
+	po = gameData.modelData.modelToOOF [0][nModel];
 	if (!po)
 		return 0;
 	}
@@ -159,7 +159,7 @@ for (i = 0, pBm = m_textures.Buffer (); i < m_nTextures; i++, pBm++) {
 	}
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 m_nType = -1;
-gameData.models.polyModels [0][nModel].SetRad (Size (pObj, 1), 1);
+gameData.modelData.polyModels [0][nModel].SetRad (Size (pObj, 1), 1);
 Setup (1, 1);
 #if 1
 SetGunPoints (pObj, 0);

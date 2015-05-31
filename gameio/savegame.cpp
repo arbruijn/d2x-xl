@@ -108,12 +108,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // 13- Saved palette flash stuff
 // 14- Save cloaking CWall stuff
 // 15- Save additional ai info
-// 16- Save gameData.render.lights.subtracted
+// 16- Save gameData.renderData.lights.subtracted
 // 17- New marker save
 // 18- Took out saving of old cheat status
 // 19- Saved cheats_enabled flag
 // 20- gameStates.app.bFirstSecretVisit
-// 22- gameData.omega.xCharge
+// 22- gameData.omegaData.xCharge
 
 void SetFunctionMode (int32_t);
 void DoCloakInvulSecretStuff (fix xOldGameTime);
@@ -509,12 +509,12 @@ if (gameStates.gameplay.bFinalBossIsDead)		//don't allow save while final boss i
 	return 0;
 //	If this is a secret save and the control center has been destroyed, don't allow
 //	return to the base level.
-if ((m_bSecret > 0) && gameData.reactor.bDestroyed) {
+if ((m_bSecret > 0) && gameData.reactorData.bDestroyed) {
 	CFile::Delete (SECRETB_FILENAME, gameFolders.user.szSavegames);
 	return 0;
 	}
 StopTime ();
-gameData.app.bGamePaused = 1;
+gameData.appData.bGamePaused = 1;
 if (m_bQuick)
 	sprintf (m_filename, "%s.quick", LOCALPLAYER.callsign);
 else {
@@ -532,7 +532,7 @@ else {
 			sprintf (m_description, " [autosave backup]");
 			}
 		else if (!(nSaveSlot = GetSaveFile (0))) {
-			gameData.app.bGamePaused = 0;
+			gameData.appData.bGamePaused = 0;
 			StartTime (1);
 			return 0;
 			}
@@ -544,7 +544,7 @@ if ((rval = SaveState (bSecret))) {
 	if (bQuick)
 		HUDInitMessage (TXT_QUICKSAVE);
 	}
-gameData.app.bGamePaused = 0;
+gameData.appData.bGamePaused = 0;
 StartTime (1);
 return rval;
 }
@@ -695,11 +695,11 @@ m_cf.WriteFix (pPlayer->timeTotal);             // Game time played (high word =
 if (pPlayer->cloakTime == 0x7fffffff)				// cloak cheat active
 	m_cf.WriteFix (pPlayer->cloakTime);			// Time invulnerable
 else
-	m_cf.WriteFix (pPlayer->cloakTime - gameData.time.xGame);      // Time invulnerable
+	m_cf.WriteFix (pPlayer->cloakTime - gameData.timeData.xGame);      // Time invulnerable
 if (pPlayer->invulnerableTime == 0x7fffffff)		// invul cheat active
 	m_cf.WriteFix (pPlayer->invulnerableTime);      // Time invulnerable
 else
-	m_cf.WriteFix (pPlayer->invulnerableTime - gameData.time.xGame);      // Time invulnerable
+	m_cf.WriteFix (pPlayer->invulnerableTime - gameData.timeData.xGame);      // Time invulnerable
 m_cf.WriteShort (pPlayer->nScoreGoalCount);          // Num of players killed this level
 m_cf.WriteShort (pPlayer->netKilledTotal);       // Number of times killed total
 m_cf.WriteShort (pPlayer->netKillsTotal);        // Number of net kills total
@@ -804,11 +804,11 @@ m_cf.Write (missionManager [missionManager.nCurrentMission].filename, sizeof (ch
 //Save level info
 m_cf.WriteInt (missionManager.nCurrentLevel);
 m_cf.WriteInt (missionManager.NextLevel ());
-//Save gameData.time.xGame
-m_cf.WriteFix (gameData.time.xGame);
+//Save gameData.timeData.xGame
+m_cf.WriteFix (gameData.timeData.xGame);
 // If coop save, save all
 if (IsCoopGame) {
-	m_cf.WriteInt (gameData.app.nStateGameId);
+	m_cf.WriteInt (gameData.appData.nStateGameId);
 	SaveNetGame ();
 	SaveNetPlayers ();
 	m_cf.WriteInt (N_PLAYERS);
@@ -819,8 +819,8 @@ if (IsCoopGame) {
 //Save CPlayerData info
 SavePlayer (gameData.multiplayer.players + N_LOCALPLAYER);
 // Save the current weapon info
-m_cf.WriteByte (gameData.weapons.nPrimary);
-m_cf.WriteByte (gameData.weapons.nSecondary);
+m_cf.WriteByte (gameData.weaponData.nPrimary);
+m_cf.WriteByte (gameData.weaponData.nSecondary);
 // Save the difficulty level
 m_cf.WriteInt (gameStates.app.nDifficultyLevel);
 // Save cheats enabled
@@ -936,22 +936,22 @@ if (!m_bBetweenLevels) {
 	for (i = 0; i <= gameData.segData.nLastSegment; i++)
 		SEGMENT (i)->SaveState (m_cf);
 // Save the producer info
-	m_cf.WriteInt (gameData.reactor.bDestroyed);
-	m_cf.WriteFix (gameData.reactor.countdown.nTimer);
-	m_cf.WriteInt (gameData.producers.nRobotMakers);
-	for (i = 0; i < gameData.producers.nRobotMakers; i++)
-		SaveObjectProducer (gameData.producers.robotMakers + i);
-	m_cf.WriteInt (gameData.producers.nEquipmentMakers);
-	for (i = 0; i < gameData.producers.nEquipmentMakers; i++)
-		SaveObjectProducer (gameData.producers.equipmentMakers + i);
-	SaveReactorTrigger (&gameData.reactor.triggers);
-	m_cf.WriteInt (gameData.producers.nProducers);
-	for (i = 0; i < gameData.producers.nProducers; i++)
-		SaveProducer (gameData.producers.producers + i);
+	m_cf.WriteInt (gameData.reactorData.bDestroyed);
+	m_cf.WriteFix (gameData.reactorData.countdown.nTimer);
+	m_cf.WriteInt (gameData.producerData.nRobotMakers);
+	for (i = 0; i < gameData.producerData.nRobotMakers; i++)
+		SaveObjectProducer (gameData.producerData.robotMakers + i);
+	m_cf.WriteInt (gameData.producerData.nEquipmentMakers);
+	for (i = 0; i < gameData.producerData.nEquipmentMakers; i++)
+		SaveObjectProducer (gameData.producerData.equipmentMakers + i);
+	SaveReactorTrigger (&gameData.reactorData.triggers);
+	m_cf.WriteInt (gameData.producerData.nProducers);
+	for (i = 0; i < gameData.producerData.nProducers; i++)
+		SaveProducer (gameData.producerData.producers + i);
 // Save the control cen info
-	m_cf.WriteInt (gameData.reactor.bPresent);
+	m_cf.WriteInt (gameData.reactorData.bPresent);
 	for (i = 0; i < MAX_BOSS_COUNT; i++)
-		SaveReactorState (gameData.reactor.states + i);
+		SaveReactorState (gameData.reactorData.states + i);
 // Save the AI state
 	SaveAI ();
 
@@ -959,13 +959,13 @@ if (!m_bBetweenLevels) {
 	for (i = 0; i < LEVEL_SEGMENTS; i++)
 		m_cf.WriteShort (automap.m_visited [i]);
 	}
-m_cf.WriteInt ((int32_t) gameData.app.nStateGameId);
+m_cf.WriteInt ((int32_t) gameData.appData.nStateGameId);
 m_cf.WriteInt (gameStates.app.cheats.bLaserRapidFire);
 m_cf.WriteInt (gameStates.app.bLunacy);		//	Yes, writing this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
 m_cf.WriteInt (gameStates.gameplay.bMineMineCheat);
 // Save automap marker info
 markerManager.SaveState (m_cf);
-m_cf.WriteFix (gameData.physics.xAfterburnerCharge);
+m_cf.WriteFix (gameData.physicsData.xAfterburnerCharge);
 //save last was super information
 m_cf.Write (bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
 m_cf.Write (bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
@@ -975,9 +975,9 @@ m_cf.WriteFix (paletteManager.LastEffectTime ());
 m_cf.WriteShort (paletteManager.RedEffect (true));
 m_cf.WriteShort (paletteManager.GreenEffect (true));
 m_cf.WriteShort (paletteManager.BlueEffect (true));
-gameData.render.lights.subtracted.Write (m_cf, LEVEL_SEGMENTS);
+gameData.renderData.lights.subtracted.Write (m_cf, LEVEL_SEGMENTS);
 m_cf.WriteInt (gameStates.app.bFirstSecretVisit);
-m_cf.WriteFix (gameData.omega.xCharge [0]);
+m_cf.WriteFix (gameData.omegaData.xCharge [0]);
 m_cf.WriteShort (missionManager.nEntryLevel);
 m_cf.WriteInt (gameStates.gameplay.seismic.nShakeFrequency);
 m_cf.WriteInt (gameStates.gameplay.seismic.nShakeDuration);
@@ -995,21 +995,21 @@ void CSaveGameManager::SaveImage (void)
 	int32_t		x, y;
 
 SetupCanvasses ();
-gameData.render.screen.Activate ("CSaveGameManager::SaveImage (screen)");
+gameData.renderData.screen.Activate ("CSaveGameManager::SaveImage (screen)");
 
 bmOut.SetWidth (THUMBNAIL_LW);
 bmOut.SetHeight (THUMBNAIL_LH);
 bmOut.SetBPP (1);
 bmOut.CreateBuffer ();
 
-bmIn.SetWidth ((gameData.render.screen.Width (false) / THUMBNAIL_LW) * THUMBNAIL_LW);
+bmIn.SetWidth ((gameData.renderData.screen.Width (false) / THUMBNAIL_LW) * THUMBNAIL_LW);
 bmIn.SetHeight (bmIn.Width () * 3 / 5);	//force 5:3 aspect ratio
-if (bmIn.Height () > gameData.render.screen.Height (false)) {
-	bmIn.SetHeight ((gameData.render.screen.Height (false) / THUMBNAIL_LH) * THUMBNAIL_LH);
+if (bmIn.Height () > gameData.renderData.screen.Height (false)) {
+	bmIn.SetHeight ((gameData.renderData.screen.Height (false) / THUMBNAIL_LH) * THUMBNAIL_LH);
 	bmIn.SetWidth (bmIn.Height () * 5 / 3);
 	}
-x = (gameData.render.screen.Width (false) - bmIn.Width ()) / 2;
-y = (gameData.render.screen.Height (false) - bmIn.Height ()) / 2;
+x = (gameData.renderData.screen.Width (false) - bmIn.Width ()) / 2;
+y = (gameData.renderData.screen.Height (false) - bmIn.Height ()) / 2;
 bmIn.SetBPP (3);
 bmIn.CreateBuffer ();
 
@@ -1049,7 +1049,7 @@ else {
  	for (int32_t i = 0; i < THUMBNAIL_LW * THUMBNAIL_LH; i++)
 		m_cf.Write (&color, sizeof (uint8_t), 1);
 	}
-gameData.render.screen.Deactivate ();
+gameData.renderData.screen.Deactivate ();
 }
 
 //------------------------------------------------------------------------------
@@ -1152,12 +1152,12 @@ if (IsMultiGame) {
 	return 0;
 	}
 
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDStopRecording ();
-if (gameData.demo.nState != ND_STATE_NORMAL)
+if (gameData.demoData.nState != ND_STATE_NORMAL)
 	return 0;
 StopTime ();
-gameData.app.bGamePaused = 1;
+gameData.appData.bGamePaused = 1;
 if (m_bQuick) {
 	sprintf (m_filename, "%s.quick", LOCALPLAYER.callsign);
 	if (!CFile::Exist (m_filename, gameFolders.user.szSavegames, 0))
@@ -1169,7 +1169,7 @@ if (!m_bQuick) {
 		nSaveSlot = NUM_SAVES + 1;		//	So we don't trigger autosave
 		}
 	else if (!(nSaveSlot = GetLoadFile (0))) {
-		gameData.app.bGamePaused = 0;
+		gameData.appData.bGamePaused = 0;
 		StartTime (1);
 		return 0;
 		}
@@ -1178,7 +1178,7 @@ if (!m_bQuick) {
 	if (!bSecret && bInGame) {
 		int32_t choice = InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
 		if (choice != 0) {
-			gameData.app.bGamePaused = 0;
+			gameData.appData.bGamePaused = 0;
 			StartTime (1);
 			return 0;
 			}
@@ -1186,7 +1186,7 @@ if (!m_bQuick) {
 	}
 gameStates.app.bGameRunning = 0;
 i = LoadState (0, bSecret);
-gameData.app.bGamePaused = 0;
+gameData.appData.bGamePaused = 0;
 if (i) {
 	/*---*/PrintLog (1, "rebuilding OpenGL context\n");
 	ogl.SetRenderQuality ();
@@ -1242,7 +1242,7 @@ void CSaveGameManager::LoadMulti (char *pszOrgCallSign, int32_t bMulti)
 if (bMulti)
 	strcpy (pszOrgCallSign, LOCALPLAYER.callsign);
 else {
-	gameData.app.SetGameMode (GM_NORMAL);
+	gameData.appData.SetGameMode (GM_NORMAL);
 	SetFunctionMode (FMODE_GAME);
 	ChangePlayerNumTo (0);
 	strcpy (pszOrgCallSign, PLAYER (0).callsign);
@@ -1368,8 +1368,8 @@ for (i = 0; i <= gameData.objData.nLastObject [0]; i++, pObj++) {
 	nSegment = pObj->info.nSegment;
 	// hack for a bug I haven't yet been able to fix 
 	if ((pObj->info.nType != OBJ_REACTOR) && (pObj->info.xShield < 0)) {
-		j = gameData.bosses.Find (i);
-		if ((j < 0) || (gameData.bosses [j].m_nDying != i)) 
+		j = gameData.bossData.Find (i);
+		if ((j < 0) || (gameData.bossData [j].m_nDying != i)) 
 			pObj->info.nType = OBJ_NONE;
 		}
 	pObj->info.nNextInSeg = pObj->info.nPrevInSeg = pObj->info.nSegment = -1;
@@ -1559,10 +1559,10 @@ pPlayer->timeLevel = m_cf.ReadFix ();					// Level time played
 pPlayer->timeTotal = m_cf.ReadFix ();					// Game time played (high word = seconds)
 pPlayer->cloakTime = m_cf.ReadFix ();					// Time cloaked
 if (pPlayer->cloakTime != 0x7fffffff)
-	pPlayer->cloakTime += gameData.time.xGame;
+	pPlayer->cloakTime += gameData.timeData.xGame;
 pPlayer->invulnerableTime = m_cf.ReadFix ();			// Time invulnerable
 if (pPlayer->invulnerableTime != 0x7fffffff)
-	pPlayer->invulnerableTime += gameData.time.xGame;
+	pPlayer->invulnerableTime += gameData.timeData.xGame;
 pPlayer->nScoreGoalCount = m_cf.ReadShort ();          // Num of players killed this level
 pPlayer->netKilledTotal = m_cf.ReadShort ();       // Number of times killed total
 pPlayer->netKillsTotal = m_cf.ReadShort ();        // Number of net kills total
@@ -1685,15 +1685,15 @@ if (!LoadMission ())
 //Read level info
 nCurrentLevel = m_cf.ReadInt ();
 nNextLevel = m_cf.ReadInt ();
-//Restore gameData.time.xGame
-gameData.time.xGame = m_cf.ReadFix ();
+//Restore gameData.timeData.xGame
+gameData.timeData.xGame = m_cf.ReadFix ();
 // Start new game....
 CSaveGameManager::LoadMulti (szOrgCallSign, bMulti);
 if (IsMultiGame) {
 		char szServerCallSign [CALLSIGN_LEN + 1];
 
 	strcpy (szServerCallSign, NETPLAYER (0).callsign);
-	gameData.app.nStateGameId = m_cf.ReadInt ();
+	gameData.appData.nStateGameId = m_cf.ReadInt ();
 	CSaveGameManager::LoadNetGame ();
 	CSaveGameManager::LoadNetPlayers ();
 	nPlayers = m_cf.ReadInt ();
@@ -1735,10 +1735,10 @@ strcpy (LOCALPLAYER.callsign, szOrgCallSign);
 if (m_bBetweenLevels)
 	LOCALPLAYER.level = nNextLevel;
 // Restore the weapon states
-gameData.weapons.nPrimary = m_cf.ReadByte ();
-gameData.weapons.nSecondary = m_cf.ReadByte ();
-SelectWeapon (gameData.weapons.nPrimary, 0, 0, 0);
-SelectWeapon (gameData.weapons.nSecondary, 1, 0, 0);
+gameData.weaponData.nPrimary = m_cf.ReadByte ();
+gameData.weaponData.nSecondary = m_cf.ReadByte ();
+SelectWeapon (gameData.weaponData.nPrimary, 0, 0, 0);
+SelectWeapon (gameData.weaponData.nSecondary, 1, 0, 0);
 // Restore the difficulty level
 gameStates.app.nDifficultyLevel = m_cf.ReadInt ();
 // Restore the cheats enabled flag
@@ -1760,8 +1760,8 @@ if (m_nVersion > 33) {
 	   if (i != N_LOCALPLAYER)
 		   gameData.multiplayer.weaponStates [i].bTripleFusion = m_cf.ReadInt ();
    	else {
-   	   gameData.weapons.bTripleFusion = m_cf.ReadInt ();
-		   gameData.multiplayer.weaponStates [i].bTripleFusion = !gameData.weapons.bTripleFusion; 
+   	   gameData.weaponData.bTripleFusion = m_cf.ReadInt ();
+		   gameData.multiplayer.weaponStates [i].bTripleFusion = !gameData.weaponData.bTripleFusion; 
 		   }
 	}
 if (!m_bBetweenLevels) {
@@ -1796,7 +1796,7 @@ if (!m_bBetweenLevels) {
 				else {
 					pObj->Link ();
 					if ((m_nVersion < 32) && pObj->IsBoss ())
-						gameData.bosses.Add (nObject);
+						gameData.bossData.Add (nObject);
 					}
 				}
 			}
@@ -1909,39 +1909,39 @@ if (!m_bBetweenLevels) {
 	//Restore the producer info
 	audio.Prepare ();
 	SetupWalls ();
-	gameData.reactor.bDestroyed = m_cf.ReadInt ();
-	gameData.reactor.countdown.nTimer = m_cf.ReadFix ();
-	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.producers.nRobotMakers))
+	gameData.reactorData.bDestroyed = m_cf.ReadInt ();
+	gameData.reactorData.countdown.nTimer = m_cf.ReadFix ();
+	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.producerData.nRobotMakers))
 		return 0;
-	for (i = 0; i < gameData.producers.nRobotMakers; i++)
-		LoadObjectProducer (gameData.producers.robotMakers + i);
+	for (i = 0; i < gameData.producerData.nRobotMakers; i++)
+		LoadObjectProducer (gameData.producerData.robotMakers + i);
 	if (m_nVersion >= 30) {
-		if (ReadBoundedInt (MAX_EQUIP_CENTERS, &gameData.producers.nEquipmentMakers))
+		if (ReadBoundedInt (MAX_EQUIP_CENTERS, &gameData.producerData.nEquipmentMakers))
 			return 0;
-		for (i = 0; i < gameData.producers.nEquipmentMakers; i++)
-			LoadObjectProducer (gameData.producers.equipmentMakers + i);
+		for (i = 0; i < gameData.producerData.nEquipmentMakers; i++)
+			LoadObjectProducer (gameData.producerData.equipmentMakers + i);
 		}
 	else {
-		gameData.producers.nRobotMakers = 0;
-		gameData.producers.robotMakers.Clear (0);
+		gameData.producerData.nRobotMakers = 0;
+		gameData.producerData.robotMakers.Clear (0);
 		}
-	LoadReactorTrigger (&gameData.reactor.triggers);
-	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.producers.nProducers))
+	LoadReactorTrigger (&gameData.reactorData.triggers);
+	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.producerData.nProducers))
 		return 0;
-	for (i = 0; i < gameData.producers.nProducers; i++)
-		LoadProducer (gameData.producers.producers + i);
+	for (i = 0; i < gameData.producerData.nProducers; i++)
+		LoadProducer (gameData.producerData.producers + i);
 	// Restore the control cen info
 	if (m_nVersion < 31) {
-		gameData.reactor.states [0].bHit = m_cf.ReadInt ();
-		gameData.reactor.states [0].bSeenPlayer = m_cf.ReadInt ();
-		gameData.reactor.states [0].nNextFireTime = m_cf.ReadInt ();
-		gameData.reactor.bPresent = m_cf.ReadInt ();
-		gameData.reactor.states [0].nDeadObj = m_cf.ReadInt ();
+		gameData.reactorData.states [0].bHit = m_cf.ReadInt ();
+		gameData.reactorData.states [0].bSeenPlayer = m_cf.ReadInt ();
+		gameData.reactorData.states [0].nNextFireTime = m_cf.ReadInt ();
+		gameData.reactorData.bPresent = m_cf.ReadInt ();
+		gameData.reactorData.states [0].nDeadObj = m_cf.ReadInt ();
 		}
 	else {
-		gameData.reactor.bPresent = m_cf.ReadInt ();
+		gameData.reactorData.bPresent = m_cf.ReadInt ();
 		for (int32_t i = 0; i < MAX_BOSS_COUNT; i++)
-			LoadReactorState (gameData.reactor.states + i);
+			LoadReactorState (gameData.reactorData.states + i);
 		}
 	// Restore the AI state
 	LoadAIUniFormat ();
@@ -1966,14 +1966,14 @@ if (!m_bBetweenLevels) {
 			m_cf.Seek ((j - LEVEL_SEGMENTS) * sizeof (uint8_t), SEEK_CUR);
 		}
 	//	Restore hacked up weapon system stuff.
-	gameData.fusion.xNextSoundTime = gameData.time.xGame;
-	gameData.fusion.xAutoFireTime = 0;
-	gameData.laser.xNextFireTime = 
-	gameData.missiles.xNextFireTime = gameData.time.xGame;
-	gameData.laser.xLastFiredTime = 
-	gameData.missiles.xLastFiredTime = gameData.time.xGame;
+	gameData.fusionData.xNextSoundTime = gameData.timeData.xGame;
+	gameData.fusionData.xAutoFireTime = 0;
+	gameData.laserData.xNextFireTime = 
+	gameData.missileData.xNextFireTime = gameData.timeData.xGame;
+	gameData.laserData.xLastFiredTime = 
+	gameData.missileData.xLastFiredTime = gameData.timeData.xGame;
 	}
-gameData.app.nStateGameId = (uint32_t) m_cf.ReadInt ();
+gameData.appData.nStateGameId = (uint32_t) m_cf.ReadInt ();
 gameStates.app.cheats.bLaserRapidFire = m_cf.ReadInt ();
 gameStates.app.bLunacy = m_cf.ReadInt ();		//	Yes, reading this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
 gameStates.gameplay.bMineMineCheat = m_cf.ReadInt ();
@@ -1982,7 +1982,7 @@ if (gameStates.app.bLunacy)
 
 markerManager.LoadState (m_cf);
 if (m_bSecret != 1)
-	gameData.physics.xAfterburnerCharge = m_cf.ReadFix ();
+	gameData.physicsData.xAfterburnerCharge = m_cf.ReadFix ();
 else {
 	m_cf.ReadFix ();
 	}
@@ -1994,9 +1994,9 @@ paletteManager.SetLastEffectTime (m_cf.ReadFix ());
 paletteManager.StartEffect ((int32_t) m_cf.ReadShort (), (int32_t) m_cf.ReadShort (), (int32_t) m_cf.ReadShort ());
 h = (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
 j = Min (h, LEVEL_SEGMENTS);
-gameData.render.lights.subtracted.Read (m_cf, j);
+gameData.renderData.lights.subtracted.Read (m_cf, j);
 if (h > j)
-	m_cf.Seek ((h - j) * sizeof (gameData.render.lights.subtracted [0]), SEEK_CUR);
+	m_cf.Seek ((h - j) * sizeof (gameData.renderData.lights.subtracted [0]), SEEK_CUR);
 ApplyAllChangedLight ();
 //FixWalls ();
 gameStates.app.bFirstSecretVisit = m_cf.ReadInt ();
@@ -2004,8 +2004,8 @@ if (m_bSecret || (nCurrentLevel < 0))
 	gameStates.app.bFirstSecretVisit = 0;
 
 if (m_bSecret != 1)
-	gameData.omega.xCharge [0] = 
-	gameData.omega.xCharge [1] = m_cf.ReadFix ();
+	gameData.omegaData.xCharge [0] = 
+	gameData.omegaData.xCharge [1] = m_cf.ReadFix ();
 else
 	m_cf.ReadFix ();
 if (m_nVersion > 27)
@@ -2059,15 +2059,15 @@ if (!LoadMission ())
 //Read level info
 m_cf.Read (&nCurrentLevel, sizeof (int32_t), 1);
 m_cf.Read (&nNextLevel, sizeof (int32_t), 1);
-//Restore gameData.time.xGame
-m_cf.Read (&gameData.time.xGame, sizeof (fix), 1);
+//Restore gameData.timeData.xGame
+m_cf.Read (&gameData.timeData.xGame, sizeof (fix), 1);
 // Start new game....
 CSaveGameManager::LoadMulti (szOrgCallSign, bMulti);
 if (IsMultiGame) {
 		char szServerCallSign [CALLSIGN_LEN + 1];
 
 	strcpy (szServerCallSign, NETPLAYER (0).callsign);
-	m_cf.Read (&gameData.app.nStateGameId, sizeof (int32_t), 1);
+	m_cf.Read (&gameData.appData.nStateGameId, sizeof (int32_t), 1);
 	m_cf.Read (&netGameInfo, sizeof (tNetGameInfo), 1);
 	m_cf.Read (&netPlayers [0], netPlayers [0].Size (), 1);
 	m_cf.Read (&nPlayers, sizeof (N_PLAYERS), 1);
@@ -2097,10 +2097,10 @@ strcpy (LOCALPLAYER.callsign, szOrgCallSign);
 if (m_bBetweenLevels)
 	LOCALPLAYER.level = nNextLevel;
 // Restore the weapon states
-m_cf.Read (&gameData.weapons.nPrimary, sizeof (int8_t), 1);
-m_cf.Read (&gameData.weapons.nSecondary, sizeof (int8_t), 1);
-SelectWeapon (gameData.weapons.nPrimary, 0, 0, 0);
-SelectWeapon (gameData.weapons.nSecondary, 1, 0, 0);
+m_cf.Read (&gameData.weaponData.nPrimary, sizeof (int8_t), 1);
+m_cf.Read (&gameData.weaponData.nSecondary, sizeof (int8_t), 1);
+SelectWeapon (gameData.weaponData.nPrimary, 0, 0, 0);
+SelectWeapon (gameData.weaponData.nSecondary, 1, 0, 0);
 // Restore the difficulty level
 m_cf.Read (&gameStates.app.nDifficultyLevel, sizeof (int32_t), 1);
 // Restore the cheats enabled flag
@@ -2217,26 +2217,26 @@ if (!m_bBetweenLevels) {
 			}
 		}
 //Restore the producer info
-	gameData.reactor.bDestroyed = m_cf.ReadInt ();
-	gameData.reactor.countdown.nTimer = m_cf.ReadFix ();
-	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.producers.nRobotMakers))
+	gameData.reactorData.bDestroyed = m_cf.ReadInt ();
+	gameData.reactorData.countdown.nTimer = m_cf.ReadFix ();
+	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.producerData.nRobotMakers))
 		return 0;
-	for (i = 0; i < gameData.producers.nRobotMakers; i++) {
-		m_cf.Read (gameData.producers.robotMakers [i].objFlags, sizeof (int32_t), 2);
-		m_cf.Read (&gameData.producers.robotMakers [i].xHitPoints, 
-						sizeof (tObjectProducerInfo) - (reinterpret_cast<char*> (&gameData.producers.robotMakers [i].xHitPoints) - reinterpret_cast<char*> (&gameData.producers.robotMakers [i])), 1);
+	for (i = 0; i < gameData.producerData.nRobotMakers; i++) {
+		m_cf.Read (gameData.producerData.robotMakers [i].objFlags, sizeof (int32_t), 2);
+		m_cf.Read (&gameData.producerData.robotMakers [i].xHitPoints, 
+						sizeof (tObjectProducerInfo) - (reinterpret_cast<char*> (&gameData.producerData.robotMakers [i].xHitPoints) - reinterpret_cast<char*> (&gameData.producerData.robotMakers [i])), 1);
 		}
-	m_cf.Read (&gameData.reactor.triggers, sizeof (CTriggerTargets), 1);
-	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.producers.nProducers))
+	m_cf.Read (&gameData.reactorData.triggers, sizeof (CTriggerTargets), 1);
+	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.producerData.nProducers))
 		return 0;
-	gameData.producers.producers.Read (m_cf, gameData.producers.nProducers);
+	gameData.producerData.producers.Read (m_cf, gameData.producerData.nProducers);
 
 	// Restore the control cen info
-	gameData.reactor.states [0].bHit = m_cf.ReadInt ();
-	gameData.reactor.states [0].bSeenPlayer = m_cf.ReadInt ();
-	gameData.reactor.states [0].nNextFireTime = m_cf.ReadInt ();
-	gameData.reactor.bPresent = m_cf.ReadInt ();
-	gameData.reactor.states [0].nDeadObj = m_cf.ReadInt ();
+	gameData.reactorData.states [0].bHit = m_cf.ReadInt ();
+	gameData.reactorData.states [0].bSeenPlayer = m_cf.ReadInt ();
+	gameData.reactorData.states [0].nNextFireTime = m_cf.ReadInt ();
+	gameData.reactorData.bPresent = m_cf.ReadInt ();
+	gameData.reactorData.states [0].nDeadObj = m_cf.ReadInt ();
 	// Restore the AI state
 	LoadAIBinFormat ();
 	// Restore the automap visited info
@@ -2250,17 +2250,17 @@ if (!m_bBetweenLevels) {
 			automap.m_visited [i] = (uint16_t) m_cf.ReadByte ();
 		}
 	//	Restore hacked up weapon system stuff.
-	gameData.fusion.xNextSoundTime = gameData.time.xGame;
-	gameData.fusion.xAutoFireTime = 0;
-	gameData.laser.xNextFireTime = 
-	gameData.missiles.xNextFireTime = gameData.time.xGame;
-	gameData.laser.xLastFiredTime = 
-	gameData.missiles.xLastFiredTime = gameData.time.xGame;
+	gameData.fusionData.xNextSoundTime = gameData.timeData.xGame;
+	gameData.fusionData.xAutoFireTime = 0;
+	gameData.laserData.xNextFireTime = 
+	gameData.missileData.xNextFireTime = gameData.timeData.xGame;
+	gameData.laserData.xLastFiredTime = 
+	gameData.missileData.xLastFiredTime = gameData.timeData.xGame;
 	}
-gameData.app.nStateGameId = 0;
+gameData.appData.nStateGameId = 0;
 
 if (m_nVersion >= 7) {
-	m_cf.Read (&gameData.app.nStateGameId, sizeof (uint32_t), 1);
+	m_cf.Read (&gameData.appData.nStateGameId, sizeof (uint32_t), 1);
 	m_cf.Read (&gameStates.app.cheats.bLaserRapidFire, sizeof (int32_t), 1);
 	m_cf.Read (&gameStates.app.bLunacy, sizeof (int32_t), 1);		//	Yes, writing this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
 	m_cf.Read (&gameStates.app.bLunacy, sizeof (int32_t), 1);
@@ -2283,7 +2283,7 @@ else {
 
 if (m_nVersion >= 11) {
 	if (m_bSecret != 1)
-		m_cf.Read (&gameData.physics.xAfterburnerCharge, sizeof (fix), 1);
+		m_cf.Read (&gameData.physicsData.xAfterburnerCharge, sizeof (fix), 1);
 	else {
 		fix	dummy_fix;
 		m_cf.Read (&dummy_fix, sizeof (fix), 1);
@@ -2300,18 +2300,18 @@ else {
 	paletteManager.StartEffect ((int32_t) m_cf.ReadInt (), (int32_t) m_cf.ReadInt (), (int32_t) m_cf.ReadInt ());
 	}
 
-//	Load gameData.render.lights.subtracted
+//	Load gameData.renderData.lights.subtracted
 if (m_nVersion >= 16) {
 	int32_t h = (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
 	int32_t j = Min (LEVEL_SEGMENTS, h);
-	gameData.render.lights.subtracted.Read (m_cf, j);
+	gameData.renderData.lights.subtracted.Read (m_cf, j);
 	if (j < h)
 		m_cf.Seek ((h - j) * sizeof (uint8_t), SEEK_CUR);
 	ApplyAllChangedLight ();
 	//ComputeAllStaticLight ();	//	set xAvgSegLight field in CSegment struct.  See note at that function.
 	}
 else
-	gameData.render.lights.subtracted.Clear ();
+	gameData.renderData.lights.subtracted.Clear ();
 
 if (m_bSecret) 
 	gameStates.app.bFirstSecretVisit = 0;
@@ -2322,7 +2322,7 @@ else
 
 if (m_nVersion >= 22) {
 	if (m_bSecret != 1)
-		m_cf.Read (&gameData.omega.xCharge, sizeof (fix), 1);
+		m_cf.Read (&gameData.omegaData.xCharge, sizeof (fix), 1);
 	else {
 		fix	dummy_fix;
 		m_cf.Read (&dummy_fix, sizeof (fix), 1);
@@ -2339,7 +2339,7 @@ int32_t CSaveGameManager::LoadState (int32_t bMulti, int32_t bSecret, char *file
 	char		szDescription [DESC_LENGTH + 1];
 	char		nId [5];
 	int32_t	nLevel, i;
-	fix		xOldGameTime = gameData.time.xGame;
+	fix		xOldGameTime = gameData.timeData.xGame;
 
 StopTime ();
 if (filename)
@@ -2414,7 +2414,7 @@ gameData.SetViewer (gameData.objData.pConsole = OBJECT (LOCALPLAYER.nObject));
 StartTriggeredSounds ();
 StartTime (1);
 if (!extraGameInfo [0].nBossCount [0] && (!IsMultiGame || IsCoopGame) && OpenExits ())
-	InitCountdown (NULL, gameData.reactor.bDestroyed, gameData.reactor.countdown.nTimer);
+	InitCountdown (NULL, gameData.reactorData.bDestroyed, gameData.reactorData.countdown.nTimer);
 return 1;
 }
 

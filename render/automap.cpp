@@ -239,7 +239,7 @@ ogl.SetFaceCulling (false);
 ogl.SetBlending (true);
 gameStates.render.grAlpha = gameStates.app.bNostalgia ? 1.0f : bTextured ? 0.5f : 0.9f;
 ogl.SetTexturing (false);
-glLineWidth (2 * GLfloat (gameData.render.screen.Width ()) / 640.0f);
+glLineWidth (2 * GLfloat (gameData.renderData.screen.Width ()) / 640.0f);
 DrawPlayer (OBJECT (LOCALPLAYER.nObject));
 if (!m_bRadar) {
 	markerManager.Render ();
@@ -483,7 +483,7 @@ else {
 	}
 UpdateSlidingFaces ();
 if (!m_bRadar && (gameStates.app.bNostalgia < 2) && (Texturing () & 1)) {
-	gameData.render.mine.viewer = viewer;
+	gameData.renderData.mine.viewer = viewer;
 	RenderMine (gameData.objData.pConsole->info.nSegment, 0, 0);
 	RenderEffects (0);
 	}
@@ -497,7 +497,7 @@ if (m_bRadar) {
 	//ogl.m_states.bEnableScissor = 0;
 	return;
 	}
-gameData.app.nFrameCount++;
+gameData.appData.nFrameCount++;
 PROF_END(ptRenderFrame)
 #endif
 FlushFrame (xStereoSeparation);
@@ -663,8 +663,8 @@ if (m_bActive < 0) {
 			m_nHeight = CCanvas::Current ()->Height ();
 			}
 		else {
-			m_nWidth = gameData.render.screen.Width ();
-			m_nHeight = gameData.render.screen.Height ();
+			m_nWidth = gameData.renderData.screen.Width ();
+			m_nHeight = gameData.renderData.screen.Height ();
 			}
 		m_data.bHires = 1;
 		 }
@@ -715,7 +715,7 @@ m_nSegmentLimit =
 m_nMaxSegsAway = SetSegmentDepths (LOCALOBJECT->info.nSegment, m_visible.Buffer ());
 AdjustSegmentLimit ();
 m_bActive++;
-return gameData.app.bGamePaused;
+return gameData.appData.bGamePaused;
 }
 
 //------------------------------------------------------------------------------
@@ -791,12 +791,12 @@ while ((c = KeyInKey ())) {
 #endif
 		case KEY_PAUSE:
 			if (gameOpts->menus.nStyle && !IsMultiGame) {
-				if (gameData.app.bGamePaused)
+				if (gameData.appData.bGamePaused)
 					ResumeGame ();
 				else
 					PauseGame ();
 				}
-			bPauseGame = gameData.app.bGamePaused;
+			bPauseGame = gameData.appData.bGamePaused;
 			break;
 
 		case KEY_PRINT_SCREEN: {
@@ -1065,7 +1065,7 @@ do {
 		}
 	t2 = TimerGetFixedSeconds ();
 	if (bPauseGame)
-		gameData.time.SetTime (t2 - t1);
+		gameData.timeData.SetTime (t2 - t1);
 	t1 = t2;
 	PROF_END(ptFrame)
 	} while (!bDone);
@@ -1078,7 +1078,7 @@ levelNameCanv = NULL;
 
 if (!gameStates.menus.nInMenu) {
 	GameFlushInputs ();
-	if (gameData.app.bGamePaused)
+	if (gameData.appData.bGamePaused)
 		ResumeGame ();
 	ogl.m_states.nContrast = nContrast;
 	}
@@ -1167,7 +1167,7 @@ void CAutomap::DrawEdges (void)
 	
 m_bDrawBuffers = ogl.SizeBuffers (1000);
 ogl.SetTransform (1);
-glLineWidth (GLfloat (gameData.render.screen.Width ()) / 640.0f);
+glLineWidth (GLfloat (gameData.renderData.screen.Width ()) / 640.0f);
 ogl.SetDepthTest (false);
 ogl.SetDepthWrite (false);
 ogl.SetTexturing (false);
@@ -1429,7 +1429,7 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, pSide++) {
 			color = RGBA_PAL2 (0, 15, 31);
 			break;
 		case SEGMENT_FUNC_REACTOR:
-			if (gameData.reactor.bPresent)
+			if (gameData.reactorData.bPresent)
 				color = RGBA_PAL2 (29, 0, 0);
 			break;
 		case SEGMENT_FUNC_ROBOTMAKER:

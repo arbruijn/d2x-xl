@@ -1444,7 +1444,7 @@ if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.a
 controls.FlushInput ();
 backgroundManager.Setup (m_background, 640, 480);
 //paletteManager.ResumeEffect ();
-gameData.render.frame.Deactivate ();
+gameData.renderData.frame.Deactivate ();
 
 SDL_ShowCursor (1);
 if (m_items == kcKeyboard)
@@ -1605,9 +1605,9 @@ read_head_tracker ()
 		else if ((yaw < (I2X (1)/4)) && (Last_angles_h > ((I2X (3))/4)))
 			yaw1 += I2X (1);
 
-		controls [0].pitchTime	+= FixMul ((pitch- Last_angles_p)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
-		controls [0].headingTime+= FixMul ((yaw1 -  Last_angles_h)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
-		controls [0].bankTime	+= FixMul ((roll - Last_angles_b)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
+		controls [0].pitchTime	+= FixMul ((pitch- Last_angles_p)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.timeData.xFrame);
+		controls [0].headingTime+= FixMul ((yaw1 -  Last_angles_h)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.timeData.xFrame);
+		controls [0].bankTime	+= FixMul ((roll - Last_angles_b)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.timeData.xFrame);
 	}
 	Last_angles_read = 1;
 	Last_angles_p = pitch;
@@ -1682,9 +1682,9 @@ else if (m_version > 0)  {
       temp_ptr->headlightState = PlayerHasHeadlight (-1);
 		temp_ptr->primaryWeaponFlags = LOCALPLAYER.primaryWeaponFlags;
 		temp_ptr->secondaryWeaponFlags = LOCALPLAYER.secondaryWeaponFlags;
-      temp_ptr->currentPrimary_weapon = gameData.weapons.nPrimary;
-      temp_ptr->currentSecondary_weapon = gameData.weapons.nSecondary;
-      temp_ptr->current_guidebot_command = gameData.escort.nGoalObject;
+      temp_ptr->currentPrimary_weapon = gameData.weaponData.nPrimary;
+      temp_ptr->currentSecondary_weapon = gameData.weaponData.nSecondary;
+      temp_ptr->current_guidebot_command = gameData.escortData.nGoalObject;
 	   temp_ptr->force_vector=ExtForceVec;
 		temp_ptr->force_matrix=ExtApplyForceMatrix;
 	   for (i=0;i<3;i++)
@@ -1732,12 +1732,12 @@ else if (m_version > 0)  {
 		}
 	}
 
-	controls [0].pitchTime += FixMul (m_info->pitchTime,gameData.time.xFrame);
-	controls [0].verticalThrustTime += FixMul (m_info->verticalThrustTime,gameData.time.xFrame);
-	controls [0].headingTime += FixMul (m_info->headingTime,gameData.time.xFrame);
-	controls [0].sidewaysThrustTime += FixMul (m_info->sidewaysThrustTime, gameData.time.xFrame);
-	controls [0].bankTime += FixMul (m_info->bankTime, gameData.time.xFrame);
-	controls [0].forwardThrustTime += FixMul (m_info->forwardThrustTime, gameData.time.xFrame);
+	controls [0].pitchTime += FixMul (m_info->pitchTime,gameData.timeData.xFrame);
+	controls [0].verticalThrustTime += FixMul (m_info->verticalThrustTime,gameData.timeData.xFrame);
+	controls [0].headingTime += FixMul (m_info->headingTime,gameData.timeData.xFrame);
+	controls [0].sidewaysThrustTime += FixMul (m_info->sidewaysThrustTime, gameData.timeData.xFrame);
+	controls [0].bankTime += FixMul (m_info->bankTime, gameData.timeData.xFrame);
+	controls [0].forwardThrustTime += FixMul (m_info->forwardThrustTime, gameData.timeData.xFrame);
 	controls [0].rearViewDownCount += m_info->rearViewDownCount;
 	controls [0].rearViewDownState |= m_info->rearViewDownState;
 	controls [0].firePrimaryDownCount += m_info->firePrimaryDownCount;

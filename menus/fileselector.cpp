@@ -106,7 +106,7 @@ FadeIn ();
 GrString (0x8000, 10, m_props.pszTitle);
 
 CCanvas textArea;
-textArea.Setup (&gameData.render.frame, m_nTextLeft, m_nTextTop, m_nTextWidth, m_nTextHeight, true);
+textArea.Setup (&gameData.renderData.frame, m_nTextLeft, m_nTextTop, m_nTextWidth, m_nTextHeight, true);
 textArea.Activate ("CFileSelector::Render", &m_background);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 OglDrawFilledRect (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
@@ -186,7 +186,7 @@ int32_t CFileSelector::FileSelector (const char* pszTitle, const char* filespec,
 	int32_t				nPatternLen = 0;
 	char*					pszFn;
 
-gameData.render.frame.Activate ("CFileSelector::FileSelector (frame)");
+gameData.renderData.frame.Activate ("CFileSelector::FileSelector (frame)");
 
 m_tEnter = -1;
 m_nFirstItem = -1;
@@ -550,7 +550,7 @@ exitFileMenu:
 gameStates.input.keys.bRepeat = bKeyRepeat;
 
 backgroundManager.Draw ();
-gameData.render.frame.Deactivate ();
+gameData.renderData.frame.Deactivate ();
 SDL_EnableKeyRepeat(0, 0);
 Unregister ();
 return exitValue;

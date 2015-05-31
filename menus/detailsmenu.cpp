@@ -81,7 +81,7 @@ if (nDetailLevel < NUM_DETAIL_LEVELS - 1) {
 	gameStates.render.detail.nMaxLinearDepthObjects = detailData.maxLinearDepthObjects [nDetailLevel];
 	gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [nDetailLevel];
 	gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [nDetailLevel];
-	gameData.models.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [nDetailLevel];
+	gameData.modelData.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [nDetailLevel];
 	audio.SetMaxChannels (detailData.nSoundChannels [nDetailLevel]);
 	//      Set custom menu defaults.
 	gameStates.render.detail.nObjectComplexity = nDetailLevel;
@@ -158,7 +158,7 @@ gameStates.render.detail.nMaxPerspectiveDepth = detailData.maxPerspectiveDepths 
 gameStates.render.detail.nMaxLinearDepth = detailData.maxLinearDepths [DIFFICULTY_LEVEL_COUNT - 1];
 gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [DIFFICULTY_LEVEL_COUNT - 1];
 gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [DIFFICULTY_LEVEL_COUNT - 1];
-gameData.models.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [DIFFICULTY_LEVEL_COUNT - 1];
+gameData.modelData.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [DIFFICULTY_LEVEL_COUNT - 1];
 gameStates.render.detail.nMaxLinearDepthObjects = detailData.maxLinearDepthObjects [DIFFICULTY_LEVEL_COUNT - 1];
 }
 
@@ -171,7 +171,7 @@ gameStates.render.detail.nMaxPerspectiveDepth = detailData.maxPerspectiveDepths 
 gameStates.render.detail.nMaxLinearDepth = detailData.maxLinearDepths [gameStates.render.detail.nWallDetail];
 gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [gameStates.render.detail.nDebrisAmount];
 gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [gameStates.render.detail.nObjectComplexity];
-gameData.models.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [gameStates.render.detail.nObjectComplexity];
+gameData.modelData.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [gameStates.render.detail.nObjectComplexity];
 gameStates.render.detail.nMaxLinearDepthObjects = detailData.maxLinearDepthObjects [gameStates.render.detail.nObjectDetail];
 audio.SetMaxChannels (detailData.nSoundChannels [gameStates.sound.nSoundChannels]);
 }

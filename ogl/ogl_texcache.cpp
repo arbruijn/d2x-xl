@@ -56,7 +56,7 @@ if (pModel)
 static CBitmap* OglCacheTexture (int32_t nIndex, int32_t nTranspType)
 {
 LoadTexture (nIndex, 0, 0);
-CBitmap* pBm = &gameData.pig.tex.bitmaps [0][nIndex];
+CBitmap* pBm = &gameData.pigData.tex.bitmaps [0][nIndex];
 pBm->SetTranspType (nTranspType);
 pBm->SetupTexture (1, bLoadTextures);
 return pBm;
@@ -84,7 +84,7 @@ static void OglCacheAnimationTextures (int32_t i, int32_t nTransp)
 {
 if ((i >= 0) && !bVClipLoaded [i]) {
 	bVClipLoaded [i] = true;
-	OglCacheAnimationTextures (&gameData.effects.animations [0][i], nTransp);
+	OglCacheAnimationTextures (&gameData.effectData.animations [0][i], nTransp);
 	}
 }
 
@@ -112,8 +112,8 @@ static CBitmap *OglLoadFaceBitmap (int16_t nTexture, int16_t nFrameIdx, int32_t 
 	CBitmap*	pBm, * pBmo, * pBmf;
 	int32_t		nFrames;
 
-LoadTexture (gameData.pig.tex.pBmIndex [nTexture].index, 0, gameStates.app.bD1Mission);
-pBm = gameData.pig.tex.pBitmap + gameData.pig.tex.pBmIndex [nTexture].index;
+LoadTexture (gameData.pigData.tex.pBmIndex [nTexture].index, 0, gameStates.app.bD1Mission);
+pBm = gameData.pigData.tex.pBitmap + gameData.pigData.tex.pBmIndex [nTexture].index;
 pBm->SetStatic (1);
 if (!(pBmo = pBm->Override ()))
 	return pBm;
@@ -151,7 +151,7 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	if (!pSide->FaceCount ())
 		continue;
 	tMap1 = pSide->m_nBaseTex;
-	if ((tMap1 < 0) || (tMap1 >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
+	if ((tMap1 < 0) || (tMap1 >= gameData.pigData.tex.nTextures [gameStates.app.bD1Data]))
 		continue;
 	pBm = LoadFaceBitmap (tMap1, pSide->m_nFrame, bLoadTextures);
 	if ((tMap2 = pSide->m_nOvlTex)) {
@@ -248,14 +248,14 @@ TexMergeInit (-1);
 
 PrintLog (1, "caching effect textures\n");
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
-	for (i = 0, pEffectInfo = gameData.effects.effects [bD1].Buffer (); i < gameData.effects.nEffects [bD1]; i++, pEffectInfo++) {
+	for (i = 0, pEffectInfo = gameData.effectData.effects [bD1].Buffer (); i < gameData.effectData.nEffects [bD1]; i++, pEffectInfo++) {
 		if ((pEffectInfo->changing.nWallTexture == -1) && (pEffectInfo->changing.nObjectTexture == -1))
 			continue;
 		if (pEffectInfo->animationInfo.nFrameCount > max_efx)
 			max_efx = pEffectInfo->animationInfo.nFrameCount;
 		}
 	for (ef = 0; ef < max_efx; ef++)
-		for (i = 0, pEffectInfo = gameData.effects.effects [bD1].Buffer (); i < gameData.effects.nEffects [bD1]; i++, pEffectInfo++) {
+		for (i = 0, pEffectInfo = gameData.effectData.effects [bD1].Buffer (); i < gameData.effectData.nEffects [bD1]; i++, pEffectInfo++) {
 			if ((pEffectInfo->changing.nWallTexture == -1) && (pEffectInfo->changing.nObjectTexture == -1))
 				continue;
 			pEffectInfo->xTimeLeft = -1;
@@ -272,7 +272,7 @@ for (pSeg = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segData.nSegme
 		if (!pSide->FaceCount ())
 			continue;
 		nBaseTex = pSide->m_nBaseTex;
-		if ((nBaseTex < 0) || (nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
+		if ((nBaseTex < 0) || (nBaseTex >= gameData.pigData.tex.nTextures [gameStates.app.bD1Data]))
 			continue;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -328,7 +328,7 @@ gameStates.render.DisableCartoonStyle ();
 PrintLog (1, "caching weapon sprites\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 5);
 for (i = 0; i < EXTRA_OBJ_IDS; i++)
-	OglCacheWeaponTextures (gameData.weapons.info + i);
+	OglCacheWeaponTextures (gameData.weaponData.info + i);
 PrintLog (-1);
 
 gameStates.render.EnableCartoonStyle (0, 0, 1);
@@ -343,7 +343,7 @@ PrintLog (-1);
 PrintLog (1, "caching effect textures\n");
 CacheObjectEffects ();
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 2);
-for (i = 0; i < gameData.effects.nClips [0]; i++)
+for (i = 0; i < gameData.effectData.nClips [0]; i++)
 	OglCacheAnimationTextures (i, 1);
 PrintLog (-1);
 
@@ -352,8 +352,8 @@ gameStates.render.DisableCartoonStyle ();
 PrintLog (1, "caching cockpit textures\n");
 for (i = 0; i < 2; i++)
 	for (j = 0; j < MAX_GAUGE_BMS; j++)
-		if (gameData.cockpit.gauges [i][j].index != 0xffff)
-			LoadTexture (gameData.cockpit.gauges [i][j].index, 0, 0);
+		if (gameData.cockpitData.gauges [i][j].index != 0xffff)
+			LoadTexture (gameData.cockpitData.gauges [i][j].index, 0, 0);
 PrintLog (-1);
 
 ResetSpecialEffects ();

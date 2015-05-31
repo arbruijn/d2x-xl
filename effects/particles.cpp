@@ -152,7 +152,7 @@ for (int32_t i = 0; i < PARTICLE_POSITIONS; i++) {
 void CParticle::SetupRotation (void)
 {
 for (int32_t i = 0; i < PARTICLE_POSITIONS; i++)
-	mRot [1][i] = gameData.render.mine.viewer.mOrient * mRot [0][i];
+	mRot [1][i] = gameData.renderData.mine.viewer.mOrient * mRot [0][i];
 }
 
 //------------------------------------------------------------------------------
@@ -771,15 +771,15 @@ return 1;
 bool CParticle::IsVisible (int32_t nThread) 
 {
 #if 0
-	return gameData.render.mine.Visible (m_nSegment);
+	return gameData.renderData.mine.Visible (m_nSegment);
 #else
 if ((m_nSegment < 0) || (m_nSegment >= gameData.segData.nSegments))
 	return false;
-if (gameData.render.mine.Visible (m_nSegment))
+if (gameData.renderData.mine.Visible (m_nSegment))
 	return true;
 int16_t* pChild = SEGMENT (m_nSegment)->m_children;
 for (int32_t i = 6; i; i--, pChild++) {
-	if ((*pChild >= 0) && (gameData.render.mine.Visible (*pChild)))
+	if ((*pChild >= 0) && (gameData.renderData.mine.Visible (*pChild)))
 		return true;
 	}
 #if 1
@@ -790,7 +790,7 @@ int32_t nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 0, nThread);
 if (nSegment < 0)
 	return false;
 m_nSegment = nSegment;
-return gameData.render.mine.Visible (nSegment);
+return gameData.renderData.mine.Visible (nSegment);
 #endif
 }
 
@@ -1469,7 +1469,7 @@ if (m_nType == RAIN_PARTICLES) {
 	CFloatVector3::Normalize (uVec);
 	uVec.Neg ();
 	CFloatVector3 v;
-	v.Assign (gameData.render.mine.viewer.vPos);
+	v.Assign (gameData.renderData.mine.viewer.vPos);
 	CFloatVector3 u = uVec - v;
 	CFloatVector3 c = vCenter - v;
 	CFloatVector3::Normalize (u);
@@ -1485,8 +1485,8 @@ else {
 		rVec.Assign (mOrient.m.dir.r);
 		}
 	else {
-		uVec.Assign (gameData.render.mine.viewer.mOrient.m.dir.u);
-		rVec.Assign (gameData.render.mine.viewer.mOrient.m.dir.r);
+		uVec.Assign (gameData.renderData.mine.viewer.mOrient.m.dir.u);
+		rVec.Assign (gameData.renderData.mine.viewer.mOrient.m.dir.r);
 		}
 	}
 uVec *= m_nHeight * fScale;

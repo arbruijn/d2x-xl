@@ -51,7 +51,7 @@ int32_t CreateWeaponObject (uint8_t nWeaponType, int16_t nSegment, CFixVector *v
 	int32_t	nObject;
 	CObject	*pObj;
 
-switch (gameData.weapons.info [nWeaponType].renderType) {
+switch (gameData.weaponData.info [0][nWeaponType].renderType) {
 	case WEAPON_RENDER_BLOB:
 	case WEAPON_RENDER_POLYMODEL:
 	case WEAPON_RENDER_LASER:	// Not supported anymore
@@ -76,23 +76,23 @@ if (!pObj) {
 if (nObject == nDbgObj)
 	BRP;
 #endif
-if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
-	pObj->rType.polyObjInfo.nModel = gameData.weapons.info [pObj->info.nId].nModel;
-	pObj->AdjustSize (1, gameData.weapons.info [pObj->info.nId].poLenToWidthRatio);
+if (gameData.weaponData.info [0][nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
+	pObj->rType.polyObjInfo.nModel = gameData.weaponData.info [0][pObj->info.nId].nModel;
+	pObj->AdjustSize (1, gameData.weaponData.info [0][pObj->info.nId].poLenToWidthRatio);
 	}
 else if (EGI_FLAG (bTracers, 0, 1, 0) && pObj->IsGatlingRound ()) {
-	pObj->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
+	pObj->rType.polyObjInfo.nModel = gameData.weaponData.info [0][SUPERLASER_ID + 1].nModel;
 	pObj->rType.polyObjInfo.nTexOverride = -1;
 	pObj->rType.polyObjInfo.nAltTextures = 0;
-	pObj->AdjustSize (1, gameData.weapons.info [SUPERLASER_ID].poLenToWidthRatio);
+	pObj->AdjustSize (1, gameData.weaponData.info [0][SUPERLASER_ID].poLenToWidthRatio);
 	pObj->info.renderType = RT_POLYOBJ;
 	}
 pObj->mType.physInfo.mass = WI_mass (nWeaponType);
 pObj->mType.physInfo.drag = WI_drag (nWeaponType);
 pObj->mType.physInfo.thrust.SetZero ();
-if (gameData.weapons.info [nWeaponType].bounce == 1)
+if (gameData.weaponData.info [0][nWeaponType].bounce == 1)
 	pObj->mType.physInfo.flags |= PF_BOUNCES;
-if ((gameData.weapons.info [nWeaponType].bounce == 2) || gameStates.app.cheats.bBouncingWeapons)
+if ((gameData.weaponData.info [0][nWeaponType].bounce == 2) || gameStates.app.cheats.bBouncingWeapons)
 	pObj->mType.physInfo.flags |= PF_BOUNCES + PF_BOUNCES_TWICE;
 return nObject;
 }
@@ -102,10 +102,10 @@ return nObject;
 int32_t CreateWeaponSpeed (CObject* pWeapon, bool bFix)
 {
 	uint8_t			nWeaponType = pWeapon->Id ();
-	CWeaponInfo&	weaponInfo = gameData.weapons.info [nWeaponType];
+	CWeaponInfo&	weaponInfo = gameData.weaponData.info [0][nWeaponType];
 	CObject			*pParent = OBJECT (pWeapon->cType.laserInfo.parent.nObject);
 	fix				xParentSpeed;
-	fix				xLaserLength = (weaponInfo.renderType == WEAPON_RENDER_POLYMODEL) ? gameData.models.polyModels [0][pWeapon->ModelId ()].Rad () * 2 : 0;
+	fix				xLaserLength = (weaponInfo.renderType == WEAPON_RENDER_POLYMODEL) ? gameData.modelData.polyModels [0][pWeapon->ModelId ()].Rad () * 2 : 0;
 	CFixVector		vDir = pWeapon->Heading ();
 
 //	Here's where to fix the problem with OBJECTS which are moving backwards imparting higher velocity to their weaponfire.
@@ -122,18 +122,18 @@ else {
 // Move 1 frame, so that the end-tip of the laser is touching the gun barrel.
 // This also jitters the laser a bit so that it doesn't alias.
 //	Don't do for weapons created by weapons.
-if (!bFix && pParent && (pParent->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID) && !CObject::IsMissile (nWeaponType)) {
+if (!bFix && pParent && (pParent->info.nType == OBJ_PLAYER) && (gameData.weaponData.info [0][nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID) && !CObject::IsMissile (nWeaponType)) {
 #if 1
-	pWeapon->mType.physInfo.velocity = vDir * (gameData.laser.nOffset + xLaserLength / 2);
+	pWeapon->mType.physInfo.velocity = vDir * (gameData.laserData.nOffset + xLaserLength / 2);
 	if (pWeapon->Velocity ().IsZero ()) 
 		PrintLog (0, "weapon object has no velocity\n");
 	else 
 #endif
 		{
-		fix xTime = gameData.physics.xTime;
-		gameData.physics.xTime = -1;	// make it move the entire velocity vector
+		fix xTime = gameData.physicsData.xTime;
+		gameData.physicsData.xTime = -1;	// make it move the entire velocity vector
 		pWeapon->Update ();
-		gameData.physics.xTime = xTime;
+		gameData.physicsData.xTime = xTime;
 		if (pWeapon->info.nFlags & OF_SHOULD_BE_DEAD) {
 			ReleaseObject (pWeapon->Index ());
 			return -1;
@@ -153,15 +153,15 @@ if ((nWeaponType == SMARTMSL_BLOB_ID) ||
 	 (nWeaponType == ROBOT_SMARTMINE_BLOB_ID) ||
 	 (nWeaponType == EARTHSHAKER_MEGA_ID))
 	xWeaponSpeed /= 4;
-if (WIThrust (nWeaponType) != 0)
+if (WI_thrust (nWeaponType) != 0)
 	xWeaponSpeed /= 2;
 /*test*/pWeapon->mType.physInfo.velocity = vDir * (xWeaponSpeed + xParentSpeed);
 if (pParent)
 	pWeapon->SetStartVel (&pParent->mType.physInfo.velocity);
 //	Set thrust
-if (WIThrust (nWeaponType) != 0) {
+if (WI_thrust (nWeaponType) != 0) {
 	pWeapon->mType.physInfo.thrust = pWeapon->mType.physInfo.velocity;
-	pWeapon->mType.physInfo.thrust *= FixDiv (WIThrust (pWeapon->info.nId), xWeaponSpeed + xParentSpeed);
+	pWeapon->mType.physInfo.thrust *= FixDiv (WI_thrust (pWeapon->info.nId), xWeaponSpeed + xParentSpeed);
 	}
 return pWeapon->Index ();
 }
@@ -171,7 +171,7 @@ return pWeapon->Index ();
 void CreateWeaponSound (CObject* pWeapon, int32_t bMakeSound)
 {
 	uint8_t			nWeaponType = pWeapon->Id ();
-	CWeaponInfo&	weaponInfo = gameData.weapons.info [nWeaponType];
+	CWeaponInfo&	weaponInfo = gameData.weaponData.info [0][nWeaponType];
 	fix				volume = I2X (1);
 	int32_t			nParent = pWeapon->cType.laserInfo.parent.nObject;
 	CObject			*pParent = OBJECT (nParent);
@@ -226,7 +226,7 @@ if (!pParent)
 	return -1;
 
 	int32_t		nObject, nViewer;
-	CWeaponInfo	weaponInfo = gameData.weapons.info [nWeaponType];
+	CWeaponInfo	weaponInfo = gameData.weaponData.info [0][nWeaponType];
 	CFixVector	vDir = *vDirection;
 
 if (RandShort () > pParent->GunDamage ())
@@ -248,7 +248,7 @@ if (damage > 0) {
 
 //this is a horrible hack.  guided missile stuff should not be
 //handled in the middle of a routine that is dealing with the player
-if (nWeaponType >= gameData.weapons.nTypes [0])
+if (nWeaponType >= gameData.weaponData.nTypes [0])
 	nWeaponType = 0;
 //	Don't let homing blobs make muzzle flash.
 if (pParent->IsRobot ())
@@ -258,14 +258,14 @@ else if (gameStates.app.bD2XLevel &&
 			(SEGMENT (gameData.objData.pConsole->info.nSegment)->HasNoDamageProp ()))
 	return -1;
 #if 1
-if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameData.app.GameMode (GM_HOARD | GM_ENTROPY))) {
+if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameData.appData.GameMode (GM_HOARD | GM_ENTROPY))) {
 	nObject = CreatePowerup (POW_HOARD_ORB, -1, nSegment, *vPosition, 0);
 	pObj = OBJECT (nObject);
 	if (pObj) {
 		if (IsMultiGame)
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 		pObj->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [pObj->info.nId].nClipIndex;
-		pObj->rType.animationInfo.xFrameTime = gameData.effects.animations [0][pObj->rType.animationInfo.nClipIndex].xFrameTime;
+		pObj->rType.animationInfo.xFrameTime = gameData.effectData.animations [0][pObj->rType.animationInfo.nClipIndex].xFrameTime;
 		pObj->rType.animationInfo.nCurFrame = 0;
 		pObj->info.nCreator = GetTeam (N_LOCALPLAYER) + 1;
 		}
@@ -297,15 +297,15 @@ if (pParent == gameData.objData.pConsole) {
 		case GAUSS_ID:
 		case HELIX_ID:
 		case PHOENIX_ID:
-			gameData.stats.player [0].nShots [0]++;
-			gameData.stats.player [1].nShots [0]++;
+			gameData.statsData.player [0].nShots [0]++;
+			gameData.statsData.player [1].nShots [0]++;
 			break;
 		case CONCUSSION_ID:
 		case FLASHMSL_ID:
 		case GUIDEDMSL_ID:
 		case MERCURYMSL_ID:
-			gameData.stats.player [0].nShots [1]++;
-			gameData.stats.player [1].nShots [1]++;
+			gameData.statsData.player [0].nShots [1]++;
+			gameData.statsData.player [1].nShots [1]++;
 			break;
 		}
 	}
@@ -359,7 +359,7 @@ if (pParent && (pParent->info.nType == OBJ_PLAYER)) {
 	else if (nWeaponType == GUIDEDMSL_ID) {
 		if (nParent == LOCALPLAYER.nObject) {
 			gameData.objData.SetGuidedMissile (N_LOCALPLAYER, pObj);
-			if (gameData.demo.nState == ND_STATE_RECORDING)
+			if (gameData.demoData.nState == ND_STATE_RECORDING)
 				NDRecordGuidedStart ();
 			}
 		}
@@ -440,7 +440,7 @@ int32_t CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, in
 	//	Note that while FindHitpoint is pretty slow, it is not terribly slow if the destination point is
 	//	in the same CSegment as the source point.
 
-CHitQuery hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS, &pParentObj->info.position.vPos, vPosition, pParentObj->info.nSegment, OBJ_IDX (pParentObj), 0, 0, ++gameData.physics.bIgnoreObjFlag);
+CHitQuery hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS, &pParentObj->info.position.vPos, vPosition, pParentObj->info.nSegment, OBJ_IDX (pParentObj), 0, 0, ++gameData.physicsData.bIgnoreObjFlag);
 fate = FindHitpoint (hitQuery, hitResult);
 if ((fate != HIT_NONE)  || (hitResult.nSegment == -1))
 	return -1;
@@ -453,7 +453,7 @@ if (!hitResult.nSegment) {
 	hitQuery.radP0				=
 	hitQuery.radP1				= 0;
 	hitQuery.nObject			= OBJ_IDX (pParentObj);
-	hitQuery.bIgnoreObjFlag	= ++gameData.physics.bIgnoreObjFlag;
+	hitQuery.bIgnoreObjFlag	= ++gameData.physicsData.bIgnoreObjFlag;
 	hitQuery.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
 
 	fate = FindHitpoint (hitQuery, hitResult);

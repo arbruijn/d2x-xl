@@ -171,7 +171,7 @@ if (player.Connected (CONNECT_PLAYING)) {
 			}
 	// OBJECT (player.nObject)->CreateAppearanceEffect ();
 	MultiTurnPlayerToGhost (nPlayer);
-	if (gameData.demo.nState == ND_STATE_RECORDING)
+	if (gameData.demoData.nState == ND_STATE_RECORDING)
 		NDRecordMultiDisconnect (nPlayer);
 	MultiStripRobots (nPlayer);
 	}
@@ -186,7 +186,7 @@ void NetworkNewPlayer (tPlayerSyncData *their)
 nPlayer = their->player.connected;
 Assert (nPlayer >= 0);
 Assert (nPlayer < gameData.multiplayer.nMaxPlayers);        
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordMultiConnect (nPlayer, nPlayer == N_PLAYERS, their->player.callsign);
 memcpy (PLAYER (nPlayer).callsign, their->player.callsign, CALLSIGN_LEN + 1);
 memcpy (NETPLAYER (nPlayer).callsign, their->player.callsign, CALLSIGN_LEN + 1);
@@ -346,7 +346,7 @@ memset (networkData.syncInfo + networkData.nJoining, 0, sizeof (tNetworkSyncInfo
 static tNetworkSyncInfo *AcceptJoinRequest (tPlayerSyncData *player)
 {
 // Don't accept new players if we're ending this level.  Its safe to ignore since they'll request again later
-if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
+if (gameStates.app.bEndLevelSequence || gameData.reactorData.bDestroyed) {
 #if 1      
 console.printf (CON_DBG, "Ignored request from new player to join during endgame.\n");
 #endif
@@ -430,7 +430,7 @@ if (0 > (nPlayer = FindNetworkPlayer (player, newAddress))) {
 	}
 else {
 	// Player is reconnecting
-	if (gameData.demo.nState == ND_STATE_RECORDING)
+	if (gameData.demoData.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nPlayer);
 	networkData.bPlayerAdded = 0;
 	audio.PlaySound (SOUND_HUD_MESSAGE);

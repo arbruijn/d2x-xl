@@ -143,7 +143,7 @@ CObject* CreateExplosion (CObject* pParent, int16_t nSegment, CFixVector& vPos, 
 	fix			dist, force, damage;
 	CFixVector	vHit, vForce;
 	int32_t		nType, id;
-	int32_t		flash = pParent ? static_cast<int32_t> (gameData.weapons.info [pParent->info.nId].flash) : 0;
+	int32_t		flash = pParent ? static_cast<int32_t> (gameData.weaponData.info [0][pParent->info.nId].flash) : 0;
 
 nObject = CreateFireball (nVClip, nSegment, vPos, xSize, RT_FIREBALL);
 pExplObj = OBJECT (nObject);
@@ -151,7 +151,7 @@ if (!pExplObj)
 	return NULL;
 
 //now set explosion-specific data
-pExplObj->SetLife (gameData.effects.animations [0][nVClip].xTotalTime);
+pExplObj->SetLife (gameData.effectData.animations [0][nVClip].xTotalTime);
 if ((nVClip != ANIM_MORPHING_ROBOT) && 
 	 //(nVClip != ANIM_PLAYER_APPEARANCE) &&
 	 (nVClip != ANIM_POWERUP_DISAPPEARANCE) &&
@@ -235,9 +235,9 @@ FORALL_OBJS (pObj) {
 		//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
 		if (flash && !pObj->IsBoss ()) {
 			tAIStaticInfo	*aip = &pObj->cType.aiInfo;
-			int32_t				nForce = X2I (FixDiv (vForce.Mag () * flash, gameData.time.xFrame) / 128) + 2;
+			int32_t				nForce = X2I (FixDiv (vForce.Mag () * flash, gameData.timeData.xFrame) / 128) + 2;
 
-			if (pExplObj->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame >= I2X (1))
+			if (pExplObj->cType.aiInfo.SKIP_AI_COUNT * gameData.timeData.xFrame >= I2X (1))
 				aip->SKIP_AI_COUNT--;
 			else {
 				aip->SKIP_AI_COUNT += nForce;
@@ -342,7 +342,7 @@ return pExplObj;
 //return the explosion CObject
 CObject* CObject::ExplodeSplashDamageWeapon (CFixVector& vImpact, CObject* pTarget)
 {
-	CWeaponInfo *wi = &gameData.weapons.info [info.nId];
+	CWeaponInfo *wi = &gameData.weaponData.info [0][info.nId];
 
 Assert (wi->xDamageRadius);
 // adjust the impact location in case it is inside the object
@@ -416,7 +416,7 @@ if (pObj->info.renderType != RT_POLYOBJ)
 	size = 4 * PI * pow (X2F (pObj->info.xSize), 3) / 3;
 else {
 	size = 0;
-	pModel = gameData.models.polyModels [0] + pObj->ModelId ();
+	pModel = gameData.modelData.polyModels [0] + pObj->ModelId ();
 	if ((i = pObj->rType.polyObjInfo.nSubObjFlags)) {
 		for (j = 0; i && (j < pModel->ModelCount ()); i >>= 1, j++)
 			if (i & 1)
@@ -510,7 +510,7 @@ return pObj;
 void DrawFireball (CObject *pObj)
 {
 if (pObj->info.xLifeLeft > 0)
-	DrawVClipObject (pObj, pObj->info.xLifeLeft, 0, pObj->info.nId, (pObj->info.nType == OBJ_WEAPON) ? gameData.weapons.color + pObj->info.nId : NULL);
+	DrawVClipObject (pObj, pObj->info.xLifeLeft, 0, pObj->info.nId, (pObj->info.nType == OBJ_WEAPON) ? gameData.weaponData.color + pObj->info.nId : NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -526,8 +526,8 @@ if (pObj->info.nType == OBJ_ROBOT) {
 			return pRobotInfo->nExp2VClip;
 		}
 	}
-else if ((pObj->info.nType == OBJ_PLAYER) && (gameData.pig.ship.player->nExplVClip >- 1))
-	return gameData.pig.ship.player->nExplVClip;
+else if ((pObj->info.nType == OBJ_PLAYER) && (gameData.pigData.ship.player->nExplVClip >- 1))
+	return gameData.pigData.ship.player->nExplVClip;
 return ANIM_SMALL_EXPLOSION;		//default
 }
 
@@ -540,11 +540,11 @@ Assert (info.renderType == RT_POLYOBJ);
 //CreateExplBlast (); TEST!!!
 CreateShockwave ();
 RequestEffects (EXPL_LIGHTNING | SHRAPNEL_SMOKE);
-if (gameData.models.nDyingModels [ModelId ()] != -1)
-	rType.polyObjInfo.nModel = gameData.models.nDyingModels [ModelId ()];
+if (gameData.modelData.nDyingModels [ModelId ()] != -1)
+	rType.polyObjInfo.nModel = gameData.modelData.nDyingModels [ModelId ()];
 
 if ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER)) {
-	int32_t nModels = gameData.models.polyModels [0][ModelId ()].ModelCount ();
+	int32_t nModels = gameData.modelData.polyModels [0][ModelId ()].ModelCount ();
 
 	if (gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShrapnels && (nModels > 1)) {
 		int32_t j = (int32_t) FRound (X2F (info.xSize)) * (gameOpts->render.effects.nShrapnels + 1);
@@ -570,8 +570,8 @@ if ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER)) {
 //if the CObject has a destroyed model, switch to it.  Otherwise, delete it.
 void CObject::MaybeDelete (void)
 {
-if (gameData.models.nDeadModels [ModelId ()] != -1) {
-	rType.polyObjInfo.nModel = gameData.models.nDeadModels [ModelId ()];
+if (gameData.modelData.nDeadModels [ModelId ()] != -1) {
+	rType.polyObjInfo.nModel = gameData.modelData.nDeadModels [ModelId ()];
 	info.nFlags |= OF_DESTROYED;
 	}
 else {		//Normal, multi-stage explosion

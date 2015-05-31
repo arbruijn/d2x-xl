@@ -325,8 +325,8 @@ fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject 
 {
 	CFixVector			vRef = OBJPOS (pObj2)->vPos;
 	int32_t				iModel1, nModels1, iModel2, nModels2, nHits = 0, nTotalHits = 0;
-	CModelHitboxList	*pmhb1 = gameData.models.hitboxes + pObj1->ModelId ();
-	CModelHitboxList	*pmhb2 = gameData.models.hitboxes + pObj2->ModelId ();
+	CModelHitboxList	*pmhb1 = gameData.modelData.hitboxes + pObj1->ModelId ();
+	CModelHitboxList	*pmhb2 = gameData.modelData.hitboxes + pObj2->ModelId ();
 	fix					dMin = 0x7fffffff;
 
 if (CollisionModel () == 1) {
@@ -385,7 +385,7 @@ fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector& normal, CF
 {
 	int32_t				iModel, nModels;
 	fix					dMin = 0x7fffffff;
-	CModelHitboxList*	pmhb = gameData.models.hitboxes + pObj->ModelId ();
+	CModelHitboxList*	pmhb = gameData.modelData.hitboxes + pObj->ModelId ();
 
 if (CollisionModel () == 1) {
 	iModel =
@@ -479,7 +479,7 @@ CSegMasks CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal
 iModel =
 nModels = 1;
 #else
-CModelHitboxList*	pmhb = gameData.models.hitboxes + pObj->ModelId ();
+CModelHitboxList*	pmhb = gameData.modelData.hitboxes + pObj->ModelId ();
 if (CollisionModel () == 1) {
 	iModel =
 	nModels = 1;

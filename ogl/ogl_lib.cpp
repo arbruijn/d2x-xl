@@ -138,7 +138,7 @@ ogl.SetScissorTest (ogl.m_states.bEnableScissor != 0);
 void CViewport::Setup (int32_t x, int32_t y, int32_t w, int32_t h) 
 {
 CRectangle::Setup (x, y, w, h);
-m_t = gameData.render.screen.Height ();
+m_t = gameData.renderData.screen.Height ();
 }
 
 //------------------------------------------------------------------------------
@@ -469,43 +469,43 @@ else
 
 void COGL::SetupProjection (CTransformation& transformation)
 {
-gameStates.render.glAspect = m_states.bUseTransform ? gameData.render.frame.AspectRatio () : 1.0;
+gameStates.render.glAspect = m_states.bUseTransform ? gameData.renderData.frame.AspectRatio () : 1.0;
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 float aspectRatio = IsOculusRift () ? 0.8f : 1.0f; 
 #if 1
 #	if 1 //DBG
-gameStates.render.glFOV = IsOculusRift () ? gameData.render.rift.m_fov + gameOpts->render.stereo.nRiftFOV * 5 : gameStates.render.nShadowMap ? 90.0 : 105.0; 
+gameStates.render.glFOV = IsOculusRift () ? gameData.renderData.rift.m_fov + gameOpts->render.stereo.nRiftFOV * 5 : gameStates.render.nShadowMap ? 90.0 : 105.0; 
 #	else
-gameStates.render.glFOV = IsOculusRift () ? gameData.render.rift.m_fov : gameStates.render.nShadowMap ? 90.0 : 105.0; 
+gameStates.render.glFOV = IsOculusRift () ? gameData.renderData.rift.m_fov : gameStates.render.nShadowMap ? 90.0 : 105.0; 
 #	endif
 ZFAR = gameStates.render.nShadowMap ? 400.0f : 5000.0f;
 #else
 gameStates.render.glFOV = 180.0;
 #endif
 if (!StereoSeparation ())
-	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
+	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.renderData.scene.AspectRatio (), ZNEAR, ZFAR);
 else if (IsOculusRift ()) {
 #if 0
-	glLoadMatrixf ((GLfloat*) gameData.render.rift.m_eyes [StereoSeparation () > 0].Projection.M);
+	glLoadMatrixf ((GLfloat*) gameData.renderData.rift.m_eyes [StereoSeparation () > 0].Projection.M);
 #elif 0
 	SetupFrustum (2 * StereoSeparation ());
 #else
-	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom) / RIFT_DEFAULT_ZOOM, gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
+	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom) / RIFT_DEFAULT_ZOOM, gameData.renderData.scene.AspectRatio (), ZNEAR, ZFAR);
 #endif
 	}
 else if (gameOpts->render.stereo.nMethod == STEREO_PARALLEL)
 	SetupFrustum (StereoSeparation ());
 else
-	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
+	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.renderData.scene.AspectRatio (), ZNEAR, ZFAR);
 if (gameStates.render.bRearView < 0)
 	glScalef (-1.0f, 1.0f, 1.0f);
 m_data.depthScale.v.coord.x = float (ZFAR / (ZFAR - ZNEAR));
 m_data.depthScale.v.coord.y = float (ZNEAR * ZFAR / (ZNEAR - ZFAR));
 m_data.depthScale.v.coord.z = float (ZFAR - ZNEAR);
 #if 1
-m_data.windowScale.dim.x = 1.0f / float (gameData.render.screen.Width ());
-m_data.windowScale.dim.y = 1.0f / float (gameData.render.screen.Height ());
+m_data.windowScale.dim.x = 1.0f / float (gameData.renderData.screen.Width ());
+m_data.windowScale.dim.y = 1.0f / float (gameData.renderData.screen.Height ());
 #else
 m_data.windowScale.dim.x = 1.0f / float (CCanvas::Current ()->Width ());
 m_data.windowScale.dim.y = 1.0f / float (CCanvas::Current ()->Height ());
@@ -540,7 +540,7 @@ if (!gameOpts->render.cameras.bHires) {
 	w >>= gameStates.render.cameras.bActive;
 	h >>= gameStates.render.cameras.bActive;
 	}
-int32_t t = gameData.render.screen.Height ();
+int32_t t = gameData.renderData.screen.Height ();
 if (!gameOpts->render.cameras.bHires)
 	t >>= gameStates.render.cameras.bActive;
 CViewport vp = CViewport (x, y, w, h, t);
@@ -567,10 +567,10 @@ else {
 
 void COGL::GetViewport (vec4& viewport)
 {
-viewport [0] = (float) m_states.viewport [0].m_x / (float) gameData.render.screen.Width ();
-viewport [1] = (float) m_states.viewport [0].m_y / (float) gameData.render.screen.Height ();
-viewport [2] = (float) m_states.viewport [0].m_w / (float) gameData.render.screen.Width ();
-viewport [3] = (float) m_states.viewport [0].m_h / (float) gameData.render.screen.Height ();
+viewport [0] = (float) m_states.viewport [0].m_x / (float) gameData.renderData.screen.Width ();
+viewport [1] = (float) m_states.viewport [0].m_y / (float) gameData.renderData.screen.Height ();
+viewport [2] = (float) m_states.viewport [0].m_w / (float) gameData.renderData.screen.Width ();
+viewport [3] = (float) m_states.viewport [0].m_h / (float) gameData.renderData.screen.Height ();
 }
 
 //------------------------------------------------------------------------------
@@ -728,7 +728,7 @@ else
 #endif
 			{
 			ColorMask (1, 1, 1, 1, 1);
-			//SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
+			//SetViewport (0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
 			GLbitfield mask = 0;
 			if (!bResetColorBuf)
 				mask = GL_DEPTH_BUFFER_BIT;
@@ -737,9 +737,9 @@ else
 				mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
 				}
 			if (mask) {
-				gameData.render.frame.Activate ("StartFrame (frame)");
+				gameData.renderData.frame.Activate ("StartFrame (frame)");
 				glClear (mask);
-				gameData.render.frame.Deactivate ();
+				gameData.renderData.frame.Deactivate ();
 				}
 			}
 		}
@@ -792,7 +792,7 @@ else
 
 void COGL::EndFrame (int32_t nWindow)
 {
-//SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
+//SetViewport (0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
 #if 1
 if ((nWindow == 0) && (ogl.StereoSeparation () <= 0)) 
 	postProcessManager.Update ();
@@ -944,8 +944,8 @@ ResetTextures (1, bGame);
 if (bGame) {
 	InitShaders ();
 	ClearError (0);
-	gameData.models.Destroy ();
-	gameData.models.Prepare ();
+	gameData.modelData.Destroy ();
+	gameData.modelData.Prepare ();
 	if (bGame && lightmapManager.HaveLightmaps ())
 		lightmapManager.BindAll ();
 #if GPGPU_VERTEX_LIGHTING
@@ -961,7 +961,7 @@ else {
 	shaderManager.Destroy (true);
 	ogl.InitEnhanced3DShader ();
 	}
-//gameData.models.Prepare ();
+//gameData.modelData.Prepare ();
 if (!gameStates.app.bGameRunning)
 	messageBox.Clear ();
 SetDrawBuffer (m_states.nDrawBuffer, 1);

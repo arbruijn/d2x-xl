@@ -67,12 +67,12 @@ return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ?
 
 inline int32_t ScreenWidth (void)
 {
-return gameData.render.screen.Width () /*/ ScreenScale ()*/;
+return gameData.renderData.screen.Width () /*/ ScreenScale ()*/;
 }
 
 inline int32_t ScreenHeight (void)
 {
-return gameData.render.screen.Height () /*/ ScreenScale ()*/;
+return gameData.renderData.screen.Height () /*/ ScreenScale ()*/;
 }
 
 // -----------------------------------------------------------------------------------
@@ -144,8 +144,8 @@ if ((m_flags & PF_PROJECTED) || (m_codes & CC_BEHIND))
 CFloatVector3 v = transformation.m_info.projection * pViewos;
 float z = fabs (pViewos.v.coord.z);
 #if 0
-m_screen.x = fix ((float) gameData.render.screen.Width () * 0.5f * (1.0f + v.v.coord.x / z));
-m_screen.y = fix ((float) gameData.render.screen.Height () * 0.5f * (1.0f + v.v.coord.y / z));
+m_screen.x = fix ((float) gameData.renderData.screen.Width () * 0.5f * (1.0f + v.v.coord.x / z));
+m_screen.y = fix ((float) gameData.renderData.screen.Height () * 0.5f * (1.0f + v.v.coord.y / z));
 #else
 m_screen.x = fix (CCanvas::fCanvW2 * (1.0f + v.v.coord.x / z));
 m_screen.y = fix (CCanvas::fCanvH2 * (1.0f + v.v.coord.y / z));
@@ -182,13 +182,13 @@ if (!Projected ()) {
 	SetCodes ((pViewosf.v.coord.z < 0.0f) ? CC_BEHIND : 0);
 #if TRANSP_DEPTH_HASH
 	fix d = ViewPos ().Mag ();
-	if (gameData.render.zMin > d)
-		gameData.render.zMin = d;
-	if (gameData.render.zMax < d)
-		gameData.render.zMax = d;
+	if (gameData.renderData.zMin > d)
+		gameData.renderData.zMin = d;
+	if (gameData.renderData.zMax < d)
+		gameData.renderData.zMax = d;
 #else
-	if (gameData.render.zMax < point.m_vertex [1].dir.coord.z)
-		gameData.render.zMax = point.m_vertex [1].dir.coord.z;
+	if (gameData.renderData.zMax < point.m_vertex [1].dir.coord.z)
+		gameData.renderData.zMax = point.m_vertex [1].dir.coord.z;
 #endif
 	}
 return Codes ();
@@ -203,11 +203,11 @@ if (!Projected ())
 else {
 	if (m_screen.x < 0)
 		m_codes |= CC_OFF_LEFT;
-	else if (m_screen.x > gameData.render.screen.Width ())
+	else if (m_screen.x > gameData.renderData.screen.Width ())
 		m_codes |= CC_OFF_RIGHT;
 	if (m_screen.y < 0)
 		m_codes |= CC_OFF_BOT;
-	else if (m_screen.y > gameData.render.screen.Height ())
+	else if (m_screen.y > gameData.renderData.screen.Height ())
 		m_codes |= CC_OFF_TOP;
 	}
 return m_codes;

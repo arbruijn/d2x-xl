@@ -362,7 +362,7 @@ if (LOCALPLAYER.secondaryAmmo [0] < BUILTIN_MISSILES)
 	LOCALPLAYER.secondaryAmmo [0] = BUILTIN_MISSILES;
 gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles = BUILTIN_MISSILES;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) 
-	gameData.physics.xAfterburnerCharge = I2X (1);
+	gameData.physicsData.xAfterburnerCharge = I2X (1);
 OBJECT (N_LOCALPLAYER)->ResetDamage ();
 }
 
@@ -445,10 +445,10 @@ else {
 		InitAmmoAndEnergy ();
 	gameStates.app.bPlayerIsDead = 0; // Added by RH
 	player.homingObjectDist = -I2X (1); // Added by RH
-	gameData.laser.xLastFiredTime =
-	gameData.laser.xNextFireTime =
-	gameData.missiles.xLastFiredTime =
-	gameData.missiles.xNextFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
+	gameData.laserData.xLastFiredTime =
+	gameData.laserData.xNextFireTime =
+	gameData.missileData.xLastFiredTime =
+	gameData.missileData.xNextFireTime = gameData.timeData.xGame; // added by RH, solved demo playback bug
 	controls [0].afterburnerState = 0;
 	gameStates.gameplay.bLastAfterburnerState = 0;
 	audio.DestroyObjectSound (player.nObject);
@@ -458,7 +458,7 @@ else {
 #endif
 	gameData.objData.pMissileViewer = NULL;
 	}
-gameData.bosses.ResetHitTimes ();
+gameData.bossData.ResetHitTimes ();
 }
 
 //------------------------------------------------------------------------------
@@ -534,7 +534,7 @@ if (nPlayer == N_LOCALPLAYER) {
 	gameData.multiplayer.weaponStates [nPlayer].nShip = gameOpts->gameplay.nShip [0];
 	}
 
-if (gameData.demo.nState == ND_STATE_RECORDING) {
+if (gameData.demoData.nState == ND_STATE_RECORDING) {
 	NDRecordLaserLevel (player.LaserLevel (), 0);
 	NDRecordPlayerWeapon (0, 0);
 	NDRecordPlayerWeapon (1, 0);
@@ -561,9 +561,9 @@ gameData.multiplayer.weaponStates [nPlayer].nBuiltinMissiles = BUILTIN_MISSILES;
 player.secondaryAmmo [0] = BUILTIN_MISSILES;
 player.primaryWeaponFlags = HAS_LASER_FLAG;
 player.secondaryWeaponFlags = HAS_CONCUSSION_FLAG;
-gameData.weapons.nOverridden = 0;
-gameData.weapons.nPrimary = 0;
-gameData.weapons.nSecondary = 0;
+gameData.weaponData.nOverridden = 0;
+gameData.weaponData.nPrimary = 0;
+gameData.weaponData.nSecondary = 0;
 gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed = 0;
 player.flags &= ~
 	(PLAYER_FLAGS_QUAD_LASERS |
@@ -581,7 +581,7 @@ player.invulnerableTime = 0;
 player.homingObjectDist = -I2X (1); // Added by RH
 
 if (nPlayer == N_LOCALPLAYER) {
-	gameData.physics.xAfterburnerCharge = (player.flags & PLAYER_FLAGS_AFTERBURNER) ? I2X (1) : 0;
+	gameData.physicsData.xAfterburnerCharge = (player.flags & PLAYER_FLAGS_AFTERBURNER) ? I2X (1) : 0;
 	gameStates.app.bPlayerIsDead = 0;		//player no longer dead
 	gameStates.gameplay.bLastAfterburnerState = 0;
 	gameData.objData.pMissileViewer = NULL;		///reset missile camera if out there
@@ -618,7 +618,7 @@ void DoGameOver (void)
 if (missionManager.nCurrentMission == missionManager.nBuiltInMission [0])
 	scoreManager.Add (0);
 SetFunctionMode (FMODE_MENU);
-gameData.app.SetGameMode (GM_GAME_OVER);
+gameData.appData.SetGameMode (GM_GAME_OVER);
 longjmp (gameExitPoint, 0);		// Exit out of game loop
 }
 
@@ -627,12 +627,12 @@ longjmp (gameExitPoint, 0);		// Exit out of game loop
 //update various information about the player
 void UpdatePlayerStats (void)
 {
-LOCALPLAYER.timeLevel += gameData.time.xFrame;	//the never-ending march of time...
+LOCALPLAYER.timeLevel += gameData.timeData.xFrame;	//the never-ending march of time...
 if (LOCALPLAYER.timeLevel > I2X (3600)) {
 	LOCALPLAYER.timeLevel -= I2X (3600);
 	LOCALPLAYER.hoursLevel++;
 	}
-LOCALPLAYER.timeTotal += gameData.time.xFrame;	//the never-ending march of time...
+LOCALPLAYER.timeTotal += gameData.timeData.xFrame;	//the never-ending march of time...
 if (LOCALPLAYER.timeTotal > I2X (3600)) {
 	LOCALPLAYER.timeTotal -= I2X (3600);
 	LOCALPLAYER.hoursTotal++;
@@ -698,7 +698,7 @@ if (gameOpts->UseHiresSound () != gameOpts->sound.bHires [1]) {
 	audio.Reset ();
 	}
 /*---*/PrintLog (0, "unloading mine rendering data\n");
-gameData.render.mine.Destroy ();
+gameData.renderData.mine.Destroy ();
 
 /*---*/PrintLog (0, "stopping sounds\n");
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
@@ -740,7 +740,7 @@ UnloadHiresAnimations ();
 /*---*/PrintLog (0, "freeing spark effect buffers\n");
 sparkManager.Destroy ();
 /*---*/PrintLog (0, "freeing auxiliary poly model data\n");
-gameData.models.Destroy ();
+gameData.modelData.Destroy ();
 /*---*/PrintLog (0, "Destroying camera objects\n");
 cameraManager.Destroy ();
 /*---*/PrintLog (0, "Destroying omega lightnings\n");
@@ -848,7 +848,7 @@ else {
 		if (bLoadTextures)
 			LoadLevelTextures ();
 		LoadTextData (pszLevelName, ".msg", gameData.messages);
-		LoadTextData (pszLevelName, ".snd", &gameData.sounds);
+		LoadTextData (pszLevelName, ".snd", &gameData.soundData);
 		LoadReplacementBitmaps (pszLevelName);
 		LoadSoundReplacements (pszLevelName);
 		particleImageManager.LoadAll ();
@@ -862,7 +862,7 @@ else {
 	/*---*/PrintLog (1, "loading cambot\n");
 	gameData.botData.nCamBotId = (LoadRobotReplacements ("cambot.hxm", NULL, 1, 0) > 0) ? gameData.botData.nTypes [0] - 1 : -1;
 	PrintLog (-1);
-	gameData.botData.nCamBotModel = gameData.models.nPolyModels - 1;
+	gameData.botData.nCamBotModel = gameData.modelData.nPolyModels - 1;
 
 	/*---*/PrintLog (1, "loading replacement models\n");
 	if (*gameFolders.mods.szModels [0]) {
@@ -892,42 +892,42 @@ DestroyRenderThreads ();
 transparencyRenderer.ResetBuffers ();
 gameData.Destroy ();
 gameStates.app.SRand ();
-gameData.time.tLast = 0;
+gameData.timeData.tLast = 0;
 gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
 gameStates.app.bBetweenLevels = 1;
 gameStates.render.bFreeCam = (gameStates.render.bEnableFreeCam ? 0 : -1);
 gameStates.app.bGameRunning = 0;
 gameStates.app.bPlayerIsDead = 0;
 LOCALPLAYER.m_bExploded = 0;
-gameData.physics.side.nSegment = -1;
-gameData.physics.side.nSide = -1;
+gameData.physicsData.side.nSegment = -1;
+gameData.physicsData.side.nSide = -1;
 markerManager.Init ();
 gameStates.gameplay.bKillBossCheat = 0;
 gameStates.render.nFlashScale = 0;
 gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
 automap.m_bFull = 0;
 ogl.m_data.nHeadlights = -1;
-gameData.render.nColoredFaces = 0;
-gameData.app.nFrameCount = 0;
-gameData.app.nMineRenderCount = 0;
+gameData.renderData.nColoredFaces = 0;
+gameData.appData.nFrameCount = 0;
+gameData.appData.nMineRenderCount = 0;
 gameData.objData.lists.Init ();
-memset (gameData.app.semaphores, 0, sizeof (gameData.app.semaphores));
+memset (gameData.appData.semaphores, 0, sizeof (gameData.appData.semaphores));
 transparencyRenderer.Init ();
 #if PROFILING
 PROF_INIT
 #endif
-memset (gameData.stats.player, 0, sizeof (tPlayerStats));
-gameData.render.mine.bObjectRendered.Clear (char (0xff));
-gameData.render.mine.bRenderSegment.Clear (char (0xff));
-gameData.render.mine.bCalcVertexColor.Clear (0);
+memset (gameData.statsData.player, 0, sizeof (tPlayerStats));
+gameData.renderData.mine.bObjectRendered.Clear (char (0xff));
+gameData.renderData.mine.bRenderSegment.Clear (char (0xff));
+gameData.renderData.mine.bCalcVertexColor.Clear (0);
 memset (gameData.multiplayer.weaponStates, 0, sizeof (gameData.multiplayer.weaponStates));
 memset (gameData.multiplayer.bWasHit, 0, sizeof (gameData.multiplayer.bWasHit));
 memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLastHitTime));
 memset (gameData.multiplayer.tAppearing, 0, sizeof (gameData.multiplayer.tAppearing));
-memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
+memset (gameData.weaponData.firing, 0, sizeof (gameData.weaponData.firing));
 gameData.objData.objects.Clear ();
 lightClusterManager.Init ();
-gameData.render.faceIndex.Init ();
+gameData.renderData.faceIndex.Init ();
 lightManager.ResetIndex ();
 for (int32_t i = 0; i < MAX_PLAYERS; i++)
 	gameData.objData.SetGuidedMissile (i, NULL);
@@ -987,8 +987,8 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 	/*---*/PrintLog (1, "Initializing particle manager\n");
 	InitObjectSmoke ();
 	PrintLog (-1);
-	gameData.pig.tex.bitmapColors.Clear ();
-	gameData.models.thrusters.Clear ();
+	gameData.pigData.tex.bitmapColors.Clear ();
+	gameData.modelData.thrusters.Clear ();
 	savePlayer = LOCALPLAYER;
 	if (!gameStates.app.bAutoRunMission &&
 		 (!nLevel || (nLevel > missionManager.nLastLevel) || (nLevel < missionManager.nLastSecretLevel))) {
@@ -1004,11 +1004,11 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 
 /*---*/PrintLog (1, "loading texture brightness and color info\n");
 SetDataVersion (-1);
-memcpy (gameData.pig.tex.brightness.Buffer (),
-			gameData.pig.tex.defaultBrightness [gameStates.app.bD1Mission].Buffer (),
-			gameData.pig.tex.brightness. Size ());
+memcpy (gameData.pigData.tex.brightness.Buffer (),
+			gameData.pigData.tex.defaultBrightness [gameStates.app.bD1Mission].Buffer (),
+			gameData.pigData.tex.brightness. Size ());
 LoadTextureBrightness (pszLevelName, NULL);
-gameData.render.color.textures = gameData.render.color.defaultTextures [gameStates.app.bD1Mission];
+gameData.renderData.color.textures = gameData.renderData.color.defaultTextures [gameStates.app.bD1Mission];
 LoadTextureColors (pszLevelName, NULL);
 PrintLog (-1);
 
@@ -1077,28 +1077,28 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 	if (IsEntropyGame) {
 		if (!nRooms) {
 			Warning (TXT_NO_ENTROPY);
-			gameData.app.nGameMode &= ~GM_ENTROPY;
-			gameData.app.nGameMode |= GM_TEAM;
+			gameData.appData.nGameMode &= ~GM_ENTROPY;
+			gameData.appData.nGameMode |= GM_TEAM;
 			}
 		}
-	else if ((gameData.app.GameMode (GM_CAPTURE | GM_HOARD)) ||
-				((gameData.app.GameMode (GM_MONSTERBALL)) == GM_MONSTERBALL)) {
+	else if ((gameData.appData.GameMode (GM_CAPTURE | GM_HOARD)) ||
+				((gameData.appData.GameMode (GM_MONSTERBALL)) == GM_MONSTERBALL)) {
 	/*---*/PrintLog (1, "gathering CTF+ flag goals\n");
 		if (GatherFlagGoals () != 3) {
 			Warning (TXT_NO_CTF);
-			gameData.app.nGameMode &= ~GM_CAPTURE;
-			gameData.app.nGameMode |= GM_TEAM;
+			gameData.appData.nGameMode &= ~GM_CAPTURE;
+			gameData.appData.nGameMode |= GM_TEAM;
 			}
 		}
 	PrintLog (-1);
 
-	gameData.render.lights.segDeltas.Clear ();
+	gameData.renderData.lights.segDeltas.Clear ();
 	/*---*/PrintLog (1, "initializing door animations\n");
 	InitDoorAnims ();
 	PrintLog (-1);
 
 	(CPlayerInfo&) LOCALPLAYER = savePlayer;
-	gameData.hoard.nMonsterballSeg = -1;
+	gameData.hoardData.nMonsterballSeg = -1;
 	if (!IsMultiGame)
 		InitEntropySettings (0);	//required for repair centers
 	//songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
@@ -1121,8 +1121,8 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 	gameStates.render.nFrameFlipFlop = 0;
 	gameStates.app.bUsingConverter = 0;
 	/*---*/PrintLog (1, "resetting color information\n");
-	gameData.render.color.vertices.Clear ();
-	gameData.render.color.segments.Clear ();
+	gameData.renderData.color.vertices.Clear ();
+	gameData.renderData.color.segments.Clear ();
 	PrintLog (-1);
 	/*---*/PrintLog (1, "resetting speed boost information\n");
 	gameData.objData.speedBoost.Clear ();
@@ -1131,15 +1131,15 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 		extraGameInfo [0].bShadows = 0;
 	D2SetCaption ();
 	if (!bRestore) {
-		gameData.render.lights.bInitDynColoring = 1;
-		gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
+		gameData.renderData.lights.bInitDynColoring = 1;
+		gameData.omegaData.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
 		SetMaxOmegaCharge ();
 		ConvertObjects ();
 		SetEquipmentMakerStates ();
 		SetupWalls ();
 		SetupEffects ();
 	//	lightManager.Setup (nLevel);
-		gameData.time.nPaused = 0;
+		gameData.timeData.nPaused = 0;
 		}
 	LoadAddonImages ();
 	CreateShieldSphere ();
@@ -1176,7 +1176,7 @@ extern bool bRegisterBitmaps;
 //starts a new game on the given level
 int32_t StartNewGame (int32_t nLevel)
 {
-gameData.app.SetGameMode (GM_NORMAL);
+gameData.appData.SetGameMode (GM_NORMAL);
 SetFunctionMode (FMODE_GAME);
 missionManager.SetNextLevel (0);
 missionManager.SetNextLevel (-1, 1);
@@ -1350,7 +1350,7 @@ gameData.SetViewer (OBJECT (LOCALPLAYER.nObject));
 GameStartRemoveUnusedPlayers ();
 if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
 	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
-gameData.reactor.bDestroyed = 0;
+gameData.reactorData.bDestroyed = 0;
 cockpit->Init ();
 paletteManager.ResetEffect ();
 audio.Prepare ();
@@ -1363,13 +1363,13 @@ audio.SetupRouter ();
 void ExitSecretLevel (void)
 {
 bool bResume = networkThread.Suspend ();
-if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
+if ((gameData.demoData.nState == ND_STATE_RECORDING) || (gameData.demoData.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
-if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
+if (!(gameStates.app.bD1Mission || gameData.reactorData.bDestroyed))
 	saveGameManager.Save (0, 2, 0, SECRETC_FILENAME);
 if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.user.szSavegames, 0)) {
-	int32_t pwSave = gameData.weapons.nPrimary;
-	int32_t swSave = gameData.weapons.nSecondary;
+	int32_t pwSave = gameData.weaponData.nPrimary;
+	int32_t swSave = gameData.weaponData.nSecondary;
 
 	ReturningToLevelMessage ();
 	saveGameManager.Load (1, 1, 0, SECRETB_FILENAME);
@@ -1377,8 +1377,8 @@ if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.us
 	SetDataVersion (-1);
 	SetPosFromReturnSegment (1);
 	//LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
-	gameData.weapons.nPrimary = pwSave;
-	gameData.weapons.nSecondary = swSave;
+	gameData.weaponData.nPrimary = pwSave;
+	gameData.weaponData.nSecondary = swSave;
 	}
 else { // File doesn't exist, so can't return to base level.  Advance to next one.
 	if (missionManager.nEntryLevel == missionManager.nLastLevel)
@@ -1411,18 +1411,18 @@ if (nState < 0)
 
 	char	szFile [FILENAME_LEN] = {'\0'};
 
-if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
+if ((gameData.demoData.nState == ND_STATE_RECORDING) || (gameData.demoData.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
 missionManager.LevelStateName (szFile);
-if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
+if (!(gameStates.app.bD1Mission || gameData.reactorData.bDestroyed))
 	saveGameManager.Save (0, -1, 0, szFile);
 else if (CFile::Exist (szFile, gameFolders.var.szCache, 0))
 	CFile::Delete (szFile, gameFolders.user.szSavegames);
 szFile [0] = '\x02';
 missionManager.LevelStateName (szFile + 1, missionManager.NextLevel ());
 if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFolders.var.szCache, 0)) {
-	int32_t pwSave = gameData.weapons.nPrimary;
-	int32_t swSave = gameData.weapons.nSecondary;
+	int32_t pwSave = gameData.weaponData.nPrimary;
+	int32_t swSave = gameData.weaponData.nSecondary;
 	saveGameManager.Load (1, -1, 0, szFile + 1);
 	SetD1Sound ();
 	SetDataVersion (-1);
@@ -1431,8 +1431,8 @@ if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFold
 	for (int32_t i = 0; i < nMaxPlayers; i++)
 		gameData.multiplayer.bAdjustPowerupCap [i] = true;
 	//LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
-	gameData.weapons.nPrimary = pwSave;
-	gameData.weapons.nSecondary = swSave;
+	gameData.weaponData.nPrimary = pwSave;
+	gameData.weaponData.nSecondary = swSave;
 	missionManager.nCurrentLevel = missionManager.NextLevel ();
 	return 1;
 	}
@@ -1448,14 +1448,14 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
 		fix	time_used;
 
 	time_used = xOldGameTime - LOCALPLAYER.invulnerableTime;
-	LOCALPLAYER.invulnerableTime = gameData.time.xGame - time_used;
+	LOCALPLAYER.invulnerableTime = gameData.timeData.xGame - time_used;
 	}
 
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 		fix	time_used;
 
 	time_used = xOldGameTime - LOCALPLAYER.cloakTime;
-	LOCALPLAYER.cloakTime = gameData.time.xGame - time_used;
+	LOCALPLAYER.cloakTime = gameData.timeData.xGame - time_used;
 	}
 }
 
@@ -1508,10 +1508,10 @@ PlayLevelMovie (".mvx", nLevel);
 void DoEndGame (void)
 {
 SetFunctionMode (FMODE_MENU);
-if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
+if ((gameData.demoData.nState == ND_STATE_RECORDING) || (gameData.demoData.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
 SetScreenMode (SCREEN_MENU);
-gameData.render.frame.Activate ("DoEndGame (frame, 1)");
+gameData.renderData.frame.Activate ("DoEndGame (frame, 1)");
 KeyFlush ();
 if (!IsMultiGame) {
 	if (missionManager.nCurrentMission == (gameStates.app.bD1Mission ? missionManager.nBuiltInMission [1] : missionManager.nBuiltInMission [0])) {
@@ -1557,17 +1557,17 @@ else
 	DoEndLevelScoreGlitz (0);
 
 if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && !(IsMultiGame || IsCoopGame)) {
-	gameData.render.frame.Activate ("DoEndGame (frame, 2)");
+	gameData.renderData.frame.Activate ("DoEndGame (frame, 2)");
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	paletteManager.ResetEffect ();
 	//paletteManager.Load (D2_DEFAULT_PALETTE, NULL, 0, 1, 0);
 	scoreManager.Add (0);
 	}
 SetFunctionMode (FMODE_MENU);
-if (gameData.app.GameMode (GM_SERIAL | GM_MODEM))
-	gameData.app.SetGameMode (gameData.app.GameMode () | GM_GAME_OVER);		//preserve modem setting so go back into modem menu
+if (gameData.appData.GameMode (GM_SERIAL | GM_MODEM))
+	gameData.appData.SetGameMode (gameData.appData.GameMode () | GM_GAME_OVER);		//preserve modem setting so go back into modem menu
 else
-	gameData.app.SetGameMode (GM_GAME_OVER);
+	gameData.appData.SetGameMode (GM_GAME_OVER);
 longjmp (gameExitPoint, 0);		// Exit out of game loop
 }
 
@@ -1591,7 +1591,7 @@ if (!bFromSecret && ((missionManager.nCurrentLevel != missionManager.nLastLevel)
 		DoEndLevelScoreGlitz (0);		//give bonuses
 		}
 	}
-if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
+if ((gameData.demoData.nState == ND_STATE_RECORDING) || (gameData.demoData.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
 if (IsMultiGame) {
 	if ((result = MultiEndLevel (&bSecret))) { // Wait for other players to reach this point
@@ -1602,7 +1602,7 @@ if (IsMultiGame) {
 		}
 	}
 
-if (gameData.reactor.bDestroyed)
+if (gameData.reactorData.bDestroyed)
 	missionManager.SetLevelState (missionManager.nCurrentLevel, -1);
 missionManager.SaveLevelStates ();
 
@@ -1654,7 +1654,7 @@ if (IsMultiGame)
 	return;
 StopTime ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
-gameData.render.frame.Activate ("ReturningToLevelMessage (frame)");
+gameData.renderData.frame.Activate ("ReturningToLevelMessage (frame)");
 int32_t nFunctionMode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 if (missionManager.nEntryLevel < 0)
@@ -1678,7 +1678,7 @@ if (IsMultiGame)
 	return;
 StopTime ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
-gameData.render.frame.Activate ("AdvancingToLevelMessage (frame)");
+gameData.renderData.frame.Activate ("AdvancingToLevelMessage (frame)");
 int32_t nFunctionMode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", missionManager.nEntryLevel + 1);
@@ -1738,14 +1738,14 @@ if (IsNetworkGame)
 	NetworkDoFrame (1);
 PrintLog (0, "resetting AI paths\n");
 AIResetAllPaths ();
-gameData.bosses.ResetHitTimes ();
+gameData.bossData.ResetHitTimes ();
 PrintLog (0, "clearing stuck objects\n");
 ClearStuckObjects ();
 if (nLevel != 0x7fffffff)
 	meshBuilder.ComputeFaceKeys ();
 ResetTime ();
 ResetRearView ();
-gameData.fusion.xAutoFireTime = 0;
+gameData.fusionData.xAutoFireTime = 0;
 gameData.SetFusionCharge (0);
 gameStates.app.cheats.bRobotsFiring = 1;
 gameStates.app.cheats.bD1CheatsEnabled = 0;
@@ -1772,11 +1772,11 @@ if (!IsMultiGame) {
 	gameStates.render.cockpit.nLastDrawn [1] = -1;
 	}
 gameStates.render.cockpit.bBigWindowSwitch = 0;
-if (gameData.demo.nState == ND_STATE_PAUSED)
-	gameData.demo.nState = ND_STATE_RECORDING;
-if (gameData.demo.nState == ND_STATE_RECORDING) {
+if (gameData.demoData.nState == ND_STATE_PAUSED)
+	gameData.demoData.nState = ND_STATE_RECORDING;
+if (gameData.demoData.nState == ND_STATE_RECORDING) {
 	NDSetNewLevel (nLevel);
-	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
+	NDRecordStartFrame (gameData.appData.nFrameCount, gameData.timeData.xFrame);
 	}
 if (IsMultiGame)
 	SetFunctionMode (FMODE_MENU); // Cheap fix to prevent problems with errror dialogs in loadlevel.
@@ -1863,7 +1863,7 @@ else
 GameStartRemoveUnusedPlayers ();
 if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
 	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
-gameData.reactor.bDestroyed = 0;
+gameData.reactorData.bDestroyed = 0;
 gameStates.render.glFOV = DEFAULT_FOV;
 SetScreenMode (SCREEN_GAME);
 cockpit->Init ();
@@ -1895,7 +1895,7 @@ CopyDefaultsToRobotsAll ();
 if (!bRestore) {
 	InitReactorForLevel (0);
 	InitAIObjects ();
-	gameData.models.Prepare ();
+	gameData.modelData.Prepare ();
 	}
 if (!bRestore) {
 	/*---*/PrintLog (1, "initializing sound sources\n");
@@ -1928,7 +1928,7 @@ gameStates.render.bDoAppearanceEffect = 1;
 AIResetAllPaths ();
 ResetTime ();
 ResetRearView ();
-gameData.fusion.xAutoFireTime = 0;
+gameData.fusionData.xAutoFireTime = 0;
 gameData.SetFusionCharge (0);
 gameStates.app.cheats.bRobotsFiring = 1;
 SetD1Sound ();
@@ -1950,14 +1950,14 @@ menu.AddText ("", " ");
 gameStates.render.cockpit.nLastDrawn [0] = -1;
 gameStates.render.cockpit.nLastDrawn [1] = -1;
 
-if (gameData.demo.nState == ND_STATE_PAUSED)
-	gameData.demo.nState = ND_STATE_RECORDING;
+if (gameData.demoData.nState == ND_STATE_PAUSED)
+	gameData.demoData.nState = ND_STATE_RECORDING;
 
-if (gameData.demo.nState == ND_STATE_RECORDING) {
+if (gameData.demoData.nState == ND_STATE_RECORDING) {
 	NDSetNewLevel (nLevel);
-	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
+	NDRecordStartFrame (gameData.appData.nFrameCount, gameData.timeData.xFrame);
 	}
-else if (gameData.demo.nState != ND_STATE_PLAYBACK) {
+else if (gameData.demoData.nState != ND_STATE_PLAYBACK) {
 	paletteManager.DisableEffect ();
 	SetScreenMode (SCREEN_MENU);		//go into menu mode
 	if (gameStates.app.bFirstSecretVisit)
@@ -1972,7 +1972,7 @@ else if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 		}
 	}
 
-if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBACK)) {
+if (gameStates.app.bFirstSecretVisit || (gameData.demoData.nState == ND_STATE_PLAYBACK)) {
 	if (!LoadLevel (nLevel, bLoadTextures, false))
 		return 0;
 	InitSecretLevel (nLevel);
@@ -1994,13 +1994,13 @@ else {
 	if (CFile::Exist (SECRETC_FILENAME, gameFolders.user.szSavegames, 0)) {
 		int32_t	pw_save, sw_save, nCurrentLevel;
 
-		pw_save = gameData.weapons.nPrimary;
-		sw_save = gameData.weapons.nSecondary;
+		pw_save = gameData.weaponData.nPrimary;
+		sw_save = gameData.weaponData.nSecondary;
 		nCurrentLevel = missionManager.nCurrentLevel;
 		saveGameManager.Load (1, 1, 0, SECRETC_FILENAME);
 		missionManager.nEntryLevel = nCurrentLevel;
-		gameData.weapons.nPrimary = pw_save;
-		gameData.weapons.nSecondary = sw_save;
+		gameData.weaponData.nPrimary = pw_save;
+		gameData.weaponData.nSecondary = sw_save;
 		ResetSpecialEffects ();
 		StartSecretLevel ();
 		}
@@ -2038,9 +2038,9 @@ void EnterSecretLevel (void)
 
 Assert (!IsMultiGame);
 missionManager.nEntryLevel = missionManager.nCurrentLevel;
-if (gameData.reactor.bDestroyed)
+if (gameData.reactorData.bDestroyed)
 	DoEndLevelScoreGlitz (0);
-if (gameData.demo.nState != ND_STATE_PLAYBACK)
+if (gameData.demoData.nState != ND_STATE_PLAYBACK)
 	saveGameManager.Save (0, 1, 0, NULL);	//	Not between levels (ie, save all), IS a secret level, NO filename override
 //	Find secret level number to go to, stuff in missionManager.NextLevel ().
 for (i = 0; i < -missionManager.nLastSecretLevel; i++)
@@ -2073,7 +2073,7 @@ if (Type () != OBJ_POWERUP) {
 info.nId = nId;
 SetSizeFromPowerup ();
 rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [nId].nClipIndex;
-rType.animationInfo.xFrameTime = gameData.effects.animations [0][rType.animationInfo.nClipIndex].xFrameTime;
+rType.animationInfo.xFrameTime = gameData.effectData.animations [0][rType.animationInfo.nClipIndex].xFrameTime;
 }
 
 //------------------------------------------------------------------------------
@@ -2199,7 +2199,7 @@ int32_t StartNewLevel (int32_t nLevel, bool bNewGame)
 {
 bool bResume = networkThread.Suspend ();
 gameStates.app.xThisLevelTime = 0;
-gameData.reactor.bDestroyed = 0;
+gameData.reactorData.bDestroyed = 0;
 ogl.SetDrawBuffer (GL_BACK, 0);
 MakeModFolders (hogFileManager.MissionName (), nLevel);
 if (nLevel < 0) {
@@ -2432,7 +2432,7 @@ else {
 		return;
 		}
 	}
-if (gameData.reactor.bDestroyed) {
+if (gameData.reactorData.bDestroyed) {
 	//clear out stuff so no bonus
 	LOCALPLAYER.hostages.nOnBoard = 0;
 	LOCALPLAYER.SetEnergy (0);
@@ -2441,14 +2441,14 @@ if (gameData.reactor.bDestroyed) {
 	DiedInMineMessage (); // Give them some indication of what happened
 	}
 // if player dead, always leave D2 secret level, but only leave D1 secret level if reactor destroyed
-if (bSecret && (!gameStates.app.bD1Mission || gameData.reactor.bDestroyed)) {
+if (bSecret && (!gameStates.app.bD1Mission || gameData.reactorData.bDestroyed)) {
 	ExitSecretLevel ();
 	ResetShipData (-1, 2);
 	gameStates.render.cockpit.nLastDrawn [0] =
 	gameStates.render.cockpit.nLastDrawn [1] = -1;
 	}
 else {
-	if (gameData.reactor.bDestroyed) {
+	if (gameData.reactorData.bDestroyed) {
 		FindNextLevel ();
 		AdvanceLevel (0, 0);
 		ResetShipData (-1, 2);

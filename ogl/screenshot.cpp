@@ -164,19 +164,19 @@ do {
 	} while (!access (szSaveName, 0));
 
 if ((bTmpBuf = (buf == NULL))) {
-	buf = new uint8_t [gameData.render.screen.Width () * gameData.render.screen.Height () * 3];
+	buf = new uint8_t [gameData.renderData.screen.Width () * gameData.renderData.screen.Height () * 3];
 	ogl.SetTexturing (false);
 	ogl.SetReadBuffer (GL_FRONT, 0);
-	gameData.render.screen.Activate ("SaveScreenShot (screen)");
-	glReadPixels (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height (), GL_RGB, GL_UNSIGNED_BYTE, buf);
-	gameData.render.screen.Deactivate ();
+	gameData.renderData.screen.Activate ("SaveScreenShot (screen)");
+	glReadPixels (0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height (), GL_RGB, GL_UNSIGNED_BYTE, buf);
+	gameData.renderData.screen.Deactivate ();
 	glErrCode = glGetError ();
 	glErrCode = GL_NO_ERROR;
 	}
 else
 	glErrCode = GL_NO_ERROR;
 if (glErrCode == GL_NO_ERROR) {
-	WriteScreenShot (szSaveName, gameData.render.screen.Width (), gameData.render.screen.Height (), buf, 0);
+	WriteScreenShot (szSaveName, gameData.renderData.screen.Width (), gameData.renderData.screen.Height (), buf, 0);
 	if (!(bAutomap || screenShotIntervals [gameOpts->app.nScreenShotInterval])) {
 		sprintf (szMessage, "%s '%s'", TXT_DUMPING_SCREEN, szSaveName);
 		HUDMessage (MSGC_GAME_FEEDBACK, szMessage);
@@ -198,7 +198,7 @@ void AutoScreenshot (void)
 
 	static	time_t	t0 = 0;
 
-if (gameData.app.bGamePaused || gameStates.menus.nInMenu)
+if (gameData.appData.bGamePaused || gameStates.menus.nInMenu)
 	return;
 if (!(h = screenShotIntervals [gameOpts->app.nScreenShotInterval]))
 	return;

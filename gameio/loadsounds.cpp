@@ -87,21 +87,21 @@ dsh->offset = cf.ReadInt ();
 
 void PiggyInitSound (void)
 {
-memset (gameData.pig.sound.sounds, 0, sizeof (gameData.pig.sound.sounds));
+memset (gameData.pigData.sound.sounds, 0, sizeof (gameData.pigData.sound.sounds));
 }
 
 //------------------------------------------------------------------------------
 
 int32_t PiggyRegisterSound (char *szFileName, int32_t bFromFile, bool bCustom)
 {
-	int32_t i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission];
+	int32_t i = gameData.pigData.sound.nSoundFiles [gameStates.app.bD1Mission];
 
 Assert (i < MAX_SOUND_FILES);
 strncpy (sounds [gameStates.app.bD1Mission][i].name, szFileName, 12);
 soundNames [gameStates.app.bD1Mission].Insert (sounds [gameStates.app.bD1Mission][i].name, i);
 if (!bFromFile)
 	nSoundFilesNew++;
-(gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission])++;
+(gameData.pigData.sound.nSoundFiles [gameStates.app.bD1Mission])++;
 return i;
 }
 
@@ -120,7 +120,7 @@ return i;
 void FreeSoundReplacements (void)
 {
 for (int32_t i = 0; i < 2; i++) {
-	CSoundSample* pSample = gameData.pig.sound.sounds [i].Buffer ();
+	CSoundSample* pSample = gameData.pigData.sound.sounds [i].Buffer ();
 	for (int32_t j = 0; j < MAX_SOUND_FILES; j++, pSample++) {
 		if (pSample->bCustom) {
 			pSample->data [1].Destroy ();
@@ -175,7 +175,7 @@ for (i = b11K ? 0 : nLoadedSounds / 2; i < nLoadedSounds; i++) {
 	j = PiggyFindSound (dsh.name);
 	if (j < 0)
 		continue;
-	pSample = gameData.pig.sound.sounds [gameStates.app.bD1Mission] + j;
+	pSample = gameData.pigData.sound.sounds [gameStates.app.bD1Mission] + j;
 	l = dsh.length;
 	if (!pSample->data [1].Create (l))
 		continue;
@@ -241,7 +241,7 @@ cf.Seek (nSoundStart, SEEK_SET);
 memset (&sound.buffer, 0xFF, sizeof (sound.buffer));
 #endif
 if (!bCustom) {
-	gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission] = 0;
+	gameData.pigData.sound.nSoundFiles [gameStates.app.bD1Mission] = 0;
 	soundNames [gameStates.app.bD1Mission].Destroy ();
 	soundNames [gameStates.app.bD1Mission].Create (MAX_SOUND_FILES);
 	}
@@ -254,7 +254,7 @@ for (i = 0; i < nSounds; i++) {
 #endif
 	if (0 > (j = bCustom ? PiggyFindSound (szSoundName) : i))
 		continue;
-	pSound = &gameData.pig.sound.pSound [j];
+	pSound = &gameData.pigData.sound.pSound [j];
 	if (!bUseLowRes && LoadHiresSound (pSound, szSoundName, bCustom)) {
 		nLoadedSounds [1]++;
 		pSound->nOffset [0] = 0;
@@ -328,9 +328,9 @@ return 1;
 
 void LoadSounds (CFile& cf, bool bCustom)
 {
-	CSoundSample*	pSound = &gameData.pig.sound.pSound [0];
+	CSoundSample*	pSound = &gameData.pigData.sound.pSound [0];
 
-for (int32_t i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission]; i; i--, pSound++) {
+for (int32_t i = gameData.pigData.sound.nSoundFiles [gameStates.app.bD1Mission]; i; i--, pSound++) {
 	if (pSound->nOffset [bCustom] > 0) {
 		//if (PiggySoundIsNeeded (i))
 			{
@@ -350,7 +350,7 @@ for (int32_t i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission]; i; 
 void UnloadSounds (int32_t bD1)
 {
 PrintLog (1, "unloading sounds\n");
-CSoundSample* pSound = gameData.pig.sound.sounds [bD1].Buffer ();
+CSoundSample* pSound = gameData.pigData.sound.sounds [bD1].Buffer ();
 for (int32_t j = 0; j < MAX_SOUND_FILES; j++, pSound++)
 	if (pSound->bHires) {
 		pSound->data [0].Destroy ();
@@ -386,7 +386,7 @@ return true;
 
 int32_t LoadD2Sounds (bool bCustom)
 {
-if (!(gameData.pig.sound.nType || bCustom))
+if (!(gameData.pigData.sound.nType || bCustom))
 	return 1;
 
 	CFile		cf;
@@ -476,14 +476,14 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
 	gameStates.app.bD1Data = 1;
 	SetDataVersion (1);
 	SetD1Sound ();
-	if ((gameData.pig.sound.nType != 1) || gameStates.app.bCustomSounds || bCustom) {
+	if ((gameData.pigData.sound.nType != 1) || gameStates.app.bCustomSounds || bCustom) {
 		if (bCustom)
 			sprintf (gameFolders.mods.szSounds [1], "%s%s", gameFolders.mods.szSounds [0], LevelFolder (missionManager.nCurrentLevel));
 		int32_t nLoadedSounds = SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom, false);
 		if (!VerifyHiresSound (bCustom, nLoadedSounds))
 			return LoadD1Sounds (bCustom);
 		LoadSounds (cfPiggy [1]);
-		gameData.pig.sound.nType = 1;
+		gameData.pigData.sound.nType = 1;
 		if (gameStates.sound.bD1Sound)
 			gameOpts->sound.soundSampleRate = SAMPLE_RATE_11K;
 		}

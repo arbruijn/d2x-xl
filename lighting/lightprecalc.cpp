@@ -227,7 +227,7 @@ if (!lightManager.LightCount (0))
 
 if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
 	gameOpts->render.nLightingMethod = 0;
-	gameData.render.shadows.nLights = 0;
+	gameData.renderData.shadows.nLights = 0;
 	RETURN (0);
 	}
 
@@ -283,7 +283,7 @@ if (!lightManager.LightCount (0))
 
 if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
 	gameOpts->render.nLightingMethod = 0;
-	gameData.render.shadows.nLights = 0;
+	gameData.renderData.shadows.nLights = 0;
 	RETURN (0);
 	}
 
@@ -416,17 +416,17 @@ static CTransformation projection;
 
 static void SetupProjection (void)
 {
-	int32_t	w = gameData.render.screen.Width (),
-				h = gameData.render.screen.Height ();
+	int32_t	w = gameData.renderData.screen.Width (),
+				h = gameData.renderData.screen.Height ();
 	CCanvas canvas;
 
-gameData.render.screen.Setup (NULL, 0, 0, 1024, 1024);
-canvas.Setup (&gameData.render.screen);
+gameData.renderData.screen.Setup (NULL, 0, 0, 1024, 1024);
+canvas.Setup (&gameData.renderData.screen);
 canvas.Activate ("SetupProjection");
 canvas.SetWidth ();
 canvas.SetHeight ();
-gameData.render.screen.SetWidth (1024);
-gameData.render.screen.SetHeight (1024);
+gameData.renderData.screen.SetWidth (1024);
+gameData.renderData.screen.SetHeight (1024);
 ogl.SetTransform (1);
 ogl.SetViewport (0, 0, 1024, 1024);
 gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
@@ -435,9 +435,9 @@ gameStates.render.nShadowPass = 0;
 gameStates.render.nShadowMap = 0;
 ogl.SetTransform (0);
 canvas.Deactivate ();
-gameData.render.screen.Setup (NULL, 0, 0, w, h);
-gameData.render.screen.SetWidth (w);
-gameData.render.screen.SetHeight (h);
+gameData.renderData.screen.Setup (NULL, 0, 0, w, h);
+gameData.renderData.screen.SetWidth (w);
+gameData.renderData.screen.SetHeight (h);
 ogl.EndFrame (-1);
 }
 
@@ -456,7 +456,7 @@ ENTER (1, nThread, "ComputeSingleSegmentVisibility");
 	CFixVector			fVec, uVec, rVec;
 	CObject				viewer;
 	CTransformation	transformation = projection;
-	CVisibilityData&	visibility = gameData.render.mine.visibility [nThread];
+	CVisibilityData&	visibility = gameData.renderData.mine.visibility [nThread];
 
 #if DBG
 if (nStartSeg == nDbgSeg)
@@ -1174,7 +1174,7 @@ nSavedCount = 0;
 
 #ifdef _OPENMP
 if (gameStates.app.bMultiThreaded && (gameData.segData.nSegments > 15)) {
-	gameData.physics.side.bCache = 0;
+	gameData.physicsData.side.bCache = 0;
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 		ProgressBar (TXT_LOADING, 1, 0, 6, PrecalcLightPollMT);
 	else {
@@ -1191,7 +1191,7 @@ if (gameStates.app.bMultiThreaded && (gameData.segData.nSegments > 15)) {
 		PrintLog (0, "Computing vertices visible to lights\n");
 		ComputeLightsVisibleVertices (-1);
 		}
-	gameData.physics.side.bCache = 1;
+	gameData.physicsData.side.bCache = 1;
 	}
 else 
 #endif

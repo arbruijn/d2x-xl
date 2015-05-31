@@ -66,7 +66,7 @@ pObj->mType.physInfo.drag = 512;	//1024;
 pObj->mType.physInfo.mass = I2X (1);
 pObj->mType.physInfo.flags = PF_BOUNCES;
 pObj->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [pObj->info.nId].nClipIndex;
-pObj->rType.animationInfo.xFrameTime = gameData.effects.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
+pObj->rType.animationInfo.xFrameTime = gameData.effectData.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
 pObj->rType.animationInfo.nCurFrame = 0;
 if (pSpitter == gameData.objData.pConsole)
 	pObj->cType.powerupInfo.nFlags |= PF_SPAT_BY_PLAYER;
@@ -104,7 +104,7 @@ void DropCurrentWeapon (void)
 if (IsMultiGame)
 	gameStates.app.SRand ();
 
-if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
+if (gameData.weaponData.nPrimary == 0) {	//special laser drop handling
 	if ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) && !IsBuiltInDevice (PLAYER_FLAGS_QUAD_LASERS)) {
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_QUAD_LASERS;
 		nObject = SpitPowerup (gameData.objData.pConsole, POW_QUADLASER);
@@ -132,39 +132,39 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 		}
 	}
 else {
-	if ((gameData.weapons.nPrimary == 4) && gameData.weapons.bTripleFusion) {
-		gameData.weapons.bTripleFusion = 0;
-		nObject = SpitPowerup (gameData.objData.pConsole, primaryWeaponToPowerup [gameData.weapons.nPrimary]);
+	if ((gameData.weaponData.nPrimary == 4) && gameData.weaponData.bTripleFusion) {
+		gameData.weaponData.bTripleFusion = 0;
+		nObject = SpitPowerup (gameData.objData.pConsole, primaryWeaponToPowerup [gameData.weaponData.nPrimary]);
 		}
-	else if (gameData.weapons.nPrimary && !IsBuiltinWeapon (gameData.weapons.nPrimary)) { //if selected weapon was not the laser
-		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
-		nObject = SpitPowerup (gameData.objData.pConsole, primaryWeaponToPowerup [gameData.weapons.nPrimary]);
+	else if (gameData.weaponData.nPrimary && !IsBuiltinWeapon (gameData.weaponData.nPrimary)) { //if selected weapon was not the laser
+		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weaponData.nPrimary));
+		nObject = SpitPowerup (gameData.objData.pConsole, primaryWeaponToPowerup [gameData.weaponData.nPrimary]);
 		}
 	if (nObject < 0) {	// couldn't drop
-		if (gameData.weapons.nPrimary) 	//if selected weapon was not the laser
-			LOCALPLAYER.primaryWeaponFlags |= (1 << gameData.weapons.nPrimary);
+		if (gameData.weaponData.nPrimary) 	//if selected weapon was not the laser
+			LOCALPLAYER.primaryWeaponFlags |= (1 << gameData.weaponData.nPrimary);
 		return;
 		}
-	HUDInitMessage (TXT_DROP_WEAPON, PRIMARY_WEAPON_NAMES (gameData.weapons.nPrimary));
+	HUDInitMessage (TXT_DROP_WEAPON, PRIMARY_WEAPON_NAMES (gameData.weaponData.nPrimary));
 	}
 audio.PlaySound (SOUND_DROP_WEAPON);
-if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
+if ((gameData.weaponData.nPrimary == VULCAN_INDEX) || (gameData.weaponData.nPrimary == GAUSS_INDEX)) {
 	//if it's one of these, drop some ammo with the weapon
 	ammo = LOCALPLAYER.primaryAmmo [VULCAN_INDEX];
-	if ((LOCALPLAYER.primaryWeaponFlags & HAS_FLAG (VULCAN_INDEX)) && (gameData.weapons.nPrimary == GAUSS_INDEX))
+	if ((LOCALPLAYER.primaryWeaponFlags & HAS_FLAG (VULCAN_INDEX)) && (gameData.weaponData.nPrimary == GAUSS_INDEX))
 		ammo /= 2;		//if both vulcan & gauss, drop half
 	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= ammo;
 	if (nObject >= 0)
 		OBJECT (nObject)->cType.powerupInfo.nCount = ammo;
 	}
-if (gameData.weapons.nPrimary == OMEGA_INDEX) {
+if (gameData.weaponData.nPrimary == OMEGA_INDEX) {
 	//dropped weapon has current energy
 	if (nObject >= 0)
-		OBJECT (nObject)->cType.powerupInfo.nCount = gameData.omega.xCharge [IsMultiGame];
+		OBJECT (nObject)->cType.powerupInfo.nCount = gameData.omegaData.xCharge [IsMultiGame];
 	}
 if (IsMultiGame)
 	MultiSendDropWeapon (nObject);
-if (gameData.weapons.nPrimary) //if selected weapon was not the laser
+if (gameData.weaponData.nPrimary) //if selected weapon was not the laser
 	AutoSelectWeapon (0, 0);
 }
 
@@ -175,7 +175,7 @@ extern void DropOrb (void);
 void DropSecondaryWeapon (int32_t nWeapon, int32_t nAmount, int32_t bSilent)
 {
 if (nWeapon < 0)
-	nWeapon = gameData.weapons.nSecondary;
+	nWeapon = gameData.weaponData.nSecondary;
 if ((LOCALPLAYER.secondaryAmmo [nWeapon] == 0) || 
 	 (IsMultiGame && (nWeapon == 0) && (LOCALPLAYER.secondaryAmmo [nWeapon] <= gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles))) {
 	if (!bSilent)
@@ -184,7 +184,7 @@ if ((LOCALPLAYER.secondaryAmmo [nWeapon] == 0) ||
 	}
 
 int32_t nPowerup = secondaryWeaponToPowerup [0][nWeapon];
-int32_t bHoardEntropy = (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) != 0;
+int32_t bHoardEntropy = (gameData.appData.GameMode (GM_HOARD | GM_ENTROPY)) != 0;
 int32_t bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
 
 if (!bHoardEntropy && bMine && LOCALPLAYER.secondaryAmmo [nWeapon] < 4) {
@@ -217,13 +217,13 @@ for (int32_t i = 0; i < nItems; i++) {
 		return;
 		}
 	if (!bSilent) {
-		HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weapons.nSecondary));
+		HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weaponData.nSecondary));
 		audio.PlaySound (SOUND_DROP_WEAPON);
 		}
 	if (IsMultiGame)
 		MultiSendDropWeapon (nObject);
 	if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0) {
-		LOCALPLAYER.secondaryWeaponFlags &= (~(1 << gameData.weapons.nSecondary));
+		LOCALPLAYER.secondaryWeaponFlags &= (~(1 << gameData.weaponData.nSecondary));
 		AutoSelectWeapon (1, 0);
 		}
 	}

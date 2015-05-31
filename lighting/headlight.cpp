@@ -840,7 +840,7 @@ if (nType) {
 			glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 2 + bLightmaps);
 		}
 	}
-//glUniform1f (glGetUniformLocation (shaderProg, "aspect"), (float) gameData.render.screen.Width () / (float) gameData.render.screen.Height ());
+//glUniform1f (glGetUniformLocation (shaderProg, "aspect"), (float) gameData.renderData.screen.Width () / (float) gameData.renderData.screen.Height ());
 //glUniform1f (glGetUniformLocation (shaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
 if ((bTransform = !ogl.m_states.nTransformCalls))
 	ogl.SetupTransform (1);
@@ -916,7 +916,7 @@ if (!EGI_FLAG (headlight.bDrainPower, 0, 0, 1))
 if (!HeadlightIsOn (-1))
 	return;
 
-LOCALPLAYER.UpdateEnergy (-gameData.time.xFrame * 3 / 8);
+LOCALPLAYER.UpdateEnergy (-gameData.timeData.xFrame * 3 / 8);
 if (LOCALPLAYER.Energy () < I2X (10)) {
 	if (!bTurnedOff) {
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;

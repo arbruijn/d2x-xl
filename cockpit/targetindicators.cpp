@@ -107,7 +107,7 @@ void RenderDamageIndicator (CObject *pObj, CFloatVector3 *pc)
 
 if (!SHOW_OBJ_FX)
 	return;
-if ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameOpts->demo.bOldFormat)
+if ((gameData.demoData.nState == ND_STATE_PLAYBACK) && gameOpts->demo.bOldFormat)
 	return;
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;

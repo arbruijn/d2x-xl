@@ -35,7 +35,7 @@ void TransformHitboxf (CObject *pObj, CFloatVector *vertList, int32_t iSubObj)
 {
 
 	CFloatVector		hv;
-	tHitbox*				phb = gameData.models.hitboxes [pObj->ModelId ()].hitboxes + iSubObj;
+	tHitbox*				phb = gameData.modelData.hitboxes [pObj->ModelId ()].hitboxes + iSubObj;
 	CFixVector			vMin = phb->vMin;
 	CFixVector			vMax = phb->vMax;
 	int32_t				i;
@@ -60,7 +60,7 @@ if (pObj->rType.polyObjInfo.nModel < 0)
 	return;
 
 	CFloatVector	dir;
-	tHitbox*			pmhb = gameData.models.hitboxes [pObj->ModelId ()].hitboxes.Buffer ();
+	tHitbox*			pmhb = gameData.modelData.hitboxes [pObj->ModelId ()].hitboxes.Buffer ();
 	tCloakInfo		ci = {0, FADE_LEVELS, 0, 0, 0, 0, 0};
 	int32_t			i, j, iBox, nBoxes, bHit = 0;
 	float				fFade;
@@ -102,7 +102,7 @@ else if (CollisionModel () == 1) {
 	}
 else {
 	iBox = 1;
-	nBoxes = gameData.models.hitboxes [pObj->ModelId ()].nHitboxes;
+	nBoxes = gameData.modelData.hitboxes [pObj->ModelId ()].nHitboxes;
 	}
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetBlending (true);
@@ -166,10 +166,10 @@ for (; iBox <= nBoxes; iBox++) {
 	}
 float r = X2F (CFixVector::Dist (pmhb->vMin, pmhb->vMax) / 2);
 #if 0 //DBG //display collision point
-if (gameStates.app.nSDLTicks [0] - gameData.models.hitboxes [pObj->ModelId ()].tHit < 500) {
+if (gameStates.app.nSDLTicks [0] - gameData.modelData.hitboxes [pObj->ModelId ()].tHit < 500) {
 	CObject	o;
 
-	o.info.position.vPos = gameData.models.hitboxes [pObj->ModelId ()].vHit;
+	o.info.position.vPos = gameData.modelData.hitboxes [pObj->ModelId ()].vHit;
 	o.info.position.mOrient = pObj->info.position.mOrient;
 	o.SetSize (I2X (2));
 	int32_t nModel = pObj->rType.polyObjInfo.nModel;
@@ -210,7 +210,7 @@ if (bAppearing || EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShiel
 		scale *= scale;
 		}
 	bStencil = ogl.StencilOff ();
-	gameData.render.shield->SetupSurface (gameData.multiplayer.spherePulse + i, shield [0].Bitmap ());
+	gameData.renderData.shield->SetupSurface (gameData.multiplayer.spherePulse + i, shield [0].Bitmap ());
 	if (gameData.multiplayer.bWasHit [i]) {
 		if (gameData.multiplayer.bWasHit [i] < 0) {
 			gameData.multiplayer.bWasHit [i] = 1;
@@ -282,7 +282,7 @@ if ((pObj->info.nType == OBJ_ROBOT) && pObj->cType.aiInfo.CLOAKED) {
 	scale = (float) ci.nFadeValue / (float) FADE_LEVELS;
 	scale *= scale;
 	}
-gameData.render.shield->SetupSurface (&shieldPulse, shield [0].Bitmap ());
+gameData.renderData.shield->SetupSurface (&shieldPulse, shield [0].Bitmap ());
 dt = gameStates.app.nSDLTicks [0] - pObj->TimeLastHit ();
 if (dt < SHIELD_EFFECT_TIME) {
 	scale *= gameOpts->render.effects.bOnlyShieldHits ? float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * PI / 2)) : 1;

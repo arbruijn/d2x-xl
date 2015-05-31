@@ -29,12 +29,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int32_t FusionBump (void)
 {
-if (gameData.fusion.xAutoFireTime) {
-	if (gameData.weapons.nPrimary != FUSION_INDEX)
-		gameData.fusion.xAutoFireTime = 0;
-	else if (gameData.time.xGame + gameData.fusion.xFrameTime / 2 >= gameData.fusion.xAutoFireTime) {
-		gameData.fusion.xAutoFireTime = 0;
-		gameData.laser.nGlobalFiringCount = 1;
+if (gameData.fusionData.xAutoFireTime) {
+	if (gameData.weaponData.nPrimary != FUSION_INDEX)
+		gameData.fusionData.xAutoFireTime = 0;
+	else if (gameData.timeData.xGame + gameData.fusionData.xFrameTime / 2 >= gameData.fusionData.xAutoFireTime) {
+		gameData.fusionData.xAutoFireTime = 0;
+		gameData.laserData.nGlobalFiringCount = 1;
 		}
 	else {
 		static time_t t0 = 0;
@@ -43,7 +43,7 @@ if (gameData.fusion.xAutoFireTime) {
 		if (t - t0 < 30)
 			return 0;
 		t0 = t;
-		gameData.laser.nGlobalFiringCount = 0;
+		gameData.laserData.nGlobalFiringCount = 0;
 		gameData.objData.pConsole->RandomBump (I2X (1) / 8, (gameData.FusionCharge () > I2X (2)) ? gameData.FusionCharge () * 4 : I2X (4));
 		}
 	}
@@ -55,37 +55,37 @@ return 1;
 //				    cannon.
 void ChargeFusion (void)
 {
-if ((LOCALPLAYER.Energy () < I2X (2)) && (gameData.fusion.xAutoFireTime == 0)) {
-	gameData.laser.nGlobalFiringCount = 0;
+if ((LOCALPLAYER.Energy () < I2X (2)) && (gameData.fusionData.xAutoFireTime == 0)) {
+	gameData.laserData.nGlobalFiringCount = 0;
 	}
 else {
-	gameData.fusion.xFrameTime += gameData.time.xFrame;
+	gameData.fusionData.xFrameTime += gameData.timeData.xFrame;
 	if (!gameData.FusionCharge ())
 		LOCALPLAYER.UpdateEnergy (-I2X (2));
-	fix h = (gameData.fusion.xFrameTime <= LOCALPLAYER.Energy ()) ? gameData.fusion.xFrameTime : LOCALPLAYER.Energy ();
+	fix h = (gameData.fusionData.xFrameTime <= LOCALPLAYER.Energy ()) ? gameData.fusionData.xFrameTime : LOCALPLAYER.Energy ();
 	gameData.SetFusionCharge (gameData.FusionCharge () + h);
 	LOCALPLAYER.UpdateEnergy (-h);
 	if (LOCALPLAYER.Energy () > 0) 
-		gameData.fusion.xAutoFireTime = gameData.time.xGame + gameData.fusion.xFrameTime / 2 + 1;
+		gameData.fusionData.xAutoFireTime = gameData.timeData.xGame + gameData.fusionData.xFrameTime / 2 + 1;
 	else {
 		LOCALPLAYER.SetEnergy (0);
-		gameData.fusion.xAutoFireTime = gameData.time.xGame - 1;	//	Fire now!
+		gameData.fusionData.xAutoFireTime = gameData.timeData.xGame - 1;	//	Fire now!
 		}
 	if (gameStates.limitFPS.bFusion && !gameStates.app.tick40fps.bTick)
 		return;
 
 	float fScale = float (gameData.FusionCharge () >> 11) / 64.0f;
 	if (fScale > 0.0f) {
-		CFloatVector* pColor = gameData.weapons.color + FUSION_ID;
+		CFloatVector* pColor = gameData.weaponData.color + FUSION_ID;
 
 		if (gameData.FusionCharge () < I2X (2)) 
 			paletteManager.BumpEffect (pColor->Red () * fScale, pColor->Green () * fScale, pColor->Blue () * fScale);
 		else 
 			paletteManager.BumpEffect (pColor->Blue () * fScale, pColor->Red () * fScale, pColor->Green () * fScale);
 		}
-	if (gameData.time.xGame < gameData.fusion.xLastSoundTime)		//gametime has wrapped
-		gameData.fusion.xNextSoundTime = gameData.fusion.xLastSoundTime = gameData.time.xGame;
-	if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {
+	if (gameData.timeData.xGame < gameData.fusionData.xLastSoundTime)		//gametime has wrapped
+		gameData.fusionData.xNextSoundTime = gameData.fusionData.xLastSoundTime = gameData.timeData.xGame;
+	if (gameData.fusionData.xNextSoundTime < gameData.timeData.xGame) {
 		if (gameData.FusionCharge () > I2X (2)) {
 			audio.PlaySound (11);
 			gameData.objData.pConsole->ApplyDamageToPlayer (gameData.objData.pConsole, RandShort () * 4);
@@ -96,10 +96,10 @@ else {
 			if (IsMultiGame)
 				MultiSendPlaySound (SOUND_FUSION_WARMUP, I2X (1));
 				}
-		gameData.fusion.xLastSoundTime = gameData.time.xGame;
-		gameData.fusion.xNextSoundTime = gameData.time.xGame + I2X (1) / 8 + RandShort () / 4;
+		gameData.fusionData.xLastSoundTime = gameData.timeData.xGame;
+		gameData.fusionData.xNextSoundTime = gameData.timeData.xGame + I2X (1) / 8 + RandShort () / 4;
 		}
-	gameData.fusion.xFrameTime = 0;
+	gameData.fusionData.xFrameTime = 0;
 	}
 }
 

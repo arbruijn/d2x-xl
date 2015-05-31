@@ -107,8 +107,8 @@ if (!pObj)
 if (LOCALPLAYER.m_bExploded)
 	return 0;
 if (pObj->IsBoss ()) {
-	int32_t i = gameData.bosses.Find (nObject);
-	if ((i >= 0) && gameData.bosses [i].m_nDying == 1)
+	int32_t i = gameData.bossData.Find (nObject);
+	if ((i >= 0) && gameData.bossData [i].m_nDying == 1)
 		return 0;
 	return 1;
 	}
@@ -120,7 +120,7 @@ if (nRemOwner == N_LOCALPLAYER) { // Already my robot!
 	if (gameData.multigame.robots.fired [nSlot])
 		return 0;
 	gameData.multigame.robots.agitation [nSlot] = agitation;
-	gameData.multigame.robots.lastMsgTime [nSlot] = gameData.time.xGame;
+	gameData.multigame.robots.lastMsgTime [nSlot] = gameData.timeData.xGame;
 	return 1;
 	}
 if ((nRemOwner != -1) || (agitation < MIN_TO_ADD)) {
@@ -138,11 +138,11 @@ void MultiCheckRobotTimeout (void)
 	static fix lastcheck = 0;
 	int32_t i, nRemOwner;
 
-if (gameData.time.xGame > lastcheck + I2X (1)) {
-	lastcheck = gameData.time.xGame;
+if (gameData.timeData.xGame > lastcheck + I2X (1)) {
+	lastcheck = gameData.timeData.xGame;
 	for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 		if ((gameData.multigame.robots.controlled [i] != -1) && 
-			 (gameData.multigame.robots.lastSendTime [i] + ROBOT_TIMEOUT < gameData.time.xGame)) {
+			 (gameData.multigame.robots.lastSendTime [i] + ROBOT_TIMEOUT < gameData.timeData.xGame)) {
 			CObject* pObj = MULTIROBOT (gameData.multigame.robots.controlled [i]);
 			if (pObj) {
 				nRemOwner = pObj->cType.aiInfo.REMOTE_OWNER;
@@ -171,7 +171,7 @@ void MultiStripRobots (int32_t nPlayer)
 	int32_t 	i;
 	CObject*	pObj;
 
-if (gameData.app.GameMode (GM_MULTI_ROBOTS)) {
+if (gameData.appData.GameMode (GM_MULTI_ROBOTS)) {
 	if (nPlayer == N_LOCALPLAYER)
 		for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 			MultiDeleteControlledRobot (gameData.multigame.robots.controlled [i]);
@@ -191,7 +191,7 @@ if (gameData.app.GameMode (GM_MULTI_ROBOTS)) {
 void MultiDumpRobots (void)
 {
 // Dump robot control info for debug purposes
-if (!gameData.app.GameMode (GM_MULTI_ROBOTS))
+if (!gameData.appData.GameMode (GM_MULTI_ROBOTS))
 	return;
 }
 
@@ -221,7 +221,7 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 		firstFreeRobot = i;
 		break;
 		}
-	if (gameData.multigame.robots.lastMsgTime [i] + ROBOT_TIMEOUT < gameData.time.xGame) {
+	if (gameData.multigame.robots.lastMsgTime [i] + ROBOT_TIMEOUT < gameData.timeData.xGame) {
 		if (gameData.multigame.robots.sendPending [i])
 			MultiSendRobotPosition (gameData.multigame.robots.controlled [i], 1);
 		MultiSendReleaseRobot (gameData.multigame.robots.controlled [i]);
@@ -230,7 +230,7 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 		}
 	if ((gameData.multigame.robots.controlled [i] != -1) && 
 		 (gameData.multigame.robots.agitation [i] < lowest_agitation) && 
-		 (gameData.multigame.robots.controlledTime [i] + MIN_CONTROL_TIME < gameData.time.xGame)) {
+		 (gameData.multigame.robots.controlledTime [i] + MIN_CONTROL_TIME < gameData.timeData.xGame)) {
 			lowest_agitation = gameData.multigame.robots.agitation [i];
 			lowest_agitated_bot = i;
 		}
@@ -250,8 +250,8 @@ gameData.multigame.robots.controlled [i] = nObject;
 gameData.multigame.robots.agitation [i] = agitation;
 pObj->cType.aiInfo.REMOTE_OWNER = N_LOCALPLAYER;
 pObj->cType.aiInfo.REMOTE_SLOT_NUM = i;
-gameData.multigame.robots.controlledTime [i] = gameData.time.xGame;
-gameData.multigame.robots.lastSendTime [i] = gameData.multigame.robots.lastMsgTime [i] = gameData.time.xGame;
+gameData.multigame.robots.controlledTime [i] = gameData.timeData.xGame;
+gameData.multigame.robots.lastSendTime [i] = gameData.multigame.robots.lastMsgTime [i] = gameData.timeData.xGame;
 return 1;
 }
 
@@ -396,7 +396,7 @@ if (!pObj)
 if (pObj->cType.aiInfo.REMOTE_OWNER != N_LOCALPLAYER)
 	return;
 i = pObj->cType.aiInfo.REMOTE_SLOT_NUM;
-gameData.multigame.robots.lastSendTime [i] = gameData.time.xGame;
+gameData.multigame.robots.lastSendTime [i] = gameData.timeData.xGame;
 gameData.multigame.robots.sendPending [i] = 1+bForce;
 if (bForce & IsNetworkGame)
 	NetworkFlushData ();
@@ -740,8 +740,8 @@ if (!pRobotInfo)
 if (bIsThief || pRobotInfo->thief)
 	DropStolenItems (pRobot);
 if (pRobotInfo->bossFlag) {
-	int32_t i = gameData.bosses.Find (pRobot->Index ());
-	if ((i >= 0) && gameData.bosses [i].m_nDying)
+	int32_t i = gameData.bossData.Find (pRobot->Index ());
+	if ((i >= 0) && gameData.bossData [i].m_nDying)
 		return 0;
 	StartBossDeathSequence (pRobot);
 	}
@@ -817,23 +817,23 @@ nProducer = buf [pBuffer++];
 nRemoteObj = GET_INTEL_SHORT (buf + pBuffer);
 pBuffer += 2;
 nType = buf [pBuffer];
-if ((nPlayer < 0) || (nRemoteObj < 0) || (nProducer < 0) || (nProducer >= gameData.producers.nProducers) || (nPlayer >= N_PLAYERS)) 
+if ((nPlayer < 0) || (nRemoteObj < 0) || (nProducer < 0) || (nProducer >= gameData.producerData.nProducers) || (nPlayer >= N_PLAYERS)) 
 	return;
-pRobotMaker = gameData.producers.producers + nProducer;
+pRobotMaker = gameData.producerData.producers + nProducer;
 // Play effect and sound
 vObjPos = SEGMENT (pRobotMaker->nSegment)->Center ();
 pObj = CreateExplosion ((int16_t) pRobotMaker->nSegment, vObjPos, I2X (10), ANIM_MORPHING_ROBOT);
 if (pObj)
 	ExtractOrientFromSegment (&pObj->info.position.mOrient, SEGMENT (pRobotMaker->nSegment));
-if (gameData.effects.animations [0][ANIM_MORPHING_ROBOT].nSound > -1)
-	audio.CreateSegmentSound (gameData.effects.animations [0][ANIM_MORPHING_ROBOT].nSound, (int16_t) pRobotMaker->nSegment, 0, vObjPos, 0, I2X (1));
+if (gameData.effectData.animations [0][ANIM_MORPHING_ROBOT].nSound > -1)
+	audio.CreateSegmentSound (gameData.effectData.animations [0][ANIM_MORPHING_ROBOT].nSound, (int16_t) pRobotMaker->nSegment, 0, vObjPos, 0, I2X (1));
 // Set robot center flags, in case we become the master for the next one
 pRobotMaker->bFlag = 0;
-pRobotMaker->xCapacity -= gameData.producers.xEnergyToCreateOneRobot;
+pRobotMaker->xCapacity -= gameData.producerData.xEnergyToCreateOneRobot;
 pRobotMaker->xTimer = 0;
 if (! (pObj = CreateMorphRobot (SEGMENT (pRobotMaker->nSegment), &vObjPos, nType)))
 	return; // Cannot create CObject!
-pObj->info.nCreator = ((int16_t) (pRobotMaker - gameData.producers.producers.Buffer ())) | 0x80;
+pObj->info.nCreator = ((int16_t) (pRobotMaker - gameData.producerData.producers.Buffer ())) | 0x80;
 //	ExtractOrientFromSegment (&pObj->info.position.mOrient, &SEGMENT (pRobotMaker->nSegment));
 direction = gameData.objData.pConsole->info.position.vPos - pObj->info.position.vPos;
 pObj->info.position.mOrient = CFixMatrix::CreateFU(direction, pObj->info.position.mOrient.m.dir.u);
@@ -869,7 +869,7 @@ pBuffer += 2;
 pBossObj = OBJECT (nBossObj);
 if (!pBossObj)
 	return;
-nBossIdx = gameData.bosses.Find (nBossObj);
+nBossIdx = gameData.bossData.Find (nBossObj);
 if (nBossIdx < 0)
 	return;
 if (!pBossObj->IsBoss ())
@@ -880,21 +880,21 @@ switch (action)  {
 		int16_t nTeleportSeg;
 
 		CFixVector vBossDir;
-		if ((secondary < 0) || (secondary > gameData.bosses [nBossIdx].m_nTeleportSegs)) 
+		if ((secondary < 0) || (secondary > gameData.bossData [nBossIdx].m_nTeleportSegs)) 
 			return;
-		nTeleportSeg = gameData.bosses [nBossIdx].m_teleportSegs[secondary];
+		nTeleportSeg = gameData.bossData [nBossIdx].m_teleportSegs[secondary];
 		if ((nTeleportSeg < 0) || (nTeleportSeg > gameData.segData.nLastSegment)) 
 			return;
 		pBossObj->info.position.vPos = SEGMENT (nTeleportSeg)->Center ();
 		pBossObj->RelinkToSeg (nTeleportSeg);
-		gameData.bosses [nBossIdx].m_nLastTeleportTime = gameData.time.xGame;
+		gameData.bossData [nBossIdx].m_nLastTeleportTime = gameData.timeData.xGame;
 		vBossDir = PLAYEROBJECT (nPlayer)->info.position.vPos - pBossObj->info.position.vPos;
 		pBossObj->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 
-		audio.CreateSegmentSound (gameData.effects.animations [0][ANIM_MORPHING_ROBOT].nSound, nTeleportSeg, 0, pBossObj->info.position.vPos, 0, I2X (1));
+		audio.CreateSegmentSound (gameData.effectData.animations [0][ANIM_MORPHING_ROBOT].nSound, nTeleportSeg, 0, pBossObj->info.position.vPos, 0, I2X (1));
 		audio.DestroyObjectSound (OBJ_IDX (pBossObj));
 		audio.CreateObjectSound (SOUND_BOSS_SHARE_SEE, SOUNDCLASS_ROBOT, OBJ_IDX (pBossObj), 1, I2X (1), I2X (512));	//	I2X (5)12 means play twice as loud
-		gameData.ai.localInfo [OBJ_IDX (pBossObj)].pNextrimaryFire = 0;
+		gameData.aiData.localInfo [OBJ_IDX (pBossObj)].pNextrimaryFire = 0;
 		if (pBossObj->cType.aiInfo.REMOTE_OWNER == N_LOCALPLAYER) {
 			MultiDeleteControlledRobot (nBossObj);
 //			gameData.multigame.robots.controlled [pBossObj->cType.aiInfo.REMOTE_SLOT_NUM] = -1;
@@ -905,9 +905,9 @@ switch (action)  {
 		break;
 
 	case 2: // Cloak
-		gameData.bosses [nBossIdx].m_nHitTime = -I2X (10);
-		gameData.bosses [nBossIdx].m_nCloakStartTime = gameData.time.xGame;
-		gameData.bosses [nBossIdx].m_nCloakEndTime = gameData.time.xGame + gameData.bosses [nBossIdx].m_nCloakDuration;
+		gameData.bossData [nBossIdx].m_nHitTime = -I2X (10);
+		gameData.bossData [nBossIdx].m_nCloakStartTime = gameData.timeData.xGame;
+		gameData.bossData [nBossIdx].m_nCloakEndTime = gameData.timeData.xGame + gameData.bossData [nBossIdx].m_nCloakDuration;
 		pBossObj->cType.aiInfo.CLOAKED = 1;
 		break;
 
@@ -1065,7 +1065,7 @@ if (nEggObj >= 0) // Transmit the object creation to the other players
 
 //	-----------------------------------------------------------------------------
 //	Robot *robot got whacked by player player_num and requests permission to do something about it.
-//	Note: This function will be called regardless of whether gameData.app.nGameMode is a multiplayer mode, so it
+//	Note: This function will be called regardless of whether gameData.appData.nGameMode is a multiplayer mode, so it
 //	should quick-out if not in a multiplayer mode.  On the other hand, it only gets called when a
 //	player or player weapon whacks a robot, so it happens rarely.
 void MultiRobotRequestChange (CObject *robot, int32_t player_num)
@@ -1073,7 +1073,7 @@ void MultiRobotRequestChange (CObject *robot, int32_t player_num)
 	int32_t	slot, nRemoteObj;
 	int8_t dummy;
 
-if (!gameData.app.GameMode (GM_MULTI_ROBOTS))
+if (!gameData.appData.GameMode (GM_MULTI_ROBOTS))
 	return;
 slot = robot->cType.aiInfo.REMOTE_SLOT_NUM;
 if ((slot < 0) || (slot >= MAX_ROBOTS_CONTROLLED))

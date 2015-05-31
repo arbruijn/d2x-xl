@@ -155,7 +155,7 @@ class CGenericCockpit {
 		static bool IsSaved (void);
 		static void Rewind (bool bActivate = true);
 
-		inline float Aspect (void) { return float (gameData.render.screen.Height ()) / float (gameData.render.screen.Width ()) / 0.75f; }
+		inline float Aspect (void) { return float (gameData.renderData.screen.Height ()) / float (gameData.renderData.screen.Width ()) / 0.75f; }
 		inline int32_t ScaleX (int32_t v) { return (int32_t) FRound (float (v) * m_info.xScale); }
 		inline int32_t ScaleY (int32_t v) { return (int32_t) FRound (float (v) * m_info.yScale); }
 		inline int32_t LHX (int32_t x) { return x << gameStates.render.fonts.bHires; }
@@ -166,8 +166,8 @@ class CGenericCockpit {
 		inline void SetFontColor (uint32_t fontColor) { m_info.fontColor = fontColor; }
 		inline CCanvas* Canvas (void) { return CCanvas::Current (); }
 		inline CCanvas& Window (int32_t nWindow) { return m_info.windows [ nWindow]; }
-		inline void PageInGauge (int32_t nGauge) { LoadTexture (gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0, 0); }
-		inline uint16_t GaugeIndex (int32_t nGauge) { return gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index; }
+		inline void PageInGauge (int32_t nGauge) { LoadTexture (gameData.cockpitData.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0, 0); }
+		inline uint16_t GaugeIndex (int32_t nGauge) { return gameData.cockpitData.gauges [!gameStates.render.fonts.bHires][nGauge].index; }
 		CBitmap* BitBlt (int32_t nGauge, int32_t x, int32_t y, bool bScalePos = true, bool bScaleSize = true, int32_t scale = I2X (1), int32_t orient = 0, CBitmap* pBm = NULL, CBitmap* pBmo = NULL);
 		int32_t _CDECL_ PrintF (int32_t *idP, int32_t x, int32_t y, const char *pszFmt, ...);
 		void Rect (int32_t left, int32_t top, int32_t width, int32_t height) {

@@ -87,7 +87,7 @@ color.Alpha () = -1;
 //------------------------------------------------------------------------------
 
 //	Add a computed color (by GrFindClosestColor) to list of computed colors in m_computedColors.
-//	If list wasn't full already, increment gameData.render.m_nComputedColors.
+//	If list wasn't full already, increment gameData.renderData.m_nComputedColors.
 //	If was full, replace a random one.
 void CPalette::AddComputedColor (int32_t r, int32_t g, int32_t b, int32_t nIndex)
 {
@@ -430,23 +430,23 @@ if (m_data.xFadeDelay) {
 	if (m_data.xLastEffectTime)
 		bForce = true;
 
-	if ((m_data.xLastEffectTime + I2X (1) / 8 < gameData.time.xGame) || (m_data.xLastEffectTime > gameData.time.xGame)) {
+	if ((m_data.xLastEffectTime + I2X (1) / 8 < gameData.timeData.xGame) || (m_data.xLastEffectTime > gameData.timeData.xGame)) {
 		audio.PlaySound (SOUND_CLOAK_OFF, SOUNDCLASS_GENERIC, m_data.xFadeDelay / 4);
-		m_data.xLastEffectTime = gameData.time.xGame;
+		m_data.xLastEffectTime = gameData.timeData.xGame;
 		}
 
-	m_data.xFadeDelay -= gameData.time.xFrame;
+	m_data.xFadeDelay -= gameData.timeData.xFrame;
 	if (m_data.xFadeDelay < 0)
 		m_data.xFadeDelay = 0;
 
 	if (bForce || (RandShort () > 4096)) {
-      if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.Red () || m_data.effect.Green () || m_data.effect.Blue ()))
+      if ((gameData.demoData.nState == ND_STATE_RECORDING) && (m_data.effect.Red () || m_data.effect.Green () || m_data.effect.Blue ()))
 	      NDRecordPaletteEffect (int16_t (m_data.effect.Red () * 64.0f), int16_t (m_data.effect.Green () * 64.0f), int16_t (m_data.effect.Blue () * 64.0f));
 		}
 	}
 else {
-	m_data.xFadeDuration [0] = Max (0, m_data.xFadeDuration [0] - gameData.time.xFrame);
-	if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.Red () || m_data.effect.Green () || m_data.effect.Blue ()))
+	m_data.xFadeDuration [0] = Max (0, m_data.xFadeDuration [0] - gameData.timeData.xFrame);
+	if ((gameData.demoData.nState == ND_STATE_RECORDING) && (m_data.effect.Red () || m_data.effect.Green () || m_data.effect.Blue ()))
 		  NDRecordPaletteEffect (int16_t (m_data.effect.Red () * 64.0f), int16_t (m_data.effect.Green () * 64.0f), int16_t (m_data.effect.Blue () * 64.0f));
 	}
 }
@@ -563,7 +563,7 @@ if (bForce || pszLevelName || stricmp (paletteManager.LastLoaded (), pszPaletteN
 	palette = paletteManager.Load (pszPaletteName, pszLevelName);
 	//if (!(paletteManager.FadedOut () || bNoScreenChange))
 	//	ResumeEffect ();
-	gameData.hud.msgs [0].nColor = -1;
+	gameData.hudData.msgs [0].nColor = -1;
 	LoadGameBackground ();
 	}
 if (nUsedForLevel && stricmp (paletteManager.LastPig (), pszPaletteName) != 0) {

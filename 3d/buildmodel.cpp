@@ -775,7 +775,7 @@ else if ((pObj->info.nType != OBJ_ROBOT) && (pObj->info.nType != OBJ_HOSTAGE) &&
 if (vOffsetfP)
 	vOffsetf = *vOffsetfP;
 else
-	vOffsetf.Assign (gameData.models.offsets [m_nModel]);
+	vOffsetf.Assign (gameData.modelData.offsets [m_nModel]);
 if (!(vOffsetf.dir.coord.x || vOffsetf.dir.coord.y || vOffsetf.dir.coord.z))
 	return 0;
 if (vOffsetfP) {
@@ -803,7 +803,7 @@ return 1;
 
 void CSubModel::Size (CModel* pm, CObject* pObj, CFixVector* vOffset)
 {
-	tHitbox		*pHitbox = (m_nHitbox < 0) ? NULL : gameData.models.hitboxes [pm->m_nModel].hitboxes + m_nHitbox;
+	tHitbox		*pHitbox = (m_nHitbox < 0) ? NULL : gameData.modelData.hitboxes [pm->m_nModel].hitboxes + m_nHitbox;
 	CFixVector	vMin, vMax, vOffs;
 	int32_t		i, j;
 	CSubModel	*pSubModel;
@@ -880,10 +880,10 @@ fix CModel::Radius (CObject *pObj)
 	float							fRad = 0, r;
 	uint16_t						h, i, j, k;
 
-tModelSphere *pSphere = gameData.models.spheres + m_nModel;
+tModelSphere *pSphere = gameData.modelData.spheres + m_nModel;
 if (m_nType >= 0) {
 	if ((m_nSubModels == pSphere->nSubModels) && (m_nFaces == pSphere->nFaces) && (m_nFaceVerts == pSphere->nFaceVerts)) {
-		gameData.models.offsets [m_nModel] = pSphere->vOffsets [m_nType];
+		gameData.modelData.offsets [m_nModel] = pSphere->vOffsets [m_nType];
 		return pSphere->xRads [m_nType];
 		}
 	}
@@ -893,7 +893,7 @@ if (vertices.Create (m_nFaceVerts)) {
 
 	for (i = 0, h = m_nSubModels, pSubModel = m_subModels.Buffer (), pv = vertices.Buffer (); i < h; i++, pSubModel++) {
 		if (pSubModel->m_nHitbox > 0) {
-			vOffset.Assign (gameData.models.hitboxes [m_nModel].hitboxes [pSubModel->m_nHitbox].vOffset);
+			vOffset.Assign (gameData.modelData.hitboxes [m_nModel].hitboxes [pSubModel->m_nHitbox].vOffset);
 			for (j = pSubModel->m_nFaces, pModelFace = pSubModel->m_faces; j; j--, pModelFace++) {
 				for (k = pModelFace->m_nVerts, pModelVertex = m_faceVerts + pModelFace->m_nIndex; k; k--, pModelVertex++, pv++)
 					*pv = pModelVertex->m_vertex + vOffset;
@@ -917,7 +917,7 @@ if (vertices.Create (m_nFaceVerts)) {
 	fRad /= 2;
 	// then move the tentatively computed model center around so that all vertices are enclosed in the sphere
 	// around the center with the radius computed above
-	vCenter.Assign (gameData.models.offsets [m_nModel]);
+	vCenter.Assign (gameData.modelData.offsets [m_nModel]);
 	for (i = h, pv = vertices.Buffer (); i; i--, pv++) {
 		v = *pv - vCenter;
 		r = v.Mag();
@@ -931,22 +931,22 @@ if (vertices.Create (m_nFaceVerts)) {
 
 	vertices.Destroy ();
 
-	gameData.models.offsets [m_nModel].Assign (vCenter);
+	gameData.modelData.offsets [m_nModel].Assign (vCenter);
 	if (m_nType >= 0) {
 		pSphere->nSubModels = m_nSubModels;
 		pSphere->nFaces = m_nFaces;
 		pSphere->nFaceVerts = m_nFaceVerts;
-		pSphere->vOffsets [m_nType] = gameData.models.offsets [m_nModel];
+		pSphere->vOffsets [m_nType] = gameData.modelData.offsets [m_nModel];
 		pSphere->xRads [m_nType] = F2X (fRad);
 		}
 	}
 else {
 	// then move the tentatively computed model center around so that all vertices are enclosed in the sphere
 	// around the center with the radius computed above
-	vCenter.Assign (gameData.models.offsets [m_nModel]);
+	vCenter.Assign (gameData.modelData.offsets [m_nModel]);
 	for (i = 0, h = m_nSubModels, pSubModel = m_subModels.Buffer (); i < h; i++, pSubModel++) {
 		if (pSubModel->m_nHitbox > 0) {
-			vOffset.Assign (gameData.models.hitboxes [m_nModel].hitboxes [pSubModel->m_nHitbox].vOffset);
+			vOffset.Assign (gameData.modelData.hitboxes [m_nModel].hitboxes [pSubModel->m_nHitbox].vOffset);
 			for (j = pSubModel->m_nFaces, pModelFace = pSubModel->m_faces; j; j--, pModelFace++) {
 				for (k = pModelFace->m_nVerts, pModelVertex = m_faceVerts + pModelFace->m_nIndex; k; k--, pModelVertex++) {
 					v = pModelVertex->m_vertex + vOffset;
@@ -956,7 +956,7 @@ else {
 				}
 			}
 		}
-	gameData.models.offsets [m_nModel].Assign (vCenter);
+	gameData.modelData.offsets [m_nModel].Assign (vCenter);
 	}
 return F2X (fRad);
 }
@@ -967,7 +967,7 @@ fix CModel::Size (CObject *pObj, int32_t bHires)
 {
 	CSubModel*		pSubModel;
 	int32_t			i, j;
-	tHitbox*			pHitbox = &gameData.models.hitboxes [m_nModel].hitboxes [0];
+	tHitbox*			pHitbox = &gameData.modelData.hitboxes [m_nModel].hitboxes [0];
 	CFixVector		hv;
 	CFloatVector3	vOffset;
 	double			dx, dy, dz;
@@ -982,12 +982,12 @@ vOffset = pSubModel->m_vMin;
 j = 1;
 if (m_nSubModels == 1) {
 	pSubModel->m_nHitbox = 1;
-	gameData.models.hitboxes [m_nModel].nHitboxes = 1;
+	gameData.modelData.hitboxes [m_nModel].nHitboxes = 1;
 	}
 else {
 	for (i = m_nSubModels; i; i--, pSubModel++)
 		pSubModel->m_nHitbox = (pSubModel->m_bGlow || pSubModel->m_bThruster || pSubModel->m_bWeapon || (pSubModel->m_nGunPoint >= 0)) ? -1 : j++;
-	gameData.models.hitboxes [m_nModel].nHitboxes = j - 1;
+	gameData.modelData.hitboxes [m_nModel].nHitboxes = j - 1;
 	}
 do {
 	// initialize
@@ -1032,31 +1032,31 @@ do {
 			}
 		}
 	if (IsMultiGame)
-		gameData.models.offsets [m_nModel].v.coord.x =
-		gameData.models.offsets [m_nModel].v.coord.y =
-		gameData.models.offsets [m_nModel].v.coord.z = 0;
+		gameData.modelData.offsets [m_nModel].v.coord.x =
+		gameData.modelData.offsets [m_nModel].v.coord.y =
+		gameData.modelData.offsets [m_nModel].v.coord.z = 0;
 	else {
-		gameData.models.offsets [m_nModel].v.coord.x = (pHitbox [0].vMin.v.coord.x + pHitbox [0].vMax.v.coord.x) / -2;
-		gameData.models.offsets [m_nModel].v.coord.y = (pHitbox [0].vMin.v.coord.y + pHitbox [0].vMax.v.coord.y) / -2;
-		gameData.models.offsets [m_nModel].v.coord.z = (pHitbox [0].vMin.v.coord.z + pHitbox [0].vMax.v.coord.z) / -2;
+		gameData.modelData.offsets [m_nModel].v.coord.x = (pHitbox [0].vMin.v.coord.x + pHitbox [0].vMax.v.coord.x) / -2;
+		gameData.modelData.offsets [m_nModel].v.coord.y = (pHitbox [0].vMin.v.coord.y + pHitbox [0].vMax.v.coord.y) / -2;
+		gameData.modelData.offsets [m_nModel].v.coord.z = (pHitbox [0].vMin.v.coord.z + pHitbox [0].vMax.v.coord.z) / -2;
 		}
 	} while (Shift (pObj, bHires, NULL));
 
 pSubModel = m_subModels.Buffer ();
 vOffset = pSubModel->m_vMin - vOffset;
-gameData.models.offsets [m_nModel].Assign (vOffset);
+gameData.modelData.offsets [m_nModel].Assign (vOffset);
 #if DBG
 if (m_nModel == nDbgModel)
 	BRP;
 #endif
 #if 1
-//VmVecInc (&pSubModel [0].vOffset, gameData.models.offsets + m_nModel);
+//VmVecInc (&pSubModel [0].vOffset, gameData.modelData.offsets + m_nModel);
 #else
 G3ShiftModel (pObj, m_nModel, bHires, &vOffset);
 #endif
 pHitbox [0].vSize = pHitbox [0].vMax - pHitbox [0].vMin;
-gameData.models.offsets [m_nModel] = CFixVector::Avg (pHitbox [0].vMax, pHitbox [0].vMin);
-//pHitbox [0].vOffset = gameData.models.offsets [m_nModel];
+gameData.modelData.offsets [m_nModel] = CFixVector::Avg (pHitbox [0].vMax, pHitbox [0].vMin);
+//pHitbox [0].vOffset = gameData.modelData.offsets [m_nModel];
 for (i = 0; i <= j; i++)
 	ComputeHitbox (m_nModel, i);
 return Radius (pObj);
@@ -1160,14 +1160,14 @@ return h;
 
 fix G3ModelRad (CObject *pObj, int32_t m_nModel, int32_t bHires)
 {
-return gameData.models.renderModels [bHires][m_nModel].Radius (pObj);
+return gameData.modelData.renderModels [bHires][m_nModel].Radius (pObj);
 }
 
 //------------------------------------------------------------------------------
 
 fix G3ModelSize (CObject *pObj, int32_t m_nModel, int32_t bHires)
 {
-return gameData.models.renderModels [bHires][m_nModel].Size (pObj, bHires);
+return gameData.modelData.renderModels [bHires][m_nModel].Size (pObj, bHires);
 }
 
 //------------------------------------------------------------------------------
@@ -1194,7 +1194,7 @@ void CModel::SetGunPoints (CObject *pObj, int32_t bASE)
 if (bASE) {
 	CSubModel	*pSubModel = m_subModels.Buffer ();
 
-	vGunPoints = gameData.models.gunInfo [m_nModel].vGunPoints;
+	vGunPoints = gameData.modelData.gunInfo [m_nModel].vGunPoints;
 	for (i = 0, j = 0; i < m_nSubModels; i++, pSubModel++) {
 		h = pSubModel->m_nGunPoint;
 		if ((h >= 0) && (h < MAX_GUNS)) {
@@ -1203,29 +1203,29 @@ if (bASE) {
 			vGunPoints [h] = pSubModel->m_vCenter;
 			}
 		}
-	gameData.models.gunInfo [m_nModel].nGuns = j;
+	gameData.modelData.gunInfo [m_nModel].nGuns = j;
 	}
 else {
 		OOF::CPoint		*pp;
 		OOF::CSubModel	*pso;
-		OOF::CModel		*po = gameData.models.modelToOOF [1][m_nModel];
+		OOF::CModel		*po = gameData.modelData.modelToOOF [1][m_nModel];
 
 	if (!po)
-		po = gameData.models.modelToOOF [0][m_nModel];
+		po = gameData.modelData.modelToOOF [0][m_nModel];
 	pp = po->m_gunPoints.Buffer ();
 	if (pObj->info.nType == OBJ_PLAYER)
 		SetShipGunPoints (po);
 	else if (pObj->info.nType == OBJ_ROBOT)
 		SetRobotGunPoints (po);
 	else {
-		gameData.models.gunInfo [m_nModel].nGuns = 0;
+		gameData.modelData.gunInfo [m_nModel].nGuns = 0;
 		return;
 		}
 	if ((j = po->m_gunPoints.Length ())) {
 		if (j > MAX_GUNS)
 			j = MAX_GUNS;
-		gameData.models.gunInfo [m_nModel].nGuns = j;
-		vGunPoints = gameData.models.gunInfo [m_nModel].vGunPoints;
+		gameData.modelData.gunInfo [m_nModel].nGuns = j;
+		vGunPoints = gameData.modelData.gunInfo [m_nModel].vGunPoints;
 		for (i = 0; i < j; i++, pp++, vGunPoints++) {
 			(*vGunPoints).v.coord.x = F2X (pp->m_vPos.v.coord.x);
 			(*vGunPoints).v.coord.y = F2X (pp->m_vPos.v.coord.y);
@@ -1243,7 +1243,7 @@ else {
 
 int32_t G3BuildModel (CObject* pObj, int32_t nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* pObjColor, int32_t bHires)
 {
-	RenderModel::CModel*	pm = gameData.models.renderModels [bHires] + nModel;
+	RenderModel::CModel*	pm = gameData.modelData.renderModels [bHires] + nModel;
 
 if (pm->m_bValid > 0)
 	return 1;
@@ -1268,8 +1268,8 @@ int32_t G3ModelMinMax (int32_t m_nModel, tHitbox *pHitbox)
 {
 	RenderModel::CModel*		pm;
 
-if (!((pm = gameData.models.renderModels [1] + m_nModel) ||
-	   (pm = gameData.models.renderModels [0] + m_nModel)))
+if (!((pm = gameData.modelData.renderModels [1] + m_nModel) ||
+	   (pm = gameData.modelData.renderModels [0] + m_nModel)))
 	return 0;
 return pm->MinMax (pHitbox);
 }

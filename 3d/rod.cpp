@@ -123,7 +123,7 @@ return G3DrawTexPoly (4, rodPointList, uvlList, pBm, NULL, 1, bAdditive, -1);
 
 void DrawObjectRodTexPoly (CObject *pObj, tBitmapIndex bmi, int32_t bLit, int32_t iFrame)
 {
-	CBitmap*			pBm = gameData.pig.tex.bitmaps [0] + bmi.index;
+	CBitmap*			pBm = gameData.pigData.tex.bitmaps [0] + bmi.index;
 	fix				xSize = pObj->info.xSize;
 	CRenderPoint	pTop, pBottom;
 #if ADJUST_HIRES_HOSTAGE

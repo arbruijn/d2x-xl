@@ -1128,10 +1128,10 @@ if (nSegment < 0)
 	return nFrame;
 if (nTexture != 361)
 	return nFrame;
-tObjectProducerInfo* p = gameData.producers.Find (nSegment);
+tObjectProducerInfo* p = gameData.producerData.Find (nSegment);
 if (!p)
 	return nFrame;
-if (gameData.producers.producers [p->nProducer].bEnabled)
+if (gameData.producerData.producers [p->nProducer].bEnabled)
 	return nFrame;
 return 3; // that's the number of the animation's darkest frame
 }
@@ -1147,8 +1147,8 @@ CBitmap *LoadFaceBitmap (int16_t nTexture, int16_t nFrameIdx, int32_t bLoadTextu
 if (nTexture == nDbgTexture)
 	BRP;
 #endif
-LoadTexture (gameData.pig.tex.pBmIndex [nTexture].index, 0, gameStates.app.bD1Mission);
-pBm = gameData.pig.tex.pBitmap + gameData.pig.tex.pBmIndex [nTexture].index;
+LoadTexture (gameData.pigData.tex.pBmIndex [nTexture].index, 0, gameStates.app.bD1Mission);
+pBm = gameData.pigData.tex.pBitmap + gameData.pigData.tex.pBmIndex [nTexture].index;
 pBm->SetStatic (1);
 if (!(pBmo = pBm->Override ()))
 	return pBm;

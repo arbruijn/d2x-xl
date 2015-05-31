@@ -136,11 +136,11 @@ if (!tiP)
 
 m_pData = NULL;
 ti.pp = NULL;
-ti.pThrusters = gameData.models.thrusters + pObj->ModelId ();
+ti.pThrusters = gameData.modelData.thrusters + pObj->ModelId ();
 m_nThrusters = ti.pThrusters->nCount;
 if (gameOpts->render.bHiresModels [0] && (pObj->info.nType == OBJ_PLAYER) && !GetASEModel (pObj->ModelId ())) {
 	if (!m_bSpectate) {
-		m_pData = gameData.render.thrusters + pObj->info.nId;
+		m_pData = gameData.renderData.thrusters + pObj->info.nId;
 		ti.pp = m_pData->path.GetPoint ();
 		}
 	ti.fLength [0] =
@@ -154,7 +154,7 @@ if (gameOpts->render.bHiresModels [0] && (pObj->info.nType == OBJ_PLAYER) && !Ge
 	ti.pThrusters = NULL;
 	}
 else if (bAfterburnerBlob || (bMissile && !m_nThrusters)) {
-		tHitbox	*pHitbox = &gameData.models.hitboxes [pObj->ModelId ()].hitboxes [0];
+		tHitbox	*pHitbox = &gameData.modelData.hitboxes [pObj->ModelId ()].hitboxes [0];
 		fix		nObjRad = (pHitbox->vMax.v.coord.z - pHitbox->vMin.v.coord.z) / 2;
 
 	if (bAfterburnerBlob)
@@ -171,8 +171,8 @@ else if (bAfterburnerBlob || (bMissile && !m_nThrusters)) {
 	m_nThrusters = 1;
 	if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2)
 		ti.fLength [0] /= 2;
-	if (!gameData.models.vScale.IsZero ())
-		ti.vPos [0] *= gameData.models.vScale;
+	if (!gameData.modelData.vScale.IsZero ())
+		ti.vPos [0] *= gameData.modelData.vScale;
 	*ti.vPos = pObj->info.position.vPos + pObj->info.position.mOrient.m.dir.f * (-nObjRad);
 	ti.nType [0] = 
 	ti.nType [1] = 1;
@@ -183,14 +183,14 @@ else if ((pObj->info.nType == OBJ_PLAYER) ||
 			bMissile) {
 	CFixMatrix	mView, *pView;
 	if (!m_bSpectate && (pObj->info.nType == OBJ_PLAYER)) {
-		m_pData = gameData.render.thrusters + pObj->info.nId;
+		m_pData = gameData.renderData.thrusters + pObj->info.nId;
 		ti.pp = m_pData->path.GetPoint ();
 		}
 	if (!m_nThrusters) {
 		if (pObj->info.nType != OBJ_PLAYER)
 			return 0;
 		if (!m_bSpectate) {
-			m_pData = gameData.render.thrusters + pObj->info.nId;
+			m_pData = gameData.renderData.thrusters + pObj->info.nId;
 			ti.pp = m_pData->path.GetPoint ();
 			}
 		ti.fLength [0] =
@@ -220,8 +220,8 @@ else if ((pObj->info.nType == OBJ_PLAYER) ||
 				h *= 0.75f;
 			ti.fLength [i] = ti.fSize [i] * h;
 			ti.vPos [i] = *pView * ti.pThrusters->vPos [i];
-			if (!gameData.models.vScale.IsZero ())
-				ti.vPos [i] *= gameData.models.vScale;
+			if (!gameData.modelData.vScale.IsZero ())
+				ti.vPos [i] *= gameData.modelData.vScale;
 			ti.vPos [i] += pPos->vPos;
 			ti.vDir [i] = *pView * ti.pThrusters->vDir [i];
 			//CAngleVector a1 = pObj->info.position.mOrient.m.v.f.ToAnglesVec ();
@@ -268,7 +268,7 @@ vDirf.Assign (vDir);
 vPosf.Assign (vPos);
 vDirf *= fLength;
 vTrailTip = vPosf - vDirf;
-vEye.Assign (gameData.render.mine.viewer.vPos);
+vEye.Assign (gameData.renderData.mine.viewer.vPos);
 vNormf = CFloatVector::Normal (vTrailTip, vPosf, vEye) * fSize;
 vCap [0] = vPosf + vNormf;
 vCap [2] = vPosf - vNormf;
@@ -423,8 +423,8 @@ if (m_nStyle == 1) {	//2D
 	for (int32_t i = 0; i < m_nThrusters; i++) {
 		if (IsFiring (ws, i)) {
 			m_ti.fSize [i] *= ((pObj->info.nType == OBJ_PLAYER) && HaveHiresModel (pObj->ModelId ())) ? 1.2f : 1.5f;
-			if (!gameData.models.vScale.IsZero ())
-				m_ti.fSize [i] *= X2F (gameData.models.vScale.v.coord.z);
+			if (!gameData.modelData.vScale.IsZero ())
+				m_ti.fSize [i] *= X2F (gameData.modelData.vScale.v.coord.z);
 			Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize [i], m_ti.fLength [i], &tcColor);
 			}
 		}

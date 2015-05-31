@@ -432,7 +432,7 @@ else
 	if ((m_bSuspendable = bSuspendable))
 		Set ("bSuspended", 0);
 #endif
-	gameData.render.nShaderChanges++;
+	gameData.renderData.nShaderChanges++;
 	}
 return intptr_t (shaderProg);
 }

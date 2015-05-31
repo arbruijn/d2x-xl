@@ -290,8 +290,8 @@ for (i = 0; i <= gameData.segData.nLastSegment; i++, pSeg++) {
 	for (j = 0; j < SEGMENT_SIDE_COUNT; j++, pSide++) {
 		if (!pSide->FaceCount ())
 			continue;
-		if ((gameData.pig.tex.pTexMapInfo [pSide->m_nBaseTex].flags & tmi_bit) ||
-			 (gameData.pig.tex.pTexMapInfo [pSide->m_nOvlTex].flags & tmi_bit)) {
+		if ((gameData.pigData.tex.pTexMapInfo [pSide->m_nBaseTex].flags & tmi_bit) ||
+			 (gameData.pigData.tex.pTexMapInfo [pSide->m_nOvlTex].flags & tmi_bit)) {
 			if (!IS_CHILD (pSeg->m_children [j]) || IS_WALL (pSide->m_nWall)) {
 				pSeg->m_flags |= s2f_bit;
 				markedSegs [i] = 1;		//	Say it's itself that it is close enough to to hear something.

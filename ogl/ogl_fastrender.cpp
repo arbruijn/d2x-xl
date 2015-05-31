@@ -326,7 +326,7 @@ if (bTextured) {
 		gameStates.render.history.bColored = bColored;
 		}
 	if (bStateChange) {
-		gameData.render.nStateChanges++;
+		gameData.renderData.nStateChanges++;
 		if (!(bLightmaps || gameStates.render.bFullBright))
 			SetupShader (pFace, bColorKey, bmTop != NULL, bmBot != NULL, bColored, bmBot ? NULL : &pFace->m_info.color);
 		}
@@ -449,7 +449,7 @@ if (gameStates.render.nType == RENDER_TYPE_ZCULL) {
 G3SetBlendMode (pFace);
 if (bMonitor)
 	SetupMonitor (pFace, bmTop, bTextured, bLightmaps);
-gameData.render.nTotalFaces++;
+gameData.renderData.nTotalFaces++;
 
 if (gameOpts->render.debug.bWireFrame & 1)
 	glColor3f (1,1,1);
@@ -526,7 +526,7 @@ gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot !
 SetRenderStates (pFace, bmBot, bmTop, bTextured, bColorKey, 1, bLightmaps);
 if (bMonitor)
 	SetupMonitor (pFace, bmTop, bTextured, 1);
-gameData.render.nTotalFaces++;
+gameData.renderData.nTotalFaces++;
 lightManager.Headlights ().SetupShader (gameStates.render.history.nType, 1, bmBot ? NULL : &pFace->m_info.color);
 DrawFace (pFace);
 if (bMonitor)

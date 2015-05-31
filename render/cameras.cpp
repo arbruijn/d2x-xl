@@ -170,16 +170,16 @@ Init ();
 m_data.nId = nId;
 m_data.bShadowMap = bShadowMap;
 #if 0
-SetWidth (Pow2ize (gameData.render.screen.Width () / (2 - gameOpts->render.cameras.bHires)));
-SetHeight (Pow2ize (gameData.render.screen.Height () / (2 - gameOpts->render.cameras.bHires)));
+SetWidth (Pow2ize (gameData.renderData.screen.Width () / (2 - gameOpts->render.cameras.bHires)));
+SetHeight (Pow2ize (gameData.renderData.screen.Height () / (2 - gameOpts->render.cameras.bHires)));
 #else
 #	if 1
 if (bShadowMap) {
 #if 0
-	int32_t nSize = Max (gameData.render.screen.Width (), gameData.render.screen.Height ());
+	int32_t nSize = Max (gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
 #else
-	int32_t nSize = Pow2ize (int32_t (sqrt (double (gameData.render.screen.Width () * gameData.render.screen.Height ()))));
-	while ((nSize > gameData.render.screen.Width ()) || (nSize > gameData.render.screen.Height ()))
+	int32_t nSize = Pow2ize (int32_t (sqrt (double (gameData.renderData.screen.Width () * gameData.renderData.screen.Height ()))));
+	while ((nSize > gameData.renderData.screen.Width ()) || (nSize > gameData.renderData.screen.Height ()))
 		nSize /= 2;
 	if (!gameOpts->render.cameras.bHires)
 		nSize /= 2;
@@ -191,8 +191,8 @@ else
 #	endif
 	{
 	int32_t nScreenScale = (!gameOpts->render.cameras.bHires) ? 2 : 1;
-	CCanvas::SetWidth (gameData.render.screen.Width () / nScreenScale);
-	CCanvas::SetHeight (gameData.render.screen.Height () / nScreenScale);
+	CCanvas::SetWidth (gameData.renderData.screen.Width () / nScreenScale);
+	CCanvas::SetHeight (gameData.renderData.screen.Height () / nScreenScale);
 	}
 #endif
 SetBPP (4);
@@ -530,7 +530,7 @@ int32_t CCameraManager::Create (void)
 if (!(/*gameStates.app.bD2XLevel &&*/ SEGMENTS.Buffer () && OBJECTS.Buffer ()))
 	return 0;
 #if 0
-if (gameData.demo.nState == ND_STATE_PLAYBACK)
+if (gameData.demoData.nState == ND_STATE_PLAYBACK)
 	return 0;
 #endif
 PrintLog (1, "creating cameras\n");

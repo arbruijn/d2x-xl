@@ -70,8 +70,8 @@ if (pszImage) {
 		h += m_bm.Height () + 20;
 		}
 	}
-m_x = (gameData.render.frame.Width (false) - w) / 2;
-m_y = (gameData.render.frame.Height (false) - h) / 2;
+m_x = (gameData.renderData.frame.Width (false) - w) / 2;
+m_y = (gameData.renderData.frame.Height (false) - h) / 2;
 m_bCentered = bCentered;
 
 backgroundManager.Setup (m_background, w + BOX_BORDER, h + BOX_BORDER, BG_SUBMENU);

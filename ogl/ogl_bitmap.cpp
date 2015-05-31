@@ -254,8 +254,8 @@ void CBitmap::ScreenCopy (CBitmap * dest, int32_t dx, int32_t dy, int32_t w, int
 	uint8_t *d, *s;
 	int32_t	i, j;
 	int32_t	bTGA = (dest->Flags () & BM_FLAG_TGA) != 0;
-	int32_t	wScreen = gameData.render.screen.Width ();
-	int32_t	hScreen = gameData.render.screen.Height ();
+	int32_t	wScreen = gameData.renderData.screen.Width ();
+	int32_t	hScreen = gameData.renderData.screen.Height ();
 
 ogl.SetTexturing (false);
 ogl.SetReadBuffer (GL_FRONT, 1);

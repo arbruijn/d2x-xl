@@ -144,7 +144,7 @@ bool CPostEffectShockwave::SetupShader (void)
 if (!Enabled ())
 	return false;
 
-	static CFloatVector3 effectStrength = {{{10.0f, 0.8f, gameData.render.frame.Width () * 0.1f}}};
+	static CFloatVector3 effectStrength = {{{10.0f, 0.8f, gameData.renderData.frame.Width () * 0.1f}}};
 
 if (m_nShockwaves > 0)
 	return true;
@@ -175,7 +175,7 @@ if (shaderManager.Rebuild (m_shaderProg))
 shaderManager.Set ("sceneTex", 0);
 shaderManager.Set ("depthTex", 1);
 shaderManager.Set ("effectStrength", effectStrength);
-float screenSize [2] = { (float) gameData.render.screen.Width (), (float) gameData.render.screen.Height () };
+float screenSize [2] = { (float) gameData.renderData.screen.Width (), (float) gameData.renderData.screen.Height () };
 shaderManager.Set ("screenSize", screenSize);
 ogl.SetLighting (true);
 return true;
@@ -239,9 +239,9 @@ tScreenPos s [5];
 for (int32_t i = 0; i < 5; i++) {
 	ProjectPoint (p [i], s [i], 0, 0);
 	if (gameStates.render.cockpit.nType == CM_LETTERBOX)
-		s [i].y += (gameData.render.frame.Height () - CCanvas::Current ()->Height ()) / 2;
+		s [i].y += (gameData.renderData.frame.Height () - CCanvas::Current ()->Height ()) / 2;
 	else if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
-		s [i].y += gameData.render.frame.Height () - CCanvas::Current ()->Height ();
+		s [i].y += gameData.renderData.frame.Height () - CCanvas::Current ()->Height ();
 	}
 
 #if 1
@@ -267,7 +267,7 @@ m_screenRad = (float) hypot (double (xMax), double (yMax)) * 0.125f;
 int32_t d = 0;
 int32_t n = 0;
 for (int32_t i = 1; i < 5; i++) {
-	if ((s [i].x >= 0) && (s [i].x < gameData.render.screen.Width ()) && (s [i].y >= 0) && (s [i].y < gameData.render.screen.Height ())) {
+	if ((s [i].x >= 0) && (s [i].x < gameData.renderData.screen.Width ()) && (s [i].y >= 0) && (s [i].y < gameData.renderData.screen.Height ())) {
 		d += labs (s [0].x - s [i].x) + labs (s [0].y - s [i].y);
 		n += 4;
 		}
@@ -295,7 +295,7 @@ if (!SetupShader ())
 
 glEnable (GL_LIGHT0 + m_nShockwaves);
 CFloatVector3 v = m_renderPos;
-v.v.coord.x += gameData.render.frame.Left ();
+v.v.coord.x += gameData.renderData.frame.Left ();
 glLightfv (GL_LIGHT0 + m_nShockwaves, GL_POSITION, reinterpret_cast<GLfloat*> (&v));
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_CONSTANT_ATTENUATION, m_screenRad); 
 glLightf (GL_LIGHT0 + m_nShockwaves, GL_LINEAR_ATTENUATION, m_rad); // Wellenfront

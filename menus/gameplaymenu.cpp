@@ -206,7 +206,7 @@ if ((m = menu ["difficulty"])) {
 		gameStates.app.nDifficultyLevel = v;
 		if (!IsMultiGame) {
 			gameStates.app.nDifficultyLevel = v;
-			gameData.bosses.InitGateIntervals ();
+			gameData.bossData.InitGateIntervals ();
 			}
 		sprintf (m->m_text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 		m->m_bRebuild = 1;

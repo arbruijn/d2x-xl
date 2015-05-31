@@ -205,7 +205,7 @@ for (i = 0, pColor = m_vld.colors; i < m_vld.nVertices; i++) {
 		BRP;
 #endif
 	vertColor = m_vld.index [i].color;
-	vertColor += gameData.render.color.ambient [nVertex];
+	vertColor += gameData.renderData.color.ambient [nVertex];
 	if (gameOpts->render.color.nSaturation == 2) {
 		for (j = 0, nLights = m_vld.index [i].nLights; j < nLights; j++, pColor++) {
 			if (vertColor.Red () < pColor->Red ())
@@ -230,7 +230,7 @@ for (i = 0, pColor = m_vld.colors; i < m_vld.nVertices; i++) {
 				vertColor /= cMax;
 			}
 		}
-	pVertexColor = gameData.render.color.vertices + nVertex;
+	pVertexColor = gameData.renderData.color.vertices + nVertex;
 	(CFloatVector) *pVertexColor = vertColor;
 	pVertexColor->index = gameStates.render.nFrameFlipFlop + 1;
 	}
@@ -281,8 +281,8 @@ if (nState == 0) {
 #endif
 #if 0
 	glUniform1f (glGetUniformLocation (shaderProg, "shininess"), 64.0f);
-	glUniform3fv (glGetUniformLocation (shaderProg, "matAmbient"), 1, reinterpret_cast<GLfloat*> (&gameData.render.vertColor.matAmbient));
-	glUniform3fv (glGetUniformLocation (shaderProg, "matDiffuse"), 1, reinterpret_cast<GLfloat*> (&gameData.render.vertColor.matDiffuse));
+	glUniform3fv (glGetUniformLocation (shaderProg, "matAmbient"), 1, reinterpret_cast<GLfloat*> (&gameData.renderData.vertColor.matAmbient));
+	glUniform3fv (glGetUniformLocation (shaderProg, "matDiffuse"), 1, reinterpret_cast<GLfloat*> (&gameData.renderData.vertColor.matDiffuse));
 	glUniform3fv (glGetUniformLocation (shaderProg, "matSpecular"), 1, reinterpret_cast<GLfloat*> (&matSpecular));
 #endif
 	ogl.SetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 0); 
@@ -345,7 +345,7 @@ else if (nState == 1) {
 		m_vld.nVertices++;
 		m_vld.nLights += nLights;
 		}
-	//lightManager.Index (0) [0].nActive = gameData.render.lights.dynamic.shader.iVertexLights [0];
+	//lightManager.Index (0) [0].nActive = gameData.renderData.lights.dynamic.shader.iVertexLights [0];
 	}	
 else if (nState == 2) {
 	Render ();

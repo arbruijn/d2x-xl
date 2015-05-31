@@ -293,7 +293,7 @@ void FreeAddonSounds (void);
 #	define FreeAddonSounds()
 #endif
 
-#define BM_ADDON(_i)					(&gameData.pig.tex.addonBitmaps [_i])
+#define BM_ADDON(_i)					(&gameData.pigData.tex.addonBitmaps [_i])
 #define BM_ADDON_RETICLE_GREEN	2
 #define BM_ADDON_RETICLE_RED		12
 

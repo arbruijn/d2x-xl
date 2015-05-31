@@ -75,8 +75,8 @@ void COGL::FlushShadowMaps (int32_t nEffects)
 {
 	static const char* szShadowMap [] = {"shadowMap", "shadow1", "shadow2", "shadow3"};
 
-	float screenSize [2] = { float (gameData.render.screen.Width ()), float (gameData.render.screen.Height ()) };
-	float windowScale [2] = { 1.0f / float (gameData.render.screen.Width ()), 1.0f / float (gameData.render.screen.Height ()) };
+	float screenSize [2] = { float (gameData.renderData.screen.Width ()), float (gameData.renderData.screen.Height ()) };
+	float windowScale [2] = { 1.0f / float (gameData.renderData.screen.Width ()), 1.0f / float (gameData.renderData.screen.Height ()) };
 	float zScale = 5000.0f / 4999.0f;
 
 if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1, 0) != 0)) {

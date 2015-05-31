@@ -64,14 +64,14 @@ int32_t nDbgPowerup = -1;
 
 void CObject::SetCreationTime (fix xCreationTime) 
 { 
-m_xCreationTime = ((xCreationTime < 0) ? gameData.time.xGame : xCreationTime); 
+m_xCreationTime = ((xCreationTime < 0) ? gameData.timeData.xGame : xCreationTime); 
 }
 
 //------------------------------------------------------------------------------
 
 fix CObject::LifeTime (void) 
 { 
-return gameData.time.xGame - m_xCreationTime; 
+return gameData.timeData.xGame - m_xCreationTime; 
 }
 
 //------------------------------------------------------------------------------
@@ -164,7 +164,7 @@ SetLifeLeft (
 	(IsEntropyGame && (nType == OBJ_POWERUP) && (nId == POW_HOARD_ORB) && (extraGameInfo [1].entropy.nVirusLifespan > 0)) ?
 	I2X (extraGameInfo [1].entropy.nVirusLifespan) : IMMORTAL_TIME);
 SetAttachedObj (-1);
-m_xCreationTime = gameData.time.xGame;
+m_xCreationTime = gameData.timeData.xGame;
 #if 0
 if (GetControlType () == CT_POWERUP)
 	CPowerupInfo::SetCount (1);
@@ -176,14 +176,14 @@ if (GetRenderType () == RT_POLYOBJ)
 
 if (GetType () == OBJ_WEAPON) {
 	CPhysicsInfo::SetFlags (CPhysInfo.GetFlags () | WI_persistent (m_info.nId) * PF_PERSISTENT);
-	CLaserInfo::SetCreationTime (gameData.time.xGame);
+	CLaserInfo::SetCreationTime (gameData.timeData.xGame);
 	CLaserInfo::SetLastHitObj (0);
 	CLaserInfo::SetScale (I2X (1));
 	}
 else if (GetType () == OBJ_DEBRIS)
 	gameData.objData.nDebris++;
 if (GetControlType () == CT_POWERUP)
-	CPowerupInfo::SetCreationTime (gameData.time.xGame);
+	CPowerupInfo::SetCreationTime (gameData.timeData.xGame);
 else if (GetControlType () == CT_EXPLOSION) {
 	CAttachedInfo::SetPrev (-1);
 	CAttachedInfo::SetNext (-1);
@@ -311,19 +311,19 @@ if (pObj->info.movementType == MT_PHYSICS)
 	pObj->SetStartVel ((CFixVector*) &CFixVector::ZERO);
 if (pObj->info.renderType == RT_POLYOBJ)
 	pObj->rType.polyObjInfo.nTexOverride = -1;
-pObj->SetCreationTime (gameData.time.xGame);
+pObj->SetCreationTime (gameData.timeData.xGame);
 
 if (pObj->info.nType == OBJ_WEAPON) {
 	Assert (pObj->info.controlType == CT_WEAPON);
 	pObj->mType.physInfo.flags |= WI_persistent (pObj->info.nId) * PF_PERSISTENT;
-	pObj->cType.laserInfo.xCreationTime = gameData.time.xGame;
+	pObj->cType.laserInfo.xCreationTime = gameData.timeData.xGame;
 	pObj->cType.laserInfo.nLastHitObj = 0;
 	pObj->cType.laserInfo.xScale = I2X (1);
 	}
 else if (pObj->info.nType == OBJ_DEBRIS)
 	gameData.objData.nDebris++;
 if (pObj->info.controlType == CT_POWERUP)
-	pObj->cType.powerupInfo.xCreationTime = gameData.time.xGame;
+	pObj->cType.powerupInfo.xCreationTime = gameData.timeData.xGame;
 else if (pObj->info.controlType == CT_EXPLOSION)
 	pObj->cType.explInfo.attached.nNext =
 	pObj->cType.explInfo.attached.nPrev =
@@ -371,7 +371,7 @@ memcpy (pClone, pObj, sizeof (CObject));
 pClone->info.nSignature = nSignature;
 pClone->info.nCreator = -1;
 pClone->mType.physInfo.thrust.SetZero ();
-pClone->SetCreationTime (gameData.time.xGame);
+pClone->SetCreationTime (gameData.timeData.xGame);
 nSegment = pObj->info.nSegment;
 pClone->info.nSegment =
 pClone->info.nPrevInSeg =
@@ -394,7 +394,7 @@ if (!pRobotInfo) {
 	PrintLog (0, "Trying to create non-existent robot (type %d)\n", nId);
 	return -1;
 	}
-return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.models.polyModels [0][pRobotInfo->nModel].Rad (), CT_AI, MT_PHYSICS, RT_POLYOBJ);
+return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.modelData.polyModels [0][pRobotInfo->nModel].Rad (), CT_AI, MT_PHYSICS, RT_POLYOBJ);
 }
 
 //------------------------------------------------------------------------------
@@ -609,10 +609,10 @@ return nObject;
 int32_t CreateWeapon (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, fix xSize, uint8_t rType)
 {
 if (rType == 255) {
-	switch (gameData.weapons.info [nId].renderType) {
+	switch (gameData.weaponData.info [0][nId].renderType) {
 		case WEAPON_RENDER_BLOB:
 			rType = RT_LASER;			// Render as a laser even if blob (see render code above for explanation)
-			xSize = gameData.weapons.info [nId].blob_size;
+			xSize = gameData.weaponData.info [0][nId].blob_size;
 			break;
 		case WEAPON_RENDER_POLYMODEL:
 			xSize = 0;	//	Filled in below.
@@ -624,7 +624,7 @@ if (rType == 255) {
 			break;
 		case WEAPON_RENDER_VCLIP:
 			rType = RT_WEAPON_VCLIP;
-			xSize = gameData.weapons.info [nId].blob_size;
+			xSize = gameData.weaponData.info [0][nId].blob_size;
 			break;
 		default:
 			PrintLog (0, "Error: Invalid weapon render nType in CreateNewWeapon\n");
@@ -646,7 +646,7 @@ return CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY
 int32_t CreateDebris (CObject *pParent, int16_t nSubModel)
 {
 return CreateObject (OBJ_DEBRIS, 0, -1, pParent->info.nSegment, pParent->info.position.vPos, pParent->info.position.mOrient,
-							gameData.models.polyModels [0][pParent->ModelId ()].SubModels ().rads [nSubModel],
+							gameData.modelData.polyModels [0][pParent->ModelId ()].SubModels ().rads [nSubModel],
 							CT_DEBRIS, MT_PHYSICS, RT_POLYOBJ);
 }
 
@@ -723,12 +723,12 @@ int32_t DropMarkerObject (CFixVector& vPos, int16_t nSegment, CFixMatrix& orient
 {
 	int16_t nObject;
 
-//Assert (gameData.models.nMarkerModel != -1);
+//Assert (gameData.modelData.nMarkerModel != -1);
 nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, vPos, orient,
-								gameData.models.polyModels [0][gameData.models.nMarkerModel].Rad (), CT_NONE, MT_NONE, RT_POLYOBJ);
+								gameData.modelData.polyModels [0][gameData.modelData.nMarkerModel].Rad (), CT_NONE, MT_NONE, RT_POLYOBJ);
 if (nObject >= 0) {
 	CObject *pObj = OBJECT (nObject);
-	pObj->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
+	pObj->rType.polyObjInfo.nModel = gameData.modelData.nMarkerModel;
 	pObj->mType.spinRate = pObj->info.position.mOrient.m.dir.u * (I2X (1) / 2);
 	//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all OBJECTS.
 	pObj->SetLife (IMMORTAL_TIME);

@@ -59,7 +59,7 @@ int32_t LaserHandler (CObject *pObj, int32_t nLevel, int32_t& nFlags, int32_t nR
 	int16_t	nLightObj = lightClusterManager.Create (pObj);
 	int16_t nFired = 0;
 
-gameData.laser.nOffset = (I2X (2) * Rand (8)) / 8;
+gameData.laserData.nOffset = (I2X (2) * Rand (8)) / 8;
 if (0 <= LaserPlayerFire (pObj, nLaser, 0, 1, 0, nLightObj))
 	nFired++;
 if (0 <= LaserPlayerFire (pObj, nLaser, 1, 0, 0, nLightObj))
@@ -142,9 +142,9 @@ if (!nFired && (nLightObj >= 0))
 	OBJECT (nLightObj)->Die ();
 if (nRoundsPerShot > 1) {
 	nLightObj = lightClusterManager.Create (pObj);
-	if (0 <= FireWeaponDelayedWithSpread (pObj, PLASMA_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
+	if (0 <= FireWeaponDelayedWithSpread (pObj, PLASMA_ID, 0, 0, 0, gameData.timeData.xFrame / 2, 1, 0, nLightObj))
 		nFired++;
-	if (0 <= FireWeaponDelayedWithSpread (pObj, PLASMA_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
+	if (0 <= FireWeaponDelayedWithSpread (pObj, PLASMA_ID, 1, 0, 0, gameData.timeData.xFrame / 2, 0, 0, nLightObj))
 		nFired++;
 	if (!nFired && (nLightObj >= 0))
 		OBJECT (nLightObj)->Die ();
@@ -225,7 +225,7 @@ if (pFiringData->nDuration <= GATLING_DELAY)
 	return 0;
 //	Only make sound for 1/4 of vulcan bullets.
 if (0 <= LaserPlayerFireSpread (pObj, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD,
-										  (pObj->info.nId != N_LOCALPLAYER) || (gameData.laser.xNextFireTime > gameData.time.xGame), 0, -1))
+										  (pObj->info.nId != N_LOCALPLAYER) || (gameData.laserData.xNextFireTime > gameData.timeData.xGame), 0, -1))
 	nFired++;
 if (nRoundsPerShot > 1) {
 	if (0 <= LaserPlayerFireSpread (pObj, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1))
@@ -290,9 +290,9 @@ if (!nFired && (nLightObj >= 0))
 	OBJECT (nLightObj)->Die ();
 if (nRoundsPerShot > 1) {
 	nLightObj = lightClusterManager.Create (pObj);
-	if (0 <= FireWeaponDelayedWithSpread (pObj, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
+	if (0 <= FireWeaponDelayedWithSpread (pObj, PHOENIX_ID, 0, 0, 0, gameData.timeData.xFrame / 2, 1, 0, nLightObj))
 	nFired++;
-	if (0 <= FireWeaponDelayedWithSpread (pObj, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
+	if (0 <= FireWeaponDelayedWithSpread (pObj, PHOENIX_ID, 1, 0, 0, gameData.timeData.xFrame / 2, 0, 0, nLightObj))
 	nFired++;
 	if (!nFired && (nLightObj >= 0))
 		OBJECT (nLightObj)->Die ();
@@ -336,7 +336,7 @@ pWeaponHandler weaponHandlers [] = {
 int32_t FireWeapon (int16_t nObject, uint8_t nWeapon, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
 {
 if (nWeapon > OMEGA_INDEX) {
-	gameData.weapons.nPrimary = 0;
+	gameData.weaponData.nPrimary = 0;
 	nRoundsPerShot = 0;
 	}
 else {

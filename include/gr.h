@@ -47,7 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int32_t GrInit(void);
 
-// This function sets up the main gameData.render.screen.  It should be called whenever
+// This function sets up the main gameData.renderData.screen.  It should be called whenever
 // the video mode changes.
 int32_t GrInitScreen(int32_t mode, int32_t w, int32_t h, int32_t x, int32_t y, int32_t rowSize, uint8_t *data);
 

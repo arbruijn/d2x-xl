@@ -210,7 +210,7 @@ int32_t CLightningManager::Shutdown (bool bForce)
 if (!bForce && (m_bDestroy >= 0))
 	m_bDestroy = 1;
 else {
-	uint32_t bSem = gameData.app.semaphores [SEM_LIGHTNING];
+	uint32_t bSem = gameData.appData.semaphores [SEM_LIGHTNING];
 	if (!bSem)
 		SEM_ENTER (SEM_LIGHTNING)
 	int32_t nCurrent = -1;
@@ -608,9 +608,9 @@ else {
 	if (nSegment == nDbgSeg)
 		BRP;
 #endif
-	if (pLight->nFrame != gameData.app.nFrameCount) {
+	if (pLight->nFrame != gameData.appData.nFrameCount) {
 		memset (pLight, 0, sizeof (*pLight));
-		pLight->nFrame = gameData.app.nFrameCount;
+		pLight->nFrame = gameData.appData.nFrameCount;
 		pLight->nSegment = nSegment;
 		pLight->nNext = m_nFirstLight;
 		m_nFirstLight = nSegment;

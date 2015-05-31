@@ -36,6 +36,6 @@ int32_t UpdateOmegaLightnings (CObject *pParentObj, CObject *pTargetObj);
 void DestroyOmegaLightnings (int16_t nObject);
 void SetMaxOmegaCharge (void);
 
-#define MAX_OMEGA_CHARGE (gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? gameData.omega.xMaxCharge : DEFAULT_MAX_OMEGA_CHARGE)
+#define MAX_OMEGA_CHARGE (gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? gameData.omegaData.xMaxCharge : DEFAULT_MAX_OMEGA_CHARGE)
 
 #endif /* _OMEGA_H */

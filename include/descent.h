@@ -2809,7 +2809,7 @@ class CPigData {
 class CMuzzleData {
 	public:
 		int32_t				queueIndex;
-		tMuzzleInfo		info [MUZZLE_QUEUE_MAX];
+		tMuzzleInfo			info [MUZZLE_QUEUE_MAX];
 };
 
 #include "weapon.h"
@@ -2832,8 +2832,7 @@ class CWeaponData {
 		int8_t				bTripleFusion;
 		tFiringData			firing [2];
 		int32_t				nTypes [2];
-		CStaticArray< CWeaponInfo, MAX_WEAPON_TYPES >	info; // [MAX_WEAPON_TYPES];
-		CStaticArray< CD1WeaponInfo, D1_MAX_WEAPON_TYPES >	infoD1; // [D1_MAX_WEAPON_TYPES];
+		CStaticArray< CWeaponInfo, D2_MAX_WEAPON_TYPES >	info [2]; // [MAX_WEAPON_TYPES];
 		CArray<CFloatVector>	color;
 		uint8_t				bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
 		fix					xMinTrackableDot;
@@ -2844,8 +2843,8 @@ class CWeaponData {
 		void Destroy (void);
 };
 
-#define bLastPrimaryWasSuper (gameData.weapons.bLastWasSuper [0])
-#define bLastSecondaryWasSuper (gameData.weapons.bLastWasSuper [1])
+#define bLastPrimaryWasSuper (gameData.weaponData.bLastWasSuper [0])
+#define bLastSecondaryWasSuper (gameData.weaponData.bLastWasSuper [1])
 
 //------------------------------------------------------------------------------
 
@@ -3324,12 +3323,12 @@ typedef struct tProfilerData {
 	int32_t					bToggle;
 } tProfilerData;
 
-#define PROF_INIT				memset(&gameData.profiler, 0, sizeof (gameData.profiler));
+#define PROF_INIT				memset(&gameData.profilerData, 0, sizeof (gameData.profilerData));
 #define PROF_START			time_t tProf = clock ();
 #define PROF_CONT				tProf = clock ();
-#define PROF_END(_tag)		(gameData.profiler.t [_tag]) += clock () - tProf;
-#define PROF_RESET(_tag)	(gameData.profiler.t [_tag]) = 0;
-#define PROF_TOGGLE			if (gameData.profiler.bToggle) { \
+#define PROF_END(_tag)		(gameData.profilerData.t [_tag]) += clock () - tProf;
+#define PROF_RESET(_tag)	(gameData.profilerData.t [_tag]) = 0;
+#define PROF_TOGGLE			if (gameData.profilerData.bToggle) { \
 										gameStates.render.bShowProfiler = (gameStates.render.bShowProfiler + 1) % 3; \
 										PROF_INIT; \
 										}
@@ -3482,7 +3481,7 @@ class CAITarget {
 		CObject*						pObj;
 };
 
-#define TARGETOBJ	(gameData.ai.target.pObj ? gameData.ai.target.pObj : gameData.objData.pConsole)
+#define TARGETOBJ	(gameData.aiData.target.pObj ? gameData.aiData.target.pObj : gameData.objData.pConsole)
 
 class CAIData {
 	public:
@@ -3945,49 +3944,49 @@ class CGameData {
 		CTriggerData		trigData;
 		CObjectData			objData;
 		CRobotData			botData;
-		CRenderData			render;
-		CEffectData			effects;
-		CPigData				pig;
-		CModelData			models;
+		CRenderData			renderData;
+		CEffectData			effectData;
+		CPigData				pigData;
+		CModelData			modelData;
 		CMultiplayerData	multiplayer;
 		CMultiGameData		multigame;
-		CMuzzleData			muzzle;
-		CWeaponData			weapons;
-		CEntropyData		entropy;
-		CReactorData		reactor;
+		CMuzzleData			muzzleData;
+		CWeaponData			weaponData;
+		CEntropyData		entropyData;
+		CReactorData		reactorData;
 		//CMarkerData			marker;
-		CBossData			bosses; // [MAX_BOSS_COUNT];
-		CAIData				ai;
-		CEndLevelData		endLevel;
-		CMenuData			menu;
-		CProducerData		producers;
-		CDemoData			demo;
-		CEscortData			escort;
-		CThiefData			thief;
-		CHoardData			hoard;
-		CHUDData				hud;
-		CTerrainData		terrain;
-		CTimeData			time;
-		CVertColorData		vertColor;
-		CThreadData			threads;
+		CBossData			bossData; // [MAX_BOSS_COUNT];
+		CAIData				aiData;
+		CEndLevelData		endLevelData;
+		CMenuData			menuData;
+		CProducerData		producerData;
+		CDemoData			demoData;
+		CEscortData			escortData;
+		CThiefData			thiefData;
+		CHoardData			hoardData;
+		CHUDData				hudData;
+		CTerrainData		terrainData;
+		CTimeData			timeData;
+		CVertColorData		vertColorData;
+		CThreadData			threadData;
 	#if DBG
 		CSpeedtestData		speedtest;
 	#endif
-		CPhysicsData		physics;
-		CLaserData			laser;
-		CFusionData			fusion;
-		COmegaData			omega;
-		CMissileData		missiles;
-		CCockpitData		cockpit;
-		CCollisionData		collisions;
-		CScoreData			score;
+		CPhysicsData		physicsData;
+		CLaserData			laserData;
+		CFusionData			fusionData;
+		COmegaData			omegaData;
+		CMissileData		missileData;
+		CCockpitData		cockpitData;
+		CCollisionData		collisionData;
+		CScoreData			scoreData;
 		CTrackIRData		trackIR;
-		CStatsData			stats;
+		CStatsData			statsData;
 		CTextData			messages [2];
-		CTextData			sounds;
-		CApplicationData	app;
+		CTextData			soundData;
+		CApplicationData	appData;
 #if PROFILING
-		tProfilerData		profiler;
+		tProfilerData		profilerData;
 #endif
 
 	public:
@@ -4001,9 +4000,9 @@ class CGameData {
 		int32_t FloatingStereoOffset2D (int32_t x, bool bForce = false);
 		void SetStereoSeparation (int32_t nFrame);
 		int32_t SetStereoOffsetType (int32_t nType) { 
-			int32_t nOldType = render.nStereoOffsetType;
+			int32_t nOldType = renderData.nStereoOffsetType;
 			if (nType >= 0)
-				render.nStereoOffsetType = nType; 
+				renderData.nStereoOffsetType = nType; 
 			return nOldType;
 			}
 
@@ -4022,6 +4021,8 @@ class CGameData {
 		CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 		tRobotInfo* RobotInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine);
 		tRobotInfo* RobotInfo (CObject* pObj, int32_t nChecks, const char* pszFile, int32_t nLine);
+		CWeaponInfo* WeaponInfo (int32_t nId, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
+		CWeaponInfo* WeaponInfo (CObject* pObj, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 
 #else
 
@@ -4032,10 +4033,12 @@ class CGameData {
 		CTrigger* GeoTrigger (int32_t nTrigger);
 		CTrigger* ObjTrigger (int32_t nTrigger);
 		tRobotInfo* RobotInfo (int32_t nId);
-		tRobotInfo* RobotInfo (CObject* pObj);
+		tRobotInfo* RobotInfo (CObject *pObj);
+		CWeaponInfo* WeaponInfo (int32_t nId);
+		CWeaponInfo* WeaponInfo (CObject *pObj);
 
 #endif
-		inline int32_t X (int32_t x, bool bForce = false) { return render.nStereoOffsetType ? x - ((render.nStereoOffsetType == STEREO_OFFSET_FLOATING) ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()) : x; }
+		inline int32_t X (int32_t x, bool bForce = false) { return renderData.nStereoOffsetType ? x - ((renderData.nStereoOffsetType == STEREO_OFFSET_FLOATING) ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()) : x; }
 };
 
 extern CGameData gameData;
@@ -4148,13 +4151,13 @@ if (v) {
 	if (i < 0)
 		v->Assign (p->ViewPos ());
 	else
-		*v = gameData.render.pVertex [i];
+		*v = gameData.renderData.pVertex [i];
 	}
 else {
 	if (i < 0)
 		OglVertex3x (p->ViewPos ().v.coord.x, p->ViewPos ().v.coord.y, p->ViewPos ().v.coord.z);
 	else
-		glVertex3fv (reinterpret_cast<GLfloat *> (gameData.render.pVertex + i));
+		glVertex3fv (reinterpret_cast<GLfloat *> (gameData.renderData.pVertex + i));
 	}
 }
 
@@ -4211,7 +4214,7 @@ extern fix nDebrisLife [];
 #define TRIGGERS(_nType)	gameData.trigData.triggers [_nType]
 #define GEOTRIGGERS			TRIGGERS(0)
 #define OBJTRIGGERS			TRIGGERS(1)
-#define RENDERPOINTS			gameData.render.mine.visibility [0].points
+#define RENDERPOINTS			gameData.renderData.mine.visibility [0].points
 
 #if DBG
 	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
@@ -4220,6 +4223,7 @@ extern fix nDebrisLife [];
 	#define GEOTRIGGER(_id)			gameData.GeoTrigger (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
 	#define OBJTRIGGER(_id)			gameData.ObjTrigger (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
 	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
+	#define WEAPONINFO(_id)			gameData.WeaponInfo (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
 	#define SEGMENTEX(_id, _f)		gameData.Segment (_id, _f, __FILE__, __LINE__)
 	#define OBJECTEX(_id, _f)		gameData.Object (_id, _f, __FILE__, __LINE__)
 	#define WALLEX(_id, _f)			gameData.Wall (_id, _f, __FILE__, __LINE__)
@@ -4233,6 +4237,7 @@ extern fix nDebrisLife [];
 	#define GEOTRIGGER(_id)			gameData.GeoTrigger (_id)
 	#define OBJTRIGGER(_id)			gameData.ObjTrigger (_id)
 	#define ROBOTINFO(_id)			gameData.RobotInfo (_id)
+	#define WEAPONINFO(_id)			gameData.WeaponInfo (_id)
 	#define SEGMENTEX(_id, _f)		gameData.Segment (_id)
 	#define OBJECTEX(_id, _f)		gameData.Object (_id)
 	#define WALLEX(_id, _f)			gameData.Wall (_id)
@@ -4252,7 +4257,7 @@ static inline CFixVector *PolyObjPos (CObject *pObj, CFixVector *vPosP)
 {
 CFixVector vPos = OBJPOS (pObj)->vPos;
 if (pObj->info.renderType == RT_POLYOBJ) {
-	*vPosP = *pObj->View (0) * gameData.models.offsets [pObj->ModelId ()];
+	*vPosP = *pObj->View (0) * gameData.modelData.offsets [pObj->ModelId ()];
 	*vPosP += vPos;
 	return vPosP;
 	}
@@ -4335,12 +4340,12 @@ static inline void SemWait (uint32_t sem)
 {
 	time_t t0 = gameStates.app.nSDLTicks [0];
 
-while (gameData.app.semaphores [sem]) {
+while (gameData.appData.semaphores [sem]) {
 	G3_SLEEP (0);
 	if (SDL_GetTicks () - t0 > 50) {
 		PrintLog (0, "multi threading got stuck (semaphore: %d)\n", sem);
 		gameStates.app.bMultiThreaded = 1;
-		gameData.app.semaphores [sem] = 0;
+		gameData.appData.semaphores [sem] = 0;
 		break;
 		}
 	}
@@ -4352,13 +4357,13 @@ static inline void SemEnter (uint32_t sem, const char *pszFile, int32_t nLine)
 {
 SemWait (sem);
 //PrintLog (0, "SemEnter (%d) @ %s:%d\n", sem, pszFile, nLine);
-gameData.app.semaphores [sem]++;
+gameData.appData.semaphores [sem]++;
 }
 
 static inline void SemLeave (uint32_t sem, const char *pszFile, int32_t nLine)
 {
-if (gameData.app.semaphores [sem]) {
-	gameData.app.semaphores [sem]--;
+if (gameData.appData.semaphores [sem]) {
+	gameData.appData.semaphores [sem]--;
 	//PrintLog (0, "SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
 	}
 else
@@ -4377,13 +4382,13 @@ else
 static inline void SemEnter (uint32_t sem)
 {
 SemWait (sem);
-gameData.app.semaphores [sem]++;
+gameData.appData.semaphores [sem]++;
 }
 
 static inline void SemLeave (uint32_t sem)
 {
-if (gameData.app.semaphores [sem])
-	gameData.app.semaphores [sem]--;
+if (gameData.appData.semaphores [sem])
+	gameData.appData.semaphores [sem]--;
 }
 
 #define SEM_WAIT(_sem)	if (gameStates.app.bMultiThreaded) SemWait (_sem);
@@ -4438,9 +4443,199 @@ inline tRobotInfo* CGameData::RobotInfo (int32_t nId) {
 	return botData.info [gameStates.app.bD1Mission && (nId < botData.nTypes [1])] + nId; 
 	}
 
+inline CWeaponInfo* CGameData::WeaponInfo (int32_t nId) {
+	if (nId >= (gameStates.app.bD1Mission ? D1_MAX_WEAPON_TYPES : D2_MAX_WEAPON_TYPES))
+		return NULL;
+	return weaponData.info [gameStates.app.bD1Mission] + nId; 
+	}
+
 inline tRobotInfo* CGameData::RobotInfo (CObject* pObj) {
 	return (pObj && (pObj->IsRobot () || pObj->IsReactor ())) ? RobotInfo (pObj->Id ()) : NULL;
 	}
+
+inline int8_t WI_persistent (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->persistent : 0;
+}
+	
+inline int8_t WI_fireCount (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->fireCount : 0;
+}
+
+inline int8_t WI_ammo_usage (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->nAmmoUsage : 0;
+}
+
+inline int8_t WI_destructible (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->destructible : 0;
+}
+
+inline int8_t WI_matter (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->matter : 0;
+}
+
+inline int8_t WI_bounce (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->bounce : 0;
+}
+
+inline int8_t WI_homingFlag (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->homingFlag : 0;
+}
+
+inline void WI_set_homingFlag (int32_t nId, int8_t flag) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+if (pInfo)
+	pInfo->homingFlag = flag;
+}
+
+inline fix WI_energy_usage (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->xEnergyUsage : 0;
+}
+
+inline fix WI_fire_wait (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->xFireWait : 0;
+}
+
+inline fix WI_strength(int32_t nId, int32_t nDifficulty) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->strength [Clamp (nDifficulty, 0, DIFFICULTY_LEVEL_COUNT - 1)] : 0;
+}
+
+inline fix WI_speed (int32_t nId, int32_t nDifficulty) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->speed [Clamp (nDifficulty, 0, DIFFICULTY_LEVEL_COUNT - 1)] : 0;
+}
+
+inline fix WI_mass (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->mass : 0;
+}
+
+inline fix WI_drag (int32_t nId)	{
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->drag : 0;
+}
+
+inline fix WI_thrust (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->thrust : 0;
+}
+
+inline fix WI_light (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->light : 0;
+}
+
+inline fix WI_lifetime (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->lifetime : 0;
+}
+
+inline fix WI_damage_radius (int32_t nId)	{
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->xDamageRadius : 0;
+}
+
+#else
+
+inline int8_t WI_persistent (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->persistent : 0;
+}
+	
+inline int8_t WI_fireCount (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->fireCount : 0;
+}
+
+inline int8_t WI_ammo_usage (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->nAmmoUsage : 0;
+}
+
+inline int8_t WI_destructible (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->destructible : 0;
+}
+
+inline int8_t WI_matter (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->matter : 0;
+}
+
+inline int8_t WI_bounce (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->bounce : 0;
+}
+
+inline int8_t WI_homingFlag (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->homingFlag : 0;
+}
+
+inline void WI_set_homingFlag (int32_t nId, int8_t flag) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+if (pInfo)
+	pInfo->homingFlag = flag;
+}
+
+inline fix WI_energy_usage (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->xEnergyUsage : 0;
+}
+
+inline fix WI_fire_wait (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->xFireWait : 0;
+}
+
+inline fix WI_strength(int32_t nId, int32_t nDifficulty) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->strength [Clamp (nDifficulty, 0, DIFFICULTY_LEVEL_COUNT - 1)] : 0;
+}
+
+inline fix WI_speed (int32_t nId, int32_t nDifficulty) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->speed [Clamp (nDifficulty, 0, DIFFICULTY_LEVEL_COUNT - 1)] : 0;
+}
+
+inline fix WI_mass (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->mass : 0;
+}
+
+inline fix WI_drag (int32_t nId)	{
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->drag : 0;
+}
+
+inline fix WI_thrust (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->thrust : 0;
+}
+
+inline fix WI_light (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->light : 0;
+}
+
+inline fix WI_lifetime (int32_t nId) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->lifetime : 0;
+}
+
+inline fix WI_damage_radius (int32_t nId)	{
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
+return pInfo ? pInfo->xDamageRadius : 0;
+}
 
 #endif
 

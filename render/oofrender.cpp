@@ -631,13 +631,13 @@ int32_t CModel::RenderShadow (CObject *pObj, float *fLight)
 {
 	int16_t		i, *nearestLightP = lightManager.NearestSegLights () + gameData.objData.pConsole->info.nSegment * MAX_NEAREST_LIGHTS;
 
-gameData.render.shadows.nLight = 0; 
-for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*nearestLightP >= 0); i++, nearestLightP++) {
-	gameData.render.shadows.pLight = lightManager.RenderLights (*nearestLightP);
-	if (!gameData.render.shadows.pLight [0].render.bState)
+gameData.renderData.shadows.nLight = 0; 
+for (i = 0; (gameData.renderData.shadows.nLight < gameOpts->render.shadows.nLights) && (*nearestLightP >= 0); i++, nearestLightP++) {
+	gameData.renderData.shadows.pLight = lightManager.RenderLights (*nearestLightP);
+	if (!gameData.renderData.shadows.pLight [0].render.bState)
 		continue;
-	gameData.render.shadows.nLight++;
-	memcpy (&vrLightPos, gameData.render.shadows.pLight [0].render.vPosf + 1, sizeof (CFloatVector));
+	gameData.renderData.shadows.nLight++;
+	memcpy (&vrLightPos, gameData.renderData.shadows.pLight [0].render.vPosf + 1, sizeof (CFloatVector));
 	if (!Draw (pObj, fLight))
 		return 0;
 	if (FAST_SHADOWS)

@@ -127,24 +127,24 @@ do {
 			return 0;
 		}
 	if (tiRender.nTask == rtSortSegZRef) {
-		ComputeThreadRange (nId, gameData.render.mine.visibility [0].nSegments, nStart, nEnd);
-		gameData.render.mine.visibility [nId].QSortZRef (nStart, nEnd);
+		ComputeThreadRange (nId, gameData.renderData.mine.visibility [0].nSegments, nStart, nEnd);
+		gameData.renderData.mine.visibility [nId].QSortZRef (nStart, nEnd);
 		}
 	else if (tiRender.nTask == rtInitSegZRef) {
-		ComputeThreadRange (nId, gameData.render.mine.visibility [0].nSegments, nStart, nEnd);
-		gameData.render.mine.visibility [nId].InitZRef (nStart, nEnd, nId);
+		ComputeThreadRange (nId, gameData.renderData.mine.visibility [0].nSegments, nStart, nEnd);
+		gameData.renderData.mine.visibility [nId].InitZRef (nStart, nEnd, nId);
 		}
 	else if (tiRender.nTask == rtStaticVertLight) {
 		ComputeThreadRange (nId, gameData.segData.nVertices, nStart, nEnd);
 		lightManager.GatherStaticVertexLights (nStart, nEnd, nId);
 		}
 	else if (tiRender.nTask == rtComputeFaceLight) {
-		if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.visibility [0].nSegments < gameData.segData.nSegments)) {
+		if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.renderData.mine.visibility [0].nSegments < gameData.segData.nSegments)) {
 			// special handling: 
 			// tiMiddle is the index at which an equal number of visible faces is both at indices below and above it
 			// use it to balance thread load
 			if (gameStates.app.nThreads & 1) {
-				ComputeThreadRange (nId, gameData.render.mine.visibility [0].nSegments, nStart, nEnd);
+				ComputeThreadRange (nId, gameData.renderData.mine.visibility [0].nSegments, nStart, nEnd);
 				ComputeFaceLight (nStart, nEnd, nId);
 				}
 			else {
@@ -154,7 +154,7 @@ do {
 					ComputeFaceLight (nStart, nEnd, nId);
 					}
 				else {
-					ComputeThreadRange (nId - nPivot, gameData.render.mine.visibility [0].nSegments - tiRender.nMiddle, nStart, nEnd, nPivot);
+					ComputeThreadRange (nId - nPivot, gameData.renderData.mine.visibility [0].nSegments - tiRender.nMiddle, nStart, nEnd, nPivot);
 					ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, nId);
 					}
 				}
@@ -276,7 +276,7 @@ if (gameStates.app.nThreads > 1) {
 	tiEffects.bDone = 0;
 	tiEffects.bExec = 0;
 	if	(!(tiEffects.pThread || (tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL))))
-		gameData.app.bUseMultiThreading [rtEffects] = 0;
+		gameData.appData.bUseMultiThreading [rtEffects] = 0;
 	#endif
 	}
 #endif

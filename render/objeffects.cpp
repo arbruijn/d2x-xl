@@ -54,7 +54,7 @@ if (IsTeamGame && (PLAYER (pObj->info.nId).flags & PLAYER_FLAGS_FLAG)) {
 
 		CFixVector		vPos = pObj->info.position.vPos;
 		CFloatVector	vPosf, verts [4];
-		tFlagData*		pf = gameData.pig.flags + !GetTeam (pObj->info.nId);
+		tFlagData*		pf = gameData.pigData.flags + !GetTeam (pObj->info.nId);
 		tPathPoint*		pp = pf->path.GetPoint ();
 		int32_t			i, bStencil;
 		float				r;
@@ -66,7 +66,7 @@ if (IsTeamGame && (PLAYER (pObj->info.nId).flags & PLAYER_FLAGS_FLAG)) {
 		ogl.SetTexturing (true);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		LoadTexture (pf->bmi.index, 0, 0);
-		pBm = gameData.pig.tex.pBitmap + pf->pAnimInfo->frames [pf->animState.nCurFrame].index;
+		pBm = gameData.pigData.tex.pBitmap + pf->pAnimInfo->frames [pf->animState.nCurFrame].index;
 		pBm->SetTranspType (2);
 		vPos += pObj->info.position.mOrient.m.dir.f * (-pObj->info.xSize);
 		r = X2F (pObj->info.xSize);
@@ -117,8 +117,8 @@ else {
 	if (bWarp || pEffectObj) {
 		if (pEffectObj) {
 			pEffectObj->info.position.mOrient = info.position.mOrient;
-			if (gameData.effects.animations [0][ANIM_PLAYER_APPEARANCE].nSound > -1)
-				audio.CreateObjectSound (gameData.effects.animations [0][ANIM_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (pEffectObj));
+			if (gameData.effectData.animations [0][ANIM_PLAYER_APPEARANCE].nSound > -1)
+				audio.CreateObjectSound (gameData.effectData.animations [0][ANIM_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (pEffectObj));
 			}
 		if (!bWarp)
 			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), pEffectObj ? pEffectObj->LifeLeft () : I2X (1), info.xSize, 1, OBJPOS (this)->vPos));

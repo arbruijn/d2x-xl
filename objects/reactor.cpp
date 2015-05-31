@@ -45,7 +45,7 @@ void CalcReactorGunPoint (CFixVector *vGunPoint, CFixVector *vGunDir, CObject *p
 
 Assert (pObj->info.nType == OBJ_REACTOR);
 Assert (pObj->info.renderType == RT_POLYOBJ);
-props = &gameData.reactor.props [pObj->info.nId];
+props = &gameData.reactorData.props [pObj->info.nId];
 //instance gun position & orientation
 *vGunPoint = *pView * props->gunPoints[nGun];
 *vGunPoint += pObj->info.position.vPos;
@@ -91,13 +91,13 @@ int32_t nAlanPavlishReactorTimes [2][DIFFICULTY_LEVEL_COUNT] = {{90,60,45,35,30}
 void DoReactorDeadFrame (void)
 {
 if (gameStates.gameplay.nReactorCount [0] < gameStates.gameplay.nReactorCount [1]) {
-	tReactorStates*	pStates = &gameData.reactor.states [0];
+	tReactorStates*	pStates = &gameData.reactorData.states [0];
 
 	for (int32_t i = 0; i < gameStates.gameplay.nReactorCount [1]; i++, pStates++) {
 		if ((pStates->nDeadObj != -1) && 
 			 (OBJECT (pStates->nDeadObj)->info.nType == OBJ_REACTOR) &&
-			 (gameData.reactor.countdown.nSecsLeft > 0))
-		if (RandShort () < gameData.time.xFrame * 4)
+			 (gameData.reactorData.countdown.nSecsLeft > 0))
+		if (RandShort () < gameData.timeData.xFrame * 4)
 			CreateSmallFireballOnObject (OBJECT (pStates->nDeadObj), I2X (1), 1);
 		}
 	}
@@ -116,11 +116,11 @@ void DoCountdownFrame (void)
 
 	static fix cdtFrameTime;
 
-if (!gameData.reactor.bDestroyed || gameStates.app.bPlayerIsDead) {
+if (!gameData.reactorData.bDestroyed || gameStates.app.bPlayerIsDead) {
 	cdtFrameTime = 0;
 	return;
 	}
-cdtFrameTime += gameData.time.xRealFrame;
+cdtFrameTime += gameData.timeData.xRealFrame;
 if (gameStates.limitFPS.bCountDown && !gameStates.app.tick40fps.bTick)
 	return;
 if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {  // get countdown in OEM and SHAREWARE only
@@ -129,13 +129,13 @@ if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {  // get countdown in OEM and
 		 (missionManager.nCurrentLevel == missionManager.nLastLevel)) {
 		if (!IsMultiGame)
 			return;
-		if (gameData.app.GameMode (GM_MULTI_ROBOTS))
+		if (gameData.appData.GameMode (GM_MULTI_ROBOTS))
 			return;
 		}
 	}
 
 //	Control center destroyed, rock the player's ship.
-fc = gameData.reactor.countdown.nSecsLeft;
+fc = gameData.reactorData.countdown.nSecsLeft;
 if (fc > 16)
 	fc = 16;
 //	At Trainee, decrease rocking of ship by 4x.
@@ -146,36 +146,36 @@ h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
 gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.x += (FixMul (SRandShort (), h)) / xScale;
 gameData.objData.pConsole->mType.physInfo.rotVel.v.coord.z += (FixMul (SRandShort (), h)) / xScale;
 //	Hook in the rumble sound effect here.
-oldTime = gameData.reactor.countdown.nTimer;
+oldTime = gameData.reactorData.countdown.nTimer;
 if (!TimeStopped ())
-	gameData.reactor.countdown.nTimer -= cdtFrameTime;
+	gameData.reactorData.countdown.nTimer -= cdtFrameTime;
 if (IsMultiGame &&  IAmGameHost ())
 	MultiSendCountdown ();
 cdtFrameTime = 0;
-gameData.reactor.countdown.nSecsLeft = X2I (gameData.reactor.countdown.nTimer + I2X (7) / 8);
-if ((oldTime > COUNTDOWN_VOICE_TIME) && (gameData.reactor.countdown.nTimer <= COUNTDOWN_VOICE_TIME)) 
+gameData.reactorData.countdown.nSecsLeft = X2I (gameData.reactorData.countdown.nTimer + I2X (7) / 8);
+if ((oldTime > COUNTDOWN_VOICE_TIME) && (gameData.reactorData.countdown.nTimer <= COUNTDOWN_VOICE_TIME)) 
 	audio.PlaySound (SOUND_COUNTDOWN_13_SECS, SOUNDCLASS_GENERIC, I2X (3));
-if (X2I (oldTime + I2X (7) / 8) != gameData.reactor.countdown.nSecsLeft) {
-	if ((gameData.reactor.countdown.nSecsLeft >= 0) && (gameData.reactor.countdown.nSecsLeft < 10))
-		audio.PlaySound ((int16_t) (SOUND_COUNTDOWN_0_SECS + gameData.reactor.countdown.nSecsLeft), SOUNDCLASS_GENERIC, I2X (3));
-	if (gameData.reactor.countdown.nSecsLeft == gameData.reactor.countdown.nTotalTime - 1)
+if (X2I (oldTime + I2X (7) / 8) != gameData.reactorData.countdown.nSecsLeft) {
+	if ((gameData.reactorData.countdown.nSecsLeft >= 0) && (gameData.reactorData.countdown.nSecsLeft < 10))
+		audio.PlaySound ((int16_t) (SOUND_COUNTDOWN_0_SECS + gameData.reactorData.countdown.nSecsLeft), SOUNDCLASS_GENERIC, I2X (3));
+	if (gameData.reactorData.countdown.nSecsLeft == gameData.reactorData.countdown.nTotalTime - 1)
 		audio.PlaySound (SOUND_COUNTDOWN_29_SECS, SOUNDCLASS_GENERIC, I2X (3));
 	}					
-if (gameData.reactor.countdown.nTimer > 0) {
-	fix size = (I2X (gameData.reactor.countdown.nTotalTime) - gameData.reactor.countdown.nTimer) / F2X (0.65);
-	fix oldSize = (I2X (gameData.reactor.countdown.nTotalTime) - oldTime) / F2X (0.65);
-	if ((size != oldSize) && (gameData.reactor.countdown.nSecsLeft < gameData.reactor.countdown.nTotalTime - 5))	// Every 2 seconds!
+if (gameData.reactorData.countdown.nTimer > 0) {
+	fix size = (I2X (gameData.reactorData.countdown.nTotalTime) - gameData.reactorData.countdown.nTimer) / F2X (0.65);
+	fix oldSize = (I2X (gameData.reactorData.countdown.nTotalTime) - oldTime) / F2X (0.65);
+	if ((size != oldSize) && (gameData.reactorData.countdown.nSecsLeft < gameData.reactorData.countdown.nTotalTime - 5))	// Every 2 seconds!
 		audio.PlaySound (SOUND_CONTROL_CENTER_WARNING_SIREN, SOUNDCLASS_GENERIC, I2X (3));
 	}
 else {
-	int32_t flashValue = X2I (-gameData.reactor.countdown.nTimer * (64 / 4));	// 4 seconds to total whiteness
+	int32_t flashValue = X2I (-gameData.reactorData.countdown.nTimer * (64 / 4));	// 4 seconds to total whiteness
 	if (oldTime > 0)
 		audio.PlaySound (SOUND_MINE_BLEW_UP);
 	paletteManager.StartEffect (flashValue, flashValue, flashValue);
 	if (paletteManager.BlueEffect () >= 64) {
-		gameData.render.frame.Activate ("DoCountdownFrame");
+		gameData.renderData.frame.Activate ("DoCountdownFrame");
 		CCanvas::Current ()->Clear (RGBA_PAL2 (31,31,31));	//make screen all white to match palette effect
-		gameData.render.frame.Deactivate ();
+		gameData.renderData.frame.Deactivate ();
 		paletteManager.ResetEffect ();	//restore palette for death message
 		DoPlayerDead ();		//kill_player ();
 		}																			
@@ -187,15 +187,15 @@ else {
 void InitCountdown (CTrigger *pTrigger, int32_t bReactorDestroyed, int32_t nTimer)
 {
 if (pTrigger && (pTrigger->m_info.time > 0))
-	gameData.reactor.countdown.nTotalTime = pTrigger->m_info.time [0];
+	gameData.reactorData.countdown.nTotalTime = pTrigger->m_info.time [0];
 else if (gameStates.app.nBaseCtrlCenExplTime != DEFAULT_CONTROL_CENTER_EXPLOSION_TIME)
-	gameData.reactor.countdown.nTotalTime = 
+	gameData.reactorData.countdown.nTotalTime = 
 		gameStates.app.nBaseCtrlCenExplTime + gameStates.app.nBaseCtrlCenExplTime * (DIFFICULTY_LEVEL_COUNT - gameStates.app.nDifficultyLevel - 1) / 2;
 else
-	gameData.reactor.countdown.nTotalTime = nAlanPavlishReactorTimes [gameStates.app.bD1Mission][gameStates.app.nDifficultyLevel];
-gameData.reactor.countdown.nTimer = (nTimer < 0) ? I2X (gameData.reactor.countdown.nTotalTime) : (nTimer ? nTimer : I2X (1));
+	gameData.reactorData.countdown.nTotalTime = nAlanPavlishReactorTimes [gameStates.app.bD1Mission][gameStates.app.nDifficultyLevel];
+gameData.reactorData.countdown.nTimer = (nTimer < 0) ? I2X (gameData.reactorData.countdown.nTotalTime) : (nTimer ? nTimer : I2X (1));
 if (bReactorDestroyed) {
-	gameData.reactor.bDestroyed = 1;
+	gameData.reactorData.bDestroyed = 1;
 	SlowMotionOff ();
 	}
 }
@@ -204,13 +204,13 @@ if (bReactorDestroyed) {
 //	Called when control center gets destroyed.
 //	This code is common to whether control center is implicitly imbedded in a boss,
 //	or is an CObject of its own.
-//	if pObj == NULL that means the boss was the control center and don't set gameData.reactor.nDeadObj
+//	if pObj == NULL that means the boss was the control center and don't set gameData.reactorData.nDeadObj
 void DoReactorDestroyedStuff (CObject *pObj)
 {
 	int32_t		i, bFinalCountdown, bReactor = pObj && (pObj->info.nType == OBJ_REACTOR);
 	CTrigger*	pTrigger = NULL;
 
-if (gameData.app.GameMode (GM_MULTI_ROBOTS) && gameData.reactor.bDestroyed)
+if (gameData.appData.GameMode (GM_MULTI_ROBOTS) && gameData.reactorData.bDestroyed)
    return; // Don't allow resetting if control center and boss on same level
 // Must toggle walls whether it is a boss or control center.
 if ((!pObj || (pObj->info.nType == OBJ_ROBOT)) && gameStates.gameplay.bKillBossCheat)
@@ -222,8 +222,8 @@ if (bFinalCountdown ||
 //	If a secret level, delete secret.sgc to indicate that we can't return to our secret level.
 	if (bFinalCountdown) {
 		KillAllBossRobots (0);
-		for (i = 0; i < gameData.reactor.triggers.m_nLinks; i++)
-			SEGMENT (gameData.reactor.triggers.m_segments [i])->ToggleWall (gameData.reactor.triggers.m_sides [i]);
+		for (i = 0; i < gameData.reactorData.triggers.m_nLinks; i++)
+			SEGMENT (gameData.reactorData.triggers.m_segments [i])->ToggleWall (gameData.reactorData.triggers.m_sides [i]);
 		if (missionManager.nCurrentLevel < 0)
 			CFile::Delete ("secret.sgc", gameFolders.user.szSavegames);
 		}
@@ -232,7 +232,7 @@ if (bFinalCountdown ||
 if (bReactor) {
 	ExecObjTriggers (pObj->Index (), 0);
 	if (0 <= (i = FindReactor (pObj))) {
-		gameData.reactor.states [i].nDeadObj = pObj->Index ();
+		gameData.reactorData.states [i].nDeadObj = pObj->Index ();
 		gameStates.gameplay.nReactorCount [0]--;
 		}
 	}
@@ -245,7 +245,7 @@ int32_t FindReactor (CObject *pObj)
 	int32_t	i, nObject = pObj->Index ();
 
 for (i = 0; i <= gameStates.gameplay.nLastReactor; i++)
-	if (gameData.reactor.states [i].nObject == nObject)
+	if (gameData.reactorData.states [i].nObject == nObject)
 		return i;
 return -1;
 }
@@ -259,9 +259,9 @@ void RemoveReactor (CObject *pObj)
 if (i < 0)
 	return;
 if (i < --gameStates.gameplay.nReactorCount [0]) 
-	gameData.reactor.states [i] = gameData.reactor.states [gameStates.gameplay.nReactorCount [0]];
-memset (gameData.reactor.states + gameStates.gameplay.nReactorCount [0], 0, 
-		  sizeof (gameData.reactor.states [gameStates.gameplay.nReactorCount [0]]));
+	gameData.reactorData.states [i] = gameData.reactorData.states [gameStates.gameplay.nReactorCount [0]];
+memset (gameData.reactorData.states + gameStates.gameplay.nReactorCount [0], 0, 
+		  sizeof (gameData.reactorData.states [gameStates.gameplay.nReactorCount [0]]));
 }
 
 //	-----------------------------------------------------------------------------
@@ -271,13 +271,13 @@ void DoReactorFrame (CObject *pObj)
 	int32_t			nBestGun, i;
 	tReactorStates	*pReactorStates;
 
-	//	If a boss level, then gameData.reactor.bPresent will be 0.
-if (!gameData.reactor.bPresent)
+	//	If a boss level, then gameData.reactorData.bPresent will be 0.
+if (!gameData.reactorData.bPresent)
 	return;
 i = FindReactor (pObj);
 if (i < 0)
 	return;
-pReactorStates = gameData.reactor.states + i;
+pReactorStates = gameData.reactorData.states + i;
 #if DBG
 if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
 	return;
@@ -301,7 +301,7 @@ if (!(pReactorStates->bHit || pReactorStates->bSeenPlayer)) {
 		// center can spot cloaked dudes.
 
 		if (IsMultiGame)
-			gameData.ai.target.vBelievedPos = OBJPOS (OBJECT (LOCALPLAYER.nObject))->vPos;
+			gameData.aiData.target.vBelievedPos = OBJPOS (OBJECT (LOCALPLAYER.nObject))->vPos;
 
 		//	Hack for special control centers which are isolated and not reachable because the
 		//	real control center is inside the boss.
@@ -323,14 +323,14 @@ if (!(pReactorStates->bHit || pReactorStates->bSeenPlayer)) {
 
 //	Periodically, make the reactor fall asleep if player not visible.
 if (pReactorStates->bHit || pReactorStates->bSeenPlayer) {
-	if ((pReactorStates->xLastVisCheckTime + I2X (5) < gameData.time.xGame) || 
-		 (pReactorStates->xLastVisCheckTime > gameData.time.xGame)) {
+	if ((pReactorStates->xLastVisCheckTime + I2X (5) < gameData.timeData.xGame) || 
+		 (pReactorStates->xLastVisCheckTime > gameData.timeData.xGame)) {
 		CFixVector	vecToPlayer;
 		fix			xDistToPlayer;
 
 		vecToPlayer = gameData.objData.pConsole->info.position.vPos - pObj->info.position.vPos;
 		xDistToPlayer = CFixVector::Normalize (vecToPlayer);
-		pReactorStates->xLastVisCheckTime = gameData.time.xGame;
+		pReactorStates->xLastVisCheckTime = gameData.timeData.xGame;
 		if (xDistToPlayer < I2X (120)) {
 			pReactorStates->bSeenPlayer = AICanSeeTarget (pObj, &pObj->info.position.vPos, 0, &vecToPlayer);
 			if (!pReactorStates->bSeenPlayer)
@@ -340,9 +340,9 @@ if (pReactorStates->bHit || pReactorStates->bSeenPlayer) {
 	}
 
 if ((pReactorStates->nNextFireTime < 0) && 
-	 !(gameStates.app.bPlayerIsDead && (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (2)))) {
-	nBestGun = CalcBestReactorGun (gameData.reactor.props [pObj->info.nId].nGuns, pReactorStates->vGunPos, pReactorStates->vGunDir, 
-											 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) ? &gameData.ai.target.vBelievedPos : &gameData.objData.pConsole->info.position.vPos);
+	 !(gameStates.app.bPlayerIsDead && (gameData.timeData.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (2)))) {
+	nBestGun = CalcBestReactorGun (gameData.reactorData.props [pObj->info.nId].nGuns, pReactorStates->vGunPos, pReactorStates->vGunDir, 
+											 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) ? &gameData.aiData.target.vBelievedPos : &gameData.objData.pConsole->info.position.vPos);
 	if (nBestGun != -1) {
 		int32_t		nRandProb, count;
 		CFixVector	vecToGoal;
@@ -350,7 +350,7 @@ if ((pReactorStates->nNextFireTime < 0) &&
 		fix			xDeltaFireTime;
 
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
-			vecToGoal = gameData.ai.target.vBelievedPos - pReactorStates->vGunPos [nBestGun];
+			vecToGoal = gameData.aiData.target.vBelievedPos - pReactorStates->vGunPos [nBestGun];
 			xDistToPlayer = CFixVector::Normalize (vecToGoal);
 			} 
 		else {
@@ -388,20 +388,20 @@ if ((pReactorStates->nNextFireTime < 0) &&
 		}
 	} 
 else
-	pReactorStates->nNextFireTime -= gameData.physics.xTime;
+	pReactorStates->nNextFireTime -= gameData.physicsData.xTime;
 }
 
 //	-----------------------------------------------------------------------------
 
 fix ReactorStrength (void)
 {
-if (gameData.reactor.nStrength == -1) {		//use old defaults
+if (gameData.reactorData.nStrength == -1) {		//use old defaults
 	//	Boost control center strength at higher levels.
 	if (missionManager.nCurrentLevel >= 0)
 		return I2X (200) + I2X (50) * missionManager.nCurrentLevel;
 	return I2X (200) - missionManager.nCurrentLevel * I2X (150);
 	}
-return I2X (gameData.reactor.nStrength);
+return I2X (gameData.reactorData.nStrength);
 }
 
 //	-----------------------------------------------------------------------------
@@ -415,42 +415,42 @@ extraGameInfo [0].nBossCount [0] =
 extraGameInfo [0].nBossCount [1] = 0;
 gameStates.gameplay.nReactorCount [0] =
 gameStates.gameplay.nReactorCount [1] = 0;
-gameData.reactor.bPresent = 0;
+gameData.reactorData.bPresent = 0;
 
 if (bRestore) {
 	for (int32_t i = 0; i < MAX_BOSS_COUNT; i++)
-		if (gameData.reactor.states [i].nObject <= 0) {
+		if (gameData.reactorData.states [i].nObject <= 0) {
 			gameStates.gameplay.nLastReactor = i - 1;
 			break;
 			}
 	}
 else {
 	gameStates.gameplay.nLastReactor = -1;
-	gameData.reactor.states.Clear (char (0xff));
+	gameData.reactorData.states.Clear (char (0xff));
 	}
 
 CObject *pObj;
 FORALL_ACTOR_OBJS (pObj) {
 	if (pObj->info.nType == OBJ_REACTOR) {
 		if (gameStates.gameplay.nReactorCount [0] && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses))
-			PrintLog (0, "Warning: Two or more control centers including %i and %i\n", gameData.reactor.states [0].nObject, pObj->Index ());
+			PrintLog (0, "Warning: Two or more control centers including %i and %i\n", gameData.reactorData.states [0].nObject, pObj->Index ());
 		else {
 			//	Compute all gun positions.
 			int32_t j = bRestore ? -1 : FindReactor (pObj);
 			int32_t bNew = j < 0;
 			if (bNew)
 				j = gameStates.gameplay.nReactorCount [0];
-			tReactorStates *pReactorStates = gameData.reactor.states + j;
+			tReactorStates *pReactorStates = gameData.reactorData.states + j;
 			if (gameStates.gameplay.nLastReactor < j)
 				gameStates.gameplay.nLastReactor = j;
 			if (bNew)
 				pReactorStates->nDeadObj = -1;
 			pReactorStates->xLastVisCheckTime = 0;
 			if (pReactorStates->nDeadObj < 0) {
-				int32_t nGuns = gameData.reactor.props [pObj->info.nId].nGuns;
+				int32_t nGuns = gameData.reactorData.props [pObj->info.nId].nGuns;
 				for (j = 0; j < nGuns; j++)
 					CalcReactorGunPoint (pReactorStates->vGunPos + j, pReactorStates->vGunDir + j, pObj, j);
-				gameData.reactor.bPresent = 1;
+				gameData.reactorData.bPresent = 1;
 				pReactorStates->nObject = pObj->Index ();
 				if (bNew) {
 					pObj->SetShield (ReactorStrength ());
@@ -469,8 +469,8 @@ FORALL_ACTOR_OBJS (pObj) {
 
 	if (pObj->IsBoss ()) {
 		int16_t nBossObj = -1;
-		if ((BOSS_COUNT < int32_t (gameData.bosses.ToS ())) || gameData.bosses.Grow ()) {
-			gameData.bosses [BOSS_COUNT].m_nObject = pObj->Index ();
+		if ((BOSS_COUNT < int32_t (gameData.bossData.ToS ())) || gameData.bossData.Grow ()) {
+			gameData.bossData [BOSS_COUNT].m_nObject = pObj->Index ();
 			++extraGameInfo [0].nBossCount [1];
 			if (ROBOTINFO (pObj) && ROBOTINFO (pObj)->bEndsLevel) {
 				++extraGameInfo [0].nBossCount [0];
@@ -493,21 +493,21 @@ if ((BOSS_COUNT <= 0) && !gameStates.gameplay.nReactorCount [0]) {
 #endif
 
 if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
-	gameData.reactor.bDisabled = 0;
-else if (gameData.bosses.ToS () > 0) {
+	gameData.reactorData.bDisabled = 0;
+else if (gameData.bossData.ToS () > 0) {
 	for (int32_t j = 0; j < gameStates.gameplay.nReactorCount [0]; j++) {
-		pObj = OBJECT (gameData.reactor.states [j].nObject);
+		pObj = OBJECT (gameData.reactorData.states [j].nObject);
 		if (pObj) {
 			--extraGameInfo [0].nBossCount [1];
 			if (ROBOTINFO (pObj) && ROBOTINFO (pObj)->bEndsLevel) 
 				--extraGameInfo [0].nBossCount [0];
 			if (j < --gameStates.gameplay.nReactorCount [0])
-				gameData.reactor.states [j] = gameData.reactor.states [gameStates.gameplay.nReactorCount [0]];
+				gameData.reactorData.states [j] = gameData.reactorData.states [gameStates.gameplay.nReactorCount [0]];
 			pObj->BashToShield (true);
 			}
 		}
-	gameData.reactor.bPresent = 0;
-	gameData.reactor.bDisabled = 1;
+	gameData.reactorData.bPresent = 0;
+	gameData.reactorData.bDisabled = 1;
 	}
 gameStates.gameplay.nReactorCount [1] = gameStates.gameplay.nReactorCount [0];
 }
@@ -519,10 +519,10 @@ void SpecialReactorStuff (void)
 #if TRACE
 console.printf (CON_DBG, "Mucking with reactor countdown time.\n");
 #endif
-if (gameData.reactor.bDestroyed) {
-	gameData.reactor.countdown.nTimer += 
+if (gameData.reactorData.bDestroyed) {
+	gameData.reactorData.countdown.nTimer += 
 		I2X (gameStates.app.nBaseCtrlCenExplTime + (DIFFICULTY_LEVEL_COUNT - 1 - gameStates.app.nDifficultyLevel) * gameStates.app.nBaseCtrlCenExplTime / (DIFFICULTY_LEVEL_COUNT-1));
-	gameData.reactor.countdown.nTotalTime = X2I (gameData.reactor.countdown.nTimer) + 2;	//	Will prevent "Self destruct sequence activated" message from replaying.
+	gameData.reactorData.countdown.nTotalTime = X2I (gameData.reactorData.countdown.nTimer) + 2;	//	Will prevent "Self destruct sequence activated" message from replaying.
 	}
 }
 
@@ -548,9 +548,9 @@ int32_t ReadReactors (CFile& cf)
 {
 	int32_t i;
 
-for (i = 0; i < gameData.reactor.nReactors; i++)
-	ReadReactor (gameData.reactor.props [i], cf); 
-return gameData.reactor.nReactors;
+for (i = 0; i < gameData.reactorData.nReactors; i++)
+	ReadReactor (gameData.reactorData.props [i], cf); 
+return gameData.reactorData.nReactors;
 }
 
 //------------------------------------------------------------------------------
@@ -558,8 +558,8 @@ return gameData.reactor.nReactors;
 int32_t ReadReactorTriggers (CFile& cf)
 {
 for (int32_t i = 0; i < gameFileInfo.control.count; i++) {
-	gameData.reactor.triggers.m_nLinks = cf.ReadShort ();
-	gameData.reactor.triggers.Read (cf);
+	gameData.reactorData.triggers.m_nLinks = cf.ReadShort ();
+	gameData.reactorData.triggers.Read (cf);
 	}
 return gameFileInfo.control.count;
 }

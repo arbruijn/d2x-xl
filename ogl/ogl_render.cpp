@@ -336,7 +336,7 @@ if (ogl.SizeVertexBuffer (nVertices)) {
 		if (p->Index () < 0)
 			ogl.VertexBuffer () [i].Assign ((*pointList)->ViewPos ());
 		else
-			ogl.VertexBuffer () [i] = gameData.render.pVertex [p->Index ()];
+			ogl.VertexBuffer () [i] = gameData.renderData.pVertex [p->Index ()];
 		}
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices);
 	}
@@ -362,7 +362,7 @@ if (ogl.SizeVertexBuffer (nVertices)) {
 		if (p->Index () < 0)
 			ogl.VertexBuffer () [i].Assign ((*pointList)->ViewPos ());
 		else
-			ogl.VertexBuffer () [i] = gameData.render.pVertex [p->Index ()];
+			ogl.VertexBuffer () [i] = gameData.renderData.pVertex [p->Index ()];
 		}
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices);
 	if (CCanvas::Current ()->Color ().rgb || (gameStates.render.grAlpha < 1.0f))
@@ -384,7 +384,7 @@ if (color->Alpha () < 0)
 CFloatVector	vertices [8];
 
 for (int32_t i = 0; i < nVertices; i++)
-	vertices [i] = gameData.render.pVertex [pointList [i]->Index ()];
+	vertices [i] = gameData.renderData.pVertex [pointList [i]->Index ()];
 transparencyRenderer.AddPoly (NULL, NULL, NULL, vertices, nVertices, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 return 0;
 }
@@ -447,7 +447,7 @@ if (ogl.SizeVertexBuffer (nVertices)) {
 		if (p->Index () < 0)
 			ogl.VertexBuffer () [i].Assign ((*pointList)->ViewPos ());
 		else
-			ogl.VertexBuffer () [i] = gameData.render.pVertex [p->Index ()];
+			ogl.VertexBuffer () [i] = gameData.renderData.pVertex [p->Index ()];
 		}
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices);
 	}
@@ -460,13 +460,13 @@ return 0;
 			if ((_src)->Index () < 0) \
 				(_dest).Assign ((_src)->ViewPos ()); \
 			else \
-				_dest = gameData.render.pVertex [(_src)->Index ()];
+				_dest = gameData.renderData.pVertex [(_src)->Index ()];
 
 #define	G3VERTPOS3(_dest,_src) \
 			if ((_src)->Index () < 0) \
 				(_dest).Assign ((_src)->ViewPos ()); \
 			else \
-				_dest = gameData.render.pVertex [(_src)->Index ()];
+				_dest = gameData.renderData.pVertex [(_src)->Index ()];
 
 //------------------------------------------------------------------------------
 
@@ -569,7 +569,7 @@ if (bShaderMerge) {
 	glUniform1f (glGetUniformLocation (activeShaderProg, "grAlpha"), gameStates.render.grAlpha);
 	}
 else if (!bDepthSort) {
-	if (bmBot == gameData.endLevel.satellite.pBm) {
+	if (bmBot == gameData.endLevelData.satellite.pBm) {
 		ogl.SelectTMU (GL_TEXTURE0, true);
 		ogl.SetTexturing (true);
 		}
@@ -622,7 +622,7 @@ if (bDepthSort) {
 		if (pPoint->Index () < 0)
 			vertices[i].Assign (pPoint->ViewPos ());
 		else
-			vertices [i] = gameData.render.pVertex [pPoint->Index ()];
+			vertices [i] = gameData.renderData.pVertex [pPoint->Index ()];
 		texCoord [0][i].v.u = X2F (uvlList [i].u);
 		texCoord [0][i].v.v = X2F (uvlList [i].v);
 		SetTexCoord (uvlList + i, orient, 1, texCoord [1] + i, 0);
@@ -676,7 +676,7 @@ else if (bLight) {
 			if (gameStates.render.nState)
 				SetTMapColor (uvlList + i, i, bmBot, 1, ogl.ColorBuffer () + i);
 			else {
-				pColor = gameData.render.color.vertices + (*pPointP)->Index ();
+				pColor = gameData.renderData.color.vertices + (*pPointP)->Index ();
 				ogl.ColorBuffer () [i].Assign (*pColor);
 				}
 			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
@@ -690,7 +690,7 @@ else if (bLight) {
 			if (gameStates.render.nState || gameStates.app.bEndLevelSequence)
 				SetTMapColor (uvlList + i, i, bmBot, 1, ogl.ColorBuffer () + i);
 			else {
-				pColor = gameData.render.color.vertices + (*pPointP)->Index ();
+				pColor = gameData.renderData.color.vertices + (*pPointP)->Index ();
 				glColor3fv (reinterpret_cast<GLfloat*> (pColor));
 				}
 			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
@@ -925,7 +925,7 @@ else {
 	}
 ogl.SetDepthMode (GL_LEQUAL);
 pBm = pBm->Override (-1);
-if (pBm == gameData.endLevel.satellite.pBm) {
+if (pBm == gameData.endLevelData.satellite.pBm) {
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
 	}

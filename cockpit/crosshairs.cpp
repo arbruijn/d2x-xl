@@ -77,17 +77,17 @@ if (transformation.HaveHeadAngles ())
 
 int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 31, 0));
-int32_t w = gameData.render.scene.Width () >> 5;
+int32_t w = gameData.renderData.scene.Width () >> 5;
 if (w < 5)
 	w = 5;
-int32_t h = I2X (w) / gameData.render.screen.Aspect ();
-int32_t x = gameData.render.scene.Width () / 2;
+int32_t h = I2X (w) / gameData.renderData.screen.Aspect ();
+int32_t x = gameData.renderData.scene.Width () / 2;
 if (xStereoSeparation) {
 	ogl.ColorMask (1,1,1,1,1);
 	x -= int32_t (float (x / 32) * X2F (xStereoSeparation));
 	}
-int32_t y = gameData.render.scene.Height () / 2;
-glLineWidth (float (gameData.render.frame.Width ()) / 640.0f);
+int32_t y = gameData.renderData.scene.Height () / 2;
+glLineWidth (float (gameData.renderData.frame.Width ()) / 640.0f);
 x = gameData.X (x);
 #if 1
 	w /= 2 << ogl.IsOculusRift ();
@@ -110,10 +110,10 @@ gameData.SetStereoOffsetType (nOffsetSave);
 void DrawScope (void)
 {
 if (scope.Load ()) {
-	float sh = float (gameData.render.screen.Height ());
-	float ch = float (gameData.render.scene.Height ());
-	float w = 0.25f * float (gameData.render.scene.Width ()) / ch;
-	float y = 1.0f - float (gameData.render.scene.Top ()) / sh;
+	float sh = float (gameData.renderData.screen.Height ());
+	float ch = float (gameData.renderData.scene.Height ());
+	float w = 0.25f * float (gameData.renderData.scene.Width ()) / ch;
+	float y = 1.0f - float (gameData.renderData.scene.Top ()) / sh;
 	float h = ch / sh;
 
 	ogl.SetTexturing (true);
@@ -161,11 +161,11 @@ if (bInitSinCos) {
 	}
 
 	int32_t bHaveTarget = TargetInLineOfFire ();
-	int32_t sh = gameData.render.screen.Height ();
-	int32_t ch = gameData.render.scene.Height ();
-	int32_t cw = gameData.render.scene.Width ();
+	int32_t sh = gameData.renderData.screen.Height ();
+	int32_t ch = gameData.renderData.scene.Height ();
+	int32_t cw = gameData.renderData.scene.Width ();
 	int32_t h = ch >> 2;
-	int32_t w = X2I (h * gameData.render.screen.Aspect ());
+	int32_t w = X2I (h * gameData.renderData.screen.Aspect ());
 
 if (ogl.IsSideBySideDevice ()) {
 	w /= 3;
@@ -212,8 +212,8 @@ glLineWidth (float (floor (2 * float (cw) / 640.0f)));
 
 glPushMatrix ();
 ogl.SetLineSmooth (true);
-float fStereoOffset = float (gameData.StereoOffset2D ()) / float (gameData.render.frame.Width ());
-glTranslatef (0.5f - fStereoOffset, 0.5f/*1.0f - float (CCanvas::Current ()->Top () + y) / float (gameData.render.screen.Height ())*/, 0.0f);
+float fStereoOffset = float (gameData.StereoOffset2D ()) / float (gameData.renderData.frame.Width ());
+glTranslatef (0.5f - fStereoOffset, 0.5f/*1.0f - float (CCanvas::Current ()->Top () + y) / float (gameData.renderData.screen.Height ())*/, 0.0f);
 glScalef (xScale, yScale, 1.0f);
 #if 0
 float fh = 2.0f * float (h) / float (sh);
@@ -261,9 +261,9 @@ h -= h >> 1;
 glLineWidth (float (floor (2 * float (cw) / 640.0f)));
 #if 1
 //float xScale = float (w << 5) / float (cw);
-//float yScale = float (h << 5) / float (gameData.render.screen.Height ());
+//float yScale = float (h << 5) / float (gameData.renderData.screen.Height ());
 OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, xScale, 0.5f - fStereoOffset, yScale, 
-					 1.0f - float (/*CCanvas::Current ()->Top () +*/ y) / float (gameData.render.screen.Height ()), sinCos);
+					 1.0f - float (/*CCanvas::Current ()->Top () +*/ y) / float (gameData.renderData.screen.Height ()), sinCos);
 #else
 glPushMatrix ();
 ogl.SetLineSmooth (true);
@@ -341,7 +341,7 @@ if (!gameOpts->render.cockpit.bReticle
 	int32_t		bHiresReticle, bSmallReticle, ofs;
 
 if (((gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) ||
-	 ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided))) {
+	 ((gameData.demoData.nState == ND_STATE_PLAYBACK) && gameData.demoData.bFlyingGuided))) {
 	DrawGuidedCrosshairs (m_info.xStereoSeparation);
 	return;
 	}
@@ -353,20 +353,20 @@ if (gameStates.zoom.nFactor > float (gameStates.zoom.nMinFactor)) {
 
 gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 m_info.xStereoSeparation = xStereoSeparation;
-x = gameData.render.scene.Width () / 2;
-y = gameData.render.scene.Height () / 2;
+x = gameData.renderData.scene.Width () / 2;
+y = gameData.renderData.scene.Height () / 2;
 bLaserReady = AllowedToFireGun ();
 bMissileReady = AllowedToFireMissile (-1, 1);
-bLaserAmmo = PlayerHasWeapon (gameData.weapons.nPrimary, 0, -1, 1);
-bMissileAmmo = PlayerHasWeapon (gameData.weapons.nSecondary, 1, -1, 1);
+bLaserAmmo = PlayerHasWeapon (gameData.weaponData.nPrimary, 0, -1, 1);
+bMissileAmmo = PlayerHasWeapon (gameData.weaponData.nSecondary, 1, -1, 1);
 nPrimaryBm = bLaserReady && (bLaserAmmo == HAS_ALL);
 nSecondaryBm = bMissileReady && (bMissileAmmo == HAS_ALL);
-if (nPrimaryBm && (gameData.weapons.nPrimary == LASER_INDEX) && (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS))
+if (nPrimaryBm && (gameData.weaponData.nPrimary == LASER_INDEX) && (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS))
 	nPrimaryBm++;
 
-if (secondaryWeaponToGunNum [gameData.weapons.nSecondary] == 7)
+if (secondaryWeaponToGunNum [gameData.weaponData.nSecondary] == 7)
 	nSecondaryBm += 3;		//now value is 0, 1 or 3, 4
-else if (nSecondaryBm && !(gameData.laser.nMissileGun & 1))
+else if (nSecondaryBm && !(gameData.laserData.nMissileGun & 1))
 		nSecondaryBm++;
 
 nCrossBm = ((nPrimaryBm > 0) || (nSecondaryBm > 0));
@@ -386,7 +386,7 @@ if (ogl.IsOculusRift ()) {
 	m_info.yScale *= 0.5f;
 	}
 bHiresReticle = 1; //(gameStates.render.fonts.bHires != 0) && !gameStates.app.bDemoData;
-bSmallReticle = !bForceBig && (gameData.render.scene.Width () * 3 <= gameData.render.frame.Width () * 2);
+bSmallReticle = !bForceBig && (gameData.renderData.scene.Width () * 3 <= gameData.renderData.frame.Width () * 2);
 ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ()) 
 				 ? BM_ADDON_RETICLE_RED 
@@ -397,7 +397,7 @@ int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 
 if (ogl.IsOculusRift ()) {
 	float fov = float (gameStates.render.glFOV * X2D (transformation.m_info.zoom));
-	float yStep = float (gameData.render.scene.Height ()) / fov * 4;
+	float yStep = float (gameData.renderData.scene.Height ()) / fov * 4;
 	float xStep = yStep * float (CCanvas::Current ()->AspectRatio ());
 	//if ((fabs (X2F (transformation.m_info.playerHeadAngles.v.coord.h)) > 0.1f) || 
 	//	 (fabs (X2F (transformation.m_info.playerHeadAngles.v.coord.p)) > 0.1f)) 

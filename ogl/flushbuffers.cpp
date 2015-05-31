@@ -205,12 +205,12 @@ if (gameStates.render.bShowProfiler && !gameStates.menus.nInMenu && fontManager.
 	time_t t1 = clock ();
 
 	if (gameStates.render.bShowProfiler == 1)
-		gameData.profiler.nFrameCount = 1;
+		gameData.profilerData.nFrameCount = 1;
 	else
-		gameData.profiler.nFrameCount++;
+		gameData.profilerData.nFrameCount++;
 	if (((gameStates.render.bShowProfiler == 1) && (t1 - t0 >= 10)) || ((gameStates.render.bShowProfiler == 2) && (t1 - t0 >= 1000))) {
 		memcpy (&p [1], &p [0], sizeof (tProfilerData));
-		memcpy (&p [0], &gameData.profiler, sizeof (tProfilerData));
+		memcpy (&p [0], &gameData.profilerData, sizeof (tProfilerData));
 		t0 = t1;
 		}
 	fontManager.SetCurrent (SMALL_FONT);
@@ -254,7 +254,7 @@ if (gameStates.render.bShowProfiler && !gameStates.menus.nInMenu && fontManager.
 		GrPrintF (NULL, profilerValueOffset + 1, h * nLine++, ": %05.2f %c", s, '%');
 		}
 	if (gameStates.render.bShowProfiler == 1)
-		memset (&gameData.profiler, 0, sizeof (gameData.profiler));
+		memset (&gameData.profilerData, 0, sizeof (gameData.profilerData));
 	fontManager.SetCurrent (GAME_FONT);
 	}
 #endif
@@ -322,12 +322,12 @@ ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
 for (int32_t i = 0; i < 2; i++) {
 	gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 	SetupCanvasses ();
-	gameData.render.frame.Activate ("COGL::FlushEffects (frame)");
+	gameData.renderData.frame.Activate ("COGL::FlushEffects (frame)");
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 	postProcessManager.Setup ();
 	postProcessManager.Render ();
-	gameData.render.frame.Deactivate ();
+	gameData.renderData.frame.Deactivate ();
 	}
 }
 
@@ -367,7 +367,7 @@ else {
 
 void COGL::FlushOculusRiftBuffers (void)
 {
-gameData.render.screen.SetScale (1.0f);
+gameData.renderData.screen.SetScale (1.0f);
 if (!postProcessManager.HaveEffects ()) 
 	BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
 else {
@@ -437,7 +437,7 @@ if (HaveDrawBuffer ()) {
 
 	int32_t nDevice = abs (StereoDevice ());
 
-	gameData.render.screen.Activate ("FlushDrawBuffer");
+	gameData.renderData.screen.Activate ("FlushDrawBuffer");
 
 #if 0 // need to get the depth texture before switching the render target!
 	if (postProcessManager.HaveEffects ()) {
@@ -472,7 +472,7 @@ if (HaveDrawBuffer ()) {
 			break;
 		}
 
-	gameData.render.screen.Deactivate ();
+	gameData.renderData.screen.Deactivate ();
 	ResetClientStates (0);
 	SelectDrawBuffer (0);
 	shaderManager.Deploy (-1);

@@ -123,43 +123,43 @@ for (i = 0; i < N_PLAYERS; i++, pWeaponStates++) {
 
 void UpdateFiringState (void)
 {
-	int32_t	bGatling = (gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX);
+	int32_t	bGatling = (gameData.weaponData.nPrimary == VULCAN_INDEX) || (gameData.weaponData.nPrimary == GAUSS_INDEX);
 
 if ((controls [0].firePrimaryState != 0) || (controls [0].firePrimaryDownCount != 0)) {
-	if (gameData.weapons.firing [0].nStart <= 0) {
-		gameData.weapons.firing [0].nStart = gameStates.app.nSDLTicks [0];
+	if (gameData.weaponData.firing [0].nStart <= 0) {
+		gameData.weaponData.firing [0].nStart = gameStates.app.nSDLTicks [0];
 		if (bGatling) {
 			if (EGI_FLAG (bGatlingSpeedUp, 1, 0, 0))
-				gameData.weapons.firing [0].bSound = 1;
+				gameData.weaponData.firing [0].bSound = 1;
 			else {
-				gameData.weapons.firing [0].nStart -= GATLING_DELAY + 1;
-				gameData.weapons.firing [0].bSound = 0;
+				gameData.weaponData.firing [0].nStart -= GATLING_DELAY + 1;
+				gameData.weaponData.firing [0].bSound = 0;
 				}
 			}
 		}
-	gameData.weapons.firing [0].nDuration = gameStates.app.nSDLTicks [0] - gameData.weapons.firing [0].nStart;
-	gameData.weapons.firing [0].nStop = 0;
+	gameData.weaponData.firing [0].nDuration = gameStates.app.nSDLTicks [0] - gameData.weaponData.firing [0].nStart;
+	gameData.weaponData.firing [0].nStop = 0;
 	}
-else if (gameData.weapons.firing [0].nDuration) {
-	gameData.weapons.firing [0].nStop = gameStates.app.nSDLTicks [0];
-	gameData.weapons.firing [0].nDuration = 
-	gameData.weapons.firing [0].nStart = 0;
+else if (gameData.weaponData.firing [0].nDuration) {
+	gameData.weaponData.firing [0].nStop = gameStates.app.nSDLTicks [0];
+	gameData.weaponData.firing [0].nDuration = 
+	gameData.weaponData.firing [0].nStart = 0;
 	}
-else if (gameData.weapons.firing [0].nStop > 0) {
-	if (gameStates.app.nSDLTicks [0] - gameData.weapons.firing [0].nStop >= GATLING_DELAY /*WIFireTicks (gameData.weapons.nPrimary) * 4 / 5*/) {
-		gameData.weapons.firing [0].nStop = 0;
+else if (gameData.weaponData.firing [0].nStop > 0) {
+	if (gameStates.app.nSDLTicks [0] - gameData.weaponData.firing [0].nStop >= GATLING_DELAY /*WIFireTicks (gameData.weaponData.nPrimary) * 4 / 5*/) {
+		gameData.weaponData.firing [0].nStop = 0;
 		}
 	}
 if ((controls [0].fireSecondaryState != 0) || (controls [0].fireSecondaryDownCount != 0)) {
-	if (gameData.weapons.firing [1].nStart <= 0)
-		gameData.weapons.firing [1].nStart = gameStates.app.nSDLTicks [0];
-	gameData.weapons.firing [1].nDuration = gameStates.app.nSDLTicks [0] - gameData.weapons.firing [1].nStart;
-	gameData.weapons.firing [1].nStop = 0;
+	if (gameData.weaponData.firing [1].nStart <= 0)
+		gameData.weaponData.firing [1].nStart = gameStates.app.nSDLTicks [0];
+	gameData.weaponData.firing [1].nDuration = gameStates.app.nSDLTicks [0] - gameData.weaponData.firing [1].nStart;
+	gameData.weaponData.firing [1].nStop = 0;
 	}
-else if (gameData.weapons.firing [1].nDuration) {
-	gameData.weapons.firing [1].nStop = gameStates.app.nSDLTicks [0];
-	gameData.weapons.firing [1].nDuration = 
-	gameData.weapons.firing [1].nStart = 0;
+else if (gameData.weaponData.firing [1].nDuration) {
+	gameData.weaponData.firing [1].nStop = gameStates.app.nSDLTicks [0];
+	gameData.weaponData.firing [1].nDuration = 
+	gameData.weaponData.firing [1].nStart = 0;
 	}
 }
 
@@ -171,56 +171,56 @@ void UpdatePlayerWeaponInfo (void)
 	tFiringData*	pFiringData;
 
 if (gameStates.app.bPlayerIsDead)
-	gameData.weapons.firing [0].nStart = 
-	gameData.weapons.firing [0].nDuration = 
-	gameData.weapons.firing [0].nStop = 
-	gameData.weapons.firing [1].nStart = 
-	gameData.weapons.firing [1].nDuration =
-	gameData.weapons.firing [1].nStop = 0;
+	gameData.weaponData.firing [0].nStart = 
+	gameData.weaponData.firing [0].nDuration = 
+	gameData.weaponData.firing [0].nStop = 
+	gameData.weaponData.firing [1].nStart = 
+	gameData.weaponData.firing [1].nDuration =
+	gameData.weaponData.firing [1].nStop = 0;
 else
 	UpdateFiringState ();
-if (pWeaponStates->nPrimary != gameData.weapons.nPrimary) {
-	pWeaponStates->nPrimary = gameData.weapons.nPrimary;
+if (pWeaponStates->nPrimary != gameData.weaponData.nPrimary) {
+	pWeaponStates->nPrimary = gameData.weaponData.nPrimary;
 	}
-if (pWeaponStates->nSecondary != gameData.weapons.nSecondary) {
-	pWeaponStates->nSecondary = gameData.weapons.nSecondary;
+if (pWeaponStates->nSecondary != gameData.weaponData.nSecondary) {
+	pWeaponStates->nSecondary = gameData.weaponData.nSecondary;
 	}
 if (pWeaponStates->bQuadLasers != ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) != 0)) {
 	pWeaponStates->bQuadLasers = ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) != 0);
 	}
 pFiringData = pWeaponStates->firing;
 for (int32_t i = 0; i < 2; i++, pFiringData++) {
-	if (pFiringData->nStart != gameData.weapons.firing [i].nStart) {
-		pFiringData->nStart = gameData.weapons.firing [i].nStart;
+	if (pFiringData->nStart != gameData.weaponData.firing [i].nStart) {
+		pFiringData->nStart = gameData.weaponData.firing [i].nStart;
 		}
-	if (pFiringData->nDuration != gameData.weapons.firing [i].nDuration) {
-		pFiringData->nDuration = gameData.weapons.firing [i].nDuration;
+	if (pFiringData->nDuration != gameData.weaponData.firing [i].nDuration) {
+		pFiringData->nDuration = gameData.weaponData.firing [i].nDuration;
 		}
-	if (pFiringData->nStop != gameData.weapons.firing [i].nStop) {
-		pFiringData->nStop = gameData.weapons.firing [i].nStop;
+	if (pFiringData->nStop != gameData.weaponData.firing [i].nStop) {
+		pFiringData->nStop = gameData.weaponData.firing [i].nStop;
 		}
-	if (gameData.weapons.firing [i].bSound == 1) {
+	if (gameData.weaponData.firing [i].bSound == 1) {
 		pFiringData->bSound = 1;
-		gameData.weapons.firing [i].bSound = 0;
+		gameData.weaponData.firing [i].bSound = 0;
 		}
 	if (pFiringData->bSpeedUp != EGI_FLAG (bGatlingSpeedUp, 1, 0, 0)) {
 		pFiringData->bSpeedUp = EGI_FLAG (bGatlingSpeedUp, 1, 0, 0);
 		}
 	}
-if (pWeaponStates->nMissiles != LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]) {
-	pWeaponStates->nMissiles = (char) LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
+if (pWeaponStates->nMissiles != LOCALPLAYER.secondaryAmmo [gameData.weaponData.nSecondary]) {
+	pWeaponStates->nMissiles = (char) LOCALPLAYER.secondaryAmmo [gameData.weaponData.nSecondary];
 	}
 if (pWeaponStates->nLaserLevel != LOCALPLAYER.LaserLevel ()) {
 	pWeaponStates->nLaserLevel = LOCALPLAYER.LaserLevel ();
 	}
-if (pWeaponStates->bTripleFusion != gameData.weapons.bTripleFusion) {
-	pWeaponStates->bTripleFusion = gameData.weapons.bTripleFusion;
+if (pWeaponStates->bTripleFusion != gameData.weaponData.bTripleFusion) {
+	pWeaponStates->bTripleFusion = gameData.weaponData.bTripleFusion;
 	}
-if (pWeaponStates->nMslLaunchPos != (gameData.laser.nMissileGun & 3)) {
-	pWeaponStates->nMslLaunchPos = gameData.laser.nMissileGun & 3;
+if (pWeaponStates->nMslLaunchPos != (gameData.laserData.nMissileGun & 3)) {
+	pWeaponStates->nMslLaunchPos = gameData.laserData.nMissileGun & 3;
 	}
-if (pWeaponStates->xMslFireTime != gameData.missiles.xNextFireTime) {
-	pWeaponStates->xMslFireTime = gameData.missiles.xNextFireTime;
+if (pWeaponStates->xMslFireTime != gameData.missileData.xNextFireTime) {
+	pWeaponStates->xMslFireTime = gameData.missileData.xNextFireTime;
 	}
 UpdateFiringSounds ();
 }
@@ -231,14 +231,14 @@ void UpdatePlayerEffects (void)
 {
 for (int32_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {
 	if (gameData.multiplayer.tAppearing [nPlayer][0] < 0) {
-		gameData.multiplayer.tAppearing [nPlayer][0] += gameData.time.xFrame;
+		gameData.multiplayer.tAppearing [nPlayer][0] += gameData.timeData.xFrame;
 		if (gameData.multiplayer.tAppearing [nPlayer][0] >= 0) {
 			gameData.multiplayer.tAppearing [nPlayer][0] = 1;
 			PLAYEROBJECT (nPlayer)->CreateAppearanceEffect ();
 			}
 		}
 	else if (gameData.multiplayer.tAppearing [nPlayer][0] > 0) {
-		gameData.multiplayer.tAppearing [nPlayer][0] -= gameData.time.xFrame;
+		gameData.multiplayer.tAppearing [nPlayer][0] -= gameData.timeData.xFrame;
 		if (gameData.multiplayer.tAppearing [nPlayer][0] <= 0) {
 			if (nPlayer == N_LOCALPLAYER) {
 				SetChaseCam (0);
@@ -494,7 +494,7 @@ if (m_toRecharge.Suspended ())
 	return;
 if (!m_toRecharge.Expired (false))
 	return;
-fix delta = Min (FixMul (gameData.time.xFrame, gameData.producers.xFuelGiveAmount / nRechargeSpeeds [extraGameInfo [IsMultiGame].nRechargeSpeed]), m_max / 2 - *m_current);
+fix delta = Min (FixMul (gameData.timeData.xFrame, gameData.producerData.xFuelGiveAmount / nRechargeSpeeds [extraGameInfo [IsMultiGame].nRechargeSpeed]), m_max / 2 - *m_current);
 if (delta > 0)
 	Update (delta);
 SetRechargeDelay (0);

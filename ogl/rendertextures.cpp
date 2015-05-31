@@ -143,15 +143,15 @@ if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTex
 #endif
 			ogl.SetReadBuffer (GL_BACK, (gameStates.render.bRenderIndirect > 0) || gameStates.render.cameras.bActive); // side effect: If the current render target is an FBO, it will be activated!
 		SaveViewport ();
-		SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
-		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
+		SetViewport (0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
+		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
 		RestoreViewport ();
 		if ((nError = glGetError ())) {
 			DestroyDepthTexture (nId);
 			return m_states.hDepthBuffer [nId] = 0;
 			}
 		m_states.bDepthBuffer [nId] = 1;
-		gameData.render.nStateChanges++;
+		gameData.renderData.nStateChanges++;
 		}
 	}
 if (t > 0) {
@@ -229,16 +229,16 @@ if (!m_states.hColorBuffer)
 if (m_states.hColorBuffer || (m_states.hColorBuffer = CreateColorTexture (-1, 0))) {
 	BindTexture (m_states.hColorBuffer);
 	if (!m_states.bColorBuffer) {
-		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
+		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
 		if ((nError = glGetError ())) {
-			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
+			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
 			if ((nError = glGetError ())) {
 				DestroyColorTexture ();
 				return m_states.hColorBuffer = 0;
 				}
 			}
 		m_states.bColorBuffer = 1;
-		gameData.render.nStateChanges++;
+		gameData.renderData.nStateChanges++;
 		}
 	}
 return m_states.hColorBuffer;

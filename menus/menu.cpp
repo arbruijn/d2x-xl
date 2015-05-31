@@ -126,8 +126,8 @@ GrString (x - w, y, s);
 
 //------------------------------------------------------------------------------ 
 
-int32_t CMenu::XOffset (void) { return (gameData.render.frame.Width () - m_props.width) / 2; }
-int32_t CMenu::YOffset (void) { return (gameData.render.frame.Height () - m_props.height) / 2; }
+int32_t CMenu::XOffset (void) { return (gameData.renderData.frame.Width () - m_props.width) / 2; }
+int32_t CMenu::YOffset (void) { return (gameData.renderData.frame.Height () - m_props.height) / 2; }
 
 //------------------------------------------------------------------------------ 
 
@@ -330,13 +330,13 @@ class CFixFraction {
 
 int32_t CMenu::InitProps (const char* pszTitle, const char* pszSubTitle)
 {
-if ((m_props.screenWidth == gameData.render.frame.Width ()) && (m_props.screenHeight == gameData.render.frame.Height ()))
+if ((m_props.screenWidth == gameData.renderData.frame.Width ()) && (m_props.screenHeight == gameData.renderData.frame.Height ()))
 	return 0;
 
 	int32_t	i, gap, haveTitle;
 
-m_props.screenWidth = gameData.render.frame.Width ();
-m_props.screenHeight = gameData.render.frame.Height ();
+m_props.screenWidth = gameData.renderData.frame.Width ();
+m_props.screenHeight = gameData.renderData.frame.Height ();
 m_props.nDisplayMode = gameStates.video.nDisplayMode;
 GetTitleSize (pszTitle, TITLE_FONT, m_props.titleWidth, m_props.titleHeight);
 GetTitleSize (pszSubTitle, SUBTITLE_FONT, m_props.titleWidth, m_props.titleHeight);
@@ -416,7 +416,7 @@ return 1;
 
 void CMenu::SaveScreen (CCanvas **gameCanvasP)
 {
-gameData.render.frame.Activate ("CMenu::SaveScreen (frame)");
+gameData.renderData.frame.Activate ("CMenu::SaveScreen (frame)");
 }
 
 //------------------------------------------------------------------------------ 
@@ -426,7 +426,7 @@ void CMenu::RestoreScreen (void)
 backgroundManager.Draw ();
 //if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
 //	backgroundManager.Remove ();	// remove the stars background loaded for old style menus
-gameData.render.frame.Deactivate ();
+gameData.renderData.frame.Deactivate ();
 GrabMouse (1, 0);
 }
 
@@ -457,7 +457,7 @@ if (automap.Active ()) {
 	automap.DoFrame (0, 0);
 	CalcFrameTime ();
 	}
-else if (gameData.app.bGamePaused /*|| timer_paused*/) {
+else if (gameData.appData.bGamePaused /*|| timer_paused*/) {
 	GameRenderFrame ();
 	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 	CalcFrameTime ();
@@ -499,13 +499,13 @@ m_bRedraw = 0;
 
 if (gameStates.app.bGameRunning) {
 	if (!gameStates.app.bShowError) {
-		gameData.render.frame.Activate ("CMenu::Render (frame, 1)");
+		gameData.renderData.frame.Activate ("CMenu::Render (frame, 1)");
 		RenderMenuGameFrame ();
-		gameData.render.frame.Deactivate ();
+		gameData.renderData.frame.Deactivate ();
 		}
 	}
 else {
-	gameData.render.screen.Activate ("CMenu::Render", NULL, true);
+	gameData.renderData.screen.Activate ("CMenu::Render", NULL, true);
 	console.Draw ();
 	CalcFrameTime ();
 	if (!ogl.IsSideBySideDevice ()) {
@@ -516,10 +516,10 @@ else {
 		for (int32_t i = 0; i < 2; i++) {
 			gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 			SetupCanvasses (-1.0f);
-			gameData.render.frame.Activate ("CMenu::Render (frame, 2)");
+			gameData.renderData.frame.Activate ("CMenu::Render (frame, 2)");
 			ogl.ChooseDrawBuffer ();
 			Render ();
-			gameData.render.frame.Deactivate ();
+			gameData.renderData.frame.Deactivate ();
 			}
 		}
 	if (!gameStates.app.bGameRunning || m_bRedraw)
@@ -534,7 +534,7 @@ float CMenu::GetScale (void)
 #if 0 //DBG
 return ogl.IsSideBySideDevice () ? 0.5f : 1.0f;
 #else
-return (ogl.IsOculusRift () && !gameData.render.rift.Resolution ()) ? 0.5f : 1.0f;
+return (ogl.IsOculusRift () && !gameData.renderData.rift.Resolution ()) ? 0.5f : 1.0f;
 #endif
 }
 
@@ -1008,7 +1008,7 @@ switch (m_nKey) {
 
 	case KEY_COMMAND + KEY_T:
 	case KEY_CTRLED + KEY_T:
-		gameData.menu.alpha = (gameData.menu.alpha + 16) & 0xFF;
+		gameData.menuData.alpha = (gameData.menuData.alpha + 16) & 0xFF;
 		break;
 
 	case KEY_TAB + KEY_SHIFTED:
@@ -1081,7 +1081,7 @@ switch (m_nKey) {
 				m_nChoice = -1;
 				}
 			else 
-				gameData.app.bGamePaused = !gameData.app.bGamePaused;
+				gameData.appData.bGamePaused = !gameData.appData.bGamePaused;
 			break;
 			}
 
@@ -1369,7 +1369,7 @@ int32_t CMenu::Setup (int32_t nType, int32_t width, int32_t height, int32_t bTin
 if (gameStates.menus.nInMenu > 0)
 	return 0;
 
-m_bPause = gameData.app.bGamePaused;
+m_bPause = gameData.appData.bGamePaused;
 m_tEnter = -1;
 m_bRedraw = 0;
 m_nChoice = 0;
@@ -1495,7 +1495,7 @@ if (m_nKey)
 #endif
 if (mouseData.bDoubleClick)
 	m_nKey = KEY_ENTER;
-if ((m_props.screenWidth != gameData.render.frame.Width ()) || (m_props.screenHeight != gameData.render.frame.Height ())) {
+if ((m_props.screenWidth != gameData.renderData.frame.Width ()) || (m_props.screenHeight != gameData.renderData.frame.Height ())) {
 	memset (&m_props, 0, sizeof (m_props));
 	m_props.userWidth = width;
 	m_props.userHeight = height;
@@ -1884,11 +1884,11 @@ if (doProgress) { // let doProgress add menu items after the gauges
 
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
-gameData.app.bGamePaused = 1;
+gameData.appData.bGamePaused = 1;
 do {
 	i = menu.Menu (NULL, szCaption, doProgress);
 	} while (i >= 0);
-gameData.app.bGamePaused = 0;
+gameData.appData.bGamePaused = 0;
 gameStates.menus.nInMenu = nInMenu;
 }
 

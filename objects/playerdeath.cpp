@@ -122,7 +122,7 @@ void DeadPlayerEnd (void)
 {
 if (!gameStates.app.bPlayerIsDead)
 	return;
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordRestoreCockpit ();
 if (gameData.objData.deadPlayerCamera) {
 	ReleaseObject (OBJ_IDX (gameData.objData.deadPlayerCamera));
@@ -183,7 +183,7 @@ if (!LOCALPLAYER.m_bExploded) {
 void DeadPlayerFrame (void)
 {
 if (gameStates.app.bPlayerIsDead) {
-	fix xTimeDead = gameData.time.xGame - gameStates.app.nPlayerTimeOfDeath;
+	fix xTimeDead = gameData.timeData.xGame - gameStates.app.nPlayerTimeOfDeath;
 
 	//	If unable to create camera at time of death, create now.
 	if (!gameData.objData.deadPlayerCamera) {
@@ -222,7 +222,7 @@ if (gameStates.app.bPlayerIsDead) {
 			}
 		}
 	else {
-		if (RandShort () < gameData.time.xFrame * 4) {
+		if (RandShort () < gameData.timeData.xFrame * 4) {
 			if (IsMultiGame)
 				MultiSendCreateExplosion (N_LOCALPLAYER);
 			CreateSmallFireballOnObject (gameData.objData.pConsole, I2X (1), 1);
@@ -250,7 +250,7 @@ StopConquerWarning ();
 //Assert (gameStates.app.bPlayerIsDead == 0);
 //Assert (gameData.objData.deadPlayerCamera == NULL);
 ResetRearView ();
-nKilledInFrame = gameData.app.nFrameCount;
+nKilledInFrame = gameData.appData.nFrameCount;
 nKilledObjNum = OBJ_IDX (pPlayerObj);
 gameStates.app.bDeathSequenceAborted = 0;
 if (!IsMultiGame)
@@ -277,7 +277,7 @@ if (pPlayerObj->PlayerNumber () == N_LOCALPLAYER)
 pPlayerObj->mType.physInfo.rotThrust.SetZero ();
 pPlayerObj->mType.physInfo.thrust.SetZero ();
 pPlayerObj->ResetDamage ();
-gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
+gameStates.app.nPlayerTimeOfDeath = gameData.timeData.xGame;
 int32_t nObject = CreateCamera (pPlayerObj);
 pViewerSave = gameData.objData.pViewer;
 if (nObject != -1)
@@ -288,7 +288,7 @@ else {
 	}
 CGenericCockpit::Save (true);
 cockpit->Activate (CM_LETTERBOX);
-if (gameData.demo.nState == ND_STATE_RECORDING)
+if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordLetterbox ();
 nPlayerFlagsSave = pPlayerObj->info.nFlags;
 nControlTypeSave = pPlayerObj->info.controlType;

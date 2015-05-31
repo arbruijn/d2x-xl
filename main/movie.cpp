@@ -212,10 +212,10 @@ while (nNextSubTitle < m_nCaptions && nFrame >= m_captions [nNextSubTitle].first
 	for (fc.Begin (); fc.Continue (); fc.End ()) {
 	if (ogl.IsOculusRift ()) {
 		int32_t w, h;
-		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
+		cockpit->SetupSceneCenter (&gameData.renderData.frame, w, h);
 		}
 	else
-		gameData.render.frame.Activate ("CSubTitles::Draw (frame)");
+		gameData.renderData.frame.Activate ("CSubTitles::Draw (frame)");
 
 	//find y coordinate for first line of subtitles
 	y = CCanvas::Current ()->Height () - ((nLineSpacing + 1) * MAX_ACTIVE_SUBTITLES + 2);
@@ -232,9 +232,9 @@ while (nNextSubTitle < m_nCaptions && nFrame >= m_captions [nNextSubTitle].first
 			y += nLineSpacing + 1;
 		}
 	if (ogl.IsOculusRift ())
-		gameData.render.window.Deactivate ();
+		gameData.renderData.window.Deactivate ();
 	else
-		gameData.render.frame.Deactivate ();
+		gameData.renderData.frame.Deactivate ();
 	}
 }
 
@@ -270,10 +270,10 @@ CFrameController fc;
 for (fc.Begin (); fc.Continue (); fc.End ()) {
 	if (ogl.IsOculusRift ()) {
 		int32_t w, h;
-		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
+		cockpit->SetupSceneCenter (&gameData.renderData.frame, w, h);
 		}
 	else
-		gameData.render.frame.Activate ("CMovie::ShowFrame (frame)");
+		gameData.renderData.frame.Activate ("CMovie::ShowFrame (frame)");
 
 	if (gameOpts->movies.bFullScreen > 0) {
 		double r = (double) hBuffer / (double) wBuffer;
@@ -288,8 +288,8 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 		}
 	else {
 		if (gameOpts->movies.bFullScreen < 0) {
-			w = gameData.render.frame.Width (false) * int32_t (w) / 640;
-			h = gameData.render.frame.Width (false) * int32_t (h) / 640;
+			w = gameData.renderData.frame.Width (false) * int32_t (w) / 640;
+			h = gameData.renderData.frame.Width (false) * int32_t (h) / 640;
 			}
 		int32_t xOffs = (CCanvas::Current ()->Width () - w - xDest) / 2;
 		int32_t yOffs = (CCanvas::Current ()->Height () - h - yDest) / 2;
@@ -308,9 +308,9 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 			}
 		}
 	if (ogl.IsOculusRift ())
-		gameData.render.window.Deactivate ();
+		gameData.renderData.window.Deactivate ();
 	else
-		gameData.render.frame.Deactivate ();
+		gameData.renderData.frame.Deactivate ();
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 bmFrame.SetBuffer (NULL);
@@ -371,8 +371,8 @@ void ShowPauseMessage (const char* msg)
 
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.Current ()->StringSize (msg, w, h, aw);
-x = (gameData.render.screen.Width () - w) / 2;
-y = (gameData.render.screen.Height () - h) / 2;
+x = (gameData.renderData.screen.Width () - w) / 2;
+y = (gameData.renderData.screen.Height () - h) / 2;
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 OglDrawFilledRect (x - BOX_BORDER / 2, y - BOX_BORDER / 2, x + w + BOX_BORDER / 2 - 1, y + h + BOX_BORDER / 2 - 1);
 fontManager.SetColor (255, -1);

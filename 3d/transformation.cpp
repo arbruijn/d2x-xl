@@ -125,9 +125,9 @@ if (ogl.m_states.bUseTransform) {
 		h = m_info.pos - vPos;
 		Move (h);
 		Rotate (mOrient);
-		if (!gameData.models.vScale.IsZero ()) {
+		if (!gameData.modelData.vScale.IsZero ()) {
 			CFloatVector fScale;
-			fScale.Assign (gameData.models.vScale);
+			fScale.Assign (gameData.modelData.vScale);
 			glScalef (fScale.v.coord.x, fScale.v.coord.y, fScale.v.coord.z);
 			}
 		}
@@ -192,7 +192,7 @@ return dest;
 //compute aspect ratio for this canvas
 void CTransformation::ComputeAspect (int32_t nWidth, int32_t nHeight)
 {
-fix s = FixMulDiv (gameData.render.screen.Aspect (), (nWidth > 0) ? nWidth : CCanvas::Current ()->Height (), (nHeight > 0) ? nHeight : CCanvas::Current ()->Width ());
+fix s = FixMulDiv (gameData.renderData.screen.Aspect (), (nWidth > 0) ? nWidth : CCanvas::Current ()->Height (), (nHeight > 0) ? nHeight : CCanvas::Current ()->Width ());
 if (s <= I2X (1)) {	   //scale x
 	m_info.aspect.v.coord.x = s;
 	m_info.aspect.v.coord.y = I2X (1);
@@ -210,8 +210,8 @@ void CTransformation::SetupProjection (float aspectRatio)
 {
 
 m_info.oglProjection.Get (GL_PROJECTION_MATRIX);
-if (ogl.IsOculusRift () && gameData.render.rift.Available ()) {
-	//double riftXlatProj [16] = { 1.0, 0.0, 0.0, (ogl.StereoSeparation () < 0) ? -gameData.render.rift.m_projectionCenterOffset : gameData.render.rift.m_projectionCenterOffset,
+if (ogl.IsOculusRift () && gameData.renderData.rift.Available ()) {
+	//double riftXlatProj [16] = { 1.0, 0.0, 0.0, (ogl.StereoSeparation () < 0) ? -gameData.renderData.rift.m_projectionCenterOffset : gameData.renderData.rift.m_projectionCenterOffset,
 	//									  0.0, 1.0, 0.0, 0.0, 
 	//									  0.0, 0.0, 1.0, 0.0, 
 	//									  0.0, 0.0, 0.0, 1.0 };
@@ -219,7 +219,7 @@ if (ogl.IsOculusRift () && gameData.render.rift.Available ()) {
 	double riftXlatProj [16] = { 1.0, 0.0, 0.0, 0.0,
 										  0.0, 1.0, 0.0, 0.0, 
 										  0.0, 0.0, 1.0, 0.0, 
-										  (ogl.StereoSeparation () < 0) ? gameData.render.rift.m_projectionCenterOffset : -gameData.render.rift.m_projectionCenterOffset, 0.0, 0.0, 1.0 };
+										  (ogl.StereoSeparation () < 0) ? gameData.renderData.rift.m_projectionCenterOffset : -gameData.renderData.rift.m_projectionCenterOffset, 0.0, 0.0, 1.0 };
 
 	glMatrixMode (GL_PROJECTION);
 	glLoadMatrixd ((GLdouble*) riftXlatProj);
@@ -253,11 +253,11 @@ uint8_t CTransformation::Codes (CFixVector& v)
 	ProjectPoint (v, s);
 	if (s.x < 0)
 		codes |= CC_OFF_LEFT;
-	else if (s.x > gameData.render.screen.Width ())
+	else if (s.x > gameData.renderData.screen.Width ())
 		codes |= CC_OFF_RIGHT;
 	if (s.y < 0)
 		codes |= CC_OFF_BOT;
-	else if (s.y > gameData.render.screen.Height ())
+	else if (s.y > gameData.renderData.screen.Height ())
 		codes |= CC_OFF_TOP;
 #else
 	fix z = v.v.coord.z;

@@ -45,7 +45,7 @@ CBitmap* CStatusBar::StretchBlt (int32_t nGauge, int32_t x, int32_t y, double xS
 
 if (nGauge >= 0) {
 	PageInGauge (nGauge);
-	CBitmap* pBm = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
+	CBitmap* pBm = gameData.pigData.tex.bitmaps [0] + GaugeIndex (nGauge);
 	if (pBm)
 		pBm->RenderScaled (ScaleX (x), ScaleY (y), 
 								 ScaleX ((int32_t) DRound (pBm->Width () * xScale)), ScaleY ((int32_t) DRound (pBm->Height () * yScale)), 
@@ -124,7 +124,7 @@ if (!(nScore = cockpit->AddedScore (0)))
 
 	static int32_t nIdTotalScore = 0;
 
-cockpit->SetScoreTime (nTime = cockpit->ScoreTime () - gameData.time.xFrame);
+cockpit->SetScoreTime (nTime = cockpit->ScoreTime () - gameData.timeData.xFrame);
 if (nTime > 0) {
 	color = X2I (nTime * 20) + 10;
 	if (color < 10) 
@@ -300,7 +300,7 @@ if (gameStates.app.bD1Mission)
 	return;
 
 BitBlt (SB_GAUGE_AFTERBURNER, SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y);
-int32_t nEraseHeight = FixMul ((I2X (1) - gameData.physics.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
+int32_t nEraseHeight = FixMul ((I2X (1) - gameData.physicsData.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
 
 if (nEraseHeight > 0) {
 	ogl.SetBlending (false);
@@ -320,7 +320,7 @@ void CStatusBar::DrawShieldText (void)
 	char szShield [20];
 
 SetFontScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
-//LoadTexture (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
+//LoadTexture (gameData.pigData.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.modelData.nCockpits / 2 : 0)].index, 0);
 SetFontColor (BLACK_RGBA);
 Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
 sprintf (szShield, "%d", (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
@@ -375,9 +375,9 @@ void CStatusBar::DrawInvul (void)
 	static fix time = 0;
 
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
-	 ((m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.time.xGame & 0x8000)))) {
+	 ((m_info.tInvul > I2X (4)) || ((m_info.tInvul > 0) && (gameData.timeData.xGame & 0x8000)))) {
 	BitBlt (GAUGE_INVULNERABLE + m_info.nInvulnerableFrame, SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
-	time += gameData.time.xFrame;
+	time += gameData.timeData.xFrame;
 	while (time > INV_FRAME_TIME) {
 		time -= INV_FRAME_TIME;
 		if (++m_info.nInvulnerableFrame == N_INVULNERABLE_FRAMES)
@@ -463,7 +463,7 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 void CStatusBar::DrawCockpit (bool bAlphaTest)
 {
-CGenericCockpit::DrawCockpit (CM_STATUS_BAR + m_info.nCockpit, gameData.render.scene.Height (), bAlphaTest);
+CGenericCockpit::DrawCockpit (CM_STATUS_BAR + m_info.nCockpit, gameData.renderData.scene.Height (), bAlphaTest);
 }
 
 //	-----------------------------------------------------------------------------
@@ -476,17 +476,17 @@ m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
 
-int32_t h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].Height ();
+int32_t h = gameData.pigData.tex.bitmaps [0][gameData.pigData.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.modelData.nCockpits / 2) : 0)].index].Height ();
 if (gameStates.app.bDemoData)
 	h *= 2;
-if (gameData.render.screen.Height () > 480)
-	h = (int32_t) ((double) h * (double) gameData.render.screen.Height () / 480.0);
-*((CViewport*) &gameData.render.scene) += CViewport (0, 0, 0, -h);
+if (gameData.renderData.screen.Height () > 480)
+	h = (int32_t) ((double) h * (double) gameData.renderData.screen.Height () / 480.0);
+*((CViewport*) &gameData.renderData.scene) += CViewport (0, 0, 0, -h);
 
 if (bScene)
-	gameData.render.scene.Activate ("CStatusBar::Setup (scene)");
+	gameData.renderData.scene.Activate ("CStatusBar::Setup (scene)");
 else
-	gameData.render.frame.Activate ("CStatusBar::Setup (frame)");
+	gameData.renderData.frame.Activate ("CStatusBar::Setup (frame)");
 return true;
 }
 
@@ -495,11 +495,11 @@ return true;
 void CStatusBar::SetupWindow (int32_t nWindow)
 {
 tGaugeBox* pHudArea = hudWindowAreas + SB_PRIMARY_BOX + nWindow;
-gameData.render.window.Setup (&gameData.render.frame, 
-										gameData.render.frame.Left (false) + ScaleX (pHudArea->left),
-										gameData.render.frame.Top (false) + ScaleY (pHudArea->top),
+gameData.renderData.window.Setup (&gameData.renderData.frame, 
+										gameData.renderData.frame.Left (false) + ScaleX (pHudArea->left),
+										gameData.renderData.frame.Top (false) + ScaleY (pHudArea->top),
 										ScaleX (pHudArea->right - pHudArea->left + 1), ScaleY (pHudArea->bot - pHudArea->top + 1));
-gameData.render.window.Activate ("CStatusBar::SetupWindow (window)", &gameData.render.frame);
+gameData.renderData.window.Activate ("CStatusBar::SetupWindow (window)", &gameData.renderData.frame);
 }
 
 //	-----------------------------------------------------------------------------

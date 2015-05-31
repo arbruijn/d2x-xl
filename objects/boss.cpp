@@ -97,7 +97,7 @@ tail = 0;
 queue [0] = nBossHomeSeg;
 bossSegs [nSegments++] = nBossHomeSeg;
 nMaxSegments = Min (MAX_BOSS_TELEPORT_SEGS, LEVEL_SEGMENTS);
-gameData.render.mine.visibility [0].BumpVisitedFlag ();
+gameData.renderData.mine.visibility [0].BumpVisitedFlag ();
 
 while (tail != head) {
 	pSeg = SEGMENT (queue [tail++]);
@@ -113,11 +113,11 @@ while (tail != head) {
 			continue;
 		if (bOneWallHack)
 			bOneWallHack--;
-		if (gameData.render.mine.Visited (childSeg))
+		if (gameData.renderData.mine.Visited (childSeg))
 			continue;
 		if (nGroup != SEGMENT (childSeg)->m_group)
 			continue;
-		gameData.render.mine.Visit (childSeg);
+		gameData.renderData.mine.Visit (childSeg);
 		if (bSizeCheck && !BossFitsInSeg (pBossObj, childSeg))
 			continue;
 		queue [head++] = childSeg;
@@ -263,8 +263,8 @@ m_nDying = int16_t (h);
 CObject* pObj = OBJECT (m_nDying);
 if (!pObj || !pObj->IsBoss ())
 	m_nDying = -1;
-else if (m_nDying && (m_nDyingStartTime > gameData.time.xGame))
-	m_nDyingStartTime = gameData.time.xGame;
+else if (m_nDying && (m_nDyingStartTime > gameData.timeData.xGame))
+	m_nDyingStartTime = gameData.timeData.xGame;
 cf.Read (&h, sizeof (int32_t), 1);
 m_bDyingSoundPlaying = int8_t (h);
 cf.Read (&m_nHitTime, sizeof (fix), 1);
@@ -286,8 +286,8 @@ m_nLastGateTime = cf.ReadFix ();
 m_nGateInterval = cf.ReadFix ();
 m_nDyingStartTime = cf.ReadFix ();
 m_nDying = cf.ReadInt ();
-if (m_nDying && (m_nDyingStartTime > gameData.time.xGame))
-	m_nDyingStartTime = gameData.time.xGame;
+if (m_nDying && (m_nDyingStartTime > gameData.timeData.xGame))
+	m_nDyingStartTime = gameData.timeData.xGame;
 m_bDyingSoundPlaying = cf.ReadInt ();
 m_nHitTime = cf.ReadFix ();
 }
@@ -324,7 +324,7 @@ return LoadBufferState (cf, m_gateSegs, m_nGateSegs) && LoadBufferState (cf, m_t
 
 void CBossInfo::ResetCloakTime (void) 
 { 
-m_nCloakStartTime = m_nCloakEndTime = gameData.time.xGame; 
+m_nCloakStartTime = m_nCloakEndTime = gameData.timeData.xGame; 
 }
 
 // -----------------------------------------------------------------------------
@@ -425,7 +425,7 @@ for (uint32_t i = 0; i < m_info.ToS (); i++)
 void CBossData::ResetCloakTimes (void)
 {
 for (uint32_t i = 0; i < m_info.ToS (); i++)
-	gameData.bosses [i].ResetCloakTime ();
+	gameData.bossData [i].ResetCloakTime ();
 }
 
 // -----------------------------------------------------------------------------

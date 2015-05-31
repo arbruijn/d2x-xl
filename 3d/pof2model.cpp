@@ -138,7 +138,7 @@ if (bTextured) {
 			}
 		}
 	baseColor.Red () = baseColor.Green () = baseColor.Blue () = baseColor.Alpha () = 1;
-	i = (int32_t) (pBm - gameData.pig.tex.bitmaps [0]);
+	i = (int32_t) (pBm - gameData.pigData.tex.bitmaps [0]);
 	pFace->m_bThruster = (i == 24) || ((i >= 1741) && (i <= 1745));
 	}
 else {
@@ -358,7 +358,7 @@ m_faces.SortAscending ();
 AssignPOFFaces ();
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 m_nType = pp->Type ();
-gameData.models.polyModels [0][nModel].SetRad (Size (pObj, 0), 1);
+gameData.modelData.polyModels [0][nModel].SetRad (Size (pObj, 0), 1);
 Setup (0, 1);
 m_iSubModel = 0;
 if (gameStates.app.nLogLevel > 1)

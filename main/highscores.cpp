@@ -73,7 +73,7 @@ void CScoreTable::DrawItem (int32_t  i)
 	// Print CPlayerData name.
 
 GrPrintF (NULL, LHX (CENTERING_OFFSET (N_PLAYERS)) + xOffs, y, "%s", PLAYER (m_sorted [i]).callsign);
-  if (!gameData.app.GameMode (GM_MODEM | GM_SERIAL))
+  if (!gameData.appData.GameMode (GM_MODEM | GM_SERIAL))
    GrPrintF (NULL, LHX (CENTERING_OFFSET (N_PLAYERS)-15),y,"%c",szConditionLetters [PLAYER (m_sorted [i]).connected]);
    
 for (j = 0; j < N_PLAYERS; j++) {
@@ -133,7 +133,7 @@ void CScoreTable::DrawNames (void)
 	int32_t j, x;
 	int32_t color;
 
-if (gameData.score.bNoMovieMessage) {
+if (gameData.scoreData.bNoMovieMessage) {
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 	GrPrintF (NULL, CENTERSCREEN-LHX (40), LHY (20), " (Movie not played)");
 	}
@@ -159,7 +159,7 @@ GrPrintF (NULL, x, LHY (40) + yOffs, "K/E");
 
 void CScoreTable::DrawCoopNames (void)
 {
-if (gameData.score.bNoMovieMessage) {
+if (gameData.scoreData.bNoMovieMessage) {
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 	GrPrintF (NULL, CENTERSCREEN-LHX (40), LHY (20), " (Movie not played)");
 	}
@@ -182,11 +182,11 @@ y = LHY (55 + 72 + 35) + yOffs;
 	   			
 fontManager.SetColorRGBi (RGBA_PAL2 (63,20,0), 1, 0, 0);
 fontManager.Current ()->StringSize ("P-Playing E-Escaped D-Died", sw, sh, aw);
-if (! (gameData.app.GameMode (GM_MODEM | GM_SERIAL)))
+if (! (gameData.appData.GameMode (GM_MODEM | GM_SERIAL)))
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"P-Playing E-Escaped D-Died");
 y+= (sh+5);
 fontManager.Current ()->StringSize ("V-Viewing scores W-Waiting", sw, sh, aw);
-if (! (gameData.app.GameMode (GM_MODEM | GM_SERIAL)))
+if (! (gameData.appData.GameMode (GM_MODEM | GM_SERIAL)))
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
@@ -198,13 +198,13 @@ else {
    fontManager.Current ()->StringSize (TXT_PRESS_ANY_KEY2, sw, sh, aw);
    GrPrintF (NULL, CENTERSCREEN- (sw/2), y, TXT_PRESS_ANY_KEY2);
    }
-if (gameData.reactor.countdown.nSecsLeft <=0)
+if (gameData.reactorData.countdown.nSecsLeft <=0)
    DrawReactor (TXT_REACTOR_EXPLODED);
 else {
-   sprintf (reinterpret_cast<char*> (&reactor_message), "%s: %d %s  ", TXT_TIME_REMAINING, gameData.reactor.countdown.nSecsLeft, TXT_SECONDS);
+   sprintf (reinterpret_cast<char*> (&reactor_message), "%s: %d %s  ", TXT_TIME_REMAINING, gameData.reactorData.countdown.nSecsLeft, TXT_SECONDS);
    DrawReactor (reinterpret_cast<char*> (&reactor_message));
    }
-if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) 
+if (gameData.appData.GameMode (GM_HOARD | GM_ENTROPY)) 
 	DrawChampion ();
 }
 
@@ -229,11 +229,11 @@ y = LHY (55 + 72 + 35) + yOffs;
 x = LHX (35) + xOffs;
 fontManager.SetColorRGBi (RGBA_PAL2 (63,20,0), 1, 0, 0);
 fontManager.Current ()->StringSize ("P-Playing E-Escaped D-Died", sw, sh, aw);
-if (! (gameData.app.GameMode (GM_MODEM | GM_SERIAL)))
+if (! (gameData.appData.GameMode (GM_MODEM | GM_SERIAL)))
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"P-Playing E-Escaped D-Died");
 y += (sh+5);
 fontManager.Current ()->StringSize ("V-Viewing scores W-Waiting", sw, sh, aw);
-if (! (gameData.app.GameMode (GM_MODEM | GM_SERIAL)))
+if (! (gameData.appData.GameMode (GM_MODEM | GM_SERIAL)))
    GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
@@ -245,10 +245,10 @@ else {
 	fontManager.Current ()->StringSize (TXT_PRESS_ANY_KEY2, sw, sh, aw);
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y, TXT_PRESS_ANY_KEY2);
 	}
-if (gameData.reactor.countdown.nSecsLeft <=0)
+if (gameData.reactorData.countdown.nSecsLeft <=0)
 	DrawReactor (TXT_REACTOR_EXPLODED);
 else {
-	sprintf (reinterpret_cast<char*> (&reactor_message), "%s: %d %s  ", TXT_TIME_REMAINING, gameData.reactor.countdown.nSecsLeft, TXT_SECONDS);
+	sprintf (reinterpret_cast<char*> (&reactor_message), "%s: %d %s  ", TXT_TIME_REMAINING, gameData.reactorData.countdown.nSecsLeft, TXT_SECONDS);
 	DrawReactor (reinterpret_cast<char*> (&reactor_message));
 	}
 }
@@ -260,7 +260,7 @@ void CScoreTable::DrawReactor (const char *message)
   static char oldmessage [50]={0};
   int32_t sw, sh, aw;
 
-if (gameData.app.GameMode (GM_MODEM | GM_SERIAL))
+if (gameData.appData.GameMode (GM_MODEM | GM_SERIAL))
 	return;
 fontManager.SetCurrent (SMALL_FONT);
 if (oldmessage [0]!=0) {
@@ -282,12 +282,12 @@ void CScoreTable::DrawChampion (void)
 
 if (IsHoardGame != 0)
 	return;
-if ((gameData.app.GameMode (GM_MODEM | GM_SERIAL)) != 0)
+if ((gameData.appData.GameMode (GM_MODEM | GM_SERIAL)) != 0)
 	return;
-if (gameData.score.nChampion == -1)
+if (gameData.scoreData.nChampion == -1)
 	strcpy (message,TXT_NO_RECORD);
 else
-	sprintf (message, TXT_BEST_RECORD, PLAYER (gameData.score.nChampion).callsign, gameData.score.nHighscore);
+	sprintf (message, TXT_BEST_RECORD, PLAYER (gameData.scoreData.nChampion).callsign, gameData.scoreData.nHighscore);
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 fontManager.Current ()->StringSize (message, sw, sh, aw);
@@ -380,7 +380,7 @@ if (bQuit) {
 	CONNECT (N_LOCALPLAYER, CONNECT_DISCONNECTED);
 	MultiLeaveGame ();
 	}
-gameData.score.bNoMovieMessage = 0;
+gameData.scoreData.bNoMovieMessage = 0;
 backgroundManager.Draw ();
 gameStates.menus.nInMenu--;
 if (bQuit || ((missionManager.nCurrentLevel >= missionManager.nLastLevel) && !extraGameInfo [IsMultiGame].bRotateLevels))
@@ -422,7 +422,7 @@ int32_t k = KeyInKey ();
 switch (k) {
 	case KEY_ENTER:
 	case KEY_SPACEBAR:
-		if ((gameData.app.GameMode (GM_SERIAL | GM_MODEM)) != 0)
+		if ((gameData.appData.GameMode (GM_SERIAL | GM_MODEM)) != 0)
 			return IAmGameHost ();
 		if (Exit ())
 			return -1;
@@ -446,7 +446,7 @@ switch (k) {
 			Cleanup (1);
 			return -1;
 			}
-		gameData.score.nKillsChanged = 1;
+		gameData.scoreData.nKillsChanged = 1;
 		break;
 
 	case KEY_PRINT_SCREEN:
@@ -484,7 +484,7 @@ for (int32_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {
 
 	if (PLAYER (nPlayer).connected != m_oldStates [nPlayer]) {
 		if (szConditionLetters [PLAYER (nPlayer).connected] != szConditionLetters [m_oldStates [nPlayer]])
-			gameData.score.nKillsChanged = 1;
+			gameData.scoreData.nKillsChanged = 1;
 		m_oldStates [nPlayer] = PLAYER (nPlayer).connected;
 		NetworkSendEndLevelPacket ();
 		}
@@ -505,14 +505,14 @@ for (int32_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {
 		}
 
 	if (nEscaped >= N_PLAYERS)
-		gameData.reactor.countdown.nSecsLeft = -1;
-	if (m_nPrevSecsLeft != gameData.reactor.countdown.nSecsLeft) {
-		m_nPrevSecsLeft = gameData.reactor.countdown.nSecsLeft;
-		gameData.score.nKillsChanged = 1;
+		gameData.reactorData.countdown.nSecsLeft = -1;
+	if (m_nPrevSecsLeft != gameData.reactorData.countdown.nSecsLeft) {
+		m_nPrevSecsLeft = gameData.reactorData.countdown.nSecsLeft;
+		gameData.scoreData.nKillsChanged = 1;
 		}
-	if (gameData.score.nKillsChanged) {
+	if (gameData.scoreData.nKillsChanged) {
 		Render ();
-		gameData.score.nKillsChanged = 0;
+		gameData.scoreData.nKillsChanged = 0;
 		}
 	}
 networkThread.UnlockThread ();
@@ -550,7 +550,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 SetScreenMode (SCREEN_MENU);
 int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 backgroundManager.Setup (m_background, 640, 480, BG_TOPMENU, BG_STARS);
-gameData.score.bWaitingForOthers = 0;
+gameData.scoreData.bWaitingForOthers = 0;
 //@@GrPaletteFadeIn (grPalette,32, 0);
 GameFlushInputs ();
 for (i = 0; i < N_PLAYERS; i++)
@@ -570,7 +570,7 @@ for (;;) {
 		Render ();
 		bRedraw = 1;
 		}
-	gameData.score.nKillsChanged = 0;
+	gameData.scoreData.nKillsChanged = 0;
 
 	if (m_bNetwork)
 		NetworkEndLevelPoll2 (m, key, 0, 0); // check the states of the other players
@@ -587,7 +587,7 @@ for (;;) {
 			Cleanup (1);
 			return;
 			}
-		if ((gameData.app.GameMode (GM_SERIAL | GM_MODEM)) != 0) 
+		if ((gameData.appData.GameMode (GM_SERIAL | GM_MODEM)) != 0) 
 			break;
 		CONNECT (N_LOCALPLAYER, CONNECT_ADVANCE_LEVEL); // player is idling in score screen for MAX_VIEW_TIMES secs 
 		if (m_bNetwork)

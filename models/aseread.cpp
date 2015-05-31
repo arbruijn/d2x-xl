@@ -139,7 +139,7 @@ int32_t ASE_ReleaseTextures (void)
 
 PrintLog (1, "releasing ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.models.nHiresModels, pModel = gameData.models.aseModels [bCustom].Buffer (); i; i--, pModel++)
+	for (i = gameData.modelData.nHiresModels, pModel = gameData.modelData.aseModels [bCustom].Buffer (); i; i--, pModel++)
 		pModel->ReleaseTextures ();
 PrintLog (-1);
 return 0;
@@ -154,7 +154,7 @@ int32_t ASE_ReloadTextures (void)
 
 PrintLog (1, "reloading ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.models.nHiresModels, pModel = gameData.models.aseModels [bCustom].Buffer (); i; i--, pModel++)
+	for (i = gameData.modelData.nHiresModels, pModel = gameData.modelData.aseModels [bCustom].Buffer (); i; i--, pModel++)
 		if (!pModel->ReloadTextures ()) {
 			PrintLog (-1);
 			return 0;
@@ -826,7 +826,7 @@ if (!nResult)
 	Destroy ();
 else {
 	LinkSubModels ();
-	gameData.models.bHaveHiresModel [uint32_t (this - gameData.models.aseModels [bCustom != 0].Buffer ())] = 1;
+	gameData.modelData.bHaveHiresModel [uint32_t (this - gameData.modelData.aseModels [bCustom != 0].Buffer ())] = 1;
 	if (gameStates.app.bCacheModelData) {
 		if (IsPlayerShip (nModel))
 			SaveBinary (filename);

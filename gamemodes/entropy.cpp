@@ -11,8 +11,8 @@
 
 int32_t FindProducer (int32_t nSegment)
 {
-for (int32_t i = 0; i < gameData.producers.nProducers; i++)
-	if (gameData.producers.producers [i].nSegment == nSegment)
+for (int32_t i = 0; i < gameData.producerData.nProducers; i++)
+	if (gameData.producerData.producers [i].nSegment == nSegment)
 		return i;
 return -1;
 }
@@ -24,18 +24,18 @@ int32_t CountRooms (void)
 	int32_t		i;
 	CSegment	*pSeg = SEGMENTS.Buffer ();
 
-memset (gameData.entropy.nRoomOwners, 0xFF, sizeof (gameData.entropy.nRoomOwners));
-memset (gameData.entropy.nTeamRooms, 0, sizeof (gameData.entropy.nTeamRooms));
+memset (gameData.entropyData.nRoomOwners, 0xFF, sizeof (gameData.entropyData.nRoomOwners));
+memset (gameData.entropyData.nTeamRooms, 0, sizeof (gameData.entropyData.nTeamRooms));
 for (i = 0; i <= gameData.segData.nLastSegment; i++, pSeg++)
 	if ((pSeg->m_owner >= 0) && (pSeg->m_group >= 0) && 
-		 /* (pSeg->m_group <= N_MAX_ROOMS) &&*/ (gameData.entropy.nRoomOwners [(int32_t) pSeg->m_group] < 0))
-		gameData.entropy.nRoomOwners [(int32_t) pSeg->m_group] = pSeg->m_owner;
+		 /* (pSeg->m_group <= N_MAX_ROOMS) &&*/ (gameData.entropyData.nRoomOwners [(int32_t) pSeg->m_group] < 0))
+		gameData.entropyData.nRoomOwners [(int32_t) pSeg->m_group] = pSeg->m_owner;
 for (i = 0; i < N_MAX_ROOMS; i++)
-	if (gameData.entropy.nRoomOwners [i] >= 0) {
-		gameData.entropy.nTeamRooms [(int32_t) gameData.entropy.nRoomOwners [i]]++;
-		gameData.entropy.nTotalRooms++;
+	if (gameData.entropyData.nRoomOwners [i] >= 0) {
+		gameData.entropyData.nTeamRooms [(int32_t) gameData.entropyData.nRoomOwners [i]]++;
+		gameData.entropyData.nTotalRooms++;
 		}
-return gameData.entropy.nTotalRooms;
+return gameData.entropyData.nTotalRooms;
 }
 
 //-----------------------------------------------------------------------------
@@ -58,8 +58,8 @@ void ConquerRoom (int32_t newOwner, int32_t oldOwner, int32_t roomId)
 //    conquered virus centers converted from fuel/repair centers
 // So if j > jj or k < kk, all virus centers placed in virusGens can be converted
 // back to their original type
-gameData.entropy.nTeamRooms [oldOwner]--;
-gameData.entropy.nTeamRooms [newOwner]++;
+gameData.entropyData.nTeamRooms [oldOwner]--;
+gameData.entropyData.nTeamRooms [newOwner]++;
 for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, pSeg = SEGMENTS.Buffer (); 
 	  i < gameData.segData.nSegments; 
 	  i++, pSeg++) {
@@ -69,7 +69,7 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, pSeg = SEGMENTS.Buffer ();
 		if (pSeg->m_function == SEGMENT_FUNC_VIRUSMAKER) {
 			--k;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindProducer (i))) &&
-				 (gameData.producers.origProducerTypes [f] != SEGMENT_FUNC_NONE))
+				 (gameData.producerData.origProducerTypes [f] != SEGMENT_FUNC_NONE))
 				virusGens [--kk] = f;
 			for (nObject = pSeg->m_objects; nObject >= 0; nObject = pObj->info.nNextInSeg) {
 				pObj = OBJECT (nObject);
@@ -82,7 +82,7 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, pSeg = SEGMENTS.Buffer ();
 		if ((pSeg->m_owner == newOwner) && (pSeg->m_function == SEGMENT_FUNC_VIRUSMAKER)) {
 			j++;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindProducer (i))) &&
-				 (gameData.producers.origProducerTypes [f] != SEGMENT_FUNC_NONE))
+				 (gameData.producerData.origProducerTypes [f] != SEGMENT_FUNC_NONE))
 				virusGens [jj++] = f;
 			}
 		}
@@ -95,9 +95,9 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 		memcpy (virusGens + jj, virusGens + kk, (MAX_FUEL_CENTERS - kk) * sizeof (int16_t));
 		jj += (MAX_FUEL_CENTERS - kk);
 		for (j = 0; j < jj; j++) {
-			pFuel = gameData.producers.producers + virusGens [j];
+			pFuel = gameData.producerData.producers + virusGens [j];
 			CSegment* pFuelSeg = SEGMENT (pFuel->nSegment);
-			pFuelSeg->m_function = gameData.producers.origProducerTypes [uint32_t (pFuel - gameData.producers.producers.Buffer ())];
+			pFuelSeg->m_function = gameData.producerData.origProducerTypes [uint32_t (pFuel - gameData.producerData.producers.Buffer ())];
 			pFuelSeg->CreateProducer (pFuelSeg->m_function);
 			pFuelSeg->ChangeTexture (newOwner);
 			}

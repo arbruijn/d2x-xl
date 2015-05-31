@@ -105,10 +105,10 @@ for (i = 0; i < N_PLAYERS; i++)
 	if (eff < 0)
 		eff = 0;
 	if (IsHoardGame) {
-		if (gameData.score.nChampion == -1)
+		if (gameData.scoreData.nChampion == -1)
 			sprintf (szText, TXT_NO_RECORD2);
 		else
-			sprintf (szText, TXT_RECORD3, PLAYER (gameData.score.nChampion).callsign, gameData.score.nHighscore);
+			sprintf (szText, TXT_RECORD3, PLAYER (gameData.scoreData.nChampion).callsign, gameData.scoreData.nHighscore);
 		}
 	else if (!gameOpts->multi.bNoRankings) {
 		sprintf (szText, TXT_EFF_LIFETIME, eff);

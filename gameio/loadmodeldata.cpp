@@ -73,18 +73,18 @@ void _CDECL_ FreeObjExtensionBitmaps (void)
 	CBitmap*	pBm;
 
 PrintLog (1, "unloading extra bitmaps\n");
-if (!gameData.pig.tex.nExtraBitmaps)
-	gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];
-for (i = gameData.pig.tex.nBitmaps [0], pBm = gameData.pig.tex.bitmaps [0] + i; 
-	  i < gameData.pig.tex.nExtraBitmaps; i++, pBm++) {
-	gameData.pig.tex.nObjBitmaps--;
+if (!gameData.pigData.tex.nExtraBitmaps)
+	gameData.pigData.tex.nExtraBitmaps = gameData.pigData.tex.nBitmaps [0];
+for (i = gameData.pigData.tex.nBitmaps [0], pBm = gameData.pigData.tex.bitmaps [0] + i; 
+	  i < gameData.pigData.tex.nExtraBitmaps; i++, pBm++) {
+	gameData.pigData.tex.nObjBitmaps--;
 	pBm->ReleaseTexture ();
 	if (pBm->Buffer ()) {
 		pBm->DestroyBuffer ();
 		UseBitmapCache (pBm, (int32_t) -pBm->Height () * (int32_t) pBm->RowSize ());
 		}
 	}
-gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];
+gameData.pigData.tex.nExtraBitmaps = gameData.pigData.tex.nBitmaps [0];
 PrintLog (-1);
 }
 
@@ -94,14 +94,14 @@ void FreeModelExtensions (void)
 {
 	//return;
 PrintLog (1, "unloading extra poly models\n");
-while (gameData.models.nPolyModels > N_D2_POLYGON_MODELS) {
-	gameData.models.polyModels [0][--gameData.models.nPolyModels].Destroy ();
-	gameData.models.polyModels [1][gameData.models.nPolyModels].Destroy ();
+while (gameData.modelData.nPolyModels > N_D2_POLYGON_MODELS) {
+	gameData.modelData.polyModels [0][--gameData.modelData.nPolyModels].Destroy ();
+	gameData.modelData.polyModels [1][gameData.modelData.nPolyModels].Destroy ();
 	}
 if (!gameStates.app.bDemoData)
-	while (gameData.models.nPolyModels > gameData.endLevel.exit.nModel) {
-		gameData.models.polyModels [0][--gameData.models.nPolyModels].Destroy ();
-		gameData.models.polyModels [1][gameData.models.nPolyModels].Destroy ();
+	while (gameData.modelData.nPolyModels > gameData.endLevelData.exit.nModel) {
+		gameData.modelData.polyModels [0][--gameData.modelData.nPolyModels].Destroy ();
+		gameData.modelData.polyModels [1][gameData.modelData.nPolyModels].Destroy ();
 		}
 PrintLog (-1);
 }
@@ -135,8 +135,8 @@ if (nType > 1) {
 //read extra weapons
 
 t = cf.ReadInt ();
-gameData.weapons.nTypes [0] = N_D2_WEAPON_TYPES+t;
-if (gameData.weapons.nTypes [0] >= MAX_WEAPON_TYPES) {
+gameData.weaponData.nTypes [0] = N_D2_WEAPON_TYPES+t;
+if (gameData.weaponData.nTypes [0] >= MAX_WEAPON_TYPES) {
 	Warning ("Too many weapons (%d) in <%s>.  Max is %d.", t, fname, MAX_WEAPON_TYPES - N_D2_WEAPON_TYPES);
 	return -1;
 	}
@@ -169,36 +169,36 @@ if (bVertigoData) {
 	}
 
 t = cf.ReadInt ();
-j = N_D2_POLYGON_MODELS; //gameData.models.nPolyModels;
-gameData.models.nPolyModels += t;
-if (gameData.models.nPolyModels >= MAX_POLYGON_MODELS) {
+j = N_D2_POLYGON_MODELS; //gameData.modelData.nPolyModels;
+gameData.modelData.nPolyModels += t;
+if (gameData.modelData.nPolyModels >= MAX_POLYGON_MODELS) {
 	Warning ("Too many polygon models (%d)\nin <%s>.\nMax is %d.",
 				t,fname, MAX_POLYGON_MODELS - N_D2_POLYGON_MODELS);
 	return -1;
 	}
-ReadPolyModels (gameData.models.polyModels [0], t, cf, j);
+ReadPolyModels (gameData.modelData.polyModels [0], t, cf, j);
 if (bVertigoData) {
-	gameData.models.nDefPolyModels = gameData.models.nPolyModels;
-	memcpy (gameData.models.polyModels [1] + j, gameData.models.polyModels [0] + j, sizeof (CPolyModel) * t);
+	gameData.modelData.nDefPolyModels = gameData.modelData.nPolyModels;
+	memcpy (gameData.modelData.polyModels [1] + j, gameData.modelData.polyModels [0] + j, sizeof (CPolyModel) * t);
 	}
-for (i = j; i < gameData.models.nPolyModels; i++) {
-	gameData.models.polyModels [1][i].ResetBuffer ();
-	gameData.models.polyModels [0][i].Destroy ();
-	gameData.models.polyModels [0][i].ReadData (bVertigoData ? gameData.models.polyModels [1] + i : NULL, cf);
+for (i = j; i < gameData.modelData.nPolyModels; i++) {
+	gameData.modelData.polyModels [1][i].ResetBuffer ();
+	gameData.modelData.polyModels [0][i].Destroy ();
+	gameData.modelData.polyModels [0][i].ReadData (bVertigoData ? gameData.modelData.polyModels [1] + i : NULL, cf);
 	}
-for (i = j; i < gameData.models.nPolyModels; i++)
-	gameData.models.nDyingModels [i] = cf.ReadInt ();
-for (i = j; i < gameData.models.nPolyModels; i++)
-	gameData.models.nDeadModels [i] = cf.ReadInt ();
+for (i = j; i < gameData.modelData.nPolyModels; i++)
+	gameData.modelData.nDyingModels [i] = cf.ReadInt ();
+for (i = j; i < gameData.modelData.nPolyModels; i++)
+	gameData.modelData.nDeadModels [i] = cf.ReadInt ();
 
 t = cf.ReadInt ();
 if (N_D2_OBJBITMAPS + t >= MAX_OBJ_BITMAPS) {
 	Warning ("Too many object bitmaps (%d) in <%s>.  Max is %d.", t, fname, MAX_OBJ_BITMAPS - N_D2_OBJBITMAPS);
 	return -1;
 	}
-ReadBitmapIndices (gameData.pig.tex.objBmIndex, t, cf, N_D2_OBJBITMAPS);
+ReadBitmapIndices (gameData.pigData.tex.objBmIndex, t, cf, N_D2_OBJBITMAPS);
 if (bVertigoData) {
-	memcpy (&gameData.pig.tex.defaultObjBmIndex [N_D2_OBJBITMAPS], &gameData.pig.tex.objBmIndex [N_D2_OBJBITMAPS], sizeof (gameData.pig.tex.objBmIndex [0]) * t);
+	memcpy (&gameData.pigData.tex.defaultObjBmIndex [N_D2_OBJBITMAPS], &gameData.pigData.tex.objBmIndex [N_D2_OBJBITMAPS], sizeof (gameData.pigData.tex.objBmIndex [0]) * t);
 	}
 
 t = cf.ReadInt ();
@@ -207,7 +207,7 @@ if (N_D2_OBJBITMAPPTRS + t >= MAX_OBJ_BITMAPS) {
 	return -1;
 	}
 for (i = N_D2_OBJBITMAPPTRS; i < (N_D2_OBJBITMAPPTRS + t); i++)
-	gameData.pig.tex.pObjBmIndex [i] = cf.ReadShort ();
+	gameData.pigData.tex.pObjBmIndex [i] = cf.ReadShort ();
 cf.Close ();
 return 1;
 }
@@ -221,7 +221,7 @@ int32_t LoadRobotReplacements (const char* szLevel, const char* szFolder, int32_
 	int32_t		t, i, j;
 	int32_t		nBotTypeSave = gameData.botData.nTypes [gameStates.app.bD1Mission], 
 					nBotJointSave = gameData.botData.nJoints, 
-					nPolyModelSave = gameData.models.nPolyModels;
+					nPolyModelSave = gameData.modelData.nPolyModels;
 	tRobotInfo	botInfoSave;
 	char			szFile [FILENAME_LEN];
 
@@ -254,7 +254,7 @@ for (j = 0; j < t; j++) {
 		Warning (TXT_ROBOT_NO, szLevel, i, gameData.botData.nTypes [gameStates.app.bD1Mission] - 1);
 		gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 		gameData.botData.nJoints = nBotJointSave;
-		gameData.models.nPolyModels = nPolyModelSave;
+		gameData.modelData.nPolyModels = nPolyModelSave;
 		return -1;
 		}
 	if (bAltModels)
@@ -275,7 +275,7 @@ for (j = 0; j < t; j++) {
 						szLevel, i, MAX_ROBOT_JOINTS - 1);
 			gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 			gameData.botData.nJoints = nBotJointSave;
-			gameData.models.nPolyModels = nPolyModelSave;
+			gameData.modelData.nPolyModels = nPolyModelSave;
 			return -1;
 			}
 		}
@@ -284,7 +284,7 @@ for (j = 0; j < t; j++) {
 					szLevel, i, gameData.botData.nJoints - 1);
 		gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 		gameData.botData.nJoints = nBotJointSave;
-		gameData.models.nPolyModels = nPolyModelSave;
+		gameData.modelData.nPolyModels = nPolyModelSave;
 		return -1;
 		}
 	if (bAltModels)
@@ -296,36 +296,36 @@ t = cf.ReadInt ();			//read number of polygon models
 for (j = 0; j < t; j++) {
 	i = cf.ReadInt ();		//read model number
 	if (bAddBots) {
-		if (gameData.models.nPolyModels < MAX_POLYGON_MODELS) 
-			i = gameData.models.nPolyModels++;
+		if (gameData.modelData.nPolyModels < MAX_POLYGON_MODELS) 
+			i = gameData.modelData.nPolyModels++;
 		else {
 			Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
-						szLevel, i, gameData.models.nPolyModels - 1);
+						szLevel, i, gameData.modelData.nPolyModels - 1);
 			gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 			gameData.botData.nJoints = nBotJointSave;
-			gameData.models.nPolyModels = nPolyModelSave;
+			gameData.modelData.nPolyModels = nPolyModelSave;
 			return -1;
 			}
 		}
-	else if ((i < 0) || (i >= gameData.models.nPolyModels)) {
+	else if ((i < 0) || (i >= gameData.modelData.nPolyModels)) {
 		if (bAltModels) {
 			if (i < MAX_POLYGON_MODELS) 
-				gameData.models.nPolyModels = i + 1;
+				gameData.modelData.nPolyModels = i + 1;
 			else {
 				Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
-							szLevel, i, gameData.models.nPolyModels - 1);
+							szLevel, i, gameData.modelData.nPolyModels - 1);
 				gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 				gameData.botData.nJoints = nBotJointSave;
-				gameData.models.nPolyModels = nPolyModelSave;
+				gameData.modelData.nPolyModels = nPolyModelSave;
 				return -1;
 				}
 			}
-		else if ((gameData.models.nPolyModels > N_D2_POLYGON_MODELS) || (i >= N_D2_POLYGON_MODELS + N_VERTIGO_POLYGON_MODELS)) {
+		else if ((gameData.modelData.nPolyModels > N_D2_POLYGON_MODELS) || (i >= N_D2_POLYGON_MODELS + N_VERTIGO_POLYGON_MODELS)) {
 			Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
-						szLevel, i, gameData.models.nPolyModels - 1);
+						szLevel, i, gameData.modelData.nPolyModels - 1);
 			gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 			gameData.botData.nJoints = nBotJointSave;
-			gameData.models.nPolyModels = nPolyModelSave;
+			gameData.modelData.nPolyModels = nPolyModelSave;
 			return -1;
 			}
 		}
@@ -333,7 +333,7 @@ for (j = 0; j < t; j++) {
 	if (i == nDbgModel)
 		BRP;
 #endif
-	pModel = &gameData.models.polyModels [bAltModels ? 2 : 0][i];
+	pModel = &gameData.modelData.polyModels [bAltModels ? 2 : 0][i];
 	pModel->Destroy ();
 	if (!pModel->Read (0, 1, cf))
 		return -1;
@@ -350,8 +350,8 @@ for (j = 0; j < t; j++) {
 		cf.ReadInt ();
 		}
 	else {
-		gameData.models.nDyingModels [i] = cf.ReadInt ();
-		gameData.models.nDeadModels [i] = cf.ReadInt ();
+		gameData.modelData.nDyingModels [i] = cf.ReadInt ();
+		gameData.modelData.nDeadModels [i] = cf.ReadInt ();
 		}
 	}
 
@@ -363,10 +363,10 @@ for (j = 0; j < t; j++) {
 					szLevel, i, MAX_OBJ_BITMAPS - 1);
 		gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 		gameData.botData.nJoints = nBotJointSave;
-		gameData.models.nPolyModels = nPolyModelSave;
+		gameData.modelData.nPolyModels = nPolyModelSave;
 		return -1;
 		}
-	ReadBitmapIndex (gameData.pig.tex.objBmIndex + i, cf);
+	ReadBitmapIndex (gameData.pigData.tex.objBmIndex + i, cf);
 	}
 t = cf.ReadInt ();			//read number of objbitmapptrs
 for (j = 0; j < t; j++) {
@@ -376,10 +376,10 @@ for (j = 0; j < t; j++) {
 					szLevel, i, MAX_OBJ_BITMAPS - 1);
 		gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
 		gameData.botData.nJoints = nBotJointSave;
-		gameData.models.nPolyModels = nPolyModelSave;
+		gameData.modelData.nPolyModels = nPolyModelSave;
 		return -1;
 		}
-	gameData.pig.tex.pObjBmIndex [i] = cf.ReadShort ();
+	gameData.pigData.tex.pObjBmIndex [i] = cf.ReadShort ();
 	}
 cf.Close ();
 return 1;
@@ -397,7 +397,7 @@ return 1;
 static tBitmapIndex LoadExitModelIFF (const char * filename)
 {
 	tBitmapIndex	bmi;
-	CBitmap*			pBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
+	CBitmap*			pBm = gameData.pigData.tex.bitmaps [0] + gameData.pigData.tex.nExtraBitmaps;
 	int32_t				iffError;		//reference parm to avoid warning message
 	CIFF				iff;
 
@@ -416,8 +416,8 @@ if (iff.HasTransparency ())
 else
 	pBm->SetPalette (NULL, -1, 254);
 pBm->AvgColorIndex ();
-bmi.index = gameData.pig.tex.nExtraBitmaps;
-gameData.pig.tex.pBitmap [gameData.pig.tex.nExtraBitmaps++] = *pBm;
+bmi.index = gameData.pigData.tex.nExtraBitmaps;
+gameData.pigData.tex.pBitmap [gameData.pigData.tex.nExtraBitmaps++] = *pBm;
 return bmi;
 }
 
@@ -426,8 +426,8 @@ return bmi;
 static CBitmap *LoadExitModelBitmap (const char *name)
 {
 	int32_t				i;
-	tBitmapIndex*	bip = gameData.pig.tex.objBmIndex + gameData.pig.tex.nObjBitmaps;
-	Assert (gameData.pig.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
+	tBitmapIndex*	bip = gameData.pigData.tex.objBmIndex + gameData.pigData.tex.nObjBitmaps;
+	Assert (gameData.pigData.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
 
 *bip = LoadExitModelIFF (name);
 if (!bip->index) {
@@ -438,12 +438,12 @@ if (!bip->index) {
 	}
 if (!(i = bip->index))
 	return NULL;
-//if (gameData.pig.tex.bitmaps [0][i].Width () != 64 || gameData.pig.tex.bitmaps [0][i].Height () != 64)
+//if (gameData.pigData.tex.bitmaps [0][i].Width () != 64 || gameData.pigData.tex.bitmaps [0][i].Height () != 64)
 //	Error ("Bitmap <%s> is not 64x64", name);
-gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nObjBitmaps] = gameData.pig.tex.nObjBitmaps;
-gameData.pig.tex.nObjBitmaps++;
-Assert (gameData.pig.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
-return gameData.pig.tex.bitmaps [0] + i;
+gameData.pigData.tex.pObjBmIndex [gameData.pigData.tex.nObjBitmaps] = gameData.pigData.tex.nObjBitmaps;
+gameData.pigData.tex.nObjBitmaps++;
+Assert (gameData.pigData.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
+return gameData.pigData.tex.bitmaps [0] + i;
 }
 
 //------------------------------------------------------------------------------
@@ -466,7 +466,7 @@ int32_t LoadExitModels (void)
 	FreeModelExtensions ();
 	FreeObjExtensionBitmaps ();
 
-	start_num = gameData.pig.tex.nObjBitmaps;
+	start_num = gameData.pigData.tex.nObjBitmaps;
 	for (i = 0; szExitBm [i]; i++) 
 		if (!LoadExitModelBitmap (szExitBm [i])) {
 #if TRACE
@@ -476,10 +476,10 @@ int32_t LoadExitModels (void)
 		}
 
 	if (cf.Open ("exit.ham", gameFolders.game.szData [0], "rb", 0)) {
-		gameData.endLevel.exit.nModel = gameData.models.nPolyModels++;
-		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels++;
-		CPolyModel& exitModel = gameData.models.polyModels [0][gameData.endLevel.exit.nModel];
-		CPolyModel& destrModel = gameData.models.polyModels [0][gameData.endLevel.exit.nDestroyedModel];
+		gameData.endLevelData.exit.nModel = gameData.modelData.nPolyModels++;
+		gameData.endLevelData.exit.nDestroyedModel = gameData.modelData.nPolyModels++;
+		CPolyModel& exitModel = gameData.modelData.polyModels [0][gameData.endLevelData.exit.nModel];
+		CPolyModel& destrModel = gameData.modelData.polyModels [0][gameData.endLevelData.exit.nDestroyedModel];
 		if (!exitModel.Read (0, 0, cf))
 			return 0;
 		if (!destrModel.Read (0, 0, cf))
@@ -494,10 +494,10 @@ int32_t LoadExitModels (void)
 		}
 	else if (cf.Exist ("exit01.pof", gameFolders.game.szData [0], 0) && 
 				cf.Exist ("exit01d.pof", gameFolders.game.szData [0], 0)) {
-		gameData.endLevel.exit.nModel = LoadPolyModel ("exit01.pof", 3, start_num, NULL);
-		gameData.endLevel.exit.nDestroyedModel = LoadPolyModel ("exit01d.pof", 3, start_num + 3, NULL);
-		OglCachePolyModelTextures (gameData.endLevel.exit.nModel);
-		OglCachePolyModelTextures (gameData.endLevel.exit.nDestroyedModel);
+		gameData.endLevelData.exit.nModel = LoadPolyModel ("exit01.pof", 3, start_num, NULL);
+		gameData.endLevelData.exit.nDestroyedModel = LoadPolyModel ("exit01d.pof", 3, start_num + 3, NULL);
+		OglCachePolyModelTextures (gameData.endLevelData.exit.nModel);
+		OglCachePolyModelTextures (gameData.endLevelData.exit.nDestroyedModel);
 	}
 	else if (cf.Exist (D1_PIGFILE,gameFolders.game.szData [0],0)) {
 		int32_t offset, offset2;
@@ -524,10 +524,10 @@ int32_t LoadExitModels (void)
 			return 0;
 		}
 		cf.Seek (offset, SEEK_SET);
-		gameData.endLevel.exit.nModel = gameData.models.nPolyModels++;
-		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels++;
-		CPolyModel& exitModel = gameData.models.polyModels [0][gameData.endLevel.exit.nModel];
-		CPolyModel& destrModel = gameData.models.polyModels [0][gameData.endLevel.exit.nDestroyedModel];
+		gameData.endLevelData.exit.nModel = gameData.modelData.nPolyModels++;
+		gameData.endLevelData.exit.nDestroyedModel = gameData.modelData.nPolyModels++;
+		CPolyModel& exitModel = gameData.modelData.polyModels [0][gameData.endLevelData.exit.nModel];
+		CPolyModel& destrModel = gameData.modelData.polyModels [0][gameData.endLevelData.exit.nDestroyedModel];
 		if (!exitModel.Read (0, 0, cf))
 			return 0;
 		if (!destrModel.Read (0, 0, cf))
@@ -548,8 +548,8 @@ int32_t LoadExitModels (void)
 	}
 	atexit (FreeObjExtensionBitmaps);
 #if 1
-	OglCachePolyModelTextures (gameData.endLevel.exit.nModel);
-	OglCachePolyModelTextures (gameData.endLevel.exit.nDestroyedModel);
+	OglCachePolyModelTextures (gameData.endLevelData.exit.nModel);
+	OglCachePolyModelTextures (gameData.endLevelData.exit.nDestroyedModel);
 #endif
 	return 1;
 }
@@ -558,23 +558,23 @@ int32_t LoadExitModels (void)
 
 void RestoreDefaultModels (void)
 {
-	CPolyModel*	pModel = &gameData.models.polyModels [0][0];
+	CPolyModel*	pModel = &gameData.modelData.polyModels [0][0];
 	int32_t			i;
 
 gameData.botData.info [0] = gameData.botData.defaultInfo;
 gameData.botData.joints = gameData.botData.defaultJoints;
-gameData.pig.tex.objBmIndex = gameData.pig.tex.defaultObjBmIndex;
-for (i = 0; i < gameData.models.nDefPolyModels; i++, pModel++) {
+gameData.pigData.tex.objBmIndex = gameData.pigData.tex.defaultObjBmIndex;
+for (i = 0; i < gameData.modelData.nDefPolyModels; i++, pModel++) {
 #if DBG
 	if (i == nDbgModel)
 		BRP;
 #endif
 	if (pModel->Custom ()) {
 		pModel->Destroy ();
-		*pModel = gameData.models.polyModels [1][i];
+		*pModel = gameData.modelData.polyModels [1][i];
 		}
 	}
-for (; i < gameData.models.nPolyModels; i++, pModel++)
+for (; i < gameData.modelData.nPolyModels; i++, pModel++)
 	pModel->Destroy ();
 gameData.botData.nTypes [0] = gameData.botData.nDefaultTypes;
 gameData.botData.nJoints = gameData.botData.nDefaultJoints;
@@ -602,9 +602,9 @@ bOk = (cf.Read (&mdh, sizeof (mdh), 1) == 1);
 if (bOk)
 	bOk = (mdh.nVersion == MODEL_DATA_VERSION);
 if (bOk)
-	bOk = gameData.models.spheres.Read (cf, 1) == 1;
+	bOk = gameData.modelData.spheres.Read (cf, 1) == 1;
 if (!bOk)
-	gameData.models.spheres.Clear ();
+	gameData.modelData.spheres.Clear ();
 cf.Close ();
 return bOk;
 }
@@ -622,7 +622,7 @@ if (!gameStates.app.bCacheModelData)
 if (!cf.Open ("modeldata.d2x", gameFolders.var.szCache, "wb", 0))
 	return 0;
 bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
-		(gameData.models.spheres.Write (cf) == gameData.models.spheres.Length ()) &&
+		(gameData.modelData.spheres.Write (cf) == gameData.modelData.spheres.Length ()) &&
 cf.Close ();
 return bOk;
 }

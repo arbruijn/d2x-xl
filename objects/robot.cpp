@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //fills in gun_point
 int32_t CalcGunPoint (CFixVector *vGunPoint, CObject *pObj, int32_t nGun)
 {
-	CPolyModel*	pm = gameData.models.polyModels [0] + pObj->ModelId ();
+	CPolyModel*	pm = gameData.modelData.polyModels [0] + pObj->ModelId ();
 	CFixVector*	vGunPoints, vGunPos, vRot;
 	CFixMatrix	m;
 	int32_t		nSubModel;				//submodel number
@@ -55,7 +55,7 @@ while (nSubModel != 0) {
 	nSubModel = pm->SubModels ().parents [nSubModel];
 	}
 //now instance for the entire CObject
-//VmVecInc (&vGunPos, gameData.models.offsets + pRobotInfo->nModel);
+//VmVecInc (&vGunPos, gameData.modelData.offsets + pRobotInfo->nModel);
 *vGunPoint = *pObj->View (0) * vGunPos;
 *vGunPoint += pObj->info.position.vPos;
 return 1;
@@ -174,7 +174,7 @@ FORALL_STATIC_OBJS (pObj)
 		pObj->info.controlType = CT_CAMERA;
 		pObj->info.movementType = MT_NONE;
 		pObj->rType.polyObjInfo.nModel = gameData.botData.nCamBotModel;
-		gameData.ai.localInfo [pObj->Index ()].mode = AIM_IDLING;
+		gameData.aiData.localInfo [pObj->Index ()].mode = AIM_IDLING;
 		}
 	else if (pObj->info.nType == OBJ_EFFECT) {
 		pObj->SetSize (0);

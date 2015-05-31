@@ -67,12 +67,12 @@
 
 int32_t COGL::DrawBufferWidth (void)
 {
-return int32_t (gameData.render.screen.Scaled (m_states.nCurWidth));
+return int32_t (gameData.renderData.screen.Scaled (m_states.nCurWidth));
 }
 
 int32_t COGL::DrawBufferHeight (void)
 {
-return int32_t (gameData.render.screen.Scaled (m_states.nCurHeight));
+return int32_t (gameData.renderData.screen.Scaled (m_states.nCurHeight));
 }
 
 //------------------------------------------------------------------------------

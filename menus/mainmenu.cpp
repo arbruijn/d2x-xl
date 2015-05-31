@@ -114,7 +114,7 @@ if (gameStates.app.bAutoDemos) {
 			else {
 				gameStates.input.keys.xLastPressTime = curtime;                  // Reset timer so that disk won't thrash if no demos.
 				NDStartPlayback (NULL);           // Randomly pick a file
-				if (gameData.demo.nState == ND_STATE_PLAYBACK) {
+				if (gameData.demoData.nState == ND_STATE_PLAYBACK) {
 					SetFunctionMode (FMODE_GAME);
 					nLastKey = -3; //exit menu to get into game mode. -3 tells menu system not to restore
 					break;

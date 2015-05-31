@@ -419,9 +419,9 @@ void EvalShipArgs (void)
 
 for (int32_t i = 0; i < MAX_SHIP_TYPES; i++) {
 	if ((t = FindArg (szShipArgs [i])) && (p = appConfig [t+1]) && *p) {
-		strncpy (gameData.models.szShipModels [i], appConfig [t+1], FILENAME_LEN);
-		strlwr (gameData.models.szShipModels [i]);
-		replacementModels [i].pszHires = gameData.models.szShipModels [i];
+		strncpy (gameData.modelData.szShipModels [i], appConfig [t+1], FILENAME_LEN);
+		strlwr (gameData.modelData.szShipModels [i]);
+		replacementModels [i].pszHires = gameData.modelData.szShipModels [i];
 		}
 	}
 }
@@ -511,11 +511,11 @@ else if (FindArg ("-verbose"))
 else
 	CCvar::Register (const_cast<char*>("con_threshold"), -1.0);
 if ((t = FindArg ("-autodemo"))) {
-	gameData.demo.bAuto = 1;
-	strncpy (gameData.demo.fnAuto, *appConfig [t+1] ? appConfig [t+1] : "descent.dem", sizeof (gameData.demo.fnAuto));
+	gameData.demoData.bAuto = 1;
+	strncpy (gameData.demoData.fnAuto, *appConfig [t+1] ? appConfig [t+1] : "descent.dem", sizeof (gameData.demoData.fnAuto));
 	}
 else
-	gameData.demo.bAuto = 0;
+	gameData.demoData.bAuto = 0;
 gameStates.app.bMacData = FindArg ("-macdata");
 if ((t = FindArg ("-compress_data"))) {
 	gameStates.app.bCompressData = (NumArg (t, 1) == 1);

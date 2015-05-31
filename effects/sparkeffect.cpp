@@ -154,7 +154,7 @@ void CSparks::Render (void)
 {
 m_bUpdate = 1;
 //if (!automap.Active () || automap.m_bFull || automap.m_visible [m_nSegment])
-if (gameData.render.mine.Visible (m_nSegment)) {
+if (gameData.renderData.mine.Visible (m_nSegment)) {
 //#if USE_OPENMP > 1
 //#	pragma omp parallel for
 //#endif

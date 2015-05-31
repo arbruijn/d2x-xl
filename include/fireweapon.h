@@ -188,11 +188,11 @@ return LaserPlayerFireSpread (pObj, laserType, nGun, 0, 0, makeSound, harmless, 
 
 // ---------------------------------------------------------------------------------
 
-#define MAX_OMEGA_CHARGE (gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? gameData.omega.xMaxCharge : DEFAULT_MAX_OMEGA_CHARGE)
+#define MAX_OMEGA_CHARGE (gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? gameData.omegaData.xMaxCharge : DEFAULT_MAX_OMEGA_CHARGE)
 
 //	-----------------------------------------------------------------------------------------------------------
 
-#define HOMING_WEAPON_FPS			gameData.physics.nHomingWeaponFPS [extraGameInfo [IsMultiGame].nWeaponTurnSpeed]
+#define HOMING_WEAPON_FPS			gameData.physicsData.nHomingWeaponFPS [extraGameInfo [IsMultiGame].nWeaponTurnSpeed]
 #define HOMING_WEAPON_FRAMETIME	I2X (1) / HOMING_WEAPON_FPS
 
 #endif /* _LASER_H */

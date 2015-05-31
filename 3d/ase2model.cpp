@@ -122,11 +122,11 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 
 int32_t CModel::BuildFromASE (CObject *pObj, int32_t nModel)
 {
-	ASE::CModel*	pa = gameData.models.modelToASE [1][nModel];
+	ASE::CModel*	pa = gameData.modelData.modelToASE [1][nModel];
 	int32_t			i, j;
 
 if (!pa) {
-	pa = gameData.models.modelToASE [0][nModel];
+	pa = gameData.modelData.modelToASE [0][nModel];
 	if (!pa)
 		return 0;
 	}
@@ -154,7 +154,7 @@ for (i = 0; i < m_nTextures; i++)
 	if ((j = (int32_t) m_textures [i].Team ()))
 		m_teamTextures [j - 1] = i;
 m_nType = 2;
-gameData.models.polyModels [0][nModel].SetRad (Size (pObj, 1), 1);
+gameData.modelData.polyModels [0][nModel].SetRad (Size (pObj, 1), 1);
 Setup (1, 1);
 #if 1
 SetGunPoints (pObj, 1);
