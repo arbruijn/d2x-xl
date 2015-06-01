@@ -784,7 +784,7 @@ for (y = yMin; y < yMax; y++) {
 			}
 		}
 	}
-#pragma omp critical
+#pragma omp critical (CLightmapManagerBuild)
 {
 if (bBlack)
 	m_data.m_nColor |= 1;

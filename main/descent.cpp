@@ -843,7 +843,11 @@ GetAppFolders (true);
 CheckAndFixSetup ();
 gameStates.app.nLogLevel = appConfig.Int ("-printlog", 1);
 OpenLogFile ();
+#ifdef DESCENT_EXECUTABLE_VERSION
+PrintLog (0, "%s (%s)\n", DESCENT_VERSION, DESCENT_EXECUTABLE_VERSION);
+#else
 PrintLog (0, "%s\n", DESCENT_VERSION);
+#endif
 InitArgs (argc, argv);
 GetAppFolders (false);
 #ifdef D2X_MEM_HANDLER

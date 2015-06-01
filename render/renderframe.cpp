@@ -68,7 +68,7 @@ extern float quadVerts [3][4][2];
 
 int32_t RenderMissileView (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	CObject	*pObj = NULL;
 
 if (GuidedMslView (&pObj)) {
@@ -160,7 +160,7 @@ return 1;
 
 void Draw2DFrameElements (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	fix xStereoSeparation = ogl.StereoSeparation ();
 
 ogl.ColorMask (1,1,1,1,0);
@@ -254,7 +254,7 @@ LEAVE
 
 void FlushFrame (fix xStereoSeparation)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t i = ogl.StereoDevice ();
 
 if (!(i && xStereoSeparation)) {	//no stereo or shutter glasses or Oculus Rift
@@ -334,7 +334,7 @@ extern CBitmap bmBackground;
 
 void RenderFrame (fix xStereoSeparation, int32_t nWindow)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t nStartSeg;
 	fix	nEyeOffsetSave = gameStates.render.xStereoSeparation [0];
 
@@ -497,7 +497,7 @@ LEAVE
 
 void RenderMonoFrame (fix xStereoSeparation = 0)
 {
-ENTER (0);
+ENTER (0, 0);
 gameData.renderData.screen.Activate ("RenderMonoFrame", NULL, true);
 #if MAX_SHADOWMAPS
 RenderShadowMaps (xStereoSeparation);
@@ -652,7 +652,7 @@ for (y = tileTop;y <= tileBot; y++) {
 
 void UpdateSlidingFaces (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	CSegFace			*pFace;
 	int16_t			nOffset;
 	tTexCoord2f		* pTexCoord, *ovlTexCoordP;
@@ -693,7 +693,7 @@ LEAVE
 
 void GameRenderFrame (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (gameData.segData.nFaceKeys < 0)
 	meshBuilder.ComputeFaceKeys ();
 PROF_START

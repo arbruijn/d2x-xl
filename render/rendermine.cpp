@@ -129,7 +129,7 @@ else {
 
 void DoRenderObject (int32_t nObject, int32_t nWindow)
 {
-ENTER (0);
+ENTER (0, 0);
 #if DBG
 if (!(IsMultiGame || gameOpts->render.debug.bObjects))
 	LEAVE
@@ -222,7 +222,7 @@ if (left < r)
 
 int32_t SortObjList (int32_t nSegment)
 {
-ENTER (0);
+ENTER (0, 0);
 	tObjRenderListItem	*pi;
 	int32_t					i, j;
 
@@ -249,7 +249,7 @@ static int32_t nDbgListPos = -1;
 
 void RenderObjList (int32_t nListPos, int32_t nWindow)
 {
-ENTER (0);
+ENTER (0, 0);
 #if DBG
 if ((nListPos < 0) || (nListPos >= gameData.renderData.mine.nObjRenderSegs)) {
 	//PrintLog (0, "invalid object render list index!\n");
@@ -280,7 +280,7 @@ LEAVE
 
 void RenderSkyBoxObjects (void)
 {
-ENTER (0);
+ENTER (0, 0);
 PROF_START
 	int16_t		i, nObject;
 	int16_t		*segNumP;
@@ -298,7 +298,7 @@ LEAVE
 
 void RenderSkyBox (int32_t nWindow)
 {
-ENTER (0);
+ENTER (0, 0);
 PROF_START
 if (gameStates.render.bHaveSkyBox && (!automap.Active () || gameOpts->render.automap.bSkybox)) {
 	ogl.SetDepthWrite (true);
@@ -312,7 +312,7 @@ LEAVE
 
 void RenderObjectsST (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t nSegment;
 
 for (int32_t i = 0; i < gameData.renderData.mine.nObjRenderSegs; i++) {
@@ -391,7 +391,7 @@ Destroy ();
 
 void CThreadedObjectRenderer::Reset (void) 
 {
-ENTER (0);
+ENTER (0, 0);
 memset (m_threads, 0, sizeof (m_threads));
 memset (m_nThreadIds, 0, sizeof (m_nThreadIds));
 memset (m_lightObjects, 0, sizeof (m_lightObjects));
@@ -408,7 +408,7 @@ LEAVE
 
 void CThreadedObjectRenderer::Destroy (void) 
 {
-ENTER (0);
+ENTER (0, 0);
 if (m_bInited) {
 	SDL_DestroyMutex (m_lightLock);
 	SDL_DestroySemaphore (m_lightDone);
@@ -426,7 +426,7 @@ LEAVE
 
 void CThreadedObjectRenderer::Create (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!m_bInited) {
 	m_bInited = true;
 	m_lightLock = SDL_CreateMutex ();
@@ -457,7 +457,7 @@ LEAVE
 // segment.
 int32_t CThreadedObjectRenderer::Illuminate (void* nThreadP)
 {
-ENTER (0);
+ENTER (0, 0);
 #if 1
 	int32_t	nThread = *((int32_t*) nThreadP);
 #endif
@@ -517,7 +517,7 @@ RETURN (1)
 
 void CThreadedObjectRenderer::Render (void)
 {
-ENTER (0);
+ENTER (0, 0);
 Create ();
 
 #if DBG
@@ -584,7 +584,7 @@ return nSegment;
 
 static int32_t ObjectRenderSegment (int32_t i)
 {
-ENTER (0);
+ENTER (0, 0);
 if (i >= gameData.renderData.mine.visibility [0].nSegments)
 	RETURN (-1)
 int16_t nSegment = gameData.renderData.mine.visibility [0].segments [i];
@@ -624,7 +624,7 @@ RETURN (-1)
 
 void RenderMineObjects (int32_t nType)
 {
-ENTER (0);
+ENTER (0, 0);
 #if DBG
 if (!gameOpts->render.debug.bObjects)
 	LEAVE
@@ -672,7 +672,7 @@ LEAVE
 
 int32_t RenderSegmentList (int32_t nType)
 {
-ENTER (0);
+ENTER (0, 0);
 PROF_START
 
 gameStates.render.nType = nType;
@@ -719,7 +719,7 @@ RETURN (1)
 
 void RenderEffects (int32_t nWindow)
 {
-ENTER (0);
+ENTER (0, 0);
 PROF_START
 
 if (!ogl.StereoDevice () || (ogl.StereoSeparation () < 0) || nWindow || gameStates.render.cameras.bActive) {
@@ -765,7 +765,7 @@ int32_t bHave3DCockpit = -1;
 
 void RenderCockpitModel (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	static int32_t bCockpit = 1;
 	static float yOffset = 5.0f;
 
@@ -823,7 +823,7 @@ if (left < r)
 
 void RenderSegmentEdges (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!gameData.segData.edgeVertexData [0].m_vertices.Buffer () || !gameData.segData.edgeVertexData [1].m_vertices.Buffer ())
 	LEAVE
 
@@ -886,7 +886,7 @@ LEAVE
 
 void RenderMeshOutline (int32_t nScale, float fScale)
 {
-ENTER (0);
+ENTER (0, 0);
 bool bBlur = (gameOpts->render.effects.bGlow == 2) && glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
 
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
@@ -965,7 +965,7 @@ LEAVE
 
 void RenderMine (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow)
 {
-ENTER (0);
+ENTER (0, 0);
 PROF_START
 SetupMineRenderer (nWindow);
 PROF_END(ptAux)

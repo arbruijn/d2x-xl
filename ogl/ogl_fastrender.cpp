@@ -182,7 +182,7 @@ else
 
 int32_t SetupShader (CSegFace *pFace, int32_t bColorKey, int32_t bMultiTexture, int32_t bTextured, int32_t bColored, CFloatVector *pColor)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	nType, nShader = -1;
 
 if (!ogl.m_features.bShaders || (gameStates.render.nType == RENDER_TYPE_SKYBOX))
@@ -289,7 +289,7 @@ int32_t SetRenderStates (CSegFace *pFace, CBitmap *bmBot, CBitmap *bmTop,
 								 int32_t bTextured, int32_t bColorKey, int32_t bColored, int32_t bLightmaps, 
 								 bool bForce = false)
 {
-ENTER (0);
+ENTER (0, 0);
 PROF_START
 if (bTextured) {
 	bool bStateChange = false;
@@ -399,7 +399,7 @@ else
 
 int32_t RenderFace (CSegFace *pFace, CBitmap *bmBot, CBitmap *bmTop, int32_t bTextured, int32_t bLightmaps)
 {
-ENTER (0);
+ENTER (0, 0);
 PROF_START
 	int32_t bColored, bTransparent, bColorKey = 0, bMonitor = 0;
 
@@ -508,7 +508,7 @@ RETURN (0)
 
 int32_t DrawHeadlights (CSegFace *pFace, CBitmap *bmBot, CBitmap *bmTop, int32_t bTextured, int32_t bLightmaps)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t bColorKey = 0, bMonitor = 0;
 
 if (!pFace->m_info.bTextured)

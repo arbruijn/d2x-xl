@@ -199,7 +199,7 @@ else
 #endif
 CParticleSystem *pSystem;
 #if USE_OPENMP > 1
-#	pragma omp critical
+#	pragma omp critical (CParticleManagerCreate)
 #endif
 {
 if (!particleImageManager.Load (nType))

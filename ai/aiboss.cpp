@@ -66,7 +66,7 @@ int32_t	maxSpewBots [NUM_D2_BOSSES] = {2, 1, 2, 3, 3, 3, 3, 3};
 //	If pos == NULL, pick random spot in CSegment.
 int32_t CObject::CreateGatedRobot (int16_t nSegment, uint8_t nObjId, CFixVector* vPos)
 {
-ENTER (0);
+ENTER (0, 0);
 tRobotInfo*	pRobotInfo = ROBOTINFO (nObjId);
 if (!pRobotInfo)
 	RETURN (-1)
@@ -147,7 +147,7 @@ RETURN (pObj->Index ())
 //	pObj points at a boss.  He was presumably just hit and he's supposed to create a bot at the hit location *pos.
 int32_t CObject::BossSpewRobot (CFixVector *vPos, int16_t objType, int32_t bObjTrigger)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!bObjTrigger && FindObjTrigger (OBJ_IDX (this), TT_SPAWN_BOT, -1)) // not caused by an object trigger, but object has an object trigger
 	RETURN (-1)
 
@@ -207,7 +207,7 @@ RETURN (nObject)
 //	Return nObject if robot successfully created, else return -1
 int32_t GateInRobot (int16_t nObject, uint8_t nType, int16_t nSegment)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!gameData.bossData.ToS ())
 	RETURN (-1)
 if (nSegment < 0) {
@@ -226,7 +226,7 @@ RETURN (OBJECT (nObject) ? OBJECT (nObject)->CreateGatedRobot (nSegment, nType, 
 
 int32_t BossFitsInSeg (CObject *pBossObj, int32_t nSegment)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t		nObject = OBJ_IDX (pBossObj);
 	int32_t		nPos;
 	CFixVector	vSegCenter, vVertPos;
@@ -254,7 +254,7 @@ RETURN (0)
 
 int32_t IsValidTeleportDest (CFixVector *vPos, int32_t nMinDist)
 {
-ENTER (0);
+ENTER (0, 0);
 	CObject		*pObj;
 	CFixVector	vOffs;
 	fix			xDist;
@@ -272,7 +272,7 @@ RETURN (0)
 
 void TeleportBoss (CObject *pObj)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t		i, nAttempts = 5, nRandSeg = 0, nRandIndex, nObject = pObj->Index ();
 	CFixVector	vBossDir, vNewPos;
 
@@ -322,7 +322,7 @@ LEAVE
 
 void StartBossDeathSequence (CObject *pObj)
 {
-ENTER (0);
+ENTER (0, 0);
 if (pObj && pObj->IsBoss ()) {
 	int32_t	nObject = pObj->Index (),
 				i = gameData.bossData.Find (nObject);
@@ -341,7 +341,7 @@ LEAVE
 
 void DoBossDyingFrame (CObject *pObj)
 {
-ENTER (0);
+ENTER (0, 0);
 tRobotInfo	*pRobotInfo = ROBOTINFO (pObj);
 if (!pRobotInfo)
 	LEAVE
@@ -370,7 +370,7 @@ LEAVE
 //	Do special stuff for a boss.
 void DoBossStuff (CObject *pObj, int32_t nTargetVisibility)
 {
-ENTER (0);
+ENTER (0, 0);
 int32_t nBossId = pObj->BossId ();
 if (!nBossId)
 	LEAVE

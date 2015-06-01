@@ -2153,6 +2153,7 @@ return
 
 bool CGameData::Create (int32_t nSegments, int32_t nVertices)
 {
+ENTER (0, 0);
 if (!(gameData.segData.Create (nSegments, nVertices) &&
 		gameData.objData.Create () &&
 		gameData.renderData.color.Create () &&
@@ -2164,7 +2165,7 @@ if (!(gameData.segData.Create (nSegments, nVertices) &&
 		gameData.multiplayer.Create () &&
 		gameData.multigame.Create () &&
 		gameData.demoData.Create ()))
-	return false;
+	RETURN (false)
 particleManager.Init ();
 particleManager.SetLastType (-1);
 lightningManager.Init ();
@@ -2172,13 +2173,14 @@ markerManager.Init ();
 gameData.physicsData.Init ();
 gameData.bossData.Create ();
 gameData.wallData.Reset ();
-return true;
+RETURN (true)
 }
 
 // ----------------------------------------------------------------------------
 
 void CGameData::Destroy (void)
 {
+ENTER (0, 0);
 gameData.segData.Destroy ();
 gameData.objData.Destroy ();
 gameData.wallData.Destroy ();
@@ -2197,7 +2199,7 @@ gameData.bossData.Destroy ();
 particleManager.Shutdown ();
 lightningManager.Shutdown (1);
 cameraManager.Destroy ();
-
+LEAVE
 }
 
 // ----------------------------------------------------------------------------

@@ -907,8 +907,9 @@ if (pWall) {
 void RemoveObsoleteStuckObjects (void)
 {
 //	Safety and efficiency code.  If no stuck OBJECTS, should never get inside the IF, but this is faster.
+ENTER (0, 0);
 if (!nStuckObjects)
-	return;
+	LEAVE
 int16_t nObject = gameData.appData.nFrameCount % MAX_STUCK_OBJECTS;
 tStuckObject *pStuckObj = stuckObjects + nObject;
 CObject *pObj = OBJECT (pStuckObj->nObject);
@@ -919,18 +920,20 @@ if ((pWall && (pWall->state != WALL_DOOR_CLOSED)) || !pObj || (pObj->info.nSigna
 		pObj->UpdateLife (I2X (1) / 8);
 	pStuckObj->nWall = NO_WALL;
 	}
+LEAVE
 }
 
 //	----------------------------------------------------------------------------------------------------
 //	Door with CWall index nWall is opening, kill all OBJECTS stuck in it.
 void KillStuckObjects (int32_t nWall)
 {
+ENTER (0, 0);
 	int32_t			i;
 	tStuckObject	*pStuckObj;
 	CObject			*pObj;
 
 if (!IS_WALL (nWall) || (nStuckObjects == 0))
-	return;
+	LEAVE
 nStuckObjects = 0;
 
 for (i = 0, pStuckObj = stuckObjects; i < MAX_STUCK_OBJECTS; i++, pStuckObj++)
@@ -953,6 +956,7 @@ for (i = 0, pStuckObj = stuckObjects; i < MAX_STUCK_OBJECTS; i++, pStuckObj++)
 	}
 //	Ok, this is awful, but we need to do things whenever a door opens/closes/disappears, etc.
 simpleRouter [0].Flush ();
+LEAVE
 }
 
 // -----------------------------------------------------------------------------------
@@ -968,6 +972,7 @@ nStuckObjects = 0;
 // Clear out all stuck OBJECTS.  Called for a new ship
 void ClearStuckObjects (void)
 {
+ENTER (0, 0);
 	tStuckObject	*pStuckObj = stuckObjects;
 	CObject			*pObj;
 
@@ -982,6 +987,7 @@ for (int32_t i = 0; i < MAX_STUCK_OBJECTS; i++, pStuckObj++) {
 	}
 if (nStuckObjects)
 	nStuckObjects = 0;
+LEAVE
 }
 
 // -----------------------------------------------------------------------------------
@@ -989,11 +995,12 @@ if (nStuckObjects)
 
 void BngProcessSegment (CObject *pObj, fix damage, CSegment *pSeg, int32_t depth, int8_t *visited)
 {
+ENTER (0, 0);
 	int32_t	i;
 	int16_t	nSide;
 
 if (depth > MAX_BLAST_GLASS_DEPTH)
-	return;
+	LEAVE
 
 depth++;
 
@@ -1033,6 +1040,7 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		BngProcessSegment (pObj, damage, SEGMENT (nSegment), depth, visited);
 		}
 	}
+LEAVE
 }
 
 // -----------------------------------------------------------------------------------
@@ -1392,14 +1400,17 @@ gameData.wallData.exploding.Reset ();
 //explode the given CWall
 void ExplodeWall (int16_t nSegment, int16_t nSide)
 {
+ENTER (1, 0);
 	CExplodingWall * pExplodingWall = AddExplodingWall ();
 
 if (pExplodingWall) {
 	pExplodingWall->nSegment = nSegment;
 	pExplodingWall->nSide = nSide;
 	pExplodingWall->time = 0;
-	SEGMENT (nSegment)->CreateSound (SOUND_EXPLODING_WALL, nSide);
+	if (SEGMENT (nSegment))
+		SEGMENT (nSegment)->CreateSound (SOUND_EXPLODING_WALL, nSide);
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -1407,6 +1418,7 @@ if (pExplodingWall) {
 //note: this CWall code assumes the CWall is not triangulated
 void DoExplodingWallFrame (void)
 {
+ENTER (1, 0);
 for (uint32_t i = 0; i < gameData.wallData.exploding.ToS (); ) {
 	int16_t nSegment = gameData.wallData.exploding [i].nSegment;
 	if (nSegment < 0) {
@@ -1440,7 +1452,7 @@ for (uint32_t i = 0; i < gameData.wallData.exploding.ToS (); ) {
 	//n = newCount - oldCount;
 	//now create all the next explosions
 	for (e = oldCount; e < newCount; e++) {
-		uint16_t*		corners;
+		uint16_t		*corners;
 		CFixVector	*v0, *v1, *v2;
 		CFixVector	vv0, vv1, vPos;
 		fix			size;
@@ -1469,6 +1481,7 @@ for (uint32_t i = 0; i < gameData.wallData.exploding.ToS (); ) {
 	else
 		i++;
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -1495,8 +1508,8 @@ for (int32_t i = 0; i < gameData.wallData.nWalls; i++, pWall++) {
 void FixWalls (void)
 {
 	CWall*			pWall;
-	uint32_t				i, j;
-	uint8_t				bActive [MAX_WALLS];
+	uint32_t			i, j;
+	uint8_t			bActive [MAX_WALLS];
 
 memset (bActive, 0, sizeof (bActive));
 for (i = 0; i < gameData.wallData.activeDoors.ToS (); i++)

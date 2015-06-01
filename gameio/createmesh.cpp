@@ -97,7 +97,7 @@ m_edges.Destroy ();
 
 int32_t CTriMeshBuilder::AllocData (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (m_nMaxTriangles && m_nMaxEdges) {
 	if (!(m_edges.Resize (m_nMaxEdges * 2) && m_triangles.Resize (m_nMaxTriangles * 2))) {
 		PrintLog (0, "Not enough memory for building the triangle mesh (%d edges, %d tris).\n", m_nMaxEdges * 2, m_nMaxTriangles * 2);
@@ -143,7 +143,7 @@ return NULL;
 
 int32_t CTriMeshBuilder::AddEdge (int32_t nTri, uint16_t nVert1, uint16_t nVert2)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nVert2 < nVert1) {
 	uint16_t h = nVert1;
 	nVert1 = nVert2;
@@ -188,7 +188,7 @@ RETURN (m_edges.Index (pEdge))
 
 tTriangle *CTriMeshBuilder::CreateTriangle (tTriangle *pTriangle, uint16_t index [], int32_t nFace, int32_t nIndex)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	h, i;
 
 if (pTriangle)
@@ -221,7 +221,7 @@ RETURN (pTriangle)
 
 tTriangle *CTriMeshBuilder::AddTriangle (tTriangle *pTriangle, uint16_t index [], tFaceTriangle *pFaceTriangle)
 {
-ENTER (0);
+ENTER (0, 0);
 RETURN (CreateTriangle (pTriangle, index, pFaceTriangle->nFace, pFaceTriangle - TRIANGLES))
 }
 
@@ -229,7 +229,7 @@ RETURN (CreateTriangle (pTriangle, index, pFaceTriangle->nFace, pFaceTriangle - 
 
 void CTriMeshBuilder::DeleteEdge (tEdge *pEdge)
 {
-ENTER (0);
+ENTER (0, 0);
 #if 1
 pEdge->nNext = m_nFreeEdges;
 m_nFreeEdges = m_edges.Index (pEdge);
@@ -256,7 +256,7 @@ LEAVE
 
 void CTriMeshBuilder::DeleteTriangle (tTriangle *pTriangle)
 {
-ENTER (0);
+ENTER (0, 0);
 	tEdge	*pEdge;
 	int32_t	i, nTri = m_triangles.Index (pTriangle);
 
@@ -275,7 +275,7 @@ LEAVE
 
 int32_t CTriMeshBuilder::CreateTriangles (void)
 {
-ENTER (0);
+ENTER (0, 0);
 PrintLog (1, "adding existing triangles\n");
 m_nEdges = 0;
 m_nTriangles = 0;
@@ -330,7 +330,7 @@ RETURN (m_nTris = m_nTriangles)
 
 int32_t CTriMeshBuilder::SplitTriangleByEdge (int32_t nTri, uint16_t nVert1, uint16_t nVert2, int16_t nPass)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nTri < 0)
 	RETURN (1)
 
@@ -431,7 +431,7 @@ return CFloatVector::Dist(gameData.segData.fVertices [h], gameData.segData.fVert
 
 int32_t CTriMeshBuilder::SplitEdge (CSegFace* pFace, tEdge *pEdge, int16_t nPass)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	tris [2];
 	uint16_t	verts [2];
 
@@ -465,7 +465,7 @@ RETURN (1)
 
 int32_t CTriMeshBuilder::SplitTriangle (CSegFace* pFace, tTriangle *pTriangle, int16_t nPass)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	h = 0, i;
 	float	l, lMax = 0;
 
@@ -485,7 +485,7 @@ RETURN (SplitEdge (pFace, &m_edges [pTriangle->lines [h]], nPass))
 
 int32_t CTriMeshBuilder::SplitTriangles (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	bSplit = 0, h, i, j, nSplitRes;
 	int16_t	nPass = 0, nMaxPasses = 10 * m_nQuality;
 
@@ -560,7 +560,7 @@ if (left < r)
 
 void CTriMeshBuilder::SetupVertexNormals (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	tFaceTriangle*	pTriangle;
 	CRenderPoint*	pPoint = RENDERPOINTS.Buffer ();
 	int32_t			h, i, nVertex;
@@ -591,7 +591,7 @@ LEAVE
 
 int32_t CTriMeshBuilder::InsertTriangles (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	tTriangle*		pTriangle = &m_triangles [0];
 	tFaceTriangle*	pFaceTriangle = TRIANGLES.Buffer ();
 	CSegFace*		m_pFace = NULL;
@@ -696,7 +696,7 @@ if (left < r)
 
 void CTriMeshBuilder::CreateSegFaceList (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t			h = 0;
 	tSegFaces*	pSegFace = SEGFACES.Buffer ();
 
@@ -711,7 +711,7 @@ LEAVE
 
 void CTriMeshBuilder::CreateFaceVertLists (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t*			bTags = new int32_t [gameData.segData.nVertices];
 	CSegFace*		pFace;
 	tFaceTriangle*	pTriangle;
@@ -773,7 +773,7 @@ return GameDataFilename (pszFilename, "mesh", nLevel, (gameStates.render.bTriang
 
 bool CTriMeshBuilder::Load (int32_t nLevel, bool bForce)
 {
-ENTER (0);
+ENTER (0, 0);
 	CFile					cf;
 	tMeshDataHeader	mdh;
 	int32_t				nSize, nExpectedSize;
@@ -917,7 +917,7 @@ RETURN (bOk)
 
 bool CTriMeshBuilder::Save (int32_t nLevel)
 {
-ENTER (0);
+ENTER (0, 0);
 	tMeshDataHeader mdh = {MESH_DATA_VERSION,
 								  CalcSegmentCheckSum (),
 								  gameData.segData.nSegments,
@@ -970,7 +970,7 @@ RETURN (bOk)
 
 int32_t CTriMeshBuilder::Build (int32_t nLevel, int32_t nQuality)
 {
-ENTER (0);
+ENTER (0, 0);
 PrintLog (1, "creating triangle mesh\n");
 m_nQuality = nQuality;
 if (Load (nLevel)) {
@@ -1036,7 +1036,7 @@ return m_pNormal;
 
 void CQuadMeshBuilder::InitFace (int16_t nSegment, uint8_t nSide, bool bRebuild)
 {
-ENTER (0);
+ENTER (0, 0);
 if (bRebuild)
 	m_pFace->m_info.nTris = 0;
 else
@@ -1065,7 +1065,7 @@ LEAVE
 
 void CQuadMeshBuilder::InitTexturedFace (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	static char szEmpty [] = "";
 	
 m_pFace->m_info.nBaseTex = m_pSide->m_nBaseTex;
@@ -1098,7 +1098,7 @@ LEAVE
 
 void CQuadMeshBuilder::InitColoredFace (int16_t nSegment)
 {
-ENTER (0);
+ENTER (0, 0);
 m_pFace->m_info.nBaseTex = -1;
 m_pFace->m_info.bTransparent = 1;
 m_pFace->m_info.bSegColor = missionConfig.m_bColoredSegments;
@@ -1114,7 +1114,7 @@ LEAVE
 
 void CQuadMeshBuilder::SetupLMapTexCoord (tTexCoord2f *pTexCoord)
 {
-ENTER (0);
+ENTER (0, 0);
 #define	LMAP_SIZE	0.0f //(1.0f / 16.0f)
 #if 0
 	static tTexCoord2f lMapTexCoord [4] = {
@@ -1152,7 +1152,7 @@ LEAVE
 
 void CQuadMeshBuilder::SetupFace (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t			i;
 	CFixVector		vNormal;
 	CFloatVector3	vNormalf;
@@ -1194,7 +1194,7 @@ LEAVE
 
 void CQuadMeshBuilder::SplitIn1or2Tris (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	static int16_t	n2TriVerts [2][2][3] = {{{0,1,2},{0,2,3}},{{0,1,3},{1,2,3}}};
 
 	int32_t		h, i, j, k, v, nType;
@@ -1263,7 +1263,7 @@ return (i < m) ? -1 : (i > m) ? 1 : 0;
 
 void CQuadMeshBuilder::ComputeFaceKeys (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	CSegFace	*pFace = FACES.faces.Buffer ();
 	CArray<CSegFace*>	keyFaceRef;
 
@@ -1310,7 +1310,7 @@ LEAVE
 
 void CQuadMeshBuilder::BuildSlidingFaceList (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	CSegFace	*pFace = FACES.faces.Buffer ();
 
 FACES.slidingFaces = NULL;
@@ -1326,7 +1326,7 @@ LEAVE
 
 void CQuadMeshBuilder::RebuildLightmapTexCoord (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	static int16_t	n2TriVerts [2][2][3] = {{{0,1,2},{0,2,3}},{{0,1,3},{1,2,3}}};
 
 	int32_t			h, i, j, k, nFace;
@@ -1354,7 +1354,7 @@ LEAVE
 
 void CQuadMeshBuilder::SplitIn4Tris (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	static int16_t	n4TriVerts [4][3] = {{0,1,4},{1,2,4},{2,3,4},{3,0,4}};
 
 	CFloatVector	vSide [4];
@@ -1510,7 +1510,7 @@ if (FACES.vboIndexHandle) {
 
 int32_t CQuadMeshBuilder::Build (int32_t nLevel, bool bRebuild)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t			nSegment, i;
 	uint8_t			nSide;
 

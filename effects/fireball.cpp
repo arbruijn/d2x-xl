@@ -53,7 +53,7 @@ void DropStolenItems (CObject *pObj);
 
 CObject *CObject::CreateExplBlast (bool bForce)
 {
-ENTER (0);
+ENTER (0, 0);
 #if 0 //DBG
 RETURN (NULL)
 #endif
@@ -92,7 +92,7 @@ RETURN (pObj)
 
 CObject *CObject::CreateShockwave (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t	nObject;
 	CObject	*pObj;
 
@@ -140,7 +140,7 @@ RETURN (pObj)
 CObject* CreateExplosion (CObject* pParent, int16_t nSegment, CFixVector& vPos, CFixVector& vImpact, fix xSize,
 								  uint8_t nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, int16_t nParent)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t		nObject;
 	CObject		*pExplObj, *pObj;
 	fix			dist, force, damage;
@@ -328,7 +328,7 @@ RETURN (pExplObj)
 CObject* CreateSplashDamageExplosion (CObject* pObj, int16_t nSegment, CFixVector& position, CFixVector &impact, fix size, uint8_t nVClip,
 												  fix maxDamage, fix maxDistance, fix maxForce, int16_t nParent)
 {
-ENTER (0);
+ENTER (0, 0);
 CObject* pExplObj = CreateExplosion (pObj, nSegment, position, impact, size, nVClip, maxDamage, maxDistance, maxForce, nParent);
 if (pExplObj) {
 	if (!pObj ||
@@ -347,7 +347,7 @@ RETURN (pExplObj)
 //return the explosion CObject
 CObject* CObject::ExplodeSplashDamageWeapon (CFixVector& vImpact, CObject* pTarget)
 {
-ENTER (0);
+ENTER (0, 0);
 	CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
 
 if (!pWeaponInfo)
@@ -388,7 +388,7 @@ RETURN (CreateSplashDamageExplosion (this, info.nSegment, vExplPos, vImpact, pWe
 CObject* CObject::ExplodeSplashDamage (fix damage, fix distance, fix force)
 {
 
-ENTER (0);
+ENTER (0, 0);
 CObject* pExplObj = CreateSplashDamageExplosion (this, info.nSegment, info.position.vPos, info.position.vPos, info.xSize,
 																 (uint8_t) GetExplosionVClip (this, 0), damage, distance, force, OBJ_IDX (this));
 if (pExplObj)
@@ -401,7 +401,7 @@ RETURN (pExplObj)
 //return the explosion CObject
 CObject* CObject::ExplodeSplashDamagePlayer (void)
 {
-ENTER (0);
+ENTER (0, 0);
 RETURN (ExplodeSplashDamage (I2X (50), I2X (40), I2X (150)))
 }
 
@@ -418,7 +418,7 @@ return fabs (X2F (vMax.v.coord.x - vMin.v.coord.x)) *
 
 double ObjectVolume (CObject *pObj)
 {
-ENTER (0);
+ENTER (0, 0);
 	CPolyModel	*pModel;
 	int32_t		i, j;
 	double		size;
@@ -467,7 +467,7 @@ fix nDebrisLife [] = {2, 5, 10, 15, 30, 60, 120, 180, 300};
 
 void CObject::SetupDebris (int32_t nSubObj, int32_t nId, int32_t nTexOverride)
 {
-ENTER (0);
+ENTER (0, 0);
 Assert (nSubObj < 32);
 info.nType = OBJ_DEBRIS;
 //Set polygon-CObject-specific data
@@ -502,7 +502,7 @@ LEAVE
 
 CObject* CObject::CreateDebris (int32_t nSubObj)
 {
-ENTER (0);
+ENTER (0, 0);
 int32_t nObject = ::CreateDebris (this, nSubObj);
 if ((nObject < 0) && (gameData.objData.nLastObject [0] >= LEVEL_OBJECTS - 1)) {
 #if TRACE
@@ -523,7 +523,7 @@ RETURN (pObj)
 
 void DrawFireball (CObject *pObj)
 {
-ENTER (0);
+ENTER (0, 0);
 if (pObj->info.xLifeLeft > 0)
 	DrawVClipObject (pObj, pObj->info.xLifeLeft, 0, pObj->info.nId, (pObj->info.nType == OBJ_WEAPON) ? gameData.weaponData.color + pObj->info.nId : NULL);
 LEAVE
@@ -533,7 +533,7 @@ LEAVE
 //what tAnimationInfo does this explode with?
 int16_t GetExplosionVClip (CObject *pObj, int32_t stage)
 {
-ENTER (0);
+ENTER (0, 0);
 if (pObj->info.nType == OBJ_ROBOT) {
 	tRobotInfo *pRobotInfo = ROBOTINFO (pObj);
 	if (pRobotInfo) {
@@ -552,7 +552,7 @@ RETURN (ANIM_SMALL_EXPLOSION)		//default
 //blow up a polygon model
 void CObject::ExplodePolyModel (void)
 {
-ENTER (0);
+ENTER (0, 0);
 Assert (info.renderType == RT_POLYOBJ);
 
 //CreateExplBlast (); TEST!!!
@@ -605,7 +605,7 @@ else {		//Normal, multi-stage explosion
 //blow up an CObject.  Takes the CObject to destroy, and the point of impact
 void CObject::Explode (fix delayTime)
 {
-ENTER (0);
+ENTER (0, 0);
 if (info.nFlags & OF_EXPLODING)
 	LEAVE
 if (delayTime) {		//wait a little while before creating explosion
@@ -673,7 +673,7 @@ if (pObj->info.xLifeLeft < 0)
 //do whatever needs to be done for this explosion for this frame
 void CObject::DoExplosionSequence (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t nType;
 
 Assert (info.controlType == CT_EXPLOSION);

@@ -36,7 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void MakeNearbyRobotSnipe (void)
 {
-ENTER (0);
+ENTER (1, 0);
 	CObject		*pObj;
 	int16_t		bfsList [MNRS_SEG_MAX];
 	int32_t		nObject, nBfsLength, i;
@@ -65,7 +65,7 @@ LEAVE
 
 void DoSnipeWait (CObject *pObj, tAILocalInfo *pLocalInfo)
 {
-ENTER (0);
+ENTER (1, 0);
 if ((gameData.aiData.target.xDist > I2X (50)) && (pLocalInfo->nextActionTime > 0))
 	LEAVE
 pLocalInfo->nextActionTime = SNIPE_WAIT_TIME;
@@ -84,7 +84,7 @@ LEAVE
 
 void DoSnipeAttack (CObject *pObj, tAILocalInfo *pLocalInfo)
 {
-ENTER (0);
+ENTER (1, 0);
 if (pLocalInfo->nextActionTime < 0) {
 	pLocalInfo->mode = AIM_SNIPE_RETREAT;
 	pLocalInfo->nextActionTime = SNIPE_WAIT_TIME;
@@ -105,7 +105,7 @@ LEAVE
 
 void DoSnipeFire (CObject *pObj, tAILocalInfo *pLocalInfo)
 {
-ENTER (0);
+ENTER (1, 0);
 if (pLocalInfo->nextActionTime < 0) {
 	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
 	CreateNSegmentPath (pObj, 10 + RandShort () / 2048, OBJSEG (TARGETOBJ));
@@ -123,7 +123,7 @@ LEAVE
 
 void DoSnipeRetreat (CObject *pObj, tAILocalInfo *pLocalInfo)
 {
-ENTER (0);
+ENTER (1, 0);
 if (pLocalInfo->nextActionTime < 0) {
 	pLocalInfo->mode = AIM_SNIPE_WAIT;
 	pLocalInfo->nextActionTime = SNIPE_WAIT_TIME;
@@ -152,7 +152,7 @@ pAISnipeHandler aiSnipeHandlers [] = {DoSnipeAttack, DoSnipeFire, DoSnipeRetreat
 
 void DoSnipeFrame (CObject *pObj)
 {
-ENTER (0);
+ENTER (1, 0);
 if (gameData.aiData.target.xDist <= MAX_SNIPE_DIST) {
 	tAILocalInfo		*pLocalInfo = gameData.aiData.localInfo + pObj->Index ();
 	int32_t			i = pLocalInfo->mode;

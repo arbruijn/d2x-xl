@@ -68,7 +68,7 @@ class CHomingTargetData {
 
 void CHomingTargetData::Add (CObject* pTarget, float dotScale)
 {
-ENTER (0);
+ENTER (0, 0);
 CFixVector vTarget = OBJPOS (pTarget)->vPos - m_vTrackerPos;
 fix dist = CFixVector::Normalize (vTarget);
 if (dist >= m_xMaxDist)
@@ -98,7 +98,7 @@ LEAVE
 
 int32_t CHomingTargetData::Target (int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 #if NEW_TARGETTING
 if (m_targets.ToS () < 1)
 	RETURN (-1)
@@ -123,7 +123,7 @@ RETURN (m_nBestObj)
 //	and it must not be obstructed by a CWall.
 int32_t CObject::ObjectIsTrackable (int32_t nTarget, fix& xDot, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 if (IsCoopGame)
 	RETURN (0)
 CObject* pTarget = OBJECT (nTarget);
@@ -160,7 +160,7 @@ RETURN (0)
 
 int32_t CObject::SelectHomingTarget (CFixVector& vTrackerPos, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 if (!IsMultiGame)
 	RETURN (FindAnyHomingTarget (vTrackerPos, OBJ_ROBOT, -1, nThread))
 if ((Type () == OBJ_PLAYER) || (cType.laserInfo.parent.nType == OBJ_PLAYER)) {
@@ -177,7 +177,7 @@ RETURN (FindAnyHomingTarget (vTrackerPos, OBJ_PLAYER, (pParent && (pParent->Targ
 
 int32_t CObject::FindTargetWindow (void)
 {
-ENTER (0);
+ENTER (0, 0);
 for (int32_t i = 0; i < MAX_RENDERED_WINDOWS; i++)
 	if ((windowRenderedData [i].nFrame >= gameData.appData.nFrameCount - 1) &&
 		 ((windowRenderedData [i].pViewer == gameData.objData.pConsole) || (this == GuidedInMainView ())) &&
@@ -191,7 +191,7 @@ RETURN (-1)
 
 int32_t CObject::MaxTrackableDist (int32_t& xBestDot)
 {
-ENTER (0);
+ENTER (0, 0);
 if (Type () == OBJ_WEAPON) {
 	if (Id () == OMEGA_ID) {
 		xBestDot = OMEGA_MIN_TRACKABLE_DOT;
@@ -211,7 +211,7 @@ RETURN (MAX_TRACKABLE_DIST)
 //	Scan list of OBJECTS rendered last frame, find one that satisfies function of nearness to center and distance.
 int32_t CObject::FindVisibleHomingTarget (CFixVector& vTrackerPos, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 //	Find an CObject to track based on game mode (eg, whether in network play) and who fired it.
 if (IsMultiGame)
 	RETURN (SelectHomingTarget (vTrackerPos, nThread))
@@ -267,7 +267,7 @@ RETURN (targetData.Target (nThread))
 
 int32_t CObject::FindAnyHomingTarget (CFixVector& vTrackerPos, int32_t targetType1, int32_t targetType2, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 	bool bOmega = (Type () == OBJ_WEAPON) && (Id () == OMEGA_ID);
 	CObject* pTarget;
 	CHomingTargetData targetData (this, vTrackerPos, targetLists [nThread]);
@@ -319,7 +319,7 @@ RETURN (targetData.Target (nThread))
 
 int32_t CObject::UpdateHomingTarget (int32_t nTarget, fix& dot, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 	int32_t	rVal = -2;
 	int32_t	nFrame;
 	int32_t	targetType1, targetType2 = -1;

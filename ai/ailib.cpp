@@ -44,7 +44,7 @@ int32_t	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
 int32_t AICanSeeTarget (CObject *pObj, CFixVector *vPos, fix fieldOfView, CFixVector *vVecToTarget)
 {
-ENTER (0);
+ENTER (1, 0);
 	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_VISIBILITY | (pObj->AttacksRobots () ? FQ_ANY_OBJECT : FQ_CHECK_PLAYER),
 								 vPos, &gameData.aiData.target.vBelievedPos, -1, pObj->Index (), I2X (1) / 4, I2X (1) / 4, ++gameData.physicsData.bIgnoreObjFlag);
 
@@ -94,7 +94,7 @@ RETURN (1)
 
 int32_t AICanFireAtTarget (CObject *pObj, CFixVector *vGun, CFixVector *vTarget)
 {
-ENTER (0);
+ENTER (1, 0);
 	fix			nSize;
 	int16_t		nModel;
 
@@ -160,7 +160,7 @@ if ((xMaxVisibleDist > 0) && (gameData.aiData.target.xDist > xMaxVisibleDist) &&
 //	and is copied to gameData.aiData.nTargetVisibility
 void ComputeVisAndVec (CObject *pObj, CFixVector *pos, tAILocalInfo *pLocalInfo, tRobotInfo *pRobotInfo, int32_t *flag, fix xMaxVisibleDist)
 {
-ENTER (0);
+ENTER (1, 0);
 if (*flag)
 	LimitTargetVisibility (xMaxVisibleDist, pLocalInfo);
 else if (!TARGETOBJ->Appearing ()) {
@@ -263,7 +263,7 @@ LEAVE
 //	pObj == NULL means treat as buddy.
 int32_t AIDoorIsOpenable (CObject *pObj, CSegment *pSeg, int16_t nSide)
 {
-ENTER (0);
+ENTER (1, 0);
 	CWall	*pWall;
 
 if (!IS_CHILD (pSeg->m_children [nSide]))
@@ -412,7 +412,7 @@ RETURN (0)
 int32_t CheckObjectObjectIntersection (CFixVector *pos, fix size, CSegment *pSeg)
 {
 //	If this would intersect with another CObject (only check those in this CSegment), then try to move.
-ENTER (0);
+ENTER (1, 0);
 int16_t nObject = pSeg->m_objects;
 while (nObject != -1) {
 	CObject *pObj = OBJECT (nObject);
@@ -440,7 +440,7 @@ RETURN (0)
 
 int32_t AILocalPlayerControlsRobot (CObject *pObj, int32_t awarenessLevel)
 {
-ENTER (0);
+ENTER (1, 0);
 if (!IsMultiGame)
 	RETURN (1)
 if (!awarenessLevel)

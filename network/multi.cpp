@@ -1204,12 +1204,13 @@ if ((gameData.appData.GameMode (GM_MONSTERBALL)) && !IAmGameHost ()) {
 
 void MultiDoFrame (void)
 {
+ENTER (0, 0);
 	static int32_t lasttime = 0;
 	int32_t i;
 
 if (!IsMultiGame) {
 	Int3 ();
-	return;
+	LEAVE
 	}
 
 if (IsNetworkGame && netGameInfo.GetPlayTimeAllowed () && (lasttime != X2I (gameStates.app.xThisLevelTime))) {
@@ -1235,6 +1236,7 @@ if (gameData.multigame.bQuitGame && !(gameData.multigame.menu.bInvoked || gameSt
 	}
 MultiAdjustPowerupCap ();
 MultiSyncMonsterball ();
+LEAVE
 }
 
 //-----------------------------------------------------------------------------
@@ -5613,12 +5615,13 @@ extern int32_t nDbgPowerup;
 
 void MultiAdjustPowerups (void)
 {
+ENTER (0, 0);
 	static	time_t	t0 = 0;
 	time_t	t = gameStates.app.nSDLTicks [0];
 
 if (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingForWeaponInfo ()) { // don't act if player ship status pending
 	if (t - t0 < 180000) 		// enforce after 3 minutes of inactivity though
-		return;
+		LEAVE
 #if DBG
 	t0 = t;
 #endif
@@ -5627,9 +5630,9 @@ if (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingF
 	int32_t h, i, j;
 
 if (gameStates.multi.nGameType != UDP_GAME)
-	return;
+	LEAVE
 if (t - t0 < 1000)
-	return;
+	LEAVE
 t0 = t;
 for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 	if (MultiPowerupIs4Pack (i))
@@ -5687,6 +5690,7 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 			}
 		}
 	}
+LEAVE
 }
 
 //-----------------------------------------------------------------------------

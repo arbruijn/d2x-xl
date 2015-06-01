@@ -198,8 +198,9 @@ gameData.objData.pConsole->RelinkToSeg (pSeg->Index ());
 
 bool InitGame (int32_t nSegments, int32_t nVertices)
 {
+ENTER (0, 0);
 if (!gameData.Create (nSegments, nVertices))
-	return false;
+	RETURN (false)
 /*---*/PrintLog (1, "Initializing game data\n");
 PrintLog (1, "Objects ...\n");
 InitObjects ();
@@ -234,7 +235,7 @@ importantMessages [1].Destroy ();
 PrintLog (-1);
 PrintLog (-1);
 fpDrawTexPolyMulti = G3DrawTexPolyMulti;
-return true;
+RETURN (true)
 }
 
 //------------------------------------------------------------------------------
@@ -266,6 +267,7 @@ pObj->mType.physInfo.rotThrust.SetZero ();
 
 void DoCloakStuff (void)
 {
+ENTER (0, 0);
 for (int32_t i = 0; i < N_PLAYERS; i++) {
 	if (gameData.multiplayer.players[i].flags & PLAYER_FLAGS_CLOAKED) {
 		if (gameData.timeData.xGame - PLAYER (i).cloakTime > CLOAK_TIME_MAX) {
@@ -280,6 +282,7 @@ for (int32_t i = 0; i < N_PLAYERS; i++) {
 			}
 		}
 	}
+LEAVE
 }
 
 //	------------------------------------------------------------------------------------
@@ -288,6 +291,7 @@ int32_t bFakingInvul = 0;
 
 void DoInvulnerableStuff (void)
 {
+ENTER (0, 0);
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	 (LOCALPLAYER.invulnerableTime != 0x7fffffff)) {
 	if (gameData.timeData.xGame - LOCALPLAYER.invulnerableTime > INVULNERABLE_TIME_MAX) {
@@ -302,6 +306,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 		bFakingInvul = 0;
 		}
 	}
+LEAVE
 }
 
 //@@//	------------------------------------------------------------------------------------
@@ -326,6 +331,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 
 void DoAfterburnerStuff (void)
 {
+ENTER (0, 0);
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	gameData.physicsData.xAfterburnerCharge = 0;
 if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
@@ -357,6 +363,7 @@ else /*if ((gameStates.gameplay.xLastAfterburnerCharge && (controls [0].afterbur
 	}
 gameStates.gameplay.bLastAfterburnerState = controls [0].afterburnerState;
 gameStates.gameplay.xLastAfterburnerCharge = gameData.physicsData.xAfterburnerCharge;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -464,6 +471,7 @@ gameStates.app.cheats.bEnabled = 0;
 
 void CleanupAfterGame (bool bHaveLevel)
 {
+ENTER (0, 0);
 #ifdef MWPROFILE
 ProfilerSetStatus (0);
 #endif
@@ -511,6 +519,7 @@ ResetModFolders ();
 gameStates.app.bGameRunning = 0;
 backgroundManager.Rebuild ();
 SetFunctionMode (FMODE_MENU);	
+LEAVE
 }
 
 //	-----------------------------------------------------------------------------
@@ -579,6 +588,7 @@ extern bool bRegisterBitmaps;
 
 void _CDECL_ CloseGame (void)
 {
+ENTER (0, 0);
 	static	int32_t bGameClosed = 0;
 #if MULTI_THREADED
 	int32_t		i;
@@ -682,6 +692,7 @@ if (fLog) {
 	fLog = NULL;
 	}
 #endif
+LEAVE
 }
 
 //-----------------------------------------------------------------------------
@@ -708,12 +719,13 @@ return NULL;
 //if water or fire level, make occasional sound
 void DoAmbientSounds (void)
 {
+ENTER (0, 0);
 if (gameStates.app.bPlayerIsDead)
-	return;
+	LEAVE
 
 CSegment* pSeg = SEGMENT (gameData.objData.pConsole->info.nSegment);
 if (!pSeg)
-	return;
+	LEAVE
 
 	int32_t bLava = (pSeg->m_flags & S2F_AMBIENT_LAVA);
 	int32_t bWater = (pSeg->m_flags & S2F_AMBIENT_WATER);
@@ -727,23 +739,27 @@ if (bLava) {							//has lava
 else if (bWater)						//just water
 	nSound = SOUND_AMBIENT_WATER;
 else
-	return;
+	LEAVE
 if (((RandShort () << 3) < gameData.timeData.xFrame))	//play the nSound
 	audio.PlaySound (nSound, SOUNDCLASS_GENERIC, (fix) (RandShort () + I2X (1) / 2));
+LEAVE
 }
 
 //-----------------------------------------------------------------------------
 
 void DoEffectsFrame (void)
 {
+ENTER (0, 0);
 gameStates.render.bUpdateEffects = true;
 UpdateEffects ();
+LEAVE
 }
 
 //-----------------------------------------------------------------------------
 
 void UpdateEffects (void) 
 {
+ENTER (0, 0);
 if (gameStates.render.bUpdateEffects) {
 	gameStates.render.bUpdateEffects = 0;
 	wayPointManager.Update ();
@@ -752,6 +768,7 @@ if (gameStates.render.bUpdateEffects) {
 	DoParticleFrame ();
 	particleManager.Cleanup ();
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -833,6 +850,7 @@ return 0;
 
 void CGameLoop::StateLoop (void)
 {
+ENTER (0, 0);
 m_bRunning = true;
 while (m_bRunning) {
 #if DBG
@@ -872,12 +890,14 @@ while (m_bRunning) {
 #endif
 	}
 m_bRunning = false;
+LEAVE
 }
 
 //-----------------------------------------------------------------------------
 
 void CGameLoop::Render (void)
 {
+ENTER (0, 0);
 Lock ();
 #if DBG
 ++nRenderCalls;
@@ -893,12 +913,14 @@ gameStates.app.bUsingConverter = 0;
 AutoScreenshot ();
 
 Unlock ();
+LEAVE
 }
 
 //-----------------------------------------------------------------------------
 
 void CGameLoop::Setup (void)
 {
+ENTER (0, 0);
 DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
 DoLunacyOff ();	//	Restore true insane mode.
 gameStates.app.bGameAborted = 0;
@@ -924,12 +946,14 @@ ogl.m_features.bShaders.Available (gameOpts->render.bUseShaders);
 gameData.renderData.rift.SetCenter ();
 if (pfnTIRStart)
 	pfnTIRStart ();
+LEAVE
 }
 
 //	------------------------------------------------------------------------------------
 
 int32_t CGameLoop::Preprocess (void)
 {
+ENTER (0, 0);
 PROF_START
 //gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 gameData.objData.nLastObject [1] = gameData.objData.nLastObject [0];
@@ -948,13 +972,13 @@ DoInvulnerableStuff ();
 RemoveObsoleteStuckObjects ();
 InitAIFrame ();
 DoFinalBossFrame ();
-DrainHeadpLightower ();
+DrainHeadLightPower ();
 PROF_END(ptGameStates)
 
 if (IsMultiGame) {
 	if (!MultiProtectGame ()) {
 		SetFunctionMode (FMODE_MENU);
-		return -1;
+		RETURN (-1)
 		}
 	PROF_CONT
 	AutoBalanceTeams ();
@@ -977,13 +1001,14 @@ UpdatePlayerEffects ();
 PROF_END(ptGameStates)
 #endif
 
-return 1;
+RETURN (1)
 }
 
 //-----------------------------------------------------------------------------
 
 int32_t CGameLoop::Postprocess (void)
 {
+ENTER (0, 0);
 PROF_START
 
 DeadPlayerFrame ();
@@ -1007,7 +1032,7 @@ if (gameStates.app.bEndLevelSequence) {
 	DoEndLevelFrame ();
 	PowerupGrabCheatAll ();
 	DoSpecialEffects ();
-	return 1;					//skip everything else
+	RETURN (1)	//skip everything else
 	}
 
 PROF_CONT
@@ -1035,16 +1060,16 @@ else { // Note the link to above!
 	PROF_CONT
 	LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  CObject::UpdateWeapon modifies this.
 	if (!UpdateAllObjects ())
-		return 0;
+		RETURN (0)
 	PowerupGrabCheatAll ();
 	if (gameStates.app.bEndLevelSequence)	//might have been started during move
-		return 1;
+		RETURN (1)
 	UpdateAllProducers ();
 	DoAIFrameAll ();
 	if (AllowedToFireGun ()) 
 		FireGun ();				// Fire Laser!
 	if (!FusionBump ())
-		return 1;
+		RETURN (1)
 	if (gameData.laserData.nGlobalFiringCount)
 		gameData.laserData.nGlobalFiringCount -= LocalPlayerFireGun ();	
 	if (gameData.laserData.nGlobalFiringCount < 0)
@@ -1070,17 +1095,19 @@ OmegaChargeFrame ();
 SlideTextures ();
 FlickerLights ();
 PROF_END (ptGameStates)
-return 1;
+RETURN (1)
 }
 
 //-----------------------------------------------------------------------------
 
 void CGameLoop::HandleControls (int32_t bControls)
 {
+ENTER (0, 0);
 if (bControls < 0)
 	controls.Reset ();
 else if (bControls)
 	ReadControls ();
+LEAVE
 }
 
 //-----------------------------------------------------------------------------
@@ -1089,13 +1116,14 @@ extern int32_t MaxFPS (void);
 
 int32_t CGameLoop::Step (int32_t bRender, int32_t bControls, int32_t fps)
 {
+ENTER (0, 0);
 gameStates.app.bGameRunning = 1;
 
 if (m_bRunning) { // game states are updated in separate thread
 	int32_t t = fps ? SDL_GetTicks () : 0;
 	HandleControls (bControls);
 	if (!bRender)
-		return 0;
+		RETURN (0)
 	Render ();
 #if DBG
 	tRenderLoop += SDL_GetTicks () - t;
@@ -1113,17 +1141,17 @@ else {
 	m_nResult = Preprocess ();
 	gameStates.render.DisableCartoonStyle ();
 	if (0 > m_nResult)
-		return m_nResult;
+		RETURN (m_nResult)
 	if (bRender)
 		Render ();
 	gameStates.render.EnableCartoonStyle (1, 1, 1);
 	m_nResult = Postprocess ();
 	gameStates.render.DisableCartoonStyle ();
 	if (0 > m_nResult)
-		return m_nResult;
+		RETURN (m_nResult)
 	}
 
-return m_nResult;
+RETURN (m_nResult)
 }
 
 //------------------------------------------------------------------------------
@@ -1191,6 +1219,7 @@ if (m_lock) {
 
 void CGameLoop::HandleAutomap (void)
 {
+ENTER (0, 0);
 if (automap.Active ()) {
 	int32_t	save_w = gameData.renderData.frame.Width (),
 				save_h = gameData.renderData.frame.Height ();
@@ -1202,12 +1231,14 @@ if (automap.Active ()) {
 	gameData.renderData.frame.SetHeight (save_h);
 	cockpit->Init ();
 	}
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void CGameLoop::Run (void)
 {
+ENTER (0, 0);
 Setup ();								// Replaces what was here earlier.
 
 for (;;) {
@@ -1278,6 +1309,7 @@ catch (...) {
 	Warning ("Internal error when cleaning up.");
 	}
 bRegisterBitmaps = false;
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -1286,18 +1318,21 @@ bRegisterBitmaps = false;
 
 void RunGame (void)
 {
+ENTER (0, 0);
 gameLoop.Setup ();
 gameLoop.Start ();
 if (!setjmp (gameExitPoint))
 	gameLoop.Run ();
 gameLoop.Stop ();
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 int32_t GameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t fps)
 {
-return gameLoop.Step (bRenderFrame, bReadControls, fps);
+ENTER (0, 0);
+RETURN (gameLoop.Step (bRenderFrame, bReadControls, fps))
 }
 
 //------------------------------------------------------------------------------
@@ -1333,8 +1368,9 @@ gameData.segData.bHaveSlideSegs = 1;
 
 void SlideTextures (void)
 {
-	int32_t			nSegment, nSide, h, i, j, tmn;
-	uint8_t			sides;
+ENTER (1, 0);
+	int32_t		nSegment, nSide, h, i, j, tmn;
+	uint8_t		sides;
 	CSegment*	pSeg;
 	CSide*		pSide;
 	tUVL*			pUVL;
@@ -1387,6 +1423,7 @@ for (h = 0; h < gameData.segData.nSlideSegs; h++) {
 			}
 		}
 	}
+LEAVE
 }
 
 //	-------------------------------------------------------------------------------------------------------
@@ -1438,7 +1475,7 @@ int32_t nLastLevelPathCreated = -1;
 int32_t MarkPlayerPathToSegment (int32_t nSegment)
 {
 	int32_t		i;
-	CObject* pObj = gameData.objData.pConsole;
+	CObject		* pObj = gameData.objData.pConsole;
 	int16_t		playerPathLength = 0;
 	int32_t		playerHideIndex = -1;
 

@@ -685,7 +685,7 @@ for (i = 0; i < gameData.segData.nSegments; i++)
 uint8_t CVisibilityData::BumpVisitedFlag (void)
 {
 #if USE_OPENMP // > 1
-#	pragma omp critical
+#	pragma omp critical (CVisibilityDataBumpVisitedFlag)
 #endif
 	{
 	if (!++nVisited) {
@@ -701,7 +701,7 @@ return nVisited;
 uint8_t CVisibilityData::BumpProcessedFlag (void)
 {
 #if USE_OPENMP // > 1
-#	pragma omp critical
+#	pragma omp critical (CVisibilityDataBumpProcessedFlag)
 #endif
 	{
 	if (!++nProcessed) {
@@ -717,7 +717,7 @@ return nProcessed;
 uint8_t CVisibilityData::BumpVisibleFlag (void)
 {
 #if USE_OPENMP // > 1
-#	pragma omp critical
+#	pragma omp critical (CVisibilityDataBumpVisibleFlag)
 #endif
 	{
 	if (!++nVisible) {

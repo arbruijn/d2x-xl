@@ -336,12 +336,14 @@ return gameOpts->render.effects.bEnabled && (gameOpts->render.effects.nShockwave
 
 void CPostProcessManager::Destroy (void) 
 {
+ENTER (0, 0);
 while (m_effects) {
 	CPostEffect* e = m_effects;
 	m_effects = m_effects->Next ();
 	delete e;
 	}
 m_nEffects = 0;
+LEAVE
 }
 
 //------------------------------------------------------------------------------

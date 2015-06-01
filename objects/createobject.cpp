@@ -105,7 +105,7 @@ int32_t CObject::Create (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t n
 								 const CFixVector& vPos, const CFixMatrix& mOrient,
 								 fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
 {
-ENTER (0);
+ENTER (0, 0);
 #if DBG
 if (nType == OBJ_WEAPON) {
 	nType = nType;
@@ -206,7 +206,7 @@ void UpdateLastObject (int32_t nObject);
 
 int32_t CreateObject (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, const CFixMatrix& mOrient, fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t	nObject;
 	CObject	*pObj;
 
@@ -361,7 +361,7 @@ RETURN (nObject)
 
 int32_t CloneObject (CObject *pObj)
 {
-ENTER (0);
+ENTER (0, 0);
 int16_t nObject = AllocObject ();
 CObject *pClone = OBJECT (nObject);
 if (!pClone)
@@ -389,7 +389,7 @@ RETURN (nObject)
 
 int32_t CreateRobot (uint8_t nId, int16_t nSegment, const CFixVector& vPos)
 {
-ENTER (0);
+ENTER (0, 0);
 tRobotInfo* pRobotInfo = ROBOTINFO (nId);
 if (!pRobotInfo) {
 	PrintLog (0, "Trying to create non-existent robot (type %d)\n", nId);
@@ -402,7 +402,7 @@ RETURN (CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, 
 
 int32_t PowerupsInMine (int32_t nPowerup)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t nCount = 0;
 
 if (MultiPowerupIs4Pack (nPowerup))
@@ -442,7 +442,7 @@ RETURN (nCount)
 
 void SetAllowedPowerup (int32_t nPowerup, uint32_t nCount)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nCount && powerupFilter [nPowerup]) {
 #if DBG
 	if (nPowerup == nDbgPowerup)
@@ -467,7 +467,7 @@ LEAVE
 
 void AddAllowedPowerup (int32_t nPowerup, uint32_t nCount)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nCount && powerupFilter [nPowerup]) {
 #if DBG
 	if (nPowerup == nDbgPowerup)
@@ -490,7 +490,7 @@ LEAVE
 
 void RemoveAllowedPowerup (int32_t nPowerup, uint32_t nCount)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nCount && powerupFilter [nPowerup]) {
 #if DBG
 	if (nPowerup == nDbgPowerup)
@@ -516,7 +516,7 @@ LEAVE
 
 void AddPowerupInMine (int32_t nPowerup, uint32_t nCount, bool bIncreaseLimit)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nCount && powerupFilter [nPowerup]) {
 #if DBG
 	if (nPowerup == nDbgPowerup)
@@ -539,7 +539,7 @@ LEAVE
 
 void RemovePowerupInMine (int32_t nPowerup, uint32_t nCount)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nCount && powerupFilter [nPowerup]) {
 #if DBG
 	if (nPowerup == nDbgPowerup)
@@ -587,7 +587,7 @@ return 1;
 
 int32_t CreatePowerup (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, int32_t bIgnoreLimits, bool bForce)
 {
-ENTER (0);
+ENTER (0, 0);
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	RETURN (-1)
 if (nId >= MAX_POWERUP_TYPES) {
@@ -621,7 +621,7 @@ RETURN (nObject)
 
 int32_t CreateWeapon (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, fix xSize, uint8_t rType)
 {
-ENTER (0);
+ENTER (0, 0);
 if (rType == 255) {
 	CWeaponInfo *pWeaponInfo = WEAPONINFO (nId);
 	if (!pWeaponInfo)
@@ -655,7 +655,7 @@ RETURN (CreateObject (OBJ_WEAPON, nId, nCreator, nSegment, vPos, CFixMatrix::IDE
 
 int32_t CreateFireball (uint8_t nId, int16_t nSegment, const CFixVector& vPos, fix xSize, uint8_t rType)
 {
-ENTER (0);
+ENTER (0, 0);
 RETURN (CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_EXPLOSION, MT_NONE, rType))
 }
 
@@ -663,7 +663,7 @@ RETURN (CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, CFixMatrix::IDENTIT
 
 int32_t CreateDebris (CObject *pParent, int16_t nSubModel)
 {
-ENTER (0);
+ENTER (0, 0);
 RETURN (CreateObject (OBJ_DEBRIS, 0, -1, pParent->info.nSegment, pParent->info.position.vPos, pParent->info.position.mOrient,
 							 gameData.modelData.polyModels [0][pParent->ModelId ()].SubModels ().rads [nSubModel],
 							 CT_DEBRIS, MT_PHYSICS, RT_POLYOBJ))
@@ -673,7 +673,7 @@ RETURN (CreateObject (OBJ_DEBRIS, 0, -1, pParent->info.nSegment, pParent->info.p
 
 int32_t CreateCamera (CObject *pParent)
 {
-ENTER (0);
+ENTER (0, 0);
 RETURN (CreateObject (OBJ_CAMERA, 0, -1, pParent->info.nSegment, pParent->info.position.vPos, pParent->info.position.mOrient, 0, CT_NONE, MT_NONE, RT_NONE))
 }
 
@@ -681,7 +681,7 @@ RETURN (CreateObject (OBJ_CAMERA, 0, -1, pParent->info.nSegment, pParent->info.p
 
 int32_t CreateLight (uint8_t nId, int16_t nSegment, const CFixVector& vPos)
 {
-ENTER (0);
+ENTER (0, 0);
 RETURN (CreateObject (OBJ_LIGHT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, 0, CT_LIGHT, MT_NONE, RT_NONE))
 }
 
@@ -689,7 +689,7 @@ RETURN (CreateObject (OBJ_LIGHT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, 
 
 void CreateSmallFireballOnObject (CObject *pObj, fix size_scale, int32_t bSound)
 {
-ENTER (0);
+ENTER (0, 0);
 	fix			size;
 	CFixVector	vPos, vRand;
 	int16_t		nSegment;
@@ -719,7 +719,7 @@ LEAVE
 
 void CreateVClipOnObject (CObject *pObj, fix xScale, uint8_t nVClip)
 {
-ENTER (0);
+ENTER (0, 0);
 	fix			xSize;
 	CFixVector	vPos, vRand;
 	int16_t		nSegment;
@@ -745,7 +745,7 @@ LEAVE
 //creates a marker CObject in the world.  returns the CObject number
 int32_t DropMarkerObject (CFixVector& vPos, int16_t nSegment, CFixMatrix& orient, uint8_t nMarker)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t nObject;
 
 //Assert (gameData.modelData.nMarkerModel != -1);

@@ -40,7 +40,7 @@ void _CDECL_ Error(const char *fmt,...) __noreturn __format;				//exit with erro
 void Assert(int32_t expr);
 void OpenLogFile (void);
 void _CDECL_ PrintLog (const int32_t nIndent, const char *fmt = NULL, ...);
-void TraceCallStack (const int32_t nDirection, const char *pszFunction, const int32_t nThread, const char *pszFile, const int32_t nLine);
+void TraceCallStack (const int32_t nDirection, const int32_t nLevel, const char *pszFunction, const int32_t nThread, const char *pszFile, const int32_t nLine);
 void PrintCallStack (void);
 void Int3();
 
@@ -91,9 +91,9 @@ void Breakpoint (void);
 #	define	__FUNC__	__PRETTY_FUNCTION__
 #endif
 
-#	define ENTER(_thread)		const int32_t __THREAD__ = (_thread); TraceCallStack (1, __FUNC__, __THREAD__, __FILE__, __LINE__)
-#	define LEAVE					{ TraceCallStack (-1, __FUNC__, __THREAD__, __FILE__, __LINE__); return; }
-#	define RETURN(_retVal)		{ TraceCallStack (-1, __FUNC__, __THREAD__, __FILE__, __LINE__); return (_retVal); }
+#	define ENTER(_nLevel,_thread)		const int32_t __THREAD__ = (_thread); const int32_t __LEVEL__ = (_nLevel); TraceCallStack (1, __LEVEL__, __FUNC__, __THREAD__, __FILE__, __LINE__)
+#	define LEAVE					{ TraceCallStack (-1, __LEVEL__, __FUNC__, __THREAD__, __FILE__, __LINE__); return; }
+#	define RETURN(_retVal)		{ TraceCallStack (-1, __LEVEL__, __FUNC__, __THREAD__, __FILE__, __LINE__); return (_retVal); }
 
 #else
 

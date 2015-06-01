@@ -68,7 +68,7 @@ int32_t nEscortGoalText [MAX_ESCORT_GOALS] = {
 
 void InitBuddyForLevel (void)
 {
-ENTER (0);
+ENTER (1, 0);
 	CObject*	pObj;
 
 gameData.escortData.bMayTalk = 0;
@@ -93,7 +93,7 @@ LEAVE
 //	Return true if it is reachable, else return false.
 int32_t SegmentIsReachable (int32_t curseg, int16_t nSide)
 {
-ENTER (0);
+ENTER (1, 0);
 RETURN (AIDoorIsOpenable (NULL, SEGMENT (curseg), nSide))
 }
 
@@ -109,7 +109,7 @@ RETURN (AIDoorIsOpenable (NULL, SEGMENT (curseg), nSide))
 //		length:		number of elements in bfsList
 void CreateBfsList (int32_t nStartSeg, int16_t segList [], int32_t *length, int32_t nMaxSegs)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t		head = 0, tail = 0;
 	int8_t		bVisited [MAX_SEGMENTS_D2X];
 
@@ -148,7 +148,7 @@ LEAVE
 //	AND he has never yet, since being initialized for level, been allowed to talk.
 int32_t BuddyMayTalk (void)
 {
-ENTER (0);
+ENTER (1, 0);
 CObject* pObj = OBJECT (gameData.escortData.nObjNum);
 
 if ((gameData.escortData.nObjNum < 0) || (pObj && !pObj->IsRobot ())) {
@@ -194,7 +194,7 @@ RETURN (1)
 
 void DetectEscortGoalAccomplished (int32_t index)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t	i, j;
 	int32_t	bDetected = 0;
 	CObject	*pObj;
@@ -327,7 +327,7 @@ BuddyMessage (szOuch);
 
 void _CDECL_ BuddyMessage (const char * format, ... )
 {
-ENTER (0);
+ENTER (1, 0);
 if (gameData.escortData.bMsgsSuppressed)
 	LEAVE
 if (IsMultiGame)
@@ -378,7 +378,7 @@ return 0;
 
 void EscortSetSpecialGoal (int32_t specialKey)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t markerKey;
 
 gameData.escortData.bMsgsSuppressed = 0;
@@ -465,7 +465,7 @@ LEAVE
 //	Return id of boss.
 int32_t GetBossId (void)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t	h, i;
 
 for (h = gameData.bossData.ToS (), i = 0; i < h; i++) {
@@ -482,7 +482,7 @@ RETURN (-1)
 //	"special" is used to find OBJECTS spewed by player which is hacked into flags field of powerup.
 int32_t ExistsInMine2 (int32_t nSegment, int32_t objType, int32_t objId, int32_t special)
 {
-ENTER (0);
+ENTER (1, 0);
 if ((objType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	RETURN (-1)
 
@@ -521,7 +521,7 @@ RETURN (-1)
 //	-2 means CObject does exist in mine, but buddy-bot can't reach it (eg, behind triggered CWall)
 int32_t ExistsInMine (int32_t nStartSeg, int32_t objType, int32_t objId, int32_t special)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t	nSegIdx, nSegment;
 	int16_t	bfsList [MAX_SEGMENTS_D2X];
 	int32_t	length;
@@ -565,7 +565,7 @@ RETURN (-1)
 //	Return true if it happened, else return false.
 int32_t FindExitSegment (void)
 {
-ENTER (0);
+ENTER (1, 0);
 	CSegment* pSeg = SEGMENTS.Buffer ();
 
 for (int32_t i = 0; i <= gameData.segData.nSegments; i++, pSeg++)
@@ -681,7 +681,7 @@ static tEscortGoal escortGoals [MAX_ESCORT_GOALS] = {
 
 void EscortCreatePathToGoal (CObject *pObj)
 {
-ENTER (0);
+ENTER (1, 0);
 	int16_t			nGoalSeg = -1;
 	int16_t			nObject = pObj->Index ();
 	tAIStaticInfo*	aip = &pObj->cType.aiInfo;
@@ -860,7 +860,7 @@ fix	xBuddyLastSeenPlayer = 0, Buddy_last_player_path_created;
 
 int32_t TimeToVisitPlayer (CObject *pObj, tAILocalInfo *ailp, tAIStaticInfo *aip)
 {
-ENTER (0);
+ENTER (1, 0);
 	//	Note: This one has highest priority because, even if already going towards player,
 	//	might be necessary to create a new path, as player can move.
 if (gameData.timeData.xGame - xBuddyLastSeenPlayer > MAX_ESCORT_TIME_AWAY)
@@ -896,7 +896,7 @@ if (pObj) {
 
 int32_t MaybeBuddyFireMega (int16_t nObject)
 {
-ENTER (0);
+ENTER (1, 0);
 	CObject		*pObj = OBJECT (nObject);
 	CObject		*pBuddyObj = OBJECT (gameData.escortData.nObjNum);
 	fix			dist;
@@ -930,7 +930,7 @@ RETURN (1)
 
 int32_t MaybeBuddyFireSmart (int16_t nObject)
 {
-ENTER (0);
+ENTER (1, 0);
 	CObject*	pObj = OBJECT (nObject);
 	CObject*	pBuddyObj = OBJECT (gameData.escortData.nObjNum);
 	fix		dist;
@@ -955,7 +955,7 @@ RETURN (1)
 
 void DoBuddyDudeStuff (void)
 {
-ENTER (0);
+ENTER (1, 0);
 	CObject*	pObj;
 
 if (!BuddyMayTalk ())
@@ -987,7 +987,7 @@ LEAVE
 //	Called every frame (or something).
 void DoEscortFrame (CObject *pObj, fix xDistToPlayer, int32_t nPlayerVisibility)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t			nObject = pObj->Index ();
 
 if (nObject < 0)

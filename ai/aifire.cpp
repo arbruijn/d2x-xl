@@ -50,7 +50,7 @@ return (pLocalInfo->pNextrimaryFire <= 0) || ((pRobotInfo->nSecWeaponType != -1)
 void SetNextFireTime (CObject *pObj, tAILocalInfo *pLocalInfo, tRobotInfo *pRobotInfo, int32_t nGun)
 {
 	//	For guys in snipe mode, they have a 50% shot of getting this shot free.
-ENTER (0);
+ENTER (1, 0);
 if ((nGun != 0) || (pRobotInfo->nSecWeaponType == -1))
 	if ((pObj->cType.aiInfo.behavior != AIB_SNIPE) || (RandShort () > 16384))
 		pLocalInfo->nRapidFireCount++;
@@ -74,7 +74,7 @@ LEAVE
 //	If player is cloaked, then robot probably didn't actually collide, deal with that here.
 void DoAIRobotHitAttack (CObject *pRobot, CObject *pTarget, CFixVector *vCollision)
 {
-ENTER (0);
+ENTER (1, 0);
 	tAILocalInfo	*pLocalInfo = gameData.aiData.localInfo + OBJ_IDX (pRobot);
 	tRobotInfo		*pRobotInfo = ROBOTINFO (pRobot->info.nId);
 
@@ -127,7 +127,7 @@ return FixDiv (vTarget - vAttacker, elapsedTime) + player_vel;
 //		if firing a matter weapon, less leading, based on skill level.
 int32_t LeadTarget (CObject *pObj, CFixVector *vFirePoint, CFixVector *vBelievedTargetPos, int32_t nGuns, CFixVector *vFire)
 {
-ENTER (0);
+ENTER (1, 0);
 	fix			dot, xTargetSpeed, xDistToTarget, xMaxWeaponSpeed, xProjectedTime;
 	CFixVector	vTargetMovementDir, vVecToTarget;
 	int32_t		nWeaponType;
@@ -193,7 +193,7 @@ RETURN (1)
 //	When this routine is complete, the parameter gameData.aiData.target.vDir should not be necessary.
 void AIFireLaserAtTarget (CObject *pObj, CFixVector *vFirePoint, int32_t nGun, CFixVector *vBelievedTargetPos)
 {
-ENTER (0);
+ENTER (1, 0);
 	int16_t			nShot, nObject = pObj->Index ();
 	tAILocalInfo	*pLocalInfo = gameData.aiData.localInfo + nObject;
 	tRobotInfo		*pRobotInfo = ROBOTINFO (pObj);
@@ -350,7 +350,7 @@ LEAVE
 
 void DoFiringStuff (CObject *pObj, int32_t nTargetVisibility, CFixVector *vVecToTarget)
 {
-ENTER (0);
+ENTER (1, 0);
 if ((gameData.aiData.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) ||
 	 (gameData.aiData.nTargetVisibility >= 1)) {
 	//	Now, if in robot's field of view, lock onto player
@@ -390,7 +390,7 @@ LEAVE
 //	If a hiding robot gets bumped or hit, he decides to find another hiding place.
 void DoAIRobotHit (CObject *pObj, int32_t nType)
 {
-ENTER (0);
+ENTER (1, 0);
 if (!pObj)
 	LEAVE
 if (pObj->info.controlType != CT_AI)
@@ -426,7 +426,7 @@ int32_t	Gun_point_hack=0;
 //	Returns true if this CObject should be allowed to fire at the player.
 int32_t AIMaybeDoActualFiringStuff (CObject *pObj, tAIStaticInfo *pStaticInfo)
 {
-ENTER (0);
+ENTER (1, 0);
 if (IsMultiGame &&
 	 (pStaticInfo->GOAL_STATE != AIS_FLINCH) && (pObj->info.nId != ROBOT_BRAIN) &&
 	 (pStaticInfo->CURRENT_STATE == AIS_FIRE))
@@ -439,7 +439,7 @@ RETURN (0)
 //	lurking behind a corner.
 void AIDoActualFiringStuff (CObject *pObj, tAIStaticInfo *pStaticInfo, tAILocalInfo *pLocalInfo, tRobotInfo *pRobotInfo, int32_t nGun)
 {
-ENTER (0);
+ENTER (1, 0);
 if ((gameData.aiData.nTargetVisibility == 2) ||
 	 (gameData.aiData.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
 	CFixVector vFirePos = gameData.aiData.target.vBelievedPos;

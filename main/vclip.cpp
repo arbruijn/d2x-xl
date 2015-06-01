@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 inline int32_t CurFrame (CObject *pObj, int32_t nClip, fix timeToLive, int32_t nFrames = -1)
 {
-ENTER (0);
+ENTER (0, 0);
 tAnimationInfo	*pAnimInfo = gameData.effectData.animations [0] + nClip;
 if (nFrames < 0)
 	nFrames = pAnimInfo->nFrameCount;
@@ -56,7 +56,7 @@ RETURN ((iFrame < nFrames) ? iFrame : nFrames - 1)
 
 CRGBColor *AnimationColor (CObject *pObj)
 {
-ENTER (0);
+ENTER (0, 0);
 	CWeaponInfo		*pWeaponInfo = WEAPONINFO (pObj);
 
 if (!pWeaponInfo)
@@ -84,7 +84,7 @@ RETURN (pBm->GetAvgColor ())
 
 int32_t SetupHiresVClip (tAnimationInfo *pAnimInfo, tAnimationState *pState, CBitmap* pBm)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t nFrames = pAnimInfo->nFrameCount;
 
 if (pAnimInfo->flags & WCF_ALTFMT) {
@@ -116,7 +116,7 @@ RETURN (nFrames)
 
 void DrawVClipObject (CObject *pObj, fix timeToLive, int32_t bLit, int32_t nVClip, CFloatVector *color)
 {
-ENTER (0);
+ENTER (0, 0);
 	double		ta = 0, alpha = 0;
 	tAnimationInfo*	pAnimInfo = gameData.effectData.animations [0] + nVClip;
 	int32_t		nFrames = SetupHiresVClip (pAnimInfo, &pObj->rType.animationInfo);
@@ -161,7 +161,7 @@ LEAVE
 
 void DrawExplBlast (CObject *pObj)
 {
-ENTER (0);
+ENTER (0, 0);
 #if BLAST_TYPE == 1
 	int32_t			i;
 	fix			xSize2;
@@ -245,7 +245,7 @@ LEAVE
 
 void DrawShockwave (CObject *pObj)
 {
-ENTER (0);
+ENTER (0, 0);
 
 	CBitmap* pBm = shockwave.Bitmap (SHOCKWAVE_LIFE, pObj->info.xLifeLeft);
 

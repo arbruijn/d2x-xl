@@ -346,7 +346,7 @@ bool CLightningNode::SetLight (int16_t nSegment, CFloatVector *pColor)
 if (0 > (nSegment = FindSegByPos (m_vPos, nSegment, 0, 0)))
 	return false;
 #if USE_OPENMP //> 1
-#	pragma omp critical
+#	pragma omp critical (CLightningNodeSetLight)
 #endif
 	{
 	lightningManager.SetSegmentLight (nSegment, &m_vPos, pColor);

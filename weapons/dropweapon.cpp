@@ -36,7 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //this function is based on DropPowerup()
 int32_t SpitPowerup (CObject *pSpitter, uint8_t id, int32_t seed)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t					nObject;
 	CObject*					pObj;
 	CFixVector				newVelocity, newPos;
@@ -99,7 +99,7 @@ return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMul
 
 void DropCurrentWeapon (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	nObject = -1,
 				ammo = 0;
 
@@ -177,7 +177,7 @@ extern void DropOrb (void);
 
 void DropSecondaryWeapon (int32_t nWeapon, int32_t nAmount, int32_t bSilent)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nWeapon < 0)
 	nWeapon = gameData.weaponData.nSecondary;
 if ((LOCALPLAYER.secondaryAmmo [nWeapon] == 0) || 

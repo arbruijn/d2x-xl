@@ -40,7 +40,7 @@ bool CLightningEmitter::Create (int32_t nBolts, CFixVector *vPos, CFixVector *vE
 										 int16_t nSmoothe, char bClamp, char bGlow, char bBlur, char bSound, char bLight,
 										 char nStyle, float nWidth, CFloatVector *pColor)
 {
-ENTER (0);
+ENTER (0, 0);
 m_nObject = nObject;
 if (!(nLife && nLength && (nNodes > 4)))
 	RETURN (false)
@@ -102,7 +102,7 @@ RETURN (true)
 
 void CLightningEmitter::Destroy (void)
 {
-ENTER (0);
+ENTER (0, 0);
 m_bValid =
 m_bDestroy = 0;
 DestroySound ();
@@ -118,7 +118,7 @@ LEAVE
 
 void CLightningEmitter::CreateSound (int32_t bSound, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 if ((m_bSound = bSound)) {
 	audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, m_nObject, 1, I2X (1) / 2, I2X (256), -1, -1, AddonSoundName (SND_ADDON_LIGHTNING), 0, 0, nThread);
 	if (m_bForcefield) {
@@ -135,7 +135,7 @@ LEAVE
 
 void CLightningEmitter::DestroySound (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if ((m_bSound > 0) & (m_nObject >= 0))
 	audio.DestroyObjectSound (m_nObject);
 LEAVE
@@ -145,7 +145,7 @@ LEAVE
 
 void CLightningEmitter::Animate (int32_t nStart, int32_t nBolts, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 if (m_bValid < 1)
 	LEAVE
 CObject *pObj = OBJECT (m_nObject);
@@ -162,7 +162,7 @@ LEAVE
 
 int32_t CLightningEmitter::SetLife (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!m_bValid)
 	RETURN (0)
 
@@ -189,7 +189,7 @@ RETURN (m_nBolts)
 
 int32_t CLightningEmitter::Update (int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 if (m_bDestroy) {
 	Destroy ();
 	RETURN (-1)
@@ -227,7 +227,7 @@ if (m_bSound)
 
 void CLightningEmitter::UpdateSound (int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 if (m_bValid < 1) {
 	LEAVE
 	}
@@ -253,7 +253,7 @@ LEAVE
 
 void CLightningEmitter::Move (CFixVector vNewPos, int16_t nSegment)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!m_bValid)
 	LEAVE
 if (nSegment < 0)
@@ -271,7 +271,7 @@ LEAVE
 
 void CLightningEmitter::Move (CFixVector vNewPos, CFixVector vNewEnd, int16_t nSegment)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!m_bValid)
 	LEAVE
 if (nSegment < 0)
@@ -289,7 +289,7 @@ LEAVE
 
 void CLightningEmitter::MoveForObject (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!m_bValid)
 	LEAVE
 CObject* pObj = OBJECT (m_nObject);
@@ -302,7 +302,7 @@ LEAVE
 
 void CLightningEmitter::Render (int32_t nStart, int32_t nBolts, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 if (m_bValid < 1)
 	LEAVE
 
@@ -333,7 +333,7 @@ LEAVE
 
 int32_t CLightningEmitter::SetLight (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (m_bValid < 1)
 	RETURN (0)
 if (!m_lightning.Buffer ())

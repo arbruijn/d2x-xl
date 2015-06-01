@@ -352,11 +352,11 @@ class CSegment {
 		void LoadSideTextures (int32_t nSide);
 		void LoadBotGenTextures (void);
 		void Setup (void);
-		inline uint16_t WallNum (int32_t nSide) { return m_sides [nSide].WallNum (); }
-		inline int32_t CheckTransparency (int32_t nSide) { return m_sides [nSide].CheckTransparency (); }
+		inline uint16_t WallNum (int32_t nSide) { return (nSide < 0) ? 0xFFFF : m_sides [nSide].WallNum (); }
+		inline int32_t CheckTransparency (int32_t nSide) { return (nSide < 0) ? 0 : m_sides [nSide].CheckTransparency (); }
 		void CheckSum (uint32_t& sum1, uint32_t& sum2);
 
-		inline bool IsWall (int32_t nSide) { return m_sides [nSide].IsWall (); }
+		inline bool IsWall (int32_t nSide) { return (nSide < 0) ? false : m_sides [nSide].IsWall (); }
 		void SetTexture (int32_t nSide, CSegment *pConnSeg, int16_t nConnSide, int32_t nAnim, int32_t nFrame);
 		void DestroyWall (int32_t nSide);
 		void DamageWall (int32_t nSide, fix damage);

@@ -69,7 +69,7 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 
 tPointSeg *InsertTransitPoint (tPointSeg *pCurSeg, tPointSeg *pPredSeg, tPointSeg *pSuccSeg, uint8_t nConnSide)
 {
-ENTER (0);
+ENTER (1, 0);
 	CFixVector	vCenter, vPoint;
 	int16_t		nSegment;
 
@@ -95,7 +95,7 @@ RETURN (pCurSeg)
 
 int32_t OptimizePath (tPointSeg *pPointSeg, int32_t nSegs)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t		i, j;
 	CFixVector	temp1, temp2;
 	fix			dot, mag1, mag2 = 0;
@@ -128,7 +128,7 @@ RETURN (j)
 // at the end of the list and go backwards.
 int32_t InsertCenterPoints (tPointSeg *pPointSeg, int32_t numPoints)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t	i, j;
 
 for (i = 0; i < numPoints; i++) {
@@ -144,7 +144,7 @@ static tPointSeg newPtSegs [MAX_SEGMENTS_D2X];
 
 void MoveTowardsOutside (tPointSeg *ptSegs, int32_t *nPoints, CObject *pObj, int32_t bRandom)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t		i, j;
 	int32_t		nNewSeg;
 	fix			xSegSize;
@@ -263,7 +263,7 @@ LEAVE
 int32_t CreatePathPoints (CObject *pObj, int32_t nStartSeg, int32_t nEndSeg, tPointSeg *pPointSeg, int16_t *numPoints,
 							 int32_t nMaxDepth, int32_t bRandom, int32_t bSafeMode, int32_t nAvoidSeg)
 {
-ENTER (0);
+ENTER (1, 0);
 	int16_t				nCurSeg;
 	int16_t				nSide, hSide;
 	int32_t				qTail = 0, qHead = 0;
@@ -494,7 +494,7 @@ return numPoints - nFirstPoint;
 
 int32_t ValidatePath (int32_t debugFlag, tPointSeg *pPointSeg, int32_t numPoints)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t i, nCurSeg, nSide, nNextSeg;
 
 nCurSeg = pPointSeg->nSegment;
@@ -545,7 +545,7 @@ RETURN (1)
 
 void ValidateAllPaths (void)
 {
-ENTER (0);
+ENTER (1, 0);
 	CObject*			pObj;
 	tAIStaticInfo*	pStaticInfo;
 
@@ -569,7 +569,7 @@ LEAVE
 
 void CreatePathToTarget (CObject *pObj, int32_t nMaxDepth, int32_t bSafeMode)
 {
-ENTER (0);
+ENTER (1, 0);
 	tAIStaticInfo*	pStaticInfo = &pObj->cType.aiInfo;
 	tAILocalInfo*	pLocalInfo = gameData.aiData.localInfo + pObj->Index ();
 	int32_t				nStartSeg, nEndSeg;
@@ -611,7 +611,7 @@ LEAVE
 //	Creates a path from the CObject's current CSegment (pObj->info.nSegment) to CSegment goalseg.
 void CreatePathToSegment (CObject *pObj, int16_t goalseg, int32_t nMaxDepth, int32_t bSafeMode)
 {
-ENTER (0);
+ENTER (1, 0);
 	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
 	tAILocalInfo	*pLocalInfo = &gameData.aiData.localInfo [pObj->Index ()];
 	int16_t			nStartSeg, nEndSeg;
@@ -654,7 +654,7 @@ LEAVE
 //			gameData.aiData.freePointSegs				global pointer into gameData.aiData.routeSegs array
 void CreatePathToStation (CObject *pObj, int32_t nMaxDepth)
 {
-ENTER (0);
+ENTER (1, 0);
 	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
 	tAILocalInfo	*pLocalInfo = &gameData.aiData.localInfo [pObj->Index ()];
 	int32_t			nStartSeg, nEndSeg;
@@ -699,7 +699,7 @@ static int32_t nObject = 0;
 
 void CreateNSegmentPath (CObject *pObj, int32_t nPathLength, int16_t nAvoidSeg)
 {
-ENTER (0);
+ENTER (1, 0);
 	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
 	tAILocalInfo	*pLocalInfo = gameData.aiData.localInfo + pObj->Index ();
 	nObject = pObj->Index ();
@@ -751,7 +751,7 @@ CreateNSegmentPath (pObj, nPathLength, nAvoidSeg);
 
 void MoveObjectToGoal (CObject *pObj, CFixVector *vGoalPoint, int16_t nGoalSeg)
 {
-ENTER (0);
+ENTER (1, 0);
 	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
 	int32_t			nSegment;
 
@@ -833,7 +833,7 @@ LEAVE
 //	Optimization: If current velocity will take robot near goal, don't change velocity
 void AIFollowPath (CObject *pObj, int32_t nTargetVisibility, int32_t nPrevVisibility, CFixVector *vecToTarget)
 {
-ENTER (0);
+ENTER (1, 0);
 	tAIStaticInfo*	pStaticInfo = &pObj->cType.aiInfo;
 
 	CFixVector		vGoalPoint;
@@ -1126,7 +1126,7 @@ class CObjPath {
 //	Set orientation matrix and velocity for pObj based on its desire to get to a point.
 void AIPathSetOrientAndVel (CObject *pObj, CFixVector *vGoalPoint, int32_t nTargetVisibility, CFixVector *vecToTarget)
 {
-ENTER (0);
+ENTER (1, 0);
 	CFixVector	vCurVel = pObj->mType.physInfo.velocity;
 	CFixVector	vNormCurVel;
 	CFixVector	vNormToGoal;
@@ -1189,7 +1189,7 @@ int32_t	nLastFrameGarbageCollected = 0;
 //	Garbage colledion -- Free all unused records in gameData.aiData.routeSegs and compress all paths.
 void AICollectPathGarbage (void)
 {
-ENTER (0);
+ENTER (1, 0);
 #if DBG
 	int32_t					i;
 #endif
@@ -1268,7 +1268,7 @@ LEAVE
 //	Do garbage collection if not been done for awhile, or things getting really critical.
 void MaybeAIPathGarbageCollect (void)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t i = gameData.aiData.routeSegs.Index (gameData.aiData.freePointSegs);
 
 if (i > LEVEL_POINT_SEGS - MAX_PATH_LENGTH) {
@@ -1309,7 +1309,7 @@ LEAVE
 //	Should be called at the start of each level.
 void AIResetAllPaths (void)
 {
-ENTER (0);
+ENTER (1, 0);
 	CObject*	pObj = OBJECTS.Buffer ();
 
 FORALL_OBJS (pObj)
@@ -1326,7 +1326,7 @@ LEAVE
 //	Try to resume path.
 void AttemptToResumePath (CObject *pObj)
 {
-ENTER (0);
+ENTER (1, 0);
 	//int32_t				nObject = pObj->Index ();
 	tAIStaticInfo		*pStaticInfo = &pObj->cType.aiInfo;
 //	int32_t				nGoalSegnum, object_segnum,

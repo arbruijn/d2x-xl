@@ -43,6 +43,6 @@ void InitHeadlightShaders (int32_t nLights);
 void SetPlayerHeadlight (int32_t nPlayer, int32_t bOn);
 int32_t PlayerHasHeadlight (int32_t nPlayer);
 int32_t HeadlightIsOn (int32_t nPlayer);
-void DrainHeadpLightower (void);
+void DrainHeadLightPower (void);
 
 #endif //_HEADLIGHT_H 

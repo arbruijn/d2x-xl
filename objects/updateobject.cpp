@@ -85,7 +85,7 @@ if (pObj) {
 
 void StopPlayerMovement (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (OBJECTS.Buffer () && !(gameData.objData.speedBoost.Buffer () && gameData.objData.speedBoost [OBJ_IDX (gameData.objData.pConsole)].bBoosted)) {
 	StopObjectMovement (OBJECT (LOCALPLAYER.nObject));
 	memset (&gameData.physicsData.playerThrust, 0, sizeof (gameData.physicsData.playerThrust));
@@ -99,7 +99,7 @@ LEAVE
 
 void CObject::Die (void)
 {
-ENTER (0);
+ENTER (0, 0);
 info.nFlags |= OF_SHOULD_BE_DEAD;
 RequestEffects (DESTROY_SMOKE | DESTROY_LIGHTNING);
 #if DBG
@@ -140,7 +140,7 @@ if (this == dbgObjP)
 //process a continuously-spinning CObject
 void CObject::Spin (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	CAngleVector	vRot;
 	CFixMatrix		mRot, mOrient;
 
@@ -166,7 +166,7 @@ cameraManager.Rotate (this);
 
 void CObject::RotateMarker (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (m_bRotate && EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 	static time_t	t0 [MAX_DROP_SINGLE] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -187,7 +187,7 @@ LEAVE
 
 int32_t CObject::CheckWallPhysics (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	nType = 0;
 	int16_t nObject = OBJ_IDX (this);
 
@@ -239,7 +239,7 @@ RETURN (nType)
 
 void CObject::HandleSegmentFunction (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if ((info.nType == OBJ_PLAYER) && (N_LOCALPLAYER == info.nId)) {
 	CSegment*		pSeg = SEGMENT (info.nSegment);
 	CPlayerData*	pPlayer = gameData.multiplayer.players + N_LOCALPLAYER;
@@ -281,7 +281,7 @@ LEAVE
 
 int32_t CObject::UpdateMovement (void)
 {
-ENTER (0);
+ENTER (0, 0);
 #if DBG
 if (info.nType == OBJ_REACTOR)
 	BRP;
@@ -370,7 +370,7 @@ return I2X (1) / 16 + nSpeed / 512;
 
 void CObject::UpdateShipSound (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!gameOpts->sound.bShip)
 	LEAVE;
 
@@ -400,7 +400,7 @@ LEAVE
 
 void CObject::UpdatePosition (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (info.nType == OBJ_MARKER)
 	RotateMarker ();
 
@@ -431,7 +431,7 @@ LEAVE
 
 int32_t CObject::CheckTriggerHits (int16_t nPrevSegment)
 {
-ENTER (0);
+ENTER (0, 0);
 		int16_t	nConnSide, i;
 		int32_t	nOldLevel;
 
@@ -465,7 +465,7 @@ RETURN (0)
 
 void CObject::CheckGuidedMissileThroughExit (int16_t nPrevSegment)
 {
-ENTER (0);
+ENTER (0, 0);
 if (IsGuidedMissile (N_LOCALPLAYER)) {
 	if (nPrevSegment != info.nSegment) {
 		int16_t nConnSide = SEGMENT (info.nSegment)->ConnectedSide (SEGMENT (nPrevSegment));
@@ -483,7 +483,7 @@ LEAVE
 
 void CObject::CheckAfterburnerBlobDrop (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (gameStates.render.bDropAfterburnerBlob) {
 	Assert (this == gameData.objData.pConsole);
 	DropAfterburnerBlobs (this, 2, I2X (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
@@ -552,7 +552,7 @@ LEAVE
 
 void CObject::UpdateEffects (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	bool bNeedEffect, bHaveEffect = lightningManager.GetObjectSystem (Index ()) >= 0;
 	uint8_t nEffect;
 
@@ -600,7 +600,7 @@ LEAVE
 
 int32_t CObject::Update (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t	nPrevSegment = (int16_t) info.nSegment;
 
 #if DBG
@@ -659,7 +659,7 @@ RETURN (1)
 
 int32_t UpdateAllObjects (void)
 {
-ENTER (0);
+ENTER (0, 0);
 PROF_START
 	CObject*	pObj;
 
@@ -717,7 +717,7 @@ RETURN (1)
 //	wake up all robots that were rendered last frame subject to some constraints.
 void WakeupRenderedObjects (CObject *pViewer, int32_t nWindow)
 {
-ENTER (0);
+ENTER (0, 0);
 //	Make sure that we are processing current data.
 if (gameData.appData.nFrameCount != windowRenderedData [nWindow].nFrame) {
 #if TRACE
@@ -752,7 +752,7 @@ LEAVE
 
 void CleanupObjects (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	CObject*		pObj, *pPrevObj;
 	int32_t		nLocalDeadPlayerObj = -1;
 

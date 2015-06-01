@@ -59,8 +59,9 @@ FORALL_LIGHT_OBJS (pObj)
 
 void CLightClusterManager::Set (void)
 {
+ENTER (1, 0);
 if (!m_bUse)
-	return;
+	LEAVE
 
 	CObject	*pObj;
 	int32_t		h, i;
@@ -98,6 +99,7 @@ FORALL_LIGHT_OBJS (pObj) {
 			}
 		}
 	}
+LEAVE
 }
 
 //--------------------------------------------------------------------------
@@ -125,13 +127,14 @@ m_objects [nObject].nObject = -1;
 
 int32_t CLightClusterManager::Add (int16_t nObject, CFloatVector *color, fix xObjIntensity)
 {
+ENTER (1, 0);
 if (!m_bUse)
-	return 0;
+	RETURN (0)
 
 int16_t nLightObj = m_objects [nObject].nObject;
 
 if (0 > nLightObj)
-	return 0;
+	RETURN (0)
 #if DBG
 if (nDbgObj == nLightObj)
 	BRP;
@@ -139,7 +142,7 @@ if (nDbgObj == nLightObj)
 CObject *pLightObj = OBJECT (nLightObj);
 if (!pLightObj || (pLightObj->info.nSignature != m_objects [nObject].nSignature)) {
 	m_objects [nObject].nObject = -1;
-	return 0;
+	RETURN (0)
 	}
 CObject *pObj = OBJECT (nObject);
 if (pLightObj->LifeLeft () < pObj->LifeLeft ())
@@ -166,7 +169,7 @@ else {
 	pLightObj->cType.lightInfo.color.Blue () += 1;
 	pLightObj->cType.lightInfo.color.Alpha () += 1;
 	}
-return 1;
+RETURN (1)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -190,8 +193,9 @@ if (pLight) {
 
 void CLightClusterManager::AddForAI (CObject *pObj, int16_t nObject, int16_t nShot)
 {
+ENTER (1, 0);
 if (!m_bUse)
-	return;
+	LEAVE
 
 int16_t nPrevShot = pObj->Shots ().nObject;
 
@@ -230,6 +234,7 @@ if (pPrevShot && (pPrevShot->info.nSignature == pObj->Shots ().nSignature)) { //
 			}
 		}
 	}
+LEAVE
 }
 
 //--------------------------------------------------------------------------

@@ -50,7 +50,7 @@ static void WaitWithUpdate (CFaceColor* pColor)
 	int32_t bUpdate = false;
 
 for (;;) {
-#pragma omp critical
+#pragma omp critical (WaitWithUpdate)
 	{
 	if (pColor->index >= 0) {
 		pColor->index = -1;
@@ -74,7 +74,7 @@ static int32_t UpdateColor (CFaceColor* pColor)
 
 #if 0
 
-#pragma omp critical
+#pragma omp critical (UpdateColor)
 {
 bUpdate = (pColor->index >= 0) && (pColor->index != gameStates.render.nFrameFlipFlop + 1);
 }
@@ -88,7 +88,7 @@ return 0;
 
 #else
 
-#pragma omp critical
+#pragma omp critical (UpdateColor)
 {
 bUpdate = (pColor->index >= 0) && (pColor->index != gameStates.render.nFrameFlipFlop + 1);
 if (bUpdate) 
@@ -173,6 +173,7 @@ return pFace->m_info.bVisible = 1;
 
 int32_t SetupFace (int16_t nSegment, int16_t nSide, CSegment *pSeg, CSegFace *pFace, CFaceColor *faceColors, float& fAlpha)
 {
+ENTER (1, 0);
 	uint8_t	bTextured, bCloaked, bTransparent, bWall;
 	int32_t	nColor = 0;
 
@@ -184,12 +185,12 @@ if (FACE_IDX (pFace) == nDbgFace)
 #endif
 
 if (!FaceIsVisible (pFace))
-	return -1;
+	RETURN (-1)
 bWall = IS_WALL (pFace->m_info.nWall);
 if (bWall) {
 	pFace->m_info.widFlags = pSeg->IsPassable (nSide, NULL);
 	if (!(pFace->m_info.widFlags & WID_VISIBLE_FLAG)) //(WID_VISIBLE_FLAG | WID_TRANSPARENT_FLAG)))
-		return -1;
+		RETURN (-1)
 	}
 else
 	pFace->m_info.widFlags = WID_VISIBLE_FLAG;
@@ -222,13 +223,14 @@ else if (!bTextured) {
 	}
 if ((fAlpha < 1.0f) || ((nColor == 2) && (pFace->m_info.nBaseTex < 0)))
 	pFace->m_info.bTransparent = 1;
-return nColor;
+RETURN (nColor)
 }
 
 //------------------------------------------------------------------------------
 
 void ComputeDynamicFaceLight (int32_t nStart, int32_t nEnd, int32_t nThread)
 {
+ENTER (1, nThread);
 	CSegFace*		pFace;
 	CFloatVector*	pColor;
 	CFaceColor		faceColor [3];
@@ -322,6 +324,7 @@ for (i = nStart; i < nEnd; i++) {
 	lightManager.Material ().bValid = 0;
 	}
 ogl.SetTransform (0);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
@@ -330,7 +333,7 @@ void FixTriangleFan (CSegment* pSeg, CSegFace* pFace)
 {
 if (pSeg->Type (pFace->m_info.nSide) == SIDE_IS_TRI_13) 
 #if USE_OPEN_MP > 1
-#pragma omp critical
+#pragma omp critical (FixTriangleFan)
 #endif
 	{	//rearrange vertex order for TRIANGLE_FAN rendering
 #if !USE_OPENMP
@@ -367,6 +370,7 @@ if (pSeg->Type (pFace->m_info.nSide) == SIDE_IS_TRI_13)
 
 void ComputeDynamicQuadLight (int32_t nStart, int32_t nEnd, int32_t nThread)
 {
+ENTER (1, nThread);
 #if 0
 	static int32_t bSemaphore [2] = {0, 0};
 
@@ -486,12 +490,14 @@ ogl.SetTransform (0);
 #if 0
 bSemaphore [nThread] = 0;
 #endif
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void ComputeDynamicTriangleLight (int32_t nStart, int32_t nEnd, int32_t nThread)
 {
+ENTER (1, nThread);
 	CSegment*		pSeg;
 	tSegFaces*		pSegFace;
 	CSegFace*		pFace;
@@ -625,12 +631,14 @@ if (ogl.m_states.bVertexLighting)
 	gpgpuLighting.Compute (-1, 2, NULL);
 #endif
 ogl.SetTransform (0);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 void ComputeStaticFaceLight (int32_t nStart, int32_t nEnd, int32_t nThread)
 {
+ENTER (1, nThread);
 	CSegment*		pSeg;
 	CSide*			pSide;
 	tSegFaces*		pSegFace;
@@ -701,12 +709,14 @@ for (i = nStart; i < nEnd; i++) {
 		}
 	}
 ogl.SetTransform (0);
+LEAVE
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CountRenderFaces (void)
 {
+ENTER (1, 0);
 	CSegment*	pSeg;
 	int16_t		nSegment;
 	int32_t		h, i, j, nFaces, nSegments;
@@ -734,7 +744,7 @@ if (nFaces) {
 		}
 	}
 ogl.m_states.bUseTransform = 0;
-return nSegments;
+RETURN (nSegments)
 }
 
 //------------------------------------------------------------------------------

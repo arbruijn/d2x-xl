@@ -325,7 +325,7 @@ return j ? i / j : 1;
 int32_t CLightManager::Add (CSegFace* pFace, CFloatVector *pColor, fix xBrightness, int16_t nSegment,
 									 int16_t nSide, int16_t nObject, int16_t nTexture, CFixVector *vPos, uint8_t bAmbient)
 {
-ENTER (0);
+ENTER (0, 0);
 
 	int16_t		h, i;
 	float			fBrightness = X2F (xBrightness);
@@ -613,7 +613,7 @@ return fix (dist / info.fRange);
 
 int32_t CDynLight::SeesPoint (const int16_t nDestSeg, const int8_t nDestSide, const CFixVector* vNormal, CFixVector* vPoint, int32_t nLevel, int32_t nThread)
 {
-ENTER (0);
+ENTER (0, 0);
 
 	CFloatVector	v1, vNormalf;
 
@@ -746,7 +746,7 @@ return PLAYEROBJECT (info.nPlayer);
 int32_t CDynLight::Contribute (const int16_t nDestSeg, const int8_t nDestSide, const int16_t nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, 
 										 fix xMaxLightRange, float fRangeMod, fix xDistMod, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 
 #if 1
 info.bDiffuse [nThread] = 1;
@@ -874,7 +874,7 @@ RETURN (1)
 
 int32_t CDynLight::ComputeVisibleVertices (int32_t nThread)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!info.bVariable)
 	RETURN (0)
 int16_t nLightSeg = LightSeg ();
@@ -906,7 +906,7 @@ for (int32_t i = 0; i < m_data.nLights [0]; i++)
 
 void CLightManager::AddGeometryLights (void)
 {
-ENTER (0);
+ENTER (0, 0);
 
 	int32_t		nFace, nSegment, nSide, nTexture, nLight;
 	CSegFace		*pFace;
@@ -970,7 +970,7 @@ LEAVE
 
 void CLightManager::GatherStaticVertexLights (int32_t nVertex, int32_t nMax, int32_t nThread)
 {
-ENTER (0);
+ENTER (0, 0);
 	CFaceColor*		pf = gameData.renderData.color.ambient + nVertex;
 	CFloatVector	vVertex;
 	int32_t			bColorize = !gameStates.render.nLightingMethod;
@@ -998,7 +998,7 @@ extern int32_t nDbgVertex;
 
 void CLightManager::GatherStaticLights (int32_t nLevel)
 {
-ENTER (0);
+ENTER (0, 0);
 
 int32_t i, j, bColorize = !gameStates.render.nLightingMethod;
 
@@ -1093,7 +1093,7 @@ return gameStates.render.bPerPixelLighting;
 
 int32_t CLightManager::Setup (int32_t nLevel)
 {
-ENTER (0);
+ENTER (0, 0);
 SetMethod ();
 gameData.renderData.fBrightness = 1.0f;
 if (!gameStates.app.bPrecomputeLightmaps)

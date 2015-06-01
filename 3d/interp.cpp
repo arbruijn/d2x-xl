@@ -95,7 +95,7 @@ modelPointList = pointlist;
 
 void RotatePointList (CRenderPoint *dest, CFixVector *src, CRenderNormal *norms, int32_t n, int32_t o)
 {
-ENTER (0);
+ENTER (0, 0);
 PROF_START
 	CFloatVector	*pfv = gameData.modelData.fPolyModelVerts + o;
 	CFloatVector	fScale;
@@ -160,7 +160,7 @@ LEAVE
 
 void G3SwapPolyModelData (uint8_t *pData)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	i;
 	int16_t	n;
 	tUVL		* uvl_val;
@@ -272,7 +272,7 @@ chunk_list [*no_chunks].correction = 0;
 
 void G3PolyModelVerify (uint8_t *pData)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t n;
 
 for (;;) {
@@ -321,7 +321,7 @@ LEAVE
 
 int32_t G3CheckAndSwap (void *pData)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t	h = WORDVAL (pData);
 
 if ((h >= 0) && (h <= OP_GLOW))
@@ -337,7 +337,7 @@ RETURN (1)
 
 void GetThrusterPos (int32_t nModel, CFixVector *vNormal, CFixVector *vOffset, CBitmap *pBm, int32_t nPoints)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t				h, i, nSize;
 	CFixVector			v, vForward = CFixVector::Create(0,0,I2X (1));
 	CModelThrusters	*pThruster = gameData.modelData.thrusters + nModel;
@@ -397,7 +397,7 @@ int32_t G3DrawPolyModel (
 	POF::CModel*		po,
 	int32_t				nModel)
 {
-ENTER (0);
+ENTER (0, 0);
 	uint8_t *p = reinterpret_cast<uint8_t*> (modelDataP);
 	int16_t	nTag;
 	int16_t bGetThrusterPos, bLightning;

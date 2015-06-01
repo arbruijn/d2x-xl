@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void AIDoRandomPatrol (CObject *pObj, tAILocalInfo *pLocalInfo)
 {
-ENTER (0);
+ENTER (1, 0);
 #if DBG
 static int bPatrols = 1;
 if (!bPatrols)
@@ -96,7 +96,7 @@ static int8_t   xlatAnimation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLI
 
 int32_t DoSillyAnimation (CObject *pObj)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t			nObject = pObj->Index ();
 	tJointPos*		jointPositions;
 	int32_t			robotType = pObj->info.nId, nGun, robotState, nJointPositions;
@@ -173,7 +173,7 @@ RETURN (1)
 //	Delta orientation of CObject is at:		aiInfo.deltaAngles
 void AIFrameAnimation (CObject *pObj)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t	nObject = pObj->Index ();
 	int32_t	nJoint;
 	int32_t	nJoints = gameData.modelData.polyModels [0][pObj->ModelId ()].ModelCount ();
@@ -210,7 +210,7 @@ LEAVE
 //	scale: I2X (4) for boss, much smaller for much smaller guys
 int32_t DoRobotDyingFrame (CObject *pObj, fix StartTime, fix xRollDuration, int8_t *bDyingSoundPlaying, int16_t deathSound, fix xExplScale, fix xSoundScale)
 {
-ENTER (0);
+ENTER (1, 0);
 	fix	xRollVal, temp;
 	fix	xSoundDuration;
 	CSoundSample *pSound;
@@ -259,7 +259,7 @@ RETURN (StartTime + xRollDuration < gameData.timeData.xGame)
 
 void StartRobotDeathSequence (CObject *pObj)
 {
-ENTER (0);
+ENTER (1, 0);
 if (pObj && !pObj->cType.aiInfo.xDyingStartTime) { // if not already dying
 	pObj->cType.aiInfo.xDyingStartTime = gameData.timeData.xGame;
 	pObj->cType.aiInfo.bDyingSoundPlaying = 0;
@@ -272,7 +272,7 @@ LEAVE
 
 int32_t DoAnyRobotDyingFrame (CObject *pObj)
 {
-ENTER (0);
+ENTER (1, 0);
 if (pObj && pObj->cType.aiInfo.xDyingStartTime) {
 	tRobotInfo	*pRobotInfo = ROBOTINFO (pObj);
 	int32_t bDeathRoll = pRobotInfo ? pRobotInfo->bDeathRoll : 0;

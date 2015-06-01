@@ -71,7 +71,7 @@ return AIM_IDLING;
 //	initial_mode == -1 means leave mode unchanged.
 void InitAIObject (int16_t nObject, int16_t behavior, int16_t nHideSegment)
 {
-ENTER (0);
+ENTER (1, 0);
 	CObject			*pObj = OBJECT (nObject);
 	tAIStaticInfo	*pStaticInfo = &pObj->cType.aiInfo;
 	tAILocalInfo	*pLocalInfo = gameData.aiData.localInfo + nObject;
@@ -146,7 +146,7 @@ LEAVE
 
 void InitAIObjects (void)
 {
-ENTER (0);
+ENTER (1, 0);
 	int16_t		nBosses = 0;
 	CObject		*pObj;
 
@@ -184,7 +184,7 @@ int8_t		RapidfireCount_copy [MAX_ROBOT_TYPES];
 
 void DoLunacyOn (void)
 {
-ENTER (0);
+ENTER (1, 0);
 if (gameStates.app.bLunacy)	//already on
 	LEAVE
 gameStates.app.bLunacy = 1;
@@ -205,7 +205,7 @@ LEAVE
 
 void DoLunacyOff (void)
 {
-ENTER (0);
+ENTER (1, 0);
 if (!gameStates.app.bLunacy)	//already off
 	LEAVE
 gameStates.app.bLunacy = 0;
@@ -222,7 +222,7 @@ LEAVE
 //	Call this each time the player starts a new ship.
 void InitAIForShip (void)
 {
-ENTER (0);
+ENTER (1, 0);
 for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.aiData.cloakInfo [i].lastTime = gameData.timeData.xGame;
 	if (gameData.objData.pConsole) {
@@ -241,7 +241,7 @@ LEAVE
 // Initializations to be performed for all robots for a new level.
 void InitRobotsForLevel (void)
 {
-ENTER (0);
+ENTER (1, 0);
 gameData.aiData.nOverallAgitation = 0;
 gameStates.gameplay.bFinalBossIsDead = 0;
 gameData.escortData.nObjNum = 0;
@@ -256,7 +256,7 @@ LEAVE
 
 void InitAIFrame (void)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t abState;
 
 if (gameData.aiData.nMaxAwareness < PA_PLAYER_COLLISION)

@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void AIDoCloakStuff (void)
 {
-ENTER (0);
+ENTER (1, 0);
 	CObject*	pObj = TARGETOBJ ? TARGETOBJ : gameData.objData.pConsole;
 
 for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
@@ -51,7 +51,7 @@ LEAVE
 // Returns false if awareness is considered too puny to add, else returns true.
 int32_t AddAwarenessEvent (CObject *pObj, int32_t nType)
 {
-ENTER (0);
+ENTER (1, 0);
 	// If player cloaked and hit a robot, then increase awareness
 if (nType >= WEAPON_WALL_COLLISION)
 	AIDoCloakStuff ();
@@ -75,7 +75,7 @@ RETURN (1)
 void CreateAwarenessEvent (CObject *pObj, int32_t nType)
 {
 	// If not in multiplayer, or in multiplayer with robots, do this, else unnecessary!
-ENTER (0);
+ENTER (1, 0);
 if (IsRobotGame) {
 	if (AddAwarenessEvent (pObj, nType)) {
 		if (((RandShort () * (nType + 4)) >> 15) > 4)
@@ -93,7 +93,7 @@ int8_t newAwareness [MAX_SEGMENTS_D2X];
 
 void pae_aux (int32_t nSegment, int32_t nType, int32_t level)
 {
-ENTER (0);
+ENTER (1, 0);
 CSegment* pSeg = SEGMENT (nSegment);
 if (pSeg) {
 	if (newAwareness [nSegment] < nType)
@@ -113,7 +113,7 @@ LEAVE
 
 void ProcessAwarenessEvents (void)
 {
-ENTER (0);
+ENTER (1, 0);
 if (IsRobotGame) {
 	memset (newAwareness, 0, sizeof (newAwareness [0]) * gameData.segData.nSegments);
 	for (int32_t i = 0; i < gameData.aiData.nAwarenessEvents; i++)
@@ -127,7 +127,7 @@ LEAVE
 
 void SetPlayerAwarenessAll (void)
 {
-ENTER (0);
+ENTER (1, 0);
 	int32_t	i;
 	int16_t	nSegment;
 	CObject	*pObj;
@@ -154,7 +154,7 @@ LEAVE
 //  Setting player_awareness (a fix, time in seconds which CObject is aware of player)
 void DoAIFrameAll (void)
 {
-ENTER (0);
+ENTER (1, 0);
 SetPlayerAwarenessAll ();
 if (USE_D1_AI)
 	LEAVE

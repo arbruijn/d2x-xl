@@ -907,7 +907,7 @@ audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X 
 
 //-----------------------------------------------------------------------------
 
-void DrainHeadpLightower (void)
+void DrainHeadLightPower (void)
 {
 	static int32_t bTurnedOff = 0;
 

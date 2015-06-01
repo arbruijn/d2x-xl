@@ -41,7 +41,7 @@ if (ISLOCALPLAYER (nPlayer))
 //returns true if actually picked up
 int32_t PickupPrimary (int32_t nWeaponIndex, int32_t nPlayer)
 {
-ENTER (0);
+ENTER (0, 0);
 	CPlayerData	*pPlayer = gameData.multiplayer.players + nPlayer;
 	//uint16_t oldFlags = LOCALPLAYER.primaryWeaponFlags;
 	uint16_t flag = 1 << nWeaponIndex;
@@ -125,7 +125,7 @@ return nMaxAmount;
 //	Returns true if powerup picked up, else returns false.
 int32_t PickupSecondary (CObject *pObj, int32_t nWeaponIndex, int32_t nAmount, int32_t nPlayer)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t		nMaxAmount;
 	int32_t		nPickedUp;
 	int32_t		nCutPoint, bEmpty = 0, bSmokeGrens;
@@ -201,7 +201,7 @@ RETURN (1)
 //	Returns the amount picked up
 int32_t PickupAmmo (int32_t classFlag, int32_t nWeaponIndex, int32_t ammoCount, const char *pszMsg, int32_t nPlayer)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t			nMaxAmmo, nCutPoint, nSupposedWeapon = gameData.weaponData.nPrimary;
 	int32_t			nOldAmmo = classFlag;		//kill warning
 	CPlayerData*	pPlayer = gameData.multiplayer.players + nPlayer;
@@ -235,7 +235,7 @@ RETURN (ammoCount) //return amount used
 
 int32_t PickupVulcanAmmo (CObject *pObj, int32_t nPlayer)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	pwSave = gameData.weaponData.nPrimary;	
 	int32_t	nAmmo = gameStates.app.bNostalgia ? VULCAN_CLIP_CAPACITY : pObj->cType.powerupInfo.nCount; // ammo available in this clip
 	int32_t	nUsed = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, nAmmo, NULL, nPlayer); // what the player actually took this time
@@ -266,7 +266,7 @@ else {
 
 int32_t PickupLaser (CObject *pObj, int32_t nId, int32_t nPlayer)
 {
-ENTER (0);
+ENTER (0, 0);
 	CPlayerData *pPlayer = gameData.multiplayer.players + nPlayer;
 
 if (pPlayer->AddStandardLaser ()) {
@@ -288,7 +288,7 @@ RETURN (PickupEnergyBoost (pObj, nPlayer))
 
 int32_t PickupSuperLaser (CObject *pObj, int32_t nId, int32_t nPlayer)
 {
-ENTER (0);
+ENTER (0, 0);
 	CPlayerData *pPlayer = gameData.multiplayer.players + nPlayer;
 
 if (pPlayer->AddSuperLaser ()) {
@@ -314,7 +314,7 @@ RETURN (PickupEnergyBoost (pObj, nPlayer))
 
 int32_t PickupQuadLaser (CObject *pObj, int32_t nId, int32_t nPlayer)
 {
-ENTER (0);
+ENTER (0, 0);
 	CPlayerData *pPlayer = gameData.multiplayer.players + nPlayer;
 
 if (!(pPlayer->flags & PLAYER_FLAGS_QUAD_LASERS)) {
@@ -334,7 +334,7 @@ RETURN (PickupEnergyBoost (pObj, nPlayer))
 
 int32_t PickupGun (CObject *pObj, int32_t nId, int32_t nPlayer)
 {
-ENTER (0);
+ENTER (0, 0);
 if (PickupPrimary (nId, nPlayer)) {
 	if ((nId == OMEGA_INDEX) && (nPlayer == N_LOCALPLAYER))
 		gameData.omegaData.xCharge [IsMultiGame] = pObj->cType.powerupInfo.nCount;
@@ -349,7 +349,7 @@ RETURN (PickupEnergyBoost (NULL, nPlayer))
 
 int32_t PickupGatlingGun (CObject *pObj, int32_t nId, int32_t nPlayer)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t nAmmo = pObj->cType.powerupInfo.nCount;
 	int32_t bPickedUp = PickupPrimary (nId, nPlayer);
 

@@ -717,7 +717,7 @@ if (!(gameStates.render.nState || colorData.bExclusive || colorData.bMatEmissive
 	pColor = gameData.renderData.color.vertices + nVertex;
 	if (pColor->index == gameStates.render.nFrameFlipFlop + 1) {
 		if (pVertexColor)
-#pragma omp critical
+#pragma omp critical (GetVertexColor1)
 			{
 			pVertexColor->index = gameStates.render.nFrameFlipFlop + 1;
 			pVertexColor->Assign (*pColor);
@@ -804,13 +804,13 @@ if (bSetColor)
 	OglColor4sf (colorSum.Red () * fScale, colorSum.Green () * fScale, colorSum.Blue () * fScale, 1.0);
 
 if (!colorData.bMatEmissive && pColor) 
-#pragma omp critical
+#pragma omp critical (GetVertexColor2)
 	{
 	pColor->Assign (colorSum);
 	pColor->index = gameStates.render.nFrameFlipFlop + 1;
 	}
 if (pVertexColor) 
-#pragma omp critical
+#pragma omp critical (GetVertexColor3)
 	{
 	colorSum *= fScale;
 	pVertexColor->Assign (colorSum);

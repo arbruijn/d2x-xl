@@ -132,7 +132,7 @@ else
 
 int32_t LasersAreRelated (int32_t o1, int32_t o2)
 {
-ENTER (0);
+ENTER (0, 0);
 	CObject	*pObj1, *pObj2;
 	int16_t	id1, id2;
 	fix		ct1, ct2;
@@ -291,7 +291,7 @@ int32_t FireWeaponDelayedWithSpread (
 	int32_t	bHarmless,
 	int16_t	nLightObj)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t					nPlayer = pObj->Id ();
 	int16_t					nLaserSeg;
 	int32_t					nFate;
@@ -400,7 +400,7 @@ RETURN (nObject)
 
 void CreateFlare (CObject *pObj)
 {
-ENTER (0);
+ENTER (0, 0);
 	fix	xEnergyUsage = WI_energy_usage (FLARE_ID);
 
 if (gameStates.app.nDifficultyLevel < 2)
@@ -461,7 +461,7 @@ return HOMINGMSL_STRAIGHT_TIME * nMslSlowDown [(int32_t) extraGameInfo [IsMultiG
 
 bool CObject::RemoveWeapon (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (LifeLeft () == ONE_FRAME_TIME) {
 	UpdateLife (IsMultiGame ? OMEGA_MULTI_LIFELEFT : 0);
 	info.renderType = RT_NONE;
@@ -491,7 +491,7 @@ RETURN (false)
 
 void CObject::UpdateHomingWeapon (int32_t nThread)
 {
-ENTER (0);
+ENTER (0, 0);
 for (fix xFrameTime = gameData.laserData.xUpdateTime; xFrameTime >= HOMING_WEAPON_FRAMETIME; xFrameTime -= HOMING_WEAPON_FRAMETIME) {
 	CFixVector	vVecToObject, vNewVel;
 	fix			dot = I2X (1);
@@ -635,7 +635,7 @@ controls.StopSecondaryFire ();
 
 int32_t LocalPlayerFireGun (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	CPlayerData*	pPlayer = gameData.multiplayer.players + N_LOCALPLAYER;
 	CObject*			pObj = OBJECT (pPlayer->nObject);
 	fix				xEnergyUsed;
@@ -752,7 +752,7 @@ RETURN (rVal)
 //	if nGoalObj == -1, then create Random vector
 int32_t CreateHomingWeapon (CObject *pObj, int32_t nGoalObj, uint8_t objType, int32_t bMakeSound)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t		nObject;
 	CFixVector	vGoal, vRandom;
 	CObject		*pGoalObj = OBJECT (nGoalObj);
@@ -777,7 +777,7 @@ RETURN (nObject)
 // Create the children of a smart bomb, which is a bunch of homing missiles.
 void CreateSmartChildren (CObject *pObj, int32_t nSmartChildren)
 {
-ENTER (0);
+ENTER (0, 0);
 	tParentInfo		parent;
 	int32_t			bMakeSound;
 	int32_t			nObjects = 0;
@@ -870,7 +870,7 @@ LEAVE
 //give up control of the guided missile
 void ReleaseGuidedMissile (int32_t nPlayer)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nPlayer == N_LOCALPLAYER) {
 	CObject* gmObjP = gameData.objData.GetGuidedMissile (nPlayer);
 	if (!gmObjP)
@@ -891,7 +891,7 @@ LEAVE
 //want to autoselect if the bomb isn't actually selected.
 void DoMissileFiring (int32_t bAutoSelect)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t			i, gunFlag = 0;
 	CPlayerData*	pPlayer = gameData.multiplayer.players + N_LOCALPLAYER;
 
@@ -985,7 +985,7 @@ LEAVE
 
 void GetPlayerMslLock (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (gameStates.app.bPlayerIsDead || OBSERVING)
 	LEAVE
 
@@ -1040,7 +1040,7 @@ LEAVE
 //				    cannon.
 void FireGun (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t i = primaryWeaponToWeaponInfo [gameData.weaponData.nPrimary];
 
 if (gameData.weaponData.firing [0].nDuration)

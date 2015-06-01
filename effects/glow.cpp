@@ -349,7 +349,7 @@ if (!bTransformed)
 	transformation.Transform (v, v);
 tScreenPos s;
 ProjectPoint (v, s);
-#pragma omp critical
+#pragma omp critical (GlowRendererSetItemExtent)
 {
 if (m_itemMin.x > s.x)
 	m_itemMin.x = s.x;
@@ -410,6 +410,8 @@ return true;
 
 void CGlowRenderer::InitViewport (void)
 {
+m_itemMin.x = m_itemMin.y = 0x7FFF;
+m_itemMax.x = m_itemMax.y = -0x7FFF;
 if (!UseViewport ()) {
 	m_renderMin.x = CCanvas::Current ()->Left ();
 	m_renderMin.y = CCanvas::Current ()->Top ();
@@ -461,8 +463,6 @@ if (!UseViewport ())
 if (!pVertex || !nVerts)
 	return 1;
 //#pragma omp parallel for
-m_itemMin.x = m_itemMin.y = 0x7FFF;
-m_itemMax.x = m_itemMax.y = -0x7FFF;
 for (int32_t i = 0; i < nVerts; i++) 
 	SetItemExtent (*(pVertex [i].XYZ ()));
 #endif
@@ -480,9 +480,6 @@ if ((GLOW_FLAGS & nType) == 0)
 #if USE_VIEWPORT
 if (!UseViewport ())
 	return 1;
-
-m_itemMin.x = m_itemMin.y = 0x7FFF;
-m_itemMax.x = m_itemMax.y = -0x7FFF;
 
 CFloatVector3 o;
 o.Set (width, height, 0.0f);
@@ -508,8 +505,6 @@ if (!UseViewport ())
 	return 1;
 CFloatVector3 v;
 v.Assign (pos);
-m_itemMin.x = m_itemMin.y = 0x7FFF;
-m_itemMax.x = m_itemMax.y = -0x7FFF;
 return SetViewport (nType, v, radius, radius);
 #else
 return 1;
@@ -722,7 +717,7 @@ ogl.ChooseDrawBuffer ();
 
 void CGlowRenderer::Done (const int32_t nType)
 {
-#if 1
+#if 0
 End ();
 #else
 if (Available (nType)) {

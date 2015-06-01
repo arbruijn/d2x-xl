@@ -488,6 +488,7 @@ return (m_nFaces < 2) || (Height () <= PLANE_DIST_TOLERANCE);
 //this CSegment.  See CSegMasks structure for info on fields
 CSegMasks CSide::Masks (const CFixVector& refPoint, fix xRad, int16_t sideBit, int16_t faceBit, bool bCheckPoke)
 {
+ENTER (2, 0);
 	CSegMasks	masks;
 	fix			xDist;
 
@@ -534,13 +535,14 @@ else {
 		}
 	}
 masks.m_valid = 1;
-return masks;
+RETURN (masks)
 }
 
 // -------------------------------------------------------------------------------
 
 uint8_t CSide::Dist (const CFixVector& refPoint, fix& xSideDist, int32_t bBehind, int16_t sideBit)
 {
+ENTER (2, 0);
 	fix	xDist;
 	uint8_t mask = 0;
 
@@ -577,13 +579,14 @@ else {				//only one face on this CSide
 		xSideDist = xDist;
 		}
 	}
-return mask;
+RETURN (mask)
 }
 
 // -------------------------------------------------------------------------------
 
 uint8_t CSide::Distf (const CFloatVector& refPoint, float& fSideDist, int32_t bBehind, int16_t sideBit)
 {
+ENTER (2, 0);
 	float	fDist;
 	uint8_t mask = 0;
 	CFloatVector vMin, vNormal;
@@ -626,7 +629,7 @@ else {				//only one face on this CSide
 		fSideDist = fDist;
 		}
 	}
-return mask;
+RETURN (mask)
 }
 
 //	-----------------------------------------------------------------------------
@@ -666,7 +669,7 @@ float CSide::DistToPointf (CFloatVector v)
 {
 	CFloatVector	h, n;
 	float				dist, minDist = 1e30f;
-	int32_t				i, j;
+	int32_t			i, j;
 
 // compute vIntersection of perpendicular through pRef with the plane spanned up by the face
 for (i = j = 0; i < m_nFaces; i++, j += 3) {
@@ -1418,24 +1421,25 @@ return 0;
 
 int32_t CSide::CheckTransparency (void)
 {
+ENTER (1, 0);
 	CBitmap	*pBm;
 
 if (m_nOvlTex) {
 	pBm = gameData.pigData.tex.pBitmap [gameData.pigData.tex.pBmIndex [m_nOvlTex].index].Override (-1);
 	if (pBm->Flags () & BM_FLAG_SUPER_TRANSPARENT)
-		return 1;
+		RETURN (1)
 	if (!(pBm->Flags () & BM_FLAG_TRANSPARENT))
-		return 0;
+		RETURN (0)
 	}
 pBm = gameData.pigData.tex.pBitmap [gameData.pigData.tex.pBmIndex [m_nBaseTex].index].Override (-1);
 if (pBm->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
-	return 1;
+	RETURN (1)
 if (gameStates.app.bD2XLevel && IS_WALL (m_nWall)) {
 	int16_t c = WALL (m_nWall)->cloakValue;
 	if (c && (c < FADE_LEVELS))
-		return 1;
+		RETURN (1)
 	}
-return gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (m_nBaseTex);
+RETURN (gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (m_nBaseTex))
 }
 
 //------------------------------------------------------------------------------

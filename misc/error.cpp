@@ -503,7 +503,7 @@ if (*gameFolders.user.szCache && (gameStates.app.nLogLevel > 0)) {
 
 void _CDECL_ PrintLog (const int32_t nIndent, const char *fmt, ...)
 {
-if (fLog && (gameStates.app.nTraceLevel < 0)) {
+if (fLog && !gameStates.app.nTraceLevel) {
 	if (fmt && *fmt) {
 		va_list arglist;
 			static char	szLogLine [2][100000] = {{'\0'}, {'\0'}};
@@ -535,25 +535,27 @@ if (fLog && (gameStates.app.nTraceLevel < 0)) {
 
 void PrintCallStack (void)
 {
+int32_t nIndent = nLogIndent;
 SetIndent (0);
 if (!callStack.Buffer ()) 
 	PrintLog (0, "\nCall stack not available\n\n");
 else {
 	PrintLog (0, "\nCall stack:\n\n");
 	int32_t nTraceLevel = gameStates.app.nTraceLevel;
-	gameStates.app.nTraceLevel = -1;
+	gameStates.app.nTraceLevel = 0;
 	for (uint32_t i = 0, h = callStack.ToS (); i < h; i++)
 		callStack [i].PrintToLog ();
 	gameStates.app.nTraceLevel = nTraceLevel;
 	}
+nLogIndent = nIndent;
 }
 
 //------------------------------------------------------------------------------
 
-void TraceCallStack (const int32_t nDirection, const char *pszFunction, const int32_t nThread, const char *pszFile, const int32_t nLine)
+void TraceCallStack (const int32_t nDirection, const int32_t nLevel, const char *pszFunction, const int32_t nThread, const char *pszFile, const int32_t nLine)
 {
-#pragma omp critical
-if (gameStates.app.nTraceLevel > -1) {
+#pragma omp critical (TraceCallStack)
+if (nLevel < gameStates.app.nTraceLevel) {
 	if (!callStack.Buffer ())
 		callStack.Create (100);
 	if (callStack.Buffer ()) {
@@ -563,7 +565,7 @@ if (gameStates.app.nTraceLevel > -1) {
 		if (nDirection > 0) {
 			f.m_pszFile = pszFile;
 			f.m_nLine = nLine;
-#if DBG
+#if 1 // DBG
 			if (!callStack.Push (f)) {
 				PrintCallStack ();
 				callStack.Reset ();

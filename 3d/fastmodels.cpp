@@ -213,7 +213,7 @@ pModel->m_fScale *= fScale;
 void G3GetThrusterPos (CObject *pObj, int16_t nModel, RenderModel::CFace *pmf, CFixVector *pvOffset,
 							  CFixVector *vNormal, int32_t nRad, int32_t bHires, uint8_t nType = 255)
 {
-ENTER (0);
+ENTER (0, 0);
 	RenderModel::CModel		*pModel = gameData.modelData.renderModels [bHires] + nModel;
 	RenderModel::CVertex		*pModelVertex = NULL;
 	CFloatVector3				v = CFloatVector3::ZERO, vn, vo, vForward = CFloatVector3::Create(0,0,1);
@@ -282,7 +282,7 @@ static int32_t bCenterGuns [] = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1};
 
 int32_t G3FilterSubModel (CObject *pObj, RenderModel::CSubModel *pSubModel, int32_t nGunId, int32_t nBombId, int32_t nMissileId, int32_t nMissiles)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t nId = pObj->info.nId;
 
 if (!pSubModel->m_bRender)
@@ -382,7 +382,7 @@ return (pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_ROBOT) || pO
 
 int32_t G3AnimateSubModel (CObject *pObj, RenderModel::CSubModel *pSubModel, int16_t nModel)
 {
-ENTER (0);
+ENTER (0, 0);
 	tFiringData*	pFiringData;
 	float				nTimeout, y;
 	int32_t			nDelay;
@@ -450,7 +450,7 @@ return 1;
 void G3TransformSubModel (CObject *pObj, int16_t nModel, int16_t nSubModel, CAngleVector *animAnglesP, CFixVector *pvOffset, 
 								  int32_t bHires, int32_t nGunId, int32_t nBombId, int32_t nMissileId, int32_t nMissiles, int32_t bEdges)
 {
-ENTER (0);
+ENTER (0, 0);
 	RenderModel::CModel*		pModel = gameData.modelData.renderModels [bHires] + nModel;
 	RenderModel::CSubModel*	pSubModel = pModel->m_subModels + nSubModel;
 	CAngleVector				va = animAnglesP ? animAnglesP [pSubModel->m_nAngles] : CAngleVector::ZERO;
@@ -500,7 +500,7 @@ void G3DrawSubModel (CObject *pObj, int16_t nModel, int16_t nSubModel, int16_t n
 						   CAngleVector *animAnglesP, CFixVector *pvOffset, int32_t bHires, int32_t bUseVBO, int32_t nPass, int32_t bTranspFilter,
 							int32_t nGunId, int32_t nBombId, int32_t nMissileId, int32_t nMissiles, int32_t bEdges, int32_t bBlur)
 {
-ENTER (0);
+ENTER (0, 0);
 	RenderModel::CModel		* pModel = gameData.modelData.renderModels [bHires] + nModel;
 	RenderModel::CSubModel	* pSubModel = pModel->m_subModels + nSubModel;
 	CBitmap*						pBm = NULL;
@@ -743,7 +743,7 @@ void G3DrawModel (CObject *pObj, int16_t nModel, int16_t nSubModel, CArray<CBitm
 						CAngleVector *animAnglesP, CFixVector *pvOffset, int32_t bHires, int32_t bUseVBO, int32_t bTranspFilter,
 						int32_t nGunId, int32_t nBombId, int32_t nMissileId, int32_t nMissiles, int32_t bEdges, int32_t bBlur)
 {
-ENTER (0);
+ENTER (0, 0);
 	RenderModel::CModel	* pModel;
 	CDynLight*				pLight;
 	int32_t					nPass, iLight, nLights, nLightRange;
@@ -913,7 +913,7 @@ LEAVE
 
 void G3RenderDamageLightning (CObject *pObj, int16_t nModel, int16_t nSubModel, CAngleVector *animAnglesP, CFixVector *pvOffset, int32_t bHires)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage))
 	LEAVE
 
@@ -961,7 +961,7 @@ LEAVE
 int32_t G3RenderModel (CObject *pObj, int16_t nModel, int16_t nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
 							  CAngleVector *animAnglesP, CFixVector *pvOffset, fix xModelLight, fix *xGlowValues, CFloatVector *pObjColor)
 {
-ENTER (0);
+ENTER (0, 0);
 if (pObj && (pObj->info.nType == OBJ_PLAYER) && (nModel > 0) && (nModel != COCKPIT_MODEL))
 	nModel += gameData.multiplayer.weaponStates [pObj->info.nId].nShip;
 

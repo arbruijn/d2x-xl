@@ -48,7 +48,7 @@
 
 CFixVector CObject::RegisterHit (CFixVector vHit, int16_t nModel)
 {
-ENTER (0);
+ENTER (0, 0);
 if (gameStates.app.bNostalgia)
 	RETURN (vHit)
 if ((info.nType != OBJ_ROBOT) && (info.nType != OBJ_PLAYER) && (info.nType != OBJ_REACTOR))

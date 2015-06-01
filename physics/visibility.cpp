@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int32_t PixelTranspType (int16_t nTexture, int16_t nOrient, int16_t nFrame, fix u, fix v)
 {
-ENTER (0);
+ENTER (2, 0);
 
 	CBitmap *pBm;
 	int32_t bmx, bmy, w, h, offs;
@@ -107,7 +107,7 @@ RETURN (0)
 //returns 1 if can pass though the CWall, else 0
 int32_t CSide::CheckForTranspPixel (CFixVector& intersection, int16_t iFace)
 {
-ENTER (0);
+ENTER (2, 0);
 	fix	u, v;
 	int32_t	nTranspType;
 
@@ -141,7 +141,7 @@ return dot >= ((fov < -1.0f) ? pObj->FoV () : fov);
 
 int32_t CanSeePoint (CObject *pObj, CFixVector *pvSource, CFixVector *pvDest, int16_t nSegment, fix xRad, float fov, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (2, nThread);
 	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_VISIBILITY, pvSource, pvDest, -1, pObj ? pObj->Index () : -1, 1, xRad);
 	CHitResult	hitResult;
 #if 1
@@ -158,7 +158,7 @@ RETURN (nHitType != HIT_WALL)
 
 int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 	CHitQuery	hitQuery (bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL | FQ_VISIBILITY : FQ_TRANSWALL | FQ_VISIBILITY,
 								 &gameData.objData.pViewer->info.position.vPos,
 								 &OBJECT (nObject)->info.position.vPos,
@@ -178,7 +178,7 @@ RETURN (bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) 
 //	Calls fvi.
 int32_t ObjectToObjectVisibility (CObject *pViewer, CObject *pTarget, int32_t transType, float fov, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 	CHitQuery	hitQuery;
 	CHitResult	hitResult;
 	int32_t		fate, nTries = 0, bSpectate = SPECTATOR (pViewer);
@@ -217,7 +217,7 @@ int32_t TargetInLineOfFire (void)
 #if 0 //DBG
 return 0;
 #else
-ENTER (0);
+ENTER (0, 0);
 	int32_t		nType;
 	CHitResult	hitResult;
 	CObject*		pObj;

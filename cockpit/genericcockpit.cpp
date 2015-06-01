@@ -181,7 +181,7 @@ SetFontScale (1.0f);
 
 void CGenericCockpit::RenderWindow (int32_t nWindow, CObject *pViewer, int32_t bRearView, int32_t nUser, const char *pszLabel)
 {
-ENTER (0);
+ENTER (0, 0);
 if (Hide ())
 	LEAVE
 if (gameStates.app.bPlayerIsDead)
@@ -298,7 +298,7 @@ LEAVE
 
 void CGenericCockpit::RenderWindows (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (ogl.IsOculusRift ())
 	LEAVE
 
@@ -406,7 +406,7 @@ LEAVE
 
 void CGenericCockpit::SetupSceneCenter (CCanvas* refCanv, int32_t& w, int32_t& h)
 {
-ENTER (0);
+ENTER (0, 0);
 if (ogl.IsOculusRift ()) {
 	w = refCanv->Width (false) / 2;
 	h = refCanv->Height (false) * w / refCanv->Width (false);
@@ -434,7 +434,7 @@ LEAVE
 
 void CGenericCockpit::Render (int32_t bExtraInfo, fix xStereoSeparation)
 {
-ENTER (0);
+ENTER (0, 0);
 #if DBG
 extern int32_t bHave3DCockpit;
 if (bHave3DCockpit > 0)
@@ -624,7 +624,7 @@ LEAVE
 //called every time the screen mode or cockpit changes
 bool CGenericCockpit::Setup (bool bScene, bool bRebuild)
 {
-ENTER (0);
+ENTER (0, 0);
 if (gameStates.video.nScreenMode != SCREEN_GAME)
 	RETURN (false)
 if (gameData.demoData.nState == ND_STATE_RECORDING)
@@ -644,7 +644,7 @@ RETURN (true)
 
 void CGenericCockpit::Activate (int32_t nType, bool bClearMessages)
 {
-ENTER (0);
+ENTER (0, 0);
 if (ogl.IsOculusRift ())
 	cockpit = &hudCockpit;
 else if (nType == CM_FULL_COCKPIT)

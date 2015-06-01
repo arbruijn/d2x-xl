@@ -81,7 +81,7 @@ return 1;
 
 CPolyModel* GetPolyModel (CObject *pObj, CFixVector *pos, int32_t nModel, int32_t flags, int32_t* bCustomModel)
 {
-ENTER (0);
+ENTER (0, 0);
 	CPolyModel	*pModel = NULL;
 	int32_t		bHaveAltModel, bIsDefModel;
 
@@ -156,7 +156,7 @@ int32_t DrawPolyModel (
 	tBitmapIndex	altTextures [],
 	CFloatVector*	pColor)
 {
-ENTER (0);
+ENTER (0, 0);
 	CPolyModel	*pModel;
 	int32_t		bHires = 0, bCustomModel = 0;
 
@@ -271,7 +271,7 @@ RETURN (1)
 
 void DrawModelPicture (int32_t nModel, CAngleVector *orientAngles)
 {
-ENTER (0);
+ENTER (0, 0);
 	CFixVector	p = CFixVector::ZERO;
 	CFixMatrix	o = CFixMatrix::IDENTITY;
 

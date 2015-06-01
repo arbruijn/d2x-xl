@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //fills in gun_point
 int32_t CalcGunPoint (CFixVector *vGunPoint, CObject *pObj, int32_t nGun)
 {
-ENTER (0);
+ENTER (0, 0);
 	CPolyModel*	pm = gameData.modelData.polyModels [0] + pObj->ModelId ();
 	CFixVector*	vGunPoints, vGunPos, vRot;
 	CFixMatrix	m;
@@ -67,7 +67,7 @@ RETURN (1)
 //takes the robot nType (CObject id), gun number, and desired state
 int32_t RobotGetAnimState (tJointPos **jointPosP, int32_t robotType, int32_t nGun, int32_t state)
 {
-ENTER (0);
+ENTER (0, 0);
 tRobotInfo*	pRobotInfo = ROBOTINFO (robotType);
 if (!pRobotInfo)
 	RETURN (0)
@@ -86,7 +86,7 @@ RETURN (nJoints)
 //for test, set a robot to a specific state
 void SetRobotState (CObject *pObj, int32_t state)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t		g, j, jo;
 	jointlist*	jl;
 
@@ -109,7 +109,7 @@ LEAVE
 //be filled in.
 void SetRobotAngles (tRobotInfo *pRobotInfo, CPolyModel* pModel, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS])
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t m, g, state;
 	int32_t nGunCounts [MAX_SUBMODELS];			//which gun each submodel is part of
 
@@ -147,7 +147,7 @@ LEAVE
 
 void InitCamBots (int32_t bReset)
 {
-ENTER (0);
+ENTER (0, 0);
 	tRobotInfo&	camBotInfo = gameData.botData.info [0][gameData.botData.nCamBotId];
 	CObject*		pObj;
 
@@ -196,7 +196,7 @@ LEAVE
 
 void UnloadCamBot (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (gameData.botData.nCamBotId >= 0) {
 	gameData.botData.nTypes [0] = gameData.botData.nCamBotId;
 	gameData.botData.nCamBotId = -1;
@@ -230,7 +230,7 @@ return i;
  */
 int32_t ReadRobotInfos (CArray<tRobotInfo>& botInfo, int32_t n, CFile& cf, int32_t o)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t h, i, j;
 
 for (i = 0; i < n; i++) {

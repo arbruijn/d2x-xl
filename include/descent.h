@@ -4443,14 +4443,18 @@ inline tRobotInfo* CGameData::RobotInfo (int32_t nId) {
 	return (nId < 0) ? NULL : botData.info [gameStates.app.bD1Mission && (nId < botData.nTypes [1])] + nId; 
 	}
 
+inline tRobotInfo* CGameData::RobotInfo (CObject* pObj) {
+	return (pObj && (pObj->IsRobot () || pObj->IsReactor ())) ? RobotInfo (pObj->Id ()) : NULL;
+	}
+
 inline CWeaponInfo* CGameData::WeaponInfo (int32_t nId) {
 	if ((nId < 0) || (nId >= (gameStates.app.bD1Mission ? D1_MAX_WEAPON_TYPES : D2_MAX_WEAPON_TYPES)))
 		return NULL;
 	return weaponData.info [gameStates.app.bD1Mission] + nId; 
 	}
 
-inline tRobotInfo* CGameData::RobotInfo (CObject* pObj) {
-	return (pObj && (pObj->IsRobot () || pObj->IsReactor ())) ? RobotInfo (pObj->Id ()) : NULL;
+inline CWeaponInfo* CGameData::WeaponInfo (CObject *pObj) {
+	return (pObj && pObj->IsWeapon ()) ? WeaponInfo (pObj->Id ()) : NULL;
 	}
 
 inline int8_t WI_persistent (int32_t nId) {

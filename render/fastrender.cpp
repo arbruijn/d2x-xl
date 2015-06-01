@@ -29,7 +29,7 @@
 
 void ResetFaceList (void)
 {
-ENTER (0);
+ENTER (0, 0);
 PROF_START
 int32_t* tails = gameData.renderData.faceIndex.tails.Buffer (),
 	* usedKeys = gameData.renderData.faceIndex.usedKeys.Buffer ();
@@ -47,7 +47,7 @@ LEAVE
 
 int32_t AddFaceListItem (CSegFace *pFace, int32_t nThread)
 {
-ENTER (0);
+ENTER (1, 0);
 if (!(pFace->m_info.widFlags & WID_VISIBLE_FLAG))
 	RETURN (0)
 #if 1
@@ -60,7 +60,7 @@ if (pFace - FACES.faces >= FACES.nFaces)
 #endif
 
 #if USE_OPENMP //> 1
-#	pragma omp critical
+#	pragma omp critical (AddFaceListItem)
 #elif !USE_OPENMP
 SDL_mutexP (tiRender.semaphore);
 #endif
@@ -99,7 +99,7 @@ RETURN (1)
 
 void LoadFaceBitmaps (CSegment *pSeg, CSegFace *pFace)
 {
-ENTER (0);
+ENTER (1, 0);
 	CSide	*pSide = pSeg->m_sides + pFace->m_info.nSide;
 	int16_t	nFrame = pSide->m_nFrame;
 
@@ -153,7 +153,7 @@ LEAVE
 
 bool RenderGeometryFace (CSegment *pSeg, CSegFace *pFace)
 {
-ENTER (0);
+ENTER (1, 0);
 faceRenderFunc (pFace, pFace->bmBot, pFace->bmTop, pFace->m_info.bTextured, (gameStates.render.bPerPixelLighting != 0) && !gameStates.render.bFullBright && !(gameOpts->render.debug.bWireFrame & 1));
 RETURN (true)
 }
@@ -162,7 +162,7 @@ RETURN (true)
 
 bool RenderCoronaFace (CSegment *pSeg, CSegFace *pFace)
 {
-ENTER (0);
+ENTER (1, 0);
 if (!pFace->m_info.nCorona)
 	RETURN (false)
 glareRenderer.Render (pFace->m_info.nSegment, pFace->m_info.nSide, 1.0f, pFace->m_info.fRads [0]);
@@ -173,7 +173,7 @@ RETURN (true)
 
 bool RenderSkyBoxFace (CSegment *pSeg, CSegFace *pFace)
 {
-ENTER (0);
+ENTER (1, 0);
 LoadFaceBitmaps (pSeg, pFace);
 RenderFace (pFace, pFace->bmBot, pFace->bmTop, 1, 0);
 RETURN (true)
@@ -192,7 +192,7 @@ static pRenderHandler renderHandlers [] = {RenderGeometryFace, RenderGeometryFac
 
 static inline bool RenderMineFace (CSegment *pSeg, CSegFace *pFace, int32_t nType)
 {
-ENTER (0);
+ENTER (1, 0);
 #if DBG
 if ((pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 	BRP;
@@ -316,7 +316,7 @@ return tiRender.nFaces;
 
 int32_t BeginRenderFaces (int32_t nType)
 {
-ENTER (0);
+ENTER (0, 0);
 	//int32_t	bVBO = 0;
 	int32_t	bLightmaps = (nType == RENDER_TYPE_GEOMETRY) && !gameStates.render.bFullBright && lightmapManager.HaveLightmaps ();
 
@@ -455,7 +455,7 @@ RETURN (1)
 
 void EndRenderFaces (void)
 {
-ENTER (0);
+ENTER (0, 0);
 #if 0
 G3FlushFaceBuffer (1);
 #endif
@@ -478,7 +478,7 @@ LEAVE
 
 void RenderSkyBoxFaces (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	tSegFaces	*pSegFace;
 	CSegFace		*pFace;
 	int16_t		*pSeg;
@@ -565,7 +565,7 @@ return !automap.Active () || automap.m_visited [pFace->m_info.nSegment] || !game
 
 int16_t RenderFaceList (CFaceListIndex& flx, int32_t nType, int32_t bHeadlight)
 {
-ENTER (0);
+ENTER (0, 0);
 	tFaceListItem*	fliP = &gameData.renderData.faceList [0];
 	CSegFace*		pFace;
 	int32_t			i, j, nFaces = 0, nSegment = -1;
@@ -609,7 +609,7 @@ RETURN (nFaces)
 
 void RenderCoronaFaceList (CFaceListIndex& flx, int32_t nPass)
 {
-ENTER (0);
+ENTER (0, 0);
 	tFaceListItem*	pIndex;
 	CSegFace*		pFace;
 	int32_t			i, j, nSegment;
@@ -674,7 +674,7 @@ LEAVE
 
 void QueryCoronas (int16_t nFaces, int32_t nPass)
 {
-ENTER (0);
+ENTER (0, 0);
 BeginRenderFaces (RENDER_TYPE_CORONAS);
 ogl.SetDepthWrite (false);
 ogl.ColorMask (1,1,1,1,1);
@@ -705,7 +705,7 @@ LEAVE
 
 int32_t SetupCoronaFaces (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	tSegFaces	*pSegFace;
 	CSegFace		*pFace;
 	int32_t		i, j, nSegment;
@@ -738,7 +738,7 @@ RETURN (gameData.renderData.lights.nCoronas)
 
 static int16_t RenderSegmentFaces (int32_t nType, int16_t nSegment, int32_t bAutomap, int32_t bHeadlight)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nSegment < 0)
 	RETURN (0)
 
@@ -779,7 +779,7 @@ RETURN (nFaces)
 
 int16_t RenderSegments (int32_t nType, int32_t bHeadlight)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	i, nFaces = 0, bAutomap = (nType == RENDER_TYPE_GEOMETRY);
 
 if (nType == RENDER_TYPE_CORONAS) {
@@ -807,7 +807,7 @@ RETURN (nFaces)
 
 void RenderHeadlights (int32_t nType)
 {
-ENTER (0);
+ENTER (0, 0);
 if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
 	ogl.SetBlendMode (OGL_BLEND_ADD_WEAK);
 	faceRenderFunc = DrawHeadlights;
@@ -821,7 +821,7 @@ LEAVE
 
 int32_t SetupCoronas (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!SetupCoronaFaces ())
 	RETURN (0)
 if (automap.Active () && !gameOpts->render.automap.bCoronas)
@@ -833,7 +833,7 @@ RETURN (1)
 
 int32_t SetupDepthBuffer (int32_t nType)
 {
-ENTER (0);
+ENTER (0, 0);
 BeginRenderFaces (RENDER_TYPE_GEOMETRY);
 RenderSegments (nType, 0);
 EndRenderFaces ();
@@ -844,7 +844,7 @@ RETURN (SortFaces ())
 
 void RenderFaceList (int32_t nType)
 {
-ENTER (0);
+ENTER (0, 0);
 BeginRenderFaces (nType);
 gameData.renderData.mine.visibility [0].BumpVisitedFlag ();
 RenderSegments (nType, 0);

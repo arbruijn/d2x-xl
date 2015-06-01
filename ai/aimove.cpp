@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 fix AITurnTowardsVector (CFixVector *vGoal, CObject *pObj, fix rate)
 {
-ENTER (0);
+ENTER (1, 0);
 //	Not all robots can turn, eg, SPECIAL_REACTOR_ROBOT
 if (!ROBOTINFO (pObj))
 	RETURN (0)
@@ -83,7 +83,7 @@ RETURN (dot)
 //	if bDotBased set, then speed is based on direction of movement relative to heading
 void MoveTowardsVector (CObject *pObj, CFixVector *vGoalVec, int32_t bDotBased)
 {
-ENTER (0);
+ENTER (1, 0);
 	tPhysicsInfo&	physicsInfo = pObj->mType.physInfo;
 	tRobotInfo		*pRobotInfo = ROBOTINFO (pObj);
 
@@ -118,7 +118,7 @@ LEAVE
 
 void MoveAwayFromOtherRobots (CObject *pObj, CFixVector& vVecToTarget)
 {
-ENTER (0);
+ENTER (1, 0);
 	fix				xAvoidRad = 0;
 	int16_t			nAvoidObjs = 0;
 	int16_t			nStartSeg = pObj->info.nSegment;
@@ -178,7 +178,7 @@ LEAVE
 void MoveTowardsPlayer (CObject *pObj, CFixVector *vVecToTarget)
 //	gameData.aiData.target.vDir must be normalized, or close to it.
 {
-ENTER (0);
+ENTER (1, 0);
 MoveAwayFromOtherRobots (pObj, *vVecToTarget);
 MoveTowardsVector (pObj, vVecToTarget, 1);
 LEAVE
@@ -188,7 +188,7 @@ LEAVE
 //	I am ashamed of this: fastFlag == -1 means Normal slide about.  fastFlag = 0 means no evasion.
 void MoveAroundPlayer (CObject *pObj, CFixVector *vVecToTarget, int32_t fastFlag)
 {
-ENTER (0);
+ENTER (1, 0);
 	tPhysicsInfo&	physInfo = pObj->mType.physInfo;
 	int32_t			nObject = pObj->Index ();
 	tRobotInfo*		pRobotInfo = ROBOTINFO (pObj);
@@ -270,7 +270,7 @@ LEAVE
 
 void MoveAwayFromTarget (CObject *pObj, CFixVector *vVecToTarget, int32_t attackType)
 {
-ENTER (0);
+ENTER (1, 0);
 	tPhysicsInfo	physicsInfo = pObj->mType.physInfo;
 	fix				ft = gameData.timeData.xFrame * 16;
 
@@ -312,7 +312,7 @@ void AIMoveRelativeToTarget (CObject *pObj, tAILocalInfo *pLocalInfo, fix xDistT
 									  CFixVector *vVecToTarget, fix circleDistance, int32_t bEvadeOnly,
 									  int32_t nTargetVisibility)
 {
-ENTER (0);
+ENTER (1, 0);
 	tRobotInfo	*pRobotInfo = ROBOTINFO (pObj);
 
 if (!pRobotInfo)
@@ -405,7 +405,7 @@ LEAVE
 
 fix MoveObjectToLegalPoint (CObject *pObj, CFixVector *vGoal)
 {
-ENTER (0);
+ENTER (1, 0);
 	CFixVector	vGoalDir;
 	fix			xDistToGoal;
 
@@ -421,7 +421,7 @@ RETURN (xDistToGoal)
 //	It might mean moving it outside its current CSegment.
 bool MoveObjectToLegalSpot (CObject *pObj, int32_t bMoveToCenter)
 {
-ENTER (0);
+ENTER (1, 0);
 	CFixVector	vSegCenter, vOrigPos = pObj->info.position.vPos;
 	CSegment*	pSeg = SEGMENT (pObj->info.nSegment);
 
@@ -475,7 +475,7 @@ RETURN (false)
 //	If CSegment center is nearer than 2 radii, move it to center.
 fix MoveTowardsPoint (CObject *pObj, CFixVector *vGoal, fix xMinDist)
 {
-ENTER (0);
+ENTER (1, 0);
 	fix			xDistToGoal;
 	CFixVector	vGoalDir;
 
@@ -515,7 +515,7 @@ RETURN (xDistToGoal)
 //	If CSegment center is nearer than 2 radii, move it to center.
 fix MoveTowardsSegmentCenter (CObject *pObj)
 {
-ENTER (0);
+ENTER (1, 0);
 CFixVector vSegCenter = SEGMENT (pObj->info.nSegment)->Center ();
 RETURN (MoveTowardsPoint (pObj, &vSegCenter, 0))
 }

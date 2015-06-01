@@ -48,7 +48,7 @@ void NDRecordGuidedStart (void);
 //creates a weapon CObject
 int32_t CreateWeaponObject (uint8_t nWeaponType, int16_t nSegment, CFixVector *vPosition, int16_t nParent)
 {
-ENTER (0);
+ENTER (0, 0);
 
 	CWeaponInfo	*pWeaponInfo = WEAPONINFO (nWeaponType);
 if (!pWeaponInfo) {
@@ -106,7 +106,7 @@ RETURN (nObject)
 
 int32_t CreateWeaponSpeed (CObject* pWeapon, bool bFix)
 {
-ENTER (0);
+ENTER (0, 0);
 	uint8_t			nWeaponType = pWeapon->Id ();
 	CWeaponInfo	*pWeaponInfo = WEAPONINFO (nWeaponType);
 
@@ -182,7 +182,7 @@ RETURN (pWeapon->Index ())
 
 void CreateWeaponSound (CObject* pWeapon, int32_t bMakeSound)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!bMakeSound)
 	LEAVE;
 
@@ -239,7 +239,7 @@ LEAVE
 //	Returns CObject number.
 int32_t CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, int16_t nSegment, int16_t nParent, uint8_t nWeaponType, int32_t bMakeSound)
 {
-ENTER (0);
+ENTER (0, 0);
 CObject *pParent = OBJECT (nParent);
 if (!pParent)
 	RETURN (-1)
@@ -449,7 +449,7 @@ RETURN (nObject)
 //	Calls CreateNewWeapon, but takes care of the CSegment and point computation for you.
 int32_t CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, int16_t parent, uint8_t nWeaponType, int32_t bMakeSound)
 {
-ENTER (0);
+ENTER (0, 0);
 	CHitResult	hitResult;
 	CObject*		pParentObj = OBJECT (parent);
 
@@ -487,7 +487,7 @@ RETURN (CreateNewWeapon (vDirection, &hitResult.vPoint, (int16_t) hitResult.nSeg
 
 bool FixWeaponObject (CObject* pObj, bool bFixType)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!IsMultiGame)
 	RETURN (true)
 if (!pObj->IsWeapon ()) {

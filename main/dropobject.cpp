@@ -28,7 +28,7 @@
 
 int32_t InitObjectCount (CObject *pObj)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	nFree, nTotal, i, j, bFree;
 	int16_t	nType = pObj->info.nType;
 	int16_t	id = pObj->info.nId;
@@ -53,7 +53,7 @@ RETURN (nFree ? -nFree : nTotal)
 
 CObject *FindInitObject (CObject *pObj)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	h, i, j, bUsed,
 			bUseFree,
 			objCount = InitObjectCount (pObj);
@@ -113,7 +113,7 @@ static int32_t	segQueue [MAX_SEGMENTS_D2X];
 
 int32_t PickConnectedSegment (CObject *pObj, int32_t nMaxDepth, int32_t *nDepthP)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t		nCurDepth;
 	int32_t		nStartSeg;
 	int32_t		nHead, nTail;
@@ -178,7 +178,7 @@ RETURN (segQueue [nTail + Rand (nHead - nTail)])
 //	Don't drop if control center in CSegment.
 int32_t ChooseDropSegment (CObject *pObj, int32_t *pbFixedPos, int32_t nDropState)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t		nPlayer = 0;
 	int16_t		nSegment = -1;
 	int32_t		nDepth, nDropDepth;
@@ -284,7 +284,7 @@ RETURN (nSegment)
 
 void DropPowerups (void)
 {
-ENTER (0);
+ENTER (0, 0);
 if (extraGameInfo [IsMultiGame].nSpawnDelay != 0) {
 	int16_t	h = gameData.objData.nFirstDropped, i;
 	while (h >= 0) {
@@ -301,7 +301,7 @@ LEAVE
 
 void RespawnDestroyedWeapon (int16_t nObject)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	h = gameData.objData.nFirstDropped, i;
 
 while (h >= 0) {
@@ -320,7 +320,7 @@ LEAVE
 
 int32_t AddDropInfo (int16_t nObject, int16_t nPowerupType, int32_t nDropTime)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	h;
 
 if (gameData.objData.nFreeDropped < 0)
@@ -347,7 +347,7 @@ RETURN (h)
 
 void DelDropInfo (int32_t h)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	i, j;
 
 if (h < 0)
@@ -373,7 +373,7 @@ LEAVE
 
 int32_t FindDropInfo (int32_t nSignature)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t	i = gameData.objData.nFirstDropped;
 
 while (i >= 0) {
@@ -390,7 +390,7 @@ RETURN (-1)
 
 int32_t MaybeDropNetPowerup (int16_t nObject, int32_t nPowerupType, int32_t nDropState)
 {
-ENTER (0);
+ENTER (0, 0);
 if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 #if 0
 	if (IsNetworkGame && (nDropState < CHECK_DROP) && (nPowerupType >= 0)) {
@@ -461,7 +461,7 @@ RETURN (0)
 //	Return true if current CSegment contains some CObject.
 int32_t SegmentContainsObject (int32_t objType, int32_t obj_id, int32_t nSegment)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nSegment == -1)
 	RETURN (0)
 int32_t nObject = SEGMENT (nSegment)->m_objects;
@@ -481,7 +481,7 @@ RETURN (0)
 
 int32_t ObjectNearbyAux (int32_t nSegment, int32_t objectType, int32_t object_id, int32_t depth)
 {
-ENTER (0);
+ENTER (0, 0);
 if (depth == 0)
 	RETURN (0)
 if (SegmentContainsObject (objectType, object_id, nSegment))
@@ -509,7 +509,7 @@ return ObjectNearbyAux (pObj->info.nSegment, OBJ_POWERUP, weapon_id, 3);
 
 void MaybeReplacePowerupWithEnergy (CObject *pDelObj)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	nWeapon = -1;
 
 if (pDelObj->info.contains.nType != OBJ_POWERUP)
@@ -607,7 +607,7 @@ LEAVE
 
 int32_t DropPowerup (uint8_t nType, uint8_t nId, int16_t owner, int32_t bDropExtras, const CFixVector& vInitVel, const CFixVector& vPos, int16_t nSegment, bool bLocal)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t		nObject = -1;
 	CObject*		pObj;
 	CFixVector	vNewVel, vNewPos;
@@ -740,7 +740,7 @@ RETURN (nObject)
 
 int32_t CObject::CreateEgg (bool bLocal, bool bUpdateLimits)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	i, nObject = -1;
 
 if ((info.nType != OBJ_PLAYER) && (info.contains.nType == OBJ_POWERUP)) {
@@ -805,7 +805,7 @@ RETURN (nObject)
 //	Returns created CObject number.
 int32_t PrepareObjectCreateEgg (CObject *pObj, int32_t nCount, int32_t nType, int32_t nId, bool bLocal, bool bUpdateLimits)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nCount <= 0)
 	RETURN (-1)
 pObj->info.contains.nCount = nCount;
@@ -818,7 +818,7 @@ RETURN (pObj->CreateEgg (bLocal, bUpdateLimits))
 //creates afterburner blobs behind the specified CObject
 void DropAfterburnerBlobs (CObject *pObj, int32_t count, fix xSizeScale, fix xLifeTime, CObject *pParent, int32_t bThruster)
 {
-ENTER (0);
+ENTER (0, 0);
 	int16_t			i, nSegment, nThrusters;
 	CObject			*pBlobObj;
 	tThrusterInfo	ti;
@@ -848,7 +848,7 @@ LEAVE
 
 int32_t MaybeDropPrimaryWeaponEgg (CObject *pPlayerObj, int32_t nWeapon)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t nWeaponFlag = HAS_FLAG (nWeapon);
 
 if (!(PLAYER (pPlayerObj->info.nId).primaryWeaponFlags & nWeaponFlag))
@@ -864,7 +864,7 @@ RETURN (PrepareObjectCreateEgg (pPlayerObj, 1, OBJ_POWERUP, primaryWeaponToPower
 
 void MaybeDropSecondaryWeaponEgg (CObject *pPlayerObj, int32_t nWeapon, int32_t count)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t nWeaponFlag = HAS_FLAG (nWeapon);
 	int32_t nPowerup = secondaryWeaponToPowerup [0][nWeapon];
 
@@ -881,7 +881,7 @@ LEAVE
 
 void MaybeDropDeviceEgg (CPlayerInfo *pPlayer, CObject *pPlayerObj, int32_t nDeviceFlag, int32_t nPowerupId)
 {
-ENTER (0);
+ENTER (0, 0);
 if ((PLAYER (pPlayerObj->info.nId).flags & nDeviceFlag) &&
 	 !(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nDevice & nDeviceFlag)))
 	PrepareObjectCreateEgg (pPlayerObj, 1, OBJ_POWERUP, nPowerupId);
@@ -892,7 +892,7 @@ LEAVE
 
 void DropMissile1or4 (CObject *pPlayerObj, int32_t nMissileIndex)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t nMissiles, nPowerupId;
 
 if (0 < (nMissiles = PLAYER (pPlayerObj->info.nId).secondaryAmmo [nMissileIndex])) {
@@ -920,7 +920,7 @@ LEAVE
 
 static void MaybeArmMines (CObject *pPlayerObj, CPlayerInfo* pPlayer, int32_t nType, int32_t nId)
 {
-ENTER (0);
+ENTER (0, 0);
 if (gameStates.multi.nGameType == UDP_GAME) {
 	int32_t nAmmo = pPlayer->secondaryAmmo [nType];
 	if (nAmmo <= 0)
@@ -966,7 +966,7 @@ LEAVE
 
 void DropPlayerEggs (CObject *pPlayerObj)
 {
-ENTER (0);
+ENTER (0, 0);
 if (pPlayerObj && ((pPlayerObj->info.nType == OBJ_PLAYER) || (pPlayerObj->info.nType == OBJ_GHOST))) {
 	int32_t			nPlayer = pPlayerObj->info.nId;
 	int16_t			nObject;
@@ -1115,7 +1115,7 @@ LEAVE
 
 void DropExcessAmmo (void)
 {
-ENTER (0);
+ENTER (0, 0);
 for (int32_t nWeapon = CONCUSSION_INDEX; nWeapon <= EARTHSHAKER_INDEX; nWeapon++) {
 	int32_t nExcess = MaxSecondaryAmmo (nWeapon) - LOCALPLAYER.secondaryAmmo [nWeapon];
 	if (nExcess > 0) {
@@ -1139,7 +1139,7 @@ LEAVE
 
 int32_t ReturnFlagHome (CObject *pObj)
 {
-ENTER (0);
+ENTER (0, 0);
 	CObject	*pInitObj;
 
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {

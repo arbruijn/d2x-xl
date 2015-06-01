@@ -97,7 +97,7 @@ static int32_t nSavedCount = 0;
 
 void ComputeSingleSegmentDistance (int32_t nSegment, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 
 	fix xMaxDist = 0;
 	float scale = 1.0f;
@@ -214,7 +214,7 @@ return 0;
 
 int32_t ComputeNearestSegmentLights (int32_t i, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 
 	CSegment				*pSeg;
 	CDynLight			*pLight;
@@ -268,7 +268,7 @@ extern int32_t nDbgVertex;
 
 int32_t ComputeNearestVertexLights (int32_t nVertex, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 
 	CFixVector*			pVertex;
 	CDynLight*			pLight;
@@ -374,7 +374,7 @@ while (!gameData.segData.SetSegVis (nStartSeg, nSegment))
 
 static void SetLightVis (int16_t nLight, int16_t nSegment)
 {
-ENTER (0);
+ENTER (0, 0);
 #if DBG
 if ((lightManager.Lights (nLight)->info.nSegment == nDbgSeg) && (lightManager.Lights (nLight)->info.nSide == nDbgSide))
 	BRP;
@@ -418,7 +418,7 @@ static CTransformation projection;
 
 static void SetupProjection (void)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	w = gameData.renderData.screen.Width (),
 				h = gameData.renderData.screen.Height ();
 	CCanvas canvas;
@@ -452,7 +452,7 @@ LEAVE
 
 static void ComputeSingleSegmentVisibility (int32_t nThread, int16_t nStartSeg, int16_t nFirstSide, int16_t nLastSide, int32_t bLights)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 
 	CSegment				*pStartSeg;
 	CSide					*pSide;
@@ -561,7 +561,7 @@ LEAVE
 
 static void ComputeSegmentVisibilityST (int32_t startI)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t i, endI;
 
 if (gameStates.app.bMultiThreaded)
@@ -579,7 +579,7 @@ LEAVE
 
 void ComputeSegmentVisibilityMT (int32_t startI, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 	int32_t endI;
 
 for (int32_t i = GetLoopLimits (startI, endI, gameData.segData.nSegments, nThread); i < endI; i++)
@@ -593,7 +593,7 @@ LEAVE
 
 static void CheckLightVisibility (int16_t nLight, int16_t nDestSeg, fix xMaxDist, float fRange, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 #if DBG
 if ((lightManager.Lights (nLight)->info.nSegment == nDbgSeg) && (lightManager.Lights (nLight)->info.nSide == nDbgSide))
 	BRP;
@@ -682,7 +682,7 @@ LEAVE
 
 static bool InitLightVisibility (int32_t nStage)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nStage) {
 	// Why does this get called here? I don't remember, but it seems to be unnecessary. [DM]
 	//SetupSegments (fix (I2X (1) * 0.001f)); 
@@ -705,7 +705,7 @@ RETURN (true);
 
 static void ComputeSingleLightVisibility (int32_t nLight, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 CDynLight* pLight = lightManager.Lights () + nLight;
 if ((pLight->info.nSegment >= 0) && (pLight->info.nSide >= 0)) {
 #if DBG
@@ -729,7 +729,7 @@ LEAVE
 
 static void ComputeLightVisibilityST (int32_t startI)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t endI;
 
 if (gameStates.app.bMultiThreaded)
@@ -749,7 +749,7 @@ LEAVE
 
 void ComputeLightVisibilityMT (int32_t startI, int32_t nThread)
 {
-ENTER (nThread);
+ENTER (0, nThread);
 	int32_t endI;
 
 for (int32_t i = GetLoopLimits (startI, endI, lightManager.LightCount (0), nThread); i < endI; i++)
@@ -761,7 +761,7 @@ LEAVE
 
 void ComputeLightsVisibleVertices (int32_t startI)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t	i, endI;
 
 for (i = GetLoopLimits (startI, endI, lightManager.LightCount (0), 0); i < endI; i++)
@@ -800,7 +800,7 @@ return GameDataFilename (pszFilename, "light", nLevel, -1);
 
 static int32_t LoadSegDistData (CFile& cf, tLightDataHeader& ldh)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t nDistances = 0;
 
 for (int32_t i = 0; i < ldh.nSegments; i++) {
@@ -823,7 +823,7 @@ RETURN (nDistances);
 
 int32_t LoadLightData (int32_t nLevel)
 {
-ENTER (0);
+ENTER (0, 0);
 	CFile					cf;
 	tLightDataHeader	ldh;
 	int32_t				bOk, nDistances = 0;
@@ -862,7 +862,7 @@ RETURN (bOk);
 
 static int32_t SaveSegDistData (CFile& cf, tLightDataHeader& ldh)
 {
-ENTER (0);
+ENTER (0, 0);
 	int32_t nDistances = 0;
 
 for (int32_t i = 0; i < ldh.nSegments; i++) {
@@ -885,7 +885,7 @@ RETURN (nDistances);
 
 int32_t SaveLightData (int32_t nLevel)
 {
-ENTER (0);
+ENTER (0, 0);
 	CFile				cf;
 	tLightDataHeader ldh = {LIGHT_DATA_VERSION,
 									CalcSegmentCheckSum (),
@@ -964,7 +964,7 @@ for (int32_t i = 0; i < gameStates.app.nThreads; i++)
 
 static int32_t PrecalcLightPollMT (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nState)
 	RETURN (nCurItem);
 
@@ -1091,7 +1091,7 @@ for (i = 0; i < gameStates.app.nThreads; i++) {
 
 static int32_t PrecalcLightPollST (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nState)
 	RETURN (nCurItem);
 
@@ -1172,7 +1172,7 @@ RETURN (nCurItem);
 
 void ComputeNearestLights (int32_t nLevel)
 {
-ENTER (0);
+ENTER (0, 0);
 if (!(SHOW_DYN_LIGHT ||
 	  (gameStates.render.bAmbientColor && !gameStates.render.bColored) ||
 	   !COMPETITION))
@@ -1260,7 +1260,7 @@ PrintLog (-1);
 
 int32_t PrecomputeLevelLightmaps (int32_t nLevel)
 {
-ENTER (0);
+ENTER (0, 0);
 int32_t nResult = LoadLevel (nLevel, false, false) >= 0;
 CleanupAfterGame (false);
 RETURN (nResult);
@@ -1273,7 +1273,7 @@ const char *LightmapPrecisionText (void);
 
 static int32_t PrecomputeLightmapsPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
-ENTER (0);
+ENTER (0, 0);
 if (nState) {
 	if (nState == -1)
 		RETURN (9);
@@ -1343,7 +1343,7 @@ RETURN (nCurItem);
 
 void PrecomputeMissionLightmaps (void)
 {
-ENTER (0);
+ENTER (0, 0);
 gameStates.app.bPrecomputeLightmaps = 1;
 
 int32_t bUseLightmaps = gameOpts->render.bUseLightmaps;
