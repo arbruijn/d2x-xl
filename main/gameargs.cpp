@@ -480,7 +480,7 @@ else
 if ((t = FindArg ("-tracelevel")))
 	gameStates.app.nTraceLevel = NumArg (t, 0);
 else
-	gameStates.app.nTraceLevel = -1;
+	gameStates.app.nTraceLevel = 0;
 if ((t = FindArg ("-nosound")))
 	gameStates.app.bUseSound = (NumArg (t, 1) == 0);
 if ((t = FindArg ("-progress_bars")))

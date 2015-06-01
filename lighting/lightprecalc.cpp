@@ -1024,7 +1024,7 @@ int32_t _CDECL_ SegDistThread (void *pThreadId)
 {
 	int32_t nId = *(reinterpret_cast<int32_t*> (pThreadId));
 
-ENTER (nId);
+ENTER (0, nId);
 ComputeSegmentDistance (nId * (gameData.segData.nSegments + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
 SDL_SemPost (ti [nId].done);
 ti [nId].bDone = 1;
@@ -1037,7 +1037,7 @@ int32_t _CDECL_ SegLightsThread (void *pThreadId)
 {
 	int32_t nId = *(reinterpret_cast<int32_t*> (pThreadId));
 
-ENTER (nId);
+ENTER (0, nId);
 ComputeNearestSegmentLights (nId * (gameData.segData.nSegments + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
 SDL_SemPost (ti [nId].done);
 ti [nId].bDone = 1;
@@ -1050,7 +1050,7 @@ int32_t _CDECL_ VertLightsThread (void *pThreadId)
 {
 	int32_t nId = *(reinterpret_cast<int32_t*> (pThreadId));
 
-ENTER (nId);
+ENTER (0, nId);
 ComputeNearestVertexLights (nId * (gameData.segData.nVertices + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
 SDL_SemPost (ti [nId].done);
 ti [nId].bDone = 1;
