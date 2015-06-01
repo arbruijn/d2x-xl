@@ -952,7 +952,7 @@ LEAVE
 
 int32_t CAudio::RegisterChannel (CAudioChannel* pChannel)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	int32_t nChannel = int32_t (pChannel - m_channels.Buffer ());
 	int32_t nIndex = pChannel->GetIndex ();
 	int32_t nToS = int32_t (m_usedChannels.ToS ());
@@ -973,7 +973,7 @@ RETURN (-1)
 
 void CAudio::UnregisterChannel (int32_t nIndex)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (nIndex < 0)
 	LEAVE;
 
@@ -1013,7 +1013,7 @@ LEAVE
 
 int32_t CAudio::SoundClassCount (int32_t nSoundClass)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	CAudioChannel	*pChannel;
 	int32_t			h, i;
 
@@ -1027,7 +1027,7 @@ RETURN (h)
 
 CAudioChannel* CAudio::FindFreeChannel (int32_t nSoundClass)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	CAudioChannel	* pChannel, * channelMinVolP [2] = {NULL, NULL};
 	int32_t			nStartChannel;
 	int32_t			bUseClass = SoundClassCount (nSoundClass) >= m_info.nMaxChannels / 2;
@@ -1079,7 +1079,7 @@ RETURN (i)
 
 int32_t CAudio::FindChannel (int16_t nSound)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (!gameStates.app.bUseSound)
 	RETURN (-1)
 if (!m_info.bAvailable) 
