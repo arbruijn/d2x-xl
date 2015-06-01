@@ -503,7 +503,7 @@ if (*gameFolders.user.szCache && (gameStates.app.nLogLevel > 0)) {
 
 void _CDECL_ PrintLog (const int32_t nIndent, const char *fmt, ...)
 {
-if (fLog && !gameStates.app.nTraceLevel) {
+if (fLog /*&& !gameStates.app.nTraceLevel*/) {
 	if (fmt && *fmt) {
 		va_list arglist;
 			static char	szLogLine [2][100000] = {{'\0'}, {'\0'}};

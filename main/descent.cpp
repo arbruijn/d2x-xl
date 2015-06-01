@@ -96,6 +96,13 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "console.h"
 #include "IpToCountry.h"
 
+#ifndef DESCENT_EXECUTABLE_VERSION
+#	ifdef __macosx__
+#		define	DESCENT_EXECUTABLE_VERSION "OS X"
+#	else
+#		define	DESCENT_EXECUTABLE_VERSION "Linux"
+#	endif
+#endif
 //extern int32_t SDL_HandleSpecialKeys;
 extern const char *pszOglExtensions;
 extern int32_t glHWHash;
