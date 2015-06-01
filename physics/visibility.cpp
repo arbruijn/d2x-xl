@@ -240,7 +240,7 @@ if (nHitType != HIT_OBJECT)
 pObj = OBJECT (hitResult.nObject);
 nType = pObj->Type ();
 if (nType == OBJ_ROBOT) 
-	return int32_t (!pObj->IsGuideBot ());
+	RETURN (int32_t (!pObj->IsGuideBot ()))
 if (nType == OBJ_REACTOR)
 	RETURN (1)
 if (nType != OBJ_PLAYER)

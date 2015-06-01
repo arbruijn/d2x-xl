@@ -300,9 +300,9 @@ if (pSubModel->m_bThruster && ((pSubModel->m_bThruster & (REAR_THRUSTER | FRONTA
 	RETURN (1)
 #endif
 if (pSubModel->m_bHeadlight)
-	return !HeadlightIsOn (nId);
+	RETURN (!HeadlightIsOn (nId))
 if (pSubModel->m_bBombMount)
-	return (nBombId == 0);
+	RETURN (nBombId == 0)
 if (pSubModel->m_bWeapon) {
 	CPlayerData	*pPlayer = gameData.multiplayer.players + nId;
 	int32_t		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
@@ -331,12 +331,12 @@ if (pSubModel->m_bWeapon) {
 		else if (pSubModel->m_nGun == LASER_INDEX + 1) {
 			if (nWingtip)
 				RETURN (1)
-			return !bCenterGun && (pSubModel->m_nWeaponPos < 3);
+			RETURN (!bCenterGun && (pSubModel->m_nWeaponPos < 3))
 			}
 		else if (pSubModel->m_nGun == SUPER_LASER_INDEX + 1) {
 			if (nWingtip != 1)
 				RETURN (1)
-			return !bCenterGun && (pSubModel->m_nWeaponPos < 3);
+			RETURN (!bCenterGun && (pSubModel->m_nWeaponPos < 3))
 			}
 		else if (!pSubModel->m_nGun) {
 			if (bLasers && bQuadLasers)
@@ -346,15 +346,14 @@ if (pSubModel->m_bWeapon) {
 			RETURN (0)
 			}
 		else if (pSubModel->m_nBomb == nBombId)
-			return (nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0);
+			RETURN ((nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0))
 		else if (pSubModel->m_nMissile == nMissileId) {
 			if (pSubModel->m_nWeaponPos > nMissiles)
 				RETURN (1)
 			else {
 				static int32_t nMslPos [] = {-1, 1, 0, 3, 2};
 				int32_t nLaunchPos = gameData.multiplayer.weaponStates [nId].nMslLaunchPos;
-				return (nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0) &&
-						 (nLaunchPos == (nMslPos [(int32_t) pSubModel->m_nWeaponPos]));
+				RETURN ((nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0) && (nLaunchPos == (nMslPos [(int32_t) pSubModel->m_nWeaponPos])))
 				}
 			}
 		else
