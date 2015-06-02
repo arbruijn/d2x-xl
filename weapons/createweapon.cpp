@@ -107,7 +107,7 @@ RETVAL (nObject)
 int32_t CreateWeaponSpeed (CObject* pWeapon, bool bFix)
 {
 ENTER (0, 0);
-	uint8_t			nWeaponType = pWeapon->Id ();
+	uint8_t		nWeaponType = pWeapon->Id ();
 	CWeaponInfo	*pWeaponInfo = WEAPONINFO (nWeaponType);
 
 if (!pWeaponInfo) {
@@ -152,6 +152,9 @@ if (!bFix && pParent && (pParent->info.nType == OBJ_PLAYER) && (pWeaponInfo->ren
 			}
 		}
 	}
+
+if (bFix)
+	PrintLog (0);
 
 fix xWeaponSpeed = WI_speed (pWeapon->info.nId, gameStates.app.nDifficultyLevel);
 if (pWeaponInfo->speedvar != 128) {

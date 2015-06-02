@@ -1217,18 +1217,27 @@ if (endMask) { //on the back of at least one face
 					d = CFixVector::Dist (curHit.vPoint, *hitQuery.p0);
 					if (d < dMin) {
 						dMin = d;
-						bestHit = curHit;
-						bestHit.nType = HIT_WALL;
-						bestHit.vNormal = gameData.collisionData.hitResult.vNormal = pSeg->m_sides [nSide].m_normals [iFace];
-						gameData.collisionData.hitResult.nNormals = 1;
-						if (!pSeg->Masks (curHit.vPoint, hitQuery.radP1).m_center)
-							bestHit.nSegment = hitQuery.nSegment;             
-						else
-							gameData.collisionData.hitResult.nAltSegment = hitQuery.nSegment;
-						gameData.collisionData.hitResult.nSegment = bestHit.nSegment;
-						gameData.collisionData.hitResult.nSide = nSide;
-						gameData.collisionData.hitResult.nFace = iFace;
-						gameData.collisionData.hitResult.nSideSegment = hitQuery.nSegment;
+						curHit.vNormal = pSeg->m_sides [nSide].m_normals [iFace];
+						CFixVector v1 = *hitQuery.p0 - curHit.vPoint;
+						CFixVector v2 = *hitQuery.p1 - curHit.vPoint;
+						CFixVector vMoved = *hitQuery.p1 - *hitQuery.p0;
+						if ((CFixVector::Dot (v1, v2) > 0) && (CFixVector::Dot (curHit.vNormal, vMoved) > 0)) // both points on same side of face and moving away from face
+							nFaceHitType = 0;
+						else {
+							bestHit = curHit;
+							bestHit.nType = HIT_WALL;
+							bestHit.vNormal = curHit.vNormal;
+							gameData.collisionData.hitResult.nNormals = 1;
+							if (!pSeg->Masks (curHit.vPoint, hitQuery.radP1).m_center)
+								bestHit.nSegment = hitQuery.nSegment;             
+							else
+								gameData.collisionData.hitResult.nAltSegment = hitQuery.nSegment;
+							gameData.collisionData.hitResult.nSegment = bestHit.nSegment;
+							gameData.collisionData.hitResult.nSide = nSide;
+							gameData.collisionData.hitResult.nFace = iFace;
+							gameData.collisionData.hitResult.nSideSegment = hitQuery.nSegment;
+							gameData.collisionData.hitResult.vNormal = bestHit.vNormal;
+							}
 						}
 					}
 				}

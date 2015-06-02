@@ -694,17 +694,17 @@ RETURN
 int32_t CObject::ProcessWallCollision (CPhysSimData& simData)
 {
 ENTER (0, 0);
-fix xWallPart, xHitSpeed;
 
-if ((simData.xMovedTime > 0) && 
-	 ((xWallPart = gameData.collisionData.hitResult.nNormals ? CFixVector::Dot (simData.vMoved, simData.hitResult.vNormal) / gameData.collisionData.hitResult.nNormals : 0)) &&
-	 ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0)) {
-	CollideObjectAndWall (xHitSpeed, simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
-	}
-else if ((info.nType == OBJ_WEAPON) && !simData.xMovedDist) 
-	RETVAL (-1)
-else {
-	ScrapeOnWall (simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
+fix xWallPart = (gameData.collisionData.hitResult.nNormals ? CFixVector::Dot (simData.vMoved, simData.hitResult.vNormal) / gameData.collisionData.hitResult.nNormals : 0);
+
+if (xWallPart < 0) {
+	fix xHitSpeed;
+	if ((simData.xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0))
+		CollideObjectAndWall (xHitSpeed, simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
+	else if ((info.nType == OBJ_WEAPON) && !simData.xMovedDist) 
+		RETVAL (-1)
+	else
+		ScrapeOnWall (simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
 	}
 
 if (info.nFlags & OF_SHOULD_BE_DEAD)
@@ -726,7 +726,14 @@ int32_t bCheckVel = 0;
 //We're constrained by a wall, so subtract wall part from velocity vector
 
 xWallPart = CFixVector::Dot (simData.hitResult.vNormal, Velocity () /*simData.velocity*/);
-if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCES)) {		//bounce off CWall
+if ((xWallPart < 0) && (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCES))) {		//bounce off CWall
+	CFixVector vVelNorm = Velocity ();
+	CFixVector::Normalize (vVelNorm);
+	CFixVector vMoveNorm = *simData.hitQuery.p1 - *simData.hitQuery.p0;
+	CFixVector::Normalize (vMoveNorm);
+	fix xVelDot = CFixVector::Dot (vVelNorm, vMoveNorm);
+	xVelDot = CFixVector::Dot (Orientation ().m.dir.f, vMoveNorm);
+	xVelDot = CFixVector::Dot (Orientation ().m.dir.f, simData.hitResult.vNormal);
 	xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
 	if (bForceFieldBounce) {
 		bCheckVel = 1;				//check for max velocity
@@ -1144,7 +1151,7 @@ if (Velocity () .IsZero ()) {
 	if (IsWeapon ()) {// actually this indicates a bug, but a workaround is needed. Alternatively, the weapon object could (and probably should) be killed
 #	if 1
 		CreateWeaponSpeed (this, true);
-		if (Velocity () .IsZero ()) {
+		if (Velocity ().IsZero ()) {
 			Die ();
 			RETURN
 			}
@@ -1213,6 +1220,7 @@ for (;;) {	//Move the object
 
 	do {
 		bRetry = -1;
+
 		//	If retry count is getting large, then we are trying to do something stupid.
 		if (++simData.nTries > 3) {
 			if (info.nType != OBJ_PLAYER)
@@ -1229,8 +1237,16 @@ for (;;) {	//Move the object
 		simData.nOldSeg = info.nSegment;
 		simData.vNewPos = info.position.vPos + simData.vOffset;
 
+#if DBG
+		if (Index () == nDbgObj)
+			BRP;
+#endif
 		SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
 		simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult, -1);
+		if ((Type () == 5) && (Id () == 6) && (simData.hitResult.nType == 1) && (nDbgSeg >= 0) && ((simData.hitResult.nSegment == nDbgSeg)|| (simData.hitResult.nSideSegment == nDbgSeg))) {
+			SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
+			simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult, -1);
+			}
 		UpdateStats (this, simData.hitResult.nType);
 
 		if (simData.hitResult.nType == HIT_BAD_P0) {
@@ -1280,6 +1296,10 @@ for (;;) {	//Move the object
 	if (!bRetry) 
 		break;
 	}
+if ((Type () == 5) && (Id () == 6) && (Segment () == 694) && (0 > CFixVector::Dot (Velocity (), SEGMENT (nDbgSeg)->Side (nDbgSide)->Normal (2))))
+	PrintLog (0);
+if ((Type () == 5) && (Id () == 6) && (Segment () == nDbgSeg) && (0 > CFixVector::Dot (Velocity (), SEGMENT (nDbgSeg)->Side (nDbgSide)->Normal (2))))
+	PrintLog (0);
 
 FixPosition (simData);
 FinishPhysicsSim (simData);
