@@ -1960,9 +1960,13 @@ void MultiDoPlaySound (uint8_t* buf)
 
 if (!PLAYER (nPlayer).IsConnected ())
 	return;
-if ((PLAYER (nPlayer).nObject >= 0) &&
-	 (PLAYER (nPlayer).nObject <= gameData.objData.nLastObject [0]))
-	audio.CreateObjectSound (nSound, SOUNDCLASS_PLAYER, (int16_t) PLAYER (nPlayer).nObject, 0, volume);
+CObject* pObj = OBJECT (PLAYER (nPlayer).nObject);
+if (pObj) {
+	if (nSound > 0)
+		audio.CreateObjectSound (nSound, SOUNDCLASS_PLAYER, (int16_t) PLAYER (nPlayer).nObject, 0, volume);
+	else
+		audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, pObj->Index (), 1, gameOpts->sound.xCustomSoundVolume, I2X (256), -1, -1, AddonSoundName (-nSound - 1), 1);
+	}
 }
 
 //-----------------------------------------------------------------------------

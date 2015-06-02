@@ -107,7 +107,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SND_ADDON_WATERFALL			35
 #define SND_ADDON_FIRE					36
 #define SND_ADDON_JET_ENGINE			37
-#define SND_ADDON_NUKE_EXPLOSION		38
+#define SND_ADDON_SCRAPE				38
 
 //------------------------------------------------------------------------------
 

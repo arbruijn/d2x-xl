@@ -958,9 +958,9 @@ for (int32_t iObjSeg = 0; iObjSeg < nObjSegs; iObjSeg++) {
 	pSeg = SEGMENT (nSegment);
 #if DBG
 restart:
-#endif
 	if (nSegment == nDbgSeg)
 		BRP;
+#endif
 	int16_t nSegObjs = gameData.objData.nObjects;
 	int16_t nFirstObj = SEGMENT (nSegment)->m_objects;
 	for (int16_t nObject = nFirstObj; nObject != -1; nObject = pOtherObj->info.nNextInSeg, nSegObjs--) {
@@ -1040,6 +1040,8 @@ static inline int32_t PassThrough (CHitQuery& hitQuery, int16_t nSide, int16_t n
 CSegment* pSeg = SEGMENT (hitQuery.nSegment);
 if (!pSeg)
 	return 0;
+if (pSeg->m_children [nSide] < 0)
+	return 0;
 
 int32_t widResult = pSeg->IsPassable (nSide, OBJECT (hitQuery.nObject));
 
@@ -1047,7 +1049,7 @@ if (widResult & WID_PASSABLE_FLAG) // check whether side can be passed through
 	return 1; 
 
 #if 1
-if (!pSeg->Masks (vHitPoint, hitQuery.radP1).m_center) {
+if (!pSeg->Masks (*hitQuery.p1, hitQuery.radP1).m_center) {
 	CFixVector vMoved = *hitQuery.p1 - *hitQuery.p0;
 	CFixVector::Normalize (vMoved);
 	if (CFixVector::Dot (pSeg->m_sides [nSide].m_normals [nFace], vMoved) > 0) // moving away from face

@@ -356,11 +356,7 @@ if (rval) {
 	gameData.bossData.Remove (i);
 	if (pRobotInfo->bEndsLevel)
 		DoReactorDestroyedStuff (NULL);
-#if 0
-	audio.CreateObjectSound (-1, SOUNDCLASS_EXPLOSION, pObj->Index (), 0, I2X (4), I2X (512), -1, -1, AddonSoundName (SND_ADDON_NUKE_EXPLOSION), 1);
-#else
 	audio.CreateObjectSound (SOUND_BADASS_EXPLOSION_ACTOR, SOUNDCLASS_EXPLOSION, pObj->Index (), 0, I2X (4), I2X (512));
-#endif
 	pObj->Explode (I2X (1)/4);
 	}
 RETURN

@@ -727,7 +727,7 @@ int32_t bCheckVel = 0;
 //We're constrained by a wall, so subtract wall part from velocity vector
 
 xWallPart = CFixVector::Dot (simData.hitResult.vNormal, Velocity () /*simData.velocity*/);
-if (/*(xWallPart < 0) && */(bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCES))) {		//bounce off CWall
+if ((xWallPart < 0) && (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCES))) {		//bounce off CWall
 	CFixVector vVelNorm = Velocity ();
 	CFixVector::Normalize (vVelNorm);
 	CFixVector vMoveNorm = *simData.hitQuery.p1 - *simData.hitQuery.p0;
