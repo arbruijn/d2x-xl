@@ -2165,7 +2165,7 @@ if (!(gameData.segData.Create (nSegments, nVertices) &&
 		gameData.multiplayer.Create () &&
 		gameData.multigame.Create () &&
 		gameData.demoData.Create ()))
-	RETURN (false)
+	RETVAL (false)
 particleManager.Init ();
 particleManager.SetLastType (-1);
 lightningManager.Init ();
@@ -2173,7 +2173,7 @@ markerManager.Init ();
 gameData.physicsData.Init ();
 gameData.bossData.Create ();
 gameData.wallData.Reset ();
-RETURN (true)
+RETVAL (true)
 }
 
 // ----------------------------------------------------------------------------
@@ -2199,7 +2199,7 @@ gameData.bossData.Destroy ();
 particleManager.Shutdown ();
 lightningManager.Shutdown (1);
 cameraManager.Destroy ();
-LEAVE
+RETURN
 }
 
 // ----------------------------------------------------------------------------

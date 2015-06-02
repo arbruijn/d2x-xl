@@ -80,7 +80,7 @@ if (GuidedMslView (&pObj)) {
 		gameStates.render.nRenderingType = 1+ (1 << 4);
 		cockpit->RenderWindow (1, pObj, 0, WBU_GUIDED, "GUIDED");
 	   }
-	RETURN (1)
+	RETVAL (1)
 	}
 else {
 	if (pObj) {		//used to be active
@@ -98,7 +98,7 @@ else {
 			//HUDMessage (0, "missile view");
   			gameStates.render.nRenderingType = 2 + (1 << 4);
 			cockpit->RenderWindow (1, gameData.objData.pMissileViewer, 0, WBUMSL, "MISSILE");
-			RETURN (1)
+			RETVAL (1)
 			}
 		else {
 			gameData.objData.pMissileViewer = NULL;
@@ -108,7 +108,7 @@ else {
 			}
 		}
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 //------------------------------------------------------------------------------
@@ -247,7 +247,7 @@ if (ogl.IsSideBySideDevice ()) {
 	ogl.EndFrame (0);
 	}
 #endif
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -276,7 +276,7 @@ else {
 		ogl.ColorMask (1,1,1,1,0);
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -345,7 +345,7 @@ if (gameStates.app.bEndLevelSequence) {
 	RenderEndLevelFrame (xStereoSeparation, nWindow);
 	gameData.appData.nFrameCount++;
 	gameStates.render.xStereoSeparation [0] = nEyeOffsetSave;
-	LEAVE
+	RETURN
 	}
 if ((gameData.demoData.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
    if (!gameStates.render.nRenderingType)
@@ -392,14 +392,14 @@ PROF_END(ptAux)
 if (gameStates.render.nShadowMap) {
 	G3EndFrame (transformation, nWindow);
 	gameStates.render.xStereoSeparation [0] = nEyeOffsetSave;
-	LEAVE
+	RETURN
 	}
 #endif
 
 if (0 > (gameStates.render.nStartSeg = nStartSeg)) {
 	G3EndFrame (transformation, nWindow);
 	gameStates.render.xStereoSeparation [0] = nEyeOffsetSave;
-	LEAVE
+	RETURN
 	}
 
 
@@ -489,7 +489,7 @@ if (!ShowGameMessage (gameData.messages, -1, -1))
 	ShowGameMessage (gameData.messages + 1, -1, -1);
 PROF_END(ptAux)
 }
-LEAVE
+RETURN
 }
 
 
@@ -529,7 +529,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && gameData.objData.GetGuidedMiss
 		gameStates.render.cockpit.bBigWindowSwitch = 1;
 		gameStates.render.cockpit.bRedraw = 1;
 		cockpit->Activate (CM_STATUS_BAR);
-		LEAVE
+		RETURN
 		}
   	CObject *pViewerSave = gameData.SetViewer (gameData.objData.GetGuidedMissile (N_LOCALPLAYER));
 	UpdateRenderedData (0, gameData.objData.pViewer, 0, 0);
@@ -551,7 +551,7 @@ else {
 		gameStates.render.cockpit.bRedraw = 1;
 		cockpit->Activate (CM_FULL_COCKPIT);
 		gameStates.render.cockpit.bBigWindowSwitch = 0;
-		LEAVE
+		RETURN
 		}
 	UpdateRenderedData (0, gameData.objData.pViewer, gameStates.render.bRearView, 0);
 	if ((xStereoSeparation <= 0) && cameraManager.Render ())
@@ -560,7 +560,7 @@ else {
 	cockpit->RenderWindows ();
 	}
 FlushFrame (xStereoSeparation);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -686,7 +686,7 @@ for (pFace = FACES.slidingFaces; pFace; pFace = pFace->nextSlidingFace) {
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -723,7 +723,7 @@ else {
 //StartTime (0);
 gameData.appData.nFrameCount++;
 PROF_END (ptRenderFrame)
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------

@@ -46,7 +46,7 @@ for (i = 0, pObj = gameData.objData.init.Buffer (); i < gameFileInfo.objects.cou
 	if (bFree)
 		nFree++;
 	}
-RETURN (nFree ? -nFree : nTotal)
+RETVAL (nFree ? -nFree : nTotal)
 }
 
 //------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ ENTER (0, 0);
 // cannot determine exact respawn CSegment, so randomly chose one from all segments where powerups
 // of this nType had initially been placed in the level.
 if (!objCount)		//no OBJECTS of this nType had initially been placed in the mine.
-	RETURN (NULL)	//can happen with missile packs
+	RETVAL (NULL)	//can happen with missile packs
 if ((bUseFree = (objCount < 0)))
 	objCount = -objCount;
 h = Rand (objCount) + 1;
@@ -83,9 +83,9 @@ for (i = 0, pObj = gameData.objData.init.Buffer (); i < gameFileInfo.objects.cou
 			continue;
 		}
 	if (!--h)
-		RETURN (pObj)
+		RETVAL (pObj)
 	}
-RETURN (NULL)
+RETVAL (NULL)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -123,7 +123,7 @@ ENTER (0, 0);
 	uint8_t		bVisited [MAX_SEGMENTS_D2X];
 
 if (!pObj)
-	RETURN (-1)
+	RETVAL (-1)
 nStartSeg = OBJSEG (pObj);
 nHead =
 nTail = 0;
@@ -137,7 +137,7 @@ while (nTail != nHead) {
 	if (nCurDepth >= nMaxDepth) {
 		if (nDepthP)
 			*nDepthP = nCurDepth;
-		RETURN (segQueue [nTail + Rand (nHead - nTail)])
+		RETVAL (segQueue [nTail + Rand (nHead - nTail)])
 		}
 	pSeg = SEGMENT (segQueue [nTail++]);
 
@@ -168,7 +168,7 @@ while ((nTail > 0) && (bVisited [segQueue [nTail - 1]] == nCurDepth))
 	nTail--;
 if (nDepthP)
 	*nDepthP = nCurDepth + 1;
-RETURN (segQueue [nTail + Rand (nHead - nTail)])
+RETVAL (segQueue [nTail + Rand (nHead - nTail)])
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -200,7 +200,7 @@ if (bUseInitSgm) {
 		*pbFixedPos = 1;
 		pObj->info.position.vPos = pInitObj->info.position.vPos;
 		pObj->info.position.mOrient = pInitObj->info.position.mOrient;
-		RETURN (pInitObj->info.nSegment)
+		RETVAL (pInitObj->info.nSegment)
 		}
 	}
 if (pbFixedPos)
@@ -230,7 +230,7 @@ while (nSegment == -1) {
 	nSegment = PickConnectedSegment (OBJECT (PLAYER (nPlayer).nObject), nDepth, &nDropDepth);
 #if 1
 	if (nDropDepth < BASE_NET_DROP_DEPTH / 2)
-		RETURN (-1)
+		RETVAL (-1)
 #endif
 #if TRACE
 	console.printf (CON_DBG, " %d", nSegment);
@@ -275,9 +275,9 @@ if (nSegment == -1) {
 #if TRACE
 	console.printf (1, "Warning: Unable to find a connected CSegment.  Picking a random one.\n");
 #endif
-	RETURN (Rand (gameData.segData.nSegments))
+	RETVAL (Rand (gameData.segData.nSegments))
 	}
-RETURN (nSegment)
+RETVAL (nSegment)
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -294,7 +294,7 @@ if (extraGameInfo [IsMultiGame].nSpawnDelay != 0) {
 			break;
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -313,7 +313,7 @@ while (h >= 0) {
 		MaybeDropNetPowerup (i, gameData.objData.dropInfo [i].nPowerupType, CHECK_DROP);
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -324,7 +324,7 @@ ENTER (0, 0);
 	int32_t	h;
 
 if (gameData.objData.nFreeDropped < 0)
-	RETURN (-1)
+	RETVAL (-1)
 //AddPowerupInMine (nPowerupType);
 h = gameData.objData.nFreeDropped;
 gameData.objData.nFreeDropped = gameData.objData.dropInfo [h].nNextPowerup;
@@ -340,7 +340,7 @@ else
 	gameData.objData.nFirstDropped = h;
 gameData.objData.nLastDropped = h;
 gameData.objData.nDropped++;
-RETURN (h)
+RETVAL (h)
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -351,7 +351,7 @@ ENTER (0, 0);
 	int32_t	i, j;
 
 if (h < 0)
-	LEAVE;
+	RETURN;
 RemovePowerupInMine (gameData.objData.dropInfo [h].nPowerupType);
 i = gameData.objData.dropInfo [h].nPrevPowerup;
 j = gameData.objData.dropInfo [h].nNextPowerup;
@@ -366,7 +366,7 @@ else
 gameData.objData.dropInfo [h].nNextPowerup = gameData.objData.nFreeDropped;
 gameData.objData.nFreeDropped = h;
 gameData.objData.nDropped--;
-LEAVE
+RETURN
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -378,10 +378,10 @@ ENTER (0, 0);
 
 while (i >= 0) {
 	if (gameData.objData.dropInfo [i].nSignature == nSignature)
-		RETURN (i)
+		RETVAL (i)
 	i = gameData.objData.dropInfo [i].nNextPowerup;
 	}
-RETURN (-1)
+RETVAL (-1)
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -395,23 +395,23 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 #if 0
 	if (IsNetworkGame && (nDropState < CHECK_DROP) && (nPowerupType >= 0)) {
 		if (gameData.multiplayer.powerupsInMine [nPowerupType] >= gameData.multiplayer.maxPowerupsAllowed [nPowerupType])
-			RETURN (0)
+			RETVAL (0)
 		}
 #endif
 	if (gameData.reactorData.bDestroyed || gameStates.app.bEndLevelSequence)
-		RETURN (0)
+		RETVAL (0)
 	gameData.multigame.create.nCount = 0;
 	
 	if (IsMultiGame && (extraGameInfo [IsMultiGame].nSpawnDelay != 0)) {
 		if (nDropState == CHECK_DROP) {
 			if ((gameData.objData.dropInfo [nObject].nDropTime < 0) ||
 				 (gameStates.app.nSDLTicks [0] - gameData.objData.dropInfo [nObject].nDropTime < extraGameInfo [IsMultiGame].nSpawnDelay))
-				RETURN (0)
+				RETVAL (0)
 			nDropState = EXEC_DROP;
 			}
 		else if (nDropState == INIT_DROP) {
 			AddDropInfo (nObject, (int16_t) nPowerupType);
-			RETURN (0)
+			RETVAL (0)
 			}
 		if (nDropState == EXEC_DROP) {
 			DelDropInfo (nObject);
@@ -421,19 +421,19 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 		if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (nDropState == INIT_DROP) && OBJECT (nObject)->IsMissile ()) {
 			//if (!(MultiPowerupIs4Pack (nPowerupType + 1) && MissingPowerups (nPowerupType + 1))) 
 				AddDropInfo (nObject, nPowerupType, 0x7FFFFFFF); // respawn missiles only after their destruction
-			RETURN (0)
+			RETVAL (0)
 			}
 		}
 
 	if (0 > (nObject = PrepareObjectCreateEgg (OBJECT (LOCALPLAYER.nObject), 1, OBJ_POWERUP, nPowerupType, true)))
-		RETURN (0)
+		RETVAL (0)
 
 	CObject* pObj = OBJECT (nObject);
 	int32_t bFixedPos = 0;
 	int16_t nSegment = ChooseDropSegment (OBJECT (nObject), &bFixedPos, nDropState);
 	if (0 > nSegment) {
 		pObj->Die ();
-		RETURN (0)
+		RETVAL (0)
 		}
 	pObj->mType.physInfo.velocity.SetZero ();
 
@@ -452,9 +452,9 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 		pObj->info.position.vPos = vNewPos;
 	pObj->RelinkToSeg (nSegment);
 	CreateExplosion (pObj, nSegment, vNewPos, vNewPos, I2X (5), ANIM_POWERUP_DISAPPEARANCE);
-	RETURN (1)
+	RETVAL (1)
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -463,18 +463,18 @@ int32_t SegmentContainsObject (int32_t objType, int32_t obj_id, int32_t nSegment
 {
 ENTER (0, 0);
 if (nSegment == -1)
-	RETURN (0)
+	RETVAL (0)
 int32_t nObject = SEGMENT (nSegment)->m_objects;
 while (nObject != -1) {
 	CObject *pObj = OBJECT (nObject);
 	if (!pObj)
-		RETURN (0)
+		RETVAL (0)
 	if ((pObj->Type () == objType) && (pObj->Id () == obj_id))
-		RETURN (1)
+		RETVAL (1)
 	else
 		nObject = pObj->info.nNextInSeg;
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -483,18 +483,18 @@ int32_t ObjectNearbyAux (int32_t nSegment, int32_t objectType, int32_t object_id
 {
 ENTER (0, 0);
 if (depth == 0)
-	RETURN (0)
+	RETVAL (0)
 if (SegmentContainsObject (objectType, object_id, nSegment))
-	RETURN (1)
+	RETVAL (1)
 CSegment* pSeg = SEGMENT (nSegment);
 if (!pSeg)
-	RETURN (0)
+	RETVAL (0)
 for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	int16_t nChildSeg = pSeg->m_children [i];
 	if ((nChildSeg != -1) && ObjectNearbyAux (nChildSeg, objectType, object_id, depth-1))
-		RETURN (1)
+		RETVAL (1)
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 
@@ -513,7 +513,7 @@ ENTER (0, 0);
 	int32_t	nWeapon = -1;
 
 if (pDelObj->info.contains.nType != OBJ_POWERUP)
-	LEAVE
+	RETURN
 
 if (pDelObj->info.contains.nId == POW_CLOAK) {
 	if (WeaponNearby (pDelObj, pDelObj->info.contains.nId)) {
@@ -522,7 +522,7 @@ if (pDelObj->info.contains.nId == POW_CLOAK) {
 #endif
 		pDelObj->info.contains.nCount = 0;
 	}
-	LEAVE
+	RETURN
 }
 switch (pDelObj->info.contains.nId) {
 	case POW_VULCAN:
@@ -600,7 +600,7 @@ if ((pDelObj->info.nCreator == BOSS_GATE_PRODUCER_NUM) && (pDelObj->info.contain
 // Change multiplayer extra-lives into invulnerability
 if (IsMultiGame && (pDelObj->info.contains.nId == POW_EXTRA_LIFE))
 	pDelObj->info.contains.nId = POW_INVUL;
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -616,9 +616,9 @@ ENTER (0, 0);
 switch (nType) {
 	case OBJ_POWERUP:
 		if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
-			RETURN (-1)
+			RETVAL (-1)
 		if (nId >= MAX_WEAPON_ID)
-			RETURN (-1)
+			RETVAL (-1)
 
 		int32_t	nRandScale, nOffset;
 		vNewVel = vInitVel;
@@ -645,15 +645,15 @@ switch (nType) {
 
 		if (IsMultiGame) {
 			if (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS) {
-				RETURN (-1)
+				RETVAL (-1)
 				}
 			if (IsNetworkGame && networkData.nStatus == NETSTAT_ENDLEVEL)
-				RETURN (-1)
+				RETVAL (-1)
 			}
 		nObject = CreatePowerup (nId, owner, nSegment, vNewPos, 0);
 		pObj = OBJECT (nObject);
 		if (!pObj) 
-			RETURN (-1)
+			RETVAL (-1)
 		if (IsMultiGame) {
 #if 0
 			if ((gameStates.multi.nGameType == UDP_GAME) && !bLocal)
@@ -696,7 +696,7 @@ switch (nType) {
 		vNewVel *= ((I2X (32) + xOldMag) * 2);
 		vNewPos = vPos;
 		if (0 > (nObject = CreateRobot (nId, nSegment, vNewPos)))
-			RETURN (nObject)
+			RETVAL (nObject)
 		if (IsMultiGame)
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 		pObj = OBJECT (nObject);
@@ -732,7 +732,7 @@ switch (nType) {
 	default:
 		PrintLog (0, "Warning: Illegal object type %d in function DropPowerup.\n", nType);
 	}
-RETURN (nObject)
+RETVAL (nObject)
 }
 
 // ----------------------------------------------------------------------------
@@ -752,24 +752,24 @@ if ((info.nType != OBJ_PLAYER) && (info.contains.nType == OBJ_POWERUP)) {
 		if (info.contains.nId == POW_SHIELD_BOOST) {
 			if (LOCALPLAYER.Shield () >= I2X (100)) {
 				if (RandShort () > 16384) {
-					RETURN (-1)
+					RETVAL (-1)
 					}
 				} 
 			else if (LOCALPLAYER.Shield () >= I2X (150)) {
 				if (RandShort () > 8192) {
-					RETURN (-1)
+					RETVAL (-1)
 					}
 				}
 			}
 		else if (info.contains.nId == POW_ENERGY) {
 			if (LOCALPLAYER.Energy () >= I2X (100)) {
 				if (RandShort () > 16384) {
-					RETURN (-1)
+					RETVAL (-1)
 					}
 				} 
 			else if (LOCALPLAYER.Energy () >= I2X (150)) {
 				if (RandShort () > 8192) {
-					RETURN (-1)
+					RETVAL (-1)
 					}
 				}
 			}
@@ -781,7 +781,7 @@ for (i = info.contains.nCount; i; i--) {
 								  mType.physInfo.velocity, info.position.vPos, info.nSegment, bLocal);
 	CObject *pObj = OBJECT (nObject);
 	if (!pObj)
-		RETURN (-1)
+		RETVAL (-1)
 	if (info.nType == OBJ_PLAYER) {
 		if (info.nId == N_LOCALPLAYER)
 			pObj->info.nFlags |= OF_PLAYER_DROPPED;
@@ -795,7 +795,7 @@ for (i = info.contains.nCount; i; i--) {
 			}
 		}
 	}
-RETURN (nObject)
+RETVAL (nObject)
 }
 
 // -- extern int32_t Items_destroyed;
@@ -807,11 +807,11 @@ int32_t PrepareObjectCreateEgg (CObject *pObj, int32_t nCount, int32_t nType, in
 {
 ENTER (0, 0);
 if (nCount <= 0)
-	RETURN (-1)
+	RETVAL (-1)
 pObj->info.contains.nCount = nCount;
 pObj->info.contains.nType = nType;
 pObj->info.contains.nId = nId;
-RETURN (pObj->CreateEgg (bLocal, bUpdateLimits))
+RETVAL (pObj->CreateEgg (bLocal, bUpdateLimits))
 }
 
 //------------------------------------------------------------------------------
@@ -841,7 +841,7 @@ for (i = 0; i < nThrusters; i++) {
 	if (bThruster)
 		pBlobObj->mType.physInfo.flags |= PF_WIGGLE;
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -852,12 +852,12 @@ ENTER (0, 0);
 	int32_t nWeaponFlag = HAS_FLAG (nWeapon);
 
 if (!(PLAYER (pPlayerObj->info.nId).primaryWeaponFlags & nWeaponFlag))
-	RETURN (-1)
+	RETVAL (-1)
 if ((nWeapon == 4) && gameData.weaponData.bTripleFusion)
 	gameData.weaponData.bTripleFusion = 0;
 else if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & nWeaponFlag))
-	RETURN (-1)
-RETURN (PrepareObjectCreateEgg (pPlayerObj, 1, OBJ_POWERUP, primaryWeaponToPowerup [nWeapon]))
+	RETVAL (-1)
+RETVAL (PrepareObjectCreateEgg (pPlayerObj, 1, OBJ_POWERUP, primaryWeaponToPowerup [nWeapon]))
 }
 
 //	-----------------------------------------------------------------------------
@@ -874,7 +874,7 @@ if (PLAYER (pPlayerObj->info.nId).secondaryWeaponFlags & nWeaponFlag) {
 	for (i = 0; i < maxCount; i++)
 		PrepareObjectCreateEgg (pPlayerObj, 1, OBJ_POWERUP, nPowerup);
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -885,7 +885,7 @@ ENTER (0, 0);
 if ((PLAYER (pPlayerObj->info.nId).flags & nDeviceFlag) &&
 	 !(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nDevice & nDeviceFlag)))
 	PrepareObjectCreateEgg (pPlayerObj, 1, OBJ_POWERUP, nPowerupId);
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -910,7 +910,7 @@ if (0 < (nMissiles = PLAYER (pPlayerObj->info.nId).secondaryAmmo [nMissileIndex]
 		PrepareObjectCreateEgg (pPlayerObj, nMissiles % 4, OBJ_POWERUP, nPowerupId);
 		}
 	}
-LEAVE
+RETURN
 }
 
 // -- int32_t	Items_destroyed = 0;
@@ -924,7 +924,7 @@ ENTER (0, 0);
 if (gameStates.multi.nGameType == UDP_GAME) {
 	int32_t nAmmo = pPlayer->secondaryAmmo [nType];
 	if (nAmmo <= 0)
-		LEAVE
+		RETURN
 	if (nAmmo > 4)
 		nAmmo = 4;
 	for (nAmmo = Rand (nAmmo); nAmmo; nAmmo--) {
@@ -932,10 +932,10 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 		CFixVector vDropPos = pPlayerObj->info.position.vPos + vRandom;
 		int16_t nNewSeg = FindSegByPos (vDropPos, pPlayerObj->info.nSegment, 1, 0);
 		if (nNewSeg == -1)
-			LEAVE
+			RETURN
 		int16_t nObject = CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (pPlayerObj), nId, 0);
 		if (!OBJECT (nObject))
-			LEAVE
+			RETURN
 	#if 0
 		if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
 			MultiSendCreateWeapon (nObject);
@@ -949,17 +949,17 @@ else {
 		CFixVector vDropPos = pPlayerObj->info.position.vPos + vRandom;
 		int16_t nNewSeg = FindSegByPos (vDropPos, pPlayerObj->info.nSegment, 1, 0);
 		if (nNewSeg == -1)
-			LEAVE
+			RETURN
 		int16_t nObject = CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (pPlayerObj), nId, 0);
 		if (!OBJECT (nObject))
-			LEAVE
+			RETURN
 	#if 0
 		if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
 			MultiSendCreateWeapon (nObject);
 	#endif
   		}
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -1107,7 +1107,7 @@ if (pPlayerObj && ((pPlayerObj->info.nType == OBJ_PLAYER) || (pPlayerObj->info.n
 		}
 	PrintLog (-1);
 	}
-LEAVE
+RETURN
 }
 
 //	----------------------------------------------------------------------------
@@ -1132,7 +1132,7 @@ if (nExcess > 0) {
 		LOCALPLAYER.primaryAmmo [VULCAN_INDEX] = 0;
 	PrepareObjectCreateEgg (LOCALOBJECT, nClips, OBJ_POWERUP, POW_VULCAN_AMMO);
 	}
-LEAVE
+RETURN
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -1144,7 +1144,7 @@ ENTER (0, 0);
 
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
 	if (SEGMENT (pObj->info.nSegment)->m_function == ((pObj->info.nId == POW_REDFLAG) ? SEGMENT_FUNC_GOAL_RED : SEGMENT_FUNC_GOAL_BLUE))
-		RETURN (pObj->info.nSegment)
+		RETVAL (pObj->info.nSegment)
 	if ((pInitObj = FindInitObject (pObj))) {
 		pObj->info.position.vPos = pInitObj->info.position.vPos;
 		pObj->info.position.mOrient = pInitObj->info.position.mOrient;
@@ -1154,7 +1154,7 @@ if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
 		MultiSendReturnFlagHome (pObj->Index ());
 		}
 	}
-RETURN (pObj->info.nSegment)
+RETVAL (pObj->info.nSegment)
 }
 
 //------------------------------------------------------------------------------

@@ -55,10 +55,10 @@ for (i = 0; i < nBfsLength; i++) {
 			continue;
 		pObj->cType.aiInfo.behavior = AIB_SNIPE;
 		gameData.aiData.localInfo [nObject].mode = AIM_SNIPE_ATTACK;
-		LEAVE
+		RETURN
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -67,7 +67,7 @@ void DoSnipeWait (CObject *pObj, tAILocalInfo *pLocalInfo)
 {
 ENTER (1, 0);
 if ((gameData.aiData.target.xDist > I2X (50)) && (pLocalInfo->nextActionTime > 0))
-	LEAVE
+	RETURN
 pLocalInfo->nextActionTime = SNIPE_WAIT_TIME;
 fix xConnectedDist = simpleRouter [0].PathLength (pObj->info.position.vPos, pObj->info.nSegment, 
 																  gameData.aiData.target.vBelievedPos, gameData.aiData.target.nBelievedSeg, 
@@ -77,7 +77,7 @@ if (xConnectedDist < MAX_SNIPE_DIST) {
 	pLocalInfo->mode = AIM_SNIPE_ATTACK;
 	pLocalInfo->nextActionTime = SNIPE_ATTACK_TIME;	//	have up to 10 seconds to find player.
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -98,7 +98,7 @@ else {
 	else
 		pLocalInfo->mode = AIM_SNIPE_ATTACK;
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -116,7 +116,7 @@ if (pLocalInfo->nextActionTime < 0) {
 		pLocalInfo->mode = AIM_SNIPE_RETREAT;
 	pLocalInfo->nextActionTime = SNIPE_RETREAT_TIME;
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -136,7 +136,7 @@ else {
 	pLocalInfo->mode = AIM_SNIPE_FIRE;
 	pLocalInfo->nextActionTime = SNIPE_FIRE_TIME/2;
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -165,7 +165,7 @@ if (gameData.aiData.target.xDist <= MAX_SNIPE_DIST) {
 		pLocalInfo->nextActionTime = I2X (1);
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------

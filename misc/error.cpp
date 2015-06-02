@@ -555,7 +555,8 @@ nLogIndent = nIndent;
 void TraceCallStack (const int32_t nDirection, const int32_t nLevel, const char *pszFunction, const int32_t nThread, const char *pszFile, const int32_t nLine)
 {
 #pragma omp critical (TraceCallStack)
-if (nLevel < gameStates.app.nTraceLevel) {
+//if (nLevel < gameStates.app.nTraceLevel) -- tested before calling TraceCallStack
+	{
 	if (!callStack.Buffer ())
 		callStack.Create (100);
 	if (callStack.Buffer ()) {

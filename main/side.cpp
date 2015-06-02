@@ -535,7 +535,7 @@ else {
 		}
 	}
 masks.m_valid = 1;
-RETURN (masks)
+RETVAL (masks)
 }
 
 // -------------------------------------------------------------------------------
@@ -579,7 +579,7 @@ else {				//only one face on this CSide
 		xSideDist = xDist;
 		}
 	}
-RETURN (mask)
+RETVAL (mask)
 }
 
 // -------------------------------------------------------------------------------
@@ -629,7 +629,7 @@ else {				//only one face on this CSide
 		fSideDist = fDist;
 		}
 	}
-RETURN (mask)
+RETVAL (mask)
 }
 
 //	-----------------------------------------------------------------------------
@@ -1427,19 +1427,19 @@ ENTER (1, 0);
 if (m_nOvlTex) {
 	pBm = gameData.pigData.tex.pBitmap [gameData.pigData.tex.pBmIndex [m_nOvlTex].index].Override (-1);
 	if (pBm->Flags () & BM_FLAG_SUPER_TRANSPARENT)
-		RETURN (1)
+		RETVAL (1)
 	if (!(pBm->Flags () & BM_FLAG_TRANSPARENT))
-		RETURN (0)
+		RETVAL (0)
 	}
 pBm = gameData.pigData.tex.pBitmap [gameData.pigData.tex.pBmIndex [m_nBaseTex].index].Override (-1);
 if (pBm->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
-	RETURN (1)
+	RETVAL (1)
 if (gameStates.app.bD2XLevel && IS_WALL (m_nWall)) {
 	int16_t c = WALL (m_nWall)->cloakValue;
 	if (c && (c < FADE_LEVELS))
-		RETURN (1)
+		RETVAL (1)
 	}
-RETURN (gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (m_nBaseTex))
+RETVAL (gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (m_nBaseTex))
 }
 
 //------------------------------------------------------------------------------

@@ -49,7 +49,7 @@ if (timeToLive > pAnimInfo->xTotalTime)
 int32_t iFrame = ((nClip == ANIM_AFTERBURNER_BLOB) && pObj->rType.animationInfo.xFrameTime)
 					  ? (pObj->rType.animationInfo.xTotalTime - timeToLive) / pObj->rType.animationInfo.xFrameTime
 					  : (pAnimInfo->xTotalTime - timeToLive) / pAnimInfo->xFrameTime;
-RETURN ((iFrame < nFrames) ? iFrame : nFrames - 1)
+RETVAL ((iFrame < nFrames) ? iFrame : nFrames - 1)
 }
 
 //------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ ENTER (0, 0);
 	CWeaponInfo		*pWeaponInfo = WEAPONINFO (pObj);
 
 if (!pWeaponInfo)
-	RETURN (NULL)
+	RETVAL (NULL)
 
 	int32_t			nVClip = pWeaponInfo->nAnimationIndex;
 	tBitmapIndex	bmi;
@@ -77,7 +77,7 @@ pBm = gameData.pigData.tex.bitmaps [0] + bmi.index;
 if ((pBm->Type () == BM_TYPE_STD) && pBm->Override ())
 	pBm = pBm->Override ();
 pBm->AvgColor (NULL, false);
-RETURN (pBm->GetAvgColor ())
+RETVAL (pBm->GetAvgColor ())
 }
 
 //------------------------------------------------------------------------------
@@ -104,7 +104,7 @@ if (pAnimInfo->flags & WCF_ALTFMT) {
 			pState->nCurFrame = Rand (nFrames);
 		}
 	}
-RETURN (nFrames)
+RETVAL (nFrames)
 }
 
 //------------------------------------------------------------------------------
@@ -124,7 +124,7 @@ ENTER (0, 0);
 	int32_t		bThruster = (pObj->info.renderType == RT_THRUSTER) && (pObj->mType.physInfo.flags & PF_WIGGLE);
 
 if ((iFrame < 0) || (iFrame >= MAX_ANIMATION_FRAMES))
-	LEAVE
+	RETURN
 if ((pObj->info.nType == OBJ_FIREBALL) || (pObj->info.nType == OBJ_EXPLOSION)) {
 	if (bThruster) {
 		alpha = THRUSTER_ALPHA;
@@ -154,7 +154,7 @@ else
 if ((pObj->info.nType == OBJ_FIREBALL) || (pObj->info.nType == OBJ_EXPLOSION))
 	ogl.SetDepthWrite (true);
 #endif
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------
@@ -180,9 +180,9 @@ ENTER (0, 0);
 	 {1, 1, 1, 3}};
 #endif
 if (pObj->info.xLifeLeft <= 0)
-	LEAVE
+	RETURN
 if (!explBlast.Load ())
-	LEAVE
+	RETURN
 
 float fScale;
 if (true || pObj->Collapsing ()) {
@@ -238,7 +238,7 @@ for (i = 0; i < 3; i++) {
 transformation.End (__FILE__, __LINE__);
 #endif
 ogl.SetDepthWrite (true);
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------
@@ -250,7 +250,7 @@ ENTER (0, 0);
 	CBitmap* pBm = shockwave.Bitmap (SHOCKWAVE_LIFE, pObj->info.xLifeLeft);
 
 if (!pBm)
-	LEAVE
+	RETURN
 
 	CFloatVector	v, vertices [4];
 
@@ -258,9 +258,9 @@ if (!pBm)
 	static CFloatVector color = {{{1.0f, 1.0f, 1.0f, 1.0f}}};
 
 if (pObj->info.xLifeLeft <= 0)
-	LEAVE
+	RETURN
 if (!shockwave.Load ())
-	LEAVE
+	RETURN
 
 vertices [0].Assign (pObj->Position ());
 vertices [1] = 
@@ -289,7 +289,7 @@ for (int32_t i = 0; i < 4; i++)
 	transformation.Transform (vertices [i], vertices [i], 0);
 transparencyRenderer.AddPoly (NULL, NULL, pBm, vertices, 4, texCoord, &color, NULL, 1, 0, GL_QUADS, GL_CLAMP, 2, -1);
 #endif
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------

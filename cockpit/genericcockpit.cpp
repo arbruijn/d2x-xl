@@ -183,13 +183,13 @@ void CGenericCockpit::RenderWindow (int32_t nWindow, CObject *pViewer, int32_t b
 {
 ENTER (0, 0);
 if (Hide ())
-	LEAVE
+	RETURN
 if (gameStates.app.bPlayerIsDead)
-	LEAVE
+	RETURN
 if (gameStates.app.bEndLevelSequence >= EL_LOOKBACK)
-	LEAVE
+	RETURN
 if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor))
-	LEAVE
+	RETURN
 
 	static CCanvas overlapCanv;
 
@@ -206,11 +206,11 @@ if (!pViewer) {								//this nUser is done
 	if ((nUser == WBU_STATIC) && (m_info.weaponBoxUser [nWindow] != WBU_STATIC))
 		staticTime [nWindow] = 0;
 	if (m_info.weaponBoxUser [nWindow] == WBU_WEAPON || m_info.weaponBoxUser [nWindow] == WBU_STATIC)
-		LEAVE		//already set
+		RETURN		//already set
 	m_info.weaponBoxUser [nWindow] = nUser;
 	if (bOverlapDirty [nWindow])
 		bOverlapDirty [nWindow] = 0;
-	LEAVE
+	RETURN
 	}
 UpdateRenderedData (nWindow + 1, pViewer, bRearView, nUser);
 m_info.weaponBoxUser [nWindow] = nUser;						//say who's using window
@@ -291,7 +291,7 @@ gameData.SetViewer (pViewerSave);
 ogl.SetDepthTest (true);
 gameData.renderData.window.Deactivate ();
 gameStates.render.bRearView = bRearViewSave;
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -300,7 +300,7 @@ void CGenericCockpit::RenderWindows (void)
 {
 ENTER (0, 0);
 if (ogl.IsOculusRift ())
-	LEAVE
+	RETURN
 
 	int32_t		bDidMissileView = 0;
 	int32_t		saveNewDemoState = gameData.demoData.nState;
@@ -325,7 +325,7 @@ if (gameData.demoData.nState == ND_STATE_PLAYBACK) {
 		cockpit->RenderWindow (1, NULL, 0, WBU_WEAPON, NULL);
    nDemoDoLeft = nDemoDoRight = 0;
 	nDemoDoingLeft = nDemoDoingRight = 0;
-   LEAVE
+   RETURN
    }
 bDidMissileView = RenderMissileView ();
 for (w = 0; w < 2 - bDidMissileView; w++) {
@@ -399,7 +399,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 	}
 gameStates.render.nRenderingType = 0;
 gameData.demoData.nState = saveNewDemoState;
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -425,7 +425,7 @@ glLineWidth (float (gameData.renderData.screen.Width ()) / 640.0f);
 OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 glLineWidth (1);
 #endif
-LEAVE
+RETURN
 }
 
 
@@ -438,20 +438,20 @@ ENTER (0, 0);
 #if DBG
 extern int32_t bHave3DCockpit;
 if (bHave3DCockpit > 0)
-	LEAVE
+	RETURN
 #endif
 if (Hide ()) 
-	LEAVE
+	RETURN
 if (gameStates.app.bPlayerIsDead)
-	LEAVE
+	RETURN
 if (gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0)) {
 #if DBG
 	HUDRenderMessageFrame ();
 #endif
-	LEAVE
+	RETURN
 	}
 if (!cockpit->Setup (false, false))
-	LEAVE
+	RETURN
 
 int32_t nOffsetSave;
 
@@ -616,7 +616,7 @@ if (!GuidedMissileActive () && ((gameOpts->render.cockpit.bHUD > 1) || (gameStat
 DemoRecording ();
 Canvas ()->Deactivate ();
 m_history [0].bCloak = m_info.bCloak;
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -626,7 +626,7 @@ bool CGenericCockpit::Setup (bool bScene, bool bRebuild)
 {
 ENTER (0, 0);
 if (gameStates.video.nScreenMode != SCREEN_GAME)
-	RETURN (false)
+	RETVAL (false)
 if (gameData.demoData.nState == ND_STATE_RECORDING)
 	NDRecordCockpitChange (gameStates.render.cockpit.nType);
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
@@ -637,7 +637,7 @@ SetFontScale (1.0f);
 SetFontColor (GREEN_RGBA);
 if (bRebuild)
 	gameStates.render.cockpit.nShieldFlash = 0;
-RETURN (true)
+RETVAL (true)
 }
 
 //------------------------------------------------------------------------------
@@ -660,7 +660,7 @@ else if (nType == CM_REAR_VIEW) {
 	gameStates.render.bRearView = 1;
 	}
 else
-	LEAVE
+	RETURN
 gameStates.render.cockpit.nType = nType;
 gameStates.zoom.nFactor = float (gameStates.zoom.nMinFactor);
 m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.modelData.nCockpits / 2 : 0;
@@ -670,7 +670,7 @@ if (bClearMessages)
 	HUDClearMessages ();
 if (!gameStates.app.bPlayerIsDead)
 	SavePlayerProfile ();
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------

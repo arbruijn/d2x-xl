@@ -4,6 +4,7 @@
 #include "error.h"
 #include "dialheap.h"
 #include "error.h"
+#include "descent.h"
 
 #define SPARSE_RESET 1
 #define FAST_SCAN 1
@@ -17,11 +18,11 @@ Destroy ();
 m_nNodes = nNodes;
 if (!(m_index.Create (65536) && m_dirtyIndex.Create (65536) && m_cost.Create (nNodes) && m_dirtyCost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes) && m_edge.Create (nNodes))) {
 	Destroy ();
-	RETURN (false)
+	RETVAL (false)
 	}
 m_index.Clear (0xFF);
 m_cost.Clear (0xFF);
-RETURN (true)
+RETVAL (true)
 }
 
 //-----------------------------------------------------------------------------
@@ -38,7 +39,7 @@ m_pred.Destroy ();
 m_edge.Destroy ();
 m_route.Destroy ();
 m_nNodes = 0;
-LEAVE
+RETURN
 }
 
 //-----------------------------------------------------------------------------
@@ -71,7 +72,7 @@ m_index.Clear (0xFF);
 #endif
 m_cost.Clear (0xFF);
 m_nIndex = 0;
-LEAVE
+RETURN
 }
 
 //-----------------------------------------------------------------------------
@@ -81,7 +82,7 @@ void CDialHeap::Setup (int16_t nNode)
 ENTER (0, 0);
 Reset ();
 Push (nNode, -1, -1, 0);
-LEAVE
+RETURN
 }
 
 //-----------------------------------------------------------------------------
@@ -91,13 +92,13 @@ bool CDialHeap::Push (int16_t nNode, int16_t nPredNode, int16_t nEdge, uint32_t 
 ENTER (0, 0);
 if (!m_index.Buffer ()) { // -> Bug!
 	PrintLog (0, "Dial heap has not been initialized!\n");
-	RETURN (false)
+	RETVAL (false)
 	}
 
 	uint32_t nOldCost = m_cost [nNode] & ~0x80000000;
 
 if (nNewCost >= nOldCost)
-	RETURN (false)
+	RETVAL (false)
 
 #if DBG
 if (!nNewCost)
@@ -129,7 +130,7 @@ m_cost [nNode] = nNewCost;
 m_index [nIndex] = nNode;
 m_pred [nNode] = nPredNode;
 m_edge [nNode] = nEdge;
-RETURN (true)
+RETVAL (true)
 }
 
 //-----------------------------------------------------------------------------
@@ -139,14 +140,14 @@ int32_t CDialHeap::Scan (int32_t nStart, int32_t nLength)
 ENTER (0, 0);
 if (!m_index.Buffer ()) { // -> Bug!
 	PrintLog (0, "Dial heap has not been initialized!\n");
-	RETURN (-1)
+	RETVAL (-1)
 	}
 
 int16_t *pBuffer = m_index.Buffer (nStart);
 for (; nLength; nLength--, pBuffer++)
 	if (*pBuffer >= 0)
-		RETURN (int32_t (pBuffer - m_index.Buffer ()))
-RETURN (-1)
+		RETVAL (int32_t (pBuffer - m_index.Buffer ()))
+RETVAL (-1)
 }
 
 //-----------------------------------------------------------------------------
@@ -159,17 +160,17 @@ int32_t i = Scan (m_nIndex, m_index.Length () - m_nIndex); // scan beginning at 
 if (i < 0)
 	i = Scan (0, m_nIndex); // wrap around and scan from the end of the buffer to m_nIndex
 if (i < 0)
-	RETURN (-1)
+	RETVAL (-1)
 m_nIndex = uint16_t (i);
 int16_t nNode = m_index [m_nIndex];
 #if DBG
 if (nNode < 0) // bug; should never happen
-	RETURN (-1) 
+	RETVAL (-1) 
 #endif
 m_index [m_nIndex] = m_links [nNode];
 nCost = m_cost [nNode];
 m_cost [nNode] |= 0x80000000;
-RETURN (nNode)
+RETVAL (nNode)
 #else
 	int16_t	nNode;
 
@@ -178,11 +179,11 @@ for (int32_t i = 65536; i; i--) {
 		m_index [m_nIndex] = m_links [nNode];
 		nCost = m_cost [nNode];
 		m_cost [nNode] |= 0x80000000;
-		RETURN (nNode)
+		RETVAL (nNode)
 		}
 	m_nIndex++;
 	}
-RETURN (-1)
+RETVAL (-1)
 #endif
 }
 
@@ -193,14 +194,14 @@ int16_t CDialHeap::RouteLength (int16_t nNode)
 ENTER (0, 0);
 if (!m_pred.Buffer ()) { // -> Bug!
 	PrintLog (0, "Dial heap has not been initialized!\n");
-	RETURN (0)
+	RETVAL (0)
 	}
 
 	int16_t	h = nNode, i = 0;
 
 while (0 <= (h = m_pred [h]))
 	i++;
-RETURN (i + 1)
+RETVAL (i + 1)
 }
 
 //-----------------------------------------------------------------------------
@@ -210,7 +211,7 @@ int16_t CDialHeap::BuildRoute (int16_t nNode, int32_t bReverse, tPathNode* route
 ENTER (0, 0);
 if (!m_pred.Buffer () || !m_edge.Buffer ()) { // -> Bug!
 	PrintLog (0, "Dial heap has not been initialized!\n");
-	RETURN (0)
+	RETVAL (0)
 	}
 
 	int16_t	h = RouteLength (nNode);
@@ -235,7 +236,7 @@ else {
 		nNode = m_pred [nNode];
 		}
 	}
-RETURN (h)
+RETVAL (h)
 }
 
 //-----------------------------------------------------------------------------

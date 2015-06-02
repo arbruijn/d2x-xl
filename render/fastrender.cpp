@@ -37,7 +37,7 @@ for (int32_t i = 0; i < gameData.renderData.faceIndex.nUsedKeys; i++)
 	tails [usedKeys [i]] = -1;
 gameData.renderData.faceIndex.nUsedKeys = 0;
 PROF_END(ptFaceList)
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -49,14 +49,14 @@ int32_t AddFaceListItem (CSegFace *pFace, int32_t nThread)
 {
 ENTER (1, 0);
 if (!(pFace->m_info.widFlags & WID_VISIBLE_FLAG))
-	RETURN (0)
+	RETVAL (0)
 #if 1
 if (pFace->m_info.nFrame == gameData.appData.nMineRenderCount)
-	RETURN (0)
+	RETVAL (0)
 #endif
 #if DBG
 if (pFace - FACES.faces >= FACES.nFaces)
-	RETURN (0)
+	RETVAL (0)
 #endif
 
 #if USE_OPENMP //> 1
@@ -92,7 +92,7 @@ pFace->m_info.nColored = -1;
 pFace->m_info.nFrame = gameData.appData.nFrameCount;
 PROF_END(ptFaceList)
 }
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ ENTER (1, 0);
 
 if (pFace->m_info.nCamera >= 0) {
 	if (SetupMonitorFace (pFace->m_info.nSegment, pFace->m_info.nSide, pFace->m_info.nCamera, pFace)) 
-		LEAVE
+		RETURN
 	pFace->m_info.nCamera = -1;
 	}
 #if DBG
@@ -115,7 +115,7 @@ if ((pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSi
 	BRP;
 #endif
 if ((pFace->m_info.nBaseTex < 0) || !pFace->m_info.bTextured)
-	LEAVE
+	RETURN
 if (pFace->m_info.bOverlay)
 	pFace->m_info.nBaseTex = pSide->m_nOvlTex;
 else {
@@ -146,7 +146,7 @@ else {
 		LoadTexture (gameData.pigData.tex.pBmIndex [pFace->m_info.nBaseTex].index, 0, gameStates.app.bD1Mission);
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ bool RenderGeometryFace (CSegment *pSeg, CSegFace *pFace)
 {
 ENTER (1, 0);
 faceRenderFunc (pFace, pFace->bmBot, pFace->bmTop, pFace->m_info.bTextured, (gameStates.render.bPerPixelLighting != 0) && !gameStates.render.bFullBright && !(gameOpts->render.debug.bWireFrame & 1));
-RETURN (true)
+RETVAL (true)
 }
 
 //------------------------------------------------------------------------------
@@ -164,9 +164,9 @@ bool RenderCoronaFace (CSegment *pSeg, CSegFace *pFace)
 {
 ENTER (1, 0);
 if (!pFace->m_info.nCorona)
-	RETURN (false)
+	RETVAL (false)
 glareRenderer.Render (pFace->m_info.nSegment, pFace->m_info.nSide, 1.0f, pFace->m_info.fRads [0]);
-RETURN (true)
+RETVAL (true)
 }
 
 //------------------------------------------------------------------------------
@@ -176,7 +176,7 @@ bool RenderSkyBoxFace (CSegment *pSeg, CSegFace *pFace)
 ENTER (1, 0);
 LoadFaceBitmaps (pSeg, pFace);
 RenderFace (pFace, pFace->bmBot, pFace->bmTop, 1, 0);
-RETURN (true)
+RETVAL (true)
 }
 
 //------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ ENTER (1, 0);
 if ((pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 	BRP;
 #endif
-RETURN (renderHandlers [nType] (pSeg, pFace))
+RETVAL (renderHandlers [nType] (pSeg, pFace))
 }
 
 //------------------------------------------------------------------------------
@@ -355,7 +355,7 @@ else
 #if 0
 		ogl.SetDepthMode (GL_LEQUAL); 
 #endif
-		RETURN (0)
+		RETVAL (0)
 		}
 #if 0
 	ogl.SetDepthMode (GL_EQUAL); 
@@ -448,7 +448,7 @@ if (gameStates.render.bFullBright) {
 	}
 ogl.SetBlendMode (OGL_BLEND_REPLACE);
 ogl.ClearError (0);
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -471,7 +471,7 @@ ogl.SetDepthWrite (true);
 ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.ClearError (0);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -501,7 +501,7 @@ if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.bFullBright = bFullBright;
 	EndRenderFaces ();
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -602,7 +602,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			nFaces++;
 		}
 	}
-RETURN (nFaces)
+RETVAL (nFaces)
 }
 
 //------------------------------------------------------------------------------
@@ -623,7 +623,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		nSegment = pFace->m_info.nSegment;
 		if (automap.Active ()) {
 			if (!(automap.m_bFull || automap.m_visible [nSegment]))
-				LEAVE
+				RETURN
 			if (!gameOpts->render.automap.bSkybox && (SEGMENT (nSegment)->m_function == SEGMENT_FUNC_SKYBOX))
 				continue;
 			}
@@ -667,7 +667,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			}	
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -698,7 +698,7 @@ glClearDepth (0xffffffff);
 glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 EndRenderFaces ();
 gameStates.render.bQueryCoronas = 0;
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -711,7 +711,7 @@ ENTER (0, 0);
 	int32_t		i, j, nSegment;
 
 if (!(gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse))
-	RETURN (0)
+	RETVAL (0)
 gameData.renderData.lights.nCoronas = 0;
 for (i = 0; i < gameData.renderData.mine.visibility [0].nSegments; i++) {
 	if (0 > (nSegment = gameData.renderData.mine.visibility [0].segments [i]))
@@ -731,7 +731,7 @@ for (i = 0; i < gameData.renderData.mine.visibility [0].nSegments; i++) {
 		else
 			pFace->m_info.nCorona = 0;
 	}
-RETURN (gameData.renderData.lights.nCoronas)
+RETVAL (gameData.renderData.lights.nCoronas)
 }
 
 //------------------------------------------------------------------------------
@@ -740,7 +740,7 @@ static int16_t RenderSegmentFaces (int32_t nType, int16_t nSegment, int32_t bAut
 {
 ENTER (0, 0);
 if (nSegment < 0)
-	RETURN (0)
+	RETVAL (0)
 
 	tSegFaces	*pSegFace = SEGFACES + nSegment;
 	CSegFace		*pFace;
@@ -752,7 +752,7 @@ if (nSegment == nDbgSeg)
 	BRP;
 #endif
 if (!(bHeadlight || VisitSegment (nSegment, bAutomap)))
-	RETURN (0)
+	RETVAL (0)
 #if DBG
 if (nSegment == nDbgSeg)
 	BRP;
@@ -772,7 +772,7 @@ for (i = pSegFace->nFaces, pFace = pSegFace->pFace; i; i--, pFace++) {
 	if (RenderMineFace (SEGMENT (nSegment), pFace, nType))
 		nFaces++;
 	}
-RETURN (nFaces)
+RETVAL (nFaces)
 }
 
 //------------------------------------------------------------------------------
@@ -800,7 +800,7 @@ else {
 	// render mine by pre-sorted textures
 	nFaces = RenderFaceList (gameData.renderData.faceIndex, nType, bHeadlight);
 	}
-RETURN (nFaces)
+RETVAL (nFaces)
 }
 
 //------------------------------------------------------------------------------
@@ -814,7 +814,7 @@ if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
 	RenderSegments (nType, 1);
 	SetFaceDrawer (-1);
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -823,10 +823,10 @@ int32_t SetupCoronas (void)
 {
 ENTER (0, 0);
 if (!SetupCoronaFaces ())
-	RETURN (0)
+	RETVAL (0)
 if (automap.Active () && !gameOpts->render.automap.bCoronas)
-	RETURN (0)
-RETURN (1)
+	RETVAL (0)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -837,7 +837,7 @@ ENTER (0, 0);
 BeginRenderFaces (RENDER_TYPE_GEOMETRY);
 RenderSegments (nType, 0);
 EndRenderFaces ();
-RETURN (SortFaces ())
+RETVAL (SortFaces ())
 }
 
 //------------------------------------------------------------------------------
@@ -851,7 +851,7 @@ RenderSegments (nType, 0);
 if (nType == RENDER_TYPE_GEOMETRY)
 	RenderHeadlights (nType);
 EndRenderFaces ();
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------

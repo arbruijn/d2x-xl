@@ -51,7 +51,7 @@ pBm = BmOverride (gameData.pigData.tex.pBitmap + pBmIndex->index);
 #else
 pBm = LoadFaceBitmap (nTexture, nFrame);
 if (!pBm->Buffer ())
-	RETURN (0)
+	RETVAL (0)
 #endif
 if (pBm->Flags () & BM_FLAG_RLE)
 	pBm = rle_expand_texture (pBm);
@@ -78,7 +78,7 @@ if (pBm->Flags () & BM_FLAG_TGA) {
 	uint8_t *p;
 
 	if (pBm->BPP () == 3)	//no alpha -> no transparency
-		RETURN (0)
+		RETVAL (0)
 	p = pBm->Buffer () + offs * pBm->BPP ();
 	// check super transparency color
 #if 1
@@ -87,19 +87,19 @@ if (pBm->Flags () & BM_FLAG_TGA) {
 	if ((gameOpts->ogl.bGlTexMerge) ?
 	    (p [3] == 1) : ((p [0] == 120) && (p [1] == 88) && (p [2] == 128)))
 #endif
-		RETURN (-1)
+		RETVAL (-1)
 	// check alpha
 	if (!p [3])
-		RETURN (1)
+		RETVAL (1)
 	}
 else {
 	c = pBm->Buffer () [offs];
 	if (c == SUPER_TRANSP_COLOR)
-		RETURN (-1)
+		RETVAL (-1)
 	if (c == TRANSPARENCY_COLOR)
-		RETURN (1)
+		RETVAL (1)
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 //	-----------------------------------------------------------------------------
@@ -115,12 +115,12 @@ HitPointUV (&u, &v, NULL, intersection, iFace);	//	Don't compute light value.
 if (m_nOvlTex) {
 	nTranspType = PixelTranspType (m_nOvlTex, m_nOvlOrient, m_nFrame, u, v);
 	if (nTranspType < 0)
-		RETURN (1)
+		RETVAL (1)
 	if (!nTranspType)
-		RETURN (0)
+		RETVAL (0)
 	}
 nTranspType = PixelTranspType (m_nBaseTex, 0, m_nFrame, u, v) != 0;
-RETURN (nTranspType)
+RETVAL (nTranspType)
 }
 
 //------------------------------------------------------------------------------
@@ -146,11 +146,11 @@ ENTER (2, nThread);
 	CHitResult	hitResult;
 #if 1
 if (!hitQuery.InFoV (pObj, fov))
-	RETURN (0)
+	RETVAL (0)
 #endif
 hitQuery.nSegment = FindSegByPos (OBJPOS (pObj)->vPos, pObj->info.nSegment, 1, 0);
 int32_t nHitType = FindHitpoint (hitQuery, hitResult, 0, nThread);
-RETURN (nHitType != HIT_WALL)
+RETVAL (nHitType != HIT_WALL)
 }
 
 //	-----------------------------------------------------------------------------
@@ -170,7 +170,7 @@ ENTER (0, nThread);
 	CHitResult		hitResult;
 
 int32_t nHitType = FindHitpoint (hitQuery, hitResult, 0, nThread);
-RETURN (bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) : (nHitType != HIT_WALL))
+RETVAL (bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) : (nHitType != HIT_WALL))
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -188,7 +188,7 @@ do {
 	hitQuery.p0 = &OBJPOS (pViewer)->vPos;
 	hitQuery.p1 = &OBJPOS (pTarget)->vPos;
 	if (!hitQuery.InFoV (pViewer, fov))
-		RETURN (false)
+		RETVAL (false)
 
 	hitQuery.radP0 =
 	hitQuery.radP1 = 0x10;
@@ -199,7 +199,7 @@ do {
 								  : FindSegByPos (pViewer->info.position.vPos, pViewer->info.nSegment, 1, 0);
 		if (hitQuery.nSegment < 0) {
 			fate = HIT_BAD_P0;
-			RETURN (false)
+			RETVAL (false)
 			}
 		}
 	else
@@ -207,7 +207,7 @@ do {
 	fate = gameData.segData.SegVis (hitQuery.nSegment, pTarget->Segment ()) ? FindHitpoint (hitQuery, hitResult, 0, nThread) : HIT_WALL;
 	}
 while ((fate == HIT_BAD_P0) && (nTries < 2));
-RETURN ((fate == HIT_NONE) || (fate == HIT_BAD_P0) || ((fate == HIT_OBJECT) && (hitResult.nObject == pTarget->Index ())))
+RETVAL ((fate == HIT_NONE) || (fate == HIT_BAD_P0) || ((fate == HIT_OBJECT) && (hitResult.nObject == pTarget->Index ())))
 }
 
 //	-----------------------------------------------------------------------------
@@ -236,20 +236,20 @@ CHitQuery hitQuery (FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TR
 
 int32_t nHitType = FindHitpoint (hitQuery, hitResult);
 if (nHitType != HIT_OBJECT)
-	RETURN (0)
+	RETVAL (0)
 pObj = OBJECT (hitResult.nObject);
 nType = pObj->Type ();
 if (nType == OBJ_ROBOT) 
-	RETURN (int32_t (!pObj->IsGuideBot ()))
+	RETVAL (int32_t (!pObj->IsGuideBot ()))
 if (nType == OBJ_REACTOR)
-	RETURN (1)
+	RETVAL (1)
 if (nType != OBJ_PLAYER)
-	RETURN (0)
+	RETVAL (0)
 if (IsCoopGame)
-	RETURN (0)
+	RETVAL (0)
 if (!IsTeamGame)
-	RETURN (1)
-RETURN (GetTeam (gameData.objData.pConsole->info.nId) != GetTeam (pObj->info.nId))
+	RETVAL (1)
+RETVAL (GetTeam (gameData.objData.pConsole->info.nId) != GetTeam (pObj->info.nId))
 #endif
 }
 

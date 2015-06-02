@@ -57,11 +57,11 @@ ENTER (0, 0);
 	int16_t nModel;
 
 if ((nModel = PowerupToModel (nId)))
-	RETURN (nModel)
+	RETVAL (nModel)
 if (0 > (nId = PowerupToObject (nId)))
-	RETURN (-1)
+	RETVAL (-1)
 CWeaponInfo *pWeaponInfo = WEAPONINFO (nId);
-RETURN (pWeaponInfo ? pWeaponInfo->nModel : -1)
+RETVAL (pWeaponInfo ? pWeaponInfo->nModel : -1)
 }
 
 //------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ int16_t WeaponModel (CObject *pObj)
 ENTER (0, 0);
 	int16_t	nModel = WeaponToModel (pObj->info.nId);
 
-RETURN (nModel ? nModel : pObj->ModelId ())
+RETVAL (nModel ? nModel : pObj->ModelId ())
 }
 
 //------------------------------------------------------------------------------
@@ -111,17 +111,17 @@ int32_t ConvertHostageToModel (CObject *pObj)
 {
 ENTER (0, 0);
 if (pObj->info.renderType == RT_POLYOBJ)
-	RETURN (1)
+	RETVAL (1)
 if (gameStates.app.bNostalgia || !gameOpts->Use3DPowerups ())
-	RETURN (0)
+	RETVAL (0)
 if (!HaveReplacementModel (HOSTAGE_MODEL))
-	RETURN (0)
+	RETVAL (0)
 pObj->info.renderType = RT_POLYOBJ;
 pObj->rType.polyObjInfo.nModel = HOSTAGE_MODEL;
 pObj->rType.polyObjInfo.nTexOverride = -1;
 pObj->mType.physInfo.rotVel.SetZero ();
 memset (pObj->rType.polyObjInfo.animAngles, 0, sizeof (pObj->rType.polyObjInfo.animAngles));
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ pObj->info.controlType = CT_POWERUP;
 pObj->info.renderType = RT_HOSTAGE;
 pObj->mType.physInfo.mass = I2X (1);
 pObj->mType.physInfo.drag = 512;
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -165,7 +165,7 @@ else {
 	else
 		pObj->mType.physInfo.rotVel.SetZero ();
 	}
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------
@@ -272,13 +272,13 @@ int32_t CObject::PowerupToDevice (void)
 {
 ENTER (0, 0);
 if (gameStates.app.bNostalgia)
-	RETURN (0)
+	RETVAL (0)
 if (!gameOpts->Use3DPowerups ())
-	RETURN (0)
+	RETVAL (0)
 if (info.controlType == CT_WEAPON)
-	RETURN (1)
+	RETVAL (1)
 if ((info.nType != OBJ_POWERUP) && (info.nType != OBJ_WEAPON))
-	RETURN (0)
+	RETVAL (0)
 
 int32_t bHasModel = 0;
 int16_t nId, nModel = PowerupToModel (info.nId);
@@ -301,7 +301,7 @@ else {
 		}
 	}
 if (!bHasModel && !IsMissile () && !(nModel && HaveReplacementModel (nModel)))
-		RETURN (0)
+		RETVAL (0)
 
 #if 0 //DBG
 Orientation () = gameData.objData.pConsole->Orientation ();
@@ -327,7 +327,7 @@ if (bHasModel)
 	AdjustSize ();
 rType.polyObjInfo.nTexOverride = -1;
 SetLife (IMMORTAL_TIME);
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -342,7 +342,7 @@ FORALL_OBJS (pObj)
 		pObj->PowerupToDevice ();
 		pObj->LoadTextures ();
 		}
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------
@@ -374,9 +374,9 @@ ENTER (0, 0);
 	fix xLight;
 
 if (gameStates.render.bBuildModels)
-	RETURN (I2X (1))
+	RETVAL (I2X (1))
 if (!pObj)
-	RETURN (0)
+	RETVAL (0)
 if (IsMultiGame && netGameInfo.m_info.BrightPlayers && (pObj->info.nType == OBJ_PLAYER)) {
 	xLight = I2X (1); //	If option set for bright players in netgame, brighten them
 	gameOpts->ogl.bLightObjects = 0;
@@ -393,7 +393,7 @@ else if (pObj->info.nType == OBJ_WEAPON) {
 else if (pObj->info.nType == OBJ_MARKER)
  	xLight += I2X (2);
 ComputeEngineGlow (pObj, xEngineGlow);
-RETURN (xLight)
+RETVAL (xLight)
 }
 
 //------------------------------------------------------------------------------
@@ -449,7 +449,7 @@ static int32_t DrawPowerupSphere (CObject* pObj, CBitmap *pBm, CFloatVector& col
 {
 ENTER (0, 0);
 if (!gameData.renderData.shield)
-	RETURN (0)
+	RETVAL (0)
 
 	static CPulseData powerupPulse;
 
@@ -471,7 +471,7 @@ int32_t h = (pObj->Id () == POW_SHIELD_BOOST)
 if (h && pBm)
 	transparencyRenderer.AddSprite (pBm, pObj->Position (), &color, 2 * pObj->info.xSize / 3, 2 * pObj->info.xSize / 3, 0, 0, 0.0f);
 #endif
-RETURN (h)
+RETVAL (h)
 }
 
 //------------------------------------------------------------------------------
@@ -483,7 +483,7 @@ ENTER (0, 0);
 	int32_t nType = pObj->info.nType;
 
 if ((nType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
-	LEAVE
+	RETURN
 
 	CBitmap*			pBm;
 	CFloatVector	color;
@@ -495,7 +495,7 @@ if ((nType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	fix				xSize;
 
 if ((nType == OBJ_WEAPON) && (pObj->info.nId == OMEGA_ID) && omegaLightning.Exist ())
-	LEAVE
+	RETURN
 #if DBG
 if ((nType == nDbgObjType) && ((nDbgObjId < 0) || (pObj->info.nId == nDbgObjId)))
 	BRP;
@@ -530,7 +530,7 @@ else {
 
 if (bmi < 0) {
 	if (-bmi - 1 >= int32_t (gameData.pigData.tex.addonBitmaps.Length ()))
-		LEAVE
+		RETURN
 	pBm = &gameData.pigData.tex.addonBitmaps [-bmi - 1];
 	pBm = pBm->SetCurFrame (iFrame);
 	}
@@ -542,7 +542,7 @@ else {
 		pBm = pBmo->SetCurFrame (iFrame);
 	}
 if (!pBm || pBm->Bind (1))
-	LEAVE
+	RETURN
 
 bool b3DShield = ((pObj->Type () == OBJ_POWERUP) && 
 					   ((pObj->Id () == POW_SHIELD_BOOST) || (pObj->Id () == POW_INVUL) || (pObj->Id () == POW_CLOAK) || (pObj->Id () == POW_EXTRA_LIFE) || (pObj->Id () == POW_HOARD_ORB)) &&
@@ -589,7 +589,7 @@ else {
 		}
 	gameData.renderData.nTotalSprites++;
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -647,7 +647,7 @@ else if (pObj->info.nType == OBJ_ROBOT) {
 	ci.xFadeoutDuration = CLOAK_FADEOUT_DURATION_ROBOT;
 	}
 else
-	RETURN (0)
+	RETVAL (0)
 
 ci.xDeltaTime = (xCloakStartTime == 0x7fffffff) ? gameData.timeData.xGame : gameData.timeData.xGame - xCloakStartTime;
 
@@ -680,7 +680,7 @@ else {
 	}
 if (ciP)
 	*ciP = ci;
-RETURN (ci.bFading)
+RETVAL (ci.bFading)
 }
 
 //------------------------------------------------------------------------------
@@ -722,7 +722,7 @@ else {
 	gameStates.render.grAlpha = 1.0f;
 	gameStates.render.bCloaked = 0;
 	}
-RETURN (bOk)
+RETVAL (bOk)
 }
 
 //------------------------------------------------------------------------------
@@ -743,30 +743,30 @@ ENTER (0, 0);
 
 #if 0
 if (gameStates.render.bLoResShadows && (gameStates.render.nShadowPass == 2))
-	RETURN (0)
+	RETVAL (0)
 #endif
 if (pObj->info.nType == OBJ_DEBRIS)
-	RETURN (0)
+	RETVAL (0)
 else if ((pObj->info.nType == OBJ_POWERUP) || (pObj->info.nType == OBJ_WEAPON)) {
 	if (pObj->info.nType == OBJ_POWERUP)
 		nModel = PowerupModel (pObj->info.nId);
 	else if (pObj->info.nType == OBJ_WEAPON)
 		nModel = WeaponModel (pObj);
 	if (!nModel)
-		RETURN (0)
+		RETVAL (0)
 	}
 else
 	nModel = pObj->ModelId ();
 if (!(po = GetOOFModel (nModel)))
-	RETURN (0)
+	RETVAL (0)
 if (gameData.modelData.renderModels [1][nModel].m_bValid >= 0)
-	RETURN (0)
+	RETVAL (0)
 //G3RenderModel (pObj, nModel, NULL, NULL, NULL, xLight, NULL, color);
 fLight [0] = xLight / 65536.0f;
 fLight [1] = (float) xEngineGlow [0] / 65536.0f;
 fLight [2] = (float) xEngineGlow [1] / 65536.0f;
 po->Render (pObj, fLight, ObjectIsCloaked (pObj));
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -787,7 +787,7 @@ ENTER (0, 0);
 	int32_t	i, id, bOk = 0;
 
 if (pObj->info.nType == 255)
-	RETURN (0)
+	RETVAL (0)
 #if DBG
 if ((pObj->info.nType != OBJ_PLAYER) && (pObj->info.position.vPos == OBJECT (0)->info.position.vPos))
 	BRP;
@@ -799,17 +799,17 @@ else {
 	bEnergyWeapon = pObj->IsEnergyProjectile ();
 	}
 if (!bForce && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass == 3))
-	RETURN (1)
+	RETVAL (1)
 if (gameStates.render.bBuildModels)
 	xLight = I2X (1);
 else {
 	xLight = CalcObjectLight (pObj, xEngineGlow);
 	if ((gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) && (bCloaked || bEnergyWeapon) && (gameStates.render.nShadowPass != 2)) {
 		transparencyRenderer.AddObject (pObj);
-		RETURN (1)
+		RETVAL (1)
 		}
 	if (DrawHiresObject (pObj, xLight, xEngineGlow))
-		RETURN (1)
+		RETVAL (1)
 	gameStates.render.bBrightObject = bEnergyWeapon;
 	imSave = gameStates.render.nInterpolationMethod;
 	if (bLinearTMapPolyObjs)
@@ -908,7 +908,7 @@ if (!gameStates.render.bBuildModels) {
 	gameStates.render.nInterpolationMethod = imSave;
 	gameStates.render.bBrightObject = 0;
 	}
-RETURN (bOk)
+RETVAL (bOk)
 }
 
 // -----------------------------------------------------------------------------
@@ -917,9 +917,9 @@ static int32_t RenderPlayerModel (CObject* pObj, int32_t bSpectate)
 {
 ENTER (0, 0);
 if (pObj->AppearanceStage () < 0)
-	RETURN (0)
+	RETVAL (0)
 if (automap.Active () && !(OBSERVING || (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (pObj->info.nId))))
-	RETURN (0)
+	RETVAL (0)
 tObjTransformation savePos;
 if (bSpectate) {
 	savePos = pObj->info.position;
@@ -931,7 +931,7 @@ if (bSpectate) {
 		}
 if (!DrawPolygonObject (pObj, 0)) {
 	gameData.modelData.vScale.SetZero ();
-	RETURN (0)
+	RETVAL (0)
 	}
 gameData.modelData.vScale.SetZero ();
 gameOpts->ogl.bLightObjects = (gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
@@ -941,7 +941,7 @@ RenderTargetIndicator (pObj, NULL);
 RenderTowedFlag (pObj);
 if (bSpectate)
 	pObj->info.position = savePos;
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -950,7 +950,7 @@ static int32_t RenderRobotModel (CObject* pObj, int32_t bSpectate)
 {
 ENTER (0, 0);
 if (automap.Active () && !AM_SHOW_ROBOTS)
-	RETURN (0)
+	RETVAL (0)
 gameData.modelData.vScale.SetZero ();
 #if DBG
 if (pObj->Index () == nDbgObj)
@@ -958,7 +958,7 @@ if (pObj->Index () == nDbgObj)
 #endif
 #if 1 //!RENDER_HITBOX
 if (!DrawPolygonObject (pObj, 0))
-	RETURN (0)
+	RETVAL (0)
 #endif
 if (pObj->info.controlType) {
 	thrusterFlames.Render (pObj);
@@ -972,7 +972,7 @@ if (pObj->info.controlType) {
 else 
 	RenderHitbox (pObj, 0.5f, 0.0f, 0.6f, 0.4f);
 #endif
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -981,12 +981,12 @@ static int32_t RenderReactorModel (CObject* pObj, int32_t bSpectate)
 {
 ENTER (0, 0);
 if (!DrawPolygonObject (pObj, 0))
-	RETURN (0)
+	RETVAL (0)
 if ((gameStates.render.nShadowPass != 2)) {
 	RenderRobotShield (pObj);
 	RenderTargetIndicator (pObj, NULL);
 	}
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -995,7 +995,7 @@ static int32_t RenderWeaponModel (CObject* pObj, int32_t bSpectate)
 {
 ENTER (0, 0);
 if (automap.Active () && !AM_SHOW_POWERUPS (1))
-	RETURN (0)
+	RETVAL (0)
 if (!(gameStates.app.bNostalgia || gameOpts->Use3DPowerups ()) && pObj->IsMine () && (pObj->info.nId != SMALLMINE_ID))
 	ConvertWeaponToVClip (pObj);
 else {
@@ -1032,7 +1032,7 @@ else {
 #endif
 		if (pObj->info.nType != OBJ_WEAPON) {
 			if (!DrawPolygonObject (pObj, 0))
-				RETURN (0)
+				RETVAL (0)
 			if (pObj->info.nId != SMALLMINE_ID)
 				RenderLightTrail (pObj);
 			}
@@ -1056,7 +1056,7 @@ else {
 			}
 		}
 	}
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -1065,9 +1065,9 @@ static int32_t RenderPowerupModel (CObject* pObj, int32_t bSpectate)
 {
 ENTER (0, 0);
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
-	RETURN (0)
+	RETVAL (0)
 if (automap.Active () && !AM_SHOW_POWERUPS (1))
-	RETURN (0)
+	RETVAL (0)
 if (!gameStates.app.bNostalgia && gameOpts->Use3DPowerups ()) {
 	RenderPowerupCorona (pObj, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 	if (!DrawPolygonObject (pObj, 0))
@@ -1088,7 +1088,7 @@ if (!gameStates.app.bNostalgia && gameOpts->Use3DPowerups ()) {
 	}
 else
 	ConvertWeaponToPowerup (pObj);
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -1101,7 +1101,7 @@ if (gameStates.app.bNostalgia || !(gameOpts->Use3DPowerups () && DrawPolygonObje
 #if DBG
 RenderRobotShield (pObj);
 #endif
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -1114,7 +1114,7 @@ if (!(SHOW_SMOKE && gameOpts->render.particles.bDebris))
 	DrawDebrisCorona (pObj);
 if (markerManager.IsSpawnObject (pObj))
 	RenderMslLockIndicator (pObj);
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -1128,7 +1128,7 @@ if (gameStates.render.nShadowPass != 2) {
 		RenderLightTrail (pObj);
 		}
 	}
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -1138,7 +1138,7 @@ static int32_t RenderExplBlast (CObject* pObj, int32_t bForce)
 ENTER (0, 0);
 if (gameStates.render.nShadowPass != 2)
 	DrawExplBlast (pObj);
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -1148,7 +1148,7 @@ static int32_t RenderShockwave (CObject* pObj, int32_t bForce)
 ENTER (0, 0);
 if (gameStates.render.nShadowPass != 2)
 	DrawShockwave (pObj);
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -1158,7 +1158,7 @@ static int32_t RenderShrapnel (CObject* pObj, int32_t bForce)
 ENTER (0, 0);
 if (gameStates.render.nShadowPass != 2)
 	shrapnelManager.Draw (pObj);
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -1168,7 +1168,7 @@ static int32_t RenderWeapon (CObject* pObj, int32_t bForce)
 ENTER (0, 0);
 if (gameStates.render.nShadowPass != 2) {
 	if (automap.Active () && !AM_SHOW_POWERUPS (1))
-		RETURN (0)
+		RETVAL (0)
 	if (pObj->info.nType != OBJ_WEAPON)
 		DrawWeaponVClip (pObj);
 	else {
@@ -1185,7 +1185,7 @@ if (gameStates.render.nShadowPass != 2) {
 			}
 		}
 	}
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -1197,7 +1197,7 @@ if (ConvertHostageToModel (pObj))
 	DrawPolygonObject (pObj, 0);
 else if (gameStates.render.nShadowPass != 2)
 	DrawHostage (pObj);
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -1206,16 +1206,16 @@ static int32_t RenderPowerup (CObject* pObj, int32_t bForce)
 {
 ENTER (0, 0);
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
-	RETURN (0)
+	RETVAL (0)
 if (automap.Active () && !AM_SHOW_POWERUPS (1))
-	RETURN (0)
+	RETVAL (0)
 if (pObj->PowerupToDevice ()) {
 	RenderPowerupCorona (pObj, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 	DrawPolygonObject (pObj, 0);
 	}
 else if (gameStates.render.nShadowPass != 2)
 	DrawPowerup (pObj);
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -1228,7 +1228,7 @@ if (gameStates.render.nShadowPass != 2) {
 	if (pObj->info.nType == OBJ_WEAPON)
 		RenderLightTrail (pObj);
 	}
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -1242,12 +1242,12 @@ ENTER (0, 0);
 int32_t nType = pObj->info.nType;
 if (nType == 255) {
 	pObj->Die ();
-	RETURN (0)
+	RETVAL (0)
 	}
 if ((nType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
-	RETURN (0)
+	RETVAL (0)
 if ((gameStates.render.nShadowPass != 2) && pObj->IsGuidedMissile ()) {
-	RETURN (0)
+	RETVAL (0)
 	}
 #if DBG
 if (nObject == nDbgObj)
@@ -1255,7 +1255,7 @@ if (nObject == nDbgObj)
 #endif
 if (nObject != LOCALPLAYER.nObject) {
 	if (pObj == gameData.objData.pViewer)
-		RETURN (0)
+		RETVAL (0)
 	 }
 else if ((gameData.objData.pViewer == gameData.objData.pConsole) && !automap.Active ()) {
 	if ((bSpectate = ((gameStates.render.bFreeCam > 0) && !nWindow)))
@@ -1276,14 +1276,14 @@ else if ((gameData.objData.pViewer == gameData.objData.pConsole) && !automap.Act
 			SEM_LEAVE (SEM_SMOKE)
 			}
 #endif
-		RETURN (0)
+		RETVAL (0)
 		}
 	}
 if ((nType == OBJ_NONE)/* || (nType==OBJ_CAMBOT)*/){
 #if TRACE
 	console.printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", nObject, pObj->info.nSegment);
 #endif
-	RETURN (0)
+	RETVAL (0)
 	}
 int32_t mldSave = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.nState = 1;
@@ -1297,35 +1297,35 @@ switch (pObj->info.renderType) {
 	case RT_POLYOBJ:
 		if (nType == OBJ_EFFECT) {
 			pObj->info.renderType = (pObj->info.nId == PARTICLE_ID) ? RT_PARTICLES : (pObj->info.nId == LIGHTNING_ID) ? RT_LIGHTNING : RT_SOUND;
-			RETURN (0)
+			RETVAL (0)
 			}
 		if (nType == OBJ_PLAYER) {
 			if (!RenderPlayerModel (pObj, bSpectate))
-				RETURN (0)
+				RETVAL (0)
 			}
 		else if (nType == OBJ_ROBOT) {
 			if (!RenderRobotModel (pObj, bSpectate))
-				RETURN (0)
+				RETVAL (0)
 			}
 		else if (nType == OBJ_WEAPON) {
 			if (!RenderWeaponModel (pObj, bSpectate))
-				RETURN (0)
+				RETVAL (0)
 			}
 		else if (nType == OBJ_REACTOR) {
 			if (!RenderReactorModel (pObj, bSpectate))
-				RETURN (0)
+				RETVAL (0)
 			}
 		else if (nType == OBJ_POWERUP) {
 			if (!RenderPowerupModel (pObj, bSpectate))
-				RETURN (0)
+				RETVAL (0)
 			}
 		else if (nType == OBJ_HOSTAGE) {
 			if (!RenderHostageModel (pObj, bSpectate))
-				RETURN (0)
+				RETVAL (0)
 			}
 		else {
 			if (!RenderPolyModel (pObj, bSpectate))
-				RETURN (0)
+				RETVAL (0)
 			}
 		break;
 
@@ -1340,48 +1340,48 @@ switch (pObj->info.renderType) {
 
 	case RT_FIREBALL:
 		if (!RenderFireball (pObj, bForce))
-			RETURN (0)
+			RETVAL (0)
 		break;
 
 	case RT_EXPLBLAST:
 		if (!RenderExplBlast (pObj, bForce))
-			RETURN (0)
+			RETVAL (0)
 		break;
 
 	case RT_SHOCKWAVE:
 		if (!RenderShockwave (pObj, bForce))
-			RETURN (0)
+			RETVAL (0)
 		break;
 
 	case RT_SHRAPNELS:
 		if (!RenderShrapnel (pObj, bForce))
-			RETURN (0)
+			RETVAL (0)
 		break;
 
 	case RT_WEAPON_VCLIP:
 		if (!RenderWeapon (pObj, bForce))
-			RETURN (0)
+			RETVAL (0)
 		break;
 
 	case RT_HOSTAGE:
 		if (!RenderHostage (pObj, bForce))
-			RETURN (0)
+			RETVAL (0)
 		break;
 
 	case RT_POWERUP:
 		if (!RenderPowerup (pObj, bForce))
-			RETURN (0)
+			RETVAL (0)
 		break;
 
 	case RT_LASER:
 		if (!RenderLaser (pObj, bForce))
-			RETURN (0)
+			RETVAL (0)
 		break;
 
 	case RT_PARTICLES:
 	case RT_LIGHTNING:
 	case RT_SOUND:
-		RETURN (0)
+		RETVAL (0)
 		break;
 
 	default:
@@ -1399,7 +1399,7 @@ if (pObj->info.renderType != RT_NONE)
 gameStates.render.detail.nMaxLinearDepth = mldSave;
 gameData.renderData.nTotalObjects++;
 ogl.ClearError (0);
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------

@@ -57,11 +57,11 @@ if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 //the player.
 newPos = pPos->vPos + pPos->mOrient.m.dir.f * pSpitter->info.xSize;
 if (IsMultiGame && (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS))
-	RETURN (-1)
+	RETVAL (-1)
 nObject = CreatePowerup (id, int16_t (GetTeam (N_LOCALPLAYER) + 1), int16_t (OBJSEG (pSpitter)), newPos, 0);
 pObj = OBJECT (nObject);
 if (!pObj)
-	RETURN (-1)
+	RETVAL (-1)
 pObj->mType.physInfo.velocity = newVelocity;
 pObj->mType.physInfo.drag = 512;	//1024;
 pObj->mType.physInfo.mass = I2X (1);
@@ -85,7 +85,7 @@ switch (pObj->info.nId) {
 		//	pObj->info.xLifeLeft = (RandShort () + I2X (3)) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
 		break;
 	}
-RETURN (nObject)
+RETVAL (nObject)
 }
 
 //	-----------------------------------------------------------------------------
@@ -112,7 +112,7 @@ if (gameData.weaponData.nPrimary == 0) {	//special laser drop handling
 		nObject = SpitPowerup (gameData.objData.pConsole, POW_QUADLASER);
 		if (nObject < 0) {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
-			LEAVE
+			RETURN
 			}
 		HUDInitMessage(TXT_DROP_QLASER);
 		}
@@ -120,7 +120,7 @@ if (gameData.weaponData.nPrimary == 0) {	//special laser drop handling
 		nObject = SpitPowerup (gameData.objData.pConsole, POW_SUPERLASER);
 		if (nObject < 0) {
 			LOCALPLAYER.AddSuperLaser ();
-			LEAVE
+			RETURN
 			}
 		HUDInitMessage (TXT_DROP_SLASER);
 		}
@@ -128,7 +128,7 @@ if (gameData.weaponData.nPrimary == 0) {	//special laser drop handling
 		nObject = SpitPowerup (gameData.objData.pConsole, POW_LASER);
 		if (nObject < 0) {
 			LOCALPLAYER.AddStandardLaser ();
-			LEAVE
+			RETURN
 			}
 		HUDInitMessage (TXT_DROP_LASER);
 		}
@@ -145,7 +145,7 @@ else {
 	if (nObject < 0) {	// couldn't drop
 		if (gameData.weaponData.nPrimary) 	//if selected weapon was not the laser
 			LOCALPLAYER.primaryWeaponFlags |= (1 << gameData.weaponData.nPrimary);
-		LEAVE
+		RETURN
 		}
 	HUDInitMessage (TXT_DROP_WEAPON, PRIMARY_WEAPON_NAMES (gameData.weaponData.nPrimary));
 	}
@@ -168,7 +168,7 @@ if (IsMultiGame)
 	MultiSendDropWeapon (nObject);
 if (gameData.weaponData.nPrimary) //if selected weapon was not the laser
 	AutoSelectWeapon (0, 0);
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -184,7 +184,7 @@ if ((LOCALPLAYER.secondaryAmmo [nWeapon] == 0) ||
 	 (IsMultiGame && (nWeapon == 0) && (LOCALPLAYER.secondaryAmmo [nWeapon] <= gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles))) {
 	if (!bSilent)
 		HUDInitMessage (TXT_CANT_DROP_SEC);
-	LEAVE
+	RETURN
 	}
 
 int32_t nPowerup = secondaryWeaponToPowerup [0][nWeapon];
@@ -193,11 +193,11 @@ int32_t bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
 
 if (!bHoardEntropy && bMine && LOCALPLAYER.secondaryAmmo [nWeapon] < 4) {
 	HUDInitMessage(TXT_DROP_NEED4);
-	LEAVE
+	RETURN
 	}
 if (bHoardEntropy) {
 	DropOrb ();
-	LEAVE
+	RETURN
 	}
 
 int32_t nItems = nAmount;
@@ -218,7 +218,7 @@ for (int32_t i = 0; i < nItems; i++) {
 			LOCALPLAYER.secondaryAmmo [nWeapon] += 4;
 		else
 			LOCALPLAYER.secondaryAmmo [nWeapon] += nAmount;
-		LEAVE
+		RETURN
 		}
 	if (!bSilent) {
 		HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weaponData.nSecondary));
@@ -231,7 +231,7 @@ for (int32_t i = 0; i < nItems; i++) {
 		AutoSelectWeapon (1, 0);
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------

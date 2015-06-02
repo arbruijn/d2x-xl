@@ -222,17 +222,17 @@ ENTER (0, 0);
 	float							h, nSize;
 
 if (!pObj)
-	LEAVE
+	RETURN
 if (nCount < 0) {
 	if (pModel->m_bRendered && gameData.modelData.vScale.IsZero ())
-		LEAVE
+		RETURN
 	nCount = 0;
 	}	
 else if (nCount >= MAX_THRUSTERS)
-	LEAVE
+	RETURN
 vn.Assign (pmf ? pmf->m_vNormal : *vNormal);
 if (!IsPlayerShip (nModel) && (CFloatVector3::Dot (vn, vForward) > -1.0f / 3.0f))
-	LEAVE
+	RETURN
 if (pmf) {
 	for (i = 0, j = pmf->m_nVerts, pModelVertex = pModel->m_faceVerts + pmf->m_nIndex; i < j; i++)
 		v += pModelVertex [i].m_vertex;
@@ -254,7 +254,7 @@ if (pvOffset) {
 #endif
 #endif
 if (nCount && (v.v.coord.x == pThruster->vPos [0].v.coord.x) && (v.v.coord.y == pThruster->vPos [0].v.coord.y) && (v.v.coord.z == pThruster->vPos [0].v.coord.z))
-	LEAVE
+	RETURN
 pThruster->vPos [nCount].Assign (v);
 if (pvOffset)
 	v -= vo;
@@ -273,7 +273,7 @@ pThruster->nType [nCount] = nType;
 		}
 	}
 pThruster->nCount = -(++nCount);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -286,23 +286,23 @@ ENTER (0, 0);
 	int32_t nId = pObj->info.nId;
 
 if (!pSubModel->m_bRender)
-	RETURN (0)
+	RETVAL (0)
 #if 1
 if (pSubModel->m_bFlare)
-	RETURN (1)
+	RETVAL (1)
 #endif
 if (pSubModel->m_nGunPoint >= 0)
-	RETURN (1)
+	RETVAL (1)
 if (pSubModel->m_bBullets)
-	RETURN (1)
+	RETVAL (1)
 #if 1
 if (pSubModel->m_bThruster && ((pSubModel->m_bThruster & (REAR_THRUSTER | FRONTAL_THRUSTER)) != (REAR_THRUSTER | FRONTAL_THRUSTER)))
-	RETURN (1)
+	RETVAL (1)
 #endif
 if (pSubModel->m_bHeadlight)
-	RETURN (!HeadlightIsOn (nId))
+	RETVAL (!HeadlightIsOn (nId))
 if (pSubModel->m_bBombMount)
-	RETURN (nBombId == 0)
+	RETVAL (nBombId == 0)
 if (pSubModel->m_bWeapon) {
 	CPlayerData	*pPlayer = gameData.multiplayer.players + nId;
 	int32_t		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
@@ -321,53 +321,53 @@ if (pSubModel->m_bWeapon) {
 		if (pSubModel->m_nGun == nGunId + 1) {
 			if (pSubModel->m_nGun == FUSION_INDEX + 1) {
 				if ((pSubModel->m_nWeaponPos == 3) && !gameData.multiplayer.weaponStates [N_LOCALPLAYER].bTripleFusion)
-					RETURN (1)
+					RETVAL (1)
 				}
 			else if (bLasers) {
 				if ((pSubModel->m_nWeaponPos > 2) && !bQuadLasers && (nWingtip != bSuperLasers))
-					RETURN (1)
+					RETVAL (1)
 				}
 			}
 		else if (pSubModel->m_nGun == LASER_INDEX + 1) {
 			if (nWingtip)
-				RETURN (1)
-			RETURN (!bCenterGun && (pSubModel->m_nWeaponPos < 3))
+				RETVAL (1)
+			RETVAL (!bCenterGun && (pSubModel->m_nWeaponPos < 3))
 			}
 		else if (pSubModel->m_nGun == SUPER_LASER_INDEX + 1) {
 			if (nWingtip != 1)
-				RETURN (1)
-			RETURN (!bCenterGun && (pSubModel->m_nWeaponPos < 3))
+				RETVAL (1)
+			RETVAL (!bCenterGun && (pSubModel->m_nWeaponPos < 3))
 			}
 		else if (!pSubModel->m_nGun) {
 			if (bLasers && bQuadLasers)
-				RETURN (1)
+				RETVAL (1)
 			if (pSubModel->m_nType != gameOpts->render.ship.nWingtip)
-				RETURN (1)
-			RETURN (0)
+				RETVAL (1)
+			RETVAL (0)
 			}
 		else if (pSubModel->m_nBomb == nBombId)
-			RETURN ((nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0))
+			RETVAL ((nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0))
 		else if (pSubModel->m_nMissile == nMissileId) {
 			if (pSubModel->m_nWeaponPos > nMissiles)
-				RETURN (1)
+				RETVAL (1)
 			else {
 				static int32_t nMslPos [] = {-1, 1, 0, 3, 2};
 				int32_t nLaunchPos = gameData.multiplayer.weaponStates [nId].nMslLaunchPos;
-				RETURN ((nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0) && (nLaunchPos == (nMslPos [(int32_t) pSubModel->m_nWeaponPos])))
+				RETVAL ((nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0) && (nLaunchPos == (nMslPos [(int32_t) pSubModel->m_nWeaponPos])))
 				}
 			}
 		else
-			RETURN (1)
+			RETVAL (1)
 		}
 	else {
 		if (pSubModel->m_nGun == 1)
-			RETURN (0)
+			RETVAL (0)
 		if ((pSubModel->m_nGun < 0) && (pSubModel->m_nMissile == 1))
-			RETURN (0)
-		RETURN (1)
+			RETVAL (0)
+		RETVAL (1)
 		}
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 //------------------------------------------------------------------------------
@@ -387,7 +387,7 @@ ENTER (0, 0);
 	int32_t			nDelay;
 
 if (!pSubModel->m_nFrames)
-	RETURN (0)
+	RETVAL (0)
 if ((pSubModel->m_bThruster & (REAR_THRUSTER | FRONTAL_THRUSTER)) == (REAR_THRUSTER | FRONTAL_THRUSTER)) {
 	nTimeout = gameStates.gameplay.slowmo [0].fSpeed;
 	glPushMatrix ();
@@ -409,7 +409,7 @@ else {
 	if (pFiringData->nStop > 0) {
 		nDelay = gameStates.app.nSDLTicks [0] - pFiringData->nStop;
 		if (nDelay > GATLING_DELAY)
-			RETURN (0)
+			RETVAL (0)
 		nTimeout += (float) nDelay / 10;
 		}
 	else if (pFiringData->nStart > 0) {
@@ -418,7 +418,7 @@ else {
 			nTimeout += (float) nDelay / 10;
 		}
 	else
-		RETURN (0)
+		RETVAL (0)
 	glPushMatrix ();
 	y = X2F (pSubModel->m_vCenter .v.coord.y);
 	glTranslatef (0, y, 0);
@@ -429,7 +429,7 @@ else {
 		pSubModel->m_iFrame = (pSubModel->m_iFrame + 1) % pSubModel->m_nFrames;
 		}
 	}
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -457,9 +457,9 @@ ENTER (0, 0);
 	int32_t						i, j;
 
 if (pSubModel->m_bThruster)
-	LEAVE
+	RETURN
 if (G3FilterSubModel (pObj, pSubModel, nGunId, nBombId, nMissileId, nMissiles))
-	LEAVE
+	RETURN
 vo = pSubModel->m_vOffset;
 if (!gameData.modelData.vScale.IsZero ())
 	vo *= gameData.modelData.vScale;
@@ -490,7 +490,7 @@ for (i = 0, j = pModel->m_nSubModels, pSubModel = pModel->m_subModels.Buffer ();
 		G3TransformSubModel (pObj, nModel, i, animAnglesP, &vo, bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 	}
 transformation.End (__FILE__, __LINE__);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -534,10 +534,10 @@ if (pSubModel->m_bThruster) {
 		G3GetThrusterPos (pObj, nModel, NULL, &vo, &pSubModel->m_faces->m_vNormal, pSubModel->m_nRad, bHires, pSubModel->m_bThruster);
 		}
 	if (!pSubModel->m_nFrames)
-		LEAVE
+		RETURN
 	}
 if (G3FilterSubModel (pObj, pSubModel, nGunId, nBombId, nMissileId, nMissiles))
-	LEAVE
+	RETURN
 
 vo = pSubModel->m_vOffset;
 if (!gameData.modelData.vScale.IsZero ())
@@ -733,7 +733,7 @@ if (bRestoreMatrix)
 if (pvOffset && (nExclusive < 0))
 	transformation.End (__FILE__, __LINE__);
 #endif
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -905,7 +905,7 @@ if (!bEdges || !bPolygonalOutline)
 #endif
 	ogl.ResetTransform (1);
 //HUDMessage (0, "%s", szLightSources);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -914,7 +914,7 @@ void G3RenderDamageLightning (CObject *pObj, int16_t nModel, int16_t nSubModel, 
 {
 ENTER (0, 0);
 if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage))
-	LEAVE
+	RETURN
 
 	RenderModel::CModel*		pModel;
 	RenderModel::CSubModel*	pSubModel;
@@ -926,15 +926,15 @@ if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage))
 pModel = gameData.modelData.renderModels [bHires] + nModel;
 if (pModel->m_bValid < 1) {
 	if (!bHires)
-		LEAVE
+		RETURN
 	pModel = gameData.modelData.renderModels [0] + nModel;
 	if (pModel->m_bValid < 1)
-		LEAVE
+		RETURN
 	}
 pSubModel = pModel->m_subModels + nSubModel;
 va = animAnglesP ? animAnglesP + pSubModel->m_nAngles : &CAngleVector::ZERO;
 if (!pObj || (pObj->Damage () > 0.5f))
-	LEAVE
+	RETURN
 // set the translation
 vo = pSubModel->m_vOffset;
 if (!gameData.modelData.vScale.IsZero ())
@@ -952,7 +952,7 @@ for (pSubModel = pModel->m_subModels + nSubModel, i = pSubModel->m_nFaces, pmf =
 	lightningManager.RenderForDamage (pObj, NULL, pModel->m_faceVerts + pmf->m_nIndex, pmf->m_nVerts);
 if (pvOffset)
 	transformation.End (__FILE__, __LINE__);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -975,7 +975,7 @@ nModel = abs (nModel);
 RenderModel::CModel*	pModel = gameData.modelData.renderModels [bHires] + nModel;
 
 if (!pObj)
-	RETURN (0)
+	RETVAL (0)
 #if DBG
 if (nModel == nDbgModel)
 	nDbgModel = nModel;
@@ -999,7 +999,7 @@ if (bHires) {
 					pModel->m_bValid = 0;
 				i = G3BuildModel (pObj, nModel, pp, modelBitmaps, pObjColor, 1);
 				if (i < 0)	//successfully built new model
-					RETURN (gameStates.render.bBuildModels)
+					RETVAL (gameStates.render.bBuildModels)
 				}
 			else
 				i = 0;
@@ -1012,7 +1012,7 @@ if (bHires) {
 if (!bHires) {
 	pModel = gameData.modelData.renderModels [0] + nModel;
 	if (pModel->m_bValid < 0)
-		RETURN (0)
+		RETVAL (0)
 	if (bUseVBO && pModel->m_bValid && !(pModel->m_vboDataHandle && pModel->m_vboIndexHandle))
 		pModel->m_bValid = 0;
 	if (!pModel->m_bValid) {
@@ -1020,7 +1020,7 @@ if (!bHires) {
 		if (i <= 0) {
 			if (!i)
 				pModel->m_bValid = -1;
-			RETURN (gameStates.render.bBuildModels)
+			RETVAL (gameStates.render.bBuildModels)
 			}
 		}
 	}
@@ -1191,7 +1191,7 @@ if (gameOpts->render.debug.bWireFrame & 2) {
 ogl.ClearError (0);
 PROF_END(ptRenderObjectMeshes)
 }
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------

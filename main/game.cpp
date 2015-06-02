@@ -200,7 +200,7 @@ bool InitGame (int32_t nSegments, int32_t nVertices)
 {
 ENTER (0, 0);
 if (!gameData.Create (nSegments, nVertices))
-	RETURN (false)
+	RETVAL (false)
 /*---*/PrintLog (1, "Initializing game data\n");
 PrintLog (1, "Objects ...\n");
 InitObjects ();
@@ -235,7 +235,7 @@ importantMessages [1].Destroy ();
 PrintLog (-1);
 PrintLog (-1);
 fpDrawTexPolyMulti = G3DrawTexPolyMulti;
-RETURN (true)
+RETVAL (true)
 }
 
 //------------------------------------------------------------------------------
@@ -282,7 +282,7 @@ for (int32_t i = 0; i < N_PLAYERS; i++) {
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	------------------------------------------------------------------------------------
@@ -306,7 +306,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 		bFakingInvul = 0;
 		}
 	}
-LEAVE
+RETURN
 }
 
 //@@//	------------------------------------------------------------------------------------
@@ -363,7 +363,7 @@ else /*if ((gameStates.gameplay.xLastAfterburnerCharge && (controls [0].afterbur
 	}
 gameStates.gameplay.bLastAfterburnerState = controls [0].afterburnerState;
 gameStates.gameplay.xLastAfterburnerCharge = gameData.physicsData.xAfterburnerCharge;
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -519,7 +519,7 @@ ResetModFolders ();
 gameStates.app.bGameRunning = 0;
 backgroundManager.Rebuild ();
 SetFunctionMode (FMODE_MENU);	
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -692,7 +692,7 @@ if (fLog) {
 	fLog = NULL;
 	}
 #endif
-LEAVE
+RETURN
 }
 
 //-----------------------------------------------------------------------------
@@ -721,11 +721,11 @@ void DoAmbientSounds (void)
 {
 ENTER (0, 0);
 if (gameStates.app.bPlayerIsDead)
-	LEAVE
+	RETURN
 
 CSegment* pSeg = SEGMENT (gameData.objData.pConsole->info.nSegment);
 if (!pSeg)
-	LEAVE
+	RETURN
 
 	int32_t bLava = (pSeg->m_flags & S2F_AMBIENT_LAVA);
 	int32_t bWater = (pSeg->m_flags & S2F_AMBIENT_WATER);
@@ -739,10 +739,10 @@ if (bLava) {							//has lava
 else if (bWater)						//just water
 	nSound = SOUND_AMBIENT_WATER;
 else
-	LEAVE
+	RETURN
 if (((RandShort () << 3) < gameData.timeData.xFrame))	//play the nSound
 	audio.PlaySound (nSound, SOUNDCLASS_GENERIC, (fix) (RandShort () + I2X (1) / 2));
-LEAVE
+RETURN
 }
 
 //-----------------------------------------------------------------------------
@@ -752,7 +752,7 @@ void DoEffectsFrame (void)
 ENTER (0, 0);
 gameStates.render.bUpdateEffects = true;
 UpdateEffects ();
-LEAVE
+RETURN
 }
 
 //-----------------------------------------------------------------------------
@@ -768,7 +768,7 @@ if (gameStates.render.bUpdateEffects) {
 	DoParticleFrame ();
 	particleManager.Cleanup ();
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -890,7 +890,7 @@ while (m_bRunning) {
 #endif
 	}
 m_bRunning = false;
-LEAVE
+RETURN
 }
 
 //-----------------------------------------------------------------------------
@@ -913,7 +913,7 @@ gameStates.app.bUsingConverter = 0;
 AutoScreenshot ();
 
 Unlock ();
-LEAVE
+RETURN
 }
 
 //-----------------------------------------------------------------------------
@@ -946,7 +946,7 @@ ogl.m_features.bShaders.Available (gameOpts->render.bUseShaders);
 gameData.renderData.rift.SetCenter ();
 if (pfnTIRStart)
 	pfnTIRStart ();
-LEAVE
+RETURN
 }
 
 //	------------------------------------------------------------------------------------
@@ -978,7 +978,7 @@ PROF_END(ptGameStates)
 if (IsMultiGame) {
 	if (!MultiProtectGame ()) {
 		SetFunctionMode (FMODE_MENU);
-		RETURN (-1)
+		RETVAL (-1)
 		}
 	PROF_CONT
 	AutoBalanceTeams ();
@@ -1001,7 +1001,7 @@ UpdatePlayerEffects ();
 PROF_END(ptGameStates)
 #endif
 
-RETURN (1)
+RETVAL (1)
 }
 
 //-----------------------------------------------------------------------------
@@ -1032,7 +1032,7 @@ if (gameStates.app.bEndLevelSequence) {
 	DoEndLevelFrame ();
 	PowerupGrabCheatAll ();
 	DoSpecialEffects ();
-	RETURN (1)	//skip everything else
+	RETVAL (1)	//skip everything else
 	}
 
 PROF_CONT
@@ -1060,16 +1060,16 @@ else { // Note the link to above!
 	PROF_CONT
 	LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  CObject::UpdateWeapon modifies this.
 	if (!UpdateAllObjects ())
-		RETURN (0)
+		RETVAL (0)
 	PowerupGrabCheatAll ();
 	if (gameStates.app.bEndLevelSequence)	//might have been started during move
-		RETURN (1)
+		RETVAL (1)
 	UpdateAllProducers ();
 	DoAIFrameAll ();
 	if (AllowedToFireGun ()) 
 		FireGun ();				// Fire Laser!
 	if (!FusionBump ())
-		RETURN (1)
+		RETVAL (1)
 	if (gameData.laserData.nGlobalFiringCount)
 		gameData.laserData.nGlobalFiringCount -= LocalPlayerFireGun ();	
 	if (gameData.laserData.nGlobalFiringCount < 0)
@@ -1095,7 +1095,7 @@ OmegaChargeFrame ();
 SlideTextures ();
 FlickerLights ();
 PROF_END (ptGameStates)
-RETURN (1)
+RETVAL (1)
 }
 
 //-----------------------------------------------------------------------------
@@ -1107,7 +1107,7 @@ if (bControls < 0)
 	controls.Reset ();
 else if (bControls)
 	ReadControls ();
-LEAVE
+RETURN
 }
 
 //-----------------------------------------------------------------------------
@@ -1123,7 +1123,7 @@ if (m_bRunning) { // game states are updated in separate thread
 	int32_t t = fps ? SDL_GetTicks () : 0;
 	HandleControls (bControls);
 	if (!bRender)
-		RETURN (0)
+		RETVAL (0)
 	Render ();
 #if DBG
 	tRenderLoop += SDL_GetTicks () - t;
@@ -1141,17 +1141,17 @@ else {
 	m_nResult = Preprocess ();
 	gameStates.render.DisableCartoonStyle ();
 	if (0 > m_nResult)
-		RETURN (m_nResult)
+		RETVAL (m_nResult)
 	if (bRender)
 		Render ();
 	gameStates.render.EnableCartoonStyle (1, 1, 1);
 	m_nResult = Postprocess ();
 	gameStates.render.DisableCartoonStyle ();
 	if (0 > m_nResult)
-		RETURN (m_nResult)
+		RETVAL (m_nResult)
 	}
 
-RETURN (m_nResult)
+RETVAL (m_nResult)
 }
 
 //------------------------------------------------------------------------------
@@ -1231,7 +1231,7 @@ if (automap.Active ()) {
 	gameData.renderData.frame.SetHeight (save_h);
 	cockpit->Init ();
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1309,7 +1309,7 @@ catch (...) {
 	Warning ("Internal error when cleaning up.");
 	}
 bRegisterBitmaps = false;
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1324,7 +1324,7 @@ gameLoop.Start ();
 if (!setjmp (gameExitPoint))
 	gameLoop.Run ();
 gameLoop.Stop ();
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1332,7 +1332,7 @@ LEAVE
 int32_t GameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t fps)
 {
 ENTER (0, 0);
-RETURN (gameLoop.Step (bRenderFrame, bReadControls, fps))
+RETVAL (gameLoop.Step (bRenderFrame, bReadControls, fps))
 }
 
 //------------------------------------------------------------------------------
@@ -1423,7 +1423,7 @@ for (h = 0; h < gameData.segData.nSlideSegs; h++) {
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	-------------------------------------------------------------------------------------------------------

@@ -50,19 +50,19 @@ ENTER (0, 0);
 
 if (nWeaponIndex == FUSION_INDEX) {
 	if (gameData.multiplayer.weaponStates [nPlayer].nShip == 1)
-		RETURN (0)
+		RETVAL (0)
 	if (pPlayer->primaryWeaponFlags & flag) {
 		if (!EGI_FLAG (bTripleFusion, 0, 0, 0)) {
 			HUDInitMessage (TXT_MAXED_OUT, TXT_FUSION);
-			RETURN (0) // tri-fusion not allowed
+			RETVAL (0) // tri-fusion not allowed
 			}
 		if (gameData.multiplayer.weaponStates [nPlayer].nShip != 2) {
 			HUDInitMessage (TXT_MAXED_OUT, TXT_FUSION);
-			RETURN (0) // tri-fusion only allowed on heavy fighter
+			RETVAL (0) // tri-fusion only allowed on heavy fighter
 			}
 		if (gameData.multiplayer.weaponStates [nPlayer].bTripleFusion) {
 			DuplicateWeaponMsg (nWeaponIndex, nPlayer);
-			RETURN (0) // already has tri-fusion
+			RETVAL (0) // already has tri-fusion
 			}
 		if (nPlayer == N_LOCALPLAYER)
    		gameData.weaponData.bTripleFusion = 1;
@@ -73,7 +73,7 @@ if (nWeaponIndex == FUSION_INDEX) {
 else if (nWeaponIndex != LASER_INDEX) {
 	if (pPlayer->primaryWeaponFlags & flag) {
 		DuplicateWeaponMsg (nWeaponIndex, nPlayer);
-		RETURN (0)
+		RETVAL (0)
 		}
 	}
 pPlayer->primaryWeaponFlags |= flag;
@@ -90,7 +90,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 	if (nWeaponIndex != LASER_INDEX)
   		HUDInitMessage ("%s!", PRIMARY_WEAPON_NAMES (nWeaponIndex));
 	}
-RETURN (1)
+RETVAL (1)
 }
 
 //	---------------------------------------------------------------------
@@ -145,7 +145,7 @@ if (pPlayer->secondaryAmmo [nWeaponIndex] >= nMaxAmount) {
 			TXT_ALREADY_HAVE, 
 			pPlayer->secondaryAmmo [nWeaponIndex],
 			bSmokeGrens ? TXT_SMOKE_GRENADE : SECONDARY_WEAPON_NAMES (nWeaponIndex));
-	RETURN (0)
+	RETVAL (0)
 	}
 pPlayer->secondaryWeaponFlags |= (1 << nWeaponIndex);
 pPlayer->secondaryAmmo [nWeaponIndex] += nAmount;
@@ -192,7 +192,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 		HUDInitMessage("%s!", bSmokeGrens ? TXT_SMOKE_GRENADE : SECONDARY_WEAPON_NAMES (nWeaponIndex));
 		}
 	}
-RETURN (1)
+RETVAL (1)
 }
 
 //	-----------------------------------------------------------------------------
@@ -212,7 +212,7 @@ if (pPlayer->flags & PLAYER_FLAGS_AMMO_RACK)
 nMaxAmmo -= pPlayer->primaryAmmo [nWeaponIndex];
 if (ammoCount > nMaxAmmo) {
 	if (!nMaxAmmo/* || (nWeaponIndex == VULCAN_INDEX)*/)	// only pick up Vulcan ammo if player can take the entire clip
-		RETURN (0)
+		RETVAL (0)
 	ammoCount = nMaxAmmo;
 	}
 nOldAmmo = pPlayer->primaryAmmo [nWeaponIndex];
@@ -228,7 +228,7 @@ if ((nPlayer = N_LOCALPLAYER)) {
 		(POrderList (nWeaponIndex) < POrderList (nSupposedWeapon)))
 		SelectWeapon (nWeaponIndex,0,0,1);
 	}
-RETURN (ammoCount) //return amount used
+RETVAL (ammoCount) //return amount used
 }
 
 //------------------------------------------------------------------------------
@@ -249,7 +249,7 @@ if (nUsed) {
 	pObj->cType.powerupInfo.nCount -= nUsed;
 	MultiSendAmmoUpdate (pObj->Index ());
 	gameData.weaponData.nPrimary = pwSave;
-	RETURN (nUsed >= nAmmo)
+	RETVAL (nUsed >= nAmmo)
 	} 
 else {
 	int32_t nMaxAmmo = nMaxPrimaryAmmo [VULCAN_INDEX];
@@ -258,7 +258,7 @@ else {
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %d %s!", TXT_ALREADY_HAVE,X2I ((uint32_t) VULCAN_AMMO_SCALE * (uint32_t) nMaxAmmo), TXT_VULCAN_ROUNDS);
 	gameData.weaponData.nPrimary = pwSave;
-	RETURN (0)
+	RETVAL (0)
 	}
 }
 
@@ -275,13 +275,13 @@ if (pPlayer->AddStandardLaser ()) {
 	PickupEffect (10, 0, 10, LASER_SCORE, "%s %s %d", TXT_LASER, TXT_BOOSTED_TO, pPlayer->LaserLevel () + 1);
 	cockpit->UpdateLaserWeaponInfo ();
 	PickupPrimary (LASER_INDEX, nPlayer);
-	RETURN (1)
+	RETVAL (1)
 	}
 if (nPlayer == N_LOCALPLAYER)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_LASER);
 if (IsMultiGame)
-	RETURN (0)
-RETURN (PickupEnergyBoost (pObj, nPlayer))
+	RETVAL (0)
+RETVAL (PickupEnergyBoost (pObj, nPlayer))
 }
 
 //------------------------------------------------------------------------------
@@ -301,13 +301,13 @@ if (pPlayer->AddSuperLaser ()) {
 		if (gameData.weaponData.nPrimary != LASER_INDEX)
 		   CheckToUsePrimary (SUPER_LASER_INDEX);
 		}
-	RETURN (1)
+	RETVAL (1)
 	}
 if (nPlayer == N_LOCALPLAYER)
 	HUDInitMessage (TXT_LASER_MAXEDOUT);
 if (IsMultiGame)
-	RETURN (0)
-RETURN (PickupEnergyBoost (pObj, nPlayer))
+	RETVAL (0)
+RETVAL (PickupEnergyBoost (pObj, nPlayer))
 }
 
 //------------------------------------------------------------------------------
@@ -321,13 +321,13 @@ if (!(pPlayer->flags & PLAYER_FLAGS_QUAD_LASERS)) {
 	pPlayer->flags |= PLAYER_FLAGS_QUAD_LASERS;
 	PickupEffect (15, 15, 7, QUAD_FIRE_SCORE, "%s!", TXT_QUAD_LASERS);
 	cockpit->UpdateLaserWeaponInfo ();
-	RETURN (1)
+	RETVAL (1)
 	}
 if (nPlayer == N_LOCALPLAYER)
 	HUDInitMessage ("%s %s!", TXT_ALREADY_HAVE, TXT_QUAD_LASERS);
 if (IsMultiGame)
-	RETURN (0)
-RETURN (PickupEnergyBoost (pObj, nPlayer))
+	RETVAL (0)
+RETVAL (PickupEnergyBoost (pObj, nPlayer))
 }
 
 //------------------------------------------------------------------------------
@@ -338,11 +338,11 @@ ENTER (0, 0);
 if (PickupPrimary (nId, nPlayer)) {
 	if ((nId == OMEGA_INDEX) && (nPlayer == N_LOCALPLAYER))
 		gameData.omegaData.xCharge [IsMultiGame] = pObj->cType.powerupInfo.nCount;
-	RETURN (1)
+	RETVAL (1)
 	}
 if (IsMultiGame)
-	RETURN (0)
-RETURN (PickupEnergyBoost (NULL, nPlayer))
+	RETVAL (0)
+RETVAL (PickupEnergyBoost (NULL, nPlayer))
 }
 
 //	-----------------------------------------------------------------------------
@@ -365,11 +365,11 @@ if (nAmmo > 0) {
 	if (ISLOCALPLAYER (nPlayer)) {
 		if (!bPickedUp && nAmmoUsed) {
 			PickupEffect (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO);
-			RETURN (pObj->cType.powerupInfo.nCount ? -1 : -2)
+			RETVAL (pObj->cType.powerupInfo.nCount ? -1 : -2)
 			}
 		}
 	}
-RETURN (bPickedUp)
+RETVAL (bPickedUp)
 }
 
 //	-----------------------------------------------------------------------------

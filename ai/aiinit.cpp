@@ -82,7 +82,7 @@ if (!pObj->IsRobot ())
 	BRP;
 #endif
 if (!pRobotInfo)
-	LEAVE
+	RETURN
 if (behavior == AIB_STATIC) {
 	pObj->info.controlType = CT_NONE;
 	pObj->info.movementType = MT_NONE;
@@ -138,7 +138,7 @@ pObj->mType.physInfo.flags |= (PF_BOUNCES | PF_TURNROLL);
 pStaticInfo->REMOTE_OWNER = -1;
 pStaticInfo->bDyingSoundPlaying = 0;
 pStaticInfo->xDyingStartTime = 0;
-LEAVE
+RETURN
 }
 
 
@@ -172,7 +172,7 @@ if (0 < i) {
 gameData.aiData.bInitialized = 1;
 AIDoCloakStuff ();
 InitBuddyForLevel ();
-LEAVE
+RETURN
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -186,7 +186,7 @@ void DoLunacyOn (void)
 {
 ENTER (1, 0);
 if (gameStates.app.bLunacy)	//already on
-	LEAVE
+	RETURN
 gameStates.app.bLunacy = 1;
 nDiffSave = gameStates.app.nDifficultyLevel;
 gameStates.app.nDifficultyLevel = DIFFICULTY_LEVEL_COUNT-1;
@@ -198,7 +198,7 @@ for (int32_t i = 0; i < MAX_ROBOT_TYPES; i++) {
 	gameData.botData.pInfo [i].secondaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = gameData.botData.pInfo [i].secondaryFiringWait [1];
 	gameData.botData.pInfo [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1] = gameData.botData.pInfo [i].nRapidFireCount [1];
 	}
-LEAVE
+RETURN
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -207,7 +207,7 @@ void DoLunacyOff (void)
 {
 ENTER (1, 0);
 if (!gameStates.app.bLunacy)	//already off
-	LEAVE
+	RETURN
 gameStates.app.bLunacy = 0;
 for (int32_t i = 0; i < MAX_ROBOT_TYPES; i++) {
 	gameData.botData.pInfo [i].primaryFiringWait [DIFFICULTY_LEVEL_COUNT-1] = Firing_wait_copy [i];
@@ -215,7 +215,7 @@ for (int32_t i = 0; i < MAX_ROBOT_TYPES; i++) {
 	gameData.botData.pInfo [i].nRapidFireCount [DIFFICULTY_LEVEL_COUNT-1] = RapidfireCount_copy [i];
 	}
 gameStates.app.nDifficultyLevel = nDiffSave;
-LEAVE
+RETURN
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -234,7 +234,7 @@ for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 		gameData.aiData.cloakInfo [i].vLastPos = CFixVector::ZERO;
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	-------------------------------------------------------------------------------------------------
@@ -249,7 +249,7 @@ gameData.escortData.bMayTalk = 0;
 gameData.physicsData.xBossInvulDot = I2X (1)/4 - I2X (gameStates.app.nDifficultyLevel)/8;
 for (uint32_t i = 0; i < gameData.bossData.Count (); i++)
 	gameData.bossData [i].m_nDyingStartTime = 0;
-LEAVE
+RETURN
 }
 
 // ----------------------------------------------------------------------------
@@ -271,7 +271,7 @@ abState = gameData.physicsData.xAfterburnerCharge && controls [0].afterburnerSta
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || HeadlightIsOn (-1) || abState)
 	AIDoCloakStuff ();
 gameData.aiData.nMaxAwareness = 0;
-LEAVE
+RETURN
 }
 
 //	---------------------------------------------------------------

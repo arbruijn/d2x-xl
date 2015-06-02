@@ -153,7 +153,7 @@ while (n--) {
 	pfv++;
 	}
 PROF_END(ptTransform)
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -169,7 +169,7 @@ for (;;) {
 	UShortSwap (WORDPTR (pData));
 	switch (WORDVAL (pData)) {
 		case OP_EOF:
-			LEAVE
+			RETURN
 
 		case OP_DEFPOINTS:
 			UShortSwap (WORDPTR (pData + 2));
@@ -251,7 +251,7 @@ for (;;) {
 			Error ("invalid polygon model\n"); //Int3 ();
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -314,7 +314,7 @@ for (;;) {
 			Error ("invalid polygon model\n");
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -325,12 +325,12 @@ ENTER (0, 0);
 	int16_t	h = WORDVAL (pData);
 
 if ((h >= 0) && (h <= OP_GLOW))
-	RETURN (1)
+	RETVAL (1)
 ShortSwap (&h);
 if ((h < 0) || (h > OP_GLOW))
-	RETURN (0)
+	RETVAL (0)
 G3SwapPolyModelData (reinterpret_cast<uint8_t*> (pData));
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -343,20 +343,20 @@ ENTER (0, 0);
 	CModelThrusters	*pThruster = gameData.modelData.thrusters + nModel;
 
 if (pThruster->nCount >= 2)
-	LEAVE
+	RETURN
 if (pBm) {
 	if (!gameData.pigData.tex.bitmaps [0].IsElement (pBm))
-		LEAVE
+		RETURN
 	i = (int32_t) (pBm - gameData.pigData.tex.bitmaps [0]);
 	if ((i != 24) && ((i < 1741) || (i > 1745)))
-		LEAVE
+		RETURN
 	}
 #if 1
 if (CFixVector::Dot (*vNormal, vForward) > -I2X (1) / 3)
 #else
 if (vNormal->p.x || vNormal->p.y || (vNormal->p.z != -I2X (1)))
 #endif
-	LEAVE
+	RETURN
 for (i = 1, v = pointList [0]->WorldPos (); i < nPoints; i++)
 	v += pointList [i]->WorldPos ();
 v.v.coord.x /= nPoints;
@@ -366,7 +366,7 @@ v.v.coord.z -= I2X (1) / 8;
 if (vOffset)
 	v += *vOffset;
 if (pThruster->nCount && (v.v.coord.x == pThruster->vPos [0].v.coord.x) && (v.v.coord.y == pThruster->vPos [0].v.coord.y) && (v.v.coord.z == pThruster->vPos [0].v.coord.z))
-	LEAVE
+	RETURN
 pThruster->vPos [pThruster->nCount] = v;
 if (vOffset)
 	v -= *vOffset;
@@ -378,7 +378,7 @@ if (!pThruster->nCount++) {
 			nSize = h;
 	pThruster->fSize [i] = X2F (nSize);// * 1.25f;
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -413,11 +413,11 @@ else {
 	}
 #if DBG_SHADOWS
 if (bShadowTest)
-	RETURN (1)
+	RETVAL (1)
 #endif
 #if CONTOUR_OUTLINE
 //if (extraGameInfo [0].bShadows && (gameStates.render.nShadowPass < 3))
-	RETURN (1)
+	RETVAL (1)
 #endif
 nDepth++;
 G3CheckAndSwap (modelDataP);
@@ -529,13 +529,13 @@ for (;;) {
 			//draw back then front
 			if (!(G3DrawPolyModel (pObj, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel) &&
 					G3DrawPolyModel (pObj, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel)))
-				RETURN (0)
+				RETVAL (0)
 			}
 #if CHECK_NORMAL_FACING
 		else {			//not facing.  draw front then back
 			if (!(G3DrawPolyModel (pObj, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel) &&
 					G3DrawPolyModel (pObj, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel)))
-				RETURN (0)
+				RETVAL (0)
 			}
 #endif
 		p += 32;
@@ -560,7 +560,7 @@ for (;;) {
 			vo += *vOffset;
 		if (!G3DrawPolyModel (pObj, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, pColor, po, nModel)) {
 			transformation.End (__FILE__, __LINE__);
-			RETURN (0)
+			RETVAL (0)
 			}
 		transformation.End (__FILE__, __LINE__);
 		p += 20;
@@ -574,11 +574,11 @@ for (;;) {
 #if DBG
 		PrintLog (0, "invalid polygon model\n");
 #endif
-		RETURN (0)
+		RETVAL (0)
 		}
 	}
 nDepth--;
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------

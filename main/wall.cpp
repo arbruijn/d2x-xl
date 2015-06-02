@@ -909,7 +909,7 @@ void RemoveObsoleteStuckObjects (void)
 //	Safety and efficiency code.  If no stuck OBJECTS, should never get inside the IF, but this is faster.
 ENTER (0, 0);
 if (!nStuckObjects)
-	LEAVE
+	RETURN
 int16_t nObject = gameData.appData.nFrameCount % MAX_STUCK_OBJECTS;
 tStuckObject *pStuckObj = stuckObjects + nObject;
 CObject *pObj = OBJECT (pStuckObj->nObject);
@@ -920,7 +920,7 @@ if ((pWall && (pWall->state != WALL_DOOR_CLOSED)) || !pObj || (pObj->info.nSigna
 		pObj->UpdateLife (I2X (1) / 8);
 	pStuckObj->nWall = NO_WALL;
 	}
-LEAVE
+RETURN
 }
 
 //	----------------------------------------------------------------------------------------------------
@@ -933,7 +933,7 @@ ENTER (0, 0);
 	CObject			*pObj;
 
 if (!IS_WALL (nWall) || (nStuckObjects == 0))
-	LEAVE
+	RETURN
 nStuckObjects = 0;
 
 for (i = 0, pStuckObj = stuckObjects; i < MAX_STUCK_OBJECTS; i++, pStuckObj++)
@@ -956,7 +956,7 @@ for (i = 0, pStuckObj = stuckObjects; i < MAX_STUCK_OBJECTS; i++, pStuckObj++)
 	}
 //	Ok, this is awful, but we need to do things whenever a door opens/closes/disappears, etc.
 simpleRouter [0].Flush ();
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------------
@@ -987,7 +987,7 @@ for (int32_t i = 0; i < MAX_STUCK_OBJECTS; i++, pStuckObj++) {
 	}
 if (nStuckObjects)
 	nStuckObjects = 0;
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------------
@@ -1000,7 +1000,7 @@ ENTER (0, 0);
 	int16_t	nSide;
 
 if (depth > MAX_BLAST_GLASS_DEPTH)
-	LEAVE
+	RETURN
 
 depth++;
 
@@ -1040,7 +1040,7 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		BngProcessSegment (pObj, damage, SEGMENT (nSegment), depth, visited);
 		}
 	}
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------------
@@ -1410,7 +1410,7 @@ if (pExplodingWall) {
 	if (SEGMENT (nSegment))
 		SEGMENT (nSegment)->CreateSound (SOUND_EXPLODING_WALL, nSide);
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1481,7 +1481,7 @@ for (uint32_t i = 0; i < gameData.wallData.exploding.ToS (); ) {
 	else
 		i++;
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------

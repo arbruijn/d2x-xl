@@ -146,7 +146,7 @@ m_textures.Reset ();
 #if DBG
 texIds.Reset ();
 #endif
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -194,7 +194,7 @@ if (i) {
 	if (m_textures [i - 1]->Registered () != i)
 		TextureError ();
 #endif
-	RETURN (i)
+	RETVAL (i)
 	}
 m_textures.Push (pTexture);
 #if DBG
@@ -205,7 +205,7 @@ if (s)
 texIds.Push (s);
 s = NULL;
 #endif
-RETURN (m_textures.ToS ())
+RETVAL (m_textures.ToS ())
 }
 
 //------------------------------------------------------------------------------
@@ -220,7 +220,7 @@ uint32_t i = Check (pTexture);
 if (!i)
 	i = Find (pTexture);
 if (!i)
-	RETURN (false)
+	RETVAL (false)
 
 #if DBG
 if (texIds [i - 1])
@@ -241,7 +241,7 @@ texIds.Shrink ();
 
 *m_textures.Top () = 0;
 m_textures.Shrink ();
-RETURN (true)
+RETVAL (true)
 }
 
 //------------------------------------------------------------------------------
@@ -477,7 +477,7 @@ uint8_t* CTexture::Convert (int32_t dxo, int32_t dyo, CBitmap* pBm, int32_t nTra
 ENTER (2, 0);
 paletteManager.SetTexture (pBm->Parent () ? pBm->Parent ()->Palette () : pBm->Palette ());
 if (!paletteManager.Texture ())
-	RETURN (NULL)
+	RETVAL (NULL)
 
 int32_t bTransp = (nTranspType || bSuperTransp) && pBm->HasTransparency ();
 if (!bTransp)
@@ -688,7 +688,7 @@ else if (m_info.format == GL_RGBA)
 	m_info.internalFormat = 4;
 else if ((m_info.format == GL_RGB5) || (m_info.format == GL_RGBA4))
 	m_info.internalFormat = 2;
-RETURN (ogl.m_data.buffer [0])
+RETVAL (ogl.m_data.buffer [0])
 }
 
 //------------------------------------------------------------------------------
@@ -700,9 +700,9 @@ ENTER (2, 0);
 int32_t bpp = m_info.lw / m_info.w;
 if (!dxo && !dyo && (m_info.w == m_info.tw) && (m_info.h == m_info.th)) {
 	if (!gameStates.render.CartoonStyle () || (bpp < 3))
-		RETURN (data)	//can use data 1:1
+		RETVAL (data)	//can use data 1:1
 	memcpy (ogl.m_data.buffer [0], data, m_info.w * m_info.h * bpp);
-	RETURN (ogl.m_data.buffer [0])
+	RETVAL (ogl.m_data.buffer [0])
 	}
 else {	//need to reformat
 #if DBG
@@ -721,7 +721,7 @@ else {	//need to reformat
 		pBuffer += h;
 		}
 	memset (pBuffer, 0, m_info.th * tw - (pBuffer - ogl.m_data.buffer [0]));
-	RETURN (ogl.m_data.buffer [0])
+	RETVAL (ogl.m_data.buffer [0])
 	}
 }
 
@@ -934,12 +934,12 @@ ENTER (2, 0);
 	uint8_t		*data = new uint8_t [nSize];
 
 if (!data)
-	RETURN (0)
+	RETVAL (0)
 memset (data, 0, nSize);
 ogl.GenTextures (1, &m_info.handle);
 if (!m_info.handle) {
 	ogl.ClearError (0);
-	RETURN (0)
+	RETVAL (0)
 	}
 #if DBG
 usedHandles [m_info.handle] = 1;
@@ -950,7 +950,7 @@ glTexImage2D (GL_TEXTURE_2D, 0, 4, w, h, 0, ogl.m_states.nRGBAFormat, GL_UNSIGNE
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 delete[] data;
-RETURN (m_info.handle)
+RETVAL (m_info.handle)
 }
 
 //------------------------------------------------------------------------------
@@ -1021,11 +1021,11 @@ int32_t CTexture::Load (uint8_t* buffer)
 {
 ENTER (2, 0);
 if (!buffer)
-	RETURN (1)
+	RETVAL (1)
 ogl.GenTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 if (!m_info.handle) {
 	ogl.ClearError (0);
-	RETURN (1)
+	RETVAL (1)
 	}
 #if DBG
 	if (!usedHandles [m_info.handle])
@@ -1078,7 +1078,7 @@ else
 #endif
 	//SetSize ();
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 //------------------------------------------------------------------------------
@@ -1160,23 +1160,23 @@ LoadTexture (gameData.pigData.tex.pBmIndex [nTexture].index, 0, gameStates.app.b
 pBm = gameData.pigData.tex.pBitmap + gameData.pigData.tex.pBmIndex [nTexture].index;
 pBm->SetStatic (1);
 if (!(pBmo = pBm->Override ()))
-	RETURN (pBm)
+	RETVAL (pBm)
 pBmo->SetStatic (1);
 if (!pBmo->WallAnim ())
-	RETURN (pBmo)
+	RETVAL (pBmo)
 if (2 > (nFrames = pBmo->FrameCount ()))
-	RETURN (pBmo)
+	RETVAL (pBmo)
 pBmo->SetTranspType (3);
 pBmo->SetupTexture (1, bLoadTextures);
 if (!(pBmf = pBmo->Frames ()))
-	RETURN (pBmo)
+	RETVAL (pBmo)
 if ((nFrameIdx < 0) && (nFrames >= -nFrameIdx))
 	pBmf -= (nFrameIdx + 1);
 pBmo->SetCurFrame (pBmf);
 pBmf->SetTranspType (3);
 pBmf->SetupTexture (1, bLoadTextures);
 pBmf->SetStatic (1);
-RETURN (pBmf)
+RETVAL (pBmf)
 }
 
 //------------------------------------------------------------------------------
@@ -1189,7 +1189,7 @@ ENTER (2, 0);
 	uint8_t*		data = Buffer ();
 
 if (!data)
-	RETURN (1)
+	RETVAL (1)
 
 	GLubyte*		pBuffer = NULL;
 	CTexture		texture;
@@ -1208,7 +1208,7 @@ if (!(m_info.compressed.bCompressed || Parent ())) {
 		 (m_info.pTexture->TW () >= 64) && (m_info.pTexture->TH () >= 64))
 		m_info.pTexture->SetInternalFormat (GL_COMPRESSED_RGBA);
 	if (m_info.pTexture->Verify ())
-		RETURN (1)
+		RETVAL (1)
 	}
 #	endif
 #else
@@ -1263,7 +1263,7 @@ if (!m_info.pTexture->IsRenderBuffer ())
 	if (bLocal)
 		m_info.pTexture->Destroy ();
 	}
-RETURN (funcRes)
+RETVAL (funcRes)
 }
 
 //------------------------------------------------------------------------------
@@ -1280,7 +1280,7 @@ int32_t CBitmap::PrepareTexture (int32_t bMipMap, int32_t bMask, tPixelBuffer *r
 {
 ENTER (2, 0);
 if ((m_info.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
-	RETURN (Parent ()->PrepareTexture (bMipMap, bMask, renderBuffer))
+	RETVAL (Parent ()->PrepareTexture (bMipMap, bMask, renderBuffer))
 
 #if DBG
 if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
@@ -1308,7 +1308,7 @@ if (m_info.pTexture->Register ()) {
 	}
 else {
 	if (m_info.pTexture->Handle () > 0)
-		RETURN (0)
+		RETVAL (0)
 	if (!m_info.pTexture->Width ())
 		m_info.pTexture->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
 	}
@@ -1326,7 +1326,7 @@ if (m_info.nId == nDbgTexture)
 	BRP;
 #endif
 LoadTexture (0, 0, (m_info.props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
-RETURN (m_info.pTexture->Handle () == 0)
+RETVAL (m_info.pTexture->Handle () == 0)
 }
 
 //------------------------------------------------------------------------------
@@ -1338,7 +1338,7 @@ ENTER (2, 0);
 	uint8_t	nFlags;
 
 if (nFrames < 2)
-	RETURN (0)
+	RETVAL (0)
 else {
 #if DBG
 	if (strstr (m_info.szName, "door"))
@@ -1374,7 +1374,7 @@ else {
 			pBmf->PrepareTexture (bMipMaps, 0, NULL);
 		}
 	}
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -1387,15 +1387,15 @@ ENTER (2, 0);
 	uint8_t		*pm;
 
 if (!gameStates.render.textures.bHaveMaskShader)
-	RETURN (NULL)
+	RETVAL (NULL)
 if (!Buffer ())
-	RETURN (NULL)
+	RETVAL (NULL)
 if (m_info.pMask)
-	RETURN (m_info.pMask)
+	RETVAL (m_info.pMask)
 //int32_t nTranspType = m_info.nTranspType;
 //SetBPP (4);
 if (!(m_info.pMask = CBitmap::Create (0, Width (), Height (), 1)))
-	RETURN (NULL)
+	RETVAL (NULL)
 #if DBG
 sprintf (m_info.pMask->m_info.szName, "{%s}", Name ());
 #endif
@@ -1421,7 +1421,7 @@ else {
 			*pm = 0xff;
 	}
 m_info.nMasks = 1;
-RETURN (m_info.pMask)
+RETVAL (m_info.pMask)
 }
 
 //------------------------------------------------------------------------------
@@ -1432,14 +1432,14 @@ ENTER (2, 0);
 	int32_t	nMasks, i, nFrames;
 
 if (!gameStates.render.textures.bHaveMaskShader)
-	RETURN (0)
+	RETVAL (0)
 if (m_info.nMasks)
-	RETURN (m_info.nMasks)
+	RETVAL (m_info.nMasks)
 m_info.nMasks = -1;
 if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames.pBm) {
 	if (m_info.props.flags & BM_FLAG_SUPER_TRANSPARENT)
-		RETURN (CreateMask () != NULL)
-	RETURN (0)
+		RETVAL (CreateMask () != NULL)
+	RETVAL (0)
 	}
 nFrames = FrameCount ();
 for (nMasks = i = 0; i < nFrames; i++)
@@ -1448,7 +1448,7 @@ for (nMasks = i = 0; i < nFrames; i++)
 			nMasks++;
 if (nMasks > 0)
 	m_info.nMasks = nMasks;
-RETURN (nMasks)
+RETVAL (nMasks)
 }
 
 //------------------------------------------------------------------------------
@@ -1463,7 +1463,7 @@ ENTER (2, 0);
 
 if ((pBm = HasOverride ()) && (pBm != this)) {
 	int32_t i = pBm->Bind (bMipMaps);
-	RETURN (i)
+	RETVAL (i)
 	}
 
 #if DBG
@@ -1481,7 +1481,7 @@ if (!(m_info.pTexture && m_info.pTexture->IsRenderBuffer ()))
 			SetupTexture (bMipMaps, 1);
 #endif
 			nDepth--;
-			RETURN (1)
+			RETVAL (1)
 			}
 		}
 	CBitmap* pMask = Mask ();
@@ -1489,12 +1489,12 @@ if (!(m_info.pTexture && m_info.pTexture->IsRenderBuffer ()))
 		pMask->SetupTexture (0, 1);
 	}
 if (!m_info.pTexture)
-	RETURN (-1)
+	RETVAL (-1)
 m_info.pTexture->Bind ();
 #if 0
 nDepth--;
 #endif
-RETURN (0)
+RETVAL (0)
 }
 
 //------------------------------------------------------------------------------
@@ -1505,15 +1505,15 @@ ENTER (2, 0);
 int32_t h = m_info.props.h;
 int32_t w = m_info.props.w;
 if (!(h * w))
-	RETURN (false)
+	RETVAL (false)
 int32_t nFrames = (m_info.nType == BM_TYPE_ALT) ? FrameCount () : 0;
 if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	CreateMasks ();
 	if (bLoad) {
 		if (PrepareTexture (bMipMaps, 0, NULL))
-			RETURN (false)
+			RETVAL (false)
 		if (Mask () && Mask ()->PrepareTexture (0, 1, NULL))
-			RETURN (false)
+			RETVAL (false)
 		}
 	}
 else if (!Frames ()) {
@@ -1527,15 +1527,15 @@ else if (!Frames ()) {
 		CBitmap*	pBmf = Frames ();
 		for (int32_t i = nFrames; i; i--, pBmf++) {
 			if (pBmf->PrepareTexture (bMipMaps, 0, NULL))
-				RETURN (false)
+				RETVAL (false)
 			if (nMasks) {
 				if (pBmf->Mask () && (pBmf->Mask ()->PrepareTexture (0, 1, NULL)))
-					RETURN (false)
+					RETVAL (false)
 				}
 			}
 		}
 	}
-RETURN (m_info.bSetup = true)
+RETVAL (m_info.bSetup = true)
 }
 
 //------------------------------------------------------------------------------
@@ -1560,32 +1560,32 @@ switch (m_info.nType) {
 			if (pBm == this)
 				m_info.pOverride = NULL;
 			else
-				RETURN (pBm->SetupTexture (bMipMaps, bLoad))
+				RETVAL (pBm->SetupTexture (bMipMaps, bLoad))
 			}
 		if (m_info.bSetup)
-			RETURN (Prepared () || !PrepareTexture (bMipMaps, 0))
-		RETURN (SetupFrames (bMipMaps, bLoad))
+			RETVAL (Prepared () || !PrepareTexture (bMipMaps, 0))
+		RETVAL (SetupFrames (bMipMaps, bLoad))
 
 	case BM_TYPE_ALT:	// alternative (hires) textures
 		if (!(m_info.bSetup || SetupFrames (bMipMaps, bLoad)))
-			RETURN (false)
+			RETVAL (false)
 		if ((pBm = HasOverride ()))
-			RETURN (pBm->SetupTexture (bMipMaps, bLoad))
+			RETVAL (pBm->SetupTexture (bMipMaps, bLoad))
 		if (bLoad)
-			RETURN (Prepared () || !PrepareTexture (bMipMaps, 0))
-		RETURN (true)
+			RETVAL (Prepared () || !PrepareTexture (bMipMaps, 0))
+		RETVAL (true)
 
 	case BM_TYPE_FRAME:	// hires frame
 		if (bLoad)
-			RETURN (Prepared () || !PrepareTexture (bMipMaps, 0))
-		RETURN (true)
+			RETVAL (Prepared () || !PrepareTexture (bMipMaps, 0))
+		RETVAL (true)
 
 	case BM_TYPE_MASK:	// hires frame mask
 		if (bLoad)
-			RETURN (Prepared () || !PrepareTexture (bMipMaps, 1))
-		RETURN (true)
+			RETVAL (Prepared () || !PrepareTexture (bMipMaps, 1))
+		RETVAL (true)
 	}
-RETURN (false)
+RETVAL (false)
 }
 
 //------------------------------------------------------------------------------

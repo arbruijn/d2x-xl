@@ -119,7 +119,7 @@ if (nType == OBJ_WEAPON) {
 else if (nType == OBJ_ROBOT) {
 #if 0
 	if (ROBOTINFO ((int32_t) nId) && ROBOTINFO ((int32_t) nId)->bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
-		RETURN (-1)
+		RETVAL (-1)
 #endif
 	}
 else if (nType == OBJ_HOSTAGE)
@@ -140,11 +140,11 @@ else if (nType == OBJ_POWERUP)
 
 SetSegment (FindSegByPos (vPos, nSegment, 1, 0));
 if ((Segment () < 0) || (Segment () > gameData.segData.nLastSegment))
-	RETURN (-1)
+	RETVAL (-1)
 
 if (nType == OBJ_DEBRIS) {
 	if (!gameOpts->render.effects.nShrapnels && (gameData.objData.nDebris >= gameStates.render.detail.nMaxDebrisObjects))
-		RETURN (-1)
+		RETVAL (-1)
 	}
 
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
@@ -193,7 +193,7 @@ else if (GetControlType () == CT_EXPLOSION) {
 #endif
 Link ();
 LinkToSeg (nSegment);
-RETURN (Key ())
+RETVAL (Key ())
 }
 
 //-----------------------------------------------------------------------------
@@ -231,7 +231,7 @@ else if (nType == OBJ_ROBOT) {
 	BRP;
 #if 0
 	if (ROBOTINFO ((int32_t) nId) && ROBOTINFO ((int32_t) nId)->bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
-		RETURN (-1)
+		RETVAL (-1)
 #endif
 	}
 else if (nType == OBJ_HOSTAGE)
@@ -261,11 +261,11 @@ if (nSegment < -1)
 else
 	nSegment = FindSegByPos (vPos, nSegment, 1, 0);
 if ((nSegment < 0) || (nSegment > gameData.segData.nLastSegment))
-	RETURN (-1)
+	RETVAL (-1)
 
 if (nType == OBJ_DEBRIS) {
 	if (!gameOpts->render.effects.nShrapnels && (gameData.objData.nDebris >= gameStates.render.detail.nMaxDebrisObjects))
-		RETURN (-1)
+		RETVAL (-1)
 	}
 
 // Find next free object
@@ -276,7 +276,7 @@ if (!pObj) {
 	if (nObject > -1)
 		UpdateLastObject (0x7fffffff);
 #endif
-	RETURN (-1)
+	RETVAL (-1)
 	}
 pObj->SetKey (nObject);
 pObj->SetCreationTime ();
@@ -354,7 +354,7 @@ if (IsMultiGame && IsCoopGame &&
 #endif
 pObj->ResetDamage ();
 pObj->SetTarget (NULL);
-RETURN (nObject)
+RETVAL (nObject)
 }
 
 //------------------------------------------------------------------------------
@@ -365,7 +365,7 @@ ENTER (0, 0);
 int16_t nObject = AllocObject ();
 CObject *pClone = OBJECT (nObject);
 if (!pClone)
-	RETURN (-1)
+	RETVAL (-1)
 int32_t nSignature = pClone->info.nSignature;
 memcpy (pClone, pObj, sizeof (CObject));
 pClone->info.nSignature = nSignature;
@@ -382,7 +382,7 @@ pClone->SetLinkedType (OBJ_NONE);
 #endif
 pObj->Link ();
 pObj->LinkToSeg (nSegment);
-RETURN (nObject)
+RETVAL (nObject)
 }
 
 //------------------------------------------------------------------------------
@@ -393,9 +393,9 @@ ENTER (0, 0);
 tRobotInfo* pRobotInfo = ROBOTINFO (nId);
 if (!pRobotInfo) {
 	PrintLog (0, "Trying to create non-existent robot (type %d)\n", nId);
-	RETURN (-1)
+	RETVAL (-1)
 	}
-RETURN (CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.modelData.polyModels [0][pRobotInfo->nModel].Rad (), CT_AI, MT_PHYSICS, RT_POLYOBJ))
+RETVAL (CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.modelData.polyModels [0][pRobotInfo->nModel].Rad (), CT_AI, MT_PHYSICS, RT_POLYOBJ))
 }
 
 //------------------------------------------------------------------------------
@@ -435,7 +435,7 @@ else {
 		nCount += (nMines + 3) / 4;
 		}
 	}
-RETURN (nCount)
+RETVAL (nCount)
 }
 
 //-----------------------------------------------------------------------------
@@ -460,7 +460,7 @@ if (nCount && powerupFilter [nPowerup]) {
 			gameData.multiplayer.maxPowerupsAllowed [POW_VULCAN_AMMO] = 2 * nCount; // add vulcan ammo for each gatling type gun
 		}
 	}
-LEAVE
+RETURN
 }
 
 //-----------------------------------------------------------------------------
@@ -483,7 +483,7 @@ if (nCount && powerupFilter [nPowerup]) {
 			gameData.multiplayer.maxPowerupsAllowed [nPowerup + 1] = gameData.multiplayer.maxPowerupsAllowed [nPowerup] / 4;
 		}
 	}
-LEAVE
+RETURN
 }
 
 //-----------------------------------------------------------------------------
@@ -509,7 +509,7 @@ if (nCount && powerupFilter [nPowerup]) {
 			gameData.multiplayer.maxPowerupsAllowed [nPowerup + 1] = gameData.multiplayer.maxPowerupsAllowed [nPowerup] / 4;
 		}
 	}
-LEAVE
+RETURN
 }
 
 //-----------------------------------------------------------------------------
@@ -532,7 +532,7 @@ if (nCount && powerupFilter [nPowerup]) {
 			AddAllowedPowerup (nPowerup, nCount);
 		}
 	}
-LEAVE
+RETURN
 }
 
 //-----------------------------------------------------------------------------
@@ -556,7 +556,7 @@ if (nCount && powerupFilter [nPowerup]) {
 			gameData.multiplayer.powerupsInMine [nPowerup + 1] = gameData.multiplayer.powerupsInMine [nPowerup] / 4;
 		}	
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -589,10 +589,10 @@ int32_t CreatePowerup (uint8_t nId, int16_t nCreator, int16_t nSegment, const CF
 {
 ENTER (0, 0);
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
-	RETURN (-1)
+	RETVAL (-1)
 if (nId >= MAX_POWERUP_TYPES) {
 	PrintLog (0, "Trying to create non-existent powerup (type %d)\n", nId);
-	RETURN (-1)
+	RETVAL (-1)
 	}
 if (!bIgnoreLimits && TooManyPowerups ((int32_t) nId)) {
 #if 1 //DBG
@@ -603,10 +603,10 @@ if (!bIgnoreLimits && TooManyPowerups ((int32_t) nId)) {
 #endif
 	TooManyPowerups (nId);
 #endif
-	RETURN (-2)
+	RETVAL (-2)
 	}
 if (gameStates.gameplay.bMineMineCheat && !bForce && (CObject::IsEquipment (nId) < 2))
-	RETURN (-1)
+	RETVAL (-1)
 int16_t nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objData.pwrUp.info [nId].size, CT_POWERUP, MT_PHYSICS, RT_POWERUP);
 if (nObject >= 0) {
 	if (nId == POW_VULCAN_AMMO)
@@ -614,7 +614,7 @@ if (nObject >= 0) {
 	if (IsMultiGame && PowerupClass (nId))
 		AddPowerupInMine ((int32_t) nId);
 	}
-RETURN (nObject)
+RETVAL (nObject)
 }
 
 //------------------------------------------------------------------------------
@@ -625,7 +625,7 @@ ENTER (0, 0);
 if (rType == 255) {
 	CWeaponInfo *pWeaponInfo = WEAPONINFO (nId);
 	if (!pWeaponInfo)
-		RETURN (-1)
+		RETVAL (-1)
 	switch (pWeaponInfo->renderType) {
 		case WEAPON_RENDER_BLOB:
 			xSize = pWeaponInfo->xBlobSize;
@@ -645,10 +645,10 @@ if (rType == 255) {
 			break;
 		default:
 			PrintLog (0, "Error: Invalid weapon render nType in CreateNewWeapon\n");
-			RETURN (-1)
+			RETVAL (-1)
 		}
 	}
-RETURN (CreateObject (OBJ_WEAPON, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_WEAPON, MT_PHYSICS, rType))
+RETVAL (CreateObject (OBJ_WEAPON, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_WEAPON, MT_PHYSICS, rType))
 }
 
 //------------------------------------------------------------------------------
@@ -656,7 +656,7 @@ RETURN (CreateObject (OBJ_WEAPON, nId, nCreator, nSegment, vPos, CFixMatrix::IDE
 int32_t CreateFireball (uint8_t nId, int16_t nSegment, const CFixVector& vPos, fix xSize, uint8_t rType)
 {
 ENTER (0, 0);
-RETURN (CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_EXPLOSION, MT_NONE, rType))
+RETVAL (CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_EXPLOSION, MT_NONE, rType))
 }
 
 //------------------------------------------------------------------------------
@@ -664,7 +664,7 @@ RETURN (CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, CFixMatrix::IDENTIT
 int32_t CreateDebris (CObject *pParent, int16_t nSubModel)
 {
 ENTER (0, 0);
-RETURN (CreateObject (OBJ_DEBRIS, 0, -1, pParent->info.nSegment, pParent->info.position.vPos, pParent->info.position.mOrient,
+RETVAL (CreateObject (OBJ_DEBRIS, 0, -1, pParent->info.nSegment, pParent->info.position.vPos, pParent->info.position.mOrient,
 							 gameData.modelData.polyModels [0][pParent->ModelId ()].SubModels ().rads [nSubModel],
 							 CT_DEBRIS, MT_PHYSICS, RT_POLYOBJ))
 }
@@ -674,7 +674,7 @@ RETURN (CreateObject (OBJ_DEBRIS, 0, -1, pParent->info.nSegment, pParent->info.p
 int32_t CreateCamera (CObject *pParent)
 {
 ENTER (0, 0);
-RETURN (CreateObject (OBJ_CAMERA, 0, -1, pParent->info.nSegment, pParent->info.position.vPos, pParent->info.position.mOrient, 0, CT_NONE, MT_NONE, RT_NONE))
+RETVAL (CreateObject (OBJ_CAMERA, 0, -1, pParent->info.nSegment, pParent->info.position.vPos, pParent->info.position.mOrient, 0, CT_NONE, MT_NONE, RT_NONE))
 }
 
 //------------------------------------------------------------------------------
@@ -682,7 +682,7 @@ RETURN (CreateObject (OBJ_CAMERA, 0, -1, pParent->info.nSegment, pParent->info.p
 int32_t CreateLight (uint8_t nId, int16_t nSegment, const CFixVector& vPos)
 {
 ENTER (0, 0);
-RETURN (CreateObject (OBJ_LIGHT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, 0, CT_LIGHT, MT_NONE, RT_NONE))
+RETVAL (CreateObject (OBJ_LIGHT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, 0, CT_LIGHT, MT_NONE, RT_NONE))
 }
 
 //------------------------------------------------------------------------------
@@ -703,7 +703,7 @@ nSegment = FindSegByPos (vPos, pObj->info.nSegment, 1, 0);
 if (nSegment != -1) {
 	CObject *pExplObj = CreateExplosion (nSegment, vPos, size, ANIM_SMALL_EXPLOSION);
 	if (!pExplObj)
-		LEAVE;
+		RETURN;
 	AttachObject (pObj, pExplObj);
 	if (bSound || (RandShort () < 8192)) {
 		fix vol = I2X (1) / 2;
@@ -712,7 +712,7 @@ if (nSegment != -1) {
 		audio.CreateObjectSound (SOUND_EXPLODING_WALL, SOUNDCLASS_EXPLOSION, pObj->Index (), 0, vol);
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -733,12 +733,12 @@ nSegment = FindSegByPos (vPos, pObj->info.nSegment, 1, 0);
 if (nSegment != -1) {
 	CObject *pExplObj = CreateExplosion (nSegment, vPos, xSize, nVClip);
 	if (!pExplObj)
-		LEAVE;
+		RETURN;
 
 	pExplObj->info.movementType = MT_PHYSICS;
 	pExplObj->mType.physInfo.velocity = pObj->mType.physInfo.velocity * (I2X (1) / 2);
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -753,12 +753,12 @@ nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, vPos, orient,
 								gameData.modelData.polyModels [0][gameData.modelData.nMarkerModel].Rad (), CT_NONE, MT_NONE, RT_POLYOBJ);
 CObject *pObj = OBJECT (nObject);
 if (!pObj)
-	RETURN (-1)
+	RETVAL (-1)
 pObj->rType.polyObjInfo.nModel = gameData.modelData.nMarkerModel;
 pObj->mType.spinRate = pObj->info.position.mOrient.m.dir.u * (I2X (1) / 2);
 //	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all OBJECTS.
 pObj->SetLife (IMMORTAL_TIME);
-RETURN (nObject)
+RETVAL (nObject)
 }
 
 //------------------------------------------------------------------------------

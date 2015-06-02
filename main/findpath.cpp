@@ -57,7 +57,7 @@ ENTER (1, 0);
 m_nIndex = 0;
 for (int32_t i = 0; i < MAX_FCD_CACHE; i++)
 	m_cache [i].seg0 = -1;
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------------
@@ -83,7 +83,7 @@ else {
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------
@@ -96,10 +96,10 @@ ENTER (1, 0);
 for (int32_t i = int32_t (m_cache.Length ()); i; i--, pc++) {
 	if ((pc->seg0 == seg0) && (pc->seg1 == seg1)) {
 		SetPathLength (pc->pathLen);
-		RETURN (pc->dist)
+		RETVAL (pc->dist)
 		}
 	}
-RETURN (-1)
+RETVAL (-1)
 }
 
 // -----------------------------------------------------------------------------
@@ -116,7 +116,7 @@ m_widFlag = nWidFlag;
 m_maxDist = (nMaxDist < 0) ? gameData.segData.nSegments : nMaxDist;
 if (!++m_bFlag)
 	m_bFlag = 1;
-RETURN (m_bFlag)
+RETVAL (m_bFlag)
 }
 
 // -----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ m_nHead = 1;
 m_bFlag = flag;
 m_nDir = dir;
 m_nLinkSeg = 0;
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -146,7 +146,7 @@ int16_t CSimpleHeap::Expand (CScanInfo& scanInfo)
 {
 ENTER (1, 0);
 if (m_nTail >= m_nHead)
-	RETURN (m_nLinkSeg = -1)
+	RETVAL (m_nLinkSeg = -1)
 int16_t nPredSeg = m_queue [m_nTail++];
 
 #if DBG_SCAN
@@ -156,7 +156,7 @@ if (nPredSeg == nDbgSeg)
 
 int16_t m_nDepth = m_path [nPredSeg].m_nDepth + 1;
 if (m_nDepth > scanInfo.m_maxDist)
-	RETURN (m_nLinkSeg = scanInfo.Scanning (m_nDir) ? 0 : -1)
+	RETVAL (m_nLinkSeg = scanInfo.Scanning (m_nDir) ? 0 : -1)
 
 CSegment* pSeg = SEGMENT (nPredSeg);
 for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
@@ -179,11 +179,11 @@ for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 		BRP;
 	if (nSuccSeg >= gameData.segData.nSegments) {
 		PrintLog (0, "internal error in simple router!\n");
-		RETURN (-1)
+		RETVAL (-1)
 		}
 	if ((nSuccSeg < 0) || (nSuccSeg >= gameData.segData.nSegments)) {
 		PrintLog (0, "invalid successor in CSimpleHeap::Expand\n");
-		RETURN (-1)
+		RETVAL (-1)
 		}
 #endif
 	CPathNode& pathNode = m_path [nSuccSeg];
@@ -192,18 +192,18 @@ for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	pathNode.m_nPred = nPredSeg;
 	pathNode.m_nEdge = nSide;
 	if (Match (nSuccSeg, scanInfo))
-		RETURN (m_nLinkSeg = nSuccSeg + 1)
+		RETVAL (m_nLinkSeg = nSuccSeg + 1)
 	pathNode.m_bVisited = scanInfo.m_bFlag;
 	pathNode.m_nDepth = m_nDepth;
 	m_queue [m_nHead++] = nSuccSeg;
 #if DBG_SCAN
 	if (m_nHead >= gameData.segData.nSegments) {
 		PrintLog (0, "internal error in simple router!\n");
-		RETURN (-1)
+		RETVAL (-1)
 		}
 #endif
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 // -----------------------------------------------------------------------------
@@ -259,12 +259,12 @@ ENTER (1, 0);
 //if (!m_cacheType) 
 	{
 	m_cache [m_cacheType].SetPathLength (10000);
-	RETURN (-1)
+	RETVAL (-1)
 	}
 #endif
 
 if (0 > (m_nStartSeg = SetSegment (nStartSeg, p0)))
-	RETURN (-1)
+	RETVAL (-1)
 m_nDestSeg = nDestSeg;
 m_p0 = p0;
 m_p1 = p1;
@@ -275,7 +275,7 @@ if (m_nDestSeg >= 0) {
 	m_cacheType = nCacheType;
 	if ((m_cacheType >= 0) && (m_nStartSeg == m_nDestSeg)) {
 		m_cache [m_cacheType].SetPathLength (0);
-		RETURN (CFixVector::Dist (m_p0, m_p1))
+		RETVAL (CFixVector::Dist (m_p0, m_p1))
 		}
 #endif
 	// adjacent segments?
@@ -283,7 +283,7 @@ if (m_nDestSeg >= 0) {
 		int16_t nSide = SEGMENT (m_nStartSeg)->ConnectedSide (SEGMENT (m_nDestSeg));
 		if ((nSide != -1) && (SEGMENT (m_nDestSeg)->IsPassable (nSide, NULL) & m_widFlag)) {
 			m_cache [m_cacheType].SetPathLength (1);
-			RETURN (CFixVector::Dist (m_p0, m_p1))
+			RETVAL (CFixVector::Dist (m_p0, m_p1))
 			}
 		}
 
@@ -292,7 +292,7 @@ if (m_nDestSeg >= 0) {
 	if (m_cacheType >= 0) {
 		fix xDist = m_cache [m_cacheType].Dist (m_nStartSeg, m_nDestSeg);
 		if (xDist >= 0)
-			RETURN (xDist)
+			RETVAL (xDist)
 		}
 #	endif
 #endif
@@ -306,7 +306,7 @@ fix distance = FindPath ();
 if ((distance < 0) && (m_cacheType >= 0))
 	m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, 1024, I2X (1024));
 
-RETURN (distance)
+RETVAL (distance)
 }
 
 // -----------------------------------------------------------------------------
@@ -335,7 +335,7 @@ for (;;) {
 xDist += CFixVector::Dist (m_p0, SEGMENT (nSuccSeg)->Center ());
 if (m_cacheType >= 0) 
 	m_cache [m_cacheType].Add (m_heap.m_nStartSeg, m_heap.m_nDestSeg, nLength + 3, xDist);
-RETURN (xDist)
+RETVAL (xDist)
 }
 
 // -----------------------------------------------------------------------------
@@ -344,17 +344,17 @@ fix CSimpleUniDirRouter::FindPath (void)
 {
 ENTER (1, 0);
 if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
-	RETURN (-1)
+	RETVAL (-1)
 m_scanInfo.Setup (&m_heap, m_widFlag, m_maxDist);
 m_heap.Setup (m_nStartSeg, m_nDestSeg, m_scanInfo.m_bFlag, 0);
 
 for (;;) {
 	if (0 > (m_scanInfo.m_nLinkSeg = m_heap.Expand (m_scanInfo)))
-		RETURN (-1)
+		RETVAL (-1)
 	if (m_scanInfo.m_nLinkSeg > 0) // destination segment reached
-		RETURN (BuildPath ())
+		RETVAL (BuildPath ())
 	}	
-RETURN (-1)
+RETVAL (-1)
 }
 
 // -----------------------------------------------------------------------------
@@ -382,16 +382,16 @@ for (int32_t nDir = 0; nDir < 2; nDir++) {
 			}
 		++nLength;
 		if ((nLength > 2 * m_scanInfo.m_maxDist + 2) || (nLength > gameData.segData.nSegments))
-			RETURN (-0x7FFFFFFF)
+			RETVAL (-0x7FFFFFFF)
 		xDist += SEGMENT (nPredSeg)->m_childDists [0][heap.m_path [nSuccSeg].m_nEdge];
 		nSuccSeg = nPredSeg;
 		}
 	}
 if (xDist == 0)
-	RETURN (-0x7FFFFFFF)
+	RETVAL (-0x7FFFFFFF)
 if (m_cacheType >= 0) 
 	m_cache [m_cacheType].Add (m_heap [0].m_nStartSeg, m_heap [0].m_nDestSeg, nLength + 3, xDist);
-RETURN (xDist)
+RETVAL (xDist)
 }
 
 // -----------------------------------------------------------------------------
@@ -400,7 +400,7 @@ fix CSimpleBiDirRouter::FindPath (void)
 {
 ENTER (1, 0);
 if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
-	RETURN (-1)
+	RETVAL (-1)
 
 m_scanInfo.Setup (m_heap, m_widFlag, m_maxDist);
 m_heap [0].Setup (m_nStartSeg, m_nDestSeg, m_scanInfo.m_bFlag, 0);
@@ -417,7 +417,7 @@ if (gameStates.app.nThreads > 1) {
 
 	if (((0 < (m_scanInfo.m_nLinkSeg = m_heap [0].nLinkSeg)) && (m_scanInfo.m_nLinkSeg != m_heap [0].m_nDestSeg + 1)) || 
 		 ((0 < (m_scanInfo.m_nLinkSeg = m_heap [1].nLinkSeg)) && (m_scanInfo.m_nLinkSeg != m_heap [1].m_nDestSeg + 1)))
-		RETURN (BuildPathBiDir (m_p0, m_p1, m_cacheType))
+		RETVAL (BuildPathBiDir (m_p0, m_p1, m_cacheType))
 	}
 else 
 #endif
@@ -427,13 +427,13 @@ else
 			if (!(m_scanInfo.m_nLinkSeg = m_heap [nDir].Expand (m_scanInfo))) // nLinkSeg == 0 -> keep expanding
 				continue;
 			if (m_scanInfo.m_nLinkSeg < 0)
-				RETURN (-1)
+				RETVAL (-1)
 			// destination segment reached
-			RETURN (BuildPath ())
+			RETVAL (BuildPath ())
 			}
 		}	
 	}
-RETURN (-1)
+RETVAL (-1)
 }
 
 // -----------------------------------------------------------------------------
@@ -445,10 +445,10 @@ bool CDACSUniDirRouter::Create (int32_t nNodes)
 ENTER (1, 0);
 if ((m_nNodes != nNodes) && !m_heap.Create (nNodes)) {
 	SetSize (0);
-	RETURN (false)
+	RETVAL (false)
 	}
 SetSize (nNodes);
-RETURN (true)
+RETVAL (true)
 }
 
 // -----------------------------------------------------------------------------
@@ -457,13 +457,13 @@ fix CDACSUniDirRouter::BuildPath (int16_t nSegment)
 {
 ENTER (1, 0);
 if (m_heap.Cost (nSegment) == 0xFFFFFFFF)
-	RETURN (-1)
+	RETVAL (-1)
 
 	int32_t h = m_heap.BuildRoute (nSegment);
 	CDialHeap::tPathNode* route = m_heap.Route ();
 
 if (route [0].nNode == nSegment)
-	RETURN (0)
+	RETVAL (0)
 if (m_nDestSeg >= 0)
 	h -= 2;
 
@@ -482,7 +482,7 @@ for (int32_t i = 0, j; i < h; i = j) {
 	// segments of the route that can "see" each other even if they aren't directly connected.
 	nStartSeg = route [i].nNode;
 	if ((nStartSeg < 0) || (nStartSeg >= gameData.segData.nSegments))
-		RETURN (-2)
+		RETVAL (-2)
 	/*hitQuery.*/p0 = p1 = &SEGMENT (nStartSeg)->Center ();
 	for (j = i + 1; j < h; j++) { 
 		nDestSeg = route [j].nNode;
@@ -510,7 +510,7 @@ if	(m_nDestSeg >= 0) {
 	if (m_cacheType >= 0) 
 		m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, h + 2, xDist);
 	}
-RETURN (xDist)
+RETVAL (xDist)
 }
 
 // -----------------------------------------------------------------------------
@@ -531,9 +531,9 @@ m_heap.Setup (m_nStartSeg);
 for (;;) {
 	nSegment = m_heap.Pop (nDist);
 	if (nSegment < 0)
-		RETURN ((m_nDestSeg < 0) ? nExpanded : -1)
+		RETVAL ((m_nDestSeg < 0) ? nExpanded : -1)
 	if (nSegment == m_nDestSeg)
-		RETURN (BuildPath (nSegment))
+		RETVAL (BuildPath (nSegment))
 	pSeg = SEGMENT (nSegment);
 #if DBG
 	if (nSegment == nDbgSeg)
@@ -550,7 +550,7 @@ for (;;) {
 			}
 		}
 	}
-RETURN (-1)
+RETVAL (-1)
 }
 
 // -----------------------------------------------------------------------------
@@ -568,9 +568,9 @@ bool CDACSBiDirRouter::Create (int32_t nNodes)
 { 
 ENTER (1, 0);
 if ((m_nNodes != nNodes) && !(m_heap [0].Create (nNodes) && m_heap [1].Create (nNodes)))
-	RETURN (false)
+	RETVAL (false)
 m_nNodes = nNodes;
-RETURN (true)
+RETVAL (true)
 }
 
 // -----------------------------------------------------------------------------
@@ -582,9 +582,9 @@ ENTER (1, 0);
 
 int16_t nSegment = m_heap [nDir].Pop (nDist);
 if ((nSegment < 0) || (nSegment == m_nDestSeg))
-	RETURN (nSegment)
+	RETVAL (nSegment)
 if (m_heap [!nDir].Popped (nSegment))
-	RETURN (nSegment)
+	RETVAL (nSegment)
 CSegment* pSeg = SEGMENT (nSegment);
 for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	if ((pSeg->m_children [nSide] >= 0) && (pSeg->IsPassable (nSide, NULL) & m_widFlag)) {
@@ -593,7 +593,7 @@ for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 			m_heap [nDir].Push (pSeg->m_children [nSide], nSegment, nSide, nNewDist);
 		}
 	}
-RETURN (nSegment)
+RETVAL (nSegment)
 }
 
 // -----------------------------------------------------------------------------
@@ -613,7 +613,7 @@ for (int32_t i = 1; i < j; i++)
 xDist += CFixVector::Dist (m_p0, SEGMENT (m_route [1].nNode)->Center ()) + CFixVector::Dist (m_p1, SEGMENT (m_route [j].nNode)->Center ());
 if (m_cacheType >= 0) 
 	m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, j + 2, xDist);
-RETURN (xDist)
+RETVAL (xDist)
 }
 
 // -----------------------------------------------------------------------------
@@ -622,7 +622,7 @@ fix CDACSBiDirRouter::FindPath (void)
 {
 ENTER (1, 0);
 if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
-	RETURN (-1)
+	RETVAL (-1)
 m_heap [0].Setup (m_nSegments [0] = m_nStartSeg);
 m_heap [1].Setup (m_nSegments [1] = m_nDestSeg);
 
@@ -636,7 +636,7 @@ for (;;) {
 		m_nSegments [1] = Expand (1);
 		}
 	if ((m_nSegments [0] < 0) && (m_nSegments [1] < 0))
-		RETURN (-1)
+		RETVAL (-1)
 	if (m_nSegments [0] == m_nDestSeg) {
 		nSegment = m_nSegments [0];
 		m_nSegments [1] = -1;
@@ -651,9 +651,9 @@ for (;;) {
 		nSegment = m_nSegments [0];
 	else
 		continue;
-	RETURN (BuildPath (nSegment))
+	RETVAL (BuildPath (nSegment))
 	}
-RETURN (-1)
+RETVAL (-1)
 }
 
 //	-----------------------------------------------------------------------------

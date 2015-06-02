@@ -577,7 +577,7 @@ void NetworkHandlePingReturn (uint8_t nPlayer)
 {
 if ((nPlayer >= N_PLAYERS) || !pingStats [nPlayer].launchTime) {
 #if 1			
-	 console.printf (CON_DBG, "Got invalid PING RETURN from %s!\n", PLAYER (nPlayer).callsign);
+	 console.printf (CON_DBG, "Got invalid PING RETVAL from %s!\n", PLAYER (nPlayer).callsign);
 #endif
    return;
 	}

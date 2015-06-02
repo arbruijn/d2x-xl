@@ -186,7 +186,7 @@ ENTER (0, 0);
 	int32_t	nType, nShader = -1;
 
 if (!ogl.m_features.bShaders || (gameStates.render.nType == RENDER_TYPE_SKYBOX))
-	RETURN (-1)
+	RETVAL (-1)
 #if DBG
 if (pFace && (pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 	BRP;
@@ -208,7 +208,7 @@ else if (bColorKey || bMultiTexture)
 else
 	shaderManager.Deploy (-1);
 ogl.ClearError (0);
-RETURN (nShader)
+RETVAL (nShader)
 }
 
 //------------------------------------------------------------------------------
@@ -297,13 +297,13 @@ if (bTextured) {
 	if (bForce || (bmBot != gameStates.render.history.bmBot)) {
 		bStateChange = true;
 		if (!(gameStates.render.history.bmBot = SetupTMU (bmBot, GL_TEXTURE0 + bLightmaps, GL_MODULATE)))
-			RETURN (0)
+			RETVAL (0)
 		}
 	if (bForce || (bmTop != gameStates.render.history.bmTop)) {
 		bStateChange = true;
 		if (bmTop) {
 			if (!(gameStates.render.history.bmTop = SetupTMU (bmTop, GL_TEXTURE1 + bLightmaps, GL_DECAL)))
-				RETURN (0)
+				RETVAL (0)
 			}
 		else {
 			gameStates.render.history.bmTop = NULL;
@@ -315,7 +315,7 @@ if (bTextured) {
 		bStateChange = true;
 		if (bmMask) {
 			if (!(gameStates.render.history.bmMask = SetupTMU (bmMask, GL_TEXTURE2 + bLightmaps, GL_MODULATE)))
-				RETURN (0)
+				RETVAL (0)
 			}
 		else {
 			gameStates.render.history.bmMask = NULL;
@@ -338,7 +338,7 @@ else {
 	ResetTMU (GL_TEXTURE0);
 	}
 PROF_END(ptRenderStates)
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -436,7 +436,7 @@ if ((bTransparent /*|| (pFace->m_info.nSegColor && gameStates.render.bPerPixelLi
 #if 1 //!DBG
 	if (!(pFace->m_info.nSegColor && bmBot))
 #endif
-		RETURN (0)
+		RETVAL (0)
 	}
 
 #if 1
@@ -445,7 +445,7 @@ SetRenderStates (pFace, bmBot, bmTop, bTextured, bColorKey, bColored, bLightmaps
 SetRenderStates (pFace, bmBot, bmTop, ((gameStates.render.nType == RENDER_TYPE_ZCULL) && !(bColorKey || (bmBot->Flags () & BM_FLAG_SEE_THRU))) ? 0 : bTextured, bColorKey, bColored, bLightmaps);
 if (gameStates.render.nType == RENDER_TYPE_ZCULL) {
 	DrawFace (pFace);
-	RETURN (1)
+	RETVAL (1)
 	}
 #endif
 
@@ -501,7 +501,7 @@ else {
 if (bMonitor)
 	ResetMonitor (bmTop, bLightmaps);
 PROF_END(ptRenderFaces)
-RETURN (0)
+RETVAL (0)
 }
 
 //------------------------------------------------------------------------------
@@ -516,7 +516,7 @@ if (!pFace->m_info.bTextured)
 else if (bmBot)
 	bmBot = bmBot->Override (-1);
 if (FaceIsTransparent (pFace, bmBot, bmTop) && !(bMonitor || bmTop))
-	RETURN (0)
+	RETVAL (0)
 bMonitor = (pFace->m_info.nCamera >= 0);
 if (bmTop) {
 	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
@@ -535,7 +535,7 @@ lightManager.Headlights ().SetupShader (gameStates.render.history.nType, 1, bmBo
 DrawFace (pFace);
 if (bMonitor)
 	ResetMonitor (bmTop, 1);
-RETURN (0)
+RETVAL (0)
 }
 
 //------------------------------------------------------------------------------

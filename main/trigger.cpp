@@ -628,7 +628,7 @@ for (int32_t i = 0; i < m_nLinks; i++) {
 				pSeg->StartDecloak (nSide);
 			else {
 				CFixVector vPos = pSeg->SideCenter (nSide);
-				audio.CreateSegmentSound (SOUND_FORCEFIELD_HUM, pSeg->Index (), nSide, vPos, 1, Max (gameOpts->sound.xCustomSoundVolume, I2X (1) / 8) / 2);
+				audio.CreateSegmentSound (SOUND_FORCEFIELD_HUM, pSeg->Index (), nSide, vPos, 1, I2X (1) / 2);
 				pWall->nType = nNewWallType;
 				if (pConnWall)
 					pConnWall->nType = nNewWallType;

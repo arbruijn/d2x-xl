@@ -88,7 +88,7 @@ if (nSegment == -1) {
 	FindSegByPos (pCurSeg->point, pSuccSeg->nSegment, 1, 0);
 	}
 pCurSeg->nSegment = pSuccSeg->nSegment;
-RETURN (pCurSeg)
+RETVAL (pCurSeg)
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -119,7 +119,7 @@ for (i = 1; i < nSegs - 1; i += 2) {
 for (i = j = 0; i < nSegs; i++)
 	if (pPointSeg [i].nSegment != -1)
 		pPointSeg [j++] = pPointSeg [i];
-RETURN (j)
+RETVAL (j)
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ for (i = 0; i < numPoints; i++) {
 	j = i + 2;
 	InsertTransitPoint (pPointSeg + i + 1, pPointSeg + i, pPointSeg + j, pPointSeg [j].nConnSide);
 	}
-RETURN (OptimizePath (pPointSeg, numPoints))
+RETVAL (OptimizePath (pPointSeg, numPoints))
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -224,7 +224,7 @@ for (i = 1, --j; i < j; i++) {
 			count = 0;
 		else {
 			if ((count == 3) && (nHitType == HIT_BAD_P0))
-				LEAVE
+				RETURN
 			vGoalPos.v.coord.x = ((*hitQuery.p0).v.coord.x + hitResult.vPoint.v.coord.x)/2;
 			vGoalPos.v.coord.y = ((*hitQuery.p0).v.coord.y + hitResult.vPoint.v.coord.y)/2;
 			vGoalPos.v.coord.z = ((*hitQuery.p0).v.coord.z + hitResult.vPoint.v.coord.z)/2;
@@ -245,7 +245,7 @@ for (i = 1, --j; i < j; i++) {
 	}
 if (j > 1)
 	memcpy (ptSegs + 1, newPtSegs + 1, (j - 1) * sizeof (tPointSeg));
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -369,7 +369,7 @@ pathTooLong: ;
 while (segmentQ [--qTail].end != nEndSeg)
 	if (qTail < 0) {
 		*numPoints = lNumPoints;
-		RETURN (-1)
+		RETVAL (-1)
 		}
 for (i = qTail; i >= 0; ) {
 	nParentSeg = segmentQ [i].start;
@@ -387,7 +387,7 @@ if (bSafeMode && ((pPointSeg - gameData.aiData.routeSegs) + 2 * lNumPoints + 1 >
 #endif
 	AIResetAllPaths ();
 	*numPoints = lNumPoints;
-	RETURN (-1)
+	RETVAL (-1)
 	}
 pPointSeg->nSegment = nStartSeg;
 pPointSeg->point = SEGMENT (nStartSeg)->Center ();
@@ -434,7 +434,7 @@ ValidatePath (4, origPointSegs, lNumPoints);
 #endif
 
 *numPoints = lNumPoints;
-RETURN (0)
+RETVAL (0)
 }
 
 int32_t	Last_buddy_polish_path_frame;
@@ -503,14 +503,14 @@ if ((nCurSeg < 0) || (nCurSeg > gameData.segData.nLastSegment)) {
 	console.printf (CON_DBG, "Path beginning at index %i, length=%i is bogus!\n", pPointSeg-gameData.aiData.routeSegs, numPoints);
 #endif
 	Int3 ();		//	Contact Mike: Debug trap for elusive, nasty bug.
-	RETURN (0)
+	RETVAL (0)
 	}
 #if TRACE
 if (debugFlag == 999)
 	console.printf (CON_DBG, "That's curious...\n");
 #endif
 if (numPoints == 0)
-	RETURN (1)
+	RETVAL (1)
 for (i = 1; i < numPoints; i++) {
 	nNextSeg = pPointSeg [i].nSegment;
 	if ((nNextSeg < 0) || (nNextSeg > gameData.segData.nLastSegment)) {
@@ -518,7 +518,7 @@ for (i = 1; i < numPoints; i++) {
 		console.printf (CON_DBG, "Path beginning at index %i, length=%i is bogus!\n", pPointSeg-gameData.aiData.routeSegs, numPoints);
 #endif
 		Int3 ();		//	Contact Mike: Debug trap for elusive, nasty bug.
-		RETURN (0)
+		RETVAL (0)
 		}
 	if (nCurSeg != nNextSeg) {
 		for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
@@ -529,12 +529,12 @@ for (i = 1; i < numPoints; i++) {
 			console.printf (CON_DBG, "Path beginning at index %i, length=%i is bogus!\n", pPointSeg-gameData.aiData.routeSegs, numPoints);
 #endif
 			Int3 ();
-			RETURN (0)
+			RETVAL (0)
 			}
 		nCurSeg = nNextSeg;
 		}
 	}
-RETURN (1)
+RETVAL (1)
 }
 
 #endif
@@ -556,7 +556,7 @@ FORALL_ROBOT_OBJS (pObj) {
 		 !ValidatePath (4, &gameData.aiData.routeSegs [pStaticInfo->nHideIndex], pStaticInfo->nPathLength))
 		pStaticInfo->nPathLength = 0;	//	This allows people to resume without harm...
 	}
-LEAVE
+RETURN
 }
 #endif
 
@@ -595,7 +595,7 @@ if (nEndSeg != -1) {
 	gameData.aiData.freePointSegs += pStaticInfo->nPathLength;
 	if (uint32_t (gameData.aiData.routeSegs.Index (gameData.aiData.freePointSegs) + MAX_PATH_LENGTH * 2) > uint32_t (LEVEL_POINT_SEGS)) {
 		AIResetAllPaths ();
-		LEAVE
+		RETURN
 		}
 	pStaticInfo->PATH_DIR = 1;		//	Initialize to moving forward.
 	// -- UNUSED!pStaticInfo->SUBMODE = AISM_GOHIDE;		//	This forces immediate movement.
@@ -604,7 +604,7 @@ if (nEndSeg != -1) {
 		pLocalInfo->targetAwarenessType = 0;		//	If robot too aware of CPlayerData, will set mode to chase
 	}
 MaybeAIPathGarbageCollect ();
-LEAVE
+RETURN
 }
 
 //	-------------------------------------------------------------------------------------------------------
@@ -635,7 +635,7 @@ if (nEndSeg != -1) {
 	gameData.aiData.freePointSegs += pStaticInfo->nPathLength;
 	if (uint32_t (gameData.aiData.routeSegs.Index (gameData.aiData.freePointSegs) + MAX_PATH_LENGTH * 2) > uint32_t (LEVEL_POINT_SEGS)) {
 		AIResetAllPaths ();
-		LEAVE
+		RETURN
 		}
 	pStaticInfo->PATH_DIR = 1;		//	Initialize to moving forward.
 	// -- UNUSED!pStaticInfo->SUBMODE = AISM_GOHIDE;		//	This forces immediate movement.
@@ -643,7 +643,7 @@ if (nEndSeg != -1) {
 		pLocalInfo->targetAwarenessType = 0;		//	If robot too aware of CPlayerData, will set mode to chase
 	}
 MaybeAIPathGarbageCollect ();
-LEAVE
+RETURN
 }
 
 //	-------------------------------------------------------------------------------------------------------
@@ -680,7 +680,7 @@ if (nEndSeg != -1) {
 	gameData.aiData.freePointSegs += pStaticInfo->nPathLength;
 	if (uint32_t (gameData.aiData.routeSegs.Index (gameData.aiData.freePointSegs) + MAX_PATH_LENGTH * 2) > uint32_t (LEVEL_POINT_SEGS)) {
 		AIResetAllPaths ();
-		LEAVE
+		RETURN
 		}
 	pStaticInfo->PATH_DIR = 1;		//	Initialize to moving forward.
 	pLocalInfo->mode = AIM_FOLLOW_PATH;
@@ -688,7 +688,7 @@ if (nEndSeg != -1) {
 		pLocalInfo->targetAwarenessType = 0;
 	}
 MaybeAIPathGarbageCollect ();
-LEAVE
+RETURN
 }
 
 
@@ -735,7 +735,7 @@ if (gameData.aiData.localInfo [pObj->Index ()].nPrevVisibility) {
 		}
 	}
 MaybeAIPathGarbageCollect ();
-LEAVE
+RETURN
 }
 
 //	-------------------------------------------------------------------------------------------------------
@@ -756,13 +756,13 @@ ENTER (1, 0);
 	int32_t			nSegment;
 
 if (pStaticInfo->nPathLength < 2)
-	LEAVE
+	RETURN
 Assert (pObj->info.nSegment != -1);
 Assert (pStaticInfo->nPathLength >= 2);
 if (pStaticInfo->nCurPathIndex <= 0) {
 	if (pStaticInfo->behavior == AIB_STATION) {
 		CreatePathToStation (pObj, 15);
-		LEAVE
+		RETURN
 		}
 	pStaticInfo->nCurPathIndex = 1;
 	pStaticInfo->PATH_DIR = 1;
@@ -774,7 +774,7 @@ else if (pStaticInfo->nCurPathIndex >= pStaticInfo->nPathLength - 1) {
 			tAILocalInfo	*pLocalInfo = &gameData.aiData.localInfo [pObj->Index ()];
 			pLocalInfo->mode = AIM_IDLING;
 			}
-		LEAVE
+		RETURN
 		}
 	Assert (pStaticInfo->nPathLength != 0);
 	pStaticInfo->nCurPathIndex = pStaticInfo->nPathLength - 2;
@@ -796,7 +796,7 @@ if (nSegment == -1) {
 	}
 else
 	pObj->RelinkToSeg (nSegment);
-LEAVE
+RETURN
 }
 
 // -- too much work -- //	----------------------------------------------------------------------------------------------------------
@@ -846,7 +846,7 @@ ENTER (1, 0);
 	tRobotInfo*		pRobotInfo = ROBOTINFO (pObj);
 
 if (!pRobotInfo)
-	LEAVE
+	RETURN
 #if DBG
 if (pObj->Index () == nDbgObj)
 	BRP;
@@ -871,7 +871,7 @@ if ((pStaticInfo->nPathLength > 0) && (pStaticInfo->nHideIndex + pStaticInfo->nP
 	AICollectPathGarbage ();
 	//force_dump_aiObjects_all ("Error in AIFollowPath");
 	AIResetAllPaths ();
-	LEAVE
+	RETURN
 	}
 
 if (pStaticInfo->nPathLength < 2) {
@@ -897,7 +897,7 @@ if (pStaticInfo->nPathLength < 2) {
 	else if (pRobotInfo->companion == 0) {
 		pLocalInfo->mode = AIM_IDLING;
 		pStaticInfo->nPathLength = 0;
-		LEAVE
+		RETURN
 		}
 #if DBG
 	if (pStaticInfo->nHideIndex < 0)
@@ -921,7 +921,7 @@ else
 if (!(nTargetVisibility || nPrevVisibility) && (xDistToTarget > I2X (200)) && !IsMultiGame) {
 	if (xDistToGoal && (xDistToGoal < I2X (2))) {
 		MoveObjectToGoal (pObj, &vGoalPoint, nGoalSeg);
-		LEAVE
+		RETURN
 		}
 	else {
 		fix	xCurSpeed = pObj->MaxSpeed () / 2;
@@ -933,7 +933,7 @@ if (!(nTargetVisibility || nPrevVisibility) && (xDistToTarget > I2X (200)) && !I
 		if (!(pObj->IsGuideBot () || pObj->IsThief ())) {
 			if ((xCoverableDist >= xDistToGoal) || ((RandShort () >> 1) < FixDiv (xCoverableDist, xDistToGoal)))
 				MoveObjectToGoal (pObj, &vGoalPoint, nGoalSeg);
-			LEAVE
+			RETURN
 			}
 		}
 	}
@@ -944,7 +944,7 @@ if (pLocalInfo->mode == AIM_RUN_FROM_OBJECT) {
 		if (xVelScale < I2X (1) / 2)
 			xVelScale = I2X (1) / 2;
 		pObj->mType.physInfo.velocity *= FixMul (xVelScale, pObj->DriveDamage () * 2);
-		LEAVE
+		RETURN
 		}
 	else if (!(gameData.appData.nFrameCount ^ ((pObj->Index ()) & 0x07))) {		//	Done 1/8 frames.
 		//	If CPlayerData on path (beyond point robot is now at), then create a new path.
@@ -999,7 +999,7 @@ while (xDistToGoal < thresholdDistance) {
 		//	If mode = hiding, then stay here until get bonked or hit by player.
 		// --	if (pLocalInfo->mode == AIM_BEHIND) {
 		// --		pLocalInfo->mode = AIM_IDLING;
-		// --		LEAVE		// Stay here until bonked or hit by player.
+		// --		RETURN		// Stay here until bonked or hit by player.
 		// --	} else
 
 		//	Buddy bot.  If he's in mode to get away from CPlayerData and at end of line,
@@ -1012,14 +1012,14 @@ while (xDistToGoal < thresholdDistance) {
 					Assert (pStaticInfo->nPathLength != 0);
 					pLocalInfo->mode = AIM_WANDER;	//	Special buddy mode.p.
 					//--Int3_if (( (pStaticInfo->nCurPathIndex >= 0) && (pStaticInfo->nCurPathIndex < pStaticInfo->nPathLength));
-					LEAVE
+					RETURN
 					}
 				else {
 					pLocalInfo->mode = AIM_WANDER;	//	Special buddy mode.p.
 					pObj->mType.physInfo.velocity.SetZero ();
 					pObj->mType.physInfo.rotVel.SetZero ();
 					//!!Assert ((pStaticInfo->nCurPathIndex >= 0) && (pStaticInfo->nCurPathIndex < pStaticInfo->nPathLength);
-					LEAVE
+					RETURN
 					}
 				}
 			}
@@ -1036,14 +1036,14 @@ while (xDistToGoal < thresholdDistance) {
 			else {
 				//--Int3_if (( (pStaticInfo->nCurPathIndex >= 0) && (pStaticInfo->nCurPathIndex < pStaticInfo->nPathLength));
 				}
-			LEAVE
+			RETURN
 			}
 		else if (pLocalInfo->mode == AIM_FOLLOW_PATH) {
 			CreatePathToTarget (pObj, 10, 1);
 			if ((pStaticInfo->nHideIndex+pStaticInfo->nPathLength < 1) ||
 				 (pStaticInfo->nHideSegment != gameData.aiData.routeSegs [pStaticInfo->nHideIndex+pStaticInfo->nPathLength - 1].nSegment)) {
 				pLocalInfo->mode = AIM_IDLING;
-				LEAVE
+				RETURN
 				}
 			else {
 				//--Int3_if (( (pStaticInfo->nCurPathIndex >= 0) && (pStaticInfo->nCurPathIndex < pStaticInfo->nPathLength));
@@ -1058,7 +1058,7 @@ while (xDistToGoal < thresholdDistance) {
 				if (pStaticInfo->nPathLength < 1) {
 					pStaticInfo->behavior = AIB_NORMAL;
 					pLocalInfo->mode = AIM_IDLING;
-					LEAVE
+					RETURN
 					}
 				}
 			//--Int3_if (( (pStaticInfo->nCurPathIndex >= 0) && (pStaticInfo->nCurPathIndex < pStaticInfo->nPathLength));
@@ -1110,7 +1110,7 @@ while (xDistToGoal < thresholdDistance) {
 	}	//	end while
 //	Set velocity (pObj->mType.physInfo.velocity) and orientation (pObj->info.position.mOrient) for this CObject.
 AIPathSetOrientAndVel (pObj, &vGoalPoint, nTargetVisibility, vecToTarget);
-LEAVE
+RETURN
 }
 
 //	----------------------------------------------------------------------------------------------------------
@@ -1138,7 +1138,7 @@ ENTER (1, 0);
 	tRobotInfo	*pRobotInfo = ROBOTINFO (pObj);
 
 if (!pRobotInfo)
-	LEAVE
+	RETURN
 //	If evading CPlayerData, use highest difficulty level speed, plus something based on diff level
 xMaxSpeed = FixMul (pObj->MaxSpeed (), 2 * pObj->DriveDamage ());
 if ((gameData.aiData.localInfo [pObj->Index ()].mode == AIM_RUN_FROM_OBJECT) || (pObj->cType.aiInfo.behavior == AIB_SNIPE))
@@ -1180,7 +1180,7 @@ if ((gameData.aiData.localInfo [pObj->Index ()].mode == AIM_RUN_FROM_OBJECT) || 
 	}
 else
 	AITurnTowardsVector (&vNormToGoal, pObj, pRobotInfo->turnTime [gameStates.app.nDifficultyLevel]);
-LEAVE
+RETURN
 }
 
 int32_t	nLastFrameGarbageCollected = 0;
@@ -1261,7 +1261,7 @@ FORALL_ROBOT_OBJS (pObj)
 ValidateAllPaths ();
 #	endif
 #endif
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -1301,7 +1301,7 @@ else if (i > LEVEL_POINT_SEGS / 2) {
 		AICollectPathGarbage ();
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------
@@ -1318,7 +1318,7 @@ FORALL_OBJS (pObj)
 		pObj->cType.aiInfo.nPathLength = 0;
 		}
 AICollectPathGarbage ();
-LEAVE
+RETURN
 }
 
 //	---------------------------------------------------------------------------------------------------------
@@ -1358,7 +1358,7 @@ else
 		MoveObjectToLegalSpot (pObj, 0);
 	CreatePathToStation (pObj, 15);
 	}
-LEAVE
+RETURN
 }
 
 //	----------------------------------------------------------------------------------------------------------

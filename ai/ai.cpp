@@ -44,7 +44,7 @@ for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 // Make work for control centers.
 gameData.aiData.target.vBelievedPos = gameData.aiData.cloakInfo [0].vLastPos;
 gameData.aiData.target.nBelievedSeg = gameData.aiData.cloakInfo [0].nLastSeg;
-LEAVE
+RETURN
 }
 
 // ----------------------------------------------------------------------------
@@ -60,13 +60,13 @@ if (gameData.aiData.nAwarenessEvents < MAX_AWARENESS_EVENTS) {
 	if ((nType == WEAPON_WALL_COLLISION) || (nType == WEAPON_ROBOT_COLLISION))
 		if (pObj->info.nId == VULCAN_ID)
 			if (RandShort () > 3276)
-				RETURN (0)       // For vulcan cannon, only about 1/10 actually cause awareness
+				RETVAL (0)       // For vulcan cannon, only about 1/10 actually cause awareness
 	gameData.aiData.awarenessEvents [gameData.aiData.nAwarenessEvents].nSegment = pObj->info.nSegment;
 	gameData.aiData.awarenessEvents [gameData.aiData.nAwarenessEvents].pos = pObj->info.position.vPos;
 	gameData.aiData.awarenessEvents [gameData.aiData.nAwarenessEvents].nType = nType;
 	gameData.aiData.nAwarenessEvents++;
 	} 
-RETURN (1)
+RETVAL (1)
 }
 
 // ----------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ if (IsRobotGame) {
 			gameData.aiData.nOverallAgitation = OVERALL_AGITATION_MAX;
 		}
 	}
-LEAVE
+RETURN
 }
 
 int8_t newAwareness [MAX_SEGMENTS_D2X];
@@ -106,7 +106,7 @@ if (pSeg) {
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 // ----------------------------------------------------------------------------------
@@ -120,7 +120,7 @@ if (IsRobotGame) {
 		pae_aux (gameData.aiData.awarenessEvents [i].nSegment, gameData.aiData.awarenessEvents [i].nType, 1);
 	}
 gameData.aiData.nAwarenessEvents = 0;
-LEAVE
+RETURN
 }
 
 // ----------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ FORALL_OBJS (pObj)
 		if (newAwareness [nSegment] > gameData.aiData.localInfo [i].targetAwarenessType)
 			pObj->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		}
-LEAVE
+RETURN
 }
 
 // ----------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ void DoAIFrameAll (void)
 ENTER (1, 0);
 SetPlayerAwarenessAll ();
 if (USE_D1_AI)
-	LEAVE
+	RETURN
 CObject *pObj = OBJECT (gameData.aiData.nLastMissileCamera);
 if (pObj) {
 	// Clear if supposed misisle camera is not a weapon, or just every so often, just in case.
@@ -180,7 +180,7 @@ for (int32_t h = gameData.bossData.ToS (), j = 0; j < h; j++)
 				}
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	-------------------------------------------------------------------------------------------------

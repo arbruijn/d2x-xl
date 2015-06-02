@@ -78,18 +78,18 @@ ENTER (0, 0);
 if (!(m_objects.Buffer () || m_objects.Create (LEVEL_OBJECTS))) {
 	Shutdown (1);
 	extraGameInfo [0].bUseLightning = 0;
-	LEAVE
+	RETURN
 	}
 m_objects.Clear (0xff);
 if (!(m_lights.Buffer () || m_lights.Create (2 * LEVEL_SEGMENTS))) {
 	Shutdown (1);
 	extraGameInfo [0].bUseLightning = 0;
-	LEAVE
+	RETURN
 	}
 if (!m_emitters.Create (MAX_LIGHTNING_SYSTEMS)) {
 	Shutdown (1);
 	extraGameInfo [0].bUseLightning = 0;
-	LEAVE
+	RETURN
 	}
 m_emitterList.Create (MAX_LIGHTNING_SYSTEMS);
 int32_t i = 0;
@@ -98,7 +98,7 @@ for (CLightningEmitter* pEmitter = m_emitters.GetFirst (nCurrent); pEmitter; pEm
 	pEmitter->Init (i++);
 m_nFirstLight = -1;
 m_bDestroy = 0;
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -123,13 +123,13 @@ int32_t CLightningManager::Create (int32_t nBolts, CFixVector *vPos, CFixVector 
 {
 ENTER (0, 0);
 if (!(SHOW_LIGHTNING (1) && pColor))
-	RETURN (-1)
+	RETVAL (-1)
 if (!nBolts)
-	RETURN (-1)
+	RETVAL (-1)
 SEM_ENTER (SEM_LIGHTNING)
 CLightningEmitter* pEmitter = m_emitters.Pop ();
 if (!pEmitter)
-	RETURN (-1)
+	RETVAL (-1)
 // for random lightning, add a few extra nodes. These won't get rendered, but will cause the end of the lightning bolts to dance around a bit,
 // making them look more natural
 if (!(pEmitter->Create (nBolts, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
@@ -138,11 +138,11 @@ if (!(pEmitter->Create (nBolts, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLen
 	m_emitters.Push (pEmitter->Id ());
 	pEmitter->Destroy ();
 	SEM_LEAVE (SEM_LIGHTNING)
-	RETURN (-1)
+	RETVAL (-1)
 	}
 pEmitter->m_bValid = 1;
 SEM_LEAVE (SEM_LIGHTNING)
-RETURN (pEmitter->Id ())
+RETVAL (pEmitter->Id ())
 }
 
 //------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ color.Green () = float (li.color.Green ()) / 255.0f;
 color.Blue () = float (li.color.Blue ()) / 255.0f;
 color.Alpha () = float (li.color.Alpha ()) / 255.0f;
 
-RETURN (Create (li.nBolts, 
+RETVAL (Create (li.nBolts, 
 					 vPos, vEnd, vDelta, 
 					 nObject, 
 					 -abs (li.nLife), 
@@ -190,7 +190,7 @@ if (pLightning)
 	pLightning->Destroy ();
 else
 	pEmitter->m_bDestroy = 1;
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -208,7 +208,7 @@ for (CLightningEmitter* pEmitter = m_emitters.GetFirst (nCurrent), * pNext = NUL
 		}
 	}
 SEM_LEAVE (SEM_LIGHTNING)
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -236,7 +236,7 @@ else {
 	if (!bSem)
 		SEM_LEAVE (SEM_LIGHTNING)
 	}
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -245,10 +245,10 @@ void CLightningManager::Move (int32_t i, CFixVector vNewPos, CFixVector vNewEnd,
 {
 ENTER (0, 0);
 if (nSegment < 0)
-	LEAVE
+	RETURN
 if (SHOW_LIGHTNING (1))
 	m_emitters [i].Move (vNewPos, vNewEnd, nSegment);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -257,10 +257,10 @@ void CLightningManager::Move (int32_t i, CFixVector vNewPos, int16_t nSegment)
 {
 ENTER (0, 0);
 if (nSegment < 0)
-	LEAVE
+	RETURN
 if (SHOW_LIGHTNING (1))
 	m_emitters [i].Move (vNewPos, nSegment);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -272,7 +272,7 @@ ENTER (0, 0);
 
 if (m_objects [i] >= 0)
 	Move (m_objects [i], OBJPOS (pObj)->vPos, OBJSEG (pObj));
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -324,11 +324,11 @@ if (SHOW_LIGHTNING (1)) {
 		int32_t t = gameStates.app.nSDLTicks [0] - t0;
 
 	if (t / gameStates.gameplay.slowmo [0].fSpeed < 25)
-		LEAVE
+		RETURN
 	t0 = gameStates.app.nSDLTicks [0] + 25 - int32_t (gameStates.gameplay.slowmo [0].fSpeed * 25);
 #	else
 	if (!gameStates.app.tick40fps.bTick)
-		LEAVE
+		RETURN
 #	endif
 #endif
 	for (i = 0, pObj = OBJECTS.Buffer (); i <= gameData.objData.nLastObject [1]; i++, pObj++) {
@@ -414,7 +414,7 @@ if (SHOW_LIGHTNING (1)) {
 		gameData.objData.bWantEffect [i] &= ~(PLAYER_LIGHTNING | ROBOT_LIGHTNING | MISSILE_LIGHTNING | EXPL_LIGHTNING | MOVE_LIGHTNING);
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -441,7 +441,7 @@ int32_t nCurrent = -1, nObject = pObj->Index ();
 for (CLightningEmitter* pEmitter = m_emitters.GetFirst (nCurrent); pEmitter; pEmitter = m_emitters.GetNext (nCurrent))
 	if (pEmitter->m_nObject == nObject)
 		Destroy (pEmitter, NULL);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -459,7 +459,7 @@ FORALL_OBJS (pObj) {
 		DestroyObjectLightnings (pObj);
 #endif
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -468,7 +468,7 @@ void CLightningManager::DestroyForPlayers (void)
 {
 ENTER (0, 0);
 DestroyForAllObjects (OBJ_PLAYER, -1);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -477,7 +477,7 @@ void CLightningManager::DestroyForRobots (void)
 {
 ENTER (0, 0);
 DestroyForAllObjects (OBJ_ROBOT, -1);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -486,7 +486,7 @@ void CLightningManager::DestroyStatic (void)
 {
 ENTER (0, 0);
 DestroyForAllObjects (OBJ_EFFECT, LIGHTNING_ID);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -529,7 +529,7 @@ if (SHOW_LIGHTNING (1)) {
 		}
 	ogl.StencilOn (bStencil);
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -542,7 +542,7 @@ if (SHOW_LIGHTNING (1)) {
 	for (CLightningEmitter* pEmitter = m_emitters.GetFirst (nCurrent); pEmitter; pEmitter = m_emitters.GetNext (nCurrent))
 		pEmitter->Mute ();
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -553,12 +553,12 @@ ENTER (0, 0);
 	CObject* pObj;
 
 if (!nTarget)
-	RETURN (NULL)
+	RETVAL (NULL)
 FORALL_EFFECT_OBJS (pObj) {
 	if ((pObj != pEmitter) && (pObj->Id () == LIGHTNING_ID) && (pObj->rType.lightningInfo.nId == nTarget))
-		RETURN (&pObj->info.position.vPos)
+		RETVAL (&pObj->info.position.vPos)
 	}
-RETURN (NULL)
+RETVAL (NULL)
 }
 
 //------------------------------------------------------------------------------
@@ -568,10 +568,10 @@ int32_t CLightningManager::Enable (CObject* pObj)
 ENTER (0, 0);
 int32_t h = m_objects [pObj->Index ()];
 if (h < 0)
-	RETURN (0)
+	RETVAL (0)
 if (m_emitters [h].m_bValid)
 	m_emitters [h].m_bValid = pObj->rType.lightningInfo.bEnabled ? 1 : -1;
-RETURN (m_emitters [h].m_bValid)
+RETVAL (m_emitters [h].m_bValid)
 }
 
 //------------------------------------------------------------------------------
@@ -583,9 +583,9 @@ ENTER (0, 0);
 	CFixVector*	vEnd, * vDelta, v;
 
 if (!SHOW_LIGHTNING (1))
-	LEAVE
+	RETURN
 if (!gameOpts->render.lightning.bStatic)
-	LEAVE
+	RETURN
 FORALL_EFFECT_OBJS (pObj) {
 	if (pObj->Id () != LIGHTNING_ID)
 		continue;
@@ -611,7 +611,7 @@ FORALL_EFFECT_OBJS (pObj) {
 			m_emitters [nHandle].m_bValid = -1;
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -629,7 +629,7 @@ else {
 	StaticFrame ();
 	Cleanup ();
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -638,7 +638,7 @@ void CLightningManager::SetSegmentLight (int16_t nSegment, CFixVector *vPosP, CF
 {
 ENTER (0, 0);
 if ((nSegment < 0) || (nSegment >= gameData.segData.nSegments))
-	LEAVE
+	RETURN
 else {
 		tLightningLight	*pLight = m_lights + nSegment;
 
@@ -660,7 +660,7 @@ else {
 	pLight->color.Blue () += pColor->Blue ();
 	pLight->color.Alpha () += pColor->Alpha ();
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -691,7 +691,7 @@ if ((SHOW_LIGHTNING (1) || bForce) && m_lights.Buffer ()) {
 	m_nFirstLight = -1;
 	lightManager.DeleteLightning ();
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -726,7 +726,7 @@ if (SHOW_LIGHTNING (1)) {
 		for (CLightningEmitter* pEmitter = m_emitters.GetFirst (nCurrent); pEmitter; pEmitter = m_emitters.GetNext (nCurrent))
 			nLights += pEmitter->SetLight ();
 	if (!nLights)
-		LEAVE
+		RETURN
 	nLights = 0;
 	for (i = m_nFirstLight; i >= 0; i = pLight->nNext) {
 		if ((i < 0) || (i >= LEVEL_SEGMENTS))
@@ -758,7 +758,7 @@ if (SHOW_LIGHTNING (1)) {
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -772,7 +772,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
 			nRods, &pObj->Position (), NULL, NULL, -pObj->Segment () - 1/*pObj->Index ()*/, nTTL, 0,
 			nRad, I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 1, 1, 0, 1, -1, 3.0f, pColor);
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -783,7 +783,7 @@ ENTER (0, 0);
 static CFloatVector color = {{{0.1f, 0.1f, 0.8f, 0.2f}}};
 
 CreateForExplosion (pObj, &color, 30, I2X (20), 750);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -794,7 +794,7 @@ ENTER (0, 0);
 static CFloatVector color = {{{0.1f, 0.1f, 0.6f, 0.2f}}};
 
 CreateForExplosion (pObj, &color, 20, I2X (15), 750);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -805,7 +805,7 @@ ENTER (0, 0);
 static CFloatVector color = {{{0.8f, 0.1f, 0.1f, 0.2f}}};
 
 CreateForExplosion (pObj, &color, 30, I2X (15), 750);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -821,11 +821,11 @@ if (pObj->IsMissile ()) {
 	else if ((pObj->Id () == MEGAMSL_ID) || (pObj->Id () == ROBOT_MEGAMSL_ID))
 		CreateForMega (pObj);
 	else
-		RETURN (0)
+		RETVAL (0)
 	gameData.objData.bWantEffect [pObj->Index ()] &= ~DESTROY_LIGHTNING;
-	RETURN (1)
+	RETVAL (1)
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 //------------------------------------------------------------------------------
@@ -838,7 +838,7 @@ static CFloatVector color = {{{0.1f, 0.1f, 0.8f, 0.2f}}};
 int32_t h = X2I (pObj->info.xSize) * 2;
 
 CreateForExplosion (pObj, &color, h + Rand (h), h * (I2X (1) + I2X (1) / 2), 350);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -853,7 +853,7 @@ if (SHOW_LIGHTNING (0) /*&& gameOpts->render.lightning.bExplosions*/) {
 		(int32_t) FRound ((h + Rand (h)) * fRodScale), &pObj->info.position.vPos, NULL, NULL, -pObj->info.nSegment - 1, 1000, 0,
 		I2X (8), I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, -1, 1, 0, 1, -1, 3.0f, pColor);
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -868,7 +868,7 @@ static CFloatVector color = {{{0.0f, 0.125f, 0.25f, 0.2f}}};
 #endif
 
 CreateForTeleport (pObj, &color);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -878,7 +878,7 @@ void CLightningManager::CreateForRobotTeleport (CObject* pObj)
 ENTER (0, 0);
 static CFloatVector color = {{{0.25f, 0.0f, 0.125f, 0.2f}}};
 CreateForTeleport (pObj, &color, 0.5f);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -888,7 +888,7 @@ void CLightningManager::CreateForPowerupTeleport (CObject* pObj)
 ENTER (0, 0);
 static CFloatVector color = {{{0.0f, 0.25f, 0.125f, 0.2f}}};
 CreateForTeleport (pObj, &color);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -908,7 +908,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (p
 			m_objects [nObject] = h;
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -930,7 +930,7 @@ if (gameOpts->render.powerups.b3DShields && SHOW_LIGHTNING (3) && OBJECT_EXISTS 
 			m_objects [nObject] = h;
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -952,7 +952,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (
 			m_objects [nObject] = h;
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -964,15 +964,15 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage && OBJECT_EXISTS (p
 	int32_t i = pObj->Index ();
 	int32_t n = X2IR (RobotDefaultShield (pObj));
 	if (0 >= n)
-		LEAVE
+		RETURN
 	int32_t h = X2IR (pObj->info.xShield) * 100 / n;
 	if ((h < 0) || (h >= 50))
-		LEAVE
+		RETURN
 	n = (5 - h / 10) * 2;
 	if (0 <= (h = m_objects [i])) {
 		if (m_emitters [h].m_nBolts == n) {
 			MoveForObject (pObj);
-			LEAVE
+			RETURN
 			}
 		Destroy (m_emitters + h, NULL);
 		}
@@ -981,7 +981,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage && OBJECT_EXISTS (p
 	if (h >= 0)
 		m_objects [i] = h;
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -992,8 +992,8 @@ ENTER (0, 0);
 int32_t nCurrent = -1;
 for (CLightningEmitter* pEmitter = m_emitters.GetFirst (nCurrent); pEmitter; pEmitter = m_emitters.GetNext (nCurrent))
 	if ((pEmitter->m_nObject == nObject) && (pEmitter->m_nKey [0] == pKey [0]) && (pEmitter->m_nKey [1] == pKey [1]))
-		RETURN (pEmitter->Id ())
-RETURN (-1)
+		RETVAL (pEmitter->Id ())
+RETVAL (-1)
 }
 
 //------------------------------------------------------------------------------
@@ -1020,11 +1020,11 @@ ENTER (0, 0);
 	static CFloatVector color = {{{0.2f, 0.2f, 1.0f, 1.0f}}};
 
 if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage))
-	RETURN (-1)
+	RETVAL (-1)
 if ((pObj->Type () != OBJ_ROBOT) && (pObj->Type () != OBJ_PLAYER))
-	RETURN (-1)
+	RETVAL (-1)
 if (nVertices < 3)
-	RETURN (-1)
+	RETVAL (-1)
 j = (nVertices > 4) ? 4 : nVertices;
 h = (nVertices + 1) / 2;
 // create a unique key for the lightning using the vertex key/index
@@ -1050,7 +1050,7 @@ if (i < 0) {
 		}
 #if 1
 	if (RandDouble () > fDamage)
-		RETURN (0)
+		RETVAL (0)
 #endif
 	if (pointList) {
 		vPos = pointList [0]->WorldPos ();
@@ -1074,7 +1074,7 @@ if (i < 0) {
 		vEnd.Assign (vEndf);
 		}
 	if (CFixVector::Dist (vPos, vEnd) < I2X (1) / 4)
-		RETURN (-1)
+		RETVAL (-1)
 	nLife = 1000 + Rand (2000);
 	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, nLife, 0,
 					h, I2X (1) / 2, 0, 0, 20, 0, 1, 5, 0, 1, /*-1*/0, 1, 0, 0, 1, 3.0f, &color);
@@ -1092,13 +1092,13 @@ if (i >= 0) {
 		ogl.SetFaceCulling (false);
 		pEmitter->Render (0, -1, -1);
 		ogl.SetFaceCulling (true);
-		RETURN (1)
+		RETVAL (1)
 		}
 	else {
 		Destroy (m_emitters + i, NULL);
 		}
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 //------------------------------------------------------------------------------

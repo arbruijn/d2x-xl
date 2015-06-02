@@ -758,7 +758,7 @@ particleImageManager.FreeAll ();
 /*---*/PrintLog (0, "Unloading HUD icons\n");
 hudIcons.Destroy ();
 PrintLog (-1);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -857,7 +857,7 @@ else {
 	/*---*/PrintLog (1, "loading replacement robots\n");
 	if (0 > LoadRobotReplacements (pszLevelName, NULL, 0, 0, true)) {
 		PrintLog (-1);
-		RETURN (-1);
+		RETVAL (-1);
 		}
 	/*---*/PrintLog (1, "loading cambot\n");
 	gameData.botData.nCamBotId = (LoadRobotReplacements ("cambot.hxm", NULL, 1, 0) > 0) ? gameData.botData.nTypes [0] - 1 : -1;
@@ -880,7 +880,7 @@ else {
 	LoadModTexts ();
 	PrintLog (-1);
 	}
-RETURN (nLoadRes);
+RETVAL (nLoadRes);
 }
 
 //------------------------------------------------------------------------------
@@ -947,7 +947,7 @@ SetFreeCam (0);
 StopObserverMode ();
 PrintLog (-1);
 paletteManager.EnableEffect (true);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -980,7 +980,7 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 		gameStates.app.bBetweenLevels = 0;
 		missionManager.nCurrentLevel = nCurrentLevel;
 		PrintLog (-1);
-		RETURN (-1);
+		RETVAL (-1);
 		}
 #endif
 	songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
@@ -995,7 +995,7 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 		gameStates.app.bBetweenLevels = 0;
 		missionManager.nCurrentLevel = nCurrentLevel;
 		Warning ("Invalid level number!");
-		RETURN (0)
+		RETVAL (0)
 		}
 	nLastMsgYCrd = -1;		//so we don't restore backgound under msg
 	if (!gameStates.app.bProgressBars)
@@ -1041,7 +1041,7 @@ if (nLoadRes) {
 	gameStates.app.bBetweenLevels = 0;
 	missionManager.nCurrentLevel = nCurrentLevel;
 	Warning (TXT_LOAD_ERROR, pszLevelName);
-	RETURN (0)
+	RETVAL (0)
 	}
 
 if (!gameStates.app.bPrecomputeLightmaps) {
@@ -1052,14 +1052,14 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 	if (LoadModData (pszLevelName, bLoadTextures, 1) < 0) {
 		gameStates.app.bBetweenLevels = 0;
 		missionManager.nCurrentLevel = nCurrentLevel;
-		RETURN (-1);
+		RETVAL (-1);
 		}
 #endif
 	}
 #if 1
 if (!lightManager.Setup (nLevel)) {
 	PrintLog (-1, "Not enough memory for light data\n");
-	RETURN (-1);
+	RETVAL (-1);
 	}
 #endif
 if (!gameStates.app.bPrecomputeLightmaps) {

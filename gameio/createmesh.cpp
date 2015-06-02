@@ -102,7 +102,7 @@ if (m_nMaxTriangles && m_nMaxEdges) {
 	if (!(m_edges.Resize (m_nMaxEdges * 2) && m_triangles.Resize (m_nMaxTriangles * 2))) {
 		PrintLog (0, "Not enough memory for building the triangle mesh (%d edges, %d tris).\n", m_nMaxEdges * 2, m_nMaxTriangles * 2);
 		FreeData ();
-		RETURN (0)
+		RETVAL (0)
 		}
 	memset (&m_edges [m_nMaxTriangles], 0xff, m_nMaxTriangles * sizeof (tEdge));
 	memset (&m_triangles [m_nMaxEdges], 0xff, m_nMaxTriangles * sizeof (tTriangle));
@@ -114,17 +114,17 @@ else {
 	m_nMaxEdges = FACES.nFaces * 4;
 	if (!m_edges.Create (m_nMaxEdges)) {
 		PrintLog (0, "Not enough memory for building the triangle mesh (%d edges).\n", m_nMaxEdges);
-		RETURN (0)
+		RETVAL (0)
 		}
 	if (!m_triangles.Create (m_nMaxTriangles)) {
 		PrintLog (0, "Not enough memory for building the triangle mesh (%d tris).\n", m_nMaxTriangles);
 		FreeData ();
-		RETURN (0)
+		RETVAL (0)
 		}
 	m_edges.Clear (0xff);
 	m_triangles.Clear (0xff);
 	}
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -151,7 +151,7 @@ if (nVert2 < nVert1) {
 	}
 #if DBG
 if ((nTri < 0) || (nTri >= m_nTriangles))
-	RETURN (-1)
+	RETVAL (-1)
 #endif
 tEdge *pEdge;
 for (int32_t i = -1;;) {
@@ -160,11 +160,11 @@ for (int32_t i = -1;;) {
 	i = int32_t (pEdge - &m_edges [0]);
 	if (pEdge->tris [0] < 0) {
 		pEdge->tris [0] = nTri;
-		RETURN (i)
+		RETVAL (i)
 		}
 	if (pEdge->tris [1] < 0) {
 		pEdge->tris [1] = nTri;
-		RETURN (i)
+		RETVAL (i)
 		}
 	}
 if (m_nFreeEdges >= 0) {
@@ -174,14 +174,14 @@ if (m_nFreeEdges >= 0) {
 	}
 else {
 	if ((m_nEdges == m_nMaxEdges - 1) && !AllocData ())
-		RETURN (-1)
+		RETVAL (-1)
 	pEdge = &m_edges [m_nEdges++];
 	}
 pEdge->tris [0] = nTri;
 pEdge->verts [0] = nVert1;
 pEdge->verts [1] = nVert2;
 pEdge->fLength = CFloatVector::Dist(gameData.segData.fVertices [nVert1], gameData.segData.fVertices [nVert2]);
-RETURN (m_edges.Index (pEdge))
+RETVAL (m_edges.Index (pEdge))
 }
 
 //------------------------------------------------------------------------------
@@ -195,7 +195,7 @@ if (pTriangle)
 	pTriangle->nIndex = nIndex;
 else {
 	if ((m_nTriangles == m_nMaxTriangles - 1) && !AllocData ())
-		RETURN (NULL)
+		RETVAL (NULL)
 	pTriangle = &m_triangles [m_nTriangles++];
 	pTriangle->nIndex = nIndex;
 	if (nIndex >= 0) {
@@ -208,13 +208,13 @@ else {
 nIndex = m_triangles.Index (pTriangle);
 for (i = 0; i < 3; i++) {
 	if (0 > (h = AddEdge (nIndex, index [i], index [(i + 1) % 3])))
-		RETURN (NULL)
+		RETVAL (NULL)
 	pTriangle = &m_triangles [nIndex];
 	pTriangle->lines [i] = h;
 	}
 pTriangle->nFace = nFace;
 memcpy (pTriangle->index, index, sizeof (pTriangle->index));
-RETURN (pTriangle)
+RETVAL (pTriangle)
 }
 
 //------------------------------------------------------------------------------
@@ -222,7 +222,7 @@ RETURN (pTriangle)
 tTriangle *CTriMeshBuilder::AddTriangle (tTriangle *pTriangle, uint16_t index [], tFaceTriangle *pFaceTriangle)
 {
 ENTER (0, 0);
-RETURN (CreateTriangle (pTriangle, index, pFaceTriangle->nFace, pFaceTriangle - TRIANGLES))
+RETVAL (CreateTriangle (pTriangle, index, pFaceTriangle->nFace, pFaceTriangle - TRIANGLES))
 }
 
 //------------------------------------------------------------------------------
@@ -249,7 +249,7 @@ if (h < --m_nEdges) {
 		}
 	}
 #endif
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -268,7 +268,7 @@ for (i = 0; i < 3; i++) {
 	if (pEdge->tris [0] < 0)
 		DeleteEdge (pEdge);
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -285,7 +285,7 @@ m_nFreeEdges = -1;
 m_nVertices = gameData.segData.nVertices;
 if (!AllocData ()) {
 	PrintLog (-1);
-	RETURN (0)
+	RETVAL (0)
 	}
 
 CSegFace *pFace;
@@ -298,14 +298,14 @@ int16_t nId = 0;
 if (gameStates.render.nMeshQuality) {
 	i = LEVEL_VERTICES + ((FACES.nTriangles ? FACES.nTriangles / 2 : FACES.nFaces) << (abs (gameStates.render.nMeshQuality)));
 	if (!(gameData.segData.fVertices.Resize (i) && gameData.segData.vertices.Resize (i) && gameData.renderData.mine.Resize (i)))
-		RETURN (0)
+		RETVAL (0)
 	}
 #endif
 for (i = FACES.nTriangles, pFaceTriangle = TRIANGLES.Buffer (); i; i--, pFaceTriangle++) {
 	if (!(pTriangle = AddTriangle (NULL, pFaceTriangle->index, pFaceTriangle))) {
 		FreeData ();
 		PrintLog (-1);
-		RETURN (0)
+		RETVAL (0)
 		}
 	if (nFace == pFaceTriangle->nFace)
 		nId++;
@@ -323,7 +323,7 @@ for (i = FACES.nTriangles, pFaceTriangle = TRIANGLES.Buffer (); i; i--, pFaceTri
 		pTriangle->nPass = -2;
 	}
 PrintLog (-1);
-RETURN (m_nTris = m_nTriangles)
+RETVAL (m_nTris = m_nTriangles)
 }
 
 //------------------------------------------------------------------------------
@@ -332,12 +332,12 @@ int32_t CTriMeshBuilder::SplitTriangleByEdge (int32_t nTri, uint16_t nVert1, uin
 {
 ENTER (0, 0);
 if (nTri < 0)
-	RETURN (1)
+	RETVAL (1)
 
 tTriangle *pTriangle = &m_triangles [nTri];
 
 if (pTriangle->nPass < -1)
-	RETURN (1)
+	RETVAL (1)
 
 CSegFace *pFace = FACES.faces + pTriangle->nFace;
 
@@ -359,7 +359,7 @@ for (i = 0; i < 3; i++) {
 	}
 if (i == 3) {
 	PrintLog (0, "Internal error during construction of the triangle mesh.\n");
-	RETURN (0)
+	RETVAL (0)
 	}
 
 h = pIndex [(i + 1) % 3]; //check next vertex index
@@ -390,7 +390,7 @@ color [0].Blue () = (color [1].Blue () + color [3].Blue ()) / 2;
 color [0].Alpha () = (color [1].Alpha () + color [3].Alpha ()) / 2;
 DeleteTriangle (pTriangle); //remove any references to this triangle
 if (!(pTriangle = CreateTriangle (pTriangle, index, nFace, nIndex))) //create a new triangle at this location (insert)
-	RETURN (0)
+	RETVAL (0)
 pTriangle->nPass = nPass;
 pTriangle->nId = (pFace->m_info.nTris)++;
 memcpy (pTriangle->color, color, sizeof (pTriangle->color));
@@ -399,7 +399,7 @@ memcpy (pTriangle->ovlTexCoord, ovlTexCoord, sizeof (pTriangle->ovlTexCoord));
 
 index [1] = index [0];
 if (!(pTriangle = CreateTriangle (NULL, index + 1, nFace, -1))) //create a new triangle (append)
-	RETURN (0)
+	RETVAL (0)
 pTriangle->nPass = nPass;
 pTriangle->nId = (pFace->m_info.nTris)++;
 pTriangle->texCoord [0] = texCoord [0];
@@ -409,7 +409,7 @@ memcpy (pTriangle->color + 1, color + 2, 2 * sizeof (pTriangle->color [0]));
 memcpy (pTriangle->texCoord + 1, texCoord + 2, 2 * sizeof (pTriangle->texCoord [0]));
 memcpy (pTriangle->ovlTexCoord + 1, ovlTexCoord + 2, 2 * sizeof (pTriangle->ovlTexCoord [0]));
 FACES.faces [pTriangle->nFace].m_info.nVerts++;
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -441,7 +441,7 @@ int32_t i = gameData.segData.fVertices.Length ();
 if (gameData.segData.nVertices >= i) {
 	i *= 2;
 	if (!(gameData.segData.fVertices.Resize (i) && gameData.segData.vertices.Resize (i) && gameData.segData.vertexOwners.Resize (i) && gameData.renderData.mine.Resize (i)))
-		RETURN (0)
+		RETVAL (0)
 	}
 gameData.segData.fVertices [gameData.segData.nVertices] = CFloatVector::Avg (gameData.segData.fVertices [verts [0]], gameData.segData.fVertices [verts [1]]);
 gameData.segData.vertices [gameData.segData.nVertices].Assign (gameData.segData.fVertices [gameData.segData.nVertices]);
@@ -450,15 +450,15 @@ gameData.segData.vertexOwners [gameData.segData.nVertices].nSide = pFace->m_info
 #if 0
 if (tris [1] >= 0) {
 	if (NewEdgeLen (tris [0], verts [0], verts [1]) + NewEdgeLen (tris [1], verts [0], verts [1]) < MAX_EDGE_LEN (m_nQuality))
-		RETURN (-1)
+		RETVAL (-1)
 	}
 #endif
 gameData.segData.nVertices++;
 if (!SplitTriangleByEdge (tris [0], verts [0], verts [1], nPass))
-	RETURN (0)
+	RETVAL (0)
 if (!SplitTriangleByEdge (tris [1], verts [0], verts [1], nPass))
-	RETURN (0)
-RETURN (1)
+	RETVAL (0)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -477,8 +477,8 @@ for (i = 0; i < 3; i++) {
 		}
 	}
 if (lMax <= MAX_EDGE_LEN (m_nQuality))
-	RETURN (-1)
-RETURN (SplitEdge (pFace, &m_edges [pTriangle->lines [h]], nPass))
+	RETVAL (-1)
+RETVAL (SplitEdge (pFace, &m_edges [pTriangle->lines [h]], nPass))
 }
 
 //------------------------------------------------------------------------------
@@ -510,10 +510,10 @@ do {
 		nSplitRes = SplitTriangle (FACES.faces + m_triangles [i].nFace, &m_triangles [i], nPass);
 		if (gameData.segData.nVertices == 65536) {
 			PrintLog (-1, "Level too big for requested triangle mesh quality.\n");
-			RETURN (0)
+			RETVAL (0)
 			}
 		if (!nSplitRes)
-			RETURN (0)
+			RETVAL (0)
 		if (nSplitRes < 0)
 			m_triangles [i].nPass = -2;
 		else {
@@ -526,7 +526,7 @@ do {
 	PrintLog (-1);
 	} while (bSplit && (nPass < nMaxPasses));
 FACES.nTriangles = m_nTriangles;
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -584,7 +584,7 @@ for (h = 0, pTriangle = FACES.tris.Buffer (); h < FACES.nTriangles; h++, pTriang
 		}
 	}
 ComputeVertexNormals ();
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -614,7 +614,7 @@ for (h = 0; h < m_nTriangles; h++, pTriangle++, pFaceTriangle++) {
 		nFace = pFaceTriangle->nFace;
 #if DBG
 		if (m_pFace - FACES.faces != nFace)
-			RETURN (0)
+			RETVAL (0)
 #endif
 		m_pFace->m_info.nFrame = -1;
 		m_pFace->m_info.nIndex = nIndex;
@@ -644,7 +644,7 @@ for (h = 0; h < m_nTriangles; h++, pTriangle++, pFaceTriangle++) {
 	for (i = 1; i < 3; i++)
 		FACES.normals [nIndex + i] = FACES.normals [nIndex];
 	if ((nIndex >= FACES.texCoord.Length ()) || (nIndex >= FACES.ovlTexCoord.Length ()) || (nIndex >= FACES.color.Length ()))
-		RETURN (0)
+		RETVAL (0)
 	memcpy (FACES.texCoord + nIndex, pTriangle->texCoord, sizeof (pTriangle->texCoord));
 	memcpy (FACES.ovlTexCoord + nIndex, pTriangle->ovlTexCoord, sizeof (pTriangle->ovlTexCoord));
 	memcpy (FACES.color + nIndex, pTriangle->color, sizeof (pTriangle->color));
@@ -660,7 +660,7 @@ FreeData ();
 PrintLog (-1, "created %d new triangles and %d new vertices\n",
 			 m_nTriangles - m_nTris, gameData.segData.nVertices - m_nVertices);
 CreateFaceVertLists ();
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -704,7 +704,7 @@ for (int32_t i = gameData.segData.nSegments; i; i--, pSegFace++) {
 	pSegFace->pFace = &FACES.faces [h];
 	h += pSegFace->nFaces;
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -759,7 +759,7 @@ for (i = FACES.nFaces, pFace = FACES.faces.Buffer (), nFace = 0; i; i--, pFace++
 for (i = FACES.nFaces, pFace = FACES.faces.Buffer (); i; i--, pFace++)
 	SortFaceVertList (pFace->triIndex, 0, pFace->m_info.nVerts - 1);
 #endif
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -782,10 +782,10 @@ ENTER (0, 0);
 	char					*ioBuffer = NULL, *pBuffer;
 
 if (!(gameStates.render.bTriangleMesh && (gameStates.app.bCacheMeshes || bForce)))
-	RETURN (false)
+	RETVAL (false)
 if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.var.szMeshes, "rb", 0) &&
 	 !cf.Open (DataFilename (szFilename, nLevel), gameFolders.var.szCache, "rb", 0))
-	RETURN (false)
+	RETVAL (false)
 bOk = (cf.Read (&mdh, sizeof (mdh), 1) == 1);
 if (bOk)
 	bOk = (mdh.nVersion == MESH_DATA_VERSION) &&
@@ -910,7 +910,7 @@ if (!gameStates.app.bCacheMeshes)
 	cf.Delete (DataFilename (szFilename, nLevel), gameFolders.var.szCache);
 CreateSegFaceList ();
 CreateFaceVertLists ();
-RETURN (bOk)
+RETVAL (bOk)
 }
 
 //------------------------------------------------------------------------------
@@ -934,10 +934,10 @@ ENTER (0, 0);
 	uint32_t				nTriVerts = uint32_t (mdh.nTris * 3);
 
 if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
-	RETURN (false)
+	RETVAL (false)
 if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.var.szMeshes, "wb", 0)) {
 	PrintLog (0, "Couldn't save mesh data (check access rights of '%s')\n", gameFolders.var.szMeshes);
-	RETURN (false)
+	RETVAL (false)
 	}
 if (mdh.bCompressed)
 	PrintLog (0, "Mesh builder: writing compressed mesh data (%d)\n", gameStates.app.bCompressData);
@@ -963,7 +963,7 @@ if (bOk)
 			(FACES.faceVerts.Write (cf, mdh.nFaceVerts, 0, mdh.bCompressed) == uint32_t (mdh.nFaceVerts)) &&
 			(VERTEX_OWNERS.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint32_t (mdh.nVertices));
 cf.Close ();
-RETURN (bOk)
+RETVAL (bOk)
 }
 
 //------------------------------------------------------------------------------
@@ -975,39 +975,39 @@ PrintLog (1, "creating triangle mesh\n");
 m_nQuality = nQuality;
 if (Load (nLevel)) {
 	PrintLog (-1);
-	RETURN (1)
+	RETVAL (1)
 	}
 if (!CreateTriangles ()) {
 	gameData.segData.nVertices = m_nVertices;
 	PrintLog (-1);
-	RETURN (0)
+	RETVAL (0)
 	}
 if ((gameStates.render.bTriangleMesh > 0) && !SplitTriangles ()) {
 	gameData.segData.nVertices = m_nVertices;
 	PrintLog (-1);
-	RETURN (0)
+	RETVAL (0)
 	}
 
 if ((m_nTriangles > (LEVEL_FACES << gameStates.render.nMeshQuality)) && !gameData.segData.faces.Resize ()) {
 	gameData.segData.faces.Destroy ();
 	gameData.renderData.Destroy ();
 	PrintLog (-1, "Not enough memory to create mesh data in requested quality\n");
-	RETURN (0)
+	RETVAL (0)
 	}
 
 if (!InsertTriangles ()) {
 	gameData.segData.nVertices = m_nVertices;
 	PrintLog (-1);
-	RETURN (0)
+	RETVAL (0)
 	}
 if (gameStates.app.bReadOnly) {
 	PrintLog (-1);
-	RETURN (1)
+	RETVAL (1)
 	}
 Save (nLevel);
 int32_t nLoadRes = Load (nLevel, true); //Load will rebuild all face data buffers, reducing their memory footprint
 PrintLog (-1);
-RETURN (nLoadRes)
+RETVAL (nLoadRes)
 }
 
 //------------------------------------------------------------------------------
@@ -1058,7 +1058,7 @@ m_pFace->m_info.bAnimation = IsAnimatedTexture (m_pFace->m_info.nBaseTex) || IsA
 m_pFace->m_info.bHasColor = 0;
 m_pFace->m_info.fRads [0] = X2F (pSide->m_rads [0]); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
 m_pFace->m_info.fRads [1] = X2F (pSide->m_rads [1]); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1091,7 +1091,7 @@ else if (strstr (pszName, "lava"))
 	m_pFace->m_info.bAdditive = 2;
 else
 	m_pFace->m_info.bAdditive = (strstr (pszName, "force") || m_pFace->m_info.bSparks) ? 1 : 0;
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1107,7 +1107,7 @@ m_pFace->m_info.bAdditive = 0;
 if ((SEGMENT (nSegment)->m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA)) != 0)
 	BRP;
 #endif
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1145,7 +1145,7 @@ pTexCoord [0].v.v =
 pTexCoord [1].v.v = y * step + border;
 pTexCoord [2].v.v = 
 pTexCoord [3].v.v = (y + 1) * step - border;
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1169,9 +1169,9 @@ for (i = 0; i < 4; i++) {
 	RotateTexCoord2f (*m_pOvlTexCoord, *m_pTexCoord, (uint8_t) m_pSide->m_nOvlOrient);
 #if DBG
 	if (m_pTexCoord > FACES.texCoord.Buffer () + FACES.texCoord.Length ())
-		LEAVE
+		RETURN
 	if (m_pOvlTexCoord > FACES.ovlTexCoord.Buffer () + FACES.ovlTexCoord.Length ())
-		LEAVE
+		RETURN
 #endif
 	m_pTexCoord++;
 	m_pOvlTexCoord++;
@@ -1187,7 +1187,7 @@ for (i = 0; i < 4; i++) {
 	}
 SetupLMapTexCoord (m_pLightmapTexCoord);
 m_pLightmapTexCoord += 4;
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1208,7 +1208,7 @@ if ((m_pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_pFace->m_info
 SetupLMapTexCoord (lMapTexCoord);
 nType = (m_pSide->m_nType == SIDE_IS_TRI_13);
 if (!(h = m_pSide->FaceCount ()))
-	LEAVE
+	RETURN
 for (i = 0; i < h; i++, m_pFaceTriangle++) {
 	FACES.nTriangles++;
 	m_pFace->m_info.nTris++;
@@ -1233,7 +1233,7 @@ for (i = 0; i < h; i++, m_pFaceTriangle++) {
 		}
 	m_pNormal = SetTriNormals (m_pFaceTriangle, m_pNormal);
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1247,7 +1247,7 @@ int32_t m = (*pm)->m_info.nKey;
 int16_t i = (*pf)->m_info.nBaseTex;
 int16_t mat = (*pm)->m_info.nBaseTex;
 if (i < mat) 
-	RETURN (-1)
+	RETVAL (-1)
 if (i > mat)
 	return 1;
 i = (*pf)->m_info.nOvlTex;
@@ -1303,7 +1303,7 @@ for (i = 0; i < FACES.nFaces; i++, pFace++) {
 	}
 ++gameData.segData.nFaceKeys;
 gameData.renderData.faceIndex.Create ();
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1319,7 +1319,7 @@ for (int32_t i = FACES.nFaces; i; i--, pFace++)
 		pFace->nextSlidingFace = FACES.slidingFaces;
 		FACES.slidingFaces = pFace;
 		}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1347,7 +1347,7 @@ for (nFace = FACES.nFaces; nFace; nFace--, m_pFace++) {
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1412,7 +1412,7 @@ for (i = 0; i < 4; i++, m_pFaceTriangle++) {
 	m_pTexCoord += 3;
 	m_pFaceColor += 3;
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1555,7 +1555,7 @@ if (!(gameData.segData.faces.Create () && gameData.renderData.Create ())) {
 	gameData.segData.faces.Destroy ();
 	gameData.renderData.Destroy ();
 	PrintLog (-1, "Not enough memory for mesh data\n");
-	RETURN (0)
+	RETVAL (0)
 	}
 
 m_pFace = FACES.faces.Buffer ();
@@ -1590,11 +1590,11 @@ for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, m_pSeg++, 
 		BRP;
 	if (m_pFace >= FACES.faces.Buffer () + FACES.faces.Length ()) {
 		PrintLog (-1);
-		RETURN (0)
+		RETVAL (0)
 		}
 	if (m_pSegFace >= SEGFACES.Buffer () + SEGFACES.Length ()) {
 		PrintLog (-1);
-		RETURN (0)
+		RETVAL (0)
 		}
 #endif
 	m_pFace->m_info.nSegment = nSegment;
@@ -1652,7 +1652,7 @@ for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, m_pSeg++, 
 // any additional vertices have been stored, so prune the buffers to the minimally required size
 if (!(gameData.segData.Resize () && gameData.renderData.lights.Resize () && gameData.renderData.color.Resize ())) {
 	PrintLog (-1);
-	RETURN (0)
+	RETVAL (0)
 	}
 #endif
 for (m_pColor = gameData.renderData.color.ambient.Buffer (), i = gameData.segData.nVertices; i; i--, m_pColor++)
@@ -1664,19 +1664,19 @@ for (m_pColor = gameData.renderData.color.ambient.Buffer (), i = gameData.segDat
 		}
 if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality)) {
 	PrintLog (-1);
-	RETURN (0)
+	RETVAL (0)
 	}
 #if 1
 if (!(gameData.renderData.lights.Resize () && gameData.renderData.color.Resize ())) {
 	PrintLog (-1);
-	RETURN (0)
+	RETVAL (0)
 	}
 #endif
 BuildSlidingFaceList ();
 if (gameStates.render.bTriangleMesh)
 	cameraManager.Destroy ();
 PrintLog (-1);
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------

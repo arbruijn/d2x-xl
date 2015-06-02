@@ -338,7 +338,7 @@ if (xBrightness > I2X (1))
 	xBrightness = I2X (1);
 #endif
 if (fBrightness <= 0)
-	RETURN (-1);
+	RETVAL (-1);
 
 #if DBG
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
@@ -362,17 +362,17 @@ if (gameStates.render.nLightingMethod && (nSegment >= 0) && (nSide >= 0)) {
 if (pColor)
 	pColor->Alpha () = 1.0f;
 if (0 <= (h = Update (pColor, fBrightness, nSegment, nSide, nObject)))
-	RETURN (h);
+	RETVAL (h);
 if (!pColor)
-	RETURN (-1);
+	RETVAL (-1);
 if ((pColor->Red () == 0.0f) && (pColor->Green () == 0.0f) && (pColor->Blue () == 0.0f)) {
 	if (gameStates.app.bD2XLevel && gameStates.render.bColored)
-		RETURN (-1);
+		RETVAL (-1);
 	pColor->Red () = pColor->Green () = pColor->Blue () = 1.0f;
 	}
 if (m_data.nLights [0] >= MAX_OGL_LIGHTS) {
 	gameStates.render.bHaveDynLights = 0;
-	RETURN (-1);	//too many lights
+	RETVAL (-1);	//too many lights
 	}
 i = m_data.nLights [0]; //LastEnabledDynLight () + 1;
 CDynLight& light = m_data.lights [i];
@@ -405,7 +405,7 @@ if (nObject >= 0) {
 			light.info.bPowerup = 2;
 #if 0
 		if (light.info.bPowerup > gameData.renderData.nPowerupFilter)
-			RETURN (-1);
+			RETVAL (-1);
 #endif
 		}
 	light.info.vPos = pObj->info.position.vPos;
@@ -467,7 +467,7 @@ else {
 light.info.bOn = 1;
 light.bTransform = 1;
 SetColor (m_data.nLights [0], pColor->Red (), pColor->Green (), pColor->Blue (), fBrightness);
-RETURN (m_data.nLights [0]++);
+RETVAL (m_data.nLights [0]++);
 }
 
 //------------------------------------------------------------------------------
@@ -623,24 +623,24 @@ ENTER (0, 0);
 
 if (info.nSide < 0) {
 	if (info.nSegment < 0)
-		RETURN (1)
+		RETVAL (1)
 	if (!pLightSeg)
-		RETURN (0)
+		RETVAL (0)
 	v1.Assign (*vPoint);
 	CFloatVector v0;
 	v0.Assign (info.vPos);
 	CFloatVector vLightToPointf = v1 - v0;
 	float dist = CFloatVector::Normalize (vLightToPointf);
 	if (dist > info.fRange * X2F (MAX_LIGHT_RANGE))
-		RETURN (0)
+		RETVAL (0)
 	if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
-		RETURN (0)
+		RETVAL (0)
 	if (vNormal) {
 		vNormalf.Assign (*vNormal);
 		if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f) // light doesn't "see" face
-			RETURN (0)
+			RETVAL (0)
 		}
-	RETURN ((nDestSeg < 0) || PointSeesPoint (&v0, &v1, info.nSegment, nDestSeg, nDestSide, 0, nThread));
+	RETVAL ((nDestSeg < 0) || PointSeesPoint (&v0, &v1, info.nSegment, nDestSeg, nDestSide, 0, nThread));
 	}
 else {
 		class CLightPoint {
@@ -654,10 +654,10 @@ else {
 			};
 	
 		if (!pLightSeg)
-			RETURN (0)
+			RETVAL (0)
 		CSide	*pSide = pLightSeg->Side (info.nSide);
 		if (pSide->Shape () > SIDE_SHAPE_TRIANGLE)
-			RETURN (0)
+			RETVAL (0)
 
 		CStaticArray<CFloatVector, 9>	vLight;
 		int32_t	nVertices = 0, i;
@@ -687,11 +687,11 @@ else {
 		if (vNormal && (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f)) // light doesn't "see" face
 			continue;
 		if (0 <= pLightSeg->ChildIndex (nDestSeg)) // don't check point to point visibility for connected segments
-			RETURN (1)
+			RETVAL (1)
 		if (PointSeesPoint (&vLight [i], &v1, info.nSegment, nDestSeg, nDestSide, 0, nThread))
-			RETURN (1)
+			RETVAL (1)
 		}
-	RETURN (0) 
+	RETVAL (0) 
 #if DBG
 	if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
 		BRP;
@@ -706,7 +706,7 @@ int32_t nHitType = FindHitpoint (hitQuery, hitResult, 0, nThread);
 return (!nHitType || ((nHitType == HIT_WALL) && (hitResult.nSegment == nDestSeg)));
 
 #endif
-RETURN (0)
+RETVAL (0)
 }
 
 //------------------------------------------------------------------------------
@@ -765,11 +765,11 @@ if ((info.nSegment >= 0) && (nDestSeg >= 0)) {
 #endif
 		if (SEGMENT (info.nSegment)->HasOutdoorsProp ()) {
 			if ((nDestSide >= 0) && ((info.nSide != nDestSide) || (info.nSegment != nDestSeg)))
-				RETURN (0)
+				RETVAL (0)
 			info.bDiffuse [nThread] = 1;
 			}
 		else if (0 > (info.bDiffuse [nThread] = gameData.segData.LightVis (Index (), nDestSeg)))
-			RETURN (0)
+			RETVAL (0)
 		}
 	}
 #if 0 //DBG
@@ -778,7 +778,7 @@ else if ((info.nSegment = LightSeg ()) >= 0)
 	info.bDiffuse [nThread] = (nDestSeg < 0) || gameData.segData.SegVis (info.nSegment, nDestSeg);
 #endif
 else
-	RETURN (0)
+	RETVAL (0)
 #endif
 
 	fix xDistance, xRad;
@@ -794,9 +794,9 @@ if ((info.nSegment < 0) || (nDestSeg < 0) || (info.nSide < 0)) {
 	xDistance = vLightToPoint.Mag ();
 	xDistance = fix (float (xDistance) / (info.fRange * fRangeMod)) + xDistMod;
 	if (xDistance - xRad > xMaxLightRange)
-		RETURN (0)
+		RETVAL (0)
 	if (nDestSeg < 0)
-		RETURN (1)
+		RETVAL (1)
 	}
 else {
 	CFloatVector3 v, vHit;
@@ -804,7 +804,7 @@ else {
 	DistToFace (v, info.nSegment, uint8_t (info.nSide), &vHit);
 	float distance = CFloatVector3::Dist (v, vHit) / (info.fRange * fRangeMod) + X2F (xDistMod);
 	if (distance > X2F (xMaxLightRange))
-		RETURN (0)
+		RETVAL (0)
 	xDistance = F2X (distance);
 	xRad = 0;
 	}
@@ -830,12 +830,12 @@ else { // check whether light only contributes ambient light to point
 	if (!bSeesPoint) { // => ambient contribution only
 		fix xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 		if (xPathLength < 0)
-			RETURN (0)
+			RETVAL (0)
 		if (xDistance < xPathLength) {
 			// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
 			xDistance = (xDistance + xPathLength) / 2; 
 			if (xDistance - xRad > xMaxLightRange)
-				RETURN (0)
+				RETVAL (0)
 			}
 		}
 
@@ -851,12 +851,12 @@ else { // check whether light only contributes ambient light to point
 		if (!bSeesPoint) { // => ambient contribution only
 			fix xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 			if (xPathLength < 0)
-				RETURN (0)
+				RETVAL (0)
 			if (xDistance < xPathLength) {
 				// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
 				xDistance = (xDistance + xPathLength) / 2; 
 				if (xDistance - xRad > xMaxLightRange)
-					RETURN (0)
+					RETVAL (0)
 				}
 			}
 		}
@@ -867,7 +867,7 @@ if ((nDbgSeg == nDestSeg) && ((nDbgSide < 0) || (nDestSide == nDbgSide)) && info
 	BRP;
 #endif
 render.xDistance [nThread] = xDistance;
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -876,18 +876,18 @@ int32_t CDynLight::ComputeVisibleVertices (int32_t nThread)
 {
 ENTER (0, 0);
 if (!info.bVariable)
-	RETURN (0)
+	RETVAL (0)
 int16_t nLightSeg = LightSeg ();
 if ((nLightSeg < 0) || (info.nSide < 0))
-	RETURN (0)
+	RETVAL (0)
 if (!(info.visibleVertices || (info.visibleVertices = new CByteArray ())))
-	RETURN (-1);
+	RETVAL (-1);
 if (!info.visibleVertices->Create (gameData.segData.nVertices))
-	RETURN (-1);
+	RETVAL (-1);
 CSide* pSide = SEGMENT (nLightSeg)->Side (info.nSide);
 for (int32_t i = 0; i < gameData.segData.nVertices; i++)
 	(*info.visibleVertices) [i] = pSide->SeesPoint (VERTICES [i], -1, 2, nThread);
-RETURN (1)
+RETVAL (1)
 }
 
 //------------------------------------------------------------------------------
@@ -959,11 +959,11 @@ for (nFace = FACES.nFaces, pFace = FACES.faces.Buffer (); nFace; nFace--, pFace+
 	//	return;
 	if (!gameStates.render.bHaveDynLights) {
 		Reset ();
-		LEAVE
+		RETURN
 		}
 	}
 Sort ();
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -987,7 +987,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 	gameData.renderData.color.vertices [nVertex].index = 0;
 	GetVertexColor (-1, -1, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), vVertex.XYZ (), pf, NULL, 1, 0, nThread);
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -1018,7 +1018,7 @@ for (i = 0; i < gameData.segData.nVertices; i++) {
 		gameData.renderData.color.ambient [i].Set (0.0f, 0.0f, 0.0f, 1.0f);
 	}
 if (gameStates.render.bPerPixelLighting/* && lightmapManager.HaveLightmaps ()*/)
-	LEAVE
+	RETURN
 if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !gameStates.render.bColored)) {
 	CFaceColor*	pf = gameData.renderData.color.ambient.Buffer ();
 	memset (pf, 0, gameData.segData.nVertices * sizeof (*pf));
@@ -1047,7 +1047,7 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -1102,11 +1102,11 @@ lightManager.AddGeometryLights ();
 m_data.nGeometryLights = m_data.nLights [0];
 ComputeNearestLights (nLevel);
 if (!lightmapManager.Setup (nLevel))
-	RETURN (0)
+	RETVAL (0)
 if (!gameStates.app.bPrecomputeLightmaps)
 	messageBox.Clear ();
 GatherStaticLights (nLevel);
-RETURN (1)
+RETVAL (1)
 }
 
 // ----------------------------------------------------------------------------------------------

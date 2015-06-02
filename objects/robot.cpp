@@ -42,9 +42,9 @@ ENTER (0, 0);
 
 tRobotInfo*	pRobotInfo = ROBOTINFO (pObj);
 if (!pRobotInfo)
-	RETURN (0)
+	RETVAL (0)
 if (!(vGunPoints = GetGunPoints (pObj, nGun)))
-	RETURN (0)
+	RETVAL (0)
 vGunPos = vGunPoints [nGun];
 nSubModel = pRobotInfo->gunSubModels [nGun];
 //instance up the tree for this gun
@@ -59,7 +59,7 @@ while (nSubModel != 0) {
 //VmVecInc (&vGunPos, gameData.modelData.offsets + pRobotInfo->nModel);
 *vGunPoint = *pObj->View (0) * vGunPos;
 *vGunPoint += pObj->info.position.vPos;
-RETURN (1)
+RETVAL (1)
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ int32_t RobotGetAnimState (tJointPos **jointPosP, int32_t robotType, int32_t nGu
 ENTER (0, 0);
 tRobotInfo*	pRobotInfo = ROBOTINFO (robotType);
 if (!pRobotInfo)
-	RETURN (0)
+	RETVAL (0)
 
 int32_t nJoints = pRobotInfo->animStates [nGun][state].n_joints;
 
@@ -78,7 +78,7 @@ if (nJoints <= 0)
 	memset (jointPosP, 0, sizeof (*jointPosP));
 else
 	*jointPosP = &gameData.botData.joints [pRobotInfo->animStates [nGun][state].offset];
-RETURN (nJoints)
+RETVAL (nJoints)
 }
 
 
@@ -92,7 +92,7 @@ ENTER (0, 0);
 
 tRobotInfo*	pRobotInfo = ROBOTINFO (pObj);
 if (!pRobotInfo)
-	LEAVE;
+	RETURN;
 for (g = 0; g < pRobotInfo->nGuns + 1; g++) {
 	jl = &pRobotInfo->animStates [g][state];
 	jo = jl->offset;
@@ -101,7 +101,7 @@ for (g = 0; g < pRobotInfo->nGuns + 1; g++) {
 		pObj->rType.polyObjInfo.animAngles [jn] = gameData.botData.joints [jo].angles;
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ for (g = 0; g < pRobotInfo->nGuns + 1; g++) {
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ ENTER (0, 0);
 	CObject*		pObj;
 
 if ((gameData.botData.nCamBotId < 0) || gameStates.app.bD1Mission)
-	LEAVE;
+	RETURN;
 camBotInfo.nModel = gameData.botData.nCamBotModel;
 camBotInfo.attackType = 0;
 camBotInfo.containsId = 0;
@@ -189,7 +189,7 @@ FORALL_STATIC_OBJS (pObj)
 		pObj->info.controlType = CT_NONE;
 		pObj->info.movementType = MT_NONE;
 		}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -201,7 +201,7 @@ if (gameData.botData.nCamBotId >= 0) {
 	gameData.botData.nTypes [0] = gameData.botData.nCamBotId;
 	gameData.botData.nCamBotId = -1;
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -300,7 +300,7 @@ for (i = 0; i < n; i++) {
 		ReadJointLists (botInfo [h].animStates [j], N_ANIM_STATES, cf);
 	botInfo [h].always_0xabcd = cf.ReadInt ();
 	}
-RETURN (i)
+RETVAL (i)
 }
 
 //	-----------------------------------------------------------------------------------------------------------

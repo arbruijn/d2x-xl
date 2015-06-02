@@ -38,7 +38,7 @@ ENTER (1, 0);
 #if DBG
 static int bPatrols = 1;
 if (!bPatrols)
-	LEAVE
+	RETURN
 if (pObj->Index () == nDbgObj)
 	BRP;
 #endif
@@ -83,7 +83,7 @@ if (!IsMultiGame && gameOpts->gameplay.bIdleAnims && (pLocalInfo->mode == AIM_ID
 		DoSillyAnimation (pObj);
 		}
 	}
-LEAVE
+RETURN
 }
 
 // ------------------------------------------------------------------------------------------------------------------
@@ -108,9 +108,9 @@ ENTER (1, 0);
 	tRobotInfo*		pRobotInfo = ROBOTINFO (robotType);
 
 if (!pRobotInfo)
-	RETURN (0)
+	RETVAL (0)
 if (0 > (nGunCount = pRobotInfo->nGuns))
-	RETURN (0)
+	RETVAL (0)
 attackType = pRobotInfo->attackType;
 robotState = xlatAnimation [pStaticInfo->GOAL_STATE];
 if (attackType) // && ((robotState == AS_FIRE) || (robotState == AS_RECOIL)))
@@ -163,7 +163,7 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 
 if (at_goal == 1) //nGunCount)
 	pStaticInfo->CURRENT_STATE = pStaticInfo->GOAL_STATE;
-RETURN (1)
+RETVAL (1)
 }
 
 //	------------------------------------------------------------------------------------------
@@ -201,7 +201,7 @@ for (nJoint = 1; nJoint < nJoints; nJoint++) {
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	----------------------------------------------------------------------
@@ -252,7 +252,7 @@ if (StartTime + xRollDuration - xSoundDuration < gameData.timeData.xGame) {
 else if (RandShort () < gameData.timeData.xFrame * 8) {
 	CreateSmallFireballOnObject (pObj, (I2X (1)/2 + RandShort ()) * (16 * xExplScale / I2X (1)) / 8, RandShort () < gameData.timeData.xFrame);
 	}
-RETURN (StartTime + xRollDuration < gameData.timeData.xGame)
+RETVAL (StartTime + xRollDuration < gameData.timeData.xGame)
 }
 
 //	----------------------------------------------------------------------
@@ -265,7 +265,7 @@ if (pObj && !pObj->cType.aiInfo.xDyingStartTime) { // if not already dying
 	pObj->cType.aiInfo.bDyingSoundPlaying = 0;
 	pObj->cType.aiInfo.SKIP_AI_COUNT = 0;
 	}
-LEAVE
+RETURN
 }
 
 //	----------------------------------------------------------------------
@@ -285,9 +285,9 @@ if (pObj && pObj->cType.aiInfo.xDyingStartTime) {
 		if (!gameOpts->gameplay.bNoThief && (missionManager.nCurrentLevel < 0) && pObj->IsThief ())
 			RecreateThief (pObj);
 		}
-	RETURN (1)
+	RETVAL (1)
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 //	---------------------------------------------------------------

@@ -92,7 +92,7 @@ if (OBJECTS.Buffer () && !(gameData.objData.speedBoost.Buffer () && gameData.obj
 //	gameData.timeData.SetTime (I2X (1));
 	gameData.objData.speedBoost [OBJ_IDX (gameData.objData.pConsole)].bBoosted = 0;
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME)) {
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ mRot = CFixMatrix::Create (vRot);
 mOrient = info.position.mOrient * mRot;
 info.position.mOrient = mOrient;
 info.position.mOrient.CheckAndFix ();
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------
@@ -180,7 +180,7 @@ if (m_bRotate && EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.
 		info.position.mOrient.CheckAndFix ();
 		}
 	}
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------
@@ -192,7 +192,7 @@ ENTER (0, 0);
 	int16_t nObject = OBJ_IDX (this);
 
 if (info.nType != OBJ_PLAYER)
-	RETURN (0)
+	RETVAL (0)
 CSegment* pSeg = SEGMENT (info.nSegment);
 int32_t sideMask = pSeg->Masks (info.position.vPos, info.xSize).m_side;
 if (sideMask) {
@@ -232,7 +232,7 @@ else {
 		audio.DeleteSoundObject (nSoundObj);
 		}
 	}
-RETURN (nType)
+RETVAL (nType)
 }
 
 // -----------------------------------------------------------------------------
@@ -274,7 +274,7 @@ if ((info.nType == OBJ_PLAYER) && (N_LOCALPLAYER == info.nId)) {
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------
@@ -315,7 +315,7 @@ switch (info.controlType) {
 			Unstick ();
 			DoAnyRobotDyingFrame (this);
 #if 1//!DBG
-			RETURN (1)
+			RETVAL (1)
 #endif
 			}
 		else if (USE_D1_AI)
@@ -351,14 +351,14 @@ switch (info.controlType) {
 
 	case CT_CNTRLCEN:
 		if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
-			RETURN (1)
+			RETVAL (1)
 		DoReactorFrame (this);
 		break;
 
 	default:
 		Error ("Unknown control nType %d in CObject %i, sig/nType/id = %i/%i/%i", info.controlType, OBJ_IDX (this), info.nSignature, info.nType, info.nId);
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 // -----------------------------------------------------------------------------
@@ -372,11 +372,11 @@ void CObject::UpdateShipSound (void)
 {
 ENTER (0, 0);
 if (!gameOpts->sound.bShip)
-	LEAVE;
+	RETURN;
 
 int32_t nObject = OBJ_IDX (this);
 if (nObject != LOCALPLAYER.nObject)
-	LEAVE;
+	RETURN;
 
 int32_t nSpeed = mType.physInfo.velocity.Mag();
 #if 0
@@ -385,7 +385,7 @@ if (nSpeed < 0)
 	nSpeed = 0;
 #endif
 //if (gameData.multiplayer.bMoving == nSpeed)
-//	LEAVE;
+//	RETURN;
 
 if (gameData.multiplayer.bMoving < 0)
 	audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, OBJ_IDX (this), 1, ShipVolume (nSpeed), I2X (256), -1, -1, 
@@ -393,7 +393,7 @@ if (gameData.multiplayer.bMoving < 0)
 else
 	audio.ChangeObjectSound (OBJ_IDX (this), ShipVolume (nSpeed));
 gameData.multiplayer.bMoving = nSpeed;
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------
@@ -424,7 +424,7 @@ switch (info.movementType) {
 		Spin ();
 		break;
 	}
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------
@@ -436,7 +436,7 @@ ENTER (0, 0);
 		int32_t	nOldLevel;
 
 if ((info.movementType != MT_PHYSICS) || (nPrevSegment == info.nSegment))
-	RETURN (0)
+	RETVAL (0)
 nOldLevel = missionManager.nCurrentLevel;
 for (i = 0; i < gameData.physicsData.nSegments - 1; i++) {
 	if (gameData.physicsData.segments [i] < 0)
@@ -456,9 +456,9 @@ for (i = 0; i < gameData.physicsData.nSegments - 1; i++) {
 #endif
 	//maybe we've gone on to the next level.  if so, bail!
 	if (missionManager.nCurrentLevel != nOldLevel)
-		RETURN (1)
+		RETVAL (1)
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 // -----------------------------------------------------------------------------
@@ -476,7 +476,7 @@ if (IsGuidedMissile (N_LOCALPLAYER)) {
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------
@@ -493,15 +493,15 @@ if (gameStates.render.bDropAfterburnerBlob) {
 	}
 
 if (info.nType != OBJ_WEAPON)
-	LEAVE;
+	RETURN;
 
 CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
 
 if (!pWeaponInfo)
-	LEAVE;
+	RETURN;
 
 if (!pWeaponInfo->nAfterburnerSize)
-	LEAVE;
+	RETURN;
 
 	int32_t	bSmoke;
 	fix		delay, lifetime, nSize;
@@ -509,10 +509,10 @@ if (!pWeaponInfo->nAfterburnerSize)
 #if 1
 if (IsMissile ()) {
 	if (SHOW_SMOKE && gameOpts->render.particles.bMissiles)
-		LEAVE;
+		RETURN;
 	if ((gameStates.app.bNostalgia || EGI_FLAG (bThrusterFlames, 1, 1, 0)) &&
 			(info.nId != MERCURYMSL_ID))
-		LEAVE;
+		RETURN;
 	}
 #endif
 fix vel = mType.physInfo.velocity.Mag ();
@@ -545,7 +545,7 @@ if (bSmoke ||
 	DropAfterburnerBlobs (this, 1, nSize, lifetime, NULL, bSmoke);
 	gameData.objData.xLastAfterburnerTime [nObject] = gameData.timeData.xGame;
 	}
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------
@@ -589,10 +589,10 @@ else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 		bNeedEffect = false;
 	}
 else 
-	LEAVE;
+	RETURN;
 if (bHaveEffect != bNeedEffect)
 	RequestEffects (bNeedEffect ? nEffect : DESTROY_LIGHTNING);
-LEAVE
+RETURN
 }
 
 // -----------------------------------------------------------------------------
@@ -608,7 +608,7 @@ if (OBJ_IDX (this) == nDbgObj)
 	BRP;
 #endif
 if (!FixWeaponObject (this))
-	RETURN (0)
+	RETVAL (0)
 if (info.nType == OBJ_ROBOT) {
 	if (gameOpts->gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (info.nId) && ROBOTINFO (info.nId)->thief) {
 #if 1
@@ -632,7 +632,7 @@ if ((info.xLifeLeft != IMMORTAL_TIME) && (info.xLifeLeft != ONE_FRAME_TIME) && (
 gameStates.render.bDropAfterburnerBlob = 0;
 if ((gameData.physicsData.xTime > 0) && UpdateMovement ()) {
 	UpdateEffects ();
-	RETURN (1)
+	RETVAL (1)
 	}
 if (info.xLifeLeft < 0) {		// We died of old age
 	Die ();
@@ -642,16 +642,16 @@ if (info.xLifeLeft < 0) {		// We died of old age
 		Explode (0);
 	}
 if ((info.nType == OBJ_NONE) || (info.nFlags & OF_SHOULD_BE_DEAD)) {
-	RETURN (1)			//CObject has been deleted
+	RETVAL (1)			//CObject has been deleted
 	}
 UpdatePosition ();
 UpdateEffects ();
 if (CheckTriggerHits (nPrevSegment))
-	RETURN (0)
+	RETVAL (0)
 CheckWallPhysics ();
 CheckGuidedMissileThroughExit (nPrevSegment);
 CheckAfterburnerBlobDrop ();
-RETURN (1)
+RETVAL (1)
 }
 
 // -----------------------------------------------------------------------------
@@ -687,7 +687,7 @@ FORALL_OBJS (pObj) {
 #endif
 	if ((pObj->info.nType != OBJ_NONE) && (pObj->info.nType != OBJ_GHOST) && !(pObj->info.nFlags & OF_SHOULD_BE_DEAD) && !pObj->Update ()) {
 		PROF_END(ptObjectStates)
-		RETURN (0)
+		RETVAL (0)
 		}
 #if DBG
 	if (pObj->IsRobot ()) 
@@ -708,7 +708,7 @@ if (gameStates.app.bMultiThreaded) {
 #endif
 
 PROF_END(ptObjectStates)
-RETURN (1)
+RETVAL (1)
 }
 
 //----------------------------------------------------------------------------------------
@@ -745,7 +745,7 @@ for (int32_t i = windowRenderedData [nWindow].nObjects; i; ) {
 			}
 		}
 	}
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -781,7 +781,7 @@ for (CObjectIterator iter (pObj); pObj; pObj = (pPrevObj ? iter.Step () : iter.S
 		ReleaseObject (pObj->Index ());
 		}
 	}
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------------------------------------

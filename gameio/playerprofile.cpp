@@ -1811,7 +1811,7 @@ gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
 gameStates.render.bAmbientColor = /*gameStates.render.bPerPixelLighting ||*/ (gameOpts->render.color.nLevel == 2);
 gameOpts->render.effects.bGlow = ::Clamp (gameOpts->render.effects.bGlow, 0, 2);
-gameOpts->sound.xCustomSoundVolume = (fix) FRound (float (gameConfig.nAudioVolume [0]) * 10.0f / 8.0f);
+gameOpts->sound.xCustomSoundVolume = (I2X (1) / 8) * gameConfig.nAudioVolume [0];
 #if DBG
 if ((gameOpts->render.stereo.nRiftFOV < RIFT_MIN_FOV) || (gameOpts->render.stereo.nRiftFOV > RIFT_MAX_FOV))
 	gameOpts->render.stereo.nRiftFOV = RIFT_DEFAULT_FOV;

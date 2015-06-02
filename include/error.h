@@ -83,7 +83,7 @@ void Breakpoint (void);
 
 //	-----------------------------------------------------------------------------------------------------------
 
-#if 1 //DBG
+#if !DBG
 
 #ifdef _WIN32
 #	define	__FUNC__	__FUNCSIG__
@@ -91,15 +91,15 @@ void Breakpoint (void);
 #	define	__FUNC__	__PRETTY_FUNCTION__
 #endif
 
-#	define ENTER(_nLevel,_thread)		const int32_t __THREAD__ = (_thread); const int32_t __LEVEL__ = (_nLevel); TraceCallStack (1, __LEVEL__, __FUNC__, __THREAD__, __FILE__, __LINE__)
-#	define LEAVE							{ TraceCallStack (-1, __LEVEL__, __FUNC__, __THREAD__, __FILE__, __LINE__); return; }
-#	define RETURN(_retVal)				{ TraceCallStack (-1, __LEVEL__, __FUNC__, __THREAD__, __FILE__, __LINE__); return (_retVal); }
+#	define ENTER(_nLevel,_thread)		const int32_t __THREAD__ = (_thread); const int32_t __LEVEL__ = (_nLevel); if (__LEVEL__ < gameStates.app.nTraceLevel) TraceCallStack (1, __LEVEL__, __FUNC__, __THREAD__, __FILE__, __LINE__)
+#	define RETURN							{ if (__LEVEL__ < gameStates.app.nTraceLevel) TraceCallStack (-1, __LEVEL__, __FUNC__, __THREAD__, __FILE__, __LINE__); return; }
+#	define RETVAL(_retVal)				{ if (__LEVEL__ < gameStates.app.nTraceLevel) TraceCallStack (-1, __LEVEL__, __FUNC__, __THREAD__, __FILE__, __LINE__); return (_retVal); }
 
 #else
 
-#	define ENTER(_thread)				
-#	define LEAVE				
-#	define RETURN(_retVal)	return (_retVal);
+#	define ENTER(_nLevel,_thread)				
+#	define RETURN							return;	
+#	define RETVAL(_retVal)				return (_retVal);
 
 #endif
 

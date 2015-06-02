@@ -73,21 +73,21 @@ gameData.aiData.nHitType = FindHitpoint (hitQuery, gameData.aiData.hitResult, 0)
 gameData.aiData.vHitPos = gameData.aiData.hitResult.vPoint;
 gameData.aiData.nHitSeg = gameData.aiData.hitResult.nSegment;
 if ((gameData.aiData.nHitType != HIT_OBJECT) || (gameData.aiData.hitResult.nObject != TARGETOBJ->Index ()))
-	RETURN (0)
+	RETVAL (0)
 fix dot = CFixVector::Dot (*vVecToTarget, pObj->info.position.mOrient.m.dir.f);
 if (dot > fieldOfView - (gameData.aiData.nOverallAgitation << 9))
-	RETURN (2)
+	RETVAL (2)
 if (gameOpts->gameplay.nAIAggressivity) {	// player visible at raised AI aggressivity when having headlight on
 	 if ((TARGETOBJ->info.nType == OBJ_PLAYER) && 
 		  (TARGETOBJ->info.nId == N_LOCALPLAYER) && 
 		  HeadlightIsOn (-1))
-		RETURN (2)
+		RETVAL (2)
 	if (!TARGETOBJ->Cloaked () &&
 		 (CFixVector::Dist (*vPos, OBJPOS (TARGETOBJ)->vPos) < 
 		 ((3 + gameOpts->gameplay.nAIAggressivity) * (pObj->info.xSize + TARGETOBJ->info.xSize)) / 2))
-		RETURN (2)
+		RETVAL (2)
 	}
-RETURN (1)
+RETVAL (1)
 }
 
 // ------------------------------------------------------------------------------------------------------------------
@@ -100,9 +100,9 @@ ENTER (1, 0);
 
 //	Assume that robot's gun tip is in same CSegment as robot's center.
 if (vGun->IsZero ())
-	RETURN (0)
+	RETVAL (0)
 if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
-	RETURN (1)
+	RETVAL (1)
 pObj->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 
 CHitQuery hitQuery (FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_VISIBILITY,
@@ -133,7 +133,7 @@ gameData.aiData.vHitPos = gameData.aiData.hitResult.vPoint;
 gameData.aiData.nHitSeg = gameData.aiData.hitResult.nSegment;
 pObj->rType.polyObjInfo.nModel = nModel;
 pObj->SetSize (nSize);
-RETURN ((gameData.aiData.nHitType == HIT_NONE) || 
+RETVAL ((gameData.aiData.nHitType == HIT_NONE) || 
 		  ((gameData.aiData.nHitType == HIT_OBJECT) && pObj->Target () && (pObj->Target ()->Index () == gameData.aiData.hitResult.nObject)))
 }
 
@@ -254,7 +254,7 @@ if (pObj->Index () == nDbgObj) {
 	HUDMessage (0, "vis: %d", gameData.aiData.nTargetVisibility);
 	}
 #endif
-LEAVE
+RETURN
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -267,24 +267,24 @@ ENTER (1, 0);
 	CWall	*pWall;
 
 if (!IS_CHILD (pSeg->m_children [nSide]))
-	RETURN (0)		//trap -2 (exit CSide)
+	RETVAL (0)		//trap -2 (exit CSide)
 if (!(pWall = pSeg->Wall (nSide)))
-	RETURN (1)				//d:\temp\dm_testthen say it can't be opened
+	RETVAL (1)				//d:\temp\dm_testthen say it can't be opened
 	//	The mighty console CObject can open all doors (for purposes of determining paths).
 if (pObj == gameData.objData.pConsole) {
 	if (pWall->nType == WALL_DOOR)
-		RETURN (1)
+		RETVAL (1)
 	}
 if ((pObj == NULL) || pObj->IsGuideBot ()) {
 	int32_t	ailp_mode;
 
 	if (pWall->flags & WALL_BUDDY_PROOF) {
 		if ((pWall->nType == WALL_DOOR) && (pWall->state == WALL_DOOR_CLOSED))
-			RETURN (0)
+			RETVAL (0)
 		else if (pWall->nType == WALL_CLOSED)
-			RETURN (0)
+			RETVAL (0)
 		else if ((pWall->nType == WALL_ILLUSION) && !(pWall->flags & WALL_ILLUSION_OFF))
-			RETURN (0)
+			RETVAL (0)
 		}
 
 	if (pWall->keys != KEY_NONE) {
@@ -297,9 +297,9 @@ if ((pObj == NULL) || pObj->IsGuideBot ()) {
 		}
 
 	if (pWall->nType == WALL_CLOSED)
-		RETURN (0)
+		RETVAL (0)
 	if (pWall->nType != WALL_DOOR) /*&& (pWall->nType != WALL_CLOSED))*/
-		RETURN (1)
+		RETVAL (1)
 
 	//	If Buddy is returning to player, don't let him think he can get through triggered doors.
 	//	It's only valid to think that if the player is going to get him through.  But if he's
@@ -314,12 +314,12 @@ if ((pObj == NULL) || pObj->IsGuideBot ()) {
 	// -- if (Buddy_got_stuck) {
 	if (ailp_mode == AIM_GOTO_PLAYER) {
 		if ((pWall->nType == WALL_BLASTABLE) && (pWall->state != WALL_BLASTED))
-			RETURN (0)
+			RETVAL (0)
 		if (pWall->nType == WALL_CLOSED)
-			RETURN (0)
+			RETVAL (0)
 		if (pWall->nType == WALL_DOOR) {
 			if ((pWall->flags & WALL_DOOR_LOCKED) && (pWall->state == WALL_DOOR_CLOSED))
-				RETURN (0)
+				RETVAL (0)
 			}
 		}
 		// -- }
@@ -328,48 +328,48 @@ if ((pObj == NULL) || pObj->IsGuideBot ()) {
 		int32_t	nClip = pWall->nClip;
 
 		if (nClip == -1)
-			RETURN (1)
+			RETVAL (1)
 		else if (gameData.wallData.pAnim [nClip].flags & WCF_HIDDEN) {
 			if (pWall->state == WALL_DOOR_CLOSED)
-				RETURN (0)
+				RETVAL (0)
 			else
-				RETURN (1)
+				RETVAL (1)
 			}
 		else
-			RETURN (1)
+			RETVAL (1)
 		}
 
 	if (pWall->nType == WALL_DOOR)  {
 		if (pWall->nType == WALL_BLASTABLE)
-			RETURN (1)
+			RETVAL (1)
 		else {
 			int32_t	nClip = pWall->nClip;
 
 			if (nClip == -1)
-				RETURN (1)
+				RETVAL (1)
 			//	Buddy allowed to go through secret doors to get to player.
 			else if ((ailp_mode != AIM_GOTO_PLAYER) && (gameData.wallData.pAnim [nClip].flags & WCF_HIDDEN)) {
 				if (pWall->state == WALL_DOOR_CLOSED)
-					RETURN (0)
+					RETVAL (0)
 				else
-					RETURN (1)
+					RETVAL (1)
 				}
 			else
-				RETURN (1)
+				RETVAL (1)
 			}
 		}
 	}
 else if ((pObj->info.nId == ROBOT_BRAIN) || (pObj->cType.aiInfo.behavior == AIB_RUN_FROM) || (pObj->cType.aiInfo.behavior == AIB_SNIPE)) {
 	if (pWall) {
 		if ((pWall->nType == WALL_DOOR) && (pWall->keys == KEY_NONE) && !(pWall->flags & WALL_DOOR_LOCKED))
-			RETURN (1)
+			RETVAL (1)
 		else if (pWall->keys != KEY_NONE) {	//	Allow bots to open doors to which player has keys.
 			if (pWall->keys & LOCALPLAYER.flags)
-				RETURN (1)
+				RETVAL (1)
 			}
 		}
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 // -- // --------------------------------------------------------------------------------------------------------------------
@@ -417,14 +417,14 @@ int16_t nObject = pSeg->m_objects;
 while (nObject != -1) {
 	CObject *pObj = OBJECT (nObject);
 	if (!pObj)
-		RETURN (0)
+		RETVAL (0)
 	if ((pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_ROBOT) || (pObj->info.nType == OBJ_REACTOR)) {
 		if (CFixVector::Dist (*pos, pObj->info.position.vPos) < size + pObj->info.xSize)
-			RETURN (1)
+			RETVAL (1)
 		}
 	nObject = pObj->info.nNextInSeg;
 	}
-RETURN (0)
+RETVAL (0)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -442,10 +442,10 @@ int32_t AILocalPlayerControlsRobot (CObject *pObj, int32_t awarenessLevel)
 {
 ENTER (1, 0);
 if (!IsMultiGame)
-	RETURN (1)
+	RETVAL (1)
 if (!awarenessLevel)
-	RETURN (0)
-RETURN (MultiCanControlRobot (pObj->Index (), awarenessLevel))
+	RETVAL (0)
+RETVAL (MultiCanControlRobot (pObj->Index (), awarenessLevel))
 }
 
 // --------------------------------------------------------------------------------------------------------------------

@@ -53,7 +53,7 @@ ENTER (0, 0);
 	CWeaponInfo	*pWeaponInfo = WEAPONINFO (nWeaponType);
 if (!pWeaponInfo) {
 	Error ("Invalid weapon render nType in CreateNewWeapon\n");
-	RETURN (-1)
+	RETVAL (-1)
 	}
 
 switch (pWeaponInfo->renderType) {
@@ -65,7 +65,7 @@ switch (pWeaponInfo->renderType) {
 		break;
 	default:
 		Error ("Invalid weapon render nType in CreateNewWeapon\n");
-		RETURN (-1)
+		RETVAL (-1)
 	}
 
 int32_t nObject = CreateWeapon (nWeaponType, nParent, nSegment, *vPosition, 0, 255);
@@ -75,7 +75,7 @@ if (!pObj) {
 	if (nObject > -1)
 		BRP;
 #endif
-	RETURN (-1)
+	RETVAL (-1)
 	}
 #if DBG
 if (nObject == nDbgObj)
@@ -99,7 +99,7 @@ if (pWeaponInfo->bounce == 1)
 	pObj->mType.physInfo.flags |= PF_BOUNCES;
 if ((pWeaponInfo->bounce == 2) || gameStates.app.cheats.bBouncingWeapons)
 	pObj->mType.physInfo.flags |= PF_BOUNCES + PF_BOUNCES_TWICE;
-RETURN (nObject)
+RETVAL (nObject)
 }
 
 // ---------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ ENTER (0, 0);
 
 if (!pWeaponInfo) {
 	Error ("Invalid weapon render nType in CreateWeaponSpeed\n");
-	RETURN (-1)
+	RETVAL (-1)
 	}
 
 	CObject			*pParent = OBJECT (pWeapon->cType.laserInfo.parent.nObject);
@@ -148,7 +148,7 @@ if (!bFix && pParent && (pParent->info.nType == OBJ_PLAYER) && (pWeaponInfo->ren
 		gameData.physicsData.xTime = xTime;
 		if (pWeapon->info.nFlags & OF_SHOULD_BE_DEAD) {
 			ReleaseObject (pWeapon->Index ());
-			RETURN (-1)
+			RETVAL (-1)
 			}
 		}
 	}
@@ -175,7 +175,7 @@ if (WI_thrust (nWeaponType) != 0) {
 	pWeapon->mType.physInfo.thrust = pWeapon->mType.physInfo.velocity;
 	pWeapon->mType.physInfo.thrust *= FixDiv (WI_thrust (pWeapon->info.nId), xWeaponSpeed + xParentSpeed);
 	}
-RETURN (pWeapon->Index ())
+RETVAL (pWeapon->Index ())
 }
 
 // ---------------------------------------------------------------------------------
@@ -184,13 +184,13 @@ void CreateWeaponSound (CObject* pWeapon, int32_t bMakeSound)
 {
 ENTER (0, 0);
 if (!bMakeSound)
-	LEAVE;
+	RETURN;
 
 	uint8_t			nWeaponType = pWeapon->Id ();
 	CWeaponInfo		*pWeaponInfo = WEAPONINFO (nWeaponType);
 
 if (!pWeaponInfo || (pWeaponInfo->flashSound < 0))
-	LEAVE;
+	RETURN;
 
 	fix				volume = I2X (1);
 	int32_t			nParent = pWeapon->cType.laserInfo.parent.nObject;
@@ -225,12 +225,11 @@ if (gameOpts->sound.bMissiles && CObject::IsMissile (nWeaponType)) {
 							(nWeaponType == ROBOT_SMARTMSL_ID) ||
 							(nWeaponType == ROBOT_MEGAMSL_ID) ||
 							(nWeaponType == ROBOT_EARTHSHAKER_ID);
-	audio.CreateObjectSound (-1, SOUNDCLASS_MISSILE, nWeapon, 1, I2X (gameOpts->sound.xCustomSoundVolume) / 10, I2X (256), -1, -1,
-										AddonSoundName (nMslSounds [bBigMsl]), 1);
+	audio.CreateObjectSound (-1, SOUNDCLASS_MISSILE, nWeapon, 1, gameOpts->sound.xCustomSoundVolume, I2X (256), -1, -1, AddonSoundName (nMslSounds [bBigMsl]), 1);
 	}
 else if (nWeaponType == FLARE_ID)
 	audio.CreateObjectSound (nWeapon, SOUNDCLASS_GENERIC, -1, 0, I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_FLARE));
-LEAVE
+RETURN
 }
 
 // ---------------------------------------------------------------------------------
@@ -242,15 +241,15 @@ int32_t CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, int16_t 
 ENTER (0, 0);
 CObject *pParent = OBJECT (nParent);
 if (!pParent)
-	RETURN (-1)
+	RETVAL (-1)
 
 CWeaponInfo	*pWeaponInfo = WEAPONINFO (nWeaponType);
 if (!pWeaponInfo)
-	RETURN (-1)
+	RETVAL (-1)
 
 CFixVector	vDir = *vDirection;
 if (RandShort () > pParent->GunDamage ())
-	RETURN (-1)
+	RETVAL (-1)
 
 fix damage = (I2X (1) / 2 - pParent->AimDamage ()) >> 3;
 
@@ -276,7 +275,7 @@ if (pParent->IsRobot ())
 else if (gameStates.app.bD2XLevel &&
 			(pParent == gameData.objData.pConsole) &&
 			(SEGMENT (gameData.objData.pConsole->info.nSegment)->HasNoDamageProp ()))
-	RETURN (-1)
+	RETVAL (-1)
 #if 1
 if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameData.appData.GameMode (GM_HOARD | GM_ENTROPY))) {
 	int32_t nObject = CreatePowerup (POW_HOARD_ORB, -1, nSegment, *vPosition, 0);
@@ -289,7 +288,7 @@ if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameDat
 		pObj->rType.animationInfo.nCurFrame = 0;
 		pObj->info.nCreator = GetTeam (N_LOCALPLAYER) + 1;
 		}
-	RETURN (-1)
+	RETVAL (-1)
 	}
 #endif
 int32_t nObject = CreateWeaponObject (nWeaponType, nSegment, vPosition, -1);
@@ -299,7 +298,7 @@ if (!pObj) {
 	if (nObject > -1)
 		BRP;
 #endif
-	RETURN (-1)
+	RETVAL (-1)
 	}
 #if 0
 if (pParent == gameData.objData.pConsole) {
@@ -355,7 +354,7 @@ if (nWeaponType == OMEGA_ID) {
 			CreateMuzzleFlash (pObj->info.nSegment, pObj->info.position.vPos, pWeaponInfo->xFlashSize, pWeaponInfo->nFlashAnimation);
 		}
 	DoOmegaStuff (OBJECT (nParent), vPosition, pObj);
-	RETURN (nObject)
+	RETVAL (nObject)
 	}
 else if (nWeaponType == FUSION_ID) {
 	static int32_t nRotDir = 0;
@@ -438,11 +437,11 @@ if (((nParent != nViewer) || SPECTATOR (pParent)) && (pParent->info.nType != OBJ
 	}
 CreateWeaponSound (pObj, bMakeSound);
 if (!CreateWeaponSpeed (pObj))
-	RETURN (-1)
+	RETVAL (-1)
 if ((pObj->info.nType == OBJ_WEAPON) && (pObj->info.nId == FLARE_ID))
 	pObj->info.xLifeLeft += SRandShort () << 2;		//	add in -2..2 seconds
 
-RETURN (nObject)
+RETVAL (nObject)
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -463,7 +462,7 @@ ENTER (0, 0);
 CHitQuery hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS, &pParentObj->info.position.vPos, vPosition, pParentObj->info.nSegment, OBJ_IDX (pParentObj), 0, 0, ++gameData.physicsData.bIgnoreObjFlag);
 int32_t fate = FindHitpoint (hitQuery, hitResult);
 if ((fate != HIT_NONE)  || (hitResult.nSegment == -1))
-	RETURN (-1)
+	RETVAL (-1)
 
 #if DBG
 if (!hitResult.nSegment) {
@@ -480,7 +479,7 @@ if (!hitResult.nSegment) {
 	}
 #endif
 
-RETURN (CreateNewWeapon (vDirection, &hitResult.vPoint, (int16_t) hitResult.nSegment, parent, nWeaponType, bMakeSound))
+RETVAL (CreateNewWeapon (vDirection, &hitResult.vPoint, (int16_t) hitResult.nSegment, parent, nWeaponType, bMakeSound))
 }
 
 // -----------------------------------------------------------------------------
@@ -489,27 +488,27 @@ bool FixWeaponObject (CObject* pObj, bool bFixType)
 {
 ENTER (0, 0);
 if (!IsMultiGame)
-	RETURN (true)
+	RETVAL (true)
 if (!pObj->IsWeapon ()) {
 	if (!bFixType) 
-		RETURN (true)
+		RETVAL (true)
 	pObj->SetType (OBJ_WEAPON);
 	CreateWeaponSpeed (pObj, true);
 	}
 if (pObj->mType.physInfo.flags & PF_STICK)
-	RETURN (true)
+	RETVAL (true)
 if (pObj->Velocity ().IsZero ()) {
 	PrintLog (0, "weapon object has invalid velocity\n");
 	CreateWeaponSpeed (pObj, true);
 	if (pObj->Velocity ().IsZero ()) {
 		pObj->Die ();
-		RETURN (false)
+		RETVAL (false)
 		}
 	}
 if (pObj->LifeLeft () > WI_lifetime (pObj->Id ())) {
 	PrintLog (0, "weapon object has invalid life time\n");
 	pObj->Die ();
-	RETURN (false)
+	RETVAL (false)
 	}
 
 if (pObj->info.movementType != MT_PHYSICS) {
@@ -520,7 +519,7 @@ if (pObj->info.controlType != CT_WEAPON) {
 	PrintLog (0, "weapon object has invalid control type %s\n", pObj->info.controlType);
 	pObj->info.controlType = CT_WEAPON;
 	}	
-RETURN (true)
+RETVAL (true)
 }
 
 //	-------------------------------------------------------------------------------------------

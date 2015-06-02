@@ -185,12 +185,12 @@ if (FACE_IDX (pFace) == nDbgFace)
 #endif
 
 if (!FaceIsVisible (pFace))
-	RETURN (-1)
+	RETVAL (-1)
 bWall = IS_WALL (pFace->m_info.nWall);
 if (bWall) {
 	pFace->m_info.widFlags = pSeg->IsPassable (nSide, NULL);
 	if (!(pFace->m_info.widFlags & WID_VISIBLE_FLAG)) //(WID_VISIBLE_FLAG | WID_TRANSPARENT_FLAG)))
-		RETURN (-1)
+		RETVAL (-1)
 	}
 else
 	pFace->m_info.widFlags = WID_VISIBLE_FLAG;
@@ -223,7 +223,7 @@ else if (!bTextured) {
 	}
 if ((fAlpha < 1.0f) || ((nColor == 2) && (pFace->m_info.nBaseTex < 0)))
 	pFace->m_info.bTransparent = 1;
-RETURN (nColor)
+RETVAL (nColor)
 }
 
 //------------------------------------------------------------------------------
@@ -324,7 +324,7 @@ for (i = nStart; i < nEnd; i++) {
 	lightManager.Material ().bValid = 0;
 	}
 ogl.SetTransform (0);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -490,7 +490,7 @@ ogl.SetTransform (0);
 #if 0
 bSemaphore [nThread] = 0;
 #endif
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -631,7 +631,7 @@ if (ogl.m_states.bVertexLighting)
 	gpgpuLighting.Compute (-1, 2, NULL);
 #endif
 ogl.SetTransform (0);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -709,7 +709,7 @@ for (i = nStart; i < nEnd; i++) {
 		}
 	}
 ogl.SetTransform (0);
-LEAVE
+RETURN
 }
 
 //------------------------------------------------------------------------------
@@ -744,7 +744,7 @@ if (nFaces) {
 		}
 	}
 ogl.m_states.bUseTransform = 0;
-RETURN (nSegments)
+RETVAL (nSegments)
 }
 
 //------------------------------------------------------------------------------
