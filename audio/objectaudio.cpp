@@ -632,6 +632,29 @@ RETVAL (nKilled > 0)
 
 //------------------------------------------------------------------------------
 
+CSoundObject *CAudio::FindSegmentSound (int16_t nSound, int16_t nSegment, int16_t nSide, CFixVector& vPos)
+{
+CSoundObject *pSoundObj = m_objects.Buffer ();
+for (uint32_t i = 0, h = m_objects.ToS (); i < h; i++) {
+	if (!(pSoundObj->m_flags & SOF_LINK_TO_POS))
+		continue;
+	if (pSoundObj->m_nSound != nSound)
+		continue;
+	if (pSoundObj->m_channel < 0)
+		continue;
+	if (pSoundObj->m_linkType.pos.nSegment != nSegment)
+		continue;
+	if (pSoundObj->m_linkType.pos.nSide != nSide)
+		continue;
+	if (CFixVector::Dist (pSoundObj->m_linkType.pos.position, vPos) > I2X (1) / 2)
+		continue;
+	return pSoundObj;
+	}
+return NULL;
+}
+
+//------------------------------------------------------------------------------
+
 int32_t CAudio::CreateSegmentSound (
 	int16_t nOrgSound, int16_t nSegment, int16_t nSide, CFixVector& vPos, int32_t bForever,
 	fix maxVolume, fix maxDistance, const char* pszSound)
@@ -650,8 +673,10 @@ if (!gameData.pigData.sound.sounds [gameStates.sound.bD1Sound][nSound].data) {
 	Int3 ();
 	RETVAL (-1)
 	}
-if ((nSegment < 0)|| (nSegment > gameData.segData.nLastSegment))
+if (!SEGMENT (nSegment))
 	RETVAL (-1)
+if ((pSoundObj = FindSegmentSound (nSound, nSegment, nSide, vPos))) // if the same sound plays in this segment nearby, don't start another one 
+	RETVAL (pSoundObj->m_nSignature)
 if (nOrgSound == SOUND_FORCEFIELD_HUM)
 	maxVolume = Max (I2X (1) / 8, FixMul (maxVolume, gameOpts->sound.xCustomSoundVolume));
 if (!bForever) { 	//&& gameData.pigData.sound.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD) {

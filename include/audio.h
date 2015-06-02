@@ -98,12 +98,12 @@ class CSoundSample {
 #define SOUNDCLASS_MISSILE			5
 #define SOUNDCLASS_EXPLOSION		6
 
-#define SOF_USED				1 		// Set if this sample is used
-#define SOF_PLAYING			2		// Set if this sample is playing on a channel
-#define SOF_LINK_TO_OBJ		4		// Sound is linked to a moving CObject. If CObject dies, then finishes play and quits.
-#define SOF_LINK_TO_POS		8		// Sound is linked to CSegment, pos
-#define SOF_PLAY_FOREVER	16		// Play bForever (or until level is stopped), otherwise plays once
-#define SOF_PERMANENT		32		// Part of the level, like a waterfall or fan
+#define SOF_USED						1 		// Set if this sample is used
+#define SOF_PLAYING					2		// Set if this sample is playing on a channel
+#define SOF_LINK_TO_OBJ				4		// Sound is linked to a moving CObject. If CObject dies, then finishes play and quits.
+#define SOF_LINK_TO_POS				8		// Sound is linked to CSegment, pos
+#define SOF_PLAY_FOREVER			16		// Play bForever (or until level is stopped), otherwise plays once
+#define SOF_PERMANENT				32		// Part of the level, like a waterfall or fan
 
 //------------------------------------------------------------------------------
 
@@ -182,8 +182,8 @@ class CAudioChannel {
 		void SetVolume (int32_t nVolume);
 		void SetPan (int32_t nPan);
 		int32_t Start (int16_t nSound, int32_t nSoundClass, fix nVolume, int32_t nPan, int32_t bLooping,
-					  int32_t nLoopStart, int32_t nLoopEnd, int32_t nSoundObj, int32_t nSpeed,
-					  const char *pszWAV, CFixVector* vPos);
+							int32_t nLoopStart, int32_t nLoopEnd, int32_t nSoundObj, int32_t nSpeed,
+							const char *pszWAV, CFixVector* vPos);
 		void Stop (void);
 		void Mix (uint8_t* stream, int32_t len);
 		inline int32_t Playing (void) { return m_info.bPlaying && m_info.pMixChunk; }
@@ -212,8 +212,8 @@ class CSoundObject {
 		int16_t			m_nSignature;		// A unique nSignature to this sound
 		uint8_t			m_flags;				// Used to tell if this slot is used and/or currently playing, and how long.
 		uint8_t			m_bCustom;			//	Keep alignment
-		fix			m_maxVolume;		// Max volume that this sound is playing at
-		fix			m_maxDistance;		// The max distance that this sound can be heard at...
+		fix				m_maxVolume;		// Max volume that this sound is playing at
+		fix				m_maxDistance;		// The max distance that this sound can be heard at...
 		int32_t			m_soundClass;
 		int32_t			m_bAmbient;
 		int16_t			m_nSound;			// The sound number that is playing
@@ -222,19 +222,19 @@ class CSoundObject {
 		int32_t			m_audioVolume;		// audio volume set when the sound object was last updated
 		int32_t			m_pan;				// Pan value that this sound is playing at
 		int32_t			m_nDecay;			// type of decay (0: linear, 1: quadratic, 2: cubic)
-		char			m_szSound [FILENAME_LEN];	// file name of custom sound to be played
+		char				m_szSound [FILENAME_LEN];	// file name of custom sound to be played
 		int32_t			m_nLoopStart;		// The start point of the loop. -1 means no loop
 		int32_t			m_nLoopEnd;			// The end point of the loop
 		int32_t			m_nMidiVolume;
 		union {
 			struct {
-				int16_t			nSegment;				// Used if SOF_LINK_TO_POS field is used
-				int16_t			nSide;
+				int16_t		nSegment;				// Used if SOF_LINK_TO_POS field is used
+				int16_t		nSide;
 				CFixVector	position;
 			} pos;
 			struct {
-				int16_t			nObject;				// Used if SOF_LINK_TO_OBJ field is used
-				int16_t			nObjSig;
+				int16_t		nObject;				// Used if SOF_LINK_TO_OBJ field is used
+				int16_t		nObjSig;
 			} obj;
 		} m_linkType;
 
@@ -414,6 +414,8 @@ class CAudio {
 
 	private:
 		CAudioChannel* FindFreeChannel (int32_t nSoundClass);
+		CSoundObject *FindSegmentSound (int16_t nSound, int16_t nSegment, int16_t nSide, CFixVector& vPos);
+
 	};
 
 extern CAudio audio;
@@ -425,24 +427,24 @@ void SetD1Sound (void);
 //------------------------------------------------------------------------------
 
 typedef struct tWAVHeader {
-	char		chunkID [4];
+	char			chunkID [4];
 	uint32_t		chunkSize;
-	char		riffType [4];
+	char			riffType [4];
 } tRIFFChunk;
 
 typedef struct tWAVFormat {
-	char		chunkID [4];
+	char			chunkID [4];
 	uint32_t		chunkSize;
-	uint16_t	format;
-	uint16_t	channels;
+	uint16_t		format;
+	uint16_t		channels;
 	uint32_t		sampleRate;
 	uint32_t		avgBytesPerSec;
-	uint16_t	blockAlign;
-	uint16_t	bitsPerSample;
+	uint16_t		blockAlign;
+	uint16_t		bitsPerSample;
 	} tPCMFormatChunk;
 
 typedef struct tWAVData {
-	char		chunkID [4];
+	char			chunkID [4];
 	uint32_t		chunkSize;
 } tWAVData;
 
