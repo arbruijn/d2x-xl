@@ -678,7 +678,7 @@ if (!SEGMENT (nSegment))
 if ((pSoundObj = FindSegmentSound (nSound, nSegment, nSide, vPos))) // if the same sound plays in this segment nearby, don't start another one 
 	RETVAL (pSoundObj->m_nSignature)
 if (nOrgSound == SOUND_FORCEFIELD_HUM)
-	maxVolume = Max (I2X (1) / 8, FixMul (maxVolume, gameOpts->sound.xCustomSoundVolume));
+	maxVolume = Max (I2X (1) / 16, FixMul (maxVolume, gameOpts->sound.xCustomSoundVolume));
 if (!bForever) { 	//&& gameData.pigData.sound.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD) {
 	// Hack to keep sounds from building up...
 	int32_t nVolume, nPan;
