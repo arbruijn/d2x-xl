@@ -697,7 +697,8 @@ ENTER (0, 0);
 
 fix xWallPart = (gameData.collisionData.hitResult.nNormals ? CFixVector::Dot (simData.vMoved, simData.hitResult.vNormal) / gameData.collisionData.hitResult.nNormals : 0);
 
-if (xWallPart < 0) {
+//if (xWallPart < 0) 
+	{
 	fix xHitSpeed;
 	if ((simData.xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, simData.xMovedTime)) > 0))
 		CollideObjectAndWall (xHitSpeed, simData.hitResult.nSideSegment, simData.hitResult.nSide, simData.hitResult.vPoint);
@@ -726,7 +727,7 @@ int32_t bCheckVel = 0;
 //We're constrained by a wall, so subtract wall part from velocity vector
 
 xWallPart = CFixVector::Dot (simData.hitResult.vNormal, Velocity () /*simData.velocity*/);
-if ((xWallPart < 0) && (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCES))) {		//bounce off CWall
+if (/*(xWallPart < 0) && */(bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCES))) {		//bounce off CWall
 	CFixVector vVelNorm = Velocity ();
 	CFixVector::Normalize (vVelNorm);
 	CFixVector vMoveNorm = *simData.hitQuery.p1 - *simData.hitQuery.p0;

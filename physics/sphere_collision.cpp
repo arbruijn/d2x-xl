@@ -1035,21 +1035,30 @@ RETVAL (dMin);
 
 //	-----------------------------------------------------------------------------
 
-static inline int32_t PassThrough (int16_t nObject, int16_t nSegment, int16_t nSide, int16_t nFace, int32_t flags, CFixVector& vHitPoint)
+static inline int32_t PassThrough (CHitQuery& hitQuery, int16_t nSide, int16_t nFace, CFixVector& vHitPoint)
 {
-CSegment* pSeg = SEGMENT (nSegment);
+CSegment* pSeg = SEGMENT (hitQuery.nSegment);
 if (!pSeg)
 	return 0;
 
-int32_t widResult = pSeg->IsPassable (nSide, (nObject < 0) ? NULL : OBJECT (nObject));
+int32_t widResult = pSeg->IsPassable (nSide, OBJECT (hitQuery.nObject));
 
 if (widResult & WID_PASSABLE_FLAG) // check whether side can be passed through
 	return 1; 
 
+#if 1
+if (!pSeg->Masks (vHitPoint, hitQuery.radP1).m_center) {
+	CFixVector vMoved = *hitQuery.p1 - *hitQuery.p0;
+	CFixVector::Normalize (vMoved);
+	if (CFixVector::Dot (pSeg->m_sides [nSide].m_normals [nFace], vMoved) > 0) // moving away from face
+		return 1;
+		}
+#endif
+
 if ((widResult & WID_TRANSPARENT_WALL) == WID_TRANSPARENT_WALL) { // check whether side can be seen through
-    if (flags & FQ_TRANSWALL) 
+    if (hitQuery.flags & FQ_TRANSWALL) 
 		 return 1;
-	 if (!(flags & FQ_TRANSPOINT))
+	 if (!(hitQuery.flags & FQ_TRANSPOINT))
 		 return 0;
 	if (pSeg->CheckForTranspPixel (vHitPoint, nSide, nFace))
 		return 1;
@@ -1058,7 +1067,7 @@ if ((widResult & WID_TRANSPARENT_WALL) == WID_TRANSPARENT_WALL) { // check wheth
 // check whether side can be passed through due to a cheat
 if (gameStates.app.cheats.bPhysics != 0xBADA55)
 	return 0;
-if (nObject != LOCALPLAYER.nObject) 
+if (hitQuery.nObject != LOCALPLAYER.nObject) 
 	return 0;
 int16_t nChildSeg = pSeg->m_children [nSide];
 if (nChildSeg < 0)
@@ -1067,7 +1076,7 @@ CSegment* pChildSeg = SEGMENT (nChildSeg);
 if (!pChildSeg)
 	return 0;
 if (pChildSeg->HasBlockedProp () ||
-    (gameData.objData.speedBoost [nObject].bBoosted && ((pSeg->m_function != SEGMENT_FUNC_SPEEDBOOST) || (pChildSeg->m_function == SEGMENT_FUNC_SPEEDBOOST))))
+    (gameData.objData.speedBoost [hitQuery.nObject].bBoosted && ((pSeg->m_function != SEGMENT_FUNC_SPEEDBOOST) || (pChildSeg->m_function == SEGMENT_FUNC_SPEEDBOOST))))
 	return 1;
 
 return 0;
@@ -1171,7 +1180,7 @@ if (endMask) { //on the back of at least one face
 										: pSeg->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);
 				}
 #endif
-			if (PassThrough (hitQuery.nObject, hitQuery.nSegment, nSide, iFace, hitQuery.flags, curHit.vPoint)) {
+			if (PassThrough (hitQuery, nSide, iFace, curHit.vPoint)) {
 				int32_t		i;
 				int16_t		subSegList [MAX_FVI_SEGS];
 				int16_t		nSubSegments;
@@ -1216,28 +1225,30 @@ if (endMask) { //on the back of at least one face
 					//is this the closest hit?
 					d = CFixVector::Dist (curHit.vPoint, *hitQuery.p0);
 					if (d < dMin) {
-						dMin = d;
 						curHit.vNormal = pSeg->m_sides [nSide].m_normals [iFace];
-						CFixVector v1 = *hitQuery.p0 - curHit.vPoint;
-						CFixVector v2 = *hitQuery.p1 - curHit.vPoint;
-						CFixVector vMoved = *hitQuery.p1 - *hitQuery.p0;
-						if ((CFixVector::Dot (v1, v2) > 0) && (CFixVector::Dot (curHit.vNormal, vMoved) > 0)) // both points on same side of face and moving away from face
-							nFaceHitType = 0;
+						if (pSeg->Masks (curHit.vPoint, hitQuery.radP1).m_center) 
+							gameData.collisionData.hitResult.nAltSegment = hitQuery.nSegment;
 						else {
-							bestHit = curHit;
-							bestHit.nType = HIT_WALL;
-							bestHit.vNormal = curHit.vNormal;
-							gameData.collisionData.hitResult.nNormals = 1;
-							if (!pSeg->Masks (curHit.vPoint, hitQuery.radP1).m_center)
-								bestHit.nSegment = hitQuery.nSegment;             
-							else
-								gameData.collisionData.hitResult.nAltSegment = hitQuery.nSegment;
-							gameData.collisionData.hitResult.nSegment = bestHit.nSegment;
-							gameData.collisionData.hitResult.nSide = nSide;
-							gameData.collisionData.hitResult.nFace = iFace;
-							gameData.collisionData.hitResult.nSideSegment = hitQuery.nSegment;
-							gameData.collisionData.hitResult.vNormal = bestHit.vNormal;
+#if 0
+							CFixVector vMoved = *hitQuery.p1 - *hitQuery.p0;
+							CFixVector::Normalize (vMoved);
+							if (CFixVector::Dot (curHit.vNormal, vMoved) > 0) { // both points on same side of face and moving away from face
+								nFaceHitType = 0;
+								continue; 
+								}
+#endif
+							bestHit.nSegment = hitQuery.nSegment;             
 							}
+						dMin = d;
+						bestHit = curHit;
+						bestHit.nType = HIT_WALL;
+						bestHit.vNormal = curHit.vNormal;
+						gameData.collisionData.hitResult.nNormals = 1;
+						gameData.collisionData.hitResult.nSegment = bestHit.nSegment;
+						gameData.collisionData.hitResult.nSide = nSide;
+						gameData.collisionData.hitResult.nFace = iFace;
+						gameData.collisionData.hitResult.nSideSegment = hitQuery.nSegment;
+						gameData.collisionData.hitResult.vNormal = bestHit.vNormal;
 						}
 					}
 				}
