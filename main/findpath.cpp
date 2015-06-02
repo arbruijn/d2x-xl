@@ -53,7 +53,7 @@ CDACSBiDirRouter biDacsRouter [MAX_THREADS];
 
 void CFCDCache::Flush (void)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 m_nIndex = 0;
 for (int32_t i = 0; i < MAX_FCD_CACHE; i++)
 	m_cache [i].seg0 = -1;
@@ -64,7 +64,7 @@ LEAVE
 
 void CFCDCache::Add (int32_t seg0, int32_t seg1, int32_t nPathLen, fix dist)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (dist > MIN_CACHE_FCD_DIST) {
 	m_cache [m_nIndex].seg0 = seg0;
 	m_cache [m_nIndex].seg1 = seg1;
@@ -90,7 +90,7 @@ LEAVE
 
 fix CFCDCache::Dist (int16_t seg0, int16_t seg1)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	tFCDCacheData*	pc = m_cache.Buffer ();
 
 for (int32_t i = int32_t (m_cache.Length ()); i; i--, pc++) {
@@ -108,7 +108,7 @@ RETURN (-1)
 
 int32_t CScanInfo::Setup (CSimpleHeap* heap, int32_t nWidFlag, int32_t nMaxDist)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 m_nLinkSeg = 0;
 m_bScanning = 3;
 m_heap = heap;
@@ -125,7 +125,7 @@ RETURN (m_bFlag)
 
 void CSimpleHeap::Setup (int16_t nStartSeg, int16_t nDestSeg, uint32_t flag, int32_t dir)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 m_path [nStartSeg].m_bVisited = flag;
 m_path [nStartSeg].m_nDepth = 0;
 m_path [nStartSeg].m_nPred = -1;
@@ -144,7 +144,7 @@ LEAVE
 
 int16_t CSimpleHeap::Expand (CScanInfo& scanInfo)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (m_nTail >= m_nHead)
 	RETURN (m_nLinkSeg = -1)
 int16_t nPredSeg = m_queue [m_nTail++];
@@ -254,7 +254,7 @@ return (nSegment < 0) ? FindSegByPos (p, 0, 1, 0) : nSegment;
 fix CRouter::PathLength (const CFixVector& p0, const int16_t nStartSeg, const CFixVector& p1, 
 								 const int16_t nDestSeg, const int32_t nMaxDist, const int32_t nWidFlag, const int32_t nCacheType)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 #if 0 //DBG
 //if (!m_cacheType) 
 	{
@@ -317,7 +317,7 @@ RETURN (distance)
 
 fix CSimpleUniDirRouter::BuildPath (void)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	fix		xDist;
 	int32_t	nLength = 0; 
 	int16_t	nPredSeg, nSuccSeg = m_nDestSeg;
@@ -342,7 +342,7 @@ RETURN (xDist)
 
 fix CSimpleUniDirRouter::FindPath (void)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
 	RETURN (-1)
 m_scanInfo.Setup (&m_heap, m_widFlag, m_maxDist);
@@ -363,7 +363,7 @@ RETURN (-1)
 
 fix CSimpleBiDirRouter::BuildPath (void)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	fix		xDist = 0;
 	int32_t	nLength = 0; 
 	int16_t	nPredSeg, nSuccSeg;
@@ -398,7 +398,7 @@ RETURN (xDist)
 
 fix CSimpleBiDirRouter::FindPath (void)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
 	RETURN (-1)
 
@@ -442,7 +442,7 @@ RETURN (-1)
 
 bool CDACSUniDirRouter::Create (int32_t nNodes) 
 { 
-ENTER (0, 0);
+ENTER (1, 0);
 if ((m_nNodes != nNodes) && !m_heap.Create (nNodes)) {
 	SetSize (0);
 	RETURN (false)
@@ -455,7 +455,7 @@ RETURN (true)
 
 fix CDACSUniDirRouter::BuildPath (int16_t nSegment)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (m_heap.Cost (nSegment) == 0xFFFFFFFF)
 	RETURN (-1)
 
@@ -519,7 +519,7 @@ RETURN (xDist)
 
 fix CDACSUniDirRouter::FindPath (void)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	uint32_t		nDist;
 	int16_t		nSegment, nSide;
 	CSegment*	pSeg;
@@ -566,7 +566,7 @@ return BuildPath (nSegment);
 
 bool CDACSBiDirRouter::Create (int32_t nNodes) 
 { 
-ENTER (0, 0);
+ENTER (1, 0);
 if ((m_nNodes != nNodes) && !(m_heap [0].Create (nNodes) && m_heap [1].Create (nNodes)))
 	RETURN (false)
 m_nNodes = nNodes;
@@ -577,7 +577,7 @@ RETURN (true)
 
 int32_t CDACSBiDirRouter::Expand (int32_t nDir)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	uint32_t nDist;
 
 int16_t nSegment = m_heap [nDir].Pop (nDist);
@@ -600,7 +600,7 @@ RETURN (nSegment)
 
 fix CDACSBiDirRouter::BuildPath (int16_t nSegment)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	int32_t j = -2;
 
 if (m_nSegments [0] >= 0)
@@ -620,7 +620,7 @@ RETURN (xDist)
 
 fix CDACSBiDirRouter::FindPath (void)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
 	RETURN (-1)
 m_heap [0].Setup (m_nSegments [0] = m_nStartSeg);

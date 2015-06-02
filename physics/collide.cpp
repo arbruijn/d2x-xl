@@ -60,7 +60,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	The only reason this routine is called (as of 10/12/94) is so Brain guys can open doors.
 void CObject::CollideRobotAndWall (fix xHitSpeed, int16_t nHitSeg, int16_t nHitSide, CFixVector& vHitPt)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	tAILocalInfo	*pLocalInfo = gameData.aiData.localInfo + OBJ_IDX (this);
 	tRobotInfo		*pRobotInfo = ROBOTINFO (info.nId);
 
@@ -100,7 +100,7 @@ LEAVE
 
 int32_t CObject::ApplyDamageToClutter (fix xDamage)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (info.nFlags & OF_EXPLODING)
 	RETURN (0)
 if (info.xShield < 0)
@@ -118,7 +118,7 @@ RETURN (0)
 //given the specified vForce, apply damage from that vForce to an CObject
 void CObject::ApplyForceDamage (fix vForce, CObject* pOtherObj)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	int32_t		result;
 	fix			xDamage;
 	tRobotInfo* pRobotInfo;
@@ -186,7 +186,7 @@ LEAVE
 
 void CObject::Bump (CObject* pOtherObj, CFixVector vForce, int32_t bDamage)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 #if DBG
 if (vForce.Mag () > I2X (1) * 1000)
 	LEAVE
@@ -244,7 +244,7 @@ LEAVE
 
 void CObject::Bump (CObject* pOtherObj, CFixVector vForce, CFixVector vRotForce, int32_t bDamage)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (mType.physInfo.flags & PF_PERSISTENT)
 	LEAVE
 if (IsStatic ())
@@ -287,7 +287,7 @@ class CBumpForces {
 
 inline void CBumpForces::Compute (CFixVector& vDist, CFixVector* vNormal, CObject* pObj)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (m_vVel.IsZero ())
 	m_vForce.SetZero (), m_vRotForce.SetZero ();
 else {
@@ -319,7 +319,7 @@ LEAVE
 
 inline void CBumpForces::Bump (CBumpForces& fOther, fix massSum, fix massDiff, int32_t bDamage)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 CFixVector vRes = (m_vForce * massDiff + fOther.m_vForce * (2 * fOther.m_mass)) / massSum;
 // don't divide by the total mass here or ApplyRotForce() will scale down the forces too much
 CFixVector vRot = (m_vRotForce * massDiff + fOther.m_vRotForce * (2 * fOther.m_mass)) /*/ massSum*/;
@@ -338,7 +338,7 @@ LEAVE
 
 int32_t BumpTwoObjects (CObject* pThis, CObject* pOther, int32_t bDamage, CFixVector& vHitPt, CFixVector* vNormal = NULL)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	CObject* t;
 
 if ((pThis->info.movementType != MT_PHYSICS) && !pThis->IsStatic ())
@@ -507,7 +507,7 @@ RETURN (1)
 
 void CObject::Bump (CFixVector vForce, fix xDamage)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 vForce *= xDamage;
 ApplyForce (vForce);
 LEAVE
@@ -523,7 +523,7 @@ fix force_force = I2X (50);
 
 void CObject::CollidePlayerAndWall (fix xHitSpeed, int16_t nHitSeg, int16_t nHitSide, CFixVector& vHitPt)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	fix damage;
 	char bForceFieldHit = 0;
 	int32_t nBaseTex, nOvlTex;
@@ -602,12 +602,11 @@ fix	xLastVolatileScrapeSoundTime = 0;
 //returns 1=lava, 2=water
 int32_t CObject::ApplyWallPhysics (int16_t nSegment, int16_t nSide)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	fix	xDamage = 0;
 	int32_t	nType;
 
-if (!((nType = SEGMENT (nSegment)->Physics (nSide, xDamage)) || 
-		(nType = SEGMENT (nSegment)->Physics (xDamage))))
+if (!((nType = SEGMENT (nSegment)->Physics (nSide, xDamage)) || (nType = SEGMENT (nSegment)->Physics (xDamage))))
 	RETURN (0)
 if (SEGMENT (nSegment)->HasNoDamageProp ())
 	 xDamage = 0;
@@ -638,7 +637,7 @@ RETURN (nType)
 
 int32_t CObject::CheckSegmentPhysics (void)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	fix xDamage;
 	int32_t nType;
 
@@ -682,15 +681,14 @@ RETURN (nType)
 //this gets called when an CObject is scraping along the CWall
 void CObject::ScrapeOnWall (int16_t nHitSeg, int16_t nHitSide, CFixVector& vHitPt)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (info.nType == OBJ_PLAYER) {
 	if (info.nId == N_LOCALPLAYER) {
 		int32_t nType = ApplyWallPhysics (nHitSeg, nHitSide);
 		if (nType != 0) {
 			CFixVector	vHit, vRand;
 
-			if ((gameData.timeData.xGame > xLastVolatileScrapeSoundTime + I2X (1)/4) ||
-					(gameData.timeData.xGame < xLastVolatileScrapeSoundTime)) {
+			if ((gameData.timeData.xGame > xLastVolatileScrapeSoundTime + I2X (1) / 4) || (gameData.timeData.xGame < xLastVolatileScrapeSoundTime)) {
 				int16_t sound = (nType & 1) ? SOUND_VOLATILE_WALL_HISS : SOUND_SHIP_IN_WATER;
 				xLastVolatileScrapeSoundTime = gameData.timeData.xGame;
 				audio.CreateSegmentSound (sound, nHitSeg, 0, vHitPt);
@@ -721,7 +719,7 @@ LEAVE
 //	Return true if ok to do Omega damage.
 int32_t OkToDoOmegaDamage (CObject* pWeapon)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (!IsMultiGame)
 	RETURN (1)
 int32_t nParentSig = pWeapon->cType.laserInfo.parent.nSignature;
@@ -738,7 +736,7 @@ RETURN (1)
 
 int32_t CObject::CreateWeaponEffects (int32_t bExplBlast)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if ((info.nType == OBJ_WEAPON) && IsMissile ()) {
 	if (bExplBlast) {
 		CreateExplBlast ();
@@ -768,7 +766,7 @@ RETURN (0)
 
 int32_t CObject::CollideWeaponAndWall (fix xHitSpeed, int16_t nHitSeg, int16_t nHitSide, CFixVector& vHitPt)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	CSegment*		pSeg = SEGMENT (nHitSeg);
 
 if (!pSeg)
@@ -958,7 +956,7 @@ RETURN (1)
 
 int32_t CObject::CollideDebrisAndWall (fix xHitSpeed, int16_t nHitSeg, int16_t nHitWall, CFixVector& vHitPt)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (gameOpts->render.nDebrisLife) {
 	CFixVector	vDir = mType.physInfo.velocity,
 					vNormal = SEGMENT (nHitSeg)->m_sides [nHitWall].m_normals [0];
@@ -1011,7 +1009,7 @@ int32_t CObject::CollideRobotAndRobot (CObject* other, CFixVector& vHitPt, CFixV
 //		robot2-OBJECTS, X2I (robot2->info.position.vPos.x), X2I (robot2->info.position.vPos.y), X2I (robot2->info.position.vPos.z),
 //		X2I (vHitPt->x), X2I (vHitPt->y), X2I (vHitPt->z));
 
-ENTER (0, 0);
+ENTER (1, 0);
 BumpTwoObjects (this, other, 1, vHitPt);
 RETURN (1)
 }
@@ -1020,7 +1018,7 @@ RETURN (1)
 
 int32_t CObject::CollideRobotAndReactor (CObject* pReactor, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (info.nType == OBJ_ROBOT) {
 	CFixVector vHit = pReactor->info.position.vPos - info.position.vPos;
 	CFixVector::Normalize (vHit);
@@ -1041,7 +1039,7 @@ RETURN (1)
 
 int32_t CObject::CollideRobotAndPlayer (CObject* pPlayerObj, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (!IsStatic ()) {
 		int32_t	bTheftAttempt = 0;
 		int16_t	nCollisionSeg;
@@ -1106,7 +1104,7 @@ RETURN (1)
 //	was actually in another CObject.
 int32_t NetDestroyReactor (CObject* pReactor)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (extraGameInfo [0].nBossCount [0] && !gameData.reactorData.bDestroyed) {
 	--extraGameInfo [0].nBossCount [0];
 	--extraGameInfo [0].nBossCount [1];
@@ -1124,7 +1122,7 @@ RETURN (0)
 
 void CObject::ApplyDamageToReactor (fix xDamage, int16_t nAttacker)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 //	Only allow a player to xDamage the control center.
 CObject *pAttacker = OBJECT (nAttacker);
 if (!pAttacker)
@@ -1183,7 +1181,7 @@ LEAVE
 
 int32_t CObject::CollidePlayerAndReactor (CObject* pReactor, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (info.nId == N_LOCALPLAYER) {
 	int32_t i = FindReactor (this);
 	if (0 >= i)
@@ -1199,7 +1197,7 @@ RETURN (1)
 
 int32_t CObject::CollidePlayerAndMarker (CObject* pMarker, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 #if TRACE
 console.printf (CON_DBG, "Collided with pMarker %d! \n", pMarker->info.nId);
 #endif
@@ -1226,7 +1224,7 @@ RETURN (1)
 //	If both OBJECTS are weapons, weaken the weapon.
 void CObject::MaybeKillWeapon (CObject* pOtherObj)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (IsMine ()) {
 	Die ();
 	LEAVE;
@@ -1251,7 +1249,7 @@ LEAVE
 
 int32_t CObject::CollideWeaponAndReactor (CObject* pReactor, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (info.nId == OMEGA_ID)
 	if (!OkToDoOmegaDamage (this))
 		RETURN (1)
@@ -1283,7 +1281,7 @@ RETURN (1)
 
 int32_t CObject::CollideWeaponAndClutter (CObject* pClutter, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 uint8_t exp_vclip = ANIM_SMALL_EXPLOSION;
 if (pClutter->info.xShield >= 0)
 	pClutter->info.xShield -= info.xShield;
@@ -1303,7 +1301,7 @@ fix	nFinalBossCountdownTime = 0;
 
 void DoFinalBossFrame (void)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (!gameStates.gameplay.bFinalBossIsDead)
 	LEAVE;
 if (!gameData.reactorData.bDestroyed)
@@ -1323,7 +1321,7 @@ LEAVE
 //	which would ruin the logic of the cut sequence.
 void DoFinalBossHacks (void)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (gameStates.app.bPlayerIsDead) {
 	Int3 ();		//	Uh-oh, player is dead.  Try to rescue him.
 	gameStates.app.bPlayerIsDead = 0;
@@ -1358,7 +1356,7 @@ return pRobotInfo ? pRobotInfo->strength <= 0 : false; // indestructible static 
 //	Return 1 if this died, else return 0
 int32_t CObject::ApplyDamageToRobot (fix xDamage, int32_t nKillerObj)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	char		bIsThief, bIsBoss;
 	char		tempStolen [MAX_STOLEN_ITEMS];
 	CObject	*pKillerObj = (nKillerObj < 0) ? NULL : OBJECT (nKillerObj);
@@ -1465,7 +1463,7 @@ fix	xLastTimeBuddyGameHint = 0;
 //	Return true if damage done to boss, else return false.
 int32_t DoBossWeaponCollision (CObject* pRobot, CObject* pWeapon, CFixVector& vHitPt)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	int32_t	d2BossIndex;
 	int32_t	bDamage = 1;
 	int32_t	bKinetic = WI_matter (pWeapon->info.nId);
@@ -1576,7 +1574,7 @@ RETURN (bDamage);
 
 int32_t FindHitObject (CObject* pObj, int16_t nObject)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	int16_t	*p = gameData.objData.nHitObjects + pObj->Index () * MAX_HIT_OBJECTS;
 	int32_t	i;
 
@@ -1590,7 +1588,7 @@ RETURN (0)
 
 int32_t AddHitObject (CObject* pObj, int16_t nObject)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	int16_t	*p;
 	int32_t	i;
 
@@ -1613,7 +1611,7 @@ RETURN (1)
 
 int32_t CObject::CollideWeaponAndRobot (CObject* pRobot, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (pRobot->IsGeometry ())
 	RETURN (CollideWeaponAndWall (WI_speed (info.nId, gameStates.app.nDifficultyLevel), pRobot->Segment (), -1, vHitPt))
 
@@ -1763,7 +1761,7 @@ RETURN (1)
 
 int32_t CObject::CollidePlayerAndHostage (CObject* pHostage, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (this == gameData.objData.pConsole) {
 	DetectEscortGoalAccomplished (OBJ_IDX (pHostage));
 	cockpit->AddPointsToScore (HOSTAGE_SCORE);
@@ -1781,7 +1779,7 @@ RETURN (1)
 
 int32_t CObject::CollidePlayerAndPlayer (CObject* pOther, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (gameStates.app.bD2XLevel &&
 	 (SEGMENT (info.nSegment)->HasNoDamageProp ()))
 	RETURN (1)
@@ -1794,7 +1792,7 @@ RETURN (1)
 
 void CObject::ApplyDamageToPlayer (CObject* pAttackerObj, fix xDamage)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (gameStates.app.bPlayerIsDead) {
 	// PrintLog (0, "ApplyDamageToPlayer: Player is already dead\n");
 	LEAVE;
@@ -1874,7 +1872,7 @@ LEAVE
 
 int32_t CObject::CollideWeaponAndPlayer (CObject* pPlayerObj, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	fix xDamage = info.xShield;
 
 	//	In multiplayer games, only do xDamage to another player if in first frame.
@@ -1941,7 +1939,7 @@ RETURN (1)
 int32_t CObject::CollidePlayerAndNastyRobot (CObject* pRobot, CFixVector& vHitPt, CFixVector* vNormal)
 {
 //	if (!(ROBOTINFO (pObj)->energyDrain && PLAYER (info.nId).energy))
-ENTER (0, 0);
+ENTER (1, 0);
 tRobotInfo* pRobotInfo = ROBOTINFO (pRobot);
 if (!pRobotInfo)
 	RETURN (0)
@@ -1957,7 +1955,7 @@ RETURN (1)
 
 int32_t CObject::CollidePlayerAndObjProducer (void)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 CreateSound (SOUND_PLAYER_GOT_HIT);
 //	audio.PlaySound (SOUND_PLAYER_GOT_HIT);
 CreateExplosion (info.nSegment, info.position.vPos, I2X (10) / 2, ANIM_PLAYER_HIT);
@@ -1986,7 +1984,7 @@ RETURN (1)
 
 int32_t CObject::CollideRobotAndObjProducer (void)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 CSegment *pSeg = SEGMENT (info.nSegment);
 if (!pSeg)
 	RETURN (0)
@@ -2018,7 +2016,7 @@ RETURN (1)
 
 int32_t CObject::CollidePlayerAndPowerup (CObject* pPowerup, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	RETURN (1)
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead && (info.nId == N_LOCALPLAYER)) {
@@ -2052,7 +2050,7 @@ RETURN (1)
 
 int32_t CObject::CollidePlayerAndMonsterball (CObject* monsterball, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 	(info.nId == N_LOCALPLAYER)) {
 	if (BumpTwoObjects (this, monsterball, 0, vHitPt))
@@ -2068,7 +2066,7 @@ RETURN (1)
 
 int32_t CObject::CollideActorAndClutter (CObject* clutter, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (gameStates.app.bD2XLevel &&
 	 (SEGMENT (info.nSegment)->HasNoDamageProp ()))
 	RETURN (1)
@@ -2082,7 +2080,7 @@ RETURN (1)
 //	Return true if weapon does proximity (as opposed to only contact) damage when it explodes.
 int32_t CObject::MaybeDetonateWeapon (CObject* pOther, CFixVector& vHitPt)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
 if (!pWeaponInfo || !pWeaponInfo->xDamageRadius)
 	RETURN (0)
@@ -2123,7 +2121,7 @@ return 0;
 
 int32_t CObject::CollideWeaponAndWeapon (CObject* other, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	int32_t	id1 = info.nId;
 	int32_t	id2 = other->info.nId;
 	int32_t	bKill1, bKill2;
@@ -2155,7 +2153,7 @@ RETURN (1)
 
 int32_t CObject::CollideWeaponAndMonsterball (CObject* pMonsterball, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT, info.nSegment, 0, vHitPt);
 	if (info.nId == EARTHSHAKER_ID)
@@ -2182,7 +2180,7 @@ RETURN (1)
 
 int32_t CObject::CollideWeaponAndDebris (CObject* pDebris, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 //	Hack! Prevent pDebris from causing bombs spewed at player death to detonate!
 if (IsMine ()) {
 	if (cType.laserInfo.xCreationTime + I2X (1)/2 > gameData.timeData.xGame)
@@ -2252,7 +2250,7 @@ RETURN (1)
 
 int32_t CollideTwoObjects (CObject* objA, CObject* objB, CFixVector& vHitPt, CFixVector* vNormal)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 	int32_t collisionType = COLLISION_OF (objA->info.nType, objB->info.nType);
 
 switch (collisionType) {
@@ -2410,7 +2408,7 @@ DISABLE_COLLISION  (OBJ_ROBOT, OBJ_EFFECT);
 
 int32_t CObject::CollideObjectAndWall (fix xHitSpeed, int16_t nHitSeg, int16_t nHitWall, CFixVector& vHitPt)
 {
-ENTER (0, 0);
+ENTER (1, 0);
 switch (info.nType) {
 	case OBJ_NONE:
 		Error ("An object of type NONE hit a wall! \n");
