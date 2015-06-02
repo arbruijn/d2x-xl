@@ -684,26 +684,24 @@ void CObject::ScrapeOnWall (int16_t nHitSeg, int16_t nHitSide, CFixVector& vHitP
 ENTER (1, 0);
 if ((info.nType == OBJ_PLAYER) && (info.nId == N_LOCALPLAYER)) {
 	int32_t nType = ApplyWallPhysics (nHitSeg, nHitSide);
-	if (!nType != 0) {
-		audio.CreateObjectSound ((int16_t) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (int16_t) LOCALPLAYER.nObject);
-		audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, LOCALOBJECT->Index (), 1, gameOpts->sound.xCustomSoundVolume, I2X (256), -1, -1, AddonSoundName (SND_ADDON_SCRAPE), 1);
-		if (IsMultiGame)
-			MultiSendPlaySound (-SND_ADDON_SCRAPE - 1, I2X (1));
-		}
-	else
-		{
-		if ((gameData.timeData.xGame > xLastVolatileScrapeSoundTime + I2X (1) / 4) || (gameData.timeData.xGame < xLastVolatileScrapeSoundTime)) {
-			int16_t sound = (nType & 1) ? SOUND_VOLATILE_WALL_HISS : SOUND_SHIP_IN_WATER;
-			xLastVolatileScrapeSoundTime = gameData.timeData.xGame;
-			audio.CreateSegmentSound (sound, nHitSeg, 0, vHitPt);
+	if ((gameData.timeData.xGame > xLastVolatileScrapeSoundTime + I2X (1) / 4) || (gameData.timeData.xGame < xLastVolatileScrapeSoundTime)) {
+		if (!nType) {
+			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, LOCALOBJECT->Index (), 1, gameOpts->sound.xCustomSoundVolume, I2X (256), -1, -1, AddonSoundName (SND_ADDON_SCRAPE), 1);
 			if (IsMultiGame)
-				MultiSendPlaySound (sound, I2X (1));
+				MultiSendPlaySound (-SND_ADDON_SCRAPE - 1, I2X (1));
 			}
-		CFixVector vHit = SEGMENT (nHitSeg)->m_sides [nHitSide].m_normals [0];
-		CFixVector vRand = CFixVector::Random ();
-		vHit += vRand * (I2X (1) / 8);
-		CFixVector::Normalize (vHit);
-		Bump (vHit, I2X (8));
+		else {
+			int16_t nSound = (nType & 1) ? SOUND_VOLATILE_WALL_HISS : SOUND_SHIP_IN_WATER;
+			xLastVolatileScrapeSoundTime = gameData.timeData.xGame;
+			audio.CreateSegmentSound (nSound, nHitSeg, 0, vHitPt);
+			if (IsMultiGame)
+				MultiSendPlaySound (nSound, I2X (1));
+			CFixVector vHit = SEGMENT (nHitSeg)->m_sides [nHitSide].m_normals [0];
+			CFixVector vRand = CFixVector::Random ();
+			vHit += vRand * (I2X (1) / 8);
+			CFixVector::Normalize (vHit);
+			Bump (vHit, I2X (8));
+			}
 		}
 	}
 else if (info.nType == OBJ_WEAPON)
