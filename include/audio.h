@@ -234,7 +234,7 @@ class CSoundObject {
 			} pos;
 			struct {
 				int16_t		nObject;				// Used if SOF_LINK_TO_OBJ field is used
-				int16_t		nObjSig;
+				int32_t		nObjSig;
 			} obj;
 		} m_linkType;
 
@@ -415,6 +415,7 @@ class CAudio {
 	private:
 		CAudioChannel* FindFreeChannel (int32_t nSoundClass);
 		CSoundObject *FindSegmentSound (int16_t nSound, int16_t nSegment, int16_t nSide, CFixVector& vPos);
+		CSoundObject *FindObjectSound (int16_t nSound, CObject *pObj, CFixVector *pvPos = NULL);
 
 	};
 

@@ -687,7 +687,7 @@ if ((info.nType == OBJ_PLAYER) && (info.nId == N_LOCALPLAYER)) {
 	if ((gameData.timeData.xGame > xLastVolatileScrapeSoundTime + (nType ? I2X (1) / (Rand (4) + 1) : I2X (2) + I2X (2) / (Rand (8) + 1))) || (gameData.timeData.xGame < xLastVolatileScrapeSoundTime)) {
 		xLastVolatileScrapeSoundTime = gameData.timeData.xGame;
 		if (!nType) {
-			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, LOCALOBJECT->Index (), 0, /*gameOpts->sound.xCustomSoundVolume*/I2X (1), I2X (256), -1, -1, AddonSoundName (Rand (2) ? SND_ADDON_SCRAPE2 : SND_ADDON_SCRAPE), 1);
+			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, LOCALOBJECT->Index (), 0, /*gameOpts->sound.xCustomSoundVolume*/I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_SCRAPE + Rand (4)), 1);
 			if (IsMultiGame)
 				MultiSendPlaySound (-SND_ADDON_SCRAPE - 1, I2X (1));
 			}

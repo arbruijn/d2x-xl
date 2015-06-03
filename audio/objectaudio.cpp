@@ -436,6 +436,8 @@ if (!(pszSound && *pszSound)) {
 		}
 	}
 pObj = OBJECT (nObject);
+if ((pSoundObj = FindObjectSound (nSound, pObj, &pObj->Position ())))
+	RETVAL (pSoundObj->m_nSignature)
 if (!bForever) { 	// Hack to keep sounds from building up...
 	int32_t nVolume, nPan;
 	GetVolPan (gameData.objData.pViewer->info.position.mOrient, gameData.objData.pViewer->info.position.vPos,
@@ -574,14 +576,10 @@ RETURN
 int32_t CAudio::FindObjectSound (int32_t nObject, int16_t nSound)
 {
 ENTER (0, 0);
-	CSoundObject*	pSoundObj = m_objects.Buffer ();
-
 if (nSound >= 0)
 	nSound = XlatSound (nSound);
-for (uint32_t i = m_objects.ToS (); i; i--, pSoundObj++) 
-	if ((pSoundObj->m_linkType.obj.nObject == nObject) && (pSoundObj->m_nSound == nSound))
-		RETVAL (int32_t (m_objects.ToS () - i))
-RETVAL (-1)
+CSoundObject *pSoundObj = FindObjectSound (nSound, OBJECT (nObject));
+RETVAL (pSoundObj ? m_objects.Index (pSoundObj) : -1)
 }
 
 //------------------------------------------------------------------------------
@@ -628,6 +626,31 @@ while (i) {
 	}
 }
 RETVAL (nKilled > 0)
+}
+
+//------------------------------------------------------------------------------
+
+CSoundObject *CAudio::FindObjectSound (int16_t nSound, CObject *pObj, CFixVector *pvPos)
+{
+if (!pObj)
+	return NULL;
+CSoundObject *pSoundObj = m_objects.Buffer ();
+for (uint32_t i = 0, h = m_objects.ToS (); i < h; i++) {
+	if (!(pSoundObj->m_flags & SOF_LINK_TO_POS))
+		continue;
+	if (pSoundObj->m_nSound != nSound)
+		continue;
+	if (pSoundObj->m_channel < 0)
+		continue;
+	if (pSoundObj->m_linkType.obj.nObject != pObj->Index ())
+		continue;
+	if (pSoundObj->m_linkType.obj.nObjSig != pObj->Signature ())
+		continue;
+	if (pvPos && (CFixVector::Dist (pSoundObj->m_linkType.pos.position, *pvPos) > I2X (1) / 2))
+		continue;
+	return pSoundObj;
+	}
+return NULL;
 }
 
 //------------------------------------------------------------------------------

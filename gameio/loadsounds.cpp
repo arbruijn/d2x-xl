@@ -542,7 +542,9 @@ tAddonSound addonSounds [MAX_ADDON_SOUND_FILES] = {
 	 {NULL, "37:jet-engine.wav"},
 	 {NULL, "38:nuke-explosion-short.wav"},
 	 {NULL, "39:scrape.wav"},
-	 {NULL, "40:scrape2.wav"}
+	 {NULL, "40:scrape2.wav"},
+	 {NULL, "41:scrape3.wav"},
+	 {NULL, "42:scrape4.wav"}
 	};
 
 //------------------------------------------------------------------------------
