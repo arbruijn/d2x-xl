@@ -270,8 +270,8 @@ int32_t ComputeNearestVertexLights (int32_t nVertex, int32_t nThread)
 {
 ENTER (0, nThread);
 
-	CFixVector*			pVertex;
-	CDynLight*			pLight;
+	CFixVector			*pVertex;
+	CDynLight			*pLight;
 	int32_t				h, j, k, l, n, nMaxLights;
 	CFixVector			vLightToVert;
 	struct tLightDist	*pDists;
@@ -384,11 +384,11 @@ if (gameData.segData.LightVisIdx (nLight, nSegment) / 4 >= int32_t (gameData.seg
 while (!gameData.segData.SetLightVis (nLight, nSegment, 2))
 	;
 
-	tSegFaces*		pSegFace = SEGFACES + nSegment;
-	CSegFace*		pFace;
-	tFaceTriangle*	pTriangle;
-	int32_t				i, nFaces, nTris;
-	int16_t				nStartSeg = lightManager.Lights (nLight)->info.nSegment;
+	tSegFaces		*pSegFace = SEGFACES + nSegment;
+	CSegFace			*pFace;
+	tFaceTriangle	*pTriangle;
+	int32_t			i, nFaces, nTris;
+	int16_t			nStartSeg = lightManager.Lights (nLight)->info.nSegment;
 
 for (nFaces = pSegFace->nFaces, pFace = pSegFace->pFace; nFaces; nFaces--, pFace++) {
 #if DBG
