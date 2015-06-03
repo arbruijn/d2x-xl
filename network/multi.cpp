@@ -1965,7 +1965,7 @@ if (pObj) {
 	if (nSound > 0)
 		audio.CreateObjectSound (nSound, SOUNDCLASS_PLAYER, (int16_t) PLAYER (nPlayer).nObject, 0, volume);
 	else
-		audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, pObj->Index (), 1, gameOpts->sound.xCustomSoundVolume, I2X (256), -1, -1, AddonSoundName (-nSound - 1), 1);
+		audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, pObj->Index (), 0, gameOpts->sound.xCustomSoundVolume, I2X (256), -1, -1, AddonSoundName (-nSound - 1), 1);
 	}
 }
 
