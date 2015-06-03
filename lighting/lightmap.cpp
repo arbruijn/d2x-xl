@@ -997,7 +997,7 @@ int32_t CLightmapManager::Load (int32_t nLevel)
 	tLightmapDataHeader	ldh;
 	int32_t					i, bOk;
 	char						szFilename [FILENAME_LEN];
-	CSegFace*				pFace;
+	CSegFace					*pFace;
 
 if (!(gameStates.app.bCacheLightmaps)) {
 	PrintLog (0, "lightmap caching is disabled\n");
@@ -1029,7 +1029,7 @@ else {
 		PrintLog (0, "lightmap data outdated (face count)\n");
 	else if (ldh.nLights != m_list.nLights) 
 		PrintLog (0, "lightmap data outdated (light count)\n");
-	else if (ldh.nBuffers >> m_list.nBuffers)
+	else if (ldh.nBuffers > m_list.nBuffers)
 		PrintLog (0, "lightmap data outdated (buffer count)\n");
 	else if (ldh.nMaxLightRange != MAX_LIGHT_RANGE)
 		PrintLog (0, "lightmap data outdated (light range)\n");
