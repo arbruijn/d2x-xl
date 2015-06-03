@@ -103,7 +103,7 @@ extern CAddonBitmap invulIcon;
 extern CAddonBitmap deadzone;
 extern CAddonBitmap damageIcon [3];
 extern CAddonBitmap scope;
-extern CAddonBitmap scrape;
+extern CAddonBitmap sparks;
 extern CAddonBitmap joyMouse;
 extern CAnimation shockwave;
 

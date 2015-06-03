@@ -1049,7 +1049,7 @@ if (widResult & WID_PASSABLE_FLAG) // check whether side can be passed through
 	return 1; 
 
 #if 1
-if (!pSeg->Masks (*hitQuery.p1, hitQuery.radP1).m_center) {
+if (!pSeg->Masks (*hitQuery.p0, 0).m_center && !pSeg->Masks (*hitQuery.p1, hitQuery.radP1).m_center) {
 	CFixVector vMoved = *hitQuery.p1 - *hitQuery.p0;
 	CFixVector::Normalize (vMoved);
 	if (CFixVector::Dot (pSeg->m_sides [nSide].m_normals [nFace], vMoved) > 0) // moving away from face
