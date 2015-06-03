@@ -378,6 +378,7 @@ if (/*gameStates.app.bInitialized &&*/ ogl.m_states.bInitialized) {
 	glDisable (GL_LIGHTING);
 	bPolyOffsetFill = false;
 	glDisable (GL_POLYGON_OFFSET_FILL);
+	glGetFloatv (GL_SMOOTH_LINE_WIDTH_RANGE, lineWidthRange);
 	}
 zNear = 1.0f;
 zFar = 5000.0f;
@@ -389,7 +390,6 @@ CLEAR (lightRads);
 CLEAR (lightPos);
 bLightmaps = 0;
 nHeadlights = 0;
-glGetFloatv (GL_SMOOTH_LINE_WIDTH_RANGE, lineWidthRange);
 pDrawBuffer = &drawBuffers [0];
 #if DBG_OGL
 memset (clientBuffers, sizeof (clientBuffers), 0);
