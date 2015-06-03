@@ -314,7 +314,7 @@ int32_t LoadD1PigHeader (CFile& cf, int32_t *pSoundNum, int32_t *pBmHdrOffs, int
 //------------------------------------------------------------------------------
 
 typedef struct tAddonSound {
-	Mix_Chunk		*chunkP;
+	Mix_Chunk		*pChunk;
 	/*const*/ char		szSoundFile [FILENAME_LEN];
 } tAddonSound;
 

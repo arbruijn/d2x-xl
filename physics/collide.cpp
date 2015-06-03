@@ -683,16 +683,16 @@ void CObject::ScrapeOnWall (int16_t nHitSeg, int16_t nHitSide, CFixVector& vHitP
 {
 ENTER (1, 0);
 if ((info.nType == OBJ_PLAYER) && (info.nId == N_LOCALPLAYER)) {
-	int32_t nType = ApplyWallPhysics (nHitSeg, nHitSide);
-	if ((gameData.timeData.xGame > xLastVolatileScrapeSoundTime + I2X (1) / 4) || (gameData.timeData.xGame < xLastVolatileScrapeSoundTime)) {
+	int32_t h, nType = ApplyWallPhysics (nHitSeg, nHitSide);
+	if ((gameData.timeData.xGame > xLastVolatileScrapeSoundTime + (nType ? I2X (1) / (Rand (4) + 1) : I2X (2) + I2X (2) / (Rand (8) + 1))) || (gameData.timeData.xGame < xLastVolatileScrapeSoundTime)) {
+		xLastVolatileScrapeSoundTime = gameData.timeData.xGame;
 		if (!nType) {
-			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, LOCALOBJECT->Index (), 0, gameOpts->sound.xCustomSoundVolume, I2X (256), -1, -1, AddonSoundName (SND_ADDON_SCRAPE), 1);
+			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, LOCALOBJECT->Index (), 0, /*gameOpts->sound.xCustomSoundVolume*/I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_SCRAPE), 1);
 			if (IsMultiGame)
 				MultiSendPlaySound (-SND_ADDON_SCRAPE - 1, I2X (1));
 			}
 		else {
 			int16_t nSound = (nType & 1) ? SOUND_VOLATILE_WALL_HISS : SOUND_SHIP_IN_WATER;
-			xLastVolatileScrapeSoundTime = gameData.timeData.xGame;
 			audio.CreateSegmentSound (nSound, nHitSeg, 0, vHitPt);
 			if (IsMultiGame)
 				MultiSendPlaySound (nSound, I2X (1));

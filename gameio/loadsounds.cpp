@@ -565,7 +565,7 @@ return -1;
 
 Mix_Chunk *LoadAddonSound (const char *pszSoundFile, uint8_t *bBuiltIn)
 {
-	Mix_Chunk*		chunkP;
+	Mix_Chunk*		pChunk;
 	char				szWAV [FILENAME_LEN];
 	const char*		pszFolder, * pszFile;
 	int32_t				i;
@@ -581,8 +581,8 @@ else {
 if (i >= 0) {
 	if (bBuiltIn)
 		*bBuiltIn = 1;
-	if ((chunkP = addonSounds [i].chunkP))
-		return chunkP;
+	if ((pChunk = addonSounds [i].pChunk))
+		return pChunk;
 	pszSoundFile = addonSounds [i].szSoundFile + 3;
 	}
 if (!gameStates.app.bReadOnly && cf.Extract (pszSoundFile, gameFolders.game.szData [0], 0, "d2x-temp.wav")) {
@@ -601,13 +601,13 @@ else {
 	pszFile = const_cast<char*>(pszSoundFile);
 	}
 sprintf (szWAV, "%s%s", pszFolder, pszFile);
-if (!(chunkP = Mix_LoadWAV (szWAV)))
+if (!(pChunk = Mix_LoadWAV (szWAV)))
 	return NULL;
 if (i >= 0)
-	addonSounds [i].chunkP = chunkP;
+	addonSounds [i].pChunk = pChunk;
 if (bBuiltIn)
 	*bBuiltIn = (i >= 0);
-return chunkP;
+return pChunk;
 }
 
 //------------------------------------------------------------------------------
@@ -623,9 +623,9 @@ for (int32_t i = 0; i < int32_t (sizeofa (addonSounds)); i++)
 void FreeAddonSounds (void)
 {
 for (int32_t i = 0; i < MAX_ADDON_SOUND_FILES; i++) {
-	if (addonSounds [i].chunkP) {
-		Mix_FreeChunk (addonSounds [i].chunkP);
-		addonSounds [i].chunkP = NULL;
+	if (addonSounds [i].pChunk) {
+		Mix_FreeChunk (addonSounds [i].pChunk);
+		addonSounds [i].pChunk = NULL;
 		}
 	}
 }
