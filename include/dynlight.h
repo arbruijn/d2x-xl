@@ -18,9 +18,9 @@ class COglMaterial {
 #endif
 		CFloatVector	specular;
 		CFloatVector	emissive;
-		uint8_t				shininess;
-		uint8_t				bValid;
-		int16_t				nLight;
+		uint8_t			shininess;
+		uint8_t			bValid;
+		int16_t			nLight;
 	public:
 		COglMaterial () { Init (); }
 		void Init (void);
@@ -35,16 +35,16 @@ class CLightRenderData {
 	public:
 		CFloatVector		vPosf [2];
 		fix					xDistance [MAX_THREADS];
-		int16_t					nVerts [4];
-		int32_t					nTarget;	//lit segment/face
-		int32_t					nFrame;
-		uint8_t					nType;
-		uint8_t					bState;
-		uint8_t					bShadow;
-		uint8_t					bLightning;
-		uint8_t					bExclusive;
-		uint8_t					bUsed [MAX_THREADS];
-		CActiveDynLight*	pActiveLights [MAX_THREADS];
+		int16_t				nVerts [4];
+		int32_t				nTarget;	//lit segment/face
+		int32_t				nFrame;
+		uint8_t				nType;
+		uint8_t				bState;
+		uint8_t				bShadow;
+		uint8_t				bLightning;
+		uint8_t				bExclusive;
+		uint8_t				bUsed [MAX_THREADS];
+		CActiveDynLight	*pActiveLights [MAX_THREADS];
 
 	public:
 		CLightRenderData ();
@@ -54,7 +54,7 @@ class CLightRenderData {
 
 class CDynLightInfo {
 	public:
-		CSegFace*		pFace;
+		CSegFace			*pFace;
 		CFixVector		vPos;
 		CFloatVector	vDirf;
 		CFloatVector	color;
@@ -64,20 +64,20 @@ class CDynLightInfo {
 		float				fRad;
 		float				fSpotAngle;
 		float				fSpotExponent;
-		int16_t				nIndex;
-		int16_t				nSegment;
-		int16_t				nSide;
-		int16_t				nObject;
-		uint8_t				nPlayer;
-		uint8_t				nType;
-		uint8_t				bState;
-		uint8_t				bOn;
-		uint8_t				bSpot;
-		uint8_t				bVariable;
-		uint8_t				bPowerup;
-		uint8_t				bAmbient;
-		uint8_t				bSelf; // only illuminates segment face it is located at
-		int8_t				bDiffuse [MAX_THREADS];
+		int16_t			nIndex;
+		int16_t			nSegment;
+		int16_t			nSide;
+		int16_t			nObject;
+		uint8_t			nPlayer;
+		uint8_t			nType;
+		uint8_t			bState;
+		uint8_t			bOn;
+		uint8_t			bSpot;
+		uint8_t			bVariable;
+		uint8_t			bPowerup;
+		uint8_t			bAmbient;
+		uint8_t			bSelf; // only illuminates segment face it is located at
+		int8_t			bDiffuse [MAX_THREADS];
 		CByteArray*		visibleVertices;
 	public:
 		CDynLightInfo () { Init (); }
@@ -90,7 +90,7 @@ class CDynLight {
 		CFloatVector		color;
 		CFloatVector		fSpecular;
 		CFloatVector		fEmissive;
-		uint8_t					bTransform;
+		uint8_t				bTransform;
 		CDynLightInfo		info;
 		CLightRenderData	render;
 		//CShadowLightData	shadow;
@@ -127,8 +127,8 @@ class CDynLight {
 
 class CActiveDynLight {
 	public:
-		int16_t			nType;
-		CDynLight*	pLight;
+		int16_t		nType;
+		CDynLight	*pLight;
 };
 
 class CDynLightIndex {
@@ -149,8 +149,8 @@ class CHeadlightManager {
 		CFloatVector3		dir [MAX_PLAYERS];
 		float					brightness [MAX_PLAYERS];
 		CObject*				objects [MAX_PLAYERS];
-		int32_t					lightIds [MAX_PLAYERS];
-		int32_t					nLights;
+		int32_t				lightIds [MAX_PLAYERS];
+		int32_t				nLights;
 
 	public:
 		CHeadlightManager () { Init (); }
@@ -178,21 +178,22 @@ class CDynLightData {
 		//CStaticArray<CDynLight, MAX_SHADOWMAPS>		shadowSources;
 		CArray< CActiveDynLight >							active [MAX_THREADS]; //[MAX_OGL_LIGHTS];
 		CStaticArray< CDynLightIndex, MAX_THREADS >	index [2]; //[MAX_THREADS];
+
 		CShortArray			nearestSegLights;		//the 8 nearest static lights for every segment
 		CShortArray			nearestVertLights;	//the 8 nearest static lights for every vertex
 		CByteArray			variableVertLights;	//the 8 nearest veriable lights for every vertex
 		CShortArray			owners;
 		COglMaterial		material;
 		CFBO					fbo;
-		int16_t					nLights [3];
-		int16_t					nGeometryLights;
-		int16_t					nVariable;
-		int16_t					nDynLights;
-		int16_t					nVertLights;
-		int16_t					nHeadlights [MAX_PLAYERS];
-		int16_t					nSegment;
+		int16_t				nLights [3];
+		int16_t				nGeometryLights;
+		int16_t				nVariable;
+		int16_t				nDynLights;
+		int16_t				nVertLights;
+		int16_t				nHeadlights [MAX_PLAYERS];
+		int16_t				nSegment;
 		GLuint				nTexHandle;
-		int32_t					nThread;
+		int32_t				nThread;
 
 	public:
 		CDynLightData ();
