@@ -2225,6 +2225,7 @@ class CGridFace : public CGridFacePlane {
 		CGridFace		*m_pNextFace;
 		uint16_t			m_nSegment;
 		uint8_t			m_nSide;
+		uint8_t			m_bOutside;
 
 		bool LineIntersects (CFloatVector& v1, CFloatVector& v2);
 	};

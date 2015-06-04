@@ -161,14 +161,19 @@ bool CFaceGridSegment::AddFace (uint16_t nSegment, uint8_t nSide, CFloatVector v
 {
 if (!ContainsTriangle (vertices))
 	return true;
-CGridFace *pFace = new CGridFace;
-if (!pFace)
-	return false;
-memcpy (pFace->m_vertices, vertices, 3 * sizeof (vertices [0]));
-pFace->m_vNormal = vNormal;
-pFace->m_nSegment = nSegment;
-pFace->m_nSide = nSide;
-InsertFace (pFace);
+for (uint8_t bOutside = 0; bOutside < 2; bOutside++) {
+	CGridFace *pFace = new CGridFace;
+	if (!pFace)
+		return false;
+	memcpy (pFace->m_vertices, vertices, 3 * sizeof (vertices [0]));
+	pFace->m_vNormal = vNormal;
+	pFace->m_nSegment = nSegment;
+	pFace->m_nSide = nSide;
+	pFace->m_bOutside = bOutside;
+	InsertFace (pFace);
+	if (SEGMENT (nSegment)->ChildId (nSide) >= 0)
+		break;
+	}
 return true;
 }
 
