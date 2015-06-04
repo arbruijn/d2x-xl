@@ -166,7 +166,7 @@ for (uint8_t bOutside = 0; bOutside < 2; bOutside++) {
 	if (!pFace)
 		return false;
 	memcpy (pFace->m_vertices, vertices, 3 * sizeof (vertices [0]));
-	pFace->m_vNormal = vNormal;
+	pFace->m_vNormal = bOutside ? -vNormal : vNormal;
 	pFace->m_nSegment = nSegment;
 	pFace->m_nSide = nSide;
 	pFace->m_bOutside = bOutside;
