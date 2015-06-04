@@ -1459,7 +1459,9 @@ RETVAL (SphereIntersectsWall (&pObj->info.position.vPos, pObj->info.nSegment, pO
 
 #define CHECK_FACE_ORIENT 1
 
-#if DBG
+#define DBG_FACEGRID 0
+
+#if DBG_FACEGRID
 
 static int16_t nHitSeg, nHitSide;
 
@@ -1468,6 +1470,9 @@ int32_t PointSeesPointSub (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg
 
 int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int8_t nDestSide, int32_t nDepth, int32_t nThread)
 {
+#if DBG_FACEGRID == 1
+return gameData.segData.faceGrid.PointSeesPoint (*p0, *p1, nDestSeg, nDestSide);
+#else
 nHitSeg = nHitSide = -1;
 int32_t b1 = gameData.segData.faceGrid.PointSeesPoint (*p0, *p1, nDestSeg, nDestSide);
 int32_t b2 = PointSeesPointSub (p0, p1, nStartSeg, nDestSeg, nDestSide, nDepth, nThread);
@@ -1476,6 +1481,7 @@ if (b1 != b2) {
 	gameData.segData.faceGrid.PointSeesPoint (*p0, *p1, nDestSeg, nDestSide);
 	}
 return b2;
+#endif
 }
 
 
@@ -1587,7 +1593,7 @@ for (;;) {
 #endif
 			if (PointIsOutsideFace (&vIntersection, vertices, 5 - nFaceCount))
 				continue;
-#if DBG
+#if DBG_FACEGRID
 			nHitSeg = nStartSeg;
 			nHitSide = nSide;
 #endif
@@ -1611,7 +1617,7 @@ for (;;) {
 			continue;
 		if ((pWall = pSide->Wall ()) && !(pWall->IsVolatile () || (pWall->IsPassable (NULL, false) & WID_TRANSPARENT_FLAG))) // impassable
 			continue;
-#if DBG
+#if DBG_FACEGRID
 		if (PointSeesPointSub (p0, p1, nChildSeg, nDestSeg, nDestSide, nDepth + 1, nThread))
 #else
 		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDestSide, nDepth + 1, nThread))

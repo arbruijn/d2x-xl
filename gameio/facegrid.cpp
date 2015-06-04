@@ -313,6 +313,9 @@ CGridFace *CFaceGridSegment::FindOccluder (CGridLine& line, CGridFace *pOccluder
 {
 for (CGridFace *pFace = m_pFaces; pFace; pFace = pFace->m_pNextFace) {
 	if (pFace->LineIntersects (line.m_vStart, line.m_vEnd)) {
+#if DBG
+		pFace->LineIntersects (line.m_vStart, line.m_vEnd);
+#endif
 		if (!pOccluder)
 			pOccluder = pFace;
 		else if (pFace->m_fDist < pOccluder->m_fDist)
