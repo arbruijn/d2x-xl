@@ -624,8 +624,10 @@ int32_t CreateWeapon (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFi
 ENTER (0, 0);
 if (rType == 255) {
 	CWeaponInfo *pWeaponInfo = WEAPONINFO (nId);
-	if (!pWeaponInfo)
+	if (!pWeaponInfo) {
+		PrintLog (0, "Error: Invalid weapon type %d in CreateNewWeapon\n", nId);
 		RETVAL (-1)
+		}
 	switch (pWeaponInfo->renderType) {
 		case WEAPON_RENDER_BLOB:
 			xSize = pWeaponInfo->xBlobSize;
@@ -644,7 +646,7 @@ if (rType == 255) {
 			rType = RT_WEAPON_VCLIP;
 			break;
 		default:
-			PrintLog (0, "Error: Invalid weapon render nType in CreateNewWeapon\n");
+			PrintLog (0, "Error: Invalid weapon render type %d in CreateNewWeapon\n", pWeaponInfo->renderType);
 			RETVAL (-1)
 		}
 	}

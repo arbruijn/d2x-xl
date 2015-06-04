@@ -52,7 +52,7 @@ ENTER (0, 0);
 
 	CWeaponInfo	*pWeaponInfo = WEAPONINFO (nWeaponType);
 if (!pWeaponInfo) {
-	Error ("Invalid weapon render nType in CreateNewWeapon\n");
+	Error ("Invalid weapon type %d in CreateNewWeapon\n", nWeaponType);
 	RETVAL (-1)
 	}
 
@@ -64,7 +64,7 @@ switch (pWeaponInfo->renderType) {
 	case WEAPON_RENDER_VCLIP:
 		break;
 	default:
-		Error ("Invalid weapon render nType in CreateNewWeapon\n");
+	Error ("Invalid weapon render type %d in CreateNewWeapon\n", pWeaponInfo->renderType);
 		RETVAL (-1)
 	}
 
@@ -111,7 +111,7 @@ ENTER (0, 0);
 	CWeaponInfo	*pWeaponInfo = WEAPONINFO (nWeaponType);
 
 if (!pWeaponInfo) {
-	Error ("Invalid weapon render nType in CreateWeaponSpeed\n");
+	Error ("Invalid weapon type %d in CreateWeaponSpeed\n", nWeaponType);
 	RETVAL (-1)
 	}
 

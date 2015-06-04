@@ -90,7 +90,7 @@ void RenderLaser (CObject *pObj)
 CWeaponInfo *pWeaponInfo = WEAPONINFO (pObj);
 
 if (!pWeaponInfo) {
-	Error ("Invalid object type in RenderLaser\n");
+	Error ("Invalid weapon type %d in RenderLaser (object type: %d)\n", pObj->Id (), pObj->Type ());
 	return;
 	}
 
@@ -106,7 +106,7 @@ switch (pWeaponInfo->renderType) {
 	case WEAPON_RENDER_VCLIP:
 		Int3 ();	//	Oops, not supported, nType added by mk on 09/09/94, but not for lasers...
 	default:
-		Error ("Invalid weapon render nType in RenderLaser\n");
+		Error ("Invalid weapon render type %d in RenderLaser\n", pWeaponInfo->renderType);
 	}
 }
 
