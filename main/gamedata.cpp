@@ -2744,9 +2744,6 @@ if ((nChecks & GAMEDATA_ERRLOG_TYPE) && !pObj->IsWeapon ())
 return WeaponInfo (pObj->Id (), nChecks, pszFile, nLine);
 }
 
-
-
-
 #endif
 
 // ----------------------------------------------------------------------------
