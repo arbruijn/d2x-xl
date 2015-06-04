@@ -161,19 +161,14 @@ bool CFaceGridSegment::AddFace (uint16_t nSegment, uint8_t nSide, CFloatVector v
 {
 if (!ContainsTriangle (vertices))
 	return true;
-for (uint8_t bOutside = 0; bOutside < 2; bOutside++) {
-	CGridFace *pFace = new CGridFace;
-	if (!pFace)
-		return false;
-	memcpy (pFace->m_vertices, vertices, 3 * sizeof (vertices [0]));
-	pFace->m_vNormal = bOutside ? -vNormal : vNormal;
-	pFace->m_nSegment = nSegment;
-	pFace->m_nSide = nSide;
-	pFace->m_bOutside = bOutside;
-	InsertFace (pFace);
-	if (SEGMENT (nSegment)->ChildId (nSide) >= 0)
-		break;
-	}
+CGridFace *pFace = new CGridFace;
+if (!pFace)
+	return false;
+memcpy (pFace->m_vertices, vertices, 3 * sizeof (vertices [0]));
+pFace->m_vNormal = vNormal;
+pFace->m_nSegment = nSegment;
+pFace->m_nSide = nSide;
+InsertFace (pFace);
 return true;
 }
 
@@ -317,13 +312,16 @@ return m_pParent ? m_pParent->Occluder (line, pOccluder, nVisited) : pOccluder;
 CGridFace *CFaceGridSegment::FindOccluder (CGridLine& line, CGridFace *pOccluder)
 {
 for (CGridFace *pFace = m_pFaces; pFace; pFace = pFace->m_pNextFace) {
-	if ((CFloatVector::Dot (line.m_vNormal, pFace->m_vNormal) <= 0) && pFace->LineIntersects (line.m_vStart, line.m_vEnd)) {
+	if (pFace->LineIntersects (line.m_vStart, line.m_vEnd)) {
 		if (!pOccluder)
 			pOccluder = pFace;
 		else if (pFace->m_fDist < pOccluder->m_fDist)
 			pOccluder = pFace;
 		else if ((pFace->m_fDist == pOccluder->m_fDist) && (pFace->m_nSegment == line.m_nSegment) && ((line.m_nSide < 0) || (pFace->m_nSide == line.m_nSide)))
 			pOccluder = pFace;
+		else
+			continue;
+		pOccluder->m_bBackside = CFloatVector::Dot (line.m_vNormal, pFace->m_vNormal) > 0;
 		}
 	}
 return pOccluder;
@@ -400,7 +398,7 @@ return m_pRoot->AddFace (nSegment, nSide, v, vNormal);
 
 bool CFaceGrid::Create (int32_t nSize)
 {
-#if !DBG // don't build, octree based visibility tests are slower than those based on Descent's portal structure. Meh.
+#if 1 //!DBG - don't build, octree based visibility tests are slower than those based on Descent's portal structure. Meh.
 return false;
 #else
 ComputeDimensions (nSize);
