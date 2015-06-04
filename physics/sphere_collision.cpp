@@ -1459,7 +1459,28 @@ RETVAL (SphereIntersectsWall (&pObj->info.position.vPos, pObj->info.nSegment, pO
 
 #define CHECK_FACE_ORIENT 1
 
+#if DBG
+
+int32_t PointSeesPointSub (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int8_t nDestSide, int32_t nDepth, int32_t nThread);
+
+
 int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int8_t nDestSide, int32_t nDepth, int32_t nThread)
+{
+int32_t b1 = gameData.segData.faceGrid.PointSeesPoint (*p0, *p1, nDestSeg, nDestSide);
+int32_t b2 = PointSeesPointSub (p0, p1, nStartSeg, nDestSeg, nDestSide, nDepth, nThread);
+if (b1 != b2)
+	gameData.segData.faceGrid.PointSeesPoint (*p0, *p1, nDestSeg, nDestSide);
+return b2;
+}
+
+
+int32_t PointSeesPointSub (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int8_t nDestSide, int32_t nDepth, int32_t nThread)
+
+#else
+
+int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int8_t nDestSide, int32_t nDepth, int32_t nThread)
+
+#endif
 {
 ENTER (1, nThread);
 

@@ -2277,9 +2277,9 @@ class CFaceGridSegment {
 class CFaceGrid {
 	public:
 		CFaceGridSegment			*m_pRoot;
-		CFloatVector					m_vMin;
-		CFloatVector					m_vMax;
-		CFloatVector					m_dimensions;
+		CFloatVector				m_vMin;
+		CFloatVector				m_vMax;
+		CFloatVector				m_dimensions;
 		int32_t						m_nVisited;
 
 		CFaceGrid () : m_pRoot (NULL) { m_nVisited = 0; }

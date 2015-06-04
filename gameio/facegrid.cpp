@@ -395,7 +395,7 @@ return m_pRoot->AddFace (nSegment, nSide, v, vNormal);
 
 bool CFaceGrid::Create (int32_t nSize)
 {
-#if 1 //!DBG - don't build, octree based visibility tests are slower than those based on Descent's portal structure. Meh.
+#if !DBG // don't build, octree based visibility tests are slower than those based on Descent's portal structure. Meh.
 return false;
 #else
 ComputeDimensions (nSize);
