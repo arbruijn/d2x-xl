@@ -157,8 +157,8 @@ return nFired ? nRoundsPerShot : 0;
 int32_t FusionHandler (CObject *pObj, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
 {
 	CFixVector	vForce;
-	int16_t			nLightObj = lightClusterManager.Create (pObj);
-	int16_t			nFired = 0;
+	int16_t		nLightObj = lightClusterManager.Create (pObj);
+	int16_t		nFired = 0;
 
 if (0 <= LaserPlayerFire (pObj, FUSION_ID, 0, 1, 0, nLightObj))
 	nFired++;
@@ -191,7 +191,7 @@ return nRoundsPerShot;
 
 int32_t SuperlaserHandler (CObject *pObj, int32_t nLevel, int32_t& nFlags, int32_t nRoundsPerShot)
 {
-	uint8_t nSuperLevel = 3;		//make some new kind of laser eventually
+	uint8_t	nSuperLevel = 3;		//make some new kind of laser eventually
 	int16_t	nLightObj = lightClusterManager.Create (pObj);
 	int16_t	nFired = 0;
 

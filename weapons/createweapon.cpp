@@ -457,10 +457,10 @@ ENTER (0, 0);
 
 	//	Find segment containing laser fire position.  If the robot is straddling a segment, the position from
 	//	which it fires may be in a different segment, which is bad news for FindHitpoint.  So, cast
-	//	a ray from the object center (whose segment we know) to the laser position.  Then, in the call to CreateNewWeapon
+	//	a ray from the object center (whos segment we know) to the laser position.  Then, in the call to CreateNewWeapon
 	//	use the data returned from this call to FindHitpoint.
 	//	Note that while FindHitpoint is pretty slow, it is not terribly slow if the destination point is
-	//	in the same CSegment as the source point.
+	//	in the same segment as the source point.
 
 CHitQuery hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS, &pParentObj->info.position.vPos, vPosition, pParentObj->info.nSegment, OBJ_IDX (pParentObj), 0, 0, ++gameData.physicsData.bIgnoreObjFlag);
 int32_t fate = FindHitpoint (hitQuery, hitResult);

@@ -161,7 +161,7 @@ CFixVector *TransformGunPoint (CObject *pObj, CFixVector *vGunPoints, int32_t nG
 										fix xDelay, uint8_t nLaserType, CFixVector *vMuzzle, CFixMatrix *mP);
 typedef struct tMuzzleInfo {
 	fix         createTime;
-	int16_t       nSegment;
+	int16_t		nSegment;
 	CFixVector  pos;
 } __pack__ tMuzzleInfo;
 
@@ -174,7 +174,7 @@ extern int32_t nOmegaDuration [7];
 //	-----------------------------------------------------------------------------------------------------------
 
 static inline int32_t LaserPlayerFireSpread (CObject *pObj, uint8_t laserType, int32_t nGun, fix spreadr, fix spreadu, 
-													  int32_t makeSound, int32_t harmless, int16_t nLightObj)
+															int32_t makeSound, int32_t harmless, int16_t nLightObj)
 {
 return FireWeaponDelayedWithSpread (pObj, laserType, nGun, spreadr, spreadu, 0, makeSound, harmless, nLightObj);
 }
