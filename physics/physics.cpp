@@ -34,7 +34,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 //Global variables for physics system
-#if DBG
+
+#define DBG_PHYSICS 0
+
+#if DBG_PHYSICS
 static int32_t bNewPhysCode = 1;
 #endif
 
@@ -1106,7 +1109,7 @@ ENTER (0, 0);
 if (IsPowerup () && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	RETURN
 
-#if DBG
+#if DBG_PHYSICS
 if (!(bNewPhysCode & 1)) {
 	DoPhysicsSimOld ();
 	RETURN
@@ -1484,7 +1487,7 @@ Thrust () = Velocity () * k;
 //	-----------------------------------------------------------------------------------------------------------
 //Simulate a physics CObject for this frame
 
-#if DBG
+#if DBG_PHYSICS
 
 void CObject::DoPhysicsSimOld (void)
 {
