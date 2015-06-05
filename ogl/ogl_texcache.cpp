@@ -329,7 +329,7 @@ gameStates.render.DisableCartoonStyle ();
 
 PrintLog (1, "caching weapon sprites\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 5);
-for (i = 0; i < EXTRA_OBJ_IDS; i++)
+for (i = 0, j = (gameStates.app.bD1Mission ? D1_MAX_WEAPON_TYPES : EXTRA_OBJ_IDS); i < j; i++)
 	OglCacheWeaponTextures (WEAPONINFO (i));
 PrintLog (-1);
 

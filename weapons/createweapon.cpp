@@ -86,10 +86,10 @@ if (pWeaponInfo->renderType == WEAPON_RENDER_POLYMODEL) {
 	pObj->AdjustSize (1, pWeaponInfo->poLenToWidthRatio);
 	}
 else if (EGI_FLAG (bTracers, 0, 1, 0) && pObj->IsGatlingRound ()) {
-	pObj->rType.polyObjInfo.nModel = WEAPONINFO (SUPERLASER_ID + 1)->nModel;
+	pObj->rType.polyObjInfo.nModel = gameData.weaponData.info [0][SUPERLASER_ID + 1].nModel;
 	pObj->rType.polyObjInfo.nTexOverride = -1;
 	pObj->rType.polyObjInfo.nAltTextures = 0;
-	pObj->AdjustSize (1, WEAPONINFO (SUPERLASER_ID + 1)->poLenToWidthRatio);
+	pObj->AdjustSize (1, gameData.weaponData.info [0][SUPERLASER_ID + 1].poLenToWidthRatio);
 	pObj->info.renderType = RT_POLYOBJ;
 	}
 pObj->mType.physInfo.mass = pWeaponInfo->mass;
@@ -375,8 +375,7 @@ if (pParent && (pParent->info.nType == OBJ_PLAYER)) {
 		else
 			pObj->cType.laserInfo.xScale = I2X (4);
 		}
-	else if (/* (nWeaponType >= LASER_ID) &&*/ (nWeaponType <= MAX_SUPERLASER_LEVEL) &&
-				(PLAYER (pParent->info.nId).flags & PLAYER_FLAGS_QUAD_LASERS))
+	else if ((nWeaponType <= MAX_SUPERLASER_LEVEL) && (PLAYER (pParent->info.nId).flags & PLAYER_FLAGS_QUAD_LASERS))
 		pObj->cType.laserInfo.xScale = I2X (3) / 4;
 	else if (nWeaponType == GUIDEDMSL_ID) {
 		if (nParent == LOCALPLAYER.nObject) {

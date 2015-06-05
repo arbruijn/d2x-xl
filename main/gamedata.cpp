@@ -2729,7 +2729,7 @@ if (nId < 0)
 	return (CWeaponInfo*) GameDataError ("weapon info", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
 if ((uint32_t) nId >= uint32_t (gameStates.app.bD1Mission ? D1_MAX_WEAPON_TYPES : D2_MAX_WEAPON_TYPES))
 	return (CWeaponInfo*) GameDataError ("weapon info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
-if (nId >= botData.nTypes [gameStates.app.bD1Mission])
+if (nId >= gameData.weaponData.nTypes [gameStates.app.bD1Mission])
 	return (CWeaponInfo*) GameDataError ("weapon info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
 return a + nId; 
 }

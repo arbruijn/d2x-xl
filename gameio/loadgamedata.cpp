@@ -402,19 +402,21 @@ void BMReadWeaponInfoD1N (CFile& cf, int32_t i)
 {
 	CWeaponInfo& wi = gameData.weaponData.info [1][i];
 
-wi.renderType = cf.ReadByte ();
-wi.nModel = cf.ReadByte ();
-wi.nInnerModel = cf.ReadByte ();
+memcpy (&wi, gameData.weaponData.info [0] + i, sizeof (wi));
+
+/*wi.renderType = */cf.ReadByte ();
+/*wi.nModel = */cf.ReadByte ();
+/*wi.nInnerModel = */cf.ReadByte ();
 wi.persistent = cf.ReadByte ();
-wi.nFlashAnimation = cf.ReadByte ();
+/*wi.nFlashAnimation = */cf.ReadByte ();
 wi.flashSound = cf.ReadShort ();
-wi.nRobotHitAnimation = cf.ReadByte ();
+/*wi.nRobotHitAnimation = */cf.ReadByte ();
 wi.nRobotHitSound = cf.ReadShort ();
-wi.nWallHitAnimation = cf.ReadByte ();
+/*wi.nWallHitAnimation = */cf.ReadByte ();
 wi.nWallHitSound = cf.ReadShort ();
 wi.fireCount = cf.ReadByte ();
 wi.nAmmoUsage = cf.ReadByte ();
-wi.nAnimationIndex = cf.ReadByte ();
+/*wi.nAnimationIndex = */cf.ReadByte ();
 wi.destructible = cf.ReadByte ();
 wi.matter = cf.ReadByte ();
 wi.bounce = cf.ReadByte ();
@@ -424,8 +426,8 @@ cf.ReadByte ();
 cf.ReadByte ();
 wi.xEnergyUsage = cf.ReadFix ();
 wi.xFireWait = cf.ReadFix ();
-wi.bitmap.index = cf.ReadShort ();
-wi.xBlobSize = cf.ReadFix ();
+/*wi.bitmap.index = */cf.ReadShort ();
+/*wi.xBlobSize = */cf.ReadFix ();
 wi.xFlashSize = cf.ReadFix ();
 wi.xImpactSize = cf.ReadFix ();
 for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
@@ -639,14 +641,9 @@ for (i = 0, pr = &gameData.botData.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr+
 	pr->always_0xabcd = 0xabcd;   
 	}         
 
-cf.Seek (
-	sizeof (int32_t) +
-	JOINTPOS_SIZE * D1_MAX_ROBOT_JOINTS +
-	sizeof (int32_t) +
-	D1_WEAPON_INFO_SIZE * D1_MAX_WEAPON_TYPES +
-	sizeof (int32_t) +
-	POWERUP_TYPE_INFO_SIZE * MAX_POWERUP_TYPES_D1,
-	SEEK_CUR);
+cf.Seek (sizeof (int32_t) + JOINTPOS_SIZE * D1_MAX_ROBOT_JOINTS, SEEK_CUR);
+BMReadWeaponInfoD1 (cf);
+cf.Seek (sizeof (int32_t) + POWERUP_TYPE_INFO_SIZE * MAX_POWERUP_TYPES_D1,	SEEK_CUR);
 
 i = cf.ReadInt ();
 /*---*/PrintLog (1, "Acquiring model data size of %d polymodels\n", i);
@@ -712,6 +709,7 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (AltSounds [1][i] == tmpSounds [pr->clawSound])
 		pr->clawSound = i;
 	}
+
 PrintLog (-1);
 }
 
@@ -719,6 +717,7 @@ PrintLog (-1);
 
 void BMReadWeaponInfoD1 (CFile& cf)
 {
+#if 0
 cf.Seek (
 	sizeof (int32_t) +
 	sizeof (int32_t) +
@@ -737,6 +736,7 @@ cf.Seek (
 	sizeof (int32_t) +
 	sizeof (tJointPos) * D1_MAX_ROBOT_JOINTS,
 	SEEK_CUR);
+#endif
 gameData.weaponData.nTypes [1] = cf.ReadInt ();
 #if PRINT_WEAPON_INFO
 PrintLog (1, "\nCD1WeaponInfo defaultWeaponInfosD1 [] = {\n");
