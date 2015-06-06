@@ -131,7 +131,7 @@ if (m_bActive) {
 			int32_t nTotalProgress = m_pTotalProgress->Value ();
 			int32_t tLeft, tPassed = SDL_GetTicks () - m_tStart;
 			if (nTotalProgress / Scale () - m_nSkipped > 0)
-				tLeft = Max (int32_t (float (tPassed) * m_fTotal / float (nTotalProgress)) - tPassed, 0);
+				tLeft = Max (int32_t (float (tPassed) * m_fTotal / float (nTotalProgress - m_nSkipped * Scale ())) - tPassed, 0);
 			else { // for the first level, estimate the time needed for the entire level and scale with number of levels to be done
 				int32_t tLevel = int32_t (float (tPassed) / fLevelProgress);
 				tLeft = int32_t (float (tLevel) * m_fTotal / float (Scale ())) - tPassed;
