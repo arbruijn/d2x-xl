@@ -4270,7 +4270,9 @@ return vPosP;
 
 inline void CObject::RequestEffects (uint16_t nEffects)
 {
-gameData.objData.bWantEffect [OBJ_IDX (this)] |= nEffects;
+int32_t nObject = OBJ_IDX (this);
+if (nObject >= 0)
+	gameData.objData.bWantEffect [nObject] |= nEffects;
 }
 
 //	-----------------------------------------------------------------------------
