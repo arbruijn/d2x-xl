@@ -635,8 +635,8 @@ CSoundObject *CAudio::FindObjectSound (int16_t nSound, CObject *pObj, CFixVector
 if (!pObj)
 	return NULL;
 CSoundObject *pSoundObj = m_objects.Buffer ();
-for (uint32_t i = 0, h = m_objects.ToS (); i < h; i++) {
-	if (!(pSoundObj->m_flags & SOF_LINK_TO_POS))
+for (uint32_t i = 0, h = m_objects.ToS (); i < h; i++, pSoundObj++) {
+	if (!(pSoundObj->m_flags & SOF_LINK_TO_OBJ))
 		continue;
 	if (pSoundObj->m_nSound != nSound)
 		continue;
@@ -658,7 +658,7 @@ return NULL;
 CSoundObject *CAudio::FindSegmentSound (int16_t nSound, int16_t nSegment, int16_t nSide, CFixVector& vPos)
 {
 CSoundObject *pSoundObj = m_objects.Buffer ();
-for (uint32_t i = 0, h = m_objects.ToS (); i < h; i++) {
+for (uint32_t i = 0, h = m_objects.ToS (); i < h; i++, pSoundObj++) {
 	if (!(pSoundObj->m_flags & SOF_LINK_TO_POS))
 		continue;
 	if (pSoundObj->m_nSound != nSound)

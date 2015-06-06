@@ -93,7 +93,7 @@ typedef union tShipModifier {
 } __pack__ tShipModifier;
 
 
-#define RECHARGE_DELAY_COUNT	10
+#define RECHARGE_DELAY_COUNT	8
 
 class CShipEnergy {
 	private:

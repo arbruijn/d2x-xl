@@ -349,14 +349,17 @@ else /*if ((gameStates.gameplay.xLastAfterburnerCharge && (controls [0].afterbur
 				MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_IGNITE);
 			}
 		}
-	else if (nSoundObj >= 0) { //gameStates.gameplay.xLastAfterburnerCharge || gameStates.gameplay.bLastAfterburnerState) {
+	else {
+		audio.FindObjectSound (LOCALPLAYER.nObject, SOUND_AFTERBURNER_IGNITE);
+		if (nSoundObj >= 0) { //gameStates.gameplay.xLastAfterburnerCharge || gameStates.gameplay.bLastAfterburnerState) {
 #if 1
-		audio.DeleteSoundObject (nSoundObj);
-		audio.CreateObjectSound ((int16_t) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (int16_t) LOCALPLAYER.nObject);
-		if (IsMultiGame) {
-			if (gameStates.multi.nGameType == UDP_GAME)
-			 	MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_PLAY);
-		 	MultiSendSoundFunction (0, 0);
+			audio.DeleteSoundObject (nSoundObj);
+			audio.CreateObjectSound ((int16_t) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (int16_t) LOCALPLAYER.nObject);
+			if (IsMultiGame) {
+				if (gameStates.multi.nGameType == UDP_GAME)
+			 		MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_PLAY);
+		 		MultiSendSoundFunction (0, 0);
+				}
 			}
 #endif
 		}
