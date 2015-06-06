@@ -86,11 +86,12 @@ class CLightmapProgress {
 		int32_t		m_nLocalProgress;
 		float			m_fTotal;
 		int32_t		m_tStart;
+		int32_t		m_nSkipped;
 		bool			m_bActive;
 
 	public:
 		CLightmapProgress () 
-			: m_pProgressMenu (NULL), m_pTotalProgress (NULL), m_pLevelProgress (NULL), m_pLevelCount (NULL), m_pTime (NULL), m_nLocalProgress (0), m_fTotal (0.0f), m_tStart (0), m_bActive (false)
+			: m_pProgressMenu (NULL), m_pTotalProgress (NULL), m_pLevelProgress (NULL), m_pLevelCount (NULL), m_pTime (NULL), m_nLocalProgress (0), m_fTotal (0.0f), m_tStart (0), m_nSkipped (0), m_bActive (false)
 			{ }
 
 		void Setup (void);

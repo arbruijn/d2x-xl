@@ -96,6 +96,7 @@ if (!m_bActive) {
 	m_fTotal = float (m_pTotalProgress->MaxValue ());
 	m_tStart = SDL_GetTicks ();
 	m_pLevelCount = (*m_pProgressMenu) ["level count"];
+	m_nSkipped = 0;
 	m_bActive = true;
 	}
 
@@ -117,13 +118,24 @@ void CLightmapProgress::Update (void)
 if (m_bActive) {
 	m_pLevelProgress->Value ()++;
 	m_pLevelProgress->Rebuild ();
-	int32_t nLevelProgress = int32_t (float (Scale () * m_pLevelProgress->Value ()) / float (FACES.nFaces) + 0.5f);
+	float fLevelProgress = float (m_pLevelProgress->Value ()) / float (FACES.nFaces);
+	int32_t nLevelProgress = int32_t (float (Scale ()) * fLevelProgress + 0.5f);
+	if (m_nLocalProgress < nLevelProgress) {
+		m_nLocalProgress = nLevelProgress;
+		m_pTotalProgress->Value ()++;
+		m_pTotalProgress->Rebuild ();
+		}
 	if (m_pTime) {
 		static CTimeout to (1000);
 		if (to.Expired ()) {
-			float fDone = float (m_pTotalProgress->Value () + nLevelProgress);
-			int32_t tPassed = SDL_GetTicks () - m_tStart;
-			int32_t tLeft = Max (int32_t (float (tPassed) * m_fTotal / fDone) - tPassed, 0);
+			int32_t nTotalProgress = m_pTotalProgress->Value ();
+			int32_t tLeft, tPassed = SDL_GetTicks () - m_tStart;
+			if (nTotalProgress / Scale () - m_nSkipped > 0)
+				tLeft = Max (int32_t (float (tPassed) * m_fTotal / float (nTotalProgress)) - tPassed, 0);
+			else { // for the first level, estimate the time needed for the entire level and scale with number of levels to be done
+				int32_t tLevel = int32_t (float (tPassed) / fLevelProgress);
+				tLeft = int32_t (float (tLevel) * float (nTotalProgress / Scale ())) - tPassed;
+				}
 			tPassed = (tPassed + 500) / 1000;
 			tLeft = (tLeft + 500) / 1000;
 			char szTime [50];
@@ -132,11 +144,6 @@ if (m_bActive) {
 						tLeft / 3600, (tLeft / 60) % 60, tLeft % 60);
 			m_pTime->SetText (szTime);
 			}
-		}
-	if (m_nLocalProgress < nLevelProgress) {
-		m_nLocalProgress = nLevelProgress;
-		m_pTotalProgress->Value ()++;
-		m_pTotalProgress->Rebuild ();
 		}
 	m_pProgressMenu->Render (m_pProgressMenu->Title (), m_pProgressMenu->SubTitle ());
 	}
@@ -148,6 +155,7 @@ void CLightmapProgress::Skip (int32_t i)
 {
 if (m_pTotalProgress)
 	m_pTotalProgress->Value () += i * Scale ();
+++m_nSkipped;
 }
 
 //------------------------------------------------------------------------------
