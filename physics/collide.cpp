@@ -684,16 +684,10 @@ void CObject::ScrapeOnWall (int16_t nHitSeg, int16_t nHitSide, CFixVector& vHitP
 ENTER (1, 0);
 if ((info.nType == OBJ_PLAYER) && (info.nId == N_LOCALPLAYER)) {
 	int32_t nType = ApplyWallPhysics (nHitSeg, nHitSide);
-	if ((gameData.timeData.xGame > xLastVolatileScrapeSoundTime + (nType ? I2X (1) / (Rand (4) + 1) : I2X (2) + I2X (2) / (Rand (8) + 1))) || (gameData.timeData.xGame < xLastVolatileScrapeSoundTime)) {
+	if ((gameData.timeData.xGame > xLastVolatileScrapeSoundTime + (nType ? I2X (1) / (Rand (4) + 1) : I2X (1) + I2X (2) / (Rand (8) + 1))) || (gameData.timeData.xGame < xLastVolatileScrapeSoundTime)) {
 		xLastVolatileScrapeSoundTime = gameData.timeData.xGame;
 		if (!nType) {
-			int32_t r = Rand (4);
-			int32_t nSound = SND_ADDON_SCRAPE;
-			if (r < 4)
-				nSound += r;
-			char szMsg [40];
-			sprintf (szMsg, "Scraping on wall (%d)...", nSound - SND_ADDON_SCRAPE);
-			HUDMessage (0, szMsg);
+			int32_t nSound = SND_ADDON_SCRAPE + Rand (4);
 			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, LOCALOBJECT->Index (), 0, /*gameOpts->sound.xCustomSoundVolume*/I2X (1), I2X (256), -1, -1, AddonSoundName (nSound), 1);
 			if (IsMultiGame)
 				MultiSendPlaySound (-nSound - 1, I2X (1));
