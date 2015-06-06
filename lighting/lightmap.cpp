@@ -134,7 +134,7 @@ if (m_bActive) {
 				tLeft = Max (int32_t (float (tPassed) * m_fTotal / float (nTotalProgress)) - tPassed, 0);
 			else { // for the first level, estimate the time needed for the entire level and scale with number of levels to be done
 				int32_t tLevel = int32_t (float (tPassed) / fLevelProgress);
-				tLeft = int32_t (float (tLevel) * float (nTotalProgress / Scale () - m_nSkipped)) - tPassed;
+				tLeft = int32_t (float (tLevel) * m_fTotal / float (Scale ())) - tPassed;
 				}
 			tPassed = (tPassed + 500) / 1000;
 			tLeft = (tLeft + 500) / 1000;
