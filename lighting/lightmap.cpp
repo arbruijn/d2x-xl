@@ -134,7 +134,7 @@ if (m_bActive) {
 				tLeft = Max (int32_t (float (tPassed) * m_fTotal / float (nTotalProgress)) - tPassed, 0);
 			else { // for the first level, estimate the time needed for the entire level and scale with number of levels to be done
 				int32_t tLevel = int32_t (float (tPassed) / fLevelProgress);
-				tLeft = int32_t (float (tLevel) * float (nTotalProgress / Scale ())) - tPassed;
+				tLeft = int32_t (float (tLevel) * float (nTotalProgress / Scale () - m_nSkipped)) - tPassed;
 				}
 			tPassed = (tPassed + 500) / 1000;
 			tLeft = (tLeft + 500) / 1000;
@@ -156,6 +156,7 @@ void CLightmapProgress::Skip (int32_t i)
 if (m_pTotalProgress)
 	m_pTotalProgress->Value () += i * Scale ();
 ++m_nSkipped;
+m_fTotal = float (m_pTotalProgress->MaxValue () - m_nSkipped * Scale ());
 }
 
 //------------------------------------------------------------------------------
