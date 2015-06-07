@@ -153,10 +153,11 @@ if (m_bActive) {
 
 void CLightmapProgress::Skip (int32_t i)
 {
-if (m_pTotalProgress)
-	m_pTotalProgress->Value () += i * Scale ();
 ++m_nSkipped;
-m_fTotal = float (m_pTotalProgress->MaxValue () - m_nSkipped * Scale ());
+if (m_pTotalProgress) {
+	m_pTotalProgress->Value () += i * Scale ();
+	m_fTotal = float (m_pTotalProgress->MaxValue () - m_nSkipped * Scale ());
+	}
 }
 
 //------------------------------------------------------------------------------
