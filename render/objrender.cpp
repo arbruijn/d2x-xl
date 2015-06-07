@@ -857,22 +857,19 @@ else {
 				 (gameData.aiData.localInfo [pObj->Index ()].pNextrimaryFire < I2X (1) / 8) &&
 				 (pObj->cType.aiInfo.behavior == AIB_SNIPE))
 				xLight = 2 * xLight + I2X (1);
-			CWeaponInfo *pWeaponInfo = WEAPONINFO (id);
-			bBlendPolys = bEnergyWeapon && pWeaponInfo && (pWeaponInfo->nInnerModel > -1);
-			bBrightPolys = bGatling || (bBlendPolys && WI_energy_usage (id));
-			if (bEnergyWeapon) {
-				if (gameOpts->legacy.bRender)
-					gameStates.render.grAlpha = GrAlpha (FADE_LEVELS - 2);
-				else {
-					ogl.SetBlendMode (OGL_BLEND_ADD);
-					glowRenderer.Begin (GLOW_OBJECTS, 2, false, 1.0f);
+			if (pObj->IsWeapon ()) {
+				CWeaponInfo *pWeaponInfo = WEAPONINFO (id);
+				bBlendPolys = bEnergyWeapon && pWeaponInfo && (pWeaponInfo->nInnerModel > -1);
+				bBrightPolys = bGatling || (bBlendPolys && WI_energy_usage (id));
+				if (bEnergyWeapon) {
+					if (gameOpts->legacy.bRender)
+						gameStates.render.grAlpha = GrAlpha (FADE_LEVELS - 2);
+					else {
+						ogl.SetBlendMode (OGL_BLEND_ADD);
+						glowRenderer.Begin (GLOW_OBJECTS, 2, false, 1.0f);
+						}
 					}
-				}
-			if (bBlendPolys) {
-#if 0
-				fix xDistToEye = CFixVector::Dist(gameData.objData.pViewer->info.position.vPos, pObj->info.position.vPos);
-				if (xDistToEye < gameData.modelData.nSimpleModelThresholdScale * I2X (2))
-#endif
+				if (bBlendPolys) {
 					bOk = DrawPolyModel (pObj, &pObj->info.position.vPos, &pObj->info.position.mOrient,
 												pObj->rType.polyObjInfo.animAngles,
 												pWeaponInfo ? pWeaponInfo->nInnerModel : -1,
@@ -881,11 +878,12 @@ else {
 												xEngineGlow,
 												bmiAltTex,
 												NULL);
+					}
+				if (bEnergyWeapon)
+					gameStates.render.grAlpha = GrAlpha (4 * FADE_LEVELS / 5);
+				else if (!bBlendPolys)
+					gameStates.render.grAlpha = 1.0f;
 				}
-			if (bEnergyWeapon)
-				gameStates.render.grAlpha = GrAlpha (4 * FADE_LEVELS / 5);
-			else if (!bBlendPolys)
-				gameStates.render.grAlpha = 1.0f;
 			}
 		bOk = DrawPolyModel (pObj, &pObj->info.position.vPos, &pObj->info.position.mOrient,
 									pObj->rType.polyObjInfo.animAngles,

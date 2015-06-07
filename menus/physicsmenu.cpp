@@ -117,6 +117,15 @@ if ((m = menu ["hit detection"])) {
 		}
 	}
 #endif
+if ((m = menu ["unnerf D1 weapons"])) {
+	v = m->Value ();
+	if (extraGameInfo [0].bUnnerfD1Weapons != v) {
+		extraGameInfo [0].bUnnerfD1Weapons = v;
+		m->m_bRebuild = 1;
+		key = -2;
+		}
+	}
+
 if ((m = menu ["collision handling"])) {
 	v = m->Value ();
 	if (extraGameInfo [0].bUseHitAngles != v) {
@@ -246,9 +255,13 @@ nFusionRamp = (extraGameInfo [0].nFusionRamp > 2) ? 1 : 2;
 do {
 	m.Destroy ();
 	m.Create (30);
-	sprintf (szSlider + 1, TXT_FUSION_RAMP, nFusionRamp);
-	*szSlider = *(TXT_FUSION_RAMP - 1);
-	m.AddSlider ("fusion ramp", szSlider + 1, nFusionRamp - 1, 0, 1, KEY_F, HTX_FUSION_RAMP);
+	if (!gameStates.app.bGameRunning)
+		m.AddCheck ("unnerf D1 weapons", TXT_UNNERF_D1_WEAPONS, extraGameInfo [0].bUnnerfD1Weapons, KEY_U, HTX_UNNERF_D1_WEAPONS);
+	if (!extraGameInfo [0].bUnnerfD1Weapons) {
+		sprintf (szSlider + 1, TXT_FUSION_RAMP, nFusionRamp);
+		*szSlider = *(TXT_FUSION_RAMP - 1);
+		m.AddSlider ("fusion ramp", szSlider + 1, nFusionRamp - 1, 0, 1, KEY_F, HTX_FUSION_RAMP);
+		}
 	if (!(IsMultiGame && gameStates.app.bGameRunning)) {
 		int32_t v = 100 + extraGameInfo [0].nSpeedScale * 25;
 		sprintf (szSlider + 1, TXT_GAME_SPEED, v / 100, v % 100);

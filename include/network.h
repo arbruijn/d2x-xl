@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "loadgame.h"
 #include "network_thread.h"
 
-#define EGI_DATA_VERSION				8
+#define EGI_DATA_VERSION				9
 
 #define NETWORK_OEM						0x10
 
@@ -171,22 +171,22 @@ typedef struct tFrameInfoShort {
 } __pack__ tFrameInfoShort;
 
 typedef struct tEntropyGameInfo {
-	uint16_t		nEnergyFillRate;
-	uint16_t		nShieldFillRate;
-	uint16_t		nShieldDamageRate;
-	uint16_t		nMaxVirusCapacity; 
-	char			nBumpVirusCapacity;
-	char			nBashVirusCapacity; 
-	char			nVirusGenTime; 
-	char			nVirusLifespan; 
-	char			nVirusStability;
-	char			nCaptureVirusThreshold; 
-	char			nCaptureTimeThreshold; 
-	char			bRevertRooms;
-	char			bDoCaptureWarning;
-	char			nOverrideTextures;
-	char			bBrightenRooms;
-	char			bPlayerHandicap;
+	uint16_t				nEnergyFillRate;
+	uint16_t				nShieldFillRate;
+	uint16_t				nShieldDamageRate;
+	uint16_t				nMaxVirusCapacity; 
+	char					nBumpVirusCapacity;
+	char					nBashVirusCapacity; 
+	char					nVirusGenTime; 
+	char					nVirusLifespan; 
+	char					nVirusStability;
+	char					nCaptureVirusThreshold; 
+	char					nCaptureTimeThreshold; 
+	char					bRevertRooms;
+	char					bDoCaptureWarning;
+	char					nOverrideTextures;
+	char					bBrightenRooms;
+	char					bPlayerHandicap;
 } __pack__ tEntropyGameInfo;
 
 #define MAX_MONSTERBALL_FORCES	25
@@ -250,6 +250,7 @@ typedef struct tExtraGameInfo {
 	uint8_t				bUseCameras;
 	uint8_t				nFusionRamp;
 	uint8_t				nOmegaRamp;
+	uint8_t				bUnnerfD1Weapons;
 	uint8_t				bWiggle;
 	uint8_t				bMultiBosses;
 	uint8_t				nBossCount [2];

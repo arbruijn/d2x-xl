@@ -1687,75 +1687,75 @@ if (pRobotInfo && pRobotInfo->energyBlobs && (cType.laserInfo.parent.nType == OB
 			CreateSmartChildren (pRobot, nBlobs);
 		}
 
-	//	Note: If this hits an invulnerable boss, it will still do splash damage, including to the boss,
-	//	unless this is trapped elsewhere.
-	if (WI_damage_radius (info.nId)) {
-		if (bInvulBoss) {			//don't make badass sound
-			//this code copied from ExplodeSplashDamageWeapon ()
-			CreateSplashDamageExplosion (this, info.nSegment, vHitPt, vHitPt, pWeaponInfo->xImpactSize, pWeaponInfo->nRobotHitAnimation, 
-												  nStrength, pWeaponInfo->xDamageRadius, nStrength, cType.laserInfo.parent.nObject);
+//	Note: If this hits an invulnerable boss, it will still do splash damage, including to the boss,
+//	unless this is trapped elsewhere.
+if (WI_damage_radius (info.nId)) {
+	if (bInvulBoss) {			//don't make badass sound
+		//this code copied from ExplodeSplashDamageWeapon ()
+		CreateSplashDamageExplosion (this, info.nSegment, vHitPt, vHitPt, pWeaponInfo->xImpactSize, pWeaponInfo->nRobotHitAnimation, 
+												nStrength, pWeaponInfo->xDamageRadius, nStrength, cType.laserInfo.parent.nObject);
 
-			}
-		else		//Normal splash damage explosion
-			ExplodeSplashDamageWeapon (vHitPt, pRobot);
 		}
-	if (((cType.laserInfo.parent.nType == OBJ_PLAYER) || bAttackRobots) && !(pRobot->info.nFlags & OF_EXPLODING)) {
-		CObject *pParent, *pExplObj = NULL;
-		if (cType.laserInfo.parent.nObject == LOCALPLAYER.nObject) {
-			CreateAwarenessEvent (this, WEAPON_ROBOT_COLLISION);			// object "this" can attract attention to tPlayer
-			if (USE_D1_AI)
-				DoD1AIRobotHit (pRobot, WEAPON_ROBOT_COLLISION);
-			else
-				DoAIRobotHit (pRobot, WEAPON_ROBOT_COLLISION);
+	else		//Normal splash damage explosion
+		ExplodeSplashDamageWeapon (vHitPt, pRobot);
+	}
+if (((cType.laserInfo.parent.nType == OBJ_PLAYER) || bAttackRobots) && !(pRobot->info.nFlags & OF_EXPLODING)) {
+	CObject *pParent, *pExplObj = NULL;
+	if (cType.laserInfo.parent.nObject == LOCALPLAYER.nObject) {
+		CreateAwarenessEvent (this, WEAPON_ROBOT_COLLISION);			// object "this" can attract attention to tPlayer
+		if (USE_D1_AI)
+			DoD1AIRobotHit (pRobot, WEAPON_ROBOT_COLLISION);
+		else
+			DoAIRobotHit (pRobot, WEAPON_ROBOT_COLLISION);
+		}
+	else if ((pParent = OBJECT (cType.laserInfo.parent.nObject)))
+		MultiRobotRequestChange (pRobot, pParent->info.nId);
+	if (pRobotInfo && (pRobotInfo->nExp1VClip > -1))
+		pExplObj = CreateExplosion (info.nSegment, vHitPt, (3 * pRobot->info.xSize) / 8, (uint8_t) pRobotInfo->nExp1VClip);
+	else {
+		CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
+		if (pWeaponInfo && (pWeaponInfo->nRobotHitAnimation > -1))
+			pExplObj = CreateExplosion (info.nSegment, vHitPt, pWeaponInfo->xImpactSize, (uint8_t) pWeaponInfo->nRobotHitAnimation);
+		}
+	if (pExplObj)
+		AttachObject (pRobot, pExplObj);
+	if (bDamage && pRobotInfo && (pRobotInfo->nExp1Sound > -1))
+		audio.CreateSegmentSound (pRobotInfo->nExp1Sound, pRobot->info.nSegment, 0, vHitPt);
+	if (!(info.nFlags & OF_HARMLESS)) {
+		fix xDamage = bDamage ? FixMul (info.xShield, cType.laserInfo.xScale) : 0;
+		//	Cut Gauss xDamage on bosses because it just breaks the game.  Bosses are so easy to
+		//	hit, and missing a pRobot is what prevents the Gauss from being game-breaking.
+		if (info.nId == GAUSS_ID) {
+			if (pRobotInfo && pRobotInfo->bossFlag)
+				xDamage = (xDamage * (2 * DIFFICULTY_LEVEL_COUNT - gameStates.app.nDifficultyLevel)) / (2 * DIFFICULTY_LEVEL_COUNT);
 			}
-	  	else if ((pParent = OBJECT (cType.laserInfo.parent.nObject)))
-			MultiRobotRequestChange (pRobot, pParent->info.nId);
-		if (pRobotInfo && (pRobotInfo->nExp1VClip > -1))
-			pExplObj = CreateExplosion (info.nSegment, vHitPt, (3 * pRobot->info.xSize) / 8, (uint8_t) pRobotInfo->nExp1VClip);
-		else {
-			CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
-			if (pWeaponInfo && (pWeaponInfo->nRobotHitAnimation > -1))
-				pExplObj = CreateExplosion (info.nSegment, vHitPt, pWeaponInfo->xImpactSize, (uint8_t) pWeaponInfo->nRobotHitAnimation);
+		else if (info.nId == FUSION_ID) {
+			xDamage = gameData.FusionDamage (xDamage);
 			}
-		if (pExplObj)
-			AttachObject (pRobot, pExplObj);
-		if (bDamage && pRobotInfo && (pRobotInfo->nExp1Sound > -1))
-			audio.CreateSegmentSound (pRobotInfo->nExp1Sound, pRobot->info.nSegment, 0, vHitPt);
-		if (!(info.nFlags & OF_HARMLESS)) {
-			fix xDamage = bDamage ? FixMul (info.xShield, cType.laserInfo.xScale) : 0;
-			//	Cut Gauss xDamage on bosses because it just breaks the game.  Bosses are so easy to
-			//	hit, and missing a pRobot is what prevents the Gauss from being game-breaking.
-			if (info.nId == GAUSS_ID) {
-				if (pRobotInfo && pRobotInfo->bossFlag)
-					xDamage = (xDamage * (2 * DIFFICULTY_LEVEL_COUNT - gameStates.app.nDifficultyLevel)) / (2 * DIFFICULTY_LEVEL_COUNT);
-				}
-			else if (info.nId == FUSION_ID) {
-				xDamage = gameData.FusionDamage (xDamage);
-				}
-			if (!pRobot->ApplyDamageToRobot (xDamage, cType.laserInfo.parent.nObject))
-				BumpTwoObjects (pRobot, this, 0, vHitPt);		//only bump if not dead. no xDamage from bump
+		if (!pRobot->ApplyDamageToRobot (xDamage, cType.laserInfo.parent.nObject))
+			BumpTwoObjects (pRobot, this, 0, vHitPt);		//only bump if not dead. no xDamage from bump
 #if DBG
-			else if (cType.laserInfo.parent.nSignature == gameData.objData.pConsole->info.nSignature) {
+		else if (cType.laserInfo.parent.nSignature == gameData.objData.pConsole->info.nSignature) {
 #else
-			else if (pRobotInfo && !(gameStates.app.bGameSuspended & SUSP_ROBOTS) && (cType.laserInfo.parent.nSignature == gameData.objData.pConsole->info.nSignature)) {
+		else if (pRobotInfo && !(gameStates.app.bGameSuspended & SUSP_ROBOTS) && (cType.laserInfo.parent.nSignature == gameData.objData.pConsole->info.nSignature)) {
 #endif
-				cockpit->AddPointsToScore (pRobotInfo->scoreValue);
-				DetectEscortGoalAccomplished (OBJ_IDX (pRobot));
-				}
-			}
-		//	If Gauss Cannon, spin pRobot.
-		if (pRobot && (!pRobotInfo || !(pRobotInfo->companion || pRobotInfo->bossFlag)) && (info.nId == GAUSS_ID)) {
-			tAIStaticInfo	*aip = &pRobot->cType.aiInfo;
-
-			if (aip->SKIP_AI_COUNT * gameData.timeData.xFrame < I2X (1)) {
-				aip->SKIP_AI_COUNT++;
-				pRobot->mType.physInfo.rotThrust.v.coord.x = FixMul (SRandShort (), gameData.timeData.xFrame * aip->SKIP_AI_COUNT);
-				pRobot->mType.physInfo.rotThrust.v.coord.y = FixMul (SRandShort (), gameData.timeData.xFrame * aip->SKIP_AI_COUNT);
-				pRobot->mType.physInfo.rotThrust.v.coord.z = FixMul (SRandShort (), gameData.timeData.xFrame * aip->SKIP_AI_COUNT);
-				pRobot->mType.physInfo.flags |= PF_USES_THRUST;
-				}
+			cockpit->AddPointsToScore (pRobotInfo->scoreValue);
+			DetectEscortGoalAccomplished (OBJ_IDX (pRobot));
 			}
 		}
+	//	If Gauss Cannon, spin pRobot.
+	if (pRobot && (!pRobotInfo || !(pRobotInfo->companion || pRobotInfo->bossFlag)) && (info.nId == GAUSS_ID)) {
+		tAIStaticInfo	*aip = &pRobot->cType.aiInfo;
+
+		if (aip->SKIP_AI_COUNT * gameData.timeData.xFrame < I2X (1)) {
+			aip->SKIP_AI_COUNT++;
+			pRobot->mType.physInfo.rotThrust.v.coord.x = FixMul (SRandShort (), gameData.timeData.xFrame * aip->SKIP_AI_COUNT);
+			pRobot->mType.physInfo.rotThrust.v.coord.y = FixMul (SRandShort (), gameData.timeData.xFrame * aip->SKIP_AI_COUNT);
+			pRobot->mType.physInfo.rotThrust.v.coord.z = FixMul (SRandShort (), gameData.timeData.xFrame * aip->SKIP_AI_COUNT);
+			pRobot->mType.physInfo.flags |= PF_USES_THRUST;
+			}
+		}
+	}
 MaybeKillWeapon (pRobot);
 RETVAL (1)
 }

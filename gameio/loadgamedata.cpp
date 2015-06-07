@@ -735,7 +735,7 @@ cf.Seek (
 	sizeof (D1Robot_info) * D1_MAX_ROBOT_TYPES +
 	sizeof (int32_t) +
 	sizeof (tJointPos) * D1_MAX_ROBOT_JOINTS,
-	SEEK_CUR);
+	SEEK_SET);
 #endif
 gameData.weaponData.nTypes [1] = cf.ReadInt ();
 #if PRINT_WEAPON_INFO

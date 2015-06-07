@@ -405,6 +405,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bShowWeapons, 0, 0);
 		RP (extraGameInfo [i].bAllowCustomWeapons, 0, 0);
 		RP (extraGameInfo [i].nFusionRamp, 0, 0);
+		RP (extraGameInfo [i].bUnnerfD1Weapons, 0, 0);
 		RP (extraGameInfo [i].nSpeedScale, 0, 0);
 		for (j = 0; j < MAX_SHIP_TYPES; j++)
 			RP (extraGameInfo [i].shipsAllowed [j], i, j);
@@ -1018,6 +1019,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo [0].bAllowCustomWeapons", "1"},
 	 {"extraGameInfo [0].bBrightObjects", "0"},
 	 {"extraGameInfo[0].nFusionRamp", "2"},
+	 {"extraGameInfo[0].bUnnerfD1Weapons", "0"},
 	 {"extraGameInfo[0].nSpeedScale", "0"},
 	 {"extraGameInfo[0].shipsAllowed[0]", "1"},
 	 {"extraGameInfo[0].shipsAllowed[1]", "1"},

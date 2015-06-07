@@ -2144,7 +2144,7 @@ return gameData.multiplayer.weaponStates [(nId < 0) ? N_LOCALPLAYER : nId].xFusi
 fix CGameData::FusionDamage (fix xBaseDamage)
 {
 return 
-	(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && !COMPETITION)
+	(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && !COMPETITION && !EGI_FLAG (bUnnerfD1Weapons, 0, 0, 0))
 	? fix (float (xBaseDamage) * float (extraGameInfo [IsMultiGame].nFusionRamp) / 2)
 	: xBaseDamage;
 }
@@ -2720,30 +2720,33 @@ return RobotInfo (pObj->Id (), nChecks, pszFile, nLine);
 }
 
 
-CWeaponInfo* CGameData::WeaponInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine) 
+CWeaponInfo* CGameData::WeaponInfo (int32_t nId, int32_t bD1, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
-CArray<CWeaponInfo>& a = weaponData.info [gameStates.app.bD1Mission];
+CArray<CWeaponInfo>& a = weaponData.info [(bD1 < 0) ? gameStates.app.bD1Mission : bD1];
 if (!a.Buffer ())
 	return (CWeaponInfo*) GameDataError ("weapon info", "buffer", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
 if (nId < 0)
 	return (CWeaponInfo*) GameDataError ("weapon info", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
-if ((uint32_t) nId >= uint32_t (gameStates.app.bD1Mission ? D1_MAX_WEAPON_TYPES : D2_MAX_WEAPON_TYPES))
-	return (CWeaponInfo*) GameDataError ("weapon info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
 if (nId >= gameData.weaponData.nTypes [gameStates.app.bD1Mission])
 	return (CWeaponInfo*) GameDataError ("weapon info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
 return a + nId; 
 }
 
 
-CWeaponInfo* CGameData::WeaponInfo (CObject* pObj, int32_t nChecks, const char* pszFile, int32_t nLine) 
+CWeaponInfo* CGameData::WeaponInfo (CObject* pObj, int32_t bD1, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
 if (!pObj || !Object (pObj->Index (), GAMEDATA_ERRLOG_ALL, pszFile, nLine))
 	 return (CWeaponInfo*) GameDataError ("weapon info", "object buffer", nChecks, pszFile, nLine);
 if ((nChecks & GAMEDATA_ERRLOG_TYPE) && !pObj->IsWeapon ())
 	return (CWeaponInfo*) GameDataError ("weapon info", "object type", nChecks, pszFile, nLine);
-return WeaponInfo (pObj->Id (), nChecks, pszFile, nLine);
+return WeaponInfo (pObj->Id (), bD1, nChecks, pszFile, nLine);
 }
 
 #endif
+
+fix WI_strength(int32_t nId, int32_t nDifficulty) {
+CWeaponInfo *pInfo = gameData.WeaponInfo (nId, EGI_FLAG (bUnnerfD1Weapons, 0, 0, 0) ? 1 : -1);
+return pInfo ? pInfo->strength [Clamp (nDifficulty, 0, DIFFICULTY_LEVEL_COUNT - 1)] : 0;
+}
 
 // ----------------------------------------------------------------------------

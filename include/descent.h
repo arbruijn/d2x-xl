@@ -4022,8 +4022,8 @@ class CGameData {
 		CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 		tRobotInfo* RobotInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine);
 		tRobotInfo* RobotInfo (CObject* pObj, int32_t nChecks, const char* pszFile, int32_t nLine);
-		CWeaponInfo* WeaponInfo (int32_t nId, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
-		CWeaponInfo* WeaponInfo (CObject* pObj, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
+		CWeaponInfo* WeaponInfo (int32_t nId, int32_t bD1 = -1, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
+		CWeaponInfo* WeaponInfo (CObject* pObj, int32_t bD1 = -1, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 
 #else
 
@@ -4035,8 +4035,8 @@ class CGameData {
 		CTrigger* ObjTrigger (int32_t nTrigger);
 		tRobotInfo* RobotInfo (int32_t nId);
 		tRobotInfo* RobotInfo (CObject *pObj);
-		CWeaponInfo* WeaponInfo (int32_t nId);
-		CWeaponInfo* WeaponInfo (CObject *pObj);
+		CWeaponInfo* WeaponInfo (int32_t nId, int32_t bD1 = -1);
+		CWeaponInfo* WeaponInfo (CObject *pObj, int32_t bD1 = -1);
 
 #endif
 		inline int32_t X (int32_t x, bool bForce = false) { return renderData.nStereoOffsetType ? x - ((renderData.nStereoOffsetType == STEREO_OFFSET_FLOATING) ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()) : x; }
@@ -4224,7 +4224,7 @@ extern fix nDebrisLife [];
 	#define GEOTRIGGER(_id)			gameData.GeoTrigger (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
 	#define OBJTRIGGER(_id)			gameData.ObjTrigger (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
 	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
-	#define WEAPONINFO(_id)			gameData.WeaponInfo (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
+	#define WEAPONINFO(_id)			gameData.WeaponInfo (_id, -1, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
 	#define SEGMENTEX(_id, _f)		gameData.Segment (_id, _f, __FILE__, __LINE__)
 	#define OBJECTEX(_id, _f)		gameData.Object (_id, _f, __FILE__, __LINE__)
 	#define WALLEX(_id, _f)			gameData.Wall (_id, _f, __FILE__, __LINE__)
@@ -4450,14 +4450,16 @@ inline tRobotInfo* CGameData::RobotInfo (CObject* pObj) {
 	return (pObj && (pObj->IsRobot () || pObj->IsReactor ())) ? RobotInfo (pObj->Id ()) : NULL;
 	}
 
-inline CWeaponInfo* CGameData::WeaponInfo (int32_t nId) {
-	if ((nId < 0) || (nId >= (gameStates.app.bD1Mission ? D1_MAX_WEAPON_TYPES : D2_MAX_WEAPON_TYPES)))
+inline CWeaponInfo* CGameData::WeaponInfo (int32_t nId, int32_t bD1 = -1) {
+	if (nId < 0)
+		return NULL;
+	if (nId >= gameData.weaponData.nTypes [(bD1 < 0) ? gameStates.app.bD1Mission : bD1])
 		return NULL;
 	return weaponData.info [gameStates.app.bD1Mission] + nId; 
 	}
 
-inline CWeaponInfo* CGameData::WeaponInfo (CObject *pObj) {
-	return (pObj && pObj->IsWeapon ()) ? WeaponInfo (pObj->Id ()) : NULL;
+inline CWeaponInfo* CGameData::WeaponInfo (CObject *pObj, int32_t bD1 = -1) {
+	return (pObj && pObj->IsWeapon ()) ? WeaponInfo (pObj->Id (), bD1) : NULL;
 	}
 
 inline int8_t WI_persistent (int32_t nId) {
@@ -4511,10 +4513,7 @@ CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->xFireWait : 0;
 }
 
-inline fix WI_strength(int32_t nId, int32_t nDifficulty) {
-CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
-return pInfo ? pInfo->strength [Clamp (nDifficulty, 0, DIFFICULTY_LEVEL_COUNT - 1)] : 0;
-}
+fix WI_strength(int32_t nId, int32_t nDifficulty);
 
 inline fix WI_speed (int32_t nId, int32_t nDifficulty) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
@@ -4609,10 +4608,7 @@ CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->xFireWait : 0;
 }
 
-inline fix WI_strength(int32_t nId, int32_t nDifficulty) {
-CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
-return pInfo ? pInfo->strength [Clamp (nDifficulty, 0, DIFFICULTY_LEVEL_COUNT - 1)] : 0;
-}
+fix WI_strength(int32_t nId, int32_t nDifficulty);
 
 inline fix WI_speed (int32_t nId, int32_t nDifficulty) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
