@@ -98,58 +98,58 @@ else
 #endif
 	{
 	if (AXI.bShadows || AXI.bUseParticles || (!AXI.bCompetition && AXI.bUseLightning)) {
-		INITFLAGS ("Graphics Fx: "); 
-		ADDFLAG (AXI.bShadows, "Shadows");
-		ADDFLAG (AXI.bUseParticles, "Smoke");
+		INITFLAGS ("Graphics Fx: ")
+		ADDFLAG (AXI.bShadows, "Shadows")
+		ADDFLAG (AXI.bUseParticles, "Smoke")
 		if (!AXI.bCompetition)
-			ADDFLAG (AXI.bUseLightning, "Lightning");
+			ADDFLAG (AXI.bUseLightning, "Lightning")
 		}
 	else
 		strcpy (mTexts [opt], "Graphics Fx: None");
 	opt++;
 	if (!AXI.bCompetition && (AXI.bLightTrails || AXI.bTracers)) {
-		INITFLAGS ("Weapon Fx: ");
-		ADDFLAG (AXI.bLightTrails, "Light trails");
-		ADDFLAG (AXI.bTracers, "Tracers");
+		INITFLAGS ("Weapon Fx: ")
+		ADDFLAG (AXI.bLightTrails, "Light trails")
+		ADDFLAG (AXI.bTracers, "Tracers")
 		}
 	else
 		sprintf (mTexts [opt], "Weapon Fx: None");
 	opt++;
 	if (!AXI.bCompetition && (AXI.bDamageExplosions || AXI.nShieldEffect)) {
-		INITFLAGS ("Ship Fx: ");
-		ADDFLAG (AXI.nShieldEffect, "Shield");
-		ADDFLAG (AXI.bDamageExplosions, "Damage");
-		ADDFLAG (AXI.bShowWeapons, "Weapons");
-		ADDFLAG (AXI.bAllowCustomWeapons, "Custom weapons");
-		ADDFLAG (AXI.bGatlingSpeedUp, "Gatling speedup");
+		INITFLAGS ("Ship Fx: ")
+		ADDFLAG (AXI.nShieldEffect, "Shield")
+		ADDFLAG (AXI.bDamageExplosions, "Damage")
+		ADDFLAG (AXI.bShowWeapons, "Weapons")
+		ADDFLAG (AXI.bAllowCustomWeapons, "Custom weapons")
+		ADDFLAG (AXI.bGatlingSpeedUp, "Gatling speedup")
 		}
 	else
 		sprintf (mTexts [opt], "Ship Fx: None");
 	opt++;
 	if (AXI.nWeaponIcons || (!AXI.bCompetition && (AXI.bTargetIndicators || AXI.bDamageIndicators))) {
-		INITFLAGS ("HUD extensions: ");
-		ADDFLAG (AXI.nWeaponIcons != 0, "Icons");
-		ADDFLAG (!AXI.bCompetition && AXI.bTargetIndicators, "Tgt indicators");
-		ADDFLAG (!AXI.bCompetition && AXI.bDamageIndicators, "Dmg indicators");
-		ADDFLAG (!AXI.bCompetition && AXI.bMslLockIndicators, "Trk indicators");
+		INITFLAGS ("HUD extensions: ")
+		ADDFLAG (AXI.nWeaponIcons != 0, "Icons")
+		ADDFLAG (!AXI.bCompetition && AXI.bTargetIndicators, "Tgt indicators")
+		ADDFLAG (!AXI.bCompetition && AXI.bDamageIndicators, "Dmg indicators")
+		ADDFLAG (!AXI.bCompetition && AXI.bMslLockIndicators, "Trk indicators")
 		}
 	else
 		strcat (mTexts [opt], "HUD extensions: None");
 	opt++;
 	if (!AXI.bCompetition && AXI.bRadarEnabled) {
-		INITFLAGS ("Radar: ");
-		ADDFLAG ((AGI.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0, "Players");
-		ADDFLAG (AXI.nRadar, "Radar");
-		ADDFLAG (AXI.bPowerupsOnRadar, "Powerups");
-		ADDFLAG (AXI.bRobotsOnRadar, "Robots");
+		INITFLAGS ("Radar: ")
+		ADDFLAG ((AGI.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0, "Players")
+		ADDFLAG (AXI.nRadar, "Radar")
+		ADDFLAG (AXI.bPowerupsOnRadar, "Powerups")
+		ADDFLAG (AXI.bRobotsOnRadar, "Robots")
 		}
 	else
 		strcat (mTexts [opt], "Radar: off");
 	opt++;
 	if (!AXI.bCompetition && (AXI.bMouseLook || AXI.bFastPitch)) {
-		INITFLAGS ("Controls ext.: ");
-		ADDFLAG (AXI.bMouseLook, "mouselook");
-		ADDFLAG (AXI.bFastPitch == 1, "fast pitch");
+		INITFLAGS ("Controls ext.: ")
+		ADDFLAG (AXI.bMouseLook, "mouselook")
+		ADDFLAG (AXI.bFastPitch == 1, "fast pitch")
 		}
 	else
 		strcat (mTexts [opt], "Controls ext.: None");
@@ -157,29 +157,34 @@ else
 	if (!AXI.bCompetition && 
 		 (AXI.bDualMissileLaunch || !AXI.bFriendlyFire || AXI.bInhibitSuicide || 
 		  AXI.bEnableCheats || AXI.bDarkness || (AXI.nFusionRamp != 2))) {
-		INITFLAGS ("Gameplay ext.: ");
-		ADDFLAG (AXI.bEnableCheats, "Cheats");
-		ADDFLAG (AXI.bDarkness, "Darkness");
-		ADDFLAG (AXI.bSmokeGrenades, "Smoke Grens");
-		ADDFLAG (AXI.bDualMissileLaunch, "Dual Msls");
-		ADDFLAG (AXI.nFusionRamp != 2, "Fusion ramp");
-		ADDFLAG (!AXI.bFriendlyFire, "no FF");
-		ADDFLAG (AXI.bInhibitSuicide, "no suicide");
-		ADDFLAG (AXI.bKillMissiles, "shoot msls");
-		ADDFLAG (AXI.bTripleFusion, "tri fusion");
-		ADDFLAG (AXI.bEnhancedShakers, "enh shakers");
-		ADDFLAG (AXI.nHitboxes, "hit boxes");
-		ADDFLAG (AXI.nSpeedScale, "speed up");
+		INITFLAGS ("Gameplay ext.: ")
+		ADDFLAG (AXI.bEnableCheats, "Cheats")
+		ADDFLAG (AXI.bDarkness, "Darkness")
+		ADDFLAG (AXI.bSmokeGrenades, "Smoke Grens")
+		ADDFLAG (AXI.bDualMissileLaunch, "Dual Msls")
+		if (AXI.bUnnerfD1Weapons) {
+			ADDFLAG (AXI.bUnnerfD1Weapons, "unnerf D1")
+			}
+		else {
+			ADDFLAG (AXI.nFusionRamp != 2, "Fusion ramp")
+			}
+		ADDFLAG (!AXI.bFriendlyFire, "no FF")
+		ADDFLAG (AXI.bInhibitSuicide, "no suicide")
+		ADDFLAG (AXI.bKillMissiles, "shoot msls")
+		ADDFLAG (AXI.bTripleFusion, "tri fusion")
+		ADDFLAG (AXI.bEnhancedShakers, "enh shakers")
+		ADDFLAG (AXI.nHitboxes, "hit boxes")
+		ADDFLAG (AXI.nSpeedScale, "speed up")
 		}
 	else
 		strcat (mTexts [opt], "Gameplay ext.: None");
 	if (AXI.bCompetition)
 		strcat (mTexts [opt], "Ships: Standard");
 	else {
-		INITFLAGS ("Ships: ");
-		ADDFLAG (AXI.shipsAllowed [0], "Standard");
-		ADDFLAG (AXI.shipsAllowed [1], "Light");
-		ADDFLAG (AXI.shipsAllowed [2], "Heavy");
+		INITFLAGS ("Ships: ")
+		ADDFLAG (AXI.shipsAllowed [0], "Standard")
+		ADDFLAG (AXI.shipsAllowed [1], "Light")
+		ADDFLAG (AXI.shipsAllowed [2], "Heavy")
 		}
 	opt++;
 	}

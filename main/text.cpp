@@ -2007,9 +2007,10 @@ const char *defaultGameTexts [][2] = {
  {"~Darstellung: %s", "~Style: %s"},
  {"realistisch", "realistic"},
  {"cartoon", "cartoon"},
- {"D1-Waffen ungenerft", "~Unnerf d1 weapons"}
+ {"D1-Waffen ungenerft", "~Unnerf d1 weapons"},
 
 #if 0
+ {"", ""},
 #endif
  {"", ""}
 	};
@@ -2775,7 +2776,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann der Abstand des Minimal-HUDs vom oberen Bildschirmrand\nangepasst werden.", "Adjust the distance of the minimalist HUD from the\nupper screen border here."},
  {"Wenn angekreuzt, wird das Minimal-HUD mit zusätzlichen Linien\nversehen, um seine Elemente besser abzusetzen.", "If checked, the minimalist HUD is drawn with additional\nlines to better separate it from the reticle."},
  {"Hier kann ausgewaehlt werden, ob das Spiel realistisch oder wie\nein Cartoon aussieht.", "Select whether the game looks realistic or like a\ncartoon here."},
-#{"Wenn angekreuzt, haben Waffen aus Descent 1 in Descent 2-Missionen\ndieselbe Schlagkraft wie in Descent 1.", "If checked, Descent 1 have the same power in Descent 2 missions\nas they have in Descent 1."},
+{"Wenn angekreuzt, haben Waffen aus Descent 1 in Descent 2-Missionen\ndieselbe Schlagkraft wie in Descent 1.", "If checked, Descent 1 have the same power in Descent 2 missions\nas they have in Descent 1."},
 #if 0
  {"", ""},
 #endif
