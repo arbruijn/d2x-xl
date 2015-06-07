@@ -1098,6 +1098,7 @@ if (!ogl.m_features.bShaders && (gameConfig.nVersion != D2X_IVER)) {
 int32_t SDLCALL main (int32_t argc, char *argv[])
 {
 gameStates.app.bInitialized = 0;
+gameStates.app.SRand ();
 if (Initialize (argc, argv))
 	return -1;
 //	If built with editor, option to auto-load a level and quit game
