@@ -2737,7 +2737,7 @@ CWeaponInfo* CGameData::WeaponInfo (CObject* pObj, int32_t bD1, int32_t nChecks,
 {
 if (!pObj || !Object (pObj->Index (), GAMEDATA_ERRLOG_ALL, pszFile, nLine))
 	 return (CWeaponInfo*) GameDataError ("weapon info", "object buffer", nChecks, pszFile, nLine);
-if ((nChecks & GAMEDATA_ERRLOG_TYPE) && !pObj->IsWeapon ())
+if ((nChecks & GAMEDATA_ERRLOG_TYPE) && (pObj->Type () != OBJ_WEAPON))
 	return (CWeaponInfo*) GameDataError ("weapon info", "object type", nChecks, pszFile, nLine);
 return WeaponInfo (pObj->Id (), bD1, nChecks, pszFile, nLine);
 }
