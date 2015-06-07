@@ -860,7 +860,7 @@ else {
 			if (pObj->IsWeapon ()) {
 				CWeaponInfo *pWeaponInfo = WEAPONINFO (id);
 				bBlendPolys = bEnergyWeapon && pWeaponInfo && (pWeaponInfo->nInnerModel > -1);
-				bBrightPolys = bGatling || (bBlendPolys && WI_energy_usage (id));
+				bBrightPolys = bGatling || (bBlendPolys && WI_EnergyUsage (id));
 				if (bEnergyWeapon) {
 					if (gameOpts->legacy.bRender)
 						gameStates.render.grAlpha = GrAlpha (FADE_LEVELS - 2);

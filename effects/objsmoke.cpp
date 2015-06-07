@@ -582,8 +582,8 @@ if (!(SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
 if ((pObj->info.xShield < 0) || (pObj->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else {
-	nSpeed = WI_speed (pObj->info.nId, gameStates.app.nDifficultyLevel);
-	nLife = float (gameOpts->render.particles.nLife [3]) * sqrt (float (nSpeed) / float (WI_speed (CONCUSSION_ID, gameStates.app.nDifficultyLevel)));
+	nSpeed = WI_Speed (pObj->info.nId, gameStates.app.nDifficultyLevel);
+	nLife = float (gameOpts->render.particles.nLife [3]) * sqrt (float (nSpeed) / float (WI_Speed (CONCUSSION_ID, gameStates.app.nDifficultyLevel)));
 	nParts = int32_t (MSL_MAX_PARTS /** nLife*/); //int32_t (MSL_MAX_PARTS * X2F (nSpeed) / (15.0f * (4 - nLife)));
 	}
 if (nParts) {

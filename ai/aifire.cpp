@@ -515,8 +515,8 @@ if ((gameData.aiData.nTargetVisibility == 2) ||
 				}
 			}
 		}
-else if ((!pRobotInfo->attackType && (pRobotInfo->nWeaponType >= 0) && WI_homingFlag (pRobotInfo->nWeaponType)) ||
-			(((pRobotInfo->nSecWeaponType != -1) && WI_homingFlag (pRobotInfo->nSecWeaponType)))) {
+else if ((!pRobotInfo->attackType && (pRobotInfo->nWeaponType >= 0) && WI_HomingFlag (pRobotInfo->nWeaponType)) ||
+			(((pRobotInfo->nSecWeaponType != -1) && WI_HomingFlag (pRobotInfo->nSecWeaponType)))) {
 	fix dist;
 	//	Robots which fire homing weapons might fire even if they don't have a bead on the player.
 	if ((!gameData.aiData.bObjAnimates || (pLocalInfo->achievedState [pStaticInfo->CURRENT_GUN] == AIS_FIRE))

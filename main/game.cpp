@@ -444,7 +444,7 @@ void TurnCheatsOff (void)
 
 if (gameStates.app.cheats.bHomingWeapons)
 	for (i = 0; i < 20; i++)
-		WI_set_homingFlag (i, OldHomingState [i]);
+		WI_SetHomingFlag (i, OldHomingState [i]);
 
 if (gameStates.app.cheats.bAcid) {
 	gameStates.app.cheats.bAcid = 0;

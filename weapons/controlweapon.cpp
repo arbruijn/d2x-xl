@@ -221,7 +221,7 @@ int32_t AllowedToFireFlare (void)
 if ((xNextFlareFireTime > gameData.timeData.xGame) &&
 	 (xNextFlareFireTime < gameData.timeData.xGame + FLARE_BIG_DELAY))	//	In case time is bogus, never wait > 1 second.
 		return 0;
-if (LOCALPLAYER.Energy () >= WI_energy_usage (FLARE_ID))
+if (LOCALPLAYER.Energy () >= WI_EnergyUsage (FLARE_ID))
 	xNextFlareFireTime = gameData.timeData.xGame + F2X (gameStates.gameplay.slowmo [0].fSpeed) / 4;
 else
 	xNextFlareFireTime = gameData.timeData.xGame + (fix) (gameStates.gameplay.slowmo [0].fSpeed * FLARE_BIG_DELAY);
@@ -304,11 +304,11 @@ if (!bSecondary) {
 
 	// Special case: Gauss cannon uses vulcan ammo.	
 	if (nWeapon == GAUSS_INDEX) {
-		if (WI_ammo_usage (nWeaponIndex) <= pPlayer->primaryAmmo [VULCAN_INDEX])
+		if (WI_AmmoUsage (nWeaponIndex) <= pPlayer->primaryAmmo [VULCAN_INDEX])
 			returnValue |= HAS_AMMO_FLAG;
 		}
 	else
-		if (WI_ammo_usage (nWeaponIndex) <= pPlayer->primaryAmmo [nWeapon])
+		if (WI_AmmoUsage (nWeaponIndex) <= pPlayer->primaryAmmo [nWeapon])
 			returnValue |= HAS_AMMO_FLAG;
 	if (nWeapon == OMEGA_INDEX) {	// Hack: Make sure player has energy to omega
 		if (pPlayer->energy || gameData.omegaData.xCharge)
@@ -321,7 +321,7 @@ if (!bSecondary) {
 				returnValue |= HAS_ENERGY_FLAG;
 		}
 */
-		if (WI_energy_usage (nWeaponIndex) <= pPlayer->energy)
+		if (WI_EnergyUsage (nWeaponIndex) <= pPlayer->energy)
 			returnValue |= HAS_ENERGY_FLAG;
 		}
 	}
@@ -331,10 +331,10 @@ else {
 	if (pPlayer->secondaryWeaponFlags & (1 << nWeapon))
 		returnValue |= HAS_WEAPON_FLAG;
 
-	if (WI_ammo_usage (nWeaponIndex) <= pPlayer->secondaryAmmo [nWeapon])
+	if (WI_AmmoUsage (nWeaponIndex) <= pPlayer->secondaryAmmo [nWeapon])
 		returnValue |= HAS_AMMO_FLAG;
 
-	if (WI_energy_usage(nWeaponIndex) <= pPlayer->energy)
+	if (WI_EnergyUsage(nWeaponIndex) <= pPlayer->energy)
 		returnValue |= HAS_ENERGY_FLAG;
 }
 
@@ -819,7 +819,7 @@ if (controls [0].fireFlareDownCount)
 		CreateFlare (gameData.objData.pConsole);
 if (AllowedToFireMissile (-1, 1)) {
 	i = secondaryWeaponToWeaponInfo [gameData.weaponData.nSecondary];
-	gameData.missileData.nGlobalFiringCount += WI_fireCount (i) * (controls [0].fireSecondaryState || controls [0].fireSecondaryDownCount);
+	gameData.missileData.nGlobalFiringCount += WI_FireCount (i) * (controls [0].fireSecondaryState || controls [0].fireSecondaryDownCount);
 	}
 if (gameData.missileData.nGlobalFiringCount) {
 	DoMissileFiring (1);			//always enable autoselect for Normal missile firing

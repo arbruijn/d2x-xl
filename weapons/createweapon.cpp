@@ -156,7 +156,7 @@ if (!bFix && pParent && (pParent->info.nType == OBJ_PLAYER) && (pWeaponInfo->ren
 if (bFix)
 	PrintLog (0);
 
-fix xWeaponSpeed = WI_speed (pWeapon->info.nId, gameStates.app.nDifficultyLevel);
+fix xWeaponSpeed = WI_Speed (pWeapon->info.nId, gameStates.app.nDifficultyLevel);
 if (pWeaponInfo->speedvar != 128) {
 	fix randval = I2X (1) - ((RandShort () * pWeaponInfo->speedvar) >> 6);	//	Get a scale factor between speedvar% and 1.0.
 	xWeaponSpeed = FixMul (xWeaponSpeed, randval);
@@ -168,15 +168,15 @@ if ((nWeaponType == SMARTMSL_BLOB_ID) ||
 	 (nWeaponType == ROBOT_SMARTMINE_BLOB_ID) ||
 	 (nWeaponType == EARTHSHAKER_MEGA_ID))
 	xWeaponSpeed /= 4;
-if (WI_thrust (nWeaponType) != 0)
+if (WI_Thrust (nWeaponType) != 0)
 	xWeaponSpeed /= 2;
 /*test*/pWeapon->mType.physInfo.velocity = vDir * (xWeaponSpeed + xParentSpeed);
 if (pParent)
 	pWeapon->SetStartVel (&pParent->mType.physInfo.velocity);
 //	Set thrust
-if (WI_thrust (nWeaponType) != 0) {
+if (WI_Thrust (nWeaponType) != 0) {
 	pWeapon->mType.physInfo.thrust = pWeapon->mType.physInfo.velocity;
-	pWeapon->mType.physInfo.thrust *= FixDiv (WI_thrust (pWeapon->info.nId), xWeaponSpeed + xParentSpeed);
+	pWeapon->mType.physInfo.thrust *= FixDiv (WI_Thrust (pWeapon->info.nId), xWeaponSpeed + xParentSpeed);
 	}
 RETVAL (pWeapon->Index ())
 }
@@ -396,9 +396,9 @@ if ((nWeaponType == SMARTMSL_BLOB_ID) ||
 	pObj->mType.physInfo.flags |= PF_BOUNCES;
 if (nWeaponType == FLARE_ID)
 	pObj->mType.physInfo.flags |= PF_STICK;		//this obj sticks to walls
-pObj->info.xShield = WI_strength (nWeaponType, gameStates.app.nDifficultyLevel);
+pObj->info.xShield = WI_Strength (nWeaponType, gameStates.app.nDifficultyLevel);
 // Fill in laser-specific data
-pObj->SetLife (WI_lifetime (nWeaponType));
+pObj->SetLife (WI_Lifetime (nWeaponType));
 //	Assign nParent nType to highest level creator.  This propagates nParent nType down from
 //	the original creator through weapons which create children of their own (ie, smart missile)
 if (pParent && (pParent->Type () == OBJ_WEAPON)) {
@@ -429,7 +429,7 @@ if (pParent && (pParent->Type () == OBJ_WEAPON)) {
 	}
 // Create orientation matrix so we can look from this pov
 //	Homing missiles also need an orientation matrix so they know if they can make a turn.
-//if ((pObj->info.renderType == RT_POLYOBJ) || (WI_homingFlag (pObj->info.nId)))
+//if ((pObj->info.renderType == RT_POLYOBJ) || (WI_HomingFlag (pObj->info.nId)))
 	pObj->info.position.mOrient = CFixMatrix::CreateFU (vDir, pParent->info.position.mOrient.m.dir.u);
 //	pObj->info.position.mOrient = CFixMatrix::CreateFU (vDir, &pParent->info.position.mOrient.m.v.u, NULL);
 if (((nParent != nViewer) || SPECTATOR (pParent)) && (pParent->info.nType != OBJ_WEAPON)) {
@@ -507,7 +507,7 @@ if (pObj->Velocity ().IsZero ()) {
 		RETVAL (false)
 		}
 	}
-if (pObj->LifeLeft () > WI_lifetime (pObj->Id ())) {
+if (pObj->LifeLeft () > WI_Lifetime (pObj->Id ())) {
 	PrintLog (0, "weapon object has invalid life time\n");
 	pObj->Die ();
 	RETVAL (false)

@@ -274,7 +274,7 @@ if (nGun < 0)
 (*vMuzzle) = pPos->vPos + v [1];
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
-	*vMuzzle += pMatrix->m.dir.f * (-FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
+	*vMuzzle += pMatrix->m.dir.f * (-FixMul (xDelay, WI_Speed (nLaserType, gameStates.app.nDifficultyLevel)));
 return vMuzzle;
 }
 
@@ -382,7 +382,7 @@ if (bHarmless)
 if ((nPlayer == N_LOCALPLAYER) && !pWeapon->IsPlayerMine ())
 	gameStates.app.bPlayerFiredLaserThisFrame = nObject;
 
-if (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (nLaserType)) {
+if (gameStates.app.cheats.bHomingWeapons || WI_HomingFlag (nLaserType)) {
 	if (nPlayer == N_LOCALPLAYER) {
 		pWeapon->cType.laserInfo.nHomingTarget = pWeapon->FindVisibleHomingTarget (vLaserPos, MAX_THREADS);
 		gameData.multigame.weapon.nTrack = pWeapon->cType.laserInfo.nHomingTarget;
@@ -401,7 +401,7 @@ RETVAL (nObject)
 void CreateFlare (CObject *pObj)
 {
 ENTER (0, 0);
-	fix	xEnergyUsage = WI_energy_usage (FLARE_ID);
+	fix	xEnergyUsage = WI_EnergyUsage (FLARE_ID);
 
 if (gameStates.app.nDifficultyLevel < 2)
 	xEnergyUsage = FixMul (xEnergyUsage, I2X (gameStates.app.nDifficultyLevel+2)/4);
@@ -469,7 +469,7 @@ if (LifeLeft () == ONE_FRAME_TIME) {
 	}
 if (LifeLeft () < 0) {		// We died of old age
 	Die ();
-	if (WI_damage_radius (info.nId))
+	if (WI_DamageRadius (info.nId))
 		ExplodeSplashDamageWeapon (info.position.vPos);
 	RETVAL (true)
 	}
@@ -477,7 +477,7 @@ if (LifeLeft () < 0) {		// We died of old age
 fix xSpeed = mType.physInfo.velocity.Mag ();
 if (!((gameData.appData.nFrameCount ^ info.nSignature) & 3) &&
 		(info.nType == OBJ_WEAPON) && (info.nId != FLARE_ID) &&
-		(WI_speed (info.nId, gameStates.app.nDifficultyLevel) > 0) &&
+		(WI_Speed (info.nId, gameStates.app.nDifficultyLevel) > 0) &&
 		(xSpeed < I2X (2))) {
 	ReleaseObject (Index ());
 	RETVAL (true)
@@ -515,7 +515,7 @@ for (fix xFrameTime = gameData.laserData.xUpdateTime; xFrameTime >= HOMING_WEAPO
 			xDist = CFixVector::Normalize (vVecToObject);
 			vNewVel = mType.physInfo.velocity;
 			speed = CFixVector::Normalize (vNewVel);
-			xMaxSpeed = WI_speed (info.nId, gameStates.app.nDifficultyLevel);
+			xMaxSpeed = WI_Speed (info.nId, gameStates.app.nDifficultyLevel);
 			if (speed + I2X (1) < xMaxSpeed) {
 				speed += FixMul (xMaxSpeed, I2X (1) / 80);
 				if (speed > xMaxSpeed)
@@ -562,10 +562,10 @@ RETURN
 void CObject::UpdateWeaponSpeed (void)
 {
 fix xSpeed = mType.physInfo.velocity.Mag ();
-if ((info.nType == OBJ_WEAPON) && (xSpeed > WI_speed (info.nId, gameStates.app.nDifficultyLevel))) {
+if ((info.nType == OBJ_WEAPON) && (xSpeed > WI_Speed (info.nId, gameStates.app.nDifficultyLevel))) {
 	//	Only slow down if not allowed to move.  Makes sense, huh?  Allows proxbombs to get moved by physics force. --MK, 2/13/96
-	if (WI_speed (info.nId, gameStates.app.nDifficultyLevel)) {
-		fix xScaleFactor = FixDiv (WI_speed (info.nId, gameStates.app.nDifficultyLevel), xSpeed);
+	if (WI_Speed (info.nId, gameStates.app.nDifficultyLevel)) {
+		fix xScaleFactor = FixDiv (WI_Speed (info.nId, gameStates.app.nDifficultyLevel), xSpeed);
 		mType.physInfo.velocity *= xScaleFactor;
 		}
 	}
@@ -583,11 +583,11 @@ if (RemoveWeapon ())
 if (info.nType == OBJ_WEAPON) {
 	if (info.nId == FUSION_ID) {		//always set fusion weapon to max vel
 		CFixVector::Normalize (mType.physInfo.velocity);
-		mType.physInfo.velocity *= (WI_speed (info.nId, gameStates.app.nDifficultyLevel));
+		mType.physInfo.velocity *= (WI_Speed (info.nId, gameStates.app.nDifficultyLevel));
 		}
 	//	For homing missiles, turn towards target. (unless it's a guided missile still under player control)
 	if ((gameOpts->legacy.bHomers || (gameData.laserData.xUpdateTime >= HOMING_WEAPON_FRAMETIME)) && // limit update frequency to 40 fps
-	    (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (info.nId)) &&
+	    (gameStates.app.cheats.bHomingWeapons || WI_HomingFlag (info.nId)) &&
 		 !(info.nFlags & PF_BOUNCED_ONCE) &&
 		!IsGuidedMissile ()) {
 #if USE_OPENMP //> 1
@@ -612,7 +612,7 @@ gameData.laserData.xNextFireTime = gameData.timeData.xGame;	//	Prevents shots-to
 if (gameStates.app.cheats.bLaserRapidFire == 0xBADA55)
 	gameData.laserData.xNextFireTime = gameData.timeData.xGame + I2X (1) / 25;
 else
-	gameData.laserData.xNextFireTime = gameData.timeData.xGame + WI_fire_wait (gameData.weaponData.nPrimary);
+	gameData.laserData.xNextFireTime = gameData.timeData.xGame + WI_FireWait (gameData.weaponData.nPrimary);
 #endif
 gameData.laserData.nGlobalFiringCount = 0;
 controls.StopPrimaryFire ();
@@ -653,7 +653,7 @@ if (gameStates.app.bPlayerIsDead || OBSERVING)
 if (gameStates.app.bD2XLevel && (SEGMENT (pObj->info.nSegment)->HasNoDamageProp ()))
 	RETVAL (0)
 nWeaponIndex = primaryWeaponToWeaponInfo [gameData.weaponData.nPrimary];
-xEnergyUsed = WI_energy_usage (nWeaponIndex);
+xEnergyUsed = WI_EnergyUsage (nWeaponIndex);
 if (gameData.weaponData.nPrimary == OMEGA_INDEX)
 	xEnergyUsed = 0;	//	Omega consumes energy when recharging, not when firing.
 if (gameStates.app.nDifficultyLevel < 2)
@@ -665,7 +665,7 @@ else if (nWeaponIndex == HELIX_ID) {
 	if (IsMultiGame)
 		xEnergyUsed *= 2;
 	}
-nAmmoUsed = WI_ammo_usage (nWeaponIndex);
+nAmmoUsed = WI_AmmoUsage (nWeaponIndex);
 addval = 2 * gameData.timeData.xFrame;
 if (addval > I2X (1))
 	addval = I2X (1);
@@ -693,7 +693,7 @@ while (gameData.laserData.xNextFireTime <= gameData.timeData.xGame) {
 		if (gameStates.app.cheats.bLaserRapidFire == 0xBADA55)
 			gameData.laserData.xNextFireTime += I2X (1) / 25;
 		else
-			gameData.laserData.xNextFireTime += WI_fire_wait (nWeaponIndex);
+			gameData.laserData.xNextFireTime += WI_FireWait (nWeaponIndex);
 		nLaserLevel = LOCALPLAYER.LaserLevel ();
 		if (gameData.weaponData.nPrimary == SPREADFIRE_INDEX) {
 			if (nSpreadfireToggle)
@@ -723,12 +723,12 @@ while (gameData.laserData.xNextFireTime <= gameData.timeData.xGame) {
 				MultiSendAmmo ();
 				}
 			else {
-				pPlayer->UpdateEnergy (-(xEnergyUsed * fired) / WI_fireCount (nWeaponIndex));
+				pPlayer->UpdateEnergy (-(xEnergyUsed * fired) / WI_FireCount (nWeaponIndex));
 				}
 			}
 #else
 		rVal += FireWeapon ((int16_t) LOCALPLAYER.nObject, (uint8_t) gameData.weaponData.nPrimary, nLaserLevel, flags, nRoundsPerShot);
-		pPlayer->UpdateEnergy (-(xEnergyUsed * rVal) / WI_fireCount (nWeaponIndex));
+		pPlayer->UpdateEnergy (-(xEnergyUsed * rVal) / WI_FireCount (nWeaponIndex));
 		if (rVal && ((gameData.weaponData.nPrimary == VULCAN_INDEX) || (gameData.weaponData.nPrimary == GAUSS_INDEX))) {
 			if (nAmmoUsed > pPlayer->primaryAmmo [VULCAN_INDEX])
 				pPlayer->primaryAmmo [VULCAN_INDEX] = 0;
@@ -805,7 +805,7 @@ if (nObjType == OBJ_WEAPON) {
 	if (!pWeaponInfo || (pWeaponInfo->children < 1))
 		RETURN
 	if (nObjId == EARTHSHAKER_ID)
-		BlastNearbyGlass (pObj, WI_strength (EARTHSHAKER_ID, gameStates.app.nDifficultyLevel));
+		BlastNearbyGlass (pObj, WI_Strength (EARTHSHAKER_ID, gameStates.app.nDifficultyLevel));
 	}
 else if (nObjType != OBJ_ROBOT) 
 	RETURN
@@ -899,7 +899,7 @@ Assert (gameData.weaponData.nSecondary < MAX_SECONDARY_WEAPONS);
 if (gameData.objData.HasGuidedMissile (N_LOCALPLAYER)) {
 	ReleaseGuidedMissile (N_LOCALPLAYER);
 	i = secondaryWeaponToWeaponInfo [gameData.weaponData.nSecondary];
-	gameData.missileData.xNextFireTime = gameData.timeData.xGame + WI_fire_wait (i);
+	gameData.missileData.xNextFireTime = gameData.timeData.xGame + WI_FireWait (i);
 	RETURN
 	}
 
@@ -911,7 +911,7 @@ if ((nWeaponId == PROXMINE_ID) && IsMultiGame && !COMPETITION && EGI_FLAG (bSmok
 	 (CountPlayerObjects (N_LOCALPLAYER, OBJ_WEAPON, PROXMINE_ID) >= extraGameInfo [IsMultiGame].nMaxSmokeGrenades))
 	RETURN
 if (gameStates.app.cheats.bLaserRapidFire != 0xBADA55)
-	gameData.missileData.xNextFireTime = gameData.timeData.xGame + WI_fire_wait (nWeaponId);
+	gameData.missileData.xNextFireTime = gameData.timeData.xGame + WI_FireWait (nWeaponId);
 else
 	gameData.missileData.xNextFireTime = gameData.timeData.xGame + I2X (1)/25;
 gameData.missileData.xLastFiredTime = gameData.timeData.xGame;
@@ -1044,7 +1044,7 @@ ENTER (0, 0);
 	int32_t i = primaryWeaponToWeaponInfo [gameData.weaponData.nPrimary];
 
 if (gameData.weaponData.firing [0].nDuration)
-	gameData.laserData.nGlobalFiringCount += WI_fireCount (i);
+	gameData.laserData.nGlobalFiringCount += WI_FireCount (i);
 if ((gameData.weaponData.nPrimary == FUSION_INDEX) && gameData.laserData.nGlobalFiringCount)
 	ChargeFusion ();
 RETURN

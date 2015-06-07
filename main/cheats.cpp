@@ -535,15 +535,15 @@ void HomingCheat (int32_t bVerbose)
 
 if ((gameStates.app.cheats.bHomingWeapons = !gameStates.app.cheats.bHomingWeapons)) {
 	for (i = 0; i < 20; i++) {
-		bOldHomingStates [i] = WI_homingFlag (i);
-		WI_set_homingFlag (i, 1);
+		bOldHomingStates [i] = WI_HomingFlag (i);
+		WI_SetHomingFlag (i, 1);
 		}
 	if (bVerbose)
 		HUDInitMessage (TXT_WPN_HOMING);
 	}
 else {
 	for (i = 0; i < 20; i++) 
-		WI_set_homingFlag (i, bOldHomingStates [i]);
+		WI_SetHomingFlag (i, bOldHomingStates [i]);
 	}
 }
 

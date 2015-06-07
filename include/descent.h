@@ -4450,7 +4450,7 @@ inline tRobotInfo* CGameData::RobotInfo (CObject* pObj) {
 	return (pObj && (pObj->IsRobot () || pObj->IsReactor ())) ? RobotInfo (pObj->Id ()) : NULL;
 	}
 
-inline CWeaponInfo* CGameData::WeaponInfo (int32_t nId, int32_t bD1 = -1) {
+inline CWeaponInfo* CGameData::WeaponInfo (int32_t nId, int32_t bD1) {
 	if (nId < 0)
 		return NULL;
 	if (nId >= gameData.weaponData.nTypes [(bD1 < 0) ? gameStates.app.bD1Mission : bD1])
@@ -4458,199 +4458,175 @@ inline CWeaponInfo* CGameData::WeaponInfo (int32_t nId, int32_t bD1 = -1) {
 	return weaponData.info [gameStates.app.bD1Mission] + nId; 
 	}
 
-inline CWeaponInfo* CGameData::WeaponInfo (CObject *pObj, int32_t bD1 = -1) {
+inline CWeaponInfo* CGameData::WeaponInfo (CObject *pObj, int32_t bD1) {
 	return (pObj && pObj->IsWeapon ()) ? WeaponInfo (pObj->Id (), bD1) : NULL;
 	}
 
-inline int8_t WI_persistent (int32_t nId) {
+inline int8_t WI_Persistent (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->persistent : 0;
 }
 	
-inline int8_t WI_fireCount (int32_t nId) {
+inline int8_t WI_FireCount (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->fireCount : 0;
 }
 
-inline int8_t WI_ammo_usage (int32_t nId) {
+inline int8_t WI_AmmoUsage (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->nAmmoUsage : 0;
 }
 
-inline int8_t WI_destructible (int32_t nId) {
+inline int8_t WI_Destructible (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->destructible : 0;
 }
 
-inline int8_t WI_matter (int32_t nId) {
+inline int8_t WI_Matter (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->matter : 0;
 }
 
-inline int8_t WI_bounce (int32_t nId) {
+inline int8_t WI_Bounce (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->bounce : 0;
 }
 
-inline int8_t WI_homingFlag (int32_t nId) {
+inline int8_t WI_HomingFlag (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->homingFlag : 0;
 }
 
-inline void WI_set_homingFlag (int32_t nId, int8_t flag) {
+inline void WI_SetHomingFlag (int32_t nId, int8_t flag) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 if (pInfo)
 	pInfo->homingFlag = flag;
 }
 
-inline fix WI_energy_usage (int32_t nId) {
-CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
-return pInfo ? pInfo->xEnergyUsage : 0;
-}
-
-inline fix WI_fire_wait (int32_t nId) {
-CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
-return pInfo ? pInfo->xFireWait : 0;
-}
-
-fix WI_strength(int32_t nId, int32_t nDifficulty);
-
-inline fix WI_speed (int32_t nId, int32_t nDifficulty) {
-CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
-return pInfo ? pInfo->speed [Clamp (nDifficulty, 0, DIFFICULTY_LEVEL_COUNT - 1)] : 0;
-}
-
-inline fix WI_mass (int32_t nId) {
+inline fix WI_Mass (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->mass : 0;
 }
 
-inline fix WI_drag (int32_t nId)	{
+inline fix WI_Drag (int32_t nId)	{
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->drag : 0;
 }
 
-inline fix WI_thrust (int32_t nId) {
+inline fix WI_Thrust (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->thrust : 0;
 }
 
-inline fix WI_light (int32_t nId) {
+inline fix WI_Light (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->light : 0;
 }
 
-inline fix WI_lifetime (int32_t nId) {
+inline fix WI_Lifetime (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->lifetime : 0;
 }
 
-inline fix WI_damage_radius (int32_t nId)	{
-CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
-return pInfo ? pInfo->xDamageRadius : 0;
-}
-
-inline fix WI_blobSize (int32_t nId)	{
+inline fix WI_BlobSize (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->xBlobSize : 0;
 }
 
+fix WI_EnergyUsage (int32_t nId);
+
+fix WI_FireWait (int32_t nId);
+
+fix WI_Strength (int32_t nId, int32_t nDifficulty);
+
+fix WI_Speed (int32_t nId, int32_t nDifficulty);
+
+fix WI_DamageRadius (int32_t nId);
+
 #else
 
-inline int8_t WI_persistent (int32_t nId) {
+inline int8_t WI_Persistent (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->persistent : 0;
 }
 	
-inline int8_t WI_fireCount (int32_t nId) {
+inline int8_t WI_FireCount (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->fireCount : 0;
 }
 
-inline int8_t WI_ammo_usage (int32_t nId) {
+inline int8_t WI_AmmoUsage (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->nAmmoUsage : 0;
 }
 
-inline int8_t WI_destructible (int32_t nId) {
+inline int8_t WI_Destructible (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->destructible : 0;
 }
 
-inline int8_t WI_matter (int32_t nId) {
+inline int8_t WI_Matter (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->matter : 0;
 }
 
-inline int8_t WI_bounce (int32_t nId) {
+inline int8_t WI_Bounce (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->bounce : 0;
 }
 
-inline int8_t WI_homingFlag (int32_t nId) {
+inline int8_t WI_HomingFlag (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->homingFlag : 0;
 }
 
-inline void WI_set_homingFlag (int32_t nId, int8_t flag) {
+inline void WI_SetHomingFlag (int32_t nId, int8_t flag) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 if (pInfo)
 	pInfo->homingFlag = flag;
 }
 
-inline fix WI_energy_usage (int32_t nId) {
-CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
-return pInfo ? pInfo->xEnergyUsage : 0;
-}
-
-inline fix WI_fire_wait (int32_t nId) {
-CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
-return pInfo ? pInfo->xFireWait : 0;
-}
-
-fix WI_strength(int32_t nId, int32_t nDifficulty);
-
-inline fix WI_speed (int32_t nId, int32_t nDifficulty) {
-CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
-return pInfo ? pInfo->speed [Clamp (nDifficulty, 0, DIFFICULTY_LEVEL_COUNT - 1)] : 0;
-}
-
-inline fix WI_mass (int32_t nId) {
+inline fix WI_Mass (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->mass : 0;
 }
 
-inline fix WI_drag (int32_t nId)	{
+inline fix WI_Drag (int32_t nId)	{
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->drag : 0;
 }
 
-inline fix WI_thrust (int32_t nId) {
+inline fix WI_Thrust (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->thrust : 0;
 }
 
-inline fix WI_light (int32_t nId) {
+inline fix WI_Light (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->light : 0;
 }
 
-inline fix WI_lifetime (int32_t nId) {
+inline fix WI_Lifetime (int32_t nId) {
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->lifetime : 0;
 }
 
-inline fix WI_damage_radius (int32_t nId)	{
-CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
-return pInfo ? pInfo->xDamageRadius : 0;
-}
-
-inline fix WI_blobSize (int32_t nId)	{
+inline fix WI_BlobSize (int32_t nId)	{
 CWeaponInfo *pInfo = gameData.WeaponInfo (nId);
 return pInfo ? pInfo->xBlobSize : 0;
 }
 
 #endif
+
+fix WI_EnergyUsage (int32_t nId);
+
+fix WI_FireWait (int32_t nId);
+
+fix WI_Strength (int32_t nId, int32_t nDifficulty);
+
+fix WI_Speed (int32_t nId, int32_t nDifficulty);
+
+fix WI_DamageRadius (int32_t nId);
 
 //	-----------------------------------------------------------------------------------------------------------
 

@@ -157,8 +157,8 @@ for (i = 0; i < nOmegaBlobs; i++) {
 		pObj->mType.physInfo.velocity = vGoal;
 		//	Only make the last one move fast, else multiple blobs might collide with target.
 		pObj->mType.physInfo.velocity *= (I2X (4));
-		pObj->SetSize (WI_blobSize (pObj->info.nId));
-		pObj->info.xShield = FixMul (OMEGA_DAMAGE_SCALE * gameData.timeData.xFrame, WI_strength (pObj->info.nId, gameStates.app.nDifficultyLevel));
+		pObj->SetSize (WI_BlobSize (pObj->info.nId));
+		pObj->info.xShield = FixMul (OMEGA_DAMAGE_SCALE * gameData.timeData.xFrame, WI_Strength (pObj->info.nId, gameStates.app.nDifficultyLevel));
 		pObj->cType.laserInfo.parent.nType = pParentObj->info.nType;
 		pObj->cType.laserInfo.parent.nSignature = pParentObj->info.nSignature;
 		pObj->cType.laserInfo.parent.nObject = OBJ_IDX (pParentObj);
@@ -170,7 +170,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 	//	Make last one move faster, but it's already moving at speed = I2X (4).
 if (nLastCreatedObj != -1) {
 	CObject* pObj = OBJECT (nLastCreatedObj);
-	pObj->mType.physInfo.velocity *= WI_speed (OMEGA_ID, gameStates.app.nDifficultyLevel) / 4;
+	pObj->mType.physInfo.velocity *= WI_Speed (OMEGA_ID, gameStates.app.nDifficultyLevel) / 4;
 	pObj->info.movementType = MT_PHYSICS;
 	}
 }

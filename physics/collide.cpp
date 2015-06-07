@@ -783,7 +783,7 @@ if (!pWeaponInfo)
 	CObject*			pParentObj = OBJECT (cType.laserInfo.parent.nObject);
 
 	int32_t			nPlayer;
-	fix				nStrength = WI_strength (info.nId, gameStates.app.nDifficultyLevel);
+	fix				nStrength = WI_Strength (info.nId, gameStates.app.nDifficultyLevel);
 
 if (info.nId == OMEGA_ID)
 	if (!OkToDoOmegaDamage (this))
@@ -1263,7 +1263,7 @@ if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 		if (0 <= i)
 			gameData.reactorData.states [i].bHit = 1;
 		}
-	if (WI_damage_radius (info.nId))
+	if (WI_DamageRadius (info.nId))
 		ExplodeSplashDamageWeapon (vHitPt, pReactor);
 	else
 		CreateExplosion (pReactor->info.nSegment, vHitPt, 3 * pReactor->info.xSize / 20, ANIM_SMALL_EXPLOSION);
@@ -1468,7 +1468,7 @@ int32_t DoBossWeaponCollision (CObject* pRobot, CObject* pWeapon, CFixVector& vH
 ENTER (1, 0);
 	int32_t	d2BossIndex;
 	int32_t	bDamage = 1;
-	int32_t	bKinetic = WI_matter (pWeapon->info.nId);
+	int32_t	bKinetic = WI_Matter (pWeapon->info.nId);
 
 tRobotInfo* pRobotInfo = ROBOTINFO (pRobot);
 if (!pRobotInfo)
@@ -1533,7 +1533,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 
 		//	Cause weapon to bounce.
 		//	Make a copy of this pWeapon, because the physics wants to destroy it.
-		if ((pWeapon->info.nType == OBJ_WEAPON) && !WI_matter (pWeapon->info.nId)) {
+		if ((pWeapon->info.nType == OBJ_WEAPON) && !WI_Matter (pWeapon->info.nId)) {
 			int16_t nClone = CreateObject (pWeapon->info.nType, pWeapon->info.nId, -1, pWeapon->info.nSegment, pWeapon->info.position.vPos,
 												    pWeapon->info.position.mOrient, pWeapon->info.xSize, 
 												    pWeapon->info.controlType, pWeapon->info.movementType, pWeapon->info.renderType);
@@ -1547,8 +1547,8 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 						}
 					}
 				pClone->mType.physInfo.thrust.SetZero ();
-				pClone->mType.physInfo.mass = WI_mass (pWeapon->info.nType);
-				pClone->mType.physInfo.drag = WI_drag (pWeapon->info.nType);
+				pClone->mType.physInfo.mass = WI_Mass (pWeapon->info.nType);
+				pClone->mType.physInfo.drag = WI_Drag (pWeapon->info.nType);
 				CFixVector vImpulse = vHitPt - pRobot->info.position.vPos;
 				CFixVector::Normalize (vImpulse);
 				CFixVector vWeapon = pWeapon->mType.physInfo.velocity;
@@ -1615,7 +1615,7 @@ int32_t CObject::CollideWeaponAndRobot (CObject* pRobot, CFixVector& vHitPt, CFi
 {
 ENTER (1, 0);
 if (pRobot->IsGeometry ())
-	RETVAL (CollideWeaponAndWall (WI_speed (info.nId, gameStates.app.nDifficultyLevel), pRobot->Segment (), -1, vHitPt))
+	RETVAL (CollideWeaponAndWall (WI_Speed (info.nId, gameStates.app.nDifficultyLevel), pRobot->Segment (), -1, vHitPt))
 
 	tRobotInfo	*pRobotInfo = ROBOTINFO (pRobot);
 
@@ -1631,7 +1631,7 @@ if (!pWeaponInfo)
 
 	int32_t		bDamage = 1;
 	int32_t		bInvulBoss = 0;
-	fix			nStrength = WI_strength (info.nId, gameStates.app.nDifficultyLevel);
+	fix			nStrength = WI_Strength (info.nId, gameStates.app.nDifficultyLevel);
 	CObject		*pParent = (cType.laserInfo.parent.nType != OBJ_ROBOT) ? NULL : OBJECT (cType.laserInfo.parent.nObject);
 	bool			bAttackRobots = pParent ? pParent->AttacksRobots () || (EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && gameStates.app.cheats.bRobotsKillRobots) : false;
 
@@ -1689,7 +1689,7 @@ if (pRobotInfo && pRobotInfo->energyBlobs && (cType.laserInfo.parent.nType == OB
 
 //	Note: If this hits an invulnerable boss, it will still do splash damage, including to the boss,
 //	unless this is trapped elsewhere.
-if (WI_damage_radius (info.nId)) {
+if (WI_DamageRadius (info.nId)) {
 	if (bInvulBoss) {			//don't make badass sound
 		//this code copied from ExplodeSplashDamageWeapon ()
 		CreateSplashDamageExplosion (this, info.nSegment, vHitPt, vHitPt, pWeaponInfo->xImpactSize, pWeaponInfo->nRobotHitAnimation, 
@@ -1924,12 +1924,12 @@ if (pPlayerObj->info.nId == N_LOCALPLAYER) {
 		}
 	}
 CreateExplosion (OBJSEG (pPlayerObj), vHitPt, I2X (10)/2, ANIM_PLAYER_HIT);
-if (WI_damage_radius (info.nId))
+if (WI_DamageRadius (info.nId))
 	ExplodeSplashDamageWeapon (vHitPt, pPlayerObj);
 MaybeKillWeapon (pPlayerObj);
 BumpTwoObjects (pPlayerObj, this, 0, vHitPt);	//no xDamage from bump
 CObject* pParent;
-if (!WI_damage_radius (info.nId) && !(info.nFlags & OF_HARMLESS) && (pParent = OBJECT (cType.laserInfo.parent.nObject)))
+if (!WI_DamageRadius (info.nId) && !(info.nFlags & OF_HARMLESS) && (pParent = OBJECT (cType.laserInfo.parent.nObject)))
 	pPlayerObj->ApplyDamageToPlayer (pParent, xDamage);
 //	Robots become aware of you if you get hit.
 AIDoCloakStuff ();
@@ -2104,7 +2104,7 @@ RETVAL (1)
 
 inline int32_t DestroyWeapon (int32_t nTarget, int32_t nWeapon)
 {
-if (WI_destructible (nTarget))
+if (WI_Destructible (nTarget))
 	return 1;
 if (COMPETITION)
 	return 0;
@@ -2165,7 +2165,7 @@ if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 			RETVAL (1)
 		}
 	CreateExplosion (pMonsterball->info.nSegment, vHitPt, I2X (5), ANIM_PLAYER_HIT);
-	if (WI_damage_radius (info.nId))
+	if (WI_DamageRadius (info.nId))
 		ExplodeSplashDamageWeapon (vHitPt, pMonsterball);
 	MaybeKillWeapon (pMonsterball);
 	BumpTwoObjects (this, pMonsterball, 1, vHitPt);
@@ -2191,7 +2191,7 @@ if (IsMine ()) {
 if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && !(pDebris->info.nFlags & OF_EXPLODING)) {
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT, info.nSegment, 0, vHitPt);
 	pDebris->Explode (0);
-	if (WI_damage_radius (info.nId))
+	if (WI_DamageRadius (info.nId))
 		ExplodeSplashDamageWeapon (vHitPt, pDebris);
 	MaybeKillWeapon (pDebris);
 	Die ();

@@ -157,7 +157,7 @@ else {
 	mRot = CFixMatrix::Create (vRotAngs);
 	mOrient = pMissileObj->info.position.mOrient * mRot;
 	pMissileObj->info.position.mOrient = mOrient;
-	speed = WI_speed (pMissileObj->info.nId, gameStates.app.nDifficultyLevel);
+	speed = WI_Speed (pMissileObj->info.nId, gameStates.app.nDifficultyLevel);
 	pMissileObj->mType.physInfo.velocity = pMissileObj->info.position.mOrient.m.dir.f * speed;
 	if(IsMultiGame)
 		MultiSendGuidedInfo (pMissileObj, 0);

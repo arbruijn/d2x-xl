@@ -123,7 +123,7 @@ if (pWeaponInfo->nFlashAnimation >= 0)
 	LoadAnimationTextures (&gameData.effectData.animations [0][pWeaponInfo->nFlashAnimation], 0);
 if (pWeaponInfo->nWallHitAnimation >= 0)
 	LoadAnimationTextures (&gameData.effectData.animations [0][pWeaponInfo->nWallHitAnimation], 0);
-if (WI_damage_radius (nWeaponType)) {
+if (WI_DamageRadius (nWeaponType)) {
 	// Robot_hit_vclips are actually badass_vclips
 	if (pWeaponInfo->nRobotHitAnimation >= 0)
 		LoadAnimationTextures (&gameData.effectData.animations [0][pWeaponInfo->nRobotHitAnimation], 0);

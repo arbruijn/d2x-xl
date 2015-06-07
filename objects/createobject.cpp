@@ -176,7 +176,7 @@ if (GetRenderType () == RT_POLYOBJ)
 	CPolyObjInfo::SetTexOverride (-1);
 
 if (GetType () == OBJ_WEAPON) {
-	CPhysicsInfo::SetFlags (CPhysInfo.GetFlags () | WI_persistent (m_info.nId) * PF_PERSISTENT);
+	CPhysicsInfo::SetFlags (CPhysInfo.GetFlags () | WI_Persistent (m_info.nId) * PF_PERSISTENT);
 	CLaserInfo::SetCreationTime (gameData.timeData.xGame);
 	CLaserInfo::SetLastHitObj (0);
 	CLaserInfo::SetScale (I2X (1));
@@ -317,7 +317,7 @@ pObj->SetCreationTime (gameData.timeData.xGame);
 
 if (pObj->info.nType == OBJ_WEAPON) {
 	Assert (pObj->info.controlType == CT_WEAPON);
-	pObj->mType.physInfo.flags |= WI_persistent (pObj->info.nId) * PF_PERSISTENT;
+	pObj->mType.physInfo.flags |= WI_Persistent (pObj->info.nId) * PF_PERSISTENT;
 	pObj->cType.laserInfo.xCreationTime = gameData.timeData.xGame;
 	pObj->cType.laserInfo.nLastHitObj = 0;
 	pObj->cType.laserInfo.xScale = I2X (1);

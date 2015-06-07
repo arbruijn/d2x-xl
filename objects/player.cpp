@@ -93,7 +93,7 @@ return 0;
 #if 0
 static inline int32_t WIFireTicks (int32_t nWeapon)
 {
-return 1000 * WI_fire_wait (nWeapon) / I2X (1);
+return 1000 * WI_FireWait (nWeapon) / I2X (1);
 }
 #endif
 
