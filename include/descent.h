@@ -4459,7 +4459,7 @@ inline CWeaponInfo* CGameData::WeaponInfo (int32_t nId, int32_t bD1) {
 	}
 
 inline CWeaponInfo* CGameData::WeaponInfo (CObject *pObj, int32_t bD1) {
-	return (pObj && pObj->IsWeapon ()) ? WeaponInfo (pObj->Id (), bD1) : NULL;
+	return (pObj && (pObj->Type () == OBJ_WEAPON)) ? WeaponInfo (pObj->Id (), bD1) : NULL;
 	}
 
 inline int8_t WI_Persistent (int32_t nId) {
