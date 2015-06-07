@@ -2744,31 +2744,49 @@ return WeaponInfo (pObj->Id (), bD1, nChecks, pszFile, nLine);
 
 #endif
 
-static inline CWeaponInfo *WI_Unnerfed (int32_t nId) {
+static inline CWeaponInfo *WI_Unnerfed (int32_t nId) 
+{
 return gameData.WeaponInfo (nId, ((nId < gameData.weaponData.nTypes [gameStates.app.bD1Mission]) && EGI_FLAG (bUnnerfD1Weapons, 0, 0, 0)) ? 1 : -1);
 }
 
-fix WI_Strength (int32_t nId, int32_t nDifficulty) {
+fix WI_Strength (int32_t nId, int32_t nDifficulty) 
+{
 CWeaponInfo *pInfo = WI_Unnerfed (nId);
 return pInfo ? pInfo->strength [Clamp (nDifficulty, 0, DIFFICULTY_LEVEL_COUNT - 1)] : 0;
 }
 
-fix WI_EnergyUsage (int32_t nId) {
+fix WI_FlashSize (int32_t nId) 
+{
+CWeaponInfo *pInfo = WI_Unnerfed (nId);
+return pInfo ? pInfo->xFlashSize : 0;
+}
+
+fix WI_ImpactSize (int32_t nId) 
+{
+CWeaponInfo *pInfo = WI_Unnerfed (nId);
+return pInfo ? pInfo->xImpactSize : 0;
+}
+
+fix WI_EnergyUsage (int32_t nId) 
+{
 CWeaponInfo *pInfo = WI_Unnerfed (nId);
 return pInfo ? pInfo->xEnergyUsage : 0;
 }
 
-fix WI_FireWait (int32_t nId) {
+fix WI_FireWait (int32_t nId) 
+{
 CWeaponInfo *pInfo = WI_Unnerfed (nId);
 return pInfo ? pInfo->xFireWait : 0;
 }
 
-fix WI_Speed (int32_t nId, int32_t nDifficulty) {
+fix WI_Speed (int32_t nId, int32_t nDifficulty) 
+{
 CWeaponInfo *pInfo = WI_Unnerfed (nId);
 return pInfo ? pInfo->speed [Clamp (nDifficulty, 0, DIFFICULTY_LEVEL_COUNT - 1)] : 0;
 }
 
-fix WI_DamageRadius (int32_t nId)	{
+fix WI_DamageRadius (int32_t nId)	
+{
 CWeaponInfo *pInfo = WI_Unnerfed (nId);
 return pInfo ? pInfo->xDamageRadius : 0;
 }

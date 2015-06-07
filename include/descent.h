@@ -4618,6 +4618,10 @@ return pInfo ? pInfo->xBlobSize : 0;
 
 #endif
 
+fix WI_FlashSize (int32_t nId);
+
+fix WI_ImpactSize (int32_t nId);
+
 fix WI_EnergyUsage (int32_t nId);
 
 fix WI_FireWait (int32_t nId);

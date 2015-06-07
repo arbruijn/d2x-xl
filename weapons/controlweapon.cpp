@@ -929,68 +929,113 @@ else
 
 void CWeaponInfo::Read (CFile& cf, int32_t fileVersion)
 {
-	int32_t i;
+int32_t nId = int32_t (this - gameData.weaponData.info [0].Buffer ());
 
-renderType = cf.ReadByte ();
-persistent = cf.ReadByte ();
-nModel = cf.ReadShort ();
-nInnerModel = cf.ReadShort ();
-nFlashAnimation = cf.ReadByte ();
-nRobotHitAnimation = cf.ReadByte ();
-flashSound = cf.ReadShort ();
-nWallHitAnimation = cf.ReadByte ();
-fireCount = cf.ReadByte ();
-nRobotHitSound = cf.ReadShort ();
-nAmmoUsage = cf.ReadByte ();
-nAnimationIndex = cf.ReadByte ();
-nWallHitSound = cf.ReadShort ();
-destructible = cf.ReadByte ();
-matter = cf.ReadByte ();
-bounce = cf.ReadByte ();
-homingFlag = cf.ReadByte ();
-speedvar = cf.ReadByte ();
-flags = cf.ReadByte ();
-flash = cf.ReadByte ();
-nAfterburnerSize = cf.ReadByte ();
-SetChildren (cf, fileVersion, 0);
-xEnergyUsage = cf.ReadFix ();
-xFireWait = cf.ReadFix ();
-if (fileVersion < 3)
-	xMultiDamageScale = I2X (1);
-else {
-	xMultiDamageScale = cf.ReadFix ();
-	if (!xMultiDamageScale || (xMultiDamageScale == 0x7fffffff))
-		xMultiDamageScale = I2X (1);
+if (fileVersion < 0) { // D1
+	memcpy (this, gameData.weaponData.info [0] + nId, sizeof (*this));
+
+	/*renderType = */cf.ReadByte ();
+	/*nModel = */cf.ReadByte ();
+	/*nInnerModel = */cf.ReadByte ();
+	persistent = cf.ReadByte ();
+	/*nFlashAnimation = */cf.ReadByte ();
+	flashSound = cf.ReadShort ();
+	/*nRobotHitAnimation = */cf.ReadByte ();
+	nRobotHitSound = cf.ReadShort ();
+	/*nWallHitAnimation = */cf.ReadByte ();
+	nWallHitSound = cf.ReadShort ();
+	fireCount = cf.ReadByte ();
+	nAmmoUsage = cf.ReadByte ();
+	/*nAnimationIndex = */cf.ReadByte ();
+	destructible = cf.ReadByte ();
+	matter = cf.ReadByte ();
+	bounce = cf.ReadByte ();
+	homingFlag = cf.ReadByte ();
+	cf.ReadByte (); 
+	cf.ReadByte ();
+	cf.ReadByte ();
+	xEnergyUsage = cf.ReadFix ();
+	xFireWait = cf.ReadFix ();
+	/*bitmap.index = */cf.ReadShort ();
+	/*xBlobSize = */cf.ReadFix ();
+	xFlashSize = cf.ReadFix ();
+	xImpactSize = cf.ReadFix ();
+	for (int32_t i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
+		strength [i] = cf.ReadFix ();
+	for (int32_t i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
+		speed [i] = cf.ReadFix ();
+	mass = cf.ReadFix ();
+	drag = cf.ReadFix ();
+	thrust = cf.ReadFix ();
+	poLenToWidthRatio = cf.ReadFix ();
+	light = cf.ReadFix ();
+	lifetime = cf.ReadFix ();
+	xDamageRadius = cf.ReadFix ();
+	picture.index = cf.ReadShort ();
+
+	SetChildren (cf, 0, 1);
 	}
-ReadBitmapIndex (&bitmap, cf);
-xBlobSize = cf.ReadFix ();
-xFlashSize = cf.ReadFix ();
-xImpactSize = cf.ReadFix ();
-for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
-	strength [i] = cf.ReadFix ();
-for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
-	speed [i] = cf.ReadFix ();
-mass = cf.ReadFix ();
-drag = cf.ReadFix ();
-thrust = cf.ReadFix ();
-poLenToWidthRatio = cf.ReadFix ();
-if (CObject::IsMissile (i))
+else {
+	renderType = cf.ReadByte ();
+	persistent = cf.ReadByte ();
+	nModel = cf.ReadShort ();
+	nInnerModel = cf.ReadShort ();
+	nFlashAnimation = cf.ReadByte ();
+	nRobotHitAnimation = cf.ReadByte ();
+	flashSound = cf.ReadShort ();
+	nWallHitAnimation = cf.ReadByte ();
+	fireCount = cf.ReadByte ();
+	nRobotHitSound = cf.ReadShort ();
+	nAmmoUsage = cf.ReadByte ();
+	nAnimationIndex = cf.ReadByte ();
+	nWallHitSound = cf.ReadShort ();
+	destructible = cf.ReadByte ();
+	matter = cf.ReadByte ();
+	bounce = cf.ReadByte ();
+	homingFlag = cf.ReadByte ();
+	speedvar = cf.ReadByte ();
+	flags = cf.ReadByte ();
+	flash = cf.ReadByte ();
+	nAfterburnerSize = cf.ReadByte ();
+	SetChildren (cf, fileVersion, 0);
+	xEnergyUsage = cf.ReadFix ();
+	xFireWait = cf.ReadFix ();
+	if (fileVersion < 3)
+		xMultiDamageScale = I2X (1);
+	else {
+		xMultiDamageScale = cf.ReadFix ();
+		if (!xMultiDamageScale || (xMultiDamageScale == 0x7fffffff))
+			xMultiDamageScale = I2X (1);
+		}
+	ReadBitmapIndex (&bitmap, cf);
+	xBlobSize = cf.ReadFix ();
+	xFlashSize = cf.ReadFix ();
+	xImpactSize = cf.ReadFix ();
+	for (int32_t i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
+		strength [i] = cf.ReadFix ();
+	for (int32_t i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
+		speed [i] = cf.ReadFix ();
+	mass = cf.ReadFix ();
+	drag = cf.ReadFix ();
+	thrust = cf.ReadFix ();
+	poLenToWidthRatio = cf.ReadFix ();
+	light = cf.ReadFix ();
+	lifetime = cf.ReadFix ();
+	xDamageRadius = cf.ReadFix ();
+	ReadBitmapIndex (&picture, cf);
+	if (fileVersion >= 3)
+		ReadBitmapIndex (&hiresPicture, cf);
+	else
+		hiresPicture.index = picture.index;
+	}
+if (CObject::IsMissile (nId))
 	poLenToWidthRatio = I2X (10);
-light = cf.ReadFix ();
-i = int32_t (this - gameData.weaponData.info [0].Buffer ());
-if (i == SPREADFIRE_ID) {
+if (nId == SPREADFIRE_ID) {
 	//renderType = 3;
 	light = I2X (1);
 	}
-else if (i == HELIX_ID)
+else if (nId == HELIX_ID)
 	light = I2X (3) / 2;
-lifetime = cf.ReadFix ();
-xDamageRadius = cf.ReadFix ();
-ReadBitmapIndex (&picture, cf);
-if (fileVersion >= 3)
-	ReadBitmapIndex (&hiresPicture, cf);
-else
-	hiresPicture.index = picture.index;
 
 #if PRINT_WEAPON_INFO
 PrintLog (0, "{%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,",

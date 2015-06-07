@@ -354,7 +354,7 @@ if (nWeaponType == OMEGA_ID) {
 	if (((nParent != nViewer) || bSpectator) && (pParent->info.nType != OBJ_WEAPON)) {
 		// Muzzle flash
 		if ((pWeaponInfo->nFlashAnimation > -1) && ((nWeaponType != OMEGA_ID) || !gameOpts->render.lightning.bOmega || gameStates.render.bOmegaModded))
-			CreateMuzzleFlash (pObj->info.nSegment, pObj->info.position.vPos, pWeaponInfo->xFlashSize, pWeaponInfo->nFlashAnimation);
+			CreateMuzzleFlash (pObj->info.nSegment, pObj->info.position.vPos, WI_FlashSize (nWeaponType), pWeaponInfo->nFlashAnimation);
 		}
 	DoOmegaStuff (OBJECT (nParent), vPosition, pObj);
 	RETVAL (nObject)
@@ -435,7 +435,7 @@ if (pParent && (pParent->Type () == OBJ_WEAPON)) {
 if (((nParent != nViewer) || SPECTATOR (pParent)) && (pParent->info.nType != OBJ_WEAPON)) {
 	// Muzzle flash
 	if (pWeaponInfo->nFlashAnimation > -1)
-		CreateMuzzleFlash (pObj->info.nSegment, pObj->info.position.vPos, pWeaponInfo->xFlashSize, pWeaponInfo->nFlashAnimation);
+		CreateMuzzleFlash (pObj->info.nSegment, pObj->info.position.vPos, WI_FlashSize (nWeaponType), pWeaponInfo->nFlashAnimation);
 	}
 CreateWeaponSound (pObj, bMakeSound);
 if (!CreateWeaponSpeed (pObj))

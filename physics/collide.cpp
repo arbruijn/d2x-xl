@@ -784,6 +784,7 @@ if (!pWeaponInfo)
 
 	int32_t			nPlayer;
 	fix				nStrength = WI_Strength (info.nId, gameStates.app.nDifficultyLevel);
+	fix				xDamageRadius = WI_DamageRadius (info.nId);
 
 if (info.nId == OMEGA_ID)
 	if (!OkToDoOmegaDamage (this))
@@ -851,11 +852,11 @@ if (pSide && ((gameData.pigData.tex.pTexMapInfo [pSide->m_nBaseTex].flags & TMI_
 	//for most weapons, use volatile CWall hit.  For mega, use its special tAnimationInfo
 	tAnimationInfo = (info.nId == MEGAMSL_ID) ? pWeaponInfo->nRobotHitAnimation : ANIM_VOLATILE_WALL_HIT;
 	//	New by MK: If powerful splash damager, explode with splash damage, not due to lava, fixes megas being wimpy in lava.
-	if (pWeaponInfo->xDamageRadius >= VOLATILE_WALL_DAMAGE_RADIUS / 2)
+	if (xDamageRadius >= VOLATILE_WALL_DAMAGE_RADIUS / 2)
 		ExplodeSplashDamageWeapon (vHitPt);
 	else
-		CreateSplashDamageExplosion (this, nHitSeg, vHitPt, vHitPt, pWeaponInfo->xImpactSize + VOLATILE_WALL_IMPACT_SIZE, tAnimationInfo,
-											  nStrength / 4 + VOLATILE_WALL_EXPL_STRENGTH, pWeaponInfo->xDamageRadius+VOLATILE_WALL_DAMAGE_RADIUS,
+		CreateSplashDamageExplosion (this, nHitSeg, vHitPt, vHitPt, WI_ImpactSize (info.nId) + VOLATILE_WALL_IMPACT_SIZE, tAnimationInfo,
+											  nStrength / 4 + VOLATILE_WALL_EXPL_STRENGTH, xDamageRadius + VOLATILE_WALL_DAMAGE_RADIUS,
 											  nStrength / 2 + VOLATILE_WALL_DAMAGE_FORCE, cType.laserInfo.parent.nObject);
 	Die ();		//make flares die in lava
 	}
@@ -865,18 +866,18 @@ else if (pSide && ((gameData.pigData.tex.pTexMapInfo [pSide->m_nBaseTex].flags &
 	//	MK: 09/13/95: SplashDamage in water is 1/2 Normal intensity.
 	if (pWeaponInfo->matter) {
 		audio.CreateSegmentSound (SOUNDMSL_HIT_WATER, nHitSeg, 0, vHitPt);
-		if (pWeaponInfo->xDamageRadius) {
+		if (xDamageRadius) {
 			audio.CreateObjectSound (IsSplashDamageWeapon () ? SOUND_BADASS_EXPLOSION_WEAPON : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 			//	MK: 09/13/95: SplashDamage in water is 1/2 Normal intensity.
-			CreateSplashDamageExplosion (this, nHitSeg, vHitPt, vHitPt, pWeaponInfo->xImpactSize/2, pWeaponInfo->nRobotHitAnimation,
-												  nStrength / 4, pWeaponInfo->xDamageRadius, nStrength / 2, cType.laserInfo.parent.nObject);
+			CreateSplashDamageExplosion (this, nHitSeg, vHitPt, vHitPt, WI_ImpactSize (info.nId) / 2, pWeaponInfo->nRobotHitAnimation,
+												  nStrength / 4, xDamageRadius, nStrength / 2, cType.laserInfo.parent.nObject);
 			}
 		else
-			CreateExplosion (info.nSegment, info.position.vPos, pWeaponInfo->xImpactSize, pWeaponInfo->nWallHitAnimation);
+			CreateExplosion (info.nSegment, info.position.vPos, WI_ImpactSize (info.nId), pWeaponInfo->nWallHitAnimation);
 		}
 	else {
 		audio.CreateSegmentSound (SOUND_LASER_HIT_WATER, nHitSeg, 0, vHitPt);
-		CreateExplosion (info.nSegment, info.position.vPos, pWeaponInfo->xImpactSize, ANIM_WATER_HIT);
+		CreateExplosion (info.nSegment, info.position.vPos, WI_ImpactSize (info.nId), ANIM_WATER_HIT);
 		}
 	Die ();		//make flares die in water
 	}
@@ -889,10 +890,10 @@ else {
 			if ((pWeaponInfo->nWallHitSound > -1) && !(info.nFlags & OF_SILENT))
 				CreateSound (pWeaponInfo->nWallHitSound);
 		if (pWeaponInfo->nWallHitAnimation > -1) {
-			if (pWeaponInfo->xDamageRadius)
+			if (xDamageRadius)
 				ExplodeSplashDamageWeapon (vHitPt);
 			else
-				CreateExplosion (info.nSegment, info.position.vPos, pWeaponInfo->xImpactSize, pWeaponInfo->nWallHitAnimation);
+				CreateExplosion (info.nSegment, info.position.vPos, WI_ImpactSize (info.nId), pWeaponInfo->nWallHitAnimation);
 			}
 		}
 	}
@@ -1692,8 +1693,8 @@ if (pRobotInfo && pRobotInfo->energyBlobs && (cType.laserInfo.parent.nType == OB
 if (WI_DamageRadius (info.nId)) {
 	if (bInvulBoss) {			//don't make badass sound
 		//this code copied from ExplodeSplashDamageWeapon ()
-		CreateSplashDamageExplosion (this, info.nSegment, vHitPt, vHitPt, pWeaponInfo->xImpactSize, pWeaponInfo->nRobotHitAnimation, 
-												nStrength, pWeaponInfo->xDamageRadius, nStrength, cType.laserInfo.parent.nObject);
+		CreateSplashDamageExplosion (this, info.nSegment, vHitPt, vHitPt, WI_ImpactSize (info.nId), pWeaponInfo->nRobotHitAnimation, 
+												nStrength, WI_DamageRadius (info.nId), nStrength, cType.laserInfo.parent.nObject);
 
 		}
 	else		//Normal splash damage explosion
@@ -1715,7 +1716,7 @@ if (((cType.laserInfo.parent.nType == OBJ_PLAYER) || bAttackRobots) && !(pRobot-
 	else {
 		CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
 		if (pWeaponInfo && (pWeaponInfo->nRobotHitAnimation > -1))
-			pExplObj = CreateExplosion (info.nSegment, vHitPt, pWeaponInfo->xImpactSize, (uint8_t) pWeaponInfo->nRobotHitAnimation);
+			pExplObj = CreateExplosion (info.nSegment, vHitPt, WI_ImpactSize (info.nId), (uint8_t) pWeaponInfo->nRobotHitAnimation);
 		}
 	if (pExplObj)
 		AttachObject (pRobot, pExplObj);
@@ -2083,8 +2084,8 @@ RETVAL (1)
 int32_t CObject::MaybeDetonateWeapon (CObject* pOther, CFixVector& vHitPt)
 {
 ENTER (1, 0);
-CWeaponInfo *pWeaponInfo = WEAPONINFO (info.nId);
-if (!pWeaponInfo || !pWeaponInfo->xDamageRadius)
+CWeaponInfo *pWeaponInfo = WEAPONINFO (this);
+if (!pWeaponInfo || !WI_DamageRadius (info.nId))
 	RETVAL (0)
 fix xDist = CFixVector::Dist (info.position.vPos, pOther->info.position.vPos);
 if (xDist >= I2X (5))

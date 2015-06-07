@@ -353,7 +353,6 @@ ENTER (0, 0);
 if (!pWeaponInfo)
 	RETVAL (NULL)
 
-Assert (pWeaponInfo->xDamageRadius);
 // adjust the impact location in case it is inside the object
 #if 1
 if (pTarget) {
@@ -378,8 +377,8 @@ else { //make sure explosion center is not behind some wall
 	//VmVecScale (&v, I2X (10));
 	vExplPos += vImpact;
 	}
-RETVAL (CreateSplashDamageExplosion (this, info.nSegment, vExplPos, vImpact, pWeaponInfo->xImpactSize, pWeaponInfo->nRobotHitAnimation,
-												 pWeaponInfo->strength [gameStates.app.nDifficultyLevel], pWeaponInfo->xDamageRadius, pWeaponInfo->strength [gameStates.app.nDifficultyLevel],
+RETVAL (CreateSplashDamageExplosion (this, info.nSegment, vExplPos, vImpact, WI_ImpactSize (info.nId), pWeaponInfo->nRobotHitAnimation,
+												 WI_Strength (info.nId, gameStates.app.nDifficultyLevel), WI_DamageRadius (info.nId), WI_Strength (info.nId, gameStates.app.nDifficultyLevel),
 												 cType.laserInfo.parent.nObject))
 }
 
