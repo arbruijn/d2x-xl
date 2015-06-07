@@ -2746,7 +2746,7 @@ return WeaponInfo (pObj->Id (), bD1, nChecks, pszFile, nLine);
 
 static inline CWeaponInfo *WI_Unnerfed (int32_t nId) 
 {
-return gameData.WeaponInfo (nId, ((nId < gameData.weaponData.nTypes [gameStates.app.bD1Mission]) && EGI_FLAG (bUnnerfD1Weapons, 0, 0, 0)) ? 1 : -1);
+return gameData.WeaponInfo (nId, ((nId < gameData.weaponData.nTypes [1]) && EGI_FLAG (bUnnerfD1Weapons, 0, 0, 0)) ? 1 : -1);
 }
 
 fix WI_Strength (int32_t nId, int32_t nDifficulty) 
