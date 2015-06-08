@@ -493,6 +493,8 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 PrintLog (-1);
 
 gameData.effectData.nClips [1] = cf.ReadInt ();
+if (!gameData.effectData.nClips [1])
+	gameData.effectData.nClips [1] = MAX_ANIMATIONS_D1;
 /*---*/PrintLog (1, "Loading %d animation clips\n", gameData.effectData.nClips [1]);
 ReadAnimationInfo (gameData.effectData.animations [1], MAX_ANIMATIONS_D1, cf);
 PrintLog (-1);
@@ -518,15 +520,16 @@ for (i = 0, pw = &gameData.wallData.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw
 	}
 PrintLog (-1);
 
-/*---*/PrintLog (1, "Loading %d robot descriptions\n", gameData.botData.nTypes [1]);
 cf.Read (&gameData.botData.nTypes [1], sizeof (int32_t), 1);
 PrintLog (-1);
+/*---*/PrintLog (1, "Copying Descent 2 robot descriptions\n");
 gameData.botData.info [1] = gameData.botData.info [0];
 if (!gameOpts->sound.bUseD1Sounds) {
 	PrintLog (-1);
 	return;
 	}
 
+/*---*/PrintLog (1, "Loading %d robot descriptions\n", gameData.botData.nTypes [1]);
 for (i = 0, pr = &gameData.botData.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr++) {
 	//cf.Read (&r, sizeof (r), 1);
 	cf.Seek (
@@ -550,6 +553,7 @@ for (i = 0, pr = &gameData.botData.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr+
 	}         
 
 cf.Seek (sizeof (int32_t) + JOINTPOS_SIZE * D1_MAX_ROBOT_JOINTS, SEEK_CUR);
+/*---*/PrintLog (1, "Loading %d weapon descriptions\n", gameData.botData.nTypes [1]);
 BMReadWeaponInfoD1 (cf);
 cf.Seek (sizeof (int32_t) + POWERUP_TYPE_INFO_SIZE * MAX_POWERUP_TYPES_D1,	SEEK_CUR);
 
