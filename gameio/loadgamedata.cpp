@@ -277,8 +277,9 @@ void BMReadAll (CFile& cf, bool bDefault)
 {
 	int32_t i, t;
 
+/*---*/PrintLog (1, "Loading Descent 2 game data\n", gameData.pigData.tex.nTextures [0]);
 gameData.pigData.tex.nTextures [0] = cf.ReadInt ();
-/*---*/PrintLog (1, "Loading %d texture indices\n", gameData.pigData.tex.nTextures [0]);
+/*---*/PrintLog (0, "Loading %d texture indices\n", gameData.pigData.tex.nTextures [0]);
 ReadBitmapIndices (gameData.pigData.tex.bmIndex [0], gameData.pigData.tex.nTextures [0], cf);
 BuildTextureIndex (0, gameData.pigData.tex.nTextures [0]);
 ReadTMapInfoN (gameData.pigData.tex.tMapInfo [0], gameData.pigData.tex.nTextures [0], cf);
@@ -303,7 +304,7 @@ gameData.effectData.effects [0][32].animationInfo.xTotalTime *= 10;
 gameData.effectData.effects [0][32].animationInfo.xFrameTime *= 10;
 gameData.wallData.nAnims [0] = cf.ReadInt ();
 PrintLog (-1);
-/*---*/PrintLog (1, "Loading %d CWall animations\n", gameData.wallData.nAnims [0]);
+/*---*/PrintLog (1, "Loading %d wall animations\n", gameData.wallData.nAnims [0]);
 ReadWallEffectInfo (gameData.wallData.anims [0], gameData.wallData.nAnims [0], cf);
 PrintLog (-1);
 
@@ -444,10 +445,11 @@ void BMReadGameDataD1 (CFile& cf)
 	CPolyModel		model;
 	uint8_t			tmpSounds [D1_MAX_SOUNDS];
 
+/*---*/PrintLog (1, "Loading Descent 1 game data\n", gameData.pigData.tex.nTextures [0]);
 cf.ReadInt ();
 cf.Read (&gameData.pigData.tex.nTextures [1], sizeof (int32_t), 1);
 j = (gameData.pigData.tex.nTextures [1] == 70) ? 70 : D1_MAX_TEXTURES;
-/*---*/PrintLog (1, "Loading %d texture indices\n", j);
+/*---*/PrintLog (0, "Loading %d texture indices\n", j);
 //cf.Read (gameData.pigData.tex.bmIndex [1], sizeof (tBitmapIndex), D1_MAX_TEXTURES);
 ReadBitmapIndices (gameData.pigData.tex.bmIndex [1], D1_MAX_TEXTURES, cf);
 BuildTextureIndex (1, D1_MAX_TEXTURES);
