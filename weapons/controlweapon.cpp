@@ -929,9 +929,10 @@ else
 
 void CWeaponInfo::Read (CFile& cf, int32_t fileVersion)
 {
-int32_t nId = int32_t (this - gameData.weaponData.info [0].Buffer ());
+int32_t bD1 = fileVersion < 0;
+int32_t nId = int32_t (this - gameData.weaponData.info [bD1].Buffer ());
 
-if (fileVersion < 0) { // D1
+if (bD1) { // D1
 	memcpy (this, gameData.weaponData.info [0] + nId, sizeof (*this));
 
 	/*renderType = */cf.ReadByte ();

@@ -553,7 +553,6 @@ for (i = 0, pr = &gameData.botData.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr+
 	}         
 
 cf.Seek (sizeof (int32_t) + JOINTPOS_SIZE * D1_MAX_ROBOT_JOINTS, SEEK_CUR);
-/*---*/PrintLog (1, "Loading %d weapon descriptions\n", gameData.botData.nTypes [1]);
 BMReadWeaponInfoD1 (cf);
 cf.Seek (sizeof (int32_t) + POWERUP_TYPE_INFO_SIZE * MAX_POWERUP_TYPES_D1,	SEEK_CUR);
 
@@ -650,6 +649,7 @@ cf.Seek (
 	SEEK_SET);
 #endif
 gameData.weaponData.nTypes [1] = cf.ReadInt ();
+/*---*/PrintLog (1, "Loading %d weapon descriptions\n", gameData.weaponData.nTypes [1]);
 #if PRINT_WEAPON_INFO
 PrintLog (1, "\nCD1WeaponInfo defaultWeaponInfosD1 [] = {\n");
 #endif
