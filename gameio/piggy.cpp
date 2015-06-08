@@ -484,7 +484,6 @@ if (!nType) {
 		cfPiggy [1].Open (szD1PigFileName, gameFolders.game.szData [0], "rb", 0);
 	if (cfPiggy [1].File ()) {
 		gameStates.app.bHaveD1Data = 1;
-	/*---*/PrintLog (1, "Loading Descent 1 data\n");
 		BMReadGameDataD1 (cfPiggy [1]);
 		PrintLog (-1);
 		}
