@@ -186,8 +186,9 @@ FORALL_STATIC_OBJS (pObj)
 	else if (pObj->info.nType == OBJ_EFFECT) {
 		pObj->SetSize (0);
 		pObj->SetLife (IMMORTAL_TIME);
-		pObj->info.controlType = CT_NONE;
 		pObj->info.movementType = MT_NONE;
+		if (pObj->info.controlType != CT_WAYPOINT)
+			pObj->info.controlType = CT_NONE;
 		}
 RETURN
 }

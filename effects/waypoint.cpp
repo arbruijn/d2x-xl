@@ -106,7 +106,7 @@ nId = pObj ? pObj->cType.wayPointInfo.nId [0] : -1;
 
 // ---------------------------------------------------------------------------------
 // Map logical way point ids of all way point successors and lightning effect objects 
-// to corresponding physical ids
+// to indices in the waypoint manager's waypoint vector
 
 void CWayPointManager::Renumber (void)
 {
@@ -150,6 +150,10 @@ FORALL_EFFECT_OBJS (pObj) {
 		uint32_t i = (uint32_t) *pObj->WayPoint ();
 		if (m_wayPoints.IsIndex (i))
 			pObj->Position () = m_wayPoints [i]->Position ();
+#if DBG
+		else
+			BRP;
+#endif
 		}
 	}
 }

@@ -178,6 +178,7 @@ class CParticle : public tParticle {
 	public:
 		static CFloatVector vRot [PARTICLE_POSITIONS];
 		static CFixMatrix mRot [2][PARTICLE_POSITIONS];
+		static CFixMatrix mSparkOrient;
 
 		static void InitRotation (void);
 		static void SetupRotation (void);

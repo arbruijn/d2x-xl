@@ -433,24 +433,24 @@ const CFixMatrix CFixMatrix::CreateF (const CFixVector& fVec)
 {
 	CFixMatrix m;
 
-	m.m.dir.f = fVec;
-	CFixVector::Normalize (m.m.dir.f);
-	assert (m.m.dir.f.Mag () != 0);
+m.m.dir.f = fVec;
+CFixVector::Normalize (m.m.dir.f);
+assert (m.m.dir.f.Mag () != 0);
 
-	//just forward vec
-	if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
-		m.m.dir.r.v.coord.x = I2X (1);
-		m.m.dir.u.v.coord.z = (m.m.dir.f.v.coord.z < 0) ? I2X (1) : -I2X (1);
-		m.m.dir.r.v.coord.y = m.m.dir.r.v.coord.z = m.m.dir.u.v.coord.x = m.m.dir.u.v.coord.y = 0;
+//just forward vec
+if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
+	m.m.dir.r.v.coord.x = I2X (1);
+	m.m.dir.u.v.coord.z = (m.m.dir.f.v.coord.z < 0) ? I2X (1) : -I2X (1);
+	m.m.dir.r.v.coord.y = m.m.dir.r.v.coord.z = m.m.dir.u.v.coord.x = m.m.dir.u.v.coord.y = 0;
 	}
 	else { 		//not straight up or down
-		m.m.dir.r.v.coord.x = m.m.dir.f.v.coord.z;
-		m.m.dir.r.v.coord.y = 0;
-		m.m.dir.r.v.coord.z = -m.m.dir.f.v.coord.x;
-		CFixVector::Normalize (m.m.dir.r);
-		m.m.dir.u = CFixVector::Cross (m.m.dir.f, m.m.dir.r);
+	m.m.dir.r.v.coord.x = m.m.dir.f.v.coord.z;
+	m.m.dir.r.v.coord.y = 0;
+	m.m.dir.r.v.coord.z = -m.m.dir.f.v.coord.x;
+	CFixVector::Normalize (m.m.dir.r);
+	m.m.dir.u = CFixVector::Cross (m.m.dir.f, m.m.dir.r);
 	}
-	return m;
+return m;
 }
 
 //	-----------------------------------------------------------------------------

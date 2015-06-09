@@ -41,6 +41,7 @@
 #include "loadgame.h"
 #include "loadobjects.h"
 #include "multi.h"
+#include "waypoint.h"
 #include "savegame.h"
 #include "strutil.h"
 
@@ -445,7 +446,23 @@ switch (info.controlType) {
 		cType.powerupInfo.xCreationTime = cf.ReadFix ();
 		cType.powerupInfo.nFlags = cf.ReadInt ();
 		break;
+
+	case CT_WAYPOINT:
+		cType.wayPointInfo.nId [0] = -1;
+		cType.wayPointInfo.nSuccessor [1] = -1;
+		if (saveGameManager.Version () < 64) {
+			cType.wayPointInfo.nId [1] = -1;
+			cType.wayPointInfo.nSuccessor [0] = -1;
+			cType.wayPointInfo.nSpeed = 0;
+			}
+		else {
+			cType.wayPointInfo.nId [1] = cf.ReadInt ();
+			cType.wayPointInfo.nSuccessor [0] = cf.ReadInt ();
+			cType.wayPointInfo.nSpeed = cf.ReadInt ();
+			}
+		break;
 	}
+
 switch (info.renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
@@ -518,7 +535,10 @@ return nIndex;
 void CObject::SaveState (CFile& cf)
 {
 //	int32_t fPos = cf.Tell ();
-
+#if DBG
+if (Index () == nDbgObj)
+	BRP;
+#endif
 cf.WriteInt (info.nSignature);      
 cf.WriteByte ((int8_t) info.nType); 
 cf.WriteByte ((int8_t) info.nId);
@@ -529,6 +549,8 @@ cf.WriteByte ((int8_t) info.movementType);
 cf.WriteByte ((int8_t) info.renderType);
 #if DBG
 if (info.renderType == 14)
+	BRP;
+if (info.controlType == CT_WAYPOINT)
 	BRP;
 #endif
 cf.WriteByte ((int8_t) info.nFlags);
@@ -560,6 +582,7 @@ if (info.movementType == MT_PHYSICS) {
 else if (info.movementType == MT_SPINNING) {
 	cf.WriteVector(mType.spinRate);  
 	}
+
 switch (info.controlType) {
 	case CT_WEAPON:
 		cf.WriteShort (cType.laserInfo.parent.nType);
@@ -605,7 +628,14 @@ switch (info.controlType) {
 		cf.WriteFix (cType.powerupInfo.xCreationTime);
 		cf.WriteInt (cType.powerupInfo.nFlags);
 		break;
+
+	case CT_WAYPOINT:
+		cf.WriteInt (cType.wayPointInfo.nId [1]);
+		cf.WriteInt (wayPointManager.WayPoint (cType.wayPointInfo.nSuccessor [0])->WayPointId ());
+		cf.WriteInt (cType.wayPointInfo.nSpeed);
+
 	}
+
 switch (info.renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
@@ -637,7 +667,7 @@ switch (info.renderType) {
 		break;
 
 	case RT_LIGHTNING:
-		cf.WriteInt (rType.lightningInfo.nWayPoint);
+		cf.WriteInt (wayPointManager.WayPoint (rType.lightningInfo.nWayPoint)->WayPointId ());
 		cf.WriteByte (rType.lightningInfo.bDirection);
 		cf.WriteByte (rType.lightningInfo.bEnabled);
 		break;

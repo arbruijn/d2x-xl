@@ -1270,6 +1270,8 @@ return SEGMENT (m_children [nSide])->AdjacentSide (Index ());
 
 int32_t CSegment::SeesConnectedSide (int16_t nSide, int16_t nChildSeg, int16_t nChildSide)
 {
+if ((nSide < 0) || (nChildSide < 0))
+	return 0;
 CSegment *pSeg = SEGMENT (nChildSeg);
 if (!pSeg)
 	return 0;
@@ -1292,6 +1294,8 @@ return SEGMENT (m_info.nSegment);
 
 bool CSegment::IsSolid (int32_t nSide)
 {
+if (nSide < 0)
+	return true;
 CSide* pSide = Side (nSide);
 if (pSide->Shape () > SIDE_SHAPE_TRIANGLE)
 	return false;

@@ -70,6 +70,8 @@ void CParticleBuffer::Setup (void)
 	bool alphaControl = AlphaControl ();
 
 PROF_START
+CParticle::mSparkOrient = CFixMatrix::CreateF (gameData.renderData.mine.viewer.mOrient.m.dir.f);
+
 #if USE_OPENMP //> 1
 if (gameStates.app.bMultiThreaded) {
 #	if (LAZY_RENDER_SETUP < 2)

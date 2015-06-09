@@ -355,6 +355,9 @@ switch (info.controlType) {
 		DoReactorFrame (this);
 		break;
 
+	case CT_WAYPOINT:
+		break;		//no movement
+
 	default:
 		Error ("Unknown control nType %d in CObject %i, sig/nType/id = %i/%i/%i", info.controlType, OBJ_IDX (this), info.nSignature, info.nType, info.nId);
 	}

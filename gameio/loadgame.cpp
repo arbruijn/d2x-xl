@@ -1071,7 +1071,8 @@ if (!gameStates.app.bPrecomputeLightmaps) {
 	ResetChildObjects ();
 	ResetPlayerPaths ();
 	FixObjectSizes ();
-	wayPointManager.Setup (!bRestore);
+	if (!bRestore)
+		wayPointManager.Setup ();
 	/*---*/PrintLog (1, "counting entropy rooms\n");
 	nRooms = CountRooms ();
 	if (IsEntropyGame) {

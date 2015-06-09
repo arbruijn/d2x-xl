@@ -748,6 +748,10 @@ int32_t CDynLight::Contribute (const int16_t nDestSeg, const int8_t nDestSide, c
 {
 ENTER (0, nThread);
 
+if (nDestSeg >= gameData.segData.nSegments)
+	PrintLog (0);
+if (nThread >= MAX_THREADS)
+	PrintLog (0);
 #if 1
 info.bDiffuse [nThread] = 1;
 #else

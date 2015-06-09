@@ -19,7 +19,6 @@ class CWayPointManager {
 	bool Hop (CObject* pObj);
 	bool Synchronize (CObject* obj);
 	void Move (CObject* pObj);
-	inline CObject* WayPoint (uint32_t i) { return m_wayPoints.IsIndex (i) ? m_wayPoints [i] : NULL; }
 
 	public:
 		CWayPointManager () : m_nWayPoints (0)
@@ -27,6 +26,7 @@ class CWayPointManager {
 		bool Setup (bool bAttach = true);
 		void Update (void);
 		void Destroy (void);
+		inline CObject* WayPoint (uint32_t i) { return m_wayPoints.IsIndex (i) ? m_wayPoints [i] : NULL; }
 	};
 
 extern CWayPointManager wayPointManager;

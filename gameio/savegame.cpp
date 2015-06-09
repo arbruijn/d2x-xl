@@ -91,8 +91,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"
 #include "marker.h"
 #include "hogfile.h"
+#include "waypoint.h"
 
-#define STATE_VERSION				63
+#define STATE_VERSION				64
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -2394,6 +2395,8 @@ FixObjectSizes ();
 //lightManager.Setup (nLevel);
 //lightManager.AddGeometryLights ();	// redo to account for broken lights
 //ComputeNearestLights (nLevel);
+wayPointManager.Destroy ();
+wayPointManager.Setup ();
 SetupEffects ();
 InitReactorForLevel (1);
 InitAIObjects ();

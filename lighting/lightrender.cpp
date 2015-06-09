@@ -431,8 +431,8 @@ if (gameStates.render.nLightingMethod) {
 		int16_t nLightSeg = pLight->info.nSegment;
 		if (nLightSeg >= 0) 
 			pLight->info.bDiffuse [nThread] = (pLight->info.nSide >= 0) 
-													 ? gameData.segData.LightVis (pLight->Index (), nSegment) 
-													 : gameData.segData.SegVis (pLight->info.nSegment, nSegment);
+														 ? gameData.segData.LightVis (pLight->Index (), nSegment) 
+														 : gameData.segData.SegVis (pLight->info.nSegment, nSegment);
 		else if ((pLight->info.nObject >= 0) && ((pLight->info.nSegment = OBJECT (pLight->info.nObject)->info.nSegment) >= 0))
 			pLight->info.bDiffuse [nThread] = gameData.segData.SegVis (pLight->info.nSegment, nSegment);
 		else

@@ -48,6 +48,7 @@ CFloatVector defaultParticleColor = {{{ 1.0f, 1.0f, 1.0f, 1.0f }}};
 
 CFloatVector CParticle::vRot [PARTICLE_POSITIONS];
 CFixMatrix CParticle::mRot [2][PARTICLE_POSITIONS];
+CFixMatrix CParticle::mSparkOrient;
 
 static int32_t smokeStartAlpha [2][5] = {{160, 128, 96, 64, 32}, {128, 96, 64, 32, 16}};
 
@@ -1464,7 +1465,11 @@ else {
 	pb [0].texCoord.v.l = pb [1].texCoord.v.l = pb [2].texCoord.v.l = pb [3].texCoord.v.l = (((m_nType == SMOKE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1.0f : 2.0f);
 	}
 
-if (m_nType == RAIN_PARTICLES) {
+if (m_nType == SPARK_PARTICLES) {
+	uVec.Assign (mSparkOrient.m.dir.u);
+	rVec.Assign (mSparkOrient.m.dir.r);
+	}
+else if (m_nType == RAIN_PARTICLES) {
 	uVec.Assign (m_vDir);
 	CFloatVector3::Normalize (uVec);
 	uVec.Neg ();
