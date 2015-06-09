@@ -468,7 +468,7 @@ if (SEGMENT (nChildSeg)->HasBlockedProp ()) {
 	}
 else if ((m_function == SEGMENT_FUNC_SPEEDBOOST) && (nChildType != SEGMENT_FUNC_SPEEDBOOST)) {
 	// handle the player in a speed boost area. The player must only exit speed boost areas through a segment side with a speed boost trigger
-	if ((pObj == gameData.objData.pConsole) && gameData.objData.speedBoost [pObj->Index ()].bBoosted) {
+	if ((pObj == gameData.objData.pConsole) && (gameData.objData.speedBoost [pObj->Index ()].bBoosted > 0)) {
 		if (!pWall)
 			return WID_VISIBLE_FLAG;
 		CTrigger* pTrigger = pWall->Trigger ();
@@ -500,7 +500,7 @@ if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 
 if ((pObj == gameData.objData.pConsole) &&
-	 gameData.objData.speedBoost [pObj->Index ()].bBoosted &&
+	 (gameData.objData.speedBoost [pObj->Index ()].bBoosted > 0) &&
 	 (m_function == SEGMENT_FUNC_SPEEDBOOST) && (pChild->m_function != SEGMENT_FUNC_SPEEDBOOST) &&
 	 (!pWall || (GEOTRIGGER (pWall->nTrigger)->m_info.nType != TT_SPEEDBOOST)))
 	return WID_VISIBLE_FLAG;

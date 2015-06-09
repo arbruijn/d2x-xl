@@ -918,7 +918,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 	//	If automap key pressed, enable automap unless you are in network mode, control center destroyed and < 10 seconds left
 	if (controls [0].automapDownCount &&
 		 !LOCALOBJECT->Appearing (false) &&
-		 !gameData.objData.speedBoost [OBJ_IDX (gameData.objData.pConsole)].bBoosted &&
+		 (gameData.objData.speedBoost [OBJ_IDX (gameData.objData.pConsole)].bBoosted < 1) &&
 		 !(IsMultiGame && gameData.reactorData.bDestroyed && (gameData.reactorData.countdown.nSecsLeft < 10)))
 		automap.SetActive (-1);
 	DoWeaponStuff ();

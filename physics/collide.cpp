@@ -250,7 +250,7 @@ if (mType.physInfo.flags & PF_PERSISTENT)
 if (IsStatic ())
 	RETURN
 if (info.nType == OBJ_PLAYER) {
-	if ((this == gameData.objData.pConsole) && gameData.objData.speedBoost [OBJ_IDX (this)].bBoosted)
+	if ((this == gameData.objData.pConsole) && (gameData.objData.speedBoost [OBJ_IDX (this)].bBoosted > 0))
 		RETURN
 	vRotForce *= (I2X (1) / 4);
 	}

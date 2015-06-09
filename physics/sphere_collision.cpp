@@ -1078,7 +1078,7 @@ CSegment* pChildSeg = SEGMENT (nChildSeg);
 if (!pChildSeg)
 	return 0;
 if (pChildSeg->HasBlockedProp () ||
-    (gameData.objData.speedBoost [hitQuery.nObject].bBoosted && ((pSeg->m_function != SEGMENT_FUNC_SPEEDBOOST) || (pChildSeg->m_function == SEGMENT_FUNC_SPEEDBOOST))))
+    ((gameData.objData.speedBoost [hitQuery.nObject].bBoosted > 0) && ((pSeg->m_function != SEGMENT_FUNC_SPEEDBOOST) || (pChildSeg->m_function == SEGMENT_FUNC_SPEEDBOOST))))
 	return 1;
 
 return 0;

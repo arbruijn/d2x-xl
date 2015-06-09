@@ -1166,7 +1166,7 @@ if (Velocity () .IsZero ()) {
 		}
 	else {
 		if (this == gameData.objData.pConsole)
-			gameData.objData.speedBoost [simData.nObject].bBoosted = simData.bSpeedBoost = 0;
+			gameData.objData.speedBoost [simData.nObject].bBoosted = (simData.bSpeedBoost = 0);
 #if 1
 		if (mType.physInfo.thrust.IsZero ())
 			RETURN
@@ -1352,7 +1352,7 @@ if ((automap.Active () && (this == gameData.objData.pConsole)) || SPECTATOR (thi
 	Tactile_apply_force (vForce, &info.position.mOrient);
 #endif
 //Add in acceleration due to force
-if (!gameData.objData.speedBoost [OBJ_IDX (this)].bBoosted || (this != gameData.objData.pConsole)) {
+if ((gameData.objData.speedBoost [Index ()].bBoosted < 1) || (this != gameData.objData.pConsole)) {
 #if DBG
 	fix xScale = FixDiv (I2X (1), mType.physInfo.mass);
 	vForce *= xScale;
@@ -1542,7 +1542,7 @@ if (Velocity ().IsZero ()) {
 	Unstick ();
 #	endif
 	if (this == gameData.objData.pConsole)
-		gameData.objData.speedBoost [simData.nObject].bBoosted = simData.speedBoost.bBoosted = 0;
+		gameData.objData.speedBoost [simData.nObject].bBoosted = (simData.speedBoost.bBoosted = 0);
 #if 1
 	if (mType.physInfo.thrust.IsZero ())
 		RETURN
@@ -1567,7 +1567,7 @@ if (bNewPhysCode & 2)
 else {
 	if (mType.physInfo.drag) {
 		CFixVector accel, &vel = Velocity ();
-		int32_t			nTries = simData.xSimTime / FT;
+		int32_t		nTries = simData.xSimTime / FT;
 		fix			xDrag = mType.physInfo.drag;
 		fix			r = simData.xSimTime % FT;
 		fix			k = FixDiv (r, FT);
@@ -1599,7 +1599,7 @@ else {
 				vel += accel * k;
 				if (xDrag)
 					vel *= (I2X (1) - FixMul (k, xDrag));
-				if (simData.bSpeedBoost) {
+				if (simData.bSpeedBoost > 0) {
 					if (vel.v.coord.x < simData.speedBoost.vMinVel.v.coord.x)
 						vel.v.coord.x = simData.speedBoost.vMinVel.v.coord.x;
 					else if (vel.v.coord.x > simData.speedBoost.vMaxVel.v.coord.x)
@@ -1967,7 +1967,7 @@ retryMove:
 			CFixVector vOldVel = Velocity ();
 			//if (!(SPECTATOR (this) || SPECTATOR (OBJECT (simData.hitResult.nObject))))
 				CollideTwoObjects (this, OBJECT (simData.hitResult.nObject), vHitPos);
-			if (simData.speedBoost.bBoosted && (this == gameData.objData.pConsole))
+			if ((simData.speedBoost.bBoosted > 0) && (this == gameData.objData.pConsole))
 				Velocity () = vOldVel;
 			// Let object continue its movement
 			if (!(info.nFlags & OF_SHOULD_BE_DEAD)) {
@@ -2009,13 +2009,13 @@ else {
 		// If the ship has thrust, but the velocity is zero or the current position equals the start position
 		// stored when entering this function, it has been stopped forcefully by something, so bounce it back to
 		// avoid that the ship gets driven into the obstacle (most likely a wall, as that doesn't give in ;)
-		if (((simData.hitResult.nType == HIT_WALL) || (simData.hitResult.nType == HIT_BAD_P0)) && !(simData.speedBoost.bBoosted || simData.bStopped || simData.bBounced)) {	//Set velocity from actual movement
+		if (((simData.hitResult.nType == HIT_WALL) || (simData.hitResult.nType == HIT_BAD_P0)) && (simData.speedBoost.bBoosted < 1) && !simData.bStopped && !simData.bBounced)) {	//Set velocity from actual movement
 			fix s = FixMulDiv (FixDiv (I2X (1), gameData.physicsData.xTime), simData.xTimeScale, 100);
 
 			CFixVector vMoved = info.position.vPos - simData.vStartPos;
 			s = vMoved.Mag();
 			vMoved *= (FixMulDiv (FixDiv (I2X (1), gameData.physicsData.xTime), simData.xTimeScale, 100));
-			if (!simData.bSpeedBoost)
+			if (simData.bSpeedBoost < 1)
 				Velocity () = vMoved;
 			if ((this == gameData.objData.pConsole) && vMoved.IsZero () && !mType.physInfo.thrust.IsZero ())
 				DoBumpHack ();

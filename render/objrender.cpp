@@ -196,7 +196,7 @@ switch (pObj->Id ()) {
 		break;
 
 	case POW_GAUSS:
-		a.Set (-I2X (3) / 12, 0, int16_t ((xRotAngle + I2X (3) / 4) % I2X (1))); // rotated
+		a.Set (-I2X (1) / 3, 0, int16_t ((xRotAngle + I2X (3) / 4) % I2X (1))); // rotated
 		break;
 
 	case POW_HOMINGMSL_1:
@@ -230,6 +230,10 @@ switch (pObj->Id ()) {
 		a.Set (I2X (1) / 12, -I2X (1) / 64, int16_t ((xRotAngle + I2X (3) / 8) % I2X (1)));
 		break;
 
+	case POW_MERCURYMSL_4:
+	case POW_QUADLASER:
+		a.Set (I2X (1) / 12, 0, int16_t ((xRotAngle + I2X (1) / 2) % I2X (1)));
+		break;
 #if 0
 	case POW_LASER:
 	case POW_VULCAN:
@@ -240,7 +244,6 @@ switch (pObj->Id ()) {
 	case POW_HELIX:
 	case POW_PHOENIX:
 	case POW_OMEGA:
-	case POW_MERCURYMSL_4:
 	case POW_PROXMINE:
 	case POW_SMARTMINE:
 	case POW_BLUEFLAG:
@@ -252,7 +255,7 @@ switch (pObj->Id ()) {
 	case POW_QUADLASER:
 #endif
 	default:
-		a.Set (I2X (1) / 12, 0, xRotAngle);
+		a.Set (I2X (1) / 6, 0, xRotAngle);
 		break;
 	}
 

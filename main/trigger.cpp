@@ -829,14 +829,14 @@ return NULL;
 fix			speedBoostSpeed = 0;
 
 void SetSpeedBoostVelocity (int16_t nObject, fix speed,
-									 int16_t srcSegnum, int16_t srcSidenum,
-									 int16_t destSegnum, int16_t destSidenum,
+									 int16_t nSrcSeg, int16_t nSrcSide,
+									 int16_t nDestSeg, int16_t nDestSide,
 									 CFixVector *pSrcPt, CFixVector *pDestPt,
 									 int32_t bSetOrient)
 {
 	CFixVector			n, h;
 	CObject				*pObj = OBJECT (nObject);
-	int32_t					v;
+	int32_t				v;
 	tSpeedBoostData	sbd = gameData.objData.speedBoost [nObject];
 
 if (speed < 0)
@@ -844,106 +844,65 @@ if (speed < 0)
 if ((speed <= 0) || (speed > 10))
 	speed = 10;
 speedBoostSpeed = speed;
-v = OBJECT (nObject)->MaxSpeedScaled () + (COMPETITION ? 100 : extraGameInfo [IsMultiGame].nSpeedBoost) * 4 * speed;
-if (sbd.bBoosted) {
+v = pObj->MaxSpeedScaled () + (COMPETITION ? 100 : extraGameInfo [IsMultiGame].nSpeedBoost) * 4 * speed;
+
+if (!sbd.bBoosted) 
+	pObj->mType.physInfo.velocity /= I2X (v);
+else {
+#if DBG
+	if ((nDbgSeg >= 0) && (nSrcSeg == nDbgSeg) && ((nDbgSide < 0) || (nSrcSide == nDbgSide)))
+		BRP;
+#endif
 	if (pSrcPt && pDestPt) {
 		n = *pDestPt - *pSrcPt;
 		CFixVector::Normalize (n);
 		}
-	else if (srcSegnum >= 0) {
-		sbd.vSrc = SEGMENT (srcSegnum)->SideCenter (srcSidenum);
-		sbd.vDest = SEGMENT (destSegnum)->SideCenter (destSidenum);
-		if (memcmp (&sbd.vSrc, &sbd.vDest, sizeof (CFixVector))) {
+	else if (nSrcSeg < 0) {
+		n = SEGMENT (nDestSeg)->Side (nDestSide)->Normal (2);
+		// turn the ship so that it is facing the destination nSide of the destination CSegment
+		// Invert the Normal as it points into the CSegment
+		n.Neg ();
+		}
+	else {
+		if (SEGMENT (SEGMENT (nSrcSeg)->ChildId (nSrcSide))->ChildId (nDestSide) == nSrcSeg)
+			n.SetZero ();
+		else {
+			sbd.vSrc = SEGMENT (nSrcSeg)->SideCenter (nSrcSide);
+			sbd.vDest = SEGMENT (nDestSeg)->SideCenter (nDestSide);
 			n = sbd.vDest - sbd.vSrc;
-			CFixVector::Normalize (n);
 			}
+		if (!n.IsZero ())
+			CFixVector::Normalize (n);
 		else {
 			controls [0].verticalThrustTime =
 			controls [0].forwardThrustTime =
 			controls [0].sidewaysThrustTime = 0;
-			memcpy (&n, SEGMENT (destSegnum)->m_sides [destSidenum].m_normals, sizeof (n));
-		// turn the ship so that it is facing the destination nSide of the destination CSegment
-		// Invert the Normal as it points into the CSegment
-			/*
-			n.v.coord.x = -n.v.coord.x;
-			n.v.coord.y = -n.v.coord.y;
-			*/
-			n = -n;
+			n = SEGMENT (nDestSeg)->Side (nDestSide)->Normal (2);
+			// turn the ship so that it is facing the destination nSide of the destination CSegment
+			// Invert the Normal as it points into the CSegment
+			n.Neg ();
+			sbd.bBoosted = -1;
 			}
 		}
-	else {
-		memcpy (&n, SEGMENT (destSegnum)->m_sides [destSidenum].m_normals, sizeof (n));
-	// turn the ship so that it is facing the destination nSide of the destination CSegment
-	// Invert the Normal as it points into the CSegment
-		/*
-		n.v.coord.x = -n.v.coord.x;
-		n.v.coord.y = -n.v.coord.y;
-		*/
-		n = -n;
-		}
-	sbd.vVel.v.coord.x = n.v.coord.x * v;
-	sbd.vVel.v.coord.y = n.v.coord.y * v;
-	sbd.vVel.v.coord.z = n.v.coord.z * v;
-#if 0
-	d = (double) (labs (n.dir.coord.x) + labs (n.dir.coord.y) + labs (n.dir.coord.z)) / ((double) I2X (60));
-	h.dir.coord.x = n.dir.coord.x ? (fix) ((double) n.dir.coord.x / d) : 0;
-	h.dir.coord.y = n.dir.coord.y ? (fix) ((double) n.dir.coord.y / d) : 0;
-	h.dir.coord.z = n.dir.coord.z ? (fix) ((double) n.dir.coord.z / d) : 0;
-#else
-#	if 1
+
+	sbd.vVel = n * I2X (v);
 	h.v.coord.x =
 	h.v.coord.y =
 	h.v.coord.z = I2X (60);
-#	else
-	h.dir.coord.x = (n.dir.coord.x ? n.dir.coord.x : I2X (1)) * 60;
-	h.dir.coord.y = (n.dir.coord.y ? n.dir.coord.y : I2X (1)) * 60;
-	h.dir.coord.z = (n.dir.coord.z ? n.dir.coord.z : I2X (1)) * 60;
-#	endif
-#endif
 	sbd.vMinVel = sbd.vVel - h;
-/*
-	if (!sbd.vMinVel.v.coord.x)
-		sbd.vMinVel.v.coord.x = -I2X (60);
-	if (!sbd.vMinVel.v.coord.y)
-		sbd.vMinVel.v.coord.y = -I2X (60);
-	if (!sbd.vMinVel.v.coord.z)
-		sbd.vMinVel.v.coord.z = -I2X (60);
-*/
 	sbd.vMaxVel = sbd.vVel + h;
-/*
-	if (!sbd.vMaxVel.v.coord.x)
-		sbd.vMaxVel.v.coord.x = I2X (60);
-	if (!sbd.vMaxVel.v.coord.y)
-		sbd.vMaxVel.v.coord.y = I2X (60);
-	if (!sbd.vMaxVel.v.coord.z)
-		sbd.vMaxVel.v.coord.z = I2X (60);
-*/
-	if (sbd.vMinVel.v.coord.x > sbd.vMaxVel.v.coord.x) {
-		fix h = sbd.vMinVel.v.coord.x;
-		sbd.vMinVel.v.coord.x = sbd.vMaxVel.v.coord.x;
-		sbd.vMaxVel.v.coord.x = h;
-		}
-	if (sbd.vMinVel.v.coord.y > sbd.vMaxVel.v.coord.y) {
-		fix h = sbd.vMinVel.v.coord.y;
-		sbd.vMinVel.v.coord.y = sbd.vMaxVel.v.coord.y;
-		sbd.vMaxVel.v.coord.y = h;
-		}
-	if (sbd.vMinVel.v.coord.z > sbd.vMaxVel.v.coord.z) {
-		fix h = sbd.vMinVel.v.coord.z;
-		sbd.vMinVel.v.coord.z = sbd.vMaxVel.v.coord.z;
-		sbd.vMaxVel.v.coord.z = h;
-		}
+	if (sbd.vMinVel.v.coord.x > sbd.vMaxVel.v.coord.x)
+		Swap (sbd.vMinVel.v.coord.x, sbd.vMaxVel.v.coord.x);
+	if (sbd.vMinVel.v.coord.y > sbd.vMaxVel.v.coord.y) 
+		Swap (sbd.vMinVel.v.coord.y, sbd.vMaxVel.v.coord.y);
+	if (sbd.vMinVel.v.coord.z > sbd.vMaxVel.v.coord.z) 
+		Swap (sbd.vMinVel.v.coord.z, sbd.vMaxVel.v.coord.z);
 	pObj->mType.physInfo.velocity = sbd.vVel;
 	if (bSetOrient) {
-		TriggerSetObjOrient (nObject, destSegnum, destSidenum, 0, -1);
+		TriggerSetObjOrient (nObject, nDestSeg, nDestSide, 0, -1);
 		gameStates.gameplay.nDirSteps = MAX_ORIENT_STEPS - 1;
 		}
 	gameData.objData.speedBoost [nObject] = sbd;
-	}
-else {
-	pObj->mType.physInfo.velocity.v.coord.x = pObj->mType.physInfo.velocity.v.coord.x / v * 60;
-	pObj->mType.physInfo.velocity.v.coord.y = pObj->mType.physInfo.velocity.v.coord.y / v * 60;
-	pObj->mType.physInfo.velocity.v.coord.z = pObj->mType.physInfo.velocity.v.coord.z / v * 60;
 	}
 }
 
@@ -969,6 +928,10 @@ void CTrigger::DoSpeedBoost (int16_t nObject)
 {
 if (!(COMPETITION /*|| IsCoopGame*/) || extraGameInfo [IsMultiGame].nSpeedBoost) {
 	CWall* pWall = TriggerParentWall (Index ());
+#if DBG
+	if ((gameData.objData.speedBoost [nObject].bBoosted < 0) && !m_nLinks)
+		BRP;
+#endif
 	gameData.objData.speedBoost [nObject].bBoosted = (GetValue () && (m_nLinks > 0));
 	SetSpeedBoostVelocity ((int16_t) nObject, GetValue (),
 								  (int16_t) (pWall ? pWall->nSegment : -1), (int16_t) (pWall ? pWall->nSide : -1),

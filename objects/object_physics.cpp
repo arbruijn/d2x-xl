@@ -211,7 +211,7 @@ mType.physInfo.thrust += info.position.mOrient.m.dir.u * fix (controls [0].verti
 mType.physInfo.thrust *= 2 * DriveDamage ();
 if (!gameStates.input.bSkipControls)
 	memcpy (&gameData.physicsData.playerThrust, &mType.physInfo.thrust, sizeof (gameData.physicsData.playerThrust));
-if ((mType.physInfo.flags & PF_WIGGLE) && !gameData.objData.speedBoost [Index ()].bBoosted)
+if ((mType.physInfo.flags & PF_WIGGLE) && (gameData.objData.speedBoost [Index ()].bBoosted < 1))
 	Wiggle ();
 
 // As of now, mType.physInfo.thrust & mType.physInfo.rotThrust are
