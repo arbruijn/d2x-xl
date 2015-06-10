@@ -1280,7 +1280,13 @@ if (nChildSeg == Index ())
 if (pSeg->ChildId (nChildSide) == Index ())
 	return 0;
 CSide *pSide = Side (nSide);
+#if 1
+if (ConnectedSide (SEGMENT (nChildSeg)) != nChildSide)
+	return 1;
+return pSide->SeesSide (nChildSeg, nChildSide);
+#else
 return !pSide->IsConnected (nChildSeg, nChildSide) || pSide->SeesSide (nChildSeg, nChildSide);
+#endif
 }
 
 //------------------------------------------------------------------------------
