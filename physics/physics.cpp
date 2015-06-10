@@ -1247,10 +1247,6 @@ for (;;) {	//Move the object
 #endif
 		SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
 		simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult, -1);
-		if ((Type () == 5) && (Id () == 6) && (simData.hitResult.nType == 1) && (nDbgSeg >= 0) && ((simData.hitResult.nSegment == nDbgSeg)|| (simData.hitResult.nSideSegment == nDbgSeg))) {
-			SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
-			simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult, -1);
-			}
 		UpdateStats (this, simData.hitResult.nType);
 
 		if (simData.hitResult.nType == HIT_BAD_P0) {
@@ -1300,11 +1296,6 @@ for (;;) {	//Move the object
 	if (!bRetry) 
 		break;
 	}
-if ((Type () == 5) && (Id () == 6) && (Segment () == 694) && (0 > CFixVector::Dot (Velocity (), SEGMENT (nDbgSeg)->Side (nDbgSide)->Normal (2))))
-	PrintLog (0);
-if ((Type () == 5) && (Id () == 6) && (Segment () == nDbgSeg) && (0 > CFixVector::Dot (Velocity (), SEGMENT (nDbgSeg)->Side (nDbgSide)->Normal (2))))
-	PrintLog (0);
-
 FixPosition (simData);
 FinishPhysicsSim (simData);
 if (CriticalHit ())

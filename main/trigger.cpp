@@ -846,8 +846,10 @@ if ((speed <= 0) || (speed > 10))
 speedBoostSpeed = speed;
 v = pObj->MaxSpeedScaled () + (COMPETITION ? 100 : extraGameInfo [IsMultiGame].nSpeedBoost) * 4 * speed;
 
-if (!sbd.bBoosted) 
-	pObj->mType.physInfo.velocity /= I2X (v);
+if (!sbd.bBoosted) {
+	CFixVector::Normalize (pObj->mType.physInfo.velocity);
+	pObj->mType.physInfo.velocity *= I2X (60);
+	}
 else {
 #if DBG
 	if ((nDbgSeg >= 0) && (nSrcSeg == nDbgSeg) && ((nDbgSide < 0) || (nSrcSide == nDbgSide)))
@@ -864,7 +866,7 @@ else {
 		n.Neg ();
 		}
 	else {
-		if (SEGMENT (SEGMENT (nSrcSeg)->ChildId (nSrcSide))->ChildId (nDestSide) == nSrcSeg)
+		if ((SEGMENT (nSrcSeg)->ChildId (nSrcSide) == nDestSeg) && (SEGMENT (nDestSeg)->ChildId (nDestSide) == nSrcSeg))
 			n.SetZero ();
 		else {
 			sbd.vSrc = SEGMENT (nSrcSeg)->SideCenter (nSrcSide);
@@ -881,11 +883,13 @@ else {
 			// turn the ship so that it is facing the destination nSide of the destination CSegment
 			// Invert the Normal as it points into the CSegment
 			n.Neg ();
+			v = 60;
 			sbd.bBoosted = -1;
 			}
 		}
 
 	sbd.vVel = n * I2X (v);
+#if 1
 	h.v.coord.x =
 	h.v.coord.y =
 	h.v.coord.z = I2X (60);
@@ -897,6 +901,7 @@ else {
 		Swap (sbd.vMinVel.v.coord.y, sbd.vMaxVel.v.coord.y);
 	if (sbd.vMinVel.v.coord.z > sbd.vMaxVel.v.coord.z) 
 		Swap (sbd.vMinVel.v.coord.z, sbd.vMaxVel.v.coord.z);
+#endif
 	pObj->mType.physInfo.velocity = sbd.vVel;
 	if (bSetOrient) {
 		TriggerSetObjOrient (nObject, nDestSeg, nDestSide, 0, -1);
@@ -929,6 +934,8 @@ void CTrigger::DoSpeedBoost (int16_t nObject)
 if (!(COMPETITION /*|| IsCoopGame*/) || extraGameInfo [IsMultiGame].nSpeedBoost) {
 	CWall* pWall = TriggerParentWall (Index ());
 #if DBG
+	if (gameData.objData.speedBoost [nObject].bBoosted > 0)
+		BRP;
 	if ((gameData.objData.speedBoost [nObject].bBoosted < 0) && !m_nLinks)
 		BRP;
 #endif

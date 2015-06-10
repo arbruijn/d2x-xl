@@ -1086,16 +1086,13 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-static inline int32_t CopySegList (int16_t* dest, int16_t nDestLen, int16_t* src, int16_t nSrcLen, int32_t flags)
+static inline int16_t CopySegList (int16_t* dest, int16_t nDestLen, int16_t* src, int16_t nSrcLen, int32_t flags)
 {
-if (flags & FQ_GET_SEGLIST) {
-	int32_t i = MAX_FVI_SEGS - 1 - nDestLen;
-	if (i > nSrcLen)
-		i = nSrcLen;
-	memcpy (dest + nDestLen, src, i * sizeof (*dest));
-	return i;
-	}
-return 0;
+if (!(flags & FQ_GET_SEGLIST))
+	return 0;
+nSrcLen = Min (int16_t (MAX_FVI_SEGS - 1 - nDestLen), nSrcLen);
+memcpy (dest + nDestLen, src, nSrcLen * sizeof (*dest));
+	return nSrcLen;
 }
 
 //	-----------------------------------------------------------------------------
@@ -1264,7 +1261,7 @@ if (bestHit.nType == HIT_NONE) {     //didn't hit anything, return end pRef
 	hitData.vPoint = *hitQuery.p1;
 	hitData.nSegment = nHitNoneSegment;
 	if (nHitNoneSegment != -1) {			//(centerMask == 0)
-		nSegments += CopySegList (segList, *nSegments, hitNoneSegList, nHitNoneSegs, hitQuery.flags);
+		*nSegments += CopySegList (segList, *nSegments, hitNoneSegList, nHitNoneSegs, hitQuery.flags);
 		}
 	else if (nCurNestLevel != 0)
 		*nSegments = 0;
