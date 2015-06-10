@@ -1092,7 +1092,7 @@ if (!(flags & FQ_GET_SEGLIST))
 	return 0;
 nSrcLen = Min (int16_t (MAX_FVI_SEGS - 1 - nDestLen), nSrcLen);
 memcpy (dest + nDestLen, src, nSrcLen * sizeof (*dest));
-	return nSrcLen;
+return nSrcLen;
 }
 
 //	-----------------------------------------------------------------------------
