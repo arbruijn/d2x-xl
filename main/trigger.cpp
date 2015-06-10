@@ -730,7 +730,7 @@ if (!nStep)
 	pPos->mOrient = CFixMatrix::Create (an);
 if (CFixVector::Dot (n, pPos->mOrient.m.dir.f) < 0) {
 	pPos->mOrient.m.dir.f.Neg ();
-	pPos->mOrient.m.dir.u.Neg ();
+	//pPos->mOrient.m.dir.u.Neg ();
 	pPos->mOrient.m.dir.r.Neg ();
 	}
 if (bSetPos)
