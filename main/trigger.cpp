@@ -730,13 +730,10 @@ if (!nStep)
 	pPos->mOrient = CFixMatrix::Create (an);
 if (CFixVector::Dot (n, pPos->mOrient.m.dir.f) < 0) {
 	pPos->mOrient.m.dir.f.Neg ();
-	//pPos->mOrient.m.dir.u.Neg ();
 	pPos->mOrient.m.dir.r.Neg ();
 	}
 if (bSetPos)
 	pPos->vPos = SEGMENT (nSegment)->Center ();
-// rotate the ships vel vector accordingly
-//StopPlayerMovement ();
 }
 
 //------------------------------------------------------------------------------
@@ -751,10 +748,6 @@ void TriggerSetObjOrient (int16_t nObject, int16_t nSegment, int16_t nSide, int3
 TriggerSetOrient (&pObj->info.position, nSegment, nSide, bSetPos, nStep);
 if (nStep <= 0) {
 	n = SEGMENT (nSegment)->Side (nSide)->Normal (2);
-	/*
-	n.v.coord.x = -n.v.coord.x;
-	n.v.coord.y = -n.v.coord.y;
-	*/
 	n = -n;
 	gameStates.gameplay.vTgtDir = n;
 	if (nStep < 0)
