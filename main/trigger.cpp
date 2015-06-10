@@ -883,12 +883,21 @@ else {
 	h.v.coord.z = I2X (60);
 	sbd.vMinVel = sbd.vVel - h;
 	sbd.vMaxVel = sbd.vVel + h;
-	if (sbd.vMinVel.v.coord.x > sbd.vMaxVel.v.coord.x)
-		Swap (sbd.vMinVel.v.coord.x, sbd.vMaxVel.v.coord.x);
-	if (sbd.vMinVel.v.coord.y > sbd.vMaxVel.v.coord.y) 
-		Swap (sbd.vMinVel.v.coord.y, sbd.vMaxVel.v.coord.y);
-	if (sbd.vMinVel.v.coord.z > sbd.vMaxVel.v.coord.z) 
-		Swap (sbd.vMinVel.v.coord.z, sbd.vMaxVel.v.coord.z);
+	if (sbd.vMinVel.v.coord.x > sbd.vMaxVel.v.coord.x) {
+		fix h = sbd.vMinVel.v.coord.x;
+		sbd.vMinVel.v.coord.x = sbd.vMaxVel.v.coord.x;
+		sbd.vMaxVel.v.coord.x = h;
+		}
+	if (sbd.vMinVel.v.coord.y > sbd.vMaxVel.v.coord.y) {
+		fix h = sbd.vMinVel.v.coord.y;
+		sbd.vMinVel.v.coord.y = sbd.vMaxVel.v.coord.y;
+		sbd.vMaxVel.v.coord.y = h;
+		}
+	if (sbd.vMinVel.v.coord.z > sbd.vMaxVel.v.coord.z) {
+		fix h = sbd.vMinVel.v.coord.z;
+		sbd.vMinVel.v.coord.z = sbd.vMaxVel.v.coord.z;
+		sbd.vMaxVel.v.coord.z = h;
+		}
 #endif
 	pObj->mType.physInfo.velocity = sbd.vVel;
 	if (bSetOrient) {
