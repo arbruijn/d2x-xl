@@ -380,7 +380,8 @@ if (!IsMultiGame || IsCoopGame) {
 #endif
 			LOCALOBJECT->info.position.vPos = pMarker->info.position.vPos;
 			LOCALOBJECT->RelinkToSeg (pMarker->info.nSegment);
-			gameStates.render.bDoAppearanceEffect = 1;
+			if (!IsMultiGame || IsCoopGame)
+				gameStates.render.bDoAppearanceEffect = 1;
 			}
 		gameData.SetViewer (gameData.objData.pConsole);
 		}

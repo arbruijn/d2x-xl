@@ -796,7 +796,8 @@ if ((nObject >= 0) && (m_nLinks > 0)) {
 	// set new player direction, facing the destination nSide
 	TriggerSetObjOrient (nObject, nSegment, nSide, 1, 0);
 	TriggerSetObjPos (nObject, nSegment);
-	gameStates.render.bDoAppearanceEffect = 1; // do appearance effect, but suppress warp effect
+	if (!IsMultiGame || IsCoopGame)
+		gameStates.render.bDoAppearanceEffect = 1; // do appearance effect, but suppress warp effect
 	gameData.multiplayer.bTeleport [N_LOCALPLAYER] = 1;
 	MultiSendTeleport (N_LOCALPLAYER, nSegment, (uint8_t) nSide);
 	}
