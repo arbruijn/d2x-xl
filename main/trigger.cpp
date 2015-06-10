@@ -713,12 +713,8 @@ void TriggerSetOrient (tObjTransformation *pPos, int16_t nSegment, int16_t nSide
 	CFixVector		n;
 
 if (nStep <= 0) {
-	n = *SEGMENT (nSegment)->m_sides [nSide].m_normals;
-	n = -n;
-	/*
-	n.v.coord.y = -n.v.coord.y;
-	n.v.coord.z = -n.v.coord.z;
-	*/
+	n = SEGMENT (nSegment)->Side (nSide)->Normal (2);
+	n.Neg ();
 	gameStates.gameplay.vTgtDir = n;
 	if (nStep < 0)
 		nStep = MAX_ORIENT_STEPS;
@@ -732,6 +728,11 @@ an = n.ToAnglesVec ();
 // create new orientation matrix
 if (!nStep)
 	pPos->mOrient = CFixMatrix::Create (an);
+if (CFixVector::Dot (n, pPos->mOrient.m.dir.f) < 0) {
+	pPos->mOrient.m.dir.f.Neg ();
+	pPos->mOrient.m.dir.u.Neg ();
+	pPos->mOrient.m.dir.r.Neg ();
+	}
 if (bSetPos)
 	pPos->vPos = SEGMENT (nSegment)->Center ();
 // rotate the ships vel vector accordingly
@@ -749,7 +750,7 @@ void TriggerSetObjOrient (int16_t nObject, int16_t nSegment, int16_t nSide, int3
 
 TriggerSetOrient (&pObj->info.position, nSegment, nSide, bSetPos, nStep);
 if (nStep <= 0) {
-	n = *SEGMENT (nSegment)->m_sides [nSide].m_normals;
+	n = SEGMENT (nSegment)->Side (nSide)->Normal (2);
 	/*
 	n.v.coord.x = -n.v.coord.x;
 	n.v.coord.y = -n.v.coord.y;
@@ -763,18 +764,12 @@ else
 	n = gameStates.gameplay.vTgtDir;
 an = n.ToAnglesVec ();
 av = pObj->mType.physInfo.velocity.ToAnglesVec ();
-av.v.coord.p -= an.v.coord.p;
-av.v.coord.b -= an.v.coord.b;
-av.v.coord.h -= an.v.coord.h;
+av -= an;
 if (nStep) {
 	if (nStep > 1) {
-		av.v.coord.p /= nStep;
-		av.v.coord.b /= nStep;
-		av.v.coord.h /= nStep;
+		av /= nStep;
 		ad = pObj->info.position.mOrient.ComputeAngles ();
-		ad.v.coord.p += (an.v.coord.p - ad.v.coord.p) / nStep;
-		ad.v.coord.b += (an.v.coord.b - ad.v.coord.b) / nStep;
-		ad.v.coord.h += (an.v.coord.h - ad.v.coord.h) / nStep;
+		ad += (an - ad) / nStep;
 		pObj->info.position.mOrient = CFixMatrix::Create (ad);
 		}
 	else

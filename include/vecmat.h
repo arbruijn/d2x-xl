@@ -407,19 +407,72 @@ public:
 	bool IsZero (void) const { return !(v.coord.p || v.coord.h || v.coord.b); }
 	void SetZero (void) { memset (&v, 0, sizeof (v)); }
 	void Set (const fixang p, const fixang b, const fixang h) { v.coord.p = p; v.coord.b = b; v.coord.h = h; }
-
-	inline CAngleVector& operator+= (CAngleVector& other) {
+	void Set (const CAngleVector& other) { v.coord.p = other.v.coord.p; v.coord.b = other.v.coord.b; v.coord.h = other.v.coord.h; }
+#if 0
+	inline CAngleVector& operator+= (const CAngleVector& other) {
 		v.coord.p += other.v.coord.p;
 		v.coord.b += other.v.coord.b;
 		v.coord.h += other.v.coord.h;
 		return *this;
 		}
 
-	inline CAngleVector& operator-= (CAngleVector& other) {
+	inline CAngleVector& operator-= (const CAngleVector& other) {
 		v.coord.p -= other.v.coord.p;
 		v.coord.b -= other.v.coord.b;
 		v.coord.h -= other.v.coord.h;
 		return *this;
+		}
+#endif
+	inline CAngleVector& operator+= (const CAngleVector other) {
+		v.coord.p += other.v.coord.p;
+		v.coord.b += other.v.coord.b;
+		v.coord.h += other.v.coord.h;
+		return *this;
+		}
+
+	inline CAngleVector& operator-= (const CAngleVector other) {
+		v.coord.p -= other.v.coord.p;
+		v.coord.b -= other.v.coord.b;
+		v.coord.h -= other.v.coord.h;
+		return *this;
+		}
+
+	inline CAngleVector& operator*= (int32_t nScale) {
+		v.coord.p *= nScale;
+		v.coord.b *= nScale;
+		v.coord.h *= nScale;
+		return *this;
+		}
+
+	inline CAngleVector& operator/= (int32_t nScale) {
+		v.coord.p /= nScale;
+		v.coord.b /= nScale;
+		v.coord.h /= nScale;
+		return *this;
+		}
+
+	inline CAngleVector operator+ (const CAngleVector other) {
+		CAngleVector a;
+		a.Set (v.coord.p + other.v.coord.p, v.coord.b + other.v.coord.b, v.coord.h + other.v.coord.h);
+		return a;
+		}
+
+	inline CAngleVector operator- (const CAngleVector other) {
+		CAngleVector a;
+		a.Set (v.coord.p - other.v.coord.p, v.coord.b - other.v.coord.b, v.coord.h - other.v.coord.h);
+		return a;
+		}
+
+	inline CAngleVector operator* (const int32_t nScale) {
+		CAngleVector a;
+		a.Set (v.coord.p * nScale, v.coord.b * nScale, v.coord.h * nScale);
+		return a;
+		}
+
+	inline CAngleVector operator/ (const int32_t nScale) {
+		CAngleVector a;
+		a.Set (v.coord.p / nScale, v.coord.b / nScale, v.coord.h / nScale);
+		return a;
 		}
 
 	inline const float SqrMag (void) const {
