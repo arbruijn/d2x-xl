@@ -1964,8 +1964,10 @@ CObject* pObj = OBJECT (PLAYER (nPlayer).nObject);
 if (pObj) {
 	if (nSound > 0)
 		audio.CreateObjectSound (nSound, SOUNDCLASS_PLAYER, (int16_t) PLAYER (nPlayer).nObject, 0, volume);
-	else
-		audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, pObj->Index (), 0, gameOpts->sound.xCustomSoundVolume, I2X (256), -1, -1, AddonSoundName (-nSound - 1), 1);
+	else {
+		nSound = -nSound - 1;
+		audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, pObj->Index (), 0, ((nSound >= SND_ADDON_SCRAPE) && (nSound <= SND_ADDON_SCRAPE4)) ? volume : gameOpts->sound.xCustomSoundVolume, I2X (256), -1, -1, AddonSoundName (nSound), 1);
+		}
 	}
 }
 

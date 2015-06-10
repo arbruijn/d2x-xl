@@ -688,9 +688,9 @@ if ((info.nType == OBJ_PLAYER) && (info.nId == N_LOCALPLAYER)) {
 		xLastVolatileScrapeSoundTime = gameData.timeData.xGame;
 		if (!nType) {
 			int32_t nSound = SND_ADDON_SCRAPE + Rand (4);
-			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, LOCALOBJECT->Index (), 0, /*gameOpts->sound.xCustomSoundVolume*/I2X (1), I2X (256), -1, -1, AddonSoundName (nSound), 1);
+			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, LOCALOBJECT->Index (), 0, /*gameOpts->sound.xCustomSoundVolume*/I2X (1) / 2, I2X (256), -1, -1, AddonSoundName (nSound), 1);
 			if (IsMultiGame)
-				MultiSendPlaySound (-nSound - 1, I2X (1));
+				MultiSendPlaySound (-nSound - 1, I2X (1) / 2);
 			}
 		else {
 			int16_t nSound = (nType & 1) ? SOUND_VOLATILE_WALL_HISS : SOUND_SHIP_IN_WATER;
