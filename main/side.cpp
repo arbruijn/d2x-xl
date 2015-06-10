@@ -40,7 +40,7 @@ int16_t ConvertD1Texture (int16_t nD1Texture, int32_t bForce);
 
 CFixVector& CSide::Normal (int32_t nFace)
 { 
-return gameStates.render.bRendering ? m_rotNorms [nFace] : m_normals [nFace]; 
+return (gameStates.render.bRendering && (nFace < 2)) ? m_rotNorms [nFace] : m_normals [nFace]; 
 }
 
 // ------------------------------------------------------------------------------------------
