@@ -693,8 +693,8 @@ for (int32_t i = 0; i < m_nLinks; i++)
 
 void CTrigger::DoIllusionOff (void)
 {
-	CSegment*	pSeg;
-	int16_t			nSide;
+	CSegment	*pSeg;
+	int16_t	nSide;
 
 for (int32_t i = 0; i < m_nLinks; i++) {
 	pSeg = SEGMENT (m_segments [i]);
@@ -921,12 +921,6 @@ void CTrigger::DoSpeedBoost (int16_t nObject)
 {
 if (!(COMPETITION /*|| IsCoopGame*/) || extraGameInfo [IsMultiGame].nSpeedBoost) {
 	CWall* pWall = TriggerParentWall (Index ());
-#if DBG
-	if (gameData.objData.speedBoost [nObject].bBoosted > 0)
-		BRP;
-	if ((gameData.objData.speedBoost [nObject].bBoosted < 0) && !m_nLinks)
-		BRP;
-#endif
 	gameData.objData.speedBoost [nObject].bBoosted = (GetValue () && (m_nLinks > 0));
 	SetSpeedBoostVelocity ((int16_t) nObject, GetValue (),
 								  (int16_t) (pWall ? pWall->nSegment : -1), (int16_t) (pWall ? pWall->nSide : -1),
