@@ -652,13 +652,6 @@ if ((info.nType == OBJ_NONE) || (info.nFlags & OF_SHOULD_BE_DEAD)) {
 	}
 UpdatePosition ();
 UpdateEffects ();
-#if DBG
-if (!Index () && (info.nSegment != nPrevSegment) && ((nPrevSegment == 438) || (nPrevSegment == 439) || (nPrevSegment == 440))) {
-	memcpy (&info, &infoSave, sizeof (tObjectInfo));
-	DoPhysicsSim ();
-	BRP;
-	}
-#endif
 if (CheckTriggerHits (nPrevSegment))
 	RETVAL (0)
 CheckWallPhysics ();
