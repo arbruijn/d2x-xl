@@ -1363,6 +1363,7 @@ if (nLevel > -1) {
 		ProgressBar (TXT_CALC_LIGHTMAPS, 2, 0, 
 						 (missionManager.nLastLevel - nLevel + 1 - missionManager.nLastSecretLevel) * lightmapManager.Progress ().Scale (), 
 						 PrecomputeLightmapsPoll);
+		lightmapManager.ResetProgress ();
 		}
 	else {
 		for (; nLevel <= missionManager.nLastLevel; nLevel++)
