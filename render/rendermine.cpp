@@ -876,6 +876,8 @@ if (nType == RENDER_TYPE_OUTLINE) {
 	ogl.ClearError (0);
 	}
 
+RenderFaceList (RENDER_TYPE_FOG);
+
 #if MAX_SHADOWMAPS >= 0
 RenderMineObjects (nType);
 #endif
@@ -988,8 +990,6 @@ if (gameStates.render.CartoonStyle () && (gameStates.render.nShadowPass < 2)) {
 	RenderSegmentEdges ();
 	}
 #endif
-
-RenderFaceList (RENDER_TYPE_FOG);
 
 #	if 1
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {

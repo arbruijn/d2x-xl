@@ -42,9 +42,9 @@ const char *fogVolumeFS =
 	"#define D(z) (NDC (z) * B)\r\n" \
 	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
 	"void main (void) {\r\n" \
-	"   //if (gl_FragCoord.z <= texture2D (depthTex, gl_FragCoord.xy * windowScale).r)\r\n" \
-	"   //gl_FragColor = gl_Color * gl_FragCoord.z;\r\n" \
-	"   gl_FragColor = gl_Color * mode ? min (gl_FragCoord.z, texture2D (depthTex, gl_FragCoord.xy * windowScale).r) : gl_FragCoord.z;\r\n" \
+	"   if (gl_FragCoord.z <= texture2D (depthTex, gl_FragCoord.xy * windowScale).r)\r\n" \
+	"   gl_FragColor = gl_Color * gl_FragCoord.z;\r\n" \
+	"   //gl_FragColor = gl_Color * min (gl_FragCoord.z, texture2D (depthTex, gl_FragCoord.xy * windowScale).r);\r\n" \
 	"}\r\n"
 	;
 
