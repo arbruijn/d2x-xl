@@ -852,7 +852,7 @@ ENTER (0, 0);
 	if (!pSeg)
 		RETVAL (0)
 
-	int32_t		nColor =  pSeg->HasWaterProp () ? 1 : pSeg->HasLavaProp () ? -1 : 0;
+	int32_t		nColor = pSeg->HasWaterProp () ? 1 : pSeg->HasLavaProp () ? -1 : 0;
 	if (!nColor)
 		RETVAL (0)
 
@@ -866,7 +866,7 @@ if (nSegment == nDbgSeg)
 	BRP;
 #endif
 
-if (!nMode) {
+if (nMode) {
 	if (nColor < 0) {
 		glColorMask (0, 0, 1, 0);
 		glColor4f (0, 0, 1, 0);
@@ -901,13 +901,12 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 	if (!nMode)
 		DrawFace (pFace);
 	else if (pChildSeg) {
-		tSegFaces	*pSegFace = SEGFACES + nChildSeg;
-		CSegFace		*pFace = pSegFace->pFace;
-		int32_t		j, nSide = -1;
 
-		for (nSide = 0, pFace; nSide < 6; nSide++) {
+		for (int32_t nSide = 0, pFace; nSide < 6; nSide++) {
 			if (pChildSeg->ChildId (nSide) == nSegment) {
-				for (j = pSegFace->nFaces, pFace; j; j--, pFace++) {
+				tSegFaces *pSegFace = SEGFACES + nChildSeg;
+				CSegFace *pFace = pSegFace->pFace;
+				for (int32_t j = pSegFace->nFaces; j; j--, pFace++) {
 					if (pFace->m_info.nSide == nSide)
 						DrawFace (pFace);
 					}
@@ -950,7 +949,7 @@ else if (nType == RENDER_TYPE_FOG) {
 #	endif
 #	if 1
 	ogl.SelectFogBuffer (0);
-	glClearColor (1.0f, 0.0f, 1.0f, 0.0f);
+	glClearColor (1.0f, 0.0f, 0.0f, 0.0f);
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #	endif
 #	if 1
