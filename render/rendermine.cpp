@@ -670,128 +670,6 @@ RETURN
 
 //------------------------------------------------------------------------------
 
-int32_t RenderSegmentList (int32_t nType)
-{
-ENTER (0, 0);
-PROF_START
-
-gameStates.render.nType = nType;
-#if MAX_SHADOWMAPS
-#	if MAX_SHADOWMAPS > 0
-if (gameStates.render.nShadowMap == 0) 
-#endif
-	{
-#else
-if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
-#endif
-	gameData.renderData.mine.visibility [0].BumpVisitedFlag ();
-
-#if DBG
-if ((nType == RENDER_TYPE_GEOMETRY) && (gameOpts->render.debug.bWireFrame & 1)) {
-	nType = RENDER_TYPE_OUTLINE;
-	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
-	glLineWidth (4.0f);
-	}
-if (gameOpts->render.debug.bTextures)
-#endif
-	RenderFaceList (nType);
-#if DBG
-if (nType == RENDER_TYPE_OUTLINE) {
-	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	glLineWidth (1.0f);
-	nType = RENDER_TYPE_GEOMETRY;
-	}
-#endif
-
-	ogl.ClearError (0);
-	}
-#if MAX_SHADOWMAPS >= 0
-RenderMineObjects (nType);
-#endif
-for (int32_t i = 0; i < gameStates.app.nThreads; i++)
-	lightManager.ResetAllUsed (1, i);
-ogl.ClearError (0);
-PROF_END(ptRenderPass)
-RETVAL (1)
-}
-
-//------------------------------------------------------------------------------
-
-void RenderEffects (int32_t nWindow)
-{
-ENTER (0, 0);
-PROF_START
-
-if (!ogl.StereoDevice () || (ogl.StereoSeparation () < 0) || nWindow || gameStates.render.cameras.bActive) {
-	int32_t bLightning, bParticles, bSparks;
-
-	if (gameStates.app.nThreads > 1) {
-		while (!transparencyRenderer.Ready ())
-			G3_SLEEP (0);
-		}
-	if (automap.Active ()) {
-		bLightning = gameOpts->render.automap.bLightning;
-		bParticles = gameOpts->render.automap.bParticles;
-		bSparks = gameOpts->render.automap.bSparks;
-		}
-	else {
-		bSparks = (gameOptions [0].render.nQuality > 0);
-		bLightning = (!nWindow || gameOpts->render.lightning.bAuxViews) && 
-						  (!gameStates.render.cameras.bActive || gameOpts->render.lightning.bMonitors);
-		bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
-						 (!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
-		}
-
-	if (bSparks) 
-		sparkManager.Render ();
-	if (bParticles) {
-		//particleManager.Cleanup ();
-		particleManager.Render ();
-		}
-	if (bLightning) 
-		lightningManager.Render ();
-	}
-transparencyRenderer.Render (nWindow);
-if (!nWindow) 
-	postProcessManager.Prepare ();
-
-PROF_END(ptEffects)
-RETURN
-}
-
-//------------------------------------------------------------------------------
-
-int32_t bHave3DCockpit = -1;
-
-void RenderCockpitModel (void)
-{
-ENTER (0, 0);
-	static int32_t bCockpit = 1;
-	static float yOffset = 5.0f;
-
-if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)) {
-	int32_t bFullBright = gameStates.render.bFullBright;
-	gameStates.render.bFullBright = 1;
-	ogl.SetTransform (1);
-	CFixVector vOffset = /*OBJECT (0)->Orientation ().m.dir.f * F2X (xOffset) +*/ OBJECT (0)->Orientation ().m.dir.u * F2X (yOffset);
-	OBJECT (0)->Position () -= vOffset;
-	gameData.renderData.scene.Activate ("RenderCockpitModel (scene)");
-	gameData.modelData.vScale.Set (F2X (float (gameData.renderData.screen.Width ()) / float (gameData.renderData.screen.Height ()) * 0.75f), I2X (1), I2X (1));
-	bHave3DCockpit = (G3RenderModel (OBJECT (0), COCKPIT_MODEL, -1, NULL, gameData.modelData.textures, NULL, NULL, 0, NULL, NULL) > 0);
-	gameData.modelData.vScale.Set (I2X (1), I2X (1), I2X (1));
-	CCanvas::Current ()->SetViewport ();
-	OBJECT (0)->Position () += vOffset;
-	ogl.SetTransform (0);
-	gameStates.render.bFullBright = bFullBright;
-	gameData.renderData.scene.Deactivate ();
-	}
-RETURN
-}
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
 void CEdgeVertexData::Sort (int32_t left, int32_t right) 
 {
 	int32_t	l = left,
@@ -961,6 +839,127 @@ RETURN
 }
 
 //------------------------------------------------------------------------------
+
+int32_t RenderSegmentList (int32_t nType)
+{
+ENTER (0, 0);
+PROF_START
+
+gameStates.render.nType = nType;
+#if MAX_SHADOWMAPS
+#	if MAX_SHADOWMAPS > 0
+if (gameStates.render.nShadowMap == 0) 
+#endif
+	{
+#else
+if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
+#endif
+	gameData.renderData.mine.visibility [0].BumpVisitedFlag ();
+
+#if DBG
+if ((nType == RENDER_TYPE_GEOMETRY) && (gameOpts->render.debug.bWireFrame & 1)) {
+	nType = RENDER_TYPE_OUTLINE;
+	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+	glLineWidth (4.0f);
+	}
+if (gameOpts->render.debug.bTextures)
+#endif
+	RenderFaceList (nType);
+#if DBG
+if (nType == RENDER_TYPE_OUTLINE) {
+	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+	glLineWidth (1.0f);
+	nType = RENDER_TYPE_GEOMETRY;
+	}
+#endif
+
+	ogl.ClearError (0);
+	}
+
+#if MAX_SHADOWMAPS >= 0
+RenderMineObjects (nType);
+#endif
+for (int32_t i = 0; i < gameStates.app.nThreads; i++)
+	lightManager.ResetAllUsed (1, i);
+ogl.ClearError (0);
+PROF_END(ptRenderPass)
+RETVAL (1)
+}
+
+//------------------------------------------------------------------------------
+
+void RenderEffects (int32_t nWindow)
+{
+ENTER (0, 0);
+PROF_START
+
+if (!ogl.StereoDevice () || (ogl.StereoSeparation () < 0) || nWindow || gameStates.render.cameras.bActive) {
+	int32_t bLightning, bParticles, bSparks;
+
+	if (gameStates.app.nThreads > 1) {
+		while (!transparencyRenderer.Ready ())
+			G3_SLEEP (0);
+		}
+	if (automap.Active ()) {
+		bLightning = gameOpts->render.automap.bLightning;
+		bParticles = gameOpts->render.automap.bParticles;
+		bSparks = gameOpts->render.automap.bSparks;
+		}
+	else {
+		bSparks = (gameOptions [0].render.nQuality > 0);
+		bLightning = (!nWindow || gameOpts->render.lightning.bAuxViews) && 
+						  (!gameStates.render.cameras.bActive || gameOpts->render.lightning.bMonitors);
+		bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
+						 (!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
+		}
+
+	if (bSparks) 
+		sparkManager.Render ();
+	if (bParticles) {
+		//particleManager.Cleanup ();
+		particleManager.Render ();
+		}
+	if (bLightning) 
+		lightningManager.Render ();
+	}
+transparencyRenderer.Render (nWindow);
+if (!nWindow) 
+	postProcessManager.Prepare ();
+
+PROF_END(ptEffects)
+RETURN
+}
+
+//------------------------------------------------------------------------------
+
+int32_t bHave3DCockpit = -1;
+
+void RenderCockpitModel (void)
+{
+ENTER (0, 0);
+	static int32_t bCockpit = 1;
+	static float yOffset = 5.0f;
+
+if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)) {
+	int32_t bFullBright = gameStates.render.bFullBright;
+	gameStates.render.bFullBright = 1;
+	ogl.SetTransform (1);
+	CFixVector vOffset = /*OBJECT (0)->Orientation ().m.dir.f * F2X (xOffset) +*/ OBJECT (0)->Orientation ().m.dir.u * F2X (yOffset);
+	OBJECT (0)->Position () -= vOffset;
+	gameData.renderData.scene.Activate ("RenderCockpitModel (scene)");
+	gameData.modelData.vScale.Set (F2X (float (gameData.renderData.screen.Width ()) / float (gameData.renderData.screen.Height ()) * 0.75f), I2X (1), I2X (1));
+	bHave3DCockpit = (G3RenderModel (OBJECT (0), COCKPIT_MODEL, -1, NULL, gameData.modelData.textures, NULL, NULL, 0, NULL, NULL) > 0);
+	gameData.modelData.vScale.Set (I2X (1), I2X (1), I2X (1));
+	CCanvas::Current ()->SetViewport ();
+	OBJECT (0)->Position () += vOffset;
+	ogl.SetTransform (0);
+	gameStates.render.bFullBright = bFullBright;
+	gameData.renderData.scene.Deactivate ();
+	}
+RETURN
+}
+
+//------------------------------------------------------------------------------
 //renders onto current canvas
 
 void RenderMine (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow)
@@ -982,13 +981,16 @@ RenderCockpitModel ();
 gameStates.render.EnableCartoonStyle (1, 1, 1);
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
+
 #if 1
 if (gameStates.render.CartoonStyle () && (gameStates.render.nShadowPass < 2)) {
-	ogl.CopyDepthTexture (0, GL_TEXTURE1, 1);
+	//ogl.CopyDepthTexture (0, GL_TEXTURE1, 1);
 	RenderSegmentEdges ();
 	}
 #endif
-RenderSegmentList (RENDER_TYPE_FOG);
+
+RenderFaceList (RENDER_TYPE_FOG);
+
 #	if 1
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
 	if (!gameStates.app.bNostalgia &&
