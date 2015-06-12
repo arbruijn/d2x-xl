@@ -903,6 +903,7 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 			}
 		}
 	}
+glBlendEquation (GL_FUNC_ADD);
 RETVAL (nFaces)
 }
 

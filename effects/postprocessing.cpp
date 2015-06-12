@@ -500,6 +500,7 @@ ogl.SetBlendMode (OGL_BLEND_ALPHA);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 OglDrawArrays (GL_QUADS, 0, 4);
+shaderManager.Deploy (-1);
 }
 
 //------------------------------------------------------------------------------
