@@ -902,7 +902,7 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 #endif
 	int32_t nChildSeg = pSeg->ChildId (pFace->m_info.nSide);
 	CSegment *pChildSeg = SEGMENT (nChildSeg);
-	if (pChildSeg && (pChildSeg->HasWaterProp () == pSeg->HasWaterProp ()))
+	if (pChildSeg && (pChildSeg->HasWaterProp () == pSeg->HasWaterProp ()) && (pChildSeg->HasLavaProp () == pSeg->HasLavaProp ()))
 		continue;
 	if (!nMode)
 		DrawFace (pFace);
