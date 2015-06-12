@@ -448,12 +448,10 @@ const char *fogFS =
 	"   fogVolume = vec4 (ZEYE (fogVolume.r), ZEYE (fogVolume.g), ZEYE (fogVolume.b), ZEYE (fogVolume.a));\r\n" \
 	"   float df = fogVolume.g - fogVolume.r;\r\n" \
 	"   float dz = z - fogVolume.r;\r\n" \
-	"   vec4 waterHaze = ((df > 0.0) && (dz > 0.0)) ? vec4 (0.0, 0.5, 1.0, min (1.0, min (df, dz) / 200.0)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
+	"   vec4 waterHaze = ((df > 0.0) && (dz > 0.0)) ? vec4 (0.2, 0.5, 0.8, min (1.0, min (df, dz) / 200.0)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
 	"   df = fogVolume.a - fogVolume.b;\r\n" \
 	"   dz = z - fogVolume.b;\r\n" \
-	"   vec4 lavaHaze = ((df > 0.0) && (dz > 0.0)) ? vec4 (1.0, 0.5, 0.0, min (1.0, min (df, dz) / 200.0)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
-	"   //gl_FragColor = fogVolume; //vec4 (pow (fogVolume.r, 16), pow (fogVolume.b, 16), pow (fogVolume.b, 16), pow (fogVolume.a, 16));\r\n" \
-	"   //z = pow (z, 16); gl_FragColor = vec4 (*z, z, z, z);\r\n" \
+	"   vec4 lavaHaze = ((df > 0.0) && (dz > 0.0)) ? vec4 (0.8, 0.5, 0.2, min (1.0, min (df, dz) / 200.0)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
 	"   gl_FragColor = vec4 (waterHaze.rgb + lavaHaze.rgb, min (1.0, waterHaze.a + lavaHaze.a));\r\n" \
 	"}\r\n"
 	;

@@ -32,7 +32,6 @@
 const char *fogVolumeFS =
 	"uniform sampler2D depthTex;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
-	"uniform int mode;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
@@ -44,7 +43,6 @@ const char *fogVolumeFS =
 	"void main (void) {\r\n" \
 	"   if (gl_FragCoord.z <= texture2D (depthTex, gl_FragCoord.xy * windowScale).r)\r\n" \
 	"   gl_FragColor = gl_Color * gl_FragCoord.z;\r\n" \
-	"   //gl_FragColor = gl_Color * min (gl_FragCoord.z, texture2D (depthTex, gl_FragCoord.xy * windowScale).r);\r\n" \
 	"}\r\n"
 	;
 
@@ -871,7 +869,6 @@ if (nSegment == nDbgSeg)
 	BRP;
 #endif
 
-shaderManager.Set ("mode", nMode);
 if (nMode) {
 	if (nColor < 0) {
 		glColorMask (0, 0, 1, 0);

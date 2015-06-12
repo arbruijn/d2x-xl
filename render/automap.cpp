@@ -54,6 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "ogl_shader.h"
 #include "fastrender.h"
+#include "postprocessing.h"
 #include "network_lib.h"
 
 #ifndef PI
@@ -492,6 +493,7 @@ if (m_bRadar || (Texturing () & 2)) {
 	DrawObjects ();
 	}
 G3EndFrame (transformation, 0);
+RenderFog ();
 
 if (m_bRadar) {
 	//ogl.m_states.bEnableScissor = 0;
