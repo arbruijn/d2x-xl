@@ -443,8 +443,8 @@ const char *fogFS =
 	"void main (void) {\r\n" \
 	"   float z = ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r);\r\n" \
 	"   vec4 fogVolume = texture2D (fogTex, gl_FragCoord.xy * windowScale);\r\n" \
-	"   if (fogVolume.r > fogVolume.b) fogVolume.r = 0.0;\r\n" \
-	"   if (fogVolume.b > fogVolume.a) fogVolume.b = 0.0;\r\n" \
+	"   if (fogVolume.r > fogVolume.b) fogVolume.r = (z > fogVolume.r) ? 0.0 : z;\r\n" \
+	"   if (fogVolume.b > fogVolume.a) fogVolume.b = (z > fogVolume.b) ? 0.0 : z;\r\n" \
 	"   fogVolume = vec4 (ZEYE (fogVolume.r), ZEYE (fogVolume.g), ZEYE (fogVolume.b), ZEYE (fogVolume.a));\r\n" \
 	"   float df = fogVolume.g - fogVolume.r;\r\n" \
 	"   float dz = z - fogVolume.r;\r\n" \

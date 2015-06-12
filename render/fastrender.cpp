@@ -30,6 +30,8 @@
 #if 1
 
 const char *fogVolumeFS =
+	"uniform sampler2D depthTex;\r\n" \
+	"uniform vec2 windowScale;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
@@ -39,6 +41,7 @@ const char *fogVolumeFS =
 	"#define D(z) (NDC (z) * B)\r\n" \
 	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
 	"void main (void) {\r\n" \
+	"   if (gl_FragCoord.z <= texture2D (depthTex, gl_FragCoord.xy * windowScale).r)\r\n" \
 	"   gl_FragColor = gl_Color * gl_FragCoord.z; /*ZEYE (gl_FragCoord.z) / ZFAR;*/\r\n" \
 	"}\r\n"
 	;
@@ -946,8 +949,11 @@ else if (nType == RENDER_TYPE_FOG) {
 	if (!fogVolShaderProg)
 		RETVAL (0)
 	shaderManager.Rebuild (fogVolShaderProg);
+	shaderManager.Set ("depthTex", 0);
+	shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
 #	endif
 #	if 1
+	ogl.CopyDepthTexture (1, GL_TEXTURE0);
 	ogl.SelectFogBuffer (0);
 	glClearColor (1.0f, 0.0f, 0.0f, 0.0f);
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
