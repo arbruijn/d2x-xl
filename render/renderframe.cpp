@@ -51,6 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "createmesh.h"
 #include "renderthreads.h"
 #include "glow.h"
+#include "postprocessing.h"
 
 #define bSavingMovieFrames 0
 
@@ -482,6 +483,7 @@ gameStates.render.nShadowPass = 0;
 {
 PROF_START
 G3EndFrame (transformation, nWindow);
+RenderFog ();
 //cockpit->Canvas ()->Deactivate ();
 if (nWindow)
 	ogl.SetStereoSeparation (gameStates.render.xStereoSeparation [0] = nEyeOffsetSave);

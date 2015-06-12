@@ -445,10 +445,10 @@ const char *fogFS =
 	"   vec4 fogVolume = texture2D (fogTex, gl_FragCoord.xy * windowScale);\r\n" \
 	"   float df = fogVolume.g - fogVolume.r;\r\n" \
 	"   float dz = z - fogVolume.r;\r\n" \
-	"   vec4 waterHaze = ((df < 1.0) && (dz > 0.0)) ? vec4 (0.0, 0.5, 1.0, min (1.0, min (df, dz) / (ZFAR * 200.0))) : vec4 (0.0, 0.0, 0.0);\r\n" \
+	"   vec4 waterHaze = ((df > 0.0) && (df < 1.0) && (dz > 0.0)) ? vec4 (0.0, 0.5, 1.0, min (1.0, min (df, dz) / (ZFAR * 200.0))) : vec4 (0.0, 0.0, 0.0);\r\n" \
 	"   float df = fogVolume.a - fogVolume.b;\r\n" \
 	"   float dz = z - fogVolume.b;\r\n" \
-	"   vec4 lavaHaze = ((df < 1.0) && (dz > 0.0)) ? vec4 (1.0, 0.5, 0.0, min (1.0, min (df, dz) / (ZFAR * 200.0))) : vec4 (0.0, 0.0, 0.0);\r\n" \
+	"   vec4 lavaHaze = ((df > 0.0) && (df < 1.0) && (dz > 0.0)) ? vec4 (1.0, 0.5, 0.0, min (1.0, min (df, dz) / (ZFAR * 200.0))) : vec4 (0.0, 0.0, 0.0);\r\n" \
 	"   gl_FragColor = vec4 (waterHaze.rgb + lavaHaze.rgb, min (1.0, waterHaze.a + lavaHaze.a));\r\n" \
 	"}\r\n"
 	;
@@ -486,6 +486,8 @@ extern float quadVerts [5][4][2];
 
 void RenderFog (void)
 {
+#if 1
+#	if 0
 GLhandleARB fogShaderProg = GLhandleARB (shaderManager.Deploy (hFogShader, true));
 if (!fogShaderProg)
 	return;
@@ -494,13 +496,16 @@ shaderManager.Set ("fogTex", 0);
 shaderManager.Set ("depthTex", 1);
 shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
 ogl.CopyDepthTexture (0, GL_TEXTURE1, 1);
+#	endif
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+glColor4f (1,1,1,1);
 ogl.BindTexture (ogl.m_data.GetDrawBuffer (5)->ColorBuffer (0));
-ogl.SetBlendMode (OGL_BLEND_ALPHA);
+ogl.SetBlendMode (OGL_BLEND_REPLACE); //BLEND_ALPHA);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 OglDrawArrays (GL_QUADS, 0, 4);
 shaderManager.Deploy (-1);
+#endif
 }
 
 //------------------------------------------------------------------------------

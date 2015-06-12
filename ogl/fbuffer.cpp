@@ -217,7 +217,7 @@ if (!CreateColorBuffers (nColorBuffers)) {
 	Destroy ();
 	return 0;
 	}
-if ((nType > 0) && !CreateDepthBuffer ()) {
+if (/*(nType > 0) &&*/ !CreateDepthBuffer ()) {
 	Destroy ();
 	return 0;
 	}

@@ -752,7 +752,6 @@ if (!ogl.StereoDevice () || (ogl.StereoSeparation () < 0) || nWindow || gameStat
 		lightningManager.Render ();
 	}
 transparencyRenderer.Render (nWindow);
-RenderFog ();
 if (!nWindow) 
 	postProcessManager.Prepare ();
 

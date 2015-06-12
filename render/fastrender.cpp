@@ -39,7 +39,7 @@ const char *fogVolumeFS =
 	"#define D(z) (NDC (z) * B)\r\n" \
 	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
 	"void main (void) {\r\n" \
-	"   gl_FragColor = gl_Color * ZEYE (gl_FragCoord.z);\r\n" \
+	"   gl_FragColor = gl_Color * gl_FragCoord.z; /*ZEYE (gl_FragCoord.z) / ZFAR;*/\r\n" \
 	"}\r\n"
 	;
 
@@ -844,7 +844,7 @@ else
 // in the render buffer using glBlendEquation (GL_MAX).
 // Then render the opposite sides 
 
-static int16_t RenderFogFaces (int16_t nSegment)
+static int16_t RenderFogFaces (int16_t nSegment, int32_t nMode)
 {
 ENTER (0, 0);
 	
@@ -866,6 +866,29 @@ if (nSegment == nDbgSeg)
 	BRP;
 #endif
 
+if (!nMode) {
+	if (nColor < 0) {
+		glColorMask (0, 0, 1, 0);
+		glColor4f (0, 0, 1, 0);
+		}
+	else {
+		glColorMask (1, 0, 0, 0);
+		glColor4f (1, 0, 0, 0);
+		}
+	glBlendEquation (GL_MIN);
+	}
+else {
+	if (nColor < 0) {
+		glColorMask (0, 0, 0, 1);
+		glColor4f (0, 0, 0, 1);
+		}
+	else {
+		glColorMask (0, 1, 0, 0);
+		glColor4f (0, 1, 0, 0);
+		}
+	glBlendEquation (GL_MAX);
+	}
+
 for (i = pSegFace->nFaces; i; i--, pFace++) {
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
@@ -875,35 +898,24 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 	CSegment *pChildSeg = SEGMENT (nChildSeg);
 	if (pChildSeg && (pChildSeg->HasWaterProp () == pSeg->HasWaterProp ()))
 		continue;
-	if (nColor < 0)
-		glColor4f (0, 0, 0, 1);
-	else
-		glColor4f (0, 1, 0, 0);
-	glBlendEquation (GL_MAX);
-	DrawFace (pFace);
-	if (pChildSeg) {
+	if (!nMode)
+		DrawFace (pFace);
+	else if (pChildSeg) {
 		tSegFaces	*pSegFace = SEGFACES + nChildSeg;
 		CSegFace		*pFace = pSegFace->pFace;
 		int32_t		j, nSide = -1;
 
-		for (nSide = 0, pFace; nSide < 6; nSide++) 
-			if (pChildSeg->ChildId (i) == nSegment)
+		for (nSide = 0, pFace; nSide < 6; nSide++) {
+			if (pChildSeg->ChildId (nSide) == nSegment) {
+				for (j = pSegFace->nFaces, pFace; j; j--, pFace++) {
+					if (pFace->m_info.nSide == nSide)
+						DrawFace (pFace);
+					}
 				break;
-	
-		if (nSide < 6) {
-			if (nColor < 0)
-				glColor4f (0, 0, 1, 0);
-			else
-				glColor4f (1, 0, 0, 0);
-			glBlendEquation (GL_MIN);
-			for (j = pSegFace->nFaces, pFace; j; j--, pFace++) {
-				if (pFace->m_info.nSide == nSide)
-					DrawFace (pFace);
 				}
 			}
 		}
 	}
-glBlendEquation (GL_FUNC_ADD);
 RETVAL (nFaces)
 }
 
@@ -922,25 +934,49 @@ if (nType == RENDER_TYPE_CORONAS) {
 			if (RenderMineFace (SEGMENT (pFace->m_info.nSegment), pFace, nType))
 				nFaces++;
 		}
-	else if (nType == RENDER_TYPE_FOG) {
-		GLhandleARB fogVolShaderProg = GLhandleARB (shaderManager.Deploy (hFogVolShader, true));
-		if (!fogVolShaderProg)
-			RETVAL (0)
-		shaderManager.Rebuild (fogVolShaderProg);
-		ogl.SelectFogBuffer (0);
-		glClearColor (0, 1, 0, 1);
-		glClear (GL_COLOR_BUFFER_BIT);
-		int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
-		for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
-			RenderFogFaces (pSegList [--i]);
-		shaderManager.Deploy (-1);
-		ogl.ChooseDrawBuffer ();
-		}
 	else {
 		int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
 		for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
 			nFaces += RenderSegmentFaces (nType, pSegList [--i], bAutomap, bHeadlight);
 		}
+	}
+else if (nType == RENDER_TYPE_FOG) {
+#if 1
+#	if 1
+	GLhandleARB fogVolShaderProg = GLhandleARB (shaderManager.Deploy (hFogVolShader, true));
+	if (!fogVolShaderProg)
+		RETVAL (0)
+	shaderManager.Rebuild (fogVolShaderProg);
+#	endif
+#	if 1
+	ogl.SelectFogBuffer (0);
+	glClearColor (1.0f, 0.0f, 1.0f, 0.0f);
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#	endif
+#	if 1
+	ogl.SetDepthTest (false);
+	ogl.SetDepthWrite (true);
+	ogl.SetAlphaTest (false);
+	ogl.SetDepthMode (GL_ALWAYS);
+	//ogl.SetBlendMode (OGL_BLEND_REPLACE);
+	int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
+	for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
+		RenderFogFaces (pSegList [--i], 0);
+#	if 1
+	for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
+		RenderFogFaces (pSegList [--i], 1);
+#	endif
+#	endif
+	ogl.SetDepthTest (true);
+	ogl.SetDepthWrite (true);
+	ogl.SetAlphaTest (true);
+	ogl.SetDepthMode (GL_LEQUAL);
+	ogl.SetBlending (OGL_BLEND_ALPHA);
+	glBlendEquation (GL_FUNC_ADD);
+	glColorMask (1, 1, 1, 1);
+	shaderManager.Deploy (-1);
+	//ogl.ChooseDrawBuffer ();
+#endif
 	}
 else {
 	// render mine by pre-sorted textures

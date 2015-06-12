@@ -179,6 +179,10 @@ char IsColoredSegFace (int16_t nSegment, int16_t nSide)
 if (!gameStates.render.nLightingMethod)
 	return 0;
 #endif
+#if DBG
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	BRP;
+#endif
 	CSegment*	pSeg = SEGMENT (nSegment);
 	CSegment*	pConnSeg = (pSeg->m_children [nSide] < 0) ? NULL : SEGMENT (pSeg->m_children [nSide]);
 
@@ -216,10 +220,17 @@ return (pSeg->m_function == SEGMENT_FUNC_TEAM_BLUE) ||
 // ----------------------------------------------------------------------------
 
 CFloatVector segmentColors [4] = {
-	 {{{0.5f, 0, 0, 0.333f}}},
-	 {{{0, 0, 0.5f, 0.333f}}},
+#if DBG
+	 {{{1, 1, 1, 0}}},
+	 {{{1, 1, 1, 0}}},
+	 {{{1, 1, 1, 0}}},
+	 {{{1, 1, 1, 0}}}};
+#else
+	 {{{0.5f, 0.25f, 0, 0.333f}}},
+	 {{{0, 0.25f, 0.5f, 0.333f}}},
 	 {{{0, 1.0f / 16.0f, 0.5f, 0.333f}}},
 	 {{{0.5f, 0, 0, 0.333f}}}};
+#endif
 
 CFloatVector *ColoredSegmentColor (int32_t nSegment, int32_t nSide, char nColor)
 {

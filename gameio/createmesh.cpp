@@ -1611,7 +1611,7 @@ for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, m_pSeg++, 
 		m_nWallType = IS_WALL (m_nWall) ? WALL (m_nWall)->IsInvisible () ? 0 : 2 : (m_pSeg->m_children [nSide] == -1) ? 1 : 0;
 		CSegment* pChildSeg = (m_pSeg->m_children [nSide] < 0) ? NULL : SEGMENT (m_pSeg->m_children [nSide]);
 		char nChildColor = IsColoredSeg (m_pSeg->m_children [nSide]);
-		if (nSegColor || nChildColor || m_nWallType) {
+		if ((nSegColor != nChildColor) || m_nWallType) {
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				BRP;
