@@ -1364,7 +1364,8 @@ class CLimitFPSStates {
 #define RENDER_TYPE_OUTLINE			4
 #define RENDER_TYPE_OBJECTS			5
 #define RENDER_TYPE_TRANSPARENCY		6
-#define RENDER_PASSES					7
+#define RENDER_TYPE_FOG					7
+#define RENDER_PASSES					8
 
 class CGameStates {
 	public:

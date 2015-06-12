@@ -64,7 +64,7 @@ m_nGateInterval = I2X (4) - gameStates.app.nDifficultyLevel * I2X (2) / 3;
 #define	QUEUE_SIZE	256
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Create list of segments boss is allowed to teleport to at segListP.
+//	Create list of segments boss is allowed to teleport to at pSegList.
 //	Set *segCountP.
 //	Boss is allowed to teleport to segments he fits in (calls ObjectIntersectsWall) and
 //	he can reach from his initial position (calls PathLength).

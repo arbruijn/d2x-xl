@@ -1584,7 +1584,7 @@ gameData.renderData.mine.Resize (4 * FACES.nFaces /*LEVEL_VERTICES + LEVEL_SIDES
 
 FACES.nFaces = 0;
 for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, m_pSeg++, m_pSegFace++) {
-	bool bColoredSeg = IsColoredSeg (nSegment) != 0;
+	char nSegColor = IsColoredSeg (nSegment);
 #if DBG
 	if (nSegment == nDbgSeg)
 		BRP;
@@ -1610,17 +1610,15 @@ for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, m_pSeg++, 
 		m_nWall = m_pSeg->WallNum (nSide);
 		m_nWallType = IS_WALL (m_nWall) ? WALL (m_nWall)->IsInvisible () ? 0 : 2 : (m_pSeg->m_children [nSide] == -1) ? 1 : 0;
 		CSegment* pChildSeg = (m_pSeg->m_children [nSide] < 0) ? NULL : SEGMENT (m_pSeg->m_children [nSide]);
-		bool bColoredChild = IsColoredSeg (m_pSeg->m_children [nSide]) != 0;
-		if (bColoredSeg || bColoredChild || m_nWallType) {
+		char nChildColor = IsColoredSeg (m_pSeg->m_children [nSide]);
+		if (nSegColor || nChildColor || m_nWallType) {
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				BRP;
 #endif
 			memcpy (m_sideVerts, m_pSeg->Corners (nSide), 4 * sizeof (uint16_t));
 			InitFace (nSegment, nSide, bRebuild);
-			if ((bColoredSeg || bColoredChild) && 
-				 !(m_pSeg->IsWater (nSide) && (m_pSeg->HasWaterProp () || (pChildSeg && pChildSeg->HasWaterProp ()))) && 
-				 !(m_pSeg->IsLava (nSide) && (m_pSeg->HasLavaProp () || (pChildSeg && pChildSeg->HasLavaProp ()))))
+			if ((nSegColor != nChildColor) && ((Max (nSegColor, nChildColor) < 3) || (!m_pSeg->IsWater (nSide) && !m_pSeg->IsLava (nSide))))
 				InitColoredFace (nSegment);
 			if (m_nWallType)
 				InitTexturedFace ();

@@ -541,9 +541,9 @@ class COGL {
 
 		int32_t SelectBlurBuffer (int32_t nBuffer);
 
-		inline CFBO* DrawBuffer (int32_t nBuffer = -1) { return (nBuffer < 0) ? m_data.pDrawBuffer : m_data.GetDrawBuffer (nBuffer); }
+		int32_t SelectFogBuffer (int32_t nBuffer);
 
-		inline CFBO* GlowBuffer () { return m_data.GetDrawBuffer (2); }
+		inline CFBO* DrawBuffer (int32_t nBuffer = -1) { return (nBuffer < 0) ? m_data.pDrawBuffer : m_data.GetDrawBuffer (nBuffer); }
 
 		CFBO* BlurBuffer (int32_t nBuffer);
 

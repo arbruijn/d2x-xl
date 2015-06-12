@@ -97,7 +97,7 @@ for (int32_t i = 0; i < nBuffers; i++) {
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); 
 	glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-	if (m_info.nType == 2) // GPGPU
+	if (m_info.nType == -3) // GPGPU
 		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, m_info.nWidth, m_info.nHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 	else {
 #if 0
@@ -213,7 +213,11 @@ glGenFramebuffersEXT (1, &m_info.hFBO);
 PrintLog (0, "draw buffer handle = %d\n", m_info.hFBO);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
 
-if (!(CreateColorBuffers (nColorBuffers) && CreateDepthBuffer ())) {
+if (!CreateColorBuffers (nColorBuffers)) {
+	Destroy ();
+	return 0;
+	}
+if ((nType > 0) && !CreateDepthBuffer ()) {
 	Destroy ();
 	return 0;
 	}

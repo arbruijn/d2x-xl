@@ -27,6 +27,54 @@
 
 //------------------------------------------------------------------------------
 
+#if 1
+
+const char *fogFS =
+	"#define ZNEAR 1.0\r\n" \
+	"#define ZFAR 5000.0\r\n" \
+	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
+	"#define A (ZNEAR + ZFAR)\r\n" \
+	"#define B (ZNEAR - ZFAR)\r\n" \
+	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
+	"#define D(z) (NDC (z) * B)\r\n" \
+	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
+	"void main (void) {\r\n" \
+	"   gl_FragColor = gl_Color * ZEYE (gl_FragCoord.z);\r\n" \
+	"}\r\n"
+	;
+
+const char *fogVS =
+	"void main (void){\r\n" \
+	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
+	"gl_Position = ftransform (); //gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
+	"gl_FrontColor = gl_Color;}\r\n"
+	;
+
+int32_t		hFogShader = -1;
+GLhandleARB fogShaderProg = 0;
+
+//-------------------------------------------------------------------------
+
+void InitFogShader (void)
+{
+if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders && (ogl.m_features.bDepthBlending > -1)) {
+	PrintLog (0, "building fog blending shader program\n");
+	fogShaderProg = 0;
+	if (shaderManager.Build (hFogShader, fogFS, fogVS)) {
+		ogl.m_features.bDepthBlending.Available (1);
+		ogl.m_features.bDepthBlending = 1;
+		}
+	else {
+		ogl.ClearError (0);
+		ogl.m_features.bDepthBlending.Available (0);
+		}
+	}
+}
+
+#endif
+
+//------------------------------------------------------------------------------
+
 void ResetFaceList (void)
 {
 ENTER (0, 0);
@@ -739,13 +787,14 @@ RETVAL (gameData.renderData.lights.nCoronas)
 static int16_t RenderSegmentFaces (int32_t nType, int16_t nSegment, int32_t bAutomap, int32_t bHeadlight)
 {
 ENTER (0, 0);
-if (nSegment < 0)
+	CSegment		*pSeg = SEGMENT (nSegment);
+if (!pSeg)
 	RETVAL (0)
 
 	tSegFaces	*pSegFace = SEGFACES + nSegment;
 	CSegFace		*pFace;
-	int16_t			nFaces = 0;
-	int32_t			i;
+	int16_t		nFaces = 0;
+	int32_t		i;
 
 #if DBG
 if (nSegment == nDbgSeg)
@@ -766,11 +815,90 @@ for (i = pSegFace->nFaces, pFace = pSegFace->pFace; i; i--, pFace++) {
 #endif
 	if (!pFace->m_info.bVisible)
 		continue;
-	LoadFaceBitmaps (SEGMENT (pFace->m_info.nSegment), pFace);
+	LoadFaceBitmaps (pSeg, pFace);
 	pFace->m_info.nTransparent = FaceIsTransparent (pFace, pFace->bmBot, pFace->bmTop);
 	pFace->m_info.nColored = FaceIsColored (pFace);
-	if (RenderMineFace (SEGMENT (nSegment), pFace, nType))
+	if (RenderMineFace (pSeg, pFace, nType))
 		nFaces++;
+	}
+RETVAL (nFaces)
+}
+
+//------------------------------------------------------------------------------
+
+static inline void DrawFace (CSegFace* pFace)
+{
+if (gameStates.render.bTriangleMesh)
+	OglDrawArrays (GL_TRIANGLES, pFace->m_info.nIndex, pFace->m_info.nTris * 3);
+else
+	OglDrawArrays (GL_TRIANGLE_FAN, pFace->m_info.nIndex, 4);
+}
+
+//------------------------------------------------------------------------------
+// Store the distances of the near and far caps of foggy area in a 32 bit fp render buffer.
+// First render foggy segment faces - these are the far caps. Store distance via simple 
+// shader which encodes distance in a color component and compares with what's already 
+// in the render buffer using glBlendEquation (GL_MAX).
+// Then render the opposite sides 
+
+static int16_t RenderFogFaces (int16_t nSegment)
+{
+ENTER (0, 0);
+	
+	CSegment		*pSeg = SEGMENT (nSegment);
+	if (!pSeg)
+		RETVAL (0)
+
+	int32_t		nColor =  pSeg->HasWaterProp () ? 1 : pSeg->HasLavaProp () ? -1 : 0;
+	if (!nColor)
+		RETVAL (0)
+
+	tSegFaces	*pSegFace = SEGFACES + nSegment;
+	CSegFace		*pFace = pSegFace->pFace;
+	int16_t		nFaces = 0;
+	int32_t		i;
+
+#if DBG
+if (nSegment == nDbgSeg)
+	BRP;
+#endif
+
+for (i = pSegFace->nFaces; i; i--, pFace++) {
+#if DBG
+	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
+		BRP;
+#endif
+	int32_t nChildSeg = pSeg->ChildId (pFace->m_info.nSide);
+	CSegment *pChildSeg = SEGMENT (nChildSeg);
+	if (pChildSeg && (pChildSeg->HasWaterProp () == pSeg->HasWaterProp ()))
+		continue;
+	if (nColor < 0)
+		glColor4f (0, 0, 1, 0);
+	else
+		glColor4f (1, 0, 0, 0);
+	glBlendEquation (GL_MAX);
+	DrawFace (pFace);
+	if (pChildSeg) {
+		tSegFaces	*pSegFace = SEGFACES + nChildSeg;
+		CSegFace		*pFace = pSegFace->pFace;
+		int32_t		j, nSide = -1;
+
+		for (nSide = 0, pFace; nSide < 6; nSide++) 
+			if (pChildSeg->ChildId (i) == nSegment)
+				break;
+	
+		if (nSide < 6) {
+			if (nColor < 0)
+				glColor4f (0, 0, 0, 1);
+			else
+				glColor4f (0, 1, 0, 0);
+			glBlendEquation (GL_MIN);
+			for (j = pSegFace->nFaces, pFace; j; j--, pFace++) {
+				if (pFace->m_info.nSide == nSide)
+					DrawFace (pFace);
+				}
+			}
+		}
 	}
 RETVAL (nFaces)
 }
@@ -790,10 +918,25 @@ if (nType == RENDER_TYPE_CORONAS) {
 			if (RenderMineFace (SEGMENT (pFace->m_info.nSegment), pFace, nType))
 				nFaces++;
 		}
-	else {
-		int16_t* segListP = gameData.renderData.mine.visibility [0].segments .Buffer ();
+	else if (nType == RENDER_TYPE_FOG) {
+		GLhandleARB fogShaderProg = GLhandleARB (shaderManager.Deploy (hFogShader, true));
+		if (!fogShaderProg)
+			RETVAL (0)
+		ogl.SelectFogBuffer (0);
+		glClearColor (0, 1, 0, 1);
+		glClear (GL_COLOR_BUFFER_BIT);
+		ogl.DisableClientState (GL_COLOR_ARRAY);
+		ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY);
+		ogl.DisableClientState (GL_NORMAL_ARRAY);
+		int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
 		for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
-			nFaces += RenderSegmentFaces (nType, segListP [--i], bAutomap, bHeadlight);
+			RenderFogFaces (pSegList [--i]);
+			}
+		}
+	else {
+		int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
+		for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
+			nFaces += RenderSegmentFaces (nType, pSegList [--i], bAutomap, bHeadlight);
 		}
 	}
 else {

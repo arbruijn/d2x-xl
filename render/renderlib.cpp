@@ -736,16 +736,16 @@ if (gameData.renderData.mine.Visible (nStartSeg))
 	return 1;
 
 	uint8_t*		visitedP = bVisited.Buffer ();
-	int16_t*		segListP = segments.Buffer ();
+	int16_t*		pSegList = segments.Buffer ();
 
-segListP [0] = nStartSeg;
+pSegList [0] = nStartSeg;
 bProcessed [nStartSeg] = BumpProcessedFlag ();
 bVisited [nStartSeg] = BumpVisitedFlag ();
 if (nMaxDist < 0)
 	nMaxDist = nRadius * I2X (20);
 for (int32_t i = 0, j = 1; nRadius; nRadius--) {
 	for (int32_t h = i, i = j; h < i; h++) {
-		int32_t nSegment = segListP [h];
+		int32_t nSegment = pSegList [h];
 		if ((bVisible [nSegment] == nVisible) &&
 			 (!nMaxDist || (CFixVector::Dist (SEGMENT (nStartSeg)->Center (), SEGMENT (nSegment)->Center ()) <= nMaxDist)))
 			return 1;
@@ -753,7 +753,7 @@ for (int32_t i = 0, j = 1; nRadius; nRadius--) {
 		for (int32_t nChild = 0; nChild < SEGMENT_SIDE_COUNT; nChild++) {
 			int32_t nChildSeg = pSeg->m_children [nChild];
 			if ((nChildSeg >= 0) && (visitedP [nChildSeg] != nVisited) && (pSeg->IsPassable (nChild, NULL) & WID_TRANSPARENT_FLAG)) {
-				segListP [j++] = nChildSeg;
+				pSegList [j++] = nChildSeg;
 				visitedP [nChildSeg] = nVisited;
 				}
 			}

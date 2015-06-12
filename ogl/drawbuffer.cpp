@@ -191,7 +191,7 @@ if (nBuffer != nPrevBuffer) {
 	if (nBuffer >= 0) {
 		m_states.nCamera = 0;
 		m_data.pDrawBuffer = m_data.GetDrawBuffer (nBuffer); 
-		CreateDrawBuffer ((nBuffer < 2) ? 1 : (nBuffer < 3) ? -1 : -2);
+		CreateDrawBuffer ((nBuffer < 2) ? 1 : (nBuffer < 3) ? -1 : (nBuffer < 5) ? -2 : -3);
 		}
 	else if ((pCamera = cameraManager [-nBuffer - 1])) {
 		m_states.nCamera = nBuffer;
@@ -251,6 +251,13 @@ return SelectDrawBuffer (gameStates.render.cameras.bActive ? -cameraManager.Curr
 int32_t COGL::SelectBlurBuffer (int32_t nBuffer) 
 { 
 return SelectDrawBuffer (nBuffer + 3) > -1;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t COGL::SelectFogBuffer (int32_t nBuffer) 
+{ 
+return SelectDrawBuffer (nBuffer + 5) > -1;
 }
 
 //------------------------------------------------------------------------------

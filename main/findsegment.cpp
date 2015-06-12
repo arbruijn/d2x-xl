@@ -158,24 +158,24 @@ if ((nStartSeg >= 0) && (PointInSeg (SEGMENT (nStartSeg), vPos)))
 	return nStartSeg;
 
 	int32_t			i;
-	int16_t*		segListP = NULL;
+	int16_t*		pSegList = NULL;
 	CSegment*	pSeg;
 
 if (gameData.segData.HaveSegmentGrid (bSkyBox)) {
-	for (i = gameData.segData.GetSegList (vPos, segListP, bSkyBox); i; i--, segListP++) {
+	for (i = gameData.segData.GetSegList (vPos, pSegList, bSkyBox); i; i--, pSegList++) {
 #if DBG
-		if ((*segListP < 0) || (*segListP >= gameData.segData.nSegments))
+		if ((*pSegList < 0) || (*pSegList >= gameData.segData.nSegments))
 			continue;
 #endif
-		if (PointInSeg (SEGMENT (*segListP), vPos))
-			return *segListP;
+		if (PointInSeg (SEGMENT (*pSegList), vPos))
+			return *pSegList;
 		}
 	}
 else if (bSkyBox) {
-	for (i = gameData.segData.skybox.GetSegList (segListP); i; i--, segListP++) {
-		pSeg = SEGMENT (*segListP);
+	for (i = gameData.segData.skybox.GetSegList (pSegList); i; i--, pSegList++) {
+		pSeg = SEGMENT (*pSegList);
 		if ((pSeg->m_function == SEGMENT_FUNC_SKYBOX) && PointInSeg (pSeg, vPos))
-			return *segListP;
+			return *pSegList;
 		}
 	}
 else {
