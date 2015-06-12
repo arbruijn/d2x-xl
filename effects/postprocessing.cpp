@@ -448,10 +448,10 @@ const char *fogFS =
 	"   fogVolume = vec4 (ZEYE (fogVolume.r), ZEYE (fogVolume.g), ZEYE (fogVolume.b), ZEYE (fogVolume.a));\r\n" \
 	"   float df = fogVolume.g - fogVolume.r;\r\n" \
 	"   float dz = z - fogVolume.r;\r\n" \
-	"   vec4 waterHaze = ((df > 0.0) && (dz > 0.0)) ? vec4 (0.2, 0.5, 0.8, min (1.0, min (df, dz) / 200.0)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
+	"   vec4 waterHaze = ((df > 0.0) && (dz > 0.0)) ? vec4 (0.2, 0.4, 0.6, min (1.0, min (df, dz) / 200.0)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
 	"   df = fogVolume.a - fogVolume.b;\r\n" \
 	"   dz = z - fogVolume.b;\r\n" \
-	"   vec4 lavaHaze = ((df > 0.0) && (dz > 0.0)) ? vec4 (0.8, 0.5, 0.2, min (1.0, min (df, dz) / 200.0)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
+	"   vec4 lavaHaze = ((df > 0.0) && (dz > 0.0)) ? vec4 (0.8, 0.5, 0.2, min (1.0, min (df, dz) / 60.0)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
 	"   gl_FragColor = vec4 (waterHaze.rgb + lavaHaze.rgb, min (1.0, waterHaze.a + lavaHaze.a));\r\n" \
 	"}\r\n"
 	;
@@ -490,7 +490,6 @@ extern float quadVerts [5][4][2];
 void RenderFog (void)
 {
 #if 1
-#	if 1
 ogl.CopyDepthTexture (1, GL_TEXTURE1, 1);
 GLhandleARB fogShaderProg = GLhandleARB (shaderManager.Deploy (hFogShader, true));
 if (!fogShaderProg)
@@ -499,7 +498,6 @@ shaderManager.Rebuild (fogShaderProg);
 shaderManager.Set ("fogTex", 0);
 shaderManager.Set ("depthTex", 1);
 shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
-#	endif
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 ogl.BindTexture (ogl.m_data.GetDrawBuffer (5)->ColorBuffer (0));
 glColor4f (1,1,1,1);

@@ -143,7 +143,7 @@ else if (m_info.nType != 2) { // 2 -> GPGPU
 	else 
 #endif
 		{ // depth + stencil buffer
-		m_info.hDepthBuffer = ((m_info.nType == 1) || (m_info.nType == -2))
+		m_info.hDepthBuffer = ((m_info.nType == 1) || (m_info.nType == -2) || (m_info.nType == -3))
 									  ? ogl.CreateDepthTexture (GL_TEXTURE0, 1, 1, m_info.nWidth, m_info.nHeight)
 									  : ogl.CopyDepthTexture (1); //ogl.m_states.hDepthBuffer [1];
 		if (!m_info.hDepthBuffer)

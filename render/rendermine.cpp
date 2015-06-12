@@ -876,7 +876,8 @@ if (nType == RENDER_TYPE_OUTLINE) {
 	ogl.ClearError (0);
 	}
 
-RenderFaceList (RENDER_TYPE_FOG);
+if (gameStates.render.nShadowPass < 2)
+	RenderFaceList (RENDER_TYPE_FOG);
 
 #if MAX_SHADOWMAPS >= 0
 RenderMineObjects (nType);

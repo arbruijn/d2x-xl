@@ -667,7 +667,7 @@ switch (info.renderType) {
 		break;
 
 	case RT_LIGHTNING:
-		cf.WriteInt (wayPointManager.WayPoint (rType.lightningInfo.nWayPoint)->WayPointId ());
+		cf.WriteInt ((rType.lightningInfo.nWayPoint < 0) ? -1 : wayPointManager.WayPoint (rType.lightningInfo.nWayPoint)->WayPointId ());
 		cf.WriteByte (rType.lightningInfo.bDirection);
 		cf.WriteByte (rType.lightningInfo.bEnabled);
 		break;
