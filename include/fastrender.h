@@ -20,6 +20,7 @@ void GetRenderFaces (void);
 void RenderMineObjects (int32_t nType);
 void RenderSkyBoxFaces (void);
 int32_t SetupCoronas (void);
+void InitFogVolumeShader (void);
 
 //------------------------------------------------------------------------------
 

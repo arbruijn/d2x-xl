@@ -116,7 +116,7 @@ class CPostEffectShockwave : public CPostEffect {
 
 class CPostProcessManager {
 	private:
-		int32_t				m_nEffects;
+		int32_t			m_nEffects;
 		CPostEffect*	m_effects;
 
 	public:
@@ -147,6 +147,11 @@ class CPostProcessManager {
 	};
 
 extern CPostProcessManager postProcessManager;
+
+//------------------------------------------------------------------------------
+
+void InitFogShader (void);
+void RenderFog (void);
 
 //------------------------------------------------------------------------------
 

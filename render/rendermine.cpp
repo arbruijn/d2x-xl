@@ -752,6 +752,7 @@ if (!ogl.StereoDevice () || (ogl.StereoSeparation () < 0) || nWindow || gameStat
 		lightningManager.Render ();
 	}
 transparencyRenderer.Render (nWindow);
+RenderFog ();
 if (!nWindow) 
 	postProcessManager.Prepare ();
 
@@ -982,6 +983,7 @@ RenderCockpitModel ();
 gameStates.render.EnableCartoonStyle (1, 1, 1);
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
+RenderSegmentList (RENDER_TYPE_FOG);
 #if 1
 if (gameStates.render.CartoonStyle () && (gameStates.render.nShadowPass < 2)) {
 	ogl.CopyDepthTexture (0, GL_TEXTURE1, 1);

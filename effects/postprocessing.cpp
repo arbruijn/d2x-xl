@@ -429,3 +429,80 @@ for (CPostEffect* e = m_effects; e; e = e->Next ())
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+const char *fogFS =
+	"uniform sampler2D fogTex, depthTex;\r\n" \
+	"uniform vec2 windowScale;\r\n" \
+	"#define ZNEAR 1.0\r\n" \
+	"#define ZFAR 5000.0\r\n" \
+	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
+	"#define A (ZNEAR + ZFAR)\r\n" \
+	"#define B (ZNEAR - ZFAR)\r\n" \
+	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
+	"#define D(z) (NDC (z) * B)\r\n" \
+	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
+	"void main (void) {\r\n" \
+	"   float z = ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r);\r\n" \
+	"   vec4 fogVolume = texture2D (fogTex, gl_FragCoord.xy * windowScale);\r\n" \
+	"   float df = fogVolume.g - fogVolume.r;\r\n" \
+	"   float dz = z - fogVolume.r;\r\n" \
+	"   vec4 waterHaze = ((df < 1.0) && (dz > 0.0)) ? vec4 (0.0, 0.5, 1.0, min (1.0, min (df, dz) / (ZFAR * 200.0))) : vec4 (0.0, 0.0, 0.0);\r\n" \
+	"   float df = fogVolume.a - fogVolume.b;\r\n" \
+	"   float dz = z - fogVolume.b;\r\n" \
+	"   vec4 lavaHaze = ((df < 1.0) && (dz > 0.0)) ? vec4 (1.0, 0.5, 0.0, min (1.0, min (df, dz) / (ZFAR * 200.0))) : vec4 (0.0, 0.0, 0.0);\r\n" \
+	"   gl_FragColor = vec4 (waterHaze.rgb + lavaHaze.rgb, min (1.0, waterHaze.a + lavaHaze.a));\r\n" \
+	"}\r\n"
+	;
+
+const char *fogVS =
+	"void main (void){\r\n" \
+	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
+	"gl_Position = ftransform (); //gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
+	"gl_FrontColor = gl_Color;}\r\n"
+	;
+
+int32_t		hFogShader = -1;
+
+//-------------------------------------------------------------------------
+
+void InitFogShader (void)
+{
+if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders && (ogl.m_features.bDepthBlending > -1)) {
+	PrintLog (0, "building fog shader program\n");
+	if (shaderManager.Build (hFogShader, fogFS, fogVS)) {
+		ogl.m_features.bDepthBlending.Available (1);
+		ogl.m_features.bDepthBlending = 1;
+		}
+	else {
+		ogl.ClearError (0);
+		ogl.m_features.bDepthBlending.Available (0);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+extern tTexCoord2f quadTexCoord [3][4];
+extern float quadVerts [5][4][2];
+
+void RenderFog (void)
+{
+GLhandleARB fogShaderProg = GLhandleARB (shaderManager.Deploy (hFogShader, true));
+if (!fogShaderProg)
+	return;
+shaderManager.Rebuild (fogShaderProg);
+shaderManager.Set ("fogTex", 0);
+shaderManager.Set ("depthTex", 1);
+shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
+ogl.CopyDepthTexture (0, GL_TEXTURE1, 1);
+ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+ogl.BindTexture (ogl.m_data.GetDrawBuffer (5)->ColorBuffer (0));
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
+OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+OglDrawArrays (GL_QUADS, 0, 4);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+

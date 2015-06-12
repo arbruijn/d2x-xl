@@ -29,7 +29,7 @@
 
 #if 1
 
-const char *fogFS =
+const char *fogVolumeFS =
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
@@ -43,24 +43,22 @@ const char *fogFS =
 	"}\r\n"
 	;
 
-const char *fogVS =
+const char *fogVolumeVS =
 	"void main (void){\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
 	"gl_Position = ftransform (); //gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
 	"gl_FrontColor = gl_Color;}\r\n"
 	;
 
-int32_t		hFogShader = -1;
-GLhandleARB fogShaderProg = 0;
+int32_t		hFogVolShader = -1;
 
 //-------------------------------------------------------------------------
 
-void InitFogShader (void)
+void InitFogVolumeShader (void)
 {
 if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders && (ogl.m_features.bDepthBlending > -1)) {
 	PrintLog (0, "building fog blending shader program\n");
-	fogShaderProg = 0;
-	if (shaderManager.Build (hFogShader, fogFS, fogVS)) {
+	if (shaderManager.Build (hFogVolShader, fogVolumeFS, fogVolumeVS)) {
 		ogl.m_features.bDepthBlending.Available (1);
 		ogl.m_features.bDepthBlending = 1;
 		}
@@ -456,6 +454,11 @@ if (bVBO) {
 else 
 #endif
 	if (nType == RENDER_TYPE_OUTLINE) {
+		ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
+		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
+		glColor3f (1,1,1);
+		}
+	else if (nType == RENDER_TYPE_FOG) {
 		ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 		glColor3f (1,1,1);
@@ -873,9 +876,9 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 	if (pChildSeg && (pChildSeg->HasWaterProp () == pSeg->HasWaterProp ()))
 		continue;
 	if (nColor < 0)
-		glColor4f (0, 0, 1, 0);
+		glColor4f (0, 0, 0, 1);
 	else
-		glColor4f (1, 0, 0, 0);
+		glColor4f (0, 1, 0, 0);
 	glBlendEquation (GL_MAX);
 	DrawFace (pFace);
 	if (pChildSeg) {
@@ -889,9 +892,9 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 	
 		if (nSide < 6) {
 			if (nColor < 0)
-				glColor4f (0, 0, 0, 1);
+				glColor4f (0, 0, 1, 0);
 			else
-				glColor4f (0, 1, 0, 0);
+				glColor4f (1, 0, 0, 0);
 			glBlendEquation (GL_MIN);
 			for (j = pSegFace->nFaces, pFace; j; j--, pFace++) {
 				if (pFace->m_info.nSide == nSide)
@@ -919,19 +922,18 @@ if (nType == RENDER_TYPE_CORONAS) {
 				nFaces++;
 		}
 	else if (nType == RENDER_TYPE_FOG) {
-		GLhandleARB fogShaderProg = GLhandleARB (shaderManager.Deploy (hFogShader, true));
-		if (!fogShaderProg)
+		GLhandleARB fogVolShaderProg = GLhandleARB (shaderManager.Deploy (hFogVolShader, true));
+		if (!fogVolShaderProg)
 			RETVAL (0)
+		shaderManager.Rebuild (fogVolShaderProg);
 		ogl.SelectFogBuffer (0);
 		glClearColor (0, 1, 0, 1);
 		glClear (GL_COLOR_BUFFER_BIT);
-		ogl.DisableClientState (GL_COLOR_ARRAY);
-		ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY);
-		ogl.DisableClientState (GL_NORMAL_ARRAY);
 		int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
 		for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
 			RenderFogFaces (pSegList [--i]);
-			}
+		shaderManager.Deploy (-1);
+		ogl.ChooseDrawBuffer ();
 		}
 	else {
 		int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();

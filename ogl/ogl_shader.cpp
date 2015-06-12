@@ -40,7 +40,9 @@
 #include "particles.h"
 #include "../effects/glow.h"
 #include "sphere.h"
+#include "fastrender.h"
 #include "rendermine.h"
+#include "postprocessing.h"
 #include "gpgpu_lighting.h"
 
 #define SUSPENDABLE_SHADERS 1
@@ -475,6 +477,8 @@ InitPerPixelLightingShaders ();
 ResetLightmapShaders ();
 InitLightmapShaders ();
 ResetSphereShaders ();
+InitFogVolumeShader ();
+InitFogShader ();
 #if 0
 Link (Alloc ());
 #endif
