@@ -982,13 +982,13 @@ RenderCockpitModel ();
 gameStates.render.EnableCartoonStyle (1, 1, 1);
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
-RenderSegmentList (RENDER_TYPE_FOG);
 #if 1
 if (gameStates.render.CartoonStyle () && (gameStates.render.nShadowPass < 2)) {
 	ogl.CopyDepthTexture (0, GL_TEXTURE1, 1);
 	RenderSegmentEdges ();
 	}
 #endif
+RenderSegmentList (RENDER_TYPE_FOG);
 #	if 1
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
 	if (!gameStates.app.bNostalgia &&

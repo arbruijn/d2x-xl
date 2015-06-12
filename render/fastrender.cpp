@@ -41,8 +41,8 @@ const char *fogVolumeFS =
 	"#define D(z) (NDC (z) * B)\r\n" \
 	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
 	"void main (void) {\r\n" \
-	"   if (gl_FragCoord.z <= texture2D (depthTex, gl_FragCoord.xy * windowScale).r)\r\n" \
-	"   gl_FragColor = gl_Color * gl_FragCoord.z; /*ZEYE (gl_FragCoord.z) / ZFAR;*/\r\n" \
+	"   /*if (gl_FragCoord.z <= texture2D (depthTex, gl_FragCoord.xy * windowScale).r)*/\r\n" \
+	"   gl_FragColor = gl_Color * gl_FragCoord.z; //min (gl_FragCoord.z, texture2D (depthTex, gl_FragCoord.xy * windowScale).r);\r\n" \
 	"}\r\n"
 	;
 
@@ -905,7 +905,7 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 		DrawFace (pFace);
 	else if (pChildSeg) {
 
-		for (int32_t nSide = 0, pFace; nSide < 6; nSide++) {
+		for (int32_t nSide = 0; nSide < 6; nSide++) {
 			if (pChildSeg->ChildId (nSide) == nSegment) {
 				tSegFaces *pSegFace = SEGFACES + nChildSeg;
 				CSegFace *pFace = pSegFace->pFace;
@@ -916,6 +916,11 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 				break;
 				}
 			}
+		}
+	else {
+		glFrontFace (GL_CCW);
+		DrawFace (pFace);
+		glFrontFace (GL_CW);
 		}
 	}
 RETVAL (nFaces)
@@ -955,7 +960,7 @@ else if (nType == RENDER_TYPE_FOG) {
 #	if 1
 	ogl.CopyDepthTexture (1, GL_TEXTURE0);
 	ogl.SelectFogBuffer (0);
-	glClearColor (1.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor (1.0f, 0.0f, 1.0f, 0.0f);
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #	endif
 #	if 1
