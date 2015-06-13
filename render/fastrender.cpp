@@ -908,22 +908,22 @@ RETVAL (nFaces)
 
 //------------------------------------------------------------------------------
 
-int16_t RenderFogSegments (void)
+void RenderFogSegments (void)
 {
 #if 1
 gameStates.render.bHaveFog = 0;
 if (ogl.m_features.bDepthBlending < 0)
-	return false;
+	return;
 if (!gameOpts->render.effects.bEnabled)
-	return false;
+	return;
 if (!gameOpts->render.effects.bFog)
-	return false;
+	return;
 if (gameOptions [0].render.nQuality < 2)
-	return false;
+	return;
 
 GLhandleARB fogVolShaderProg = GLhandleARB (shaderManager.Deploy (hFogVolShader, true));
 if (!fogVolShaderProg)
-	RETVAL (0)
+	return;
 shaderManager.Rebuild (fogVolShaderProg);
 shaderManager.Set ("depthTex", 0);
 shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
