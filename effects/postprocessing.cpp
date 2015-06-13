@@ -435,6 +435,7 @@ const char *fogFS =
 	"uniform vec4 fogColor1, fogColor2;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
+	"#define MAX_ALPHA 1.0\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
 	"#define A (ZNEAR + ZFAR)\r\n" \
 	"#define B (ZNEAR - ZFAR)\r\n" \
@@ -449,14 +450,14 @@ const char *fogFS =
 	"   fogVolume = vec4 (ZEYE (fogVolume.r), ZEYE (fogVolume.g), ZEYE (fogVolume.b), ZEYE (fogVolume.a));\r\n" \
 	"   float df = fogVolume.g - fogVolume.r;\r\n" \
 	"   float dz = z - fogVolume.r;\r\n" \
-	"   vec4 c1 = ((df > 0.0) && (dz > 0.0)) ? vec4 (fogColor1.rgb, min (0.8, min (df, dz) / fogColor1.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
+	"   vec4 c1 = ((df > 0.0) && (dz > 0.0)) ? vec4 (fogColor1.rgb, min (MAX_ALPHA, min (df, dz) / fogColor1.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
 	"   df = fogVolume.a - fogVolume.b;\r\n" \
 	"   dz = z - fogVolume.b;\r\n" \
-	"   vec4 c2 = ((fogColor2.a > 0.0) && (df > 0.0) && (dz > 0.0)) ? vec4 (fogColor2.rgb, min (0.8, min (df, dz) / fogColor2.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
+	"   vec4 c2 = ((fogColor2.a > 0.0) && (df > 0.0) && (dz > 0.0)) ? vec4 (fogColor2.rgb, min (MAX_ALPHA, min (df, dz) / fogColor2.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
 	"   //gl_FragColor = vec4 (max (c1.r, c2.r), max (c1.g, c2.g), max (c1.b, c2.b), max (c1.a, c2.a));\r\n" \
 	"   //gl_FragColor = vec4 (c1.rgb + c2.rgb, min (0.8, c1.a + c2.a));\r\n" \
-	"   gl_FragColor = vec4 (c1.r * c2.r, c1.g * c2.g, c1.b * c2.b, min (0.8, c1.a + c2.a));\r\n" \
-	"   //gl_FragColor = vec4 (c1.rgb * c1.a + c2.rgb * c2.a, min (0.8, c1.a + c2.a));\r\n" \
+	"   gl_FragColor = vec4 (c1.r * c2.r, c1.g * c2.g, c1.b * c2.b, min (MAX_ALPHA, c1.a + c2.a));\r\n" \
+	"   //gl_FragColor = vec4 (c1.rgb * c1.a + c2.rgb * c2.a, min (1.0, c1.a + c2.a));\r\n" \
 	"}\r\n"
 	;
 
@@ -496,7 +497,7 @@ void RenderFog (void)
 	vec4 fogColors [4] = {
 		{0.2f, 0.4f, 0.6f, 200.0f},
 		{1.0f, 0.7f, 0.4f, 60.0f},
-		{0.7f, 0.7f, 0.7f, 20.0f},
+		{0.7f, 0.7f, 0.7f, 140.0f},
 		{0.0f, 0.0f, 0.0f, 0.0f}
 		};
 #if 1
