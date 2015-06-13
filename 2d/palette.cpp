@@ -121,8 +121,8 @@ return Sqr (r - palette.Red ()) + Sqr (g - palette.Green ()) + Sqr (b - palette.
 
 int32_t CPalette::ClosestColor (int32_t r, int32_t g, int32_t b)
 {
-	int32_t				i, n;
-	int32_t				nBestValue, nBestIndex, value;
+	int32_t			i, n;
+	int32_t			nBestValue, nBestIndex, value;
 	CComputedColor	*pci, *pcj;
 
 #if 0
@@ -191,7 +191,7 @@ CPalette* CPaletteManager::Find (CPalette& palette)
 {
 	tPaletteList	*pList;
 #if DBG
-	int32_t				i;
+	int32_t			i;
 #endif
 
 for (pList = m_data.list; pList; pList = pList->next)
@@ -284,9 +284,9 @@ SetFadeDuration (m_data.bDoEffect ? /*F2X (64.0 / FADE_RATE)*/I2X (1) / 2 : 0);
 void CPaletteManager::StartEffect (int32_t red, int32_t green, int32_t blue, bool bForce)
 {
 StartEffect (Clamp (float (red) / 64.0f, 0.0f, 1.0f), 
-	        Clamp (float (green) / 64.0f, 0.0f, 1.0f), 
-	        Clamp (float (blue) / 64.0f, 0.0f, 1.0f), 
-			  bForce);
+	          Clamp (float (green) / 64.0f, 0.0f, 1.0f), 
+	          Clamp (float (blue) / 64.0f, 0.0f, 1.0f), 
+			    bForce);
 }
 
 //------------------------------------------------------------------------------
@@ -359,9 +359,9 @@ green = Clamp (m_data.effect.Green () * fFade + green, 0.0f, maxVal);
 blue = Clamp (m_data.effect.Blue () * fFade + blue, 0.0f, maxVal);
 
 StartEffect (Max (red, m_data.effect.Red () * fFade), 
-			  Max (green, m_data.effect.Green () * fFade), 
-			  Max (blue, m_data.effect.Blue () * fFade),
-			  true);
+			    Max (green, m_data.effect.Green () * fFade), 
+			    Max (blue, m_data.effect.Blue () * fFade),
+			    true);
 }
 
 //------------------------------------------------------------------------------

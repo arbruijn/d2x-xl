@@ -497,7 +497,7 @@ void RenderFog (void)
 	vec4 fogColors [FOG_TYPE_COUNT] = {
 		{0.2f, 0.4f, 0.6f, 200.0f},
 		{1.0f, 0.7f, 0.4f, 60.0f},
-		{0.7f, 0.7f, 0.7f, 200.0f},
+		{0.7f, 0.7f, 0.7f, 240.0f},
 		{0.7f, 0.7f, 0.7f, 100.0f}
 		};
 #if 1

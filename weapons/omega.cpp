@@ -287,8 +287,7 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	CFixVector	vPerturb, perturbed_fvec;
 
 	vPerturb = CFixVector::Random();
-	perturbed_fvec = bSpectate ? gameStates.app.playerPos.mOrient.m.dir.f : pParentObj->info.position.mOrient.m.dir.f
-	               + vPerturb * (I2X (1) / 16);
+	perturbed_fvec = bSpectate ? gameStates.app.playerPos.mOrient.m.dir.f : pParentObj->info.position.mOrient.m.dir.f + vPerturb * (I2X (1) / 16);
 	vTargetPos = *vMuzzle + perturbed_fvec * MAX_OMEGA_DIST;
 	CHitQuery	hitQuery (FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_CHECK_OBJS, vMuzzle, &vTargetPos, nFiringSeg, OBJ_IDX (pParentObj), 0, 0, ++gameData.physicsData.bIgnoreObjFlag);
 	CHitResult	hitResult;
