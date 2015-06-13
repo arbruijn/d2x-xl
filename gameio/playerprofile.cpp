@@ -474,6 +474,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.bPowerupSpinType, i, 1);
 		RP (gameOptions [i].render.effects.bEnabled, i, 0);
 		RP (gameOptions [i].render.effects.bGlow, i, 0);
+		RP (gameOptions [i].render.effects.bFog, i, 0);
 		RP (gameOptions [i].render.effects.bSoftParticles, i, 0);
 		RP (gameOptions [i].render.effects.bWarpAppearance, i, 0);
 		RP (gameOptions [i].render.effects.nShrapnels, i, 0);
@@ -1064,7 +1065,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.nLightingMethod", "0"},
 	 {"gameOptions[0].render.nQuality", "2"},
 	 {"gameOptions[0].render.bCartoonize", "0"},
-	 {"gameOptions [i].render.bPowerupSpinType", "1"},
+	 {"gameOptions[0].render.bPowerupSpinType", "1"},
 	 {"gameOptions[0].render.stereo.nGlasses", "0"},
 	 {"gameOptions[0].render.stereo.nMethod", "0"},
 	 {"gameOptions[0].render.stereo.nScreenDist", "3"},
