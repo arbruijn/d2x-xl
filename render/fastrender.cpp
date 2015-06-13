@@ -934,7 +934,7 @@ else if (nType == RENDER_TYPE_FOG) {
 		return false;
 	if (!gameOpts->render.effects.bEnabled)
 		return false;
-	if (gameOpts->render.effects.bFog)
+	if (!gameOpts->render.effects.bFog)
 		return false;
 	if (gameOptions [0].render.nQuality < 2)
 		return false;

@@ -1080,6 +1080,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.stereo.bChromAbCorr", "1"},
 	 {"gameOptions[0].render.effects.bEnabled", "1"},
 	 {"gameOptions[0].render.effects.bGlow", "0"},
+	 {"gameOptions[0].render.effects.bFog", "0"},
 	 {"gameOptions[0].render.effects.bSoftParticles", "0"},
 	 {"gameOptions[0].render.effects.bWarpAppearance", "0"},
 	 {"gameOptions[0].render.effects.bEnergySparks", "1"},
