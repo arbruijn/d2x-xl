@@ -32,17 +32,10 @@
 const char *fogVolumeFS =
 	"uniform sampler2D depthTex;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
-	"#define ZNEAR 1.0\r\n" \
-	"#define ZFAR 5000.0\r\n" \
-	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
-	"#define A (ZNEAR + ZFAR)\r\n" \
-	"#define B (ZNEAR - ZFAR)\r\n" \
-	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
-	"#define D(z) (NDC (z) * B)\r\n" \
-	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
 	"void main (void) {\r\n" \
-	"   if (gl_FragCoord.z <= texture2D (depthTex, gl_FragCoord.xy * windowScale).r)\r\n" \
-	"   gl_FragColor = gl_Color * gl_FragCoord.z;\r\n" \
+	"   if (gl_FragCoord.z > texture2D (depthTex, gl_FragCoord.xy * windowScale).r)\r\n" \
+	"      discard;\r\n" \
+	"   gl_FragColor = vec4 (gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z);\r\n" \
 	"}\r\n"
 	;
 
@@ -929,39 +922,39 @@ if (!fogVolShaderProg)
 shaderManager.Rebuild (fogVolShaderProg);
 shaderManager.Set ("depthTex", 0);
 shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
-glClearColor (1.0f, 0.0f, 1.0f, 0.0f);
 ogl.SetDepthTest (false);
 ogl.SetAlphaTest (false);
 ogl.SetDepthMode (GL_ALWAYS);
+glClearColor (1.0f, 0.0f, 1.0f, 0.0f);
+ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+ogl.CopyDepthTexture (1, GL_TEXTURE0);
 int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
 for (int32_t nFogType = 0; nFogType < FOG_TYPE_COUNT; nFogType++) {
 	if (gameData.segData.nFogSegments [nFogType]) {
 		if ((nFogType & 1) == 0) {
 			ogl.SelectFogBuffer (nFogType / 2);
 			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-			ogl.CopyDepthTexture (1, GL_TEXTURE0);
 			}
 		for (int32_t nMode = 0; nMode < 2; nMode++) {
 			if (nMode) {
 				if (nFogType & 1) {
 					glColorMask (0, 0, 1, 0);
-					glColor4f (0, 0, 1, 0);
+					//glColor4f (0, 0, 1, 0);
 					}
 				else {
 					glColorMask (1, 0, 0, 0);
-					glColor4f (1, 0, 0, 0);
+					//glColor4f (1, 0, 0, 0);
 					}
 				glBlendEquation (GL_MIN);
 				}
 			else {
 				if (nFogType & 1) {
 					glColorMask (0, 0, 0, 1);
-					glColor4f (0, 0, 0, 1);
+					//glColor4f (0, 0, 0, 1);
 					}
 				else {
 					glColorMask (0, 1, 0, 0);
-					glColor4f (0, 1, 0, 0);
+					//glColor4f (0, 1, 0, 0);
 					}
 				glBlendEquation (GL_MAX);
 				}
