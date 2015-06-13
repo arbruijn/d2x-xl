@@ -222,6 +222,8 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		GetCornerIndex (i, sideVerts);
 	m_sides [i].Read (cf, m_vertices, sideVerts, m_children [i] == -1);
 	}
+if (FogType ())
+	gameData.segData.nFogSegments [FogType () - 1]++;
 if (gameData.segData.nLevelVersion > 24) 
 	RemapVertices ();
 }

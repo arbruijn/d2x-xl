@@ -482,6 +482,7 @@ class CSegment {
 		inline int32_t HasLavaProp (void) { return HasProp (SEGMENT_PROP_LAVA); }
 		inline int32_t HasFogProp (void) { return HasProp (SEGMENT_PROP_FOG); }
 		inline int32_t HasOutdoorsProp (void) { return HasProp (SEGMENT_PROP_OUTDOORS); }
+		inline int32_t FogType (void) { return HasWaterProp () ? 1 : HasLavaProp () ? 2 : HasFogProp () ? 3 : 0; }
 
 		inline int32_t HasTexture (uint8_t nSide) { return (m_children [nSide] >= 0) || m_sides [nSide].IsWall (); }
 

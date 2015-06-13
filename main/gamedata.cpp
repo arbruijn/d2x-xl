@@ -965,10 +965,14 @@ void CSegmentData::Init (void)
 fRad = 0;
 nFaceVerts = 0;
 nLastVertex = 0;
+nSegments = 0;
 nLastSegment = 0;
 nFaces = 0;
 bHaveSlideSegs = 0;
 nSlideSegs = 0;
+nFogSegments [0] =
+nFogSegments [1] =
+nFogSegments [2] = 0;
 }
 
 // ----------------------------------------------------------------------------

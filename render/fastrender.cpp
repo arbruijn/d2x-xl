@@ -847,7 +847,7 @@ else
 // in the render buffer using glBlendEquation (GL_MAX).
 // Then render the opposite sides 
 
-static int16_t RenderFogFaces (int16_t nSegment, int32_t nColor, int32_t nMode)
+static int16_t RenderFogFaces (int16_t nSegment, int32_t nFogType, int32_t nMode)
 {
 ENTER (0, 0);
 	
@@ -855,8 +855,8 @@ ENTER (0, 0);
 	if (!pSeg)
 		RETVAL (0)
 
-	int32_t		nSegColor = pSeg->HasWaterProp () ? 1 : pSeg->HasLavaProp () ? -1 : 0;
-	if (nSegColor != nColor)
+	int32_t		nSegFogType = pSeg->FogType () - 1;
+	if (nSegFogType != nFogType)
 		RETVAL (0)
 
 	tSegFaces	*pSegFace = SEGFACES + nSegment;
@@ -876,7 +876,7 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 #endif
 	int32_t nChildSeg = pSeg->ChildId (pFace->m_info.nSide);
 	CSegment *pChildSeg = SEGMENT (nChildSeg);
-	if (pChildSeg && (pChildSeg->HasWaterProp () == pSeg->HasWaterProp ()) && (pChildSeg->HasLavaProp () == pSeg->HasLavaProp ()))
+	if (pChildSeg && (pChildSeg->FogType () == nFogType))
 		continue;
 	gameStates.render.bHaveFog = 1;
 	if (!nMode)
@@ -908,55 +908,38 @@ RETVAL (nFaces)
 
 //------------------------------------------------------------------------------
 
-int16_t RenderSegments (int32_t nType, int32_t bHeadlight)
+int16_t RenderFogSegments (void)
 {
-ENTER (0, 0);
-	int32_t	i, nFaces = 0, bAutomap = (nType == RENDER_TYPE_GEOMETRY);
-
-if (nType == RENDER_TYPE_CORONAS) {
-	// render mine segment by segment
-	if (gameData.renderData.mine.visibility [0].nSegments == gameData.segData.nSegments) {
-		CSegFace *pFace = FACES.faces.Buffer ();
-		for (i = FACES.nFaces; i; i--, pFace++)
-			if (RenderMineFace (SEGMENT (pFace->m_info.nSegment), pFace, nType))
-				nFaces++;
-		}
-	else {
-		int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
-		for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
-			nFaces += RenderSegmentFaces (nType, pSegList [--i], bAutomap, bHeadlight);
-		}
-	}
-else if (nType == RENDER_TYPE_FOG) {
 #if 1
-	gameStates.render.bHaveFog = 0;
-	if (ogl.m_features.bDepthBlending < 0)
-		return false;
-	if (!gameOpts->render.effects.bEnabled)
-		return false;
-	if (!gameOpts->render.effects.bFog)
-		return false;
-	if (gameOptions [0].render.nQuality < 2)
-		return false;
+gameStates.render.bHaveFog = 0;
+if (ogl.m_features.bDepthBlending < 0)
+	return false;
+if (!gameOpts->render.effects.bEnabled)
+	return false;
+if (!gameOpts->render.effects.bFog)
+	return false;
+if (gameOptions [0].render.nQuality < 2)
+	return false;
 
-	GLhandleARB fogVolShaderProg = GLhandleARB (shaderManager.Deploy (hFogVolShader, true));
-	if (!fogVolShaderProg)
-		RETVAL (0)
-	shaderManager.Rebuild (fogVolShaderProg);
-	shaderManager.Set ("depthTex", 0);
-	shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
-	ogl.CopyDepthTexture (1, GL_TEXTURE0);
-	ogl.SelectFogBuffer (0);
-	glClearColor (1.0f, 0.0f, 1.0f, 0.0f);
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	ogl.SetDepthTest (false);
-	ogl.SetAlphaTest (false);
-	ogl.SetDepthMode (GL_ALWAYS);
-	int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
-	for (int32_t nColor = 1; nColor >= -1; nColor -= 2) {
+GLhandleARB fogVolShaderProg = GLhandleARB (shaderManager.Deploy (hFogVolShader, true));
+if (!fogVolShaderProg)
+	RETVAL (0)
+shaderManager.Rebuild (fogVolShaderProg);
+shaderManager.Set ("depthTex", 0);
+shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
+ogl.CopyDepthTexture (1, GL_TEXTURE0);
+glClearColor (1.0f, 0.0f, 1.0f, 0.0f);
+ogl.SetDepthTest (false);
+ogl.SetAlphaTest (false);
+ogl.SetDepthMode (GL_ALWAYS);
+int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
+for (int32_t nFogType = 0; nFogType < 3; nFogType++) {
+	if (gameData.segData.nFogSegments [nFogType]) {
+		ogl.SelectFogBuffer (nFogType / 2);
+		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		for (int32_t nMode = 0; nMode < 2; nMode++) {
 			if (nMode) {
-				if (nColor < 0) {
+				if (nFogType & 1) {
 					glColorMask (0, 0, 1, 0);
 					glColor4f (0, 0, 1, 0);
 					}
@@ -967,7 +950,7 @@ else if (nType == RENDER_TYPE_FOG) {
 				glBlendEquation (GL_MIN);
 				}
 			else {
-				if (nColor < 0) {
+				if (nFogType & 1) {
 					glColorMask (0, 0, 0, 1);
 					glColor4f (0, 0, 0, 1);
 					}
@@ -979,22 +962,48 @@ else if (nType == RENDER_TYPE_FOG) {
 				}
 
 			for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
-				RenderFogFaces (pSegList [--i], nColor, nMode);
+				RenderFogFaces (pSegList [--i], nFogType, nMode);
 			}
 		}
-	ogl.SetDepthTest (true);
-	ogl.SetAlphaTest (true);
-	ogl.SetDepthMode (GL_LEQUAL);
-	ogl.SetBlendMode (OGL_BLEND_ALPHA);
-	glBlendEquation (GL_FUNC_ADD);
-	glColorMask (1, 1, 1, 1);
-	shaderManager.Deploy (-1);
-	ogl.ChooseDrawBuffer ();
+	}
+ogl.SetDepthTest (true);
+ogl.SetAlphaTest (true);
+ogl.SetDepthMode (GL_LEQUAL);
+ogl.SetBlendMode (OGL_BLEND_ALPHA);
+glBlendEquation (GL_FUNC_ADD);
+glColorMask (1, 1, 1, 1);
+shaderManager.Deploy (-1);
+ogl.ChooseDrawBuffer ();
 #endif
+}
+
+//------------------------------------------------------------------------------
+
+int16_t RenderSegments (int32_t nFogType, int32_t bHeadlight)
+{
+ENTER (0, 0);
+	int32_t	i, nFaces = 0, bAutomap = (nFogType == RENDER_TYPE_GEOMETRY);
+
+if (nFogType == RENDER_TYPE_CORONAS) {
+	// render mine segment by segment
+	if (gameData.renderData.mine.visibility [0].nSegments == gameData.segData.nSegments) {
+		CSegFace *pFace = FACES.faces.Buffer ();
+		for (i = FACES.nFaces; i; i--, pFace++)
+			if (RenderMineFace (SEGMENT (pFace->m_info.nSegment), pFace, nFogType))
+				nFaces++;
+		}
+	else {
+		int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
+		for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
+			nFaces += RenderSegmentFaces (nFogType, pSegList [--i], bAutomap, bHeadlight);
+		}
+	}
+else if (nFogType == RENDER_TYPE_FOG) {
+	RenderFogSegments ();
 	}
 else {
 	// render mine by pre-sorted textures
-	nFaces = RenderFaceList (gameData.renderData.faceIndex, nType, bHeadlight);
+	nFaces = RenderFaceList (gameData.renderData.faceIndex, nFogType, bHeadlight);
 	}
 RETVAL (nFaces)
 }
