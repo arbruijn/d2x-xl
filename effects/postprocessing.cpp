@@ -432,6 +432,7 @@ for (CPostEffect* e = m_effects; e; e = e->Next ())
 const char *fogFS =
 	"uniform sampler2D fogTex, depthTex;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
+	"uniform vec4 fogColor1, fogColor2;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
@@ -448,11 +449,11 @@ const char *fogFS =
 	"   fogVolume = vec4 (ZEYE (fogVolume.r), ZEYE (fogVolume.g), ZEYE (fogVolume.b), ZEYE (fogVolume.a));\r\n" \
 	"   float df = fogVolume.g - fogVolume.r;\r\n" \
 	"   float dz = z - fogVolume.r;\r\n" \
-	"   vec4 waterHaze = ((df > 0.0) && (dz > 0.0)) ? vec4 (0.2, 0.4, 0.6, min (1.0, min (df, dz) / 200.0)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
+	"   vec4 c1 = ((df > 0.0) && (dz > 0.0)) ? vec4 (fogColor1, min (1.0, min (df, dz) / fogColor1.a)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
 	"   df = fogVolume.a - fogVolume.b;\r\n" \
 	"   dz = z - fogVolume.b;\r\n" \
-	"   vec4 lavaHaze = ((df > 0.0) && (dz > 0.0)) ? vec4 (0.8, 0.5, 0.2, min (1.0, min (df, dz) / 60.0)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
-	"   gl_FragColor = vec4 (waterHaze.rgb + lavaHaze.rgb, min (1.0, waterHaze.a + lavaHaze.a));\r\n" \
+	"   vec4 c2 = ((df > 0.0) && (dz > 0.0)) ? vec4 (fogColor2, min (1.0, min (df, dz) / fogColor2.a)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
+	"   gl_FragColor = vec4 (max (c1, c2); //waterHaze.rgb + lavaHaze.rgb, min (1.0, waterHaze.a + lavaHaze.a));\r\n" \
 	"}\r\n"
 	;
 
@@ -489,6 +490,12 @@ extern float quadVerts [5][4][2];
 
 void RenderFog (void)
 {
+	vec4 fogColors [4] = {
+		{0.2f, 0.4f, 0.6f, 200.0f},
+		{0.8f, 0.5f, 0.2f, 60.0f},
+		{0.7f, 0.7f, 0.7f, 200.0f},
+		{0.0f, 0.0f, 0.0f, 1.0f}
+		};
 #if 1
 if (!gameStates.render.bHaveFog)
 	return;
@@ -500,13 +507,19 @@ shaderManager.Rebuild (fogShaderProg);
 shaderManager.Set ("fogTex", 0);
 shaderManager.Set ("depthTex", 1);
 shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
-ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-ogl.BindTexture (ogl.m_data.GetDrawBuffer (5)->ColorBuffer (0));
 glColor4f (1,1,1,1);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
-OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
-OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
-OglDrawArrays (GL_QUADS, 0, 4);
+for (int32_t nFogType = 0; nFogType < 3; nFogType += 2) {
+	if (gameData.segData.nFogSegments [nFogType] + gameData.segData.nFogSegments [nFogType + 1]) {
+		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+		ogl.BindTexture (ogl.m_data.GetDrawBuffer (5)->ColorBuffer (nFogType / 2));
+		shaderManager.Set ("fogColor1", fogColors [nFogType]);
+		shaderManager.Set ("fogColor2", fogColors [nFogType + 1]);
+		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+		OglDrawArrays (GL_QUADS, 0, 4);
+		}
+	}
 shaderManager.Deploy (-1);
 #endif
 }
