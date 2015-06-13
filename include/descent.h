@@ -1039,7 +1039,7 @@ class CRenderStates {
 		int32_t bHaveOculusRift;
 		int32_t bHaveDynLights;
 		int32_t bHaveSparks;
-		int32_t bHaveFog [3];
+		int32_t bHaveFog [FOG_TYPE_COUNT + 1];
 		int32_t bUsePerPixelLighting;
 		int32_t nRenderPass;
 		int32_t nShadowPass;
@@ -2339,7 +2339,7 @@ class CSegmentData {
 		int32_t						nFaceKeys;
 		int32_t						nEdges;
 		int32_t						nLevelVersion;
-		int32_t						nFogSegments [3]; // size must be a multiple of two!
+		int32_t						nFogSegments [FOG_TYPE_COUNT]; // size must be a multiple of two!
 		char							szLevelFilename [FILENAME_LEN];
 		CSecretData					secret;
 		CArray<tSlideSegs>		slideSegs;

@@ -113,7 +113,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SEGMENT_PROP_BLOCKED			4
 #define SEGMENT_PROP_NODAMAGE			8
 #define SEGMENT_PROP_OUTDOORS			16
-#define SEGMENT_PROP_FOG				32
+#define SEGMENT_PROP_LIGHT_FOG		32
+#define SEGMENT_PROP_DENSE_FOG		64
+#define SEGMENT_PROP_FOG				(SEGMENT_PROP_LIGHT_FOG | SEGMENT_PROP_DENSE_FOG)
+
+#define FOG_TYPE_COUNT					4
 
 #define OBJ_IS_PROJECTILE				1
 #define OBJ_IS_ENERGY_PROJECTILE		2
@@ -480,9 +484,11 @@ class CSegment {
 		inline int32_t HasNoDamageProp (void) { return HasProp (SEGMENT_PROP_NODAMAGE); }
 		inline int32_t HasWaterProp (void) { return HasProp (SEGMENT_PROP_WATER); }
 		inline int32_t HasLavaProp (void) { return HasProp (SEGMENT_PROP_LAVA); }
+		inline int32_t HasLightFogProp (void) { return HasProp (SEGMENT_PROP_LIGHT_FOG); }
+		inline int32_t HasDenseFogProp (void) { return HasProp (SEGMENT_PROP_DENSE_FOG); }
 		inline int32_t HasFogProp (void) { return HasProp (SEGMENT_PROP_FOG); }
 		inline int32_t HasOutdoorsProp (void) { return HasProp (SEGMENT_PROP_OUTDOORS); }
-		inline int32_t FogType (void) { return HasWaterProp () ? 1 : HasLavaProp () ? 2 : HasFogProp () ? 3 : 0; }
+		inline int32_t FogType (void) { return HasWaterProp () ? 1 : HasLavaProp () ? 2 : HasLightFogProp () ? 3 : HasDenseFogProp () ? 4 : 0; }
 
 		inline int32_t HasTexture (uint8_t nSide) { return (m_children [nSide] >= 0) || m_sides [nSide].IsWall (); }
 

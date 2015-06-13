@@ -935,7 +935,7 @@ ogl.SetDepthTest (false);
 ogl.SetAlphaTest (false);
 ogl.SetDepthMode (GL_ALWAYS);
 int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
-for (int32_t nFogType = 0; nFogType < 3; nFogType++) {
+for (int32_t nFogType = 0; nFogType < FOG_TYPE_COUNT; nFogType++) {
 	if (gameData.segData.nFogSegments [nFogType]) {
 		if ((nFogType & 1) == 0) {
 			ogl.SelectFogBuffer (nFogType / 2);

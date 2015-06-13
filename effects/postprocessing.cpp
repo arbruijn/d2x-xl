@@ -494,11 +494,11 @@ extern float quadVerts [5][4][2];
 
 void RenderFog (void)
 {
-	vec4 fogColors [4] = {
+	vec4 fogColors [FOG_TYPE_COUNT] = {
 		{0.2f, 0.4f, 0.6f, 200.0f},
 		{1.0f, 0.7f, 0.4f, 60.0f},
-		{0.7f, 0.7f, 0.7f, 140.0f},
-		{0.0f, 0.0f, 0.0f, 0.0f}
+		{0.7f, 0.7f, 0.7f, 200.0f},
+		{0.7f, 0.7f, 0.7f, 100.0f}
 		};
 #if 1
 if (!gameStates.render.bHaveFog [0])
@@ -513,7 +513,7 @@ shaderManager.Set ("depthTex", 1);
 shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
 glColor4f (1,1,1,1);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
-for (int32_t nFogType = 0; nFogType < 3; nFogType += 2) {
+for (int32_t nFogType = 0; nFogType < FOG_TYPE_COUNT; nFogType += 2) {
 	if (gameStates.render.bHaveFog [nFogType / 2 + 1]) {
 		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		ogl.BindTexture (ogl.m_data.GetDrawBuffer (5 + nFogType / 2)->ColorBuffer (0));

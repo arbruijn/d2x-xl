@@ -158,12 +158,9 @@ if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (pSeg
 	return (pSeg->m_owner == 1) ? 2 : 1;
 if (!missionConfig.m_bColoredSegments)
 	return 0;
-if (pSeg->HasWaterProp ())
-	return 3;
-if (pSeg->HasLavaProp ())
-	return 4;
-if (pSeg->HasFogProp ())
-	return 5;
+int32_t nFogType = pSeg->FogType ();
+if (nFogType)
+	return 2 + nFogType;
 #if 0
 if (pSeg->m_function == SEGMENT_FUNC_TEAM_BLUE) 
 	return 1;
@@ -196,21 +193,12 @@ if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (pSeg
 if (!missionConfig.m_bColoredSegments)
 	return 0;
 
+int32_t nFogType = pSeg->FogType ();
 if (!pConnSeg) {
-	if (pSeg->HasWaterProp ())
-		return 3;
-	if (pSeg->HasLavaProp ())
-		return 4;
-	if (pSeg->HasFogProp ())
-		return 5;
-	return 0;
+	return nFogType ? 2 + nFogType : 0;
 	}
-if (pSeg->HasWaterProp () != pConnSeg->HasWaterProp ())
-	return 3;
-if (pSeg->HasLavaProp () != pConnSeg->HasLavaProp ())
-	return 4;
-if (pSeg->HasFogProp () != pConnSeg->HasFogProp ())
-	return 5;
+if (nFogType != pConnSeg->FogType ())
+	return nFogType + 2;
 #if 1
 return 0;
 #else
@@ -246,7 +234,7 @@ CFloatVector *ColoredSegmentColor (int32_t nSegment, int32_t nSide, char nColor)
 //	return NULL;
 
 	CSegment*	pSeg = SEGMENT (nSegment);
-	CSegment*	pConnSeg = (pSeg->m_children [nSide] < 0) ? NULL : SEGMENT (pSeg->m_children [nSide]);
+	CSegment*	pConnSeg = SEGMENT (pSeg->m_children [nSide]);
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -261,20 +249,12 @@ else {
 			return NULL;
 		nColor = (pSeg->m_owner == 1);
 		}
-	if (missionConfig.m_bColoredSegments && pSeg->HasWaterProp ())
-		nColor = 2;
-	else if (missionConfig.m_bColoredSegments && pSeg->HasLavaProp ())
-		nColor = 3;
-	else if (missionConfig.m_bColoredSegments && pSeg->HasFogProp ())
-		nColor = 4;
-	else
+	char nFogType = missionConfig.m_bColoredSegments ? pSeg->FogType () : 0;
+	if (missionConfig.m_bColoredSegments && nFogType)
+		nColor = nFogType + 1;
 		return NULL;
 	if (pConnSeg >= 0) {
-		if (pSeg->HasWaterProp () == pConnSeg->HasWaterProp ())
-			return NULL;
-		if (pSeg->HasLavaProp () == pConnSeg->HasLavaProp ())
-			return NULL;
-		if (pSeg->HasFogProp () == pConnSeg->HasFogProp ())
+		if (nFogType && (nFogType == pConnSeg->FogType ()))
 			return NULL;
 #if 1
 		if (pSeg->m_function == pConnSeg->m_function)
