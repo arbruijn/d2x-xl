@@ -483,6 +483,7 @@ ZFAR = gameStates.render.nShadowMap ? 400.0f : 5000.0f;
 #else
 gameStates.render.glFOV = 180.0;
 #endif
+double _r = gameData.renderData.scene.AspectRatio ();
 if (!StereoSeparation ())
 	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.renderData.scene.AspectRatio (), ZNEAR, ZFAR);
 else if (IsOculusRift ()) {
@@ -498,6 +499,7 @@ else if (gameOpts->render.stereo.nMethod == STEREO_PARALLEL)
 	SetupFrustum (StereoSeparation ());
 else
 	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.renderData.scene.AspectRatio (), ZNEAR, ZFAR);
+ogl.ClearError (0);
 if (gameStates.render.bRearView < 0)
 	glScalef (-1.0f, 1.0f, 1.0f);
 m_data.depthScale.v.coord.x = float (ZFAR / (ZFAR - ZNEAR));

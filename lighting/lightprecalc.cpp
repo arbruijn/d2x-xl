@@ -423,6 +423,7 @@ ENTER (0, 0);
 				h = gameData.renderData.screen.Height ();
 	CCanvas canvas;
 
+ogl.ClearError (0);
 gameData.renderData.screen.Setup (NULL, 0, 0, 1024, 1024);
 canvas.Setup (&gameData.renderData.screen);
 canvas.Activate ("SetupProjection");
@@ -430,10 +431,13 @@ canvas.SetWidth ();
 canvas.SetHeight ();
 gameData.renderData.screen.SetWidth (1024);
 gameData.renderData.screen.SetHeight (1024);
+SetupCanvasses ();
 ogl.SetTransform (1);
 ogl.SetViewport (0, 0, 1024, 1024);
 gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
+ogl.ClearError (0);
 SetupTransformation (projection, CFixVector::ZERO, CFixMatrix::IDENTITY, gameStates.render.xZoom, -1, 0, true);
+ogl.ClearError (0);
 gameStates.render.nShadowPass = 0;
 gameStates.render.nShadowMap = 0;
 ogl.SetTransform (0);
@@ -441,6 +445,7 @@ canvas.Deactivate ();
 gameData.renderData.screen.Setup (NULL, 0, 0, w, h);
 gameData.renderData.screen.SetWidth (w);
 gameData.renderData.screen.SetHeight (h);
+ogl.ClearError (0);
 ogl.EndFrame (-1);
 RETURN
 }

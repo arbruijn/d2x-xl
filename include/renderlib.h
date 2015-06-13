@@ -94,7 +94,7 @@ void HandleZoom (void);
 
 //------------------------------------------------------------------------------
 
-extern CFloatVector segmentColors [4];
+//extern CFloatVector segmentColors [5];
 
 #if DBG
 extern int16_t nDbgSeg;

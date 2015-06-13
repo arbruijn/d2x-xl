@@ -876,7 +876,7 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 #endif
 	int32_t nChildSeg = pSeg->ChildId (pFace->m_info.nSide);
 	CSegment *pChildSeg = SEGMENT (nChildSeg);
-	if (pChildSeg && (pChildSeg->FogType () == nFogType))
+	if (pChildSeg && (pChildSeg->FogType () - 1 == nFogType))
 		continue;
 	gameStates.render.bHaveFog = 1;
 	if (!nMode)

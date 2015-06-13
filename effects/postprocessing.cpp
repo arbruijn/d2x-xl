@@ -452,10 +452,11 @@ const char *fogFS =
 	"   vec4 c1 = ((df > 0.0) && (dz > 0.0)) ? vec4 (fogColor1.rgb, min (0.8, min (df, dz) / fogColor1.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
 	"   df = fogVolume.a - fogVolume.b;\r\n" \
 	"   dz = z - fogVolume.b;\r\n" \
-	"   vec4 c2 = ((df > 0.0) && (dz > 0.0)) ? vec4 (fogColor2.rgb, min (0.8, min (df, dz) / fogColor2.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
+	"   vec4 c2 = ((fogColor2.a > 0.0) && (df > 0.0) && (dz > 0.0)) ? vec4 (fogColor2.rgb, min (0.8, min (df, dz) / fogColor2.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
 	"   //gl_FragColor = vec4 (max (c1.r, c2.r), max (c1.g, c2.g), max (c1.b, c2.b), max (c1.a, c2.a));\r\n" \
 	"   //gl_FragColor = vec4 (c1.rgb + c2.rgb, min (0.8, c1.a + c2.a));\r\n" \
 	"   gl_FragColor = vec4 (c1.r * c2.r, c1.g * c2.g, c1.b * c2.b, min (0.8, c1.a + c2.a));\r\n" \
+	"   //gl_FragColor = vec4 (c1.rgb * c1.a + c2.rgb * c2.a, min (0.8, c1.a + c2.a));\r\n" \
 	"}\r\n"
 	;
 
@@ -494,9 +495,9 @@ void RenderFog (void)
 {
 	vec4 fogColors [4] = {
 		{0.2f, 0.4f, 0.6f, 200.0f},
-		{0.8f, 0.5f, 0.2f, 60.0f},
-		{0.7f, 0.7f, 0.7f, 200.0f},
-		{0.0f, 0.0f, 0.0f, 1.0f}
+		{1.0f, 0.7f, 0.4f, 60.0f},
+		{0.7f, 0.7f, 0.7f, 20.0f},
+		{0.0f, 0.0f, 0.0f, 0.0f}
 		};
 #if 1
 if (!gameStates.render.bHaveFog)
@@ -514,7 +515,7 @@ ogl.SetBlendMode (OGL_BLEND_ALPHA);
 for (int32_t nFogType = 0; nFogType < 3; nFogType += 2) {
 	if (gameData.segData.nFogSegments [nFogType] + gameData.segData.nFogSegments [nFogType + 1]) {
 		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-		ogl.BindTexture (ogl.m_data.GetDrawBuffer (5)->ColorBuffer (nFogType / 2));
+		ogl.BindTexture (ogl.m_data.GetDrawBuffer (5 + nFogType / 2)->ColorBuffer (0));
 		shaderManager.Set ("fogColor1", fogColors [nFogType]);
 		shaderManager.Set ("fogColor2", fogColors [nFogType + 1]);
 		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);

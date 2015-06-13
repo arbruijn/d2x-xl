@@ -162,6 +162,8 @@ if (pSeg->HasWaterProp ())
 	return 3;
 if (pSeg->HasLavaProp ())
 	return 4;
+if (pSeg->HasFogProp ())
+	return 5;
 #if 0
 if (pSeg->m_function == SEGMENT_FUNC_TEAM_BLUE) 
 	return 1;
@@ -199,12 +201,16 @@ if (!pConnSeg) {
 		return 3;
 	if (pSeg->HasLavaProp ())
 		return 4;
+	if (pSeg->HasFogProp ())
+		return 5;
 	return 0;
 	}
 if (pSeg->HasWaterProp () != pConnSeg->HasWaterProp ())
 	return 3;
 if (pSeg->HasLavaProp () != pConnSeg->HasLavaProp ())
 	return 4;
+if (pSeg->HasFogProp () != pConnSeg->HasFogProp ())
+	return 5;
 #if 1
 return 0;
 #else
@@ -219,8 +225,9 @@ return (pSeg->m_function == SEGMENT_FUNC_TEAM_BLUE) ||
 
 // ----------------------------------------------------------------------------
 
-CFloatVector segmentColors [4] = {
+CFloatVector segmentColors [5] = {
 #if DBG
+	 {{{1, 1, 1, 0}}},
 	 {{{1, 1, 1, 0}}},
 	 {{{1, 1, 1, 0}}},
 	 {{{1, 1, 1, 0}}},
@@ -230,6 +237,7 @@ CFloatVector segmentColors [4] = {
 	 {{{0, 0.25f, 0.5f, 0.333f}}},
 	 {{{0, 1.0f / 16.0f, 0.5f, 0.333f}}},
 	 {{{0.5f, 0, 0, 0.333f}}}};
+	 {{{0.5f, 0.5f, 0.5f, 0.0f}}}};
 #endif
 
 CFloatVector *ColoredSegmentColor (int32_t nSegment, int32_t nSide, char nColor)
@@ -257,12 +265,16 @@ else {
 		nColor = 2;
 	else if (missionConfig.m_bColoredSegments && pSeg->HasLavaProp ())
 		nColor = 3;
+	else if (missionConfig.m_bColoredSegments && pSeg->HasFogProp ())
+		nColor = 4;
 	else
 		return NULL;
 	if (pConnSeg >= 0) {
 		if (pSeg->HasWaterProp () == pConnSeg->HasWaterProp ())
 			return NULL;
 		if (pSeg->HasLavaProp () == pConnSeg->HasLavaProp ())
+			return NULL;
+		if (pSeg->HasFogProp () == pConnSeg->HasFogProp ())
 			return NULL;
 #if 1
 		if (pSeg->m_function == pConnSeg->m_function)

@@ -60,7 +60,7 @@ void LoadFaceBitmaps (CSegment *pSeg, CSegFace *pFace);
 
 #define	MAX_EDGE_LEN(nMeshQuality)	fMaxEdgeLen [nMeshQuality]
 
-#define MESH_DATA_VERSION	16
+#define MESH_DATA_VERSION	17
 
 #if POLYGONAL_OUTLINE
 extern bool bPolygonalOutline;
