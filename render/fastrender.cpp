@@ -937,8 +937,10 @@ ogl.SetDepthMode (GL_ALWAYS);
 int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
 for (int32_t nFogType = 0; nFogType < 3; nFogType++) {
 	if (gameData.segData.nFogSegments [nFogType]) {
-		ogl.SelectFogBuffer (nFogType / 2);
-		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		if ((nFogType & 1) == 0) {
+			ogl.SelectFogBuffer (nFogType / 2);
+			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			}
 		for (int32_t nMode = 0; nMode < 2; nMode++) {
 			if (nMode) {
 				if (nFogType & 1) {
@@ -965,6 +967,7 @@ for (int32_t nFogType = 0; nFogType < 3; nFogType++) {
 
 			for (int32_t i = gameData.renderData.mine.visibility [0].nSegments; i; )
 				RenderFogFaces (pSegList [--i], nFogType + 1, nMode);
+			glColorMask (1, 1, 1, 1);
 			}
 		}
 	}
@@ -973,7 +976,6 @@ ogl.SetAlphaTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 glBlendEquation (GL_FUNC_ADD);
-glColorMask (1, 1, 1, 1);
 shaderManager.Deploy (-1);
 ogl.ChooseDrawBuffer ();
 #endif

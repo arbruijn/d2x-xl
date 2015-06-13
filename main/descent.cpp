@@ -1004,6 +1004,7 @@ if ((t > 0) && (year == 2015) && (month == 4) && (day <= 10))
 
 void DonationNotification (void)
 {
+#if !DBG
 if (gameConfig.nTotalTime > (20 * 60)) {	// played for more than 25 hours
 	SetScreenMode (SCREEN_MENU);
 	int32_t nFade = gameOpts->menus.nFade;
@@ -1019,6 +1020,7 @@ if (gameConfig.nTotalTime > (20 * 60)) {	// played for more than 25 hours
 	gameOpts->menus.nFade = nFade;
 	gameConfig.nTotalTime = 0;	// only display after another 25 hours
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------
