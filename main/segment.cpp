@@ -169,6 +169,8 @@ else {
 m_xAvgSegLight = cf.ReadFix ();
 if (!gameStates.app.bD2XLevel && (m_function == 2))
 	m_function = 0;
+if (FogType ())
+	gameData.segData.nFogSegments [FogType () - 1]++;
 }
 
 //------------------------------------------------------------------------------
@@ -222,8 +224,6 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		GetCornerIndex (i, sideVerts);
 	m_sides [i].Read (cf, m_vertices, sideVerts, m_children [i] == -1);
 	}
-if (FogType ())
-	gameData.segData.nFogSegments [FogType () - 1]++;
 if (gameData.segData.nLevelVersion > 24) 
 	RemapVertices ();
 }

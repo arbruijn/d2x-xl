@@ -453,7 +453,8 @@ const char *fogFS =
 	"   df = fogVolume.a - fogVolume.b;\r\n" \
 	"   dz = z - fogVolume.b;\r\n" \
 	"   vec4 c2 = ((df > 0.0) && (dz > 0.0)) ? vec4 (fogColor2.rgb, min (1.0, min (df, dz) / fogColor2.a)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
-	"   gl_FragColor = vec4 (max (c1.r, c2.r), max (c1.g, c2.g), max (c1.b, c2.b), max (c1.a, c2.a)); //waterHaze.rgb + lavaHaze.rgb, min (1.0, waterHaze.a + lavaHaze.a));\r\n" \
+	"   //gl_FragColor = vec4 (max (c1.r, c2.r), max (c1.g, c2.g), max (c1.b, c2.b), max (c1.a, c2.a));\r\n" \
+	"   gl_FragColor = vc1.rgb + c2.rgb, min (1.0, c1.a + c2.a));\r\n" \
 	"}\r\n"
 	;
 

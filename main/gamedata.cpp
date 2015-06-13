@@ -971,7 +971,8 @@ bHaveSlideSegs = 0;
 nSlideSegs = 0;
 nFogSegments [0] =
 nFogSegments [1] =
-nFogSegments [2] = 0;
+nFogSegments [2] =
+nFogSegments [3] = 0;
 }
 
 // ----------------------------------------------------------------------------

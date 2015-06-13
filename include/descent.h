@@ -2339,7 +2339,7 @@ class CSegmentData {
 		int32_t						nFaceKeys;
 		int32_t						nEdges;
 		int32_t						nLevelVersion;
-		int32_t						nFogSegments [3];
+		int32_t						nFogSegments [4]; // size must be a multiple of two!
 		char							szLevelFilename [FILENAME_LEN];
 		CSecretData					secret;
 		CArray<tSlideSegs>		slideSegs;
