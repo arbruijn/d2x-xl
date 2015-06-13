@@ -847,7 +847,7 @@ else
 // in the render buffer using glBlendEquation (GL_MAX).
 // Then render the opposite sides 
 
-static int16_t RenderFogFaces (int16_t nSegment, int32_t nMode)
+static int16_t RenderFogFaces (int16_t nSegment, int32_t nColor, int32_t nMode)
 {
 ENTER (0, 0);
 	
@@ -855,8 +855,8 @@ ENTER (0, 0);
 	if (!pSeg)
 		RETVAL (0)
 
-	int32_t		nColor = pSeg->HasWaterProp () ? 1 : pSeg->HasLavaProp () ? -1 : 0;
-	if (!nColor)
+	int32_t		nSegColor = pSeg->HasWaterProp () ? 1 : pSeg->HasLavaProp () ? -1 : 0;
+	if (nSegColor != nColor)
 		RETVAL (0)
 
 	tSegFaces	*pSegFace = SEGFACES + nSegment;
@@ -868,29 +868,6 @@ ENTER (0, 0);
 if (nSegment == nDbgSeg)
 	BRP;
 #endif
-
-if (nMode) {
-	if (nColor < 0) {
-		glColorMask (0, 0, 1, 0);
-		glColor4f (0, 0, 1, 0);
-		}
-	else {
-		glColorMask (1, 0, 0, 0);
-		glColor4f (1, 0, 0, 0);
-		}
-	glBlendEquation (GL_MIN);
-	}
-else {
-	if (nColor < 0) {
-		glColorMask (0, 0, 0, 1);
-		glColor4f (0, 0, 0, 1);
-		}
-	else {
-		glColorMask (0, 1, 0, 0);
-		glColor4f (0, 1, 0, 0);
-		}
-	glBlendEquation (GL_MAX);
-	}
 
 for (i = pSegFace->nFaces; i; i--, pFace++) {
 #if DBG
@@ -976,10 +953,35 @@ else if (nType == RENDER_TYPE_FOG) {
 	ogl.SetAlphaTest (false);
 	ogl.SetDepthMode (GL_ALWAYS);
 	int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
-	for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
-		RenderFogFaces (pSegList [--i], 0);
-	for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
-		RenderFogFaces (pSegList [--i], 1);
+	for (int32_t nColor = 1; nColor >= -1; nColor -= 2) {
+		for (int32_t nMode = 0; nMode < 2; nMode++) {
+			if (nMode) {
+				if (nColor < 0) {
+					glColorMask (0, 0, 1, 0);
+					glColor4f (0, 0, 1, 0);
+					}
+				else {
+					glColorMask (1, 0, 0, 0);
+					glColor4f (1, 0, 0, 0);
+					}
+				glBlendEquation (GL_MIN);
+				}
+			else {
+				if (nColor < 0) {
+					glColorMask (0, 0, 0, 1);
+					glColor4f (0, 0, 0, 1);
+					}
+				else {
+					glColorMask (0, 1, 0, 0);
+					glColor4f (0, 1, 0, 0);
+					}
+				glBlendEquation (GL_MAX);
+				}
+
+			for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
+				RenderFogFaces (pSegList [--i], nColor, nMode);
+			}
+		}
 	ogl.SetDepthTest (true);
 	ogl.SetAlphaTest (true);
 	ogl.SetDepthMode (GL_LEQUAL);
