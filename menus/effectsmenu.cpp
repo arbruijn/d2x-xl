@@ -174,6 +174,15 @@ if ((m = menu ["glow"])) {
 		}
 	}
 
+if ((m = menu ["fog"])) {
+	v = m->Value ();
+	if (gameOpts->render.effects.bFog != v) {
+		gameOpts->render.effects.bFog  = v;
+		sprintf (m->m_text, TXT_EFFECTS_FOG, pszOffOn [gameOpts->render.effects.bFog]);
+		m->m_bRebuild = -1;
+		}
+	}
+
 if ((m = menu ["energy sparks"])) {
 	v = m->Value ();
 	if (gameOpts->render.effects.bEnergySparks != v) {
@@ -295,6 +304,9 @@ do {
 	sprintf (szSlider + 1, TXT_EFFECTS_GLOW, pszOffFastFull [gameOpts->render.effects.bGlow]);
 	*szSlider = *(TXT_EFFECTS_GLOW - 1);
 	m.AddSlider ("glow", szSlider + 1, gameOpts->render.effects.bGlow, 0, 2, KEY_W, HTX_EFFECTS_GLOW);
+	sprintf (szSlider + 1, TXT_EFFECTS_FOG, pszOffOn [gameOpts->render.effects.bFog]);
+	*szSlider = *(TXT_EFFECTS_FOG - 1);
+	m.AddSlider ("fog", szSlider + 1, gameOpts->render.effects.bFog, 0, 1, KEY_F, HTX_EFFECTS_FOG);
 	sprintf (szSlider + 1, TXT_RENDER_SPARKS, pszNoneBasicFull [gameOpts->render.effects.bEnergySparks]);
 	*szSlider = *(TXT_RENDER_SPARKS - 1);
 	m.AddSlider ("energy sparks", szSlider + 1, gameOpts->render.effects.bEnergySparks, 0, 2, KEY_P, HTX_RENDER_SPARKS);

@@ -901,6 +901,7 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 	CSegment *pChildSeg = SEGMENT (nChildSeg);
 	if (pChildSeg && (pChildSeg->HasWaterProp () == pSeg->HasWaterProp ()) && (pChildSeg->HasLavaProp () == pSeg->HasLavaProp ()))
 		continue;
+	gameStates.render.bHaveFog = 1;
 	if (!nMode)
 		DrawFace (pFace);
 	else if (pChildSeg) {
@@ -951,6 +952,16 @@ if (nType == RENDER_TYPE_CORONAS) {
 	}
 else if (nType == RENDER_TYPE_FOG) {
 #if 1
+	gameStates.render.bHaveFog = 0;
+	if (ogl.m_features.bDepthBlending < 0)
+		return false;
+	if (!gameOpts->render.effects.bEnabled)
+		return false;
+	if (gameOpts->render.effects.bFog)
+		return false;
+	if (gameOptions [0].render.nQuality < 2)
+		return false;
+
 	GLhandleARB fogVolShaderProg = GLhandleARB (shaderManager.Deploy (hFogVolShader, true));
 	if (!fogVolShaderProg)
 		RETVAL (0)

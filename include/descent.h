@@ -385,6 +385,7 @@ typedef struct tEffectRenderOptions {
 	int32_t bSoftParticles;
 	int32_t bMovingSparks;
 	int32_t bGlow;
+	int32_t bFog;
 	int32_t bWarpAppearance;
 } tEffectRenderOptions;
 
@@ -1038,6 +1039,7 @@ class CRenderStates {
 		int32_t bHaveOculusRift;
 		int32_t bHaveDynLights;
 		int32_t bHaveSparks;
+		int32_t bHaveFog;
 		int32_t bUsePerPixelLighting;
 		int32_t nRenderPass;
 		int32_t nShadowPass;

@@ -406,6 +406,8 @@ PROF_START
 #if DBG
 if (pFace && (pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
 	BRP;
+if (pFace->m_info.nSegColor)
+	BRP;
 #endif
 
 if (!pFace->m_info.bTextured)
@@ -432,6 +434,10 @@ gameStates.render.history.nType = (bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot 
 if ((bTransparent /*|| (pFace->m_info.nSegColor && gameStates.render.bPerPixelLighting)*/) && (gameStates.render.nType < RENDER_TYPE_SKYBOX) && !bMonitor) {
 	pFace->m_info.nRenderType = gameStates.render.history.nType;
 	pFace->m_info.bColored = bColored;
+#if DBG
+if (pFace->m_info.nSegColor)
+	BRP;
+#endif
 	transparencyRenderer.AddFace (pFace);
 #if 1 //!DBG
 	if (!(pFace->m_info.nSegColor && bmBot))

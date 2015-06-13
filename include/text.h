@@ -2016,10 +2016,10 @@ void LoadGameTexts(void);
 #define TXT_REALISTIC					GT(1258)
 #define TXT_CARTOON						GT(1259)
 #define TXT_UNNERF_D1_WEAPONS			GT(1260)
+#define TXT_EFFECTS_FOG					GT(1261)
 
 #if 0
 
-#define TXT_					GT(1261)
 #define TXT_					GT(1262)
 #define TXT_					GT(1263)
 #define TXT_					GT(1264)
@@ -2632,10 +2632,10 @@ void LoadGameTexts(void);
 #define HTX_HUD_SEPARATORS				HT(452)
 #define HTX_RENDER_STYLE				HT(453)
 #define HTX_UNNERF_D1_WEAPONS			HT(454)
+#define HTX_EFFECTS_FOG					HT(455)
 
 #if 0
 
-#define HTX_						HT(455)
 #define HTX_						HT(456)
 #define HTX_						HT(457)
 #define HTX_						HT(458)

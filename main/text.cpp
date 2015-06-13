@@ -2008,6 +2008,7 @@ const char *defaultGameTexts [][2] = {
  {"realistisch", "realistic"},
  {"cartoon", "cartoon"},
  {"D1-Waffen ungenerft", "~Unnerf d1 weapons"},
+ {"~Dunst: %s", "~Fog: %s"},
 
 #if 0
  {"", ""},
@@ -2777,6 +2778,7 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, wird das Minimal-HUD mit zusätzlichen Linien\nversehen, um seine Elemente besser abzusetzen.", "If checked, the minimalist HUD is drawn with additional\nlines to better separate it from the reticle."},
  {"Hier kann ausgewaehlt werden, ob das Spiel realistisch oder wie\nein Cartoon aussieht.", "Select whether the game looks realistic or like a\ncartoon here."},
 {"Wenn angekreuzt, haben Waffen aus Descent 1 in Descent 2-Missionen\ndieselbe Schlagkraft wie in Descent 1.", "If checked, Descent 1 have the same power in Descent 2 missions\nas they have in Descent 1."},
+ {"Wenn eingeschaltet, werden unter Wasser und in Lava Dunst gezeichnet.", "If turned on, a blue or orange haze is rendered under water and in lava."},
 #if 0
  {"", ""},
 #endif

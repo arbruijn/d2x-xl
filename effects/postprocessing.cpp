@@ -490,6 +490,8 @@ extern float quadVerts [5][4][2];
 void RenderFog (void)
 {
 #if 1
+if (!gameStates.render.bHaveFog)
+	return;
 ogl.CopyDepthTexture (1, GL_TEXTURE1, 1);
 GLhandleARB fogShaderProg = GLhandleARB (shaderManager.Deploy (hFogShader, true));
 if (!fogShaderProg)
