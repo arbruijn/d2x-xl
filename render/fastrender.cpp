@@ -961,7 +961,7 @@ for (int32_t nFogType = 0; nFogType < 3; nFogType++) {
 				glBlendEquation (GL_MAX);
 				}
 
-			for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
+			for (int32_t i = gameData.renderData.mine.visibility [0].nSegments; i; )
 				RenderFogFaces (pSegList [--i], nFogType, nMode);
 			}
 		}
@@ -979,31 +979,32 @@ ogl.ChooseDrawBuffer ();
 
 //------------------------------------------------------------------------------
 
-int16_t RenderSegments (int32_t nFogType, int32_t bHeadlight)
+int16_t RenderSegments (int32_t nType, int32_t bHeadlight)
 {
 ENTER (0, 0);
-	int32_t	i, nFaces = 0, bAutomap = (nFogType == RENDER_TYPE_GEOMETRY);
+	int32_t	nFaces = 0;
 
-if (nFogType == RENDER_TYPE_CORONAS) {
+if (nType == RENDER_TYPE_CORONAS) {
 	// render mine segment by segment
 	if (gameData.renderData.mine.visibility [0].nSegments == gameData.segData.nSegments) {
 		CSegFace *pFace = FACES.faces.Buffer ();
-		for (i = FACES.nFaces; i; i--, pFace++)
-			if (RenderMineFace (SEGMENT (pFace->m_info.nSegment), pFace, nFogType))
+		for (int32_t i = FACES.nFaces; i; i--, pFace++)
+			if (RenderMineFace (SEGMENT (pFace->m_info.nSegment), pFace, nType))
 				nFaces++;
 		}
 	else {
+		int32_t bAutomap = (nType == RENDER_TYPE_GEOMETRY);
 		int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
-		for (i = gameData.renderData.mine.visibility [0].nSegments; i; )
-			nFaces += RenderSegmentFaces (nFogType, pSegList [--i], bAutomap, bHeadlight);
+		for (int32_t i = gameData.renderData.mine.visibility [0].nSegments; i; )
+			nFaces += RenderSegmentFaces (nType, pSegList [--i], bAutomap, bHeadlight);
 		}
 	}
-else if (nFogType == RENDER_TYPE_FOG) {
+else if (nType == RENDER_TYPE_FOG) {
 	RenderFogSegments ();
 	}
 else {
 	// render mine by pre-sorted textures
-	nFaces = RenderFaceList (gameData.renderData.faceIndex, nFogType, bHeadlight);
+	nFaces = RenderFaceList (gameData.renderData.faceIndex, nType, bHeadlight);
 	}
 RETVAL (nFaces)
 }
