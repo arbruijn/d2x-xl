@@ -310,15 +310,23 @@ CObject *pObj = OBJECT (m_nObject);
 if (pObj && ((pObj->Type () == OBJ_ROBOT) || (pObj->Type () == OBJ_POWERUP)) && (pObj->Frame () != gameData.appData.nFrameCount))
 	RETURN
 
-if (automap.Active () && !(gameStates.render.bAllVisited || automap.m_bFull)) {
+if (automap.Active ()) {
 	if (pObj) {
-		if (!automap.m_visited [pObj->Segment ()])
+		if ((pObj->Type () == OBJ_ROBOT) && !extraGameInfo [IsMultiGame].bRobotsOnRadar)
+			RETURN
+		if ((pObj->Type () == OBJ_POWERUP) && !extraGameInfo [IsMultiGame].bPowerupsOnRadar)
 			RETURN
 		}
-	else if (!automap.m_bFull) {
-		if (((m_nSegment [0] >= 0) && !automap.m_visible [m_nSegment [0]]) &&
-			 ((m_nSegment [1] >= 0) && !automap.m_visible [m_nSegment [1]]))
-			RETURN
+	if (!(gameStates.render.bAllVisited || automap.m_bFull)) {
+		if (pObj) {
+			if (!automap.m_visited [pObj->Segment ()])
+				RETURN
+			}
+		else if (!automap.m_bFull) {
+			if (((m_nSegment [0] >= 0) && !automap.m_visible [m_nSegment [0]]) &&
+				 ((m_nSegment [1] >= 0) && !automap.m_visible [m_nSegment [1]]))
+				RETURN
+			}
 		}
 	}
 

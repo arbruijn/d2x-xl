@@ -367,7 +367,7 @@ if (gameStates.app.bSaveScreenShot && cockpit->Hide ())
 	return;
 
 	CFont*	curFont = CCanvas::Current ()->Font ();
-	int32_t		w, h, aw, offs = m_data.bHires ? 10 : 5;
+	int32_t	w, h, aw, offs = m_data.bHires ? 10 : 5;
 	char		szInfo [3][200];
 
 #if 0
