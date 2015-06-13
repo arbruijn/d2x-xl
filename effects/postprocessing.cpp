@@ -501,7 +501,7 @@ void RenderFog (void)
 		{0.0f, 0.0f, 0.0f, 0.0f}
 		};
 #if 1
-if (!gameStates.render.bHaveFog)
+if (!gameStates.render.bHaveFog [0])
 	return;
 ogl.CopyDepthTexture (1, GL_TEXTURE1, 1);
 GLhandleARB fogShaderProg = GLhandleARB (shaderManager.Deploy (hFogShader, true));
@@ -514,7 +514,7 @@ shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
 glColor4f (1,1,1,1);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 for (int32_t nFogType = 0; nFogType < 3; nFogType += 2) {
-	if (gameData.segData.nFogSegments [nFogType] + gameData.segData.nFogSegments [nFogType + 1]) {
+	if (gameStates.render.bHaveFog [nFogType / 2 + 1]) {
 		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		ogl.BindTexture (ogl.m_data.GetDrawBuffer (5 + nFogType / 2)->ColorBuffer (0));
 		shaderManager.Set ("fogColor1", fogColors [nFogType]);

@@ -855,12 +855,13 @@ ENTER (0, 0);
 	if (!pSeg)
 		RETVAL (0)
 
-	int32_t		nSegFogType = pSeg->FogType () - 1;
+	int32_t		nSegFogType = pSeg->FogType ();
 	if (nSegFogType != nFogType)
 		RETVAL (0)
 
 	tSegFaces	*pSegFace = SEGFACES + nSegment;
 	CSegFace		*pFace = pSegFace->pFace;
+	int32_t		nFogBuffer = (nFogType - 1) / 2 + 1;
 	int16_t		nFaces = 0;
 	int32_t		i;
 
@@ -876,9 +877,10 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 #endif
 	int32_t nChildSeg = pSeg->ChildId (pFace->m_info.nSide);
 	CSegment *pChildSeg = SEGMENT (nChildSeg);
-	if (pChildSeg && (pChildSeg->FogType () - 1 == nFogType))
+	if (pChildSeg && (pChildSeg->FogType () == nFogType))
 		continue;
-	gameStates.render.bHaveFog = 1;
+	gameStates.render.bHaveFog [0] = 1;
+	gameStates.render.bHaveFog [nFogBuffer] = 1;
 	if (!nMode)
 		DrawFace (pFace);
 	else if (pChildSeg) {
@@ -911,7 +913,7 @@ RETVAL (nFaces)
 void RenderFogSegments (void)
 {
 #if 1
-gameStates.render.bHaveFog = 0;
+memset (gameStates.render.bHaveFog, 0, sizeof (gameStates.render.bHaveFog));
 if (ogl.m_features.bDepthBlending < 0)
 	return;
 if (!gameOpts->render.effects.bEnabled)
@@ -962,7 +964,7 @@ for (int32_t nFogType = 0; nFogType < 3; nFogType++) {
 				}
 
 			for (int32_t i = gameData.renderData.mine.visibility [0].nSegments; i; )
-				RenderFogFaces (pSegList [--i], nFogType, nMode);
+				RenderFogFaces (pSegList [--i], nFogType + 1, nMode);
 			}
 		}
 	}
