@@ -929,7 +929,6 @@ if (!fogVolShaderProg)
 shaderManager.Rebuild (fogVolShaderProg);
 shaderManager.Set ("depthTex", 0);
 shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
-ogl.CopyDepthTexture (1, GL_TEXTURE0);
 glClearColor (1.0f, 0.0f, 1.0f, 0.0f);
 ogl.SetDepthTest (false);
 ogl.SetAlphaTest (false);
@@ -940,6 +939,8 @@ for (int32_t nFogType = 0; nFogType < FOG_TYPE_COUNT; nFogType++) {
 		if ((nFogType & 1) == 0) {
 			ogl.SelectFogBuffer (nFogType / 2);
 			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+			ogl.CopyDepthTexture (1, GL_TEXTURE0);
 			}
 		for (int32_t nMode = 0; nMode < 2; nMode++) {
 			if (nMode) {
