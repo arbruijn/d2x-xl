@@ -449,11 +449,11 @@ const char *fogFS =
 	"   fogVolume = vec4 (ZEYE (fogVolume.r), ZEYE (fogVolume.g), ZEYE (fogVolume.b), ZEYE (fogVolume.a));\r\n" \
 	"   float df = fogVolume.g - fogVolume.r;\r\n" \
 	"   float dz = z - fogVolume.r;\r\n" \
-	"   vec4 c1 = ((df > 0.0) && (dz > 0.0)) ? vec4 (fogColor1, min (1.0, min (df, dz) / fogColor1.a)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
+	"   vec4 c1 = ((df > 0.0) && (dz > 0.0)) ? vec4 (fogColor1.rgb, min (1.0, min (df, dz) / fogColor1.a)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
 	"   df = fogVolume.a - fogVolume.b;\r\n" \
 	"   dz = z - fogVolume.b;\r\n" \
-	"   vec4 c2 = ((df > 0.0) && (dz > 0.0)) ? vec4 (fogColor2, min (1.0, min (df, dz) / fogColor2.a)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
-	"   gl_FragColor = vec4 (max (c1, c2); //waterHaze.rgb + lavaHaze.rgb, min (1.0, waterHaze.a + lavaHaze.a));\r\n" \
+	"   vec4 c2 = ((df > 0.0) && (dz > 0.0)) ? vec4 (fogColor2.rgb, min (1.0, min (df, dz) / fogColor2.a)) : vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
+	"   gl_FragColor = vec4 (max (c1.r, c2.r), max (c1.g, c2.g), max (c1.b, c2.b), max (c1.a, c2.a)); //waterHaze.rgb + lavaHaze.rgb, min (1.0, waterHaze.a + lavaHaze.a));\r\n" \
 	"}\r\n"
 	;
 
