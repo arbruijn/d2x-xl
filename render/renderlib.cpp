@@ -214,20 +214,23 @@ return (pSeg->m_function == SEGMENT_FUNC_TEAM_BLUE) ||
 
 // ----------------------------------------------------------------------------
 
-CFloatVector segmentColors [5] = {
+CFloatVector segmentColors [6] = {
 #if DBG
 	 {{{1, 1, 1, 0}}},
 	 {{{1, 1, 1, 0}}},
 	 {{{1, 1, 1, 0}}},
 	 {{{1, 1, 1, 0}}},
-	 {{{1, 1, 1, 0}}}};
+	 {{{1, 1, 1, 0}}},
+	 {{{1, 1, 1, 0}}}
 #else
 	 {{{0.5f, 0.25f, 0, 0.333f}}},
 	 {{{0, 0.25f, 0.5f, 0.333f}}},
 	 {{{0, 1.0f / 16.0f, 0.5f, 0.333f}}},
 	 {{{0.5f, 0, 0, 0.333f}}},
-	 {{{0.5f, 0.5f, 0.5f, 0.0f}}}};
+	 {{{0.5f, 0.5f, 0.5f, 0.0f}}},
+	 {{{0.5f, 0.5f, 0.5f, 0.0f}}}
 #endif
+	 };
 
 CFloatVector *ColoredSegmentColor (int32_t nSegment, int32_t nSide, char nColor)
 {
@@ -253,6 +256,7 @@ else {
 	char nFogType = missionConfig.m_bColoredSegments ? pSeg->FogType () : 0;
 	if (missionConfig.m_bColoredSegments && nFogType)
 		nColor = nFogType + 1;
+	else
 		return NULL;
 	if (pConnSeg >= 0) {
 		if (nFogType && (nFogType == pConnSeg->FogType ()))
