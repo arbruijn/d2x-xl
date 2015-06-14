@@ -213,11 +213,11 @@ else {
 				(_bmP)->Texture ()->Wrap (GL_REPEAT); \
 				} \
 			else { \
-				ogl.BindTexture ((_lmP)->handle); \
+				ogl.BindTexture ((_lmP)->m_handle); \
 				CTexture::Wrap (GL_CLAMP); \
 				}
 
-#define	INIT_TMU(_initTMU,_tmu,_bmP,_lmP,_bClient,bLightmaps) \
+#define	INIT_TMU(_initTMU,_tmu,_bmP,_lmP,_bClient, bLightmaps) \
 			_initTMU (_bClient, bLightmaps); \
 			G3_BIND (_tmu,_bmP,_lmP,_bClient)
 
