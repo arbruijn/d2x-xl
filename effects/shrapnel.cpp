@@ -26,9 +26,9 @@ CShrapnelManager shrapnelManager;
 
 // -----------------------------------------------------------------------------
 
-#define SHRAPNEL_MAX_PARTS			225
+#define SHRAPNEL_MAX_PARTS			250
 #define SHRAPNEL_PART_LIFE			-1500
-#define SHRAPNEL_PART_SPEED		20
+#define SHRAPNEL_PART_SPEED		50
 
 static float fShrapnelScale [5] = {0, 5.0f, 10.0f, 15.0f, 20.0f};
 
@@ -43,11 +43,12 @@ m_info.xSpeed = 3 * (I2X (1) / 20 + Rand (I2X (1) / 20)) / 4;
 m_info.xLife =
 m_info.xTTL = I2X (3) / 2 + rand ();
 m_info.tUpdate = gameStates.app.nSDLTicks [0];
+float fSpeedScale = sqrt (float (SHRAPNEL_PART_SPEED) / 10.0f);
 m_info.nSmoke = 
-	particleManager.Create (&m_info.vPos, NULL, NULL, pObj->info.nSegment, 1, -SHRAPNEL_MAX_PARTS * Max (gameOpts->render.particles.nQuality, 2),
+	particleManager.Create (&m_info.vPos, NULL, NULL, pObj->info.nSegment, 1, int32_t (float (-SHRAPNEL_MAX_PARTS) * fSpeedScale) * Max (gameOpts->render.particles.nQuality, 2),
 								   -PARTICLE_SIZE (1, fScale, 1), 
 									/*-1, 1,*/ 
-									SHRAPNEL_PART_LIFE, SHRAPNEL_PART_SPEED, SIMPLE_SMOKE_PARTICLES, 0x7fffffff, &color, 1, -1);
+									int32_t (float (SHRAPNEL_PART_LIFE) / fSpeedScale), SHRAPNEL_PART_SPEED, SIMPLE_SMOKE_PARTICLES, 0x7fffffff, &color, 1, -1);
 if (pObj->info.xLifeLeft < m_info.xLife)
 	pObj->SetLife (m_info.xLife);
 }
@@ -75,9 +76,12 @@ if ((nTicks = gameStates.app.nSDLTicks [0] - m_info.tUpdate) < 25)
 	return;
 xSpeed = (fix) (xSpeed / gameStates.gameplay.slowmo [0].fSpeed);
 for (; nTicks >= 25; nTicks -= 25) {
+#if 1
+	vOffs = m_info.vDir; // move straight
+#else
 	if (--(m_info.nTurn))
 		vOffs = m_info.vOffs;
-	else {
+	else { // change direction a bit
 		m_info.nTurn = ((m_info.xTTL > I2X (1) / 2) ? 2 : 4) + Rand (4);
 		vOffs = m_info.vDir;
 		vOffs.v.coord.x = FixMul (vOffs.v.coord.x, 2 * RandShort ());
@@ -86,6 +90,7 @@ for (; nTicks >= 25; nTicks -= 25) {
 		CFixVector::Normalize (vOffs);
 		m_info.vOffs = vOffs;
 		}
+#endif
 	vOffs *= xSpeed;
 	m_info.vPos += vOffs;
 	}
