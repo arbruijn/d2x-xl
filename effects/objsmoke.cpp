@@ -68,6 +68,7 @@ static CFloatVector smokeColors [] = {
 #define BOMB_SMOKE					1
 #define STATIC_SMOKE					1
 #define PARTICLE_TRAIL				1
+#define GATLING_BULLETS				0
 
 //------------------------------------------------------------------------------
 
@@ -220,6 +221,7 @@ if (pObj) {
 
 void DoPlayerBullets (CObject *pObj)
 {
+#if GATLING_BULLETS
 if (gameOpts->render.ship.bBullets) {
 		int32_t	nModel = pObj->ModelId ();
 		int32_t	bHires = G3HaveModel (nModel) - 1;
@@ -270,6 +272,7 @@ if (gameOpts->render.ship.bBullets) {
 			}
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -319,7 +322,7 @@ if (bHires >= 0) {
 				gameData.multiplayer.gatlingSmoke [nPlayer] =
 					particleManager.Create (&vEmitter, &vDir, &pPos->mOrient, pObj->info.nSegment, 1, GATLING_MAX_PARTS, I2X (1) / 2, 
 													/*1, 1,*/ 
-													GATLING_PART_LIFE, GATLING_PART_SPEED, /*SIMPLE_*/SMOKE_PARTICLES, 0x7ffffffe - pObj->Index (), smokeColors + 3, 0, -1);
+													GATLING_PART_LIFE, GATLING_PART_SPEED, /*SIMPLE_*/SMOKE_PARTICLES, /*0x7ffffffe*/ pObj->Index (), smokeColors + 3, 0, -1);
 				particleManager.SetObjectSystem (pObj->Index (), gameData.multiplayer.gatlingSmoke [nPlayer], 1);
 				}
 			else {
@@ -460,7 +463,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 	return;
 	}
 KillObjectSmoke (nObject);
-KillGatlingSmoke (pObj);
+//KillGatlingSmoke (pObj);
 #endif
 }
 
@@ -841,8 +844,8 @@ else {
 	}
 if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 	if (bGatling) {
-		nScale = 5.0f;
-		c.Alpha () = 0.15f;
+		nScale = 7.5f;
+		c.Alpha () = 0.2f;
 		}
 	else {
 		if (((id >= LASER_ID) && (id <= LASER_ID + 3)) ||
