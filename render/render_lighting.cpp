@@ -209,8 +209,15 @@ pFace->m_info.nSegColor = 0;
 if (pFace->m_info.bSegColor) {
 	if ((pFace->m_info.nSegColor = IsColoredSegFace (nSegment, nSide))) {
 		CFloatVector *pColor = ColoredSegmentColor (nSegment, nSide, pFace->m_info.nSegColor);
-		if (!pColor)
-			nColor = -1;
+		if (!pColor) {
+			pFace->m_info.nSegColor = 0;
+			if (pFace->m_info.nBaseTex < 0)
+				nColor = -1;
+			else if (!bTextured) {
+				faceColors [nColor].Alpha () = fAlpha;
+				pFace->m_info.color = faceColors [nColor];
+				}
+			}
 		else {
 			pFace->m_info.color = *pColor;
 			faceColors [2].Assign (pFace->m_info.color);

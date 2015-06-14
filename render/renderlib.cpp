@@ -223,12 +223,12 @@ CFloatVector segmentColors [6] = {
 	 {{{1, 1, 1, 0}}},
 	 {{{1, 1, 1, 0}}}
 #else
-	 {{{0.5f, 0.25f, 0, 0.333f}}},
-	 {{{0, 0.25f, 0.5f, 0.333f}}},
-	 {{{0, 1.0f / 16.0f, 0.5f, 0.333f}}},
-	 {{{0.5f, 0, 0, 0.333f}}},
-	 {{{0.5f, 0.5f, 0.5f, 0.0f}}},
-	 {{{0.5f, 0.5f, 0.5f, 0.0f}}}
+	 {{{0.8f, 0.6f, 0, 0.333f}}},
+	 {{{0.0, 0.6f, 0.8f, 0.333f}}},
+	 {{{0.2f, 0.4f, 0.6f, 0.333f}}},
+	 {{{1.0f, 0.7f, 0.4f, 0.333f}}},
+	 {{{0.7f, 0.7f, 0.7f, 0.0f}}},
+	 {{{0.7f, 0.7f, 0.7f, 0.0f}}}
 #endif
 	 };
 
@@ -245,9 +245,12 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	BRP;
 #endif
 
+#if 0
 if (nColor > 0)
 	nColor--;
-else {
+else 
+#endif
+	{
 	if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (pSeg->m_owner > 0)) {
 		if (pConnSeg && (pConnSeg->m_owner == pSeg->m_owner))
 			return NULL;
@@ -257,8 +260,10 @@ else {
 	char nFogType = pSeg->FogType ();
 	char nOtherFogType = pConnSeg ? pConnSeg->FogType () : 0;
 	if (nFogType != nOtherFogType) {
+#if 1 // no colored segment faces of colored segments if volumetric fog is enabled
 		if ((ogl.m_features.bDepthBlending >= 0) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bFog &&  (gameOptions [0].render.nQuality > 1))
 			return NULL;
+#endif
 		if (!missionConfig.m_bColoredSegments)
 			return NULL;
 		nColor = (nFogType ? nFogType : nOtherFogType) + 1;
