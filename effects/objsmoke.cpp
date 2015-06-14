@@ -24,10 +24,10 @@
 #include "renderthreads.h"
 
 static CFloatVector smokeColors [] = {
-	 {{{0.5f, 0.5f, 0.5f, 2.0f}}},	// alpha == 2.0 means that the particles are red in the beginning
+	 {{{0.5f, 0.5f, 0.5f, 2.0f}}},	// alpha == 2.0 means that the particles simulate a flame in the beginning (additive orange color effect)
 	 {{{0.75f, 0.75f, 0.75f, 2.0f}}},
 	 {{{1.0f, 1.0f, 1.0f, 2.0f}}},
-	 {{{1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, -0.125f}}},
+	 {{{0.7f, 0.7f, 0.7f, /*-0.25f*/2.0f}}}, 
 	 {{{1.0f, 1.0f, 1.0f, -0.1f}}}
 	};
 
@@ -274,13 +274,16 @@ if (gameOpts->render.ship.bBullets) {
 
 //------------------------------------------------------------------------------
 
-#define GATLING_MAX_PARTS	75 //35
+#define GATLING_MAX_PARTS	100 //35
 #define GATLING_PART_LIFE	-1000
 #define GATLING_PART_SPEED	30
 
 void DoGatlingSmoke (CObject *pObj)
 {
 #if GATLING_SMOKE
+if (!SHOW_SMOKE)
+	return;
+
 	int32_t	nModel = pObj->ModelId ();
 	int32_t	bHires = G3HaveModel (nModel) - 1;
 
@@ -291,8 +294,8 @@ if (bHires >= 0) {
 			int32_t	nPlayer = pObj->info.nId;
 			int32_t	nGun = EquippedPlayerGun (pObj);
 			int32_t	bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) &&
-										(gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration >= GATLING_DELAY);
-			int32_t		i = gameData.multiplayer.gatlingSmoke [nPlayer];
+										(gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration >= (EGI_FLAG (bGatlingSpeedUp, 1, 0, 0) ? GATLING_DELAY : 0));
+			int32_t	i = gameData.multiplayer.gatlingSmoke [nPlayer];
 
 		if (bDoEffect) {
 				int32_t					bSpectate = SPECTATOR (pObj);
@@ -309,7 +312,8 @@ if (bHires >= 0) {
 
 			else
 				pView = pObj->View (0);
-			vEmitter = *pView * vGunPoints[nGun];
+			vEmitter = *pView * vGunPoints [nGun];
+			vEmitter *= I2X (9) / 10;
 			vEmitter += pPos->vPos;
 			//vDir = pPos->mOrient.m.v.f;
 			vDir = pPos->mOrient.m.dir.f * (I2X (1) / 8);
@@ -317,7 +321,7 @@ if (bHires >= 0) {
 				gameData.multiplayer.gatlingSmoke [nPlayer] =
 					particleManager.Create (&vEmitter, &vDir, &pPos->mOrient, pObj->info.nSegment, 1, GATLING_MAX_PARTS, I2X (1) / 2, 
 													/*1, 1,*/ 
-													GATLING_PART_LIFE, GATLING_PART_SPEED, SIMPLE_SMOKE_PARTICLES, 0x7ffffffe, smokeColors + 3, 0, -1);
+													GATLING_PART_LIFE, GATLING_PART_SPEED, /*SIMPLE_*/SMOKE_PARTICLES, 0x7ffffffe, smokeColors + 3, 0, -1);
 				}
 			else {
 				particleManager.SetPos (i, &vEmitter, &pPos->mOrient, pObj->info.nSegment);
@@ -338,6 +342,8 @@ if (bHires >= 0) {
 
 void DoPlayerSmoke (CObject *pObj, int32_t nPlayer)
 {
+DoGatlingSmoke (pObj);
+
 #if PLAYER_SMOKE
 	int32_t				nObject, nSmoke, d, nParts, nType;
 	float					nScale;
@@ -452,7 +458,6 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 			if ((pEmitter = particleManager.GetEmitter (nSmoke, i)))
 				pEmitter->SetPos (ti.vPos + i, NULL, nSegment);
 		}
-	DoGatlingSmoke (pObj);
 	return;
 	}
 KillObjectSmoke (nObject);
@@ -836,8 +841,10 @@ else {
 	c.Alpha () = 0.5f;
 	}
 if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
-	if (bGatling)
+	if (bGatling) {
 		nScale = 5.0f;
+		c.Alpha () = 0.15f;
+		}
 	else {
 		if (((id >= LASER_ID) && (id <= LASER_ID + 3)) ||
 			 (id == SUPERLASER_ID) || (id == SUPERLASER_ID + 1) ||
@@ -862,7 +869,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 			nScale = 1;
 		c.Alpha () = 0.1f + nScale / 10;
 		}
-	nSmoke = particleManager.Create (&pObj->info.position.vPos, NULL, NULL, pObj->info.nSegment, 1, nParts << bGatling, -PARTICLE_SIZE (1, nScale, 1),
+	nSmoke = particleManager.Create (&pObj->info.position.vPos, NULL, NULL, pObj->info.nSegment, 1, bGatling ? nParts * 4 : nParts, -PARTICLE_SIZE (1, nScale, 1),
 											   /*gameOpts->render.particles.nSize [3], 1,*/ 
 												(gameOpts->render.particles.nLife [3] + 1) * (bGatling ? 3 * LASER_PART_LIFE / 2 : LASER_PART_LIFE >> bOmega) /*<< bGatling*/, LASER_PART_SPEED, 
 											   bGatling ? GATLING_PARTICLES : LIGHT_PARTICLES, nObject, &c, 0, -1);

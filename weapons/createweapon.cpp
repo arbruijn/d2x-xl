@@ -41,6 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dropobject.h"
 #include "lightcluster.h"
 #include "visibility.h"
+#include "objsmoke.h"
 
 void NDRecordGuidedStart (void);
 
@@ -434,6 +435,7 @@ if (pParent && (pParent->Type () == OBJ_WEAPON)) {
 //	pObj->info.position.mOrient = CFixMatrix::CreateFU (vDir, &pParent->info.position.mOrient.m.v.u, NULL);
 if (((nParent != nViewer) || SPECTATOR (pParent)) && (pParent->info.nType != OBJ_WEAPON)) {
 	// Muzzle flash
+	if (!SHOW_SMOKE || (gameOpts->render.particles.nQuality < 3) || ((nWeaponType != VULCAN_ID) && (nWeaponType != GAUSS_ID)))
 	if (pWeaponInfo->nFlashAnimation > -1)
 		CreateMuzzleFlash (pObj->info.nSegment, pObj->info.position.vPos, WI_FlashSize (nWeaponType), pWeaponInfo->nFlashAnimation);
 	}
