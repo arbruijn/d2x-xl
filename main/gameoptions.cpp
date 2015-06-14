@@ -339,7 +339,7 @@ else {
 	particles.bWobbleBubbles = 1;
 	particles.bWiggleBubbles = 1;
 	particles.bCollisions = 0;
-	particles.bDisperse = 1;
+	particles.bDisperse = 0;
 	particles.bRotate = 1;
 	particles.bSort = 1;
 	particles.bDecreaseLag = 1;

@@ -274,7 +274,7 @@ if (gameOpts->render.ship.bBullets) {
 
 //------------------------------------------------------------------------------
 
-#define GATLING_MAX_PARTS	50 //35
+#define GATLING_MAX_PARTS	75 //35
 #define GATLING_PART_LIFE	-1000
 #define GATLING_PART_SPEED	30
 

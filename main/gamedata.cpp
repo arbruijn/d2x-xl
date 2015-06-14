@@ -2316,7 +2316,7 @@ if (bSetup || !gameOpts->app.bExpertMode) {
 	gameOptions [0].render.particles.bMissiles = 1;
 	gameOptions [0].render.particles.bDebris = 1;
 	gameOptions [0].render.particles.bCollisions = 0;
-	gameOptions [0].render.particles.bDisperse = 1;
+	gameOptions [0].render.particles.bDisperse = 0;
 	gameOptions [0].render.particles.bRotate = 1;
 	gameOptions [0].render.particles.bDecreaseLag = (gameOptions [0].render.nQuality < 2);
 	gameOptions [0].render.particles.bAuxViews = (gameOptions [0].render.nQuality > 2);
