@@ -27,7 +27,7 @@ static CFloatVector smokeColors [] = {
 	 {{{0.5f, 0.5f, 0.5f, 2.0f}}},	// alpha == 2.0 means that the particles simulate a flame in the beginning (additive orange color effect)
 	 {{{0.75f, 0.75f, 0.75f, 2.0f}}},
 	 {{{1.0f, 1.0f, 1.0f, 2.0f}}},
-	 {{{0.7f, 0.7f, 0.7f, /*-0.25f*/2.0f}}}, 
+	 {{{0.8f, 0.8f, 0.8f, /*-0.25f*/2.0f}}}, 
 	 {{{1.0f, 1.0f, 1.0f, -0.1f}}}
 	};
 
@@ -274,9 +274,9 @@ if (gameOpts->render.ship.bBullets) {
 
 //------------------------------------------------------------------------------
 
-#define GATLING_MAX_PARTS	100 //35
+#define GATLING_MAX_PARTS	50 //35
 #define GATLING_PART_LIFE	-1000
-#define GATLING_PART_SPEED	30
+#define GATLING_PART_SPEED	50
 
 void DoGatlingSmoke (CObject *pObj)
 {
@@ -294,8 +294,8 @@ if (bHires >= 0) {
 			int32_t	nPlayer = pObj->info.nId;
 			int32_t	nGun = EquippedPlayerGun (pObj);
 			int32_t	bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) &&
-										(gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration >= (EGI_FLAG (bGatlingSpeedUp, 1, 0, 0) ? GATLING_DELAY : 0));
-			int32_t	i = gameData.multiplayer.gatlingSmoke [nPlayer];
+										(gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration >= GATLING_DELAY);
+			int32_t	nSmoke = gameData.multiplayer.gatlingSmoke [nPlayer];
 
 		if (bDoEffect) {
 				int32_t					bSpectate = SPECTATOR (pObj);
@@ -308,8 +308,7 @@ if (bHires >= 0) {
 			if (bSpectate) {
 				pView = &m;
 				*pView = pPos->mOrient.Transpose();
-			}
-
+				}
 			else
 				pView = pObj->View (0);
 			vEmitter = *pView * vGunPoints [nGun];
@@ -317,19 +316,19 @@ if (bHires >= 0) {
 			vEmitter += pPos->vPos;
 			//vDir = pPos->mOrient.m.v.f;
 			vDir = pPos->mOrient.m.dir.f * (I2X (1) / 8);
-			if (i < 0) {
+			if (nSmoke < 0) {
 				gameData.multiplayer.gatlingSmoke [nPlayer] =
 					particleManager.Create (&vEmitter, &vDir, &pPos->mOrient, pObj->info.nSegment, 1, GATLING_MAX_PARTS, I2X (1) / 2, 
 													/*1, 1,*/ 
 													GATLING_PART_LIFE, GATLING_PART_SPEED, /*SIMPLE_*/SMOKE_PARTICLES, 0x7ffffffe, smokeColors + 3, 0, -1);
 				}
 			else {
-				particleManager.SetPos (i, &vEmitter, &pPos->mOrient, pObj->info.nSegment);
+				particleManager.SetPos (nSmoke, &vEmitter, &pPos->mOrient, pObj->info.nSegment);
 				}
 			}
 		else {
-			if (i >= 0) {
-				particleManager.SetLife (i, 0);
+			if (nSmoke >= 0) {
+				particleManager.SetLife (nSmoke, 0);
 				gameData.multiplayer.gatlingSmoke [nPlayer] = -1;
 				}
 			}
@@ -396,7 +395,7 @@ else if ((nPlayer == N_LOCALPLAYER) && (gameStates.app.bPlayerIsDead || (PLAYER 
 else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 	tObjTransformation* pos = OBJPOS (pObj);
 	int16_t nSegment = OBJSEG (pObj);
-	CFixVector* vDirP = (SPECTATOR (pObj) || pObj->mType.physInfo.thrust.IsZero ()) ? &vDir : NULL;
+	CFixVector* pvDir = (SPECTATOR (pObj) || pObj->mType.physInfo.thrust.IsZero ()) ? &vDir : NULL;
 
 	nSmoke = X2IR (PLAYER (nPlayer).Shield ());
 	nScale = X2F (pObj->info.xSize) / 2.0f;
@@ -404,7 +403,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 	if (nParts <= 0) {
 		nType = 2;	// no damage
 		//nScale /= 2;
-		nParts = SHIP_MAX_PARTS / 2; //vDirP ? SHIP_MAX_PARTS / 2 : SHIP_MAX_PARTS;
+		nParts = SHIP_MAX_PARTS / 2; //pvDir ? SHIP_MAX_PARTS / 2 : SHIP_MAX_PARTS;
 		}
 	else {
 		CreateDamageExplosion (nParts, nObject);
@@ -414,7 +413,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 		nParts += 75;
 		}
 
-	if (nParts && ((nType < 2) || vDirP)) {
+	if (nParts && ((nType < 2) || pvDir)) {
 		if (gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [0]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale, 1);
@@ -423,8 +422,8 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [1]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [1], nScale, 1);
 			}
-		int32_t nLife = ((nType != 2) || vDirP) ? PLR_PART_LIFE : PLR_PART_LIFE / 7;
-		if (vDirP) {	// if the ship is standing still, let the thruster smoke move away from it
+		int32_t nLife = ((nType != 2) || pvDir) ? PLR_PART_LIFE : PLR_PART_LIFE / 7;
+		if (pvDir) {	// if the ship is standing still, let the thruster smoke move away from it
 			nParts /= 2;
 			if (nType != 2)
 				nScale /= 2;
@@ -435,7 +434,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 		else if (nType == 2)
 			nParts /= 2;
 		if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
-			nSmoke = particleManager.Create (&pos->vPos, vDirP, NULL, nSegment, 2, nParts, nScale,
+			nSmoke = particleManager.Create (&pos->vPos, pvDir, NULL, nSegment, 2, nParts, nScale,
 														/*gameOpts->render.particles.nSize [1], 2,*/ 
 														nLife, PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, 1, -1);
 			if (nSmoke < 0)
@@ -443,8 +442,8 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 			particleManager.SetObjectSystem (nObject, nSmoke);
 			}
 		else {
-			particleManager.SetDir (nSmoke, vDirP);
-			particleManager.SetFadeType (nSmoke, vDirP != NULL);
+			particleManager.SetDir (nSmoke, pvDir);
+			particleManager.SetFadeType (nSmoke, pvDir != NULL);
 			particleManager.SetLife (nSmoke, nLife);
 			//particleManager.SetBlowUp (nSmoke, bBlowUp);
 			particleManager.SetType (nSmoke, SMOKE_PARTICLES);
@@ -492,9 +491,9 @@ if (h < 0)
 	return;
 nParts = 10 - h / 5;
 if (nParts > 0) {
-	CFixVector* vDirP = pObj->mType.physInfo.velocity.IsZero () ? &vDir : NULL;
+	CFixVector* pvDir = pObj->mType.physInfo.velocity.IsZero () ? &vDir : NULL;
 
-	if (vDirP) // if the robot is standing still, let the smoke move away from it
+	if (pvDir) // if the robot is standing still, let the smoke move away from it
 		vDir = OBJPOS (pObj)->mOrient.m.dir.f * -(I2X (1) / 12);
 
 	if (nShield > 4000)
@@ -519,8 +518,8 @@ if (nParts > 0) {
 		particleManager.SetObjectSystem (nObject, nSmoke);
 		}
 	else {
-		particleManager.SetDir (nSmoke, vDirP);
-		particleManager.SetFadeType (nSmoke, vDirP != NULL);
+		particleManager.SetDir (nSmoke, pvDir);
+		particleManager.SetFadeType (nSmoke, pvDir != NULL);
 		particleManager.SetScale (nSmoke, nScale);
 		particleManager.SetDensity (nSmoke, nParts, 2/*, gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [2]*/);
 		particleManager.SetSpeed (nSmoke, !pObj->mType.physInfo.velocity.IsZero () ? BOT_PART_SPEED : BOT_PART_SPEED * 2 / 3);
