@@ -178,10 +178,6 @@ glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_BUFWIDTH, LIGHTMAP_BUFWIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, pBm);
-#if DBG
-if ((nError = glGetError ()))
-	return 0;
-#endif
 return 1;
 }
 
@@ -449,7 +445,6 @@ m_list.ReleaseAll ();
 void CLightmapManager::Destroy (void)
 {
 if (m_list.m_info.Buffer ()) { 
-	ReleaseAll ();
 	m_list.m_info.Destroy ();
 	m_list.Destroy ();
 	m_list.m_nBuffers = 0;

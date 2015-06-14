@@ -113,7 +113,7 @@ void ResetTextures (int32_t bReload, int32_t bGame)
 if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 	textureManager.Destroy (); 
 	if (lightmapManager.HaveLightmaps ())
-		lightmapManager.Release ();
+		lightmapManager.ReleaseAll ();
 	ogl.DestroyDepthTexture (0);
 	ogl.DestroyDepthTexture (1);
 	if (bReload)
