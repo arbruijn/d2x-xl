@@ -410,7 +410,7 @@ class CParticleManager {
 	private:
 		CDataPool<CParticleSystem>	m_systems;
 		CArray<CParticleSystem*>	m_systemList;
-		CArray<int16_t>				m_objectSystems;
+		CArray<int16_t>				m_objectSystems [2];
 		CArray<time_t>					m_objExplTime;
 		int32_t							m_bAnimate;
 		int32_t							m_bStencil;
@@ -425,7 +425,8 @@ class CParticleManager {
 		~CParticleManager ();
 		void Init (void);
 		inline void InitObjects (void) {
-			m_objectSystems.Clear (0xff);
+			m_objectSystems [0].Clear (0xff);
+			m_objectSystems [1].Clear (0xff);
 			m_objExplTime.Clear (0xff);
 			}
 		int32_t Update (void);
@@ -456,7 +457,7 @@ class CParticleManager {
 		inline CParticleSystem& GetSystem (int32_t i) { return m_systems [i]; }
 		inline CParticleSystem* GetFirst (int32_t& nCurrent) { return m_systems.GetFirst (nCurrent); }
 		inline CParticleSystem* GetNext (int32_t& nCurrent) { return m_systems.GetNext (nCurrent); }
-		inline int16_t GetObjectSystem (int16_t nObject) { return  m_objectSystems.Buffer () ? m_objectSystems [nObject] : -1; }
+		inline int16_t GetObjectSystem (int16_t nObject, int32_t i = 0) { return  m_objectSystems [i].Buffer () ? m_objectSystems [i][nObject] : -1; }
 
 		inline CParticleEmitter* GetEmitter (int32_t i, int32_t j)
 		 { return GetSystem (i).GetEmitter (j); }
@@ -502,10 +503,10 @@ class CParticleManager {
 			GetSystem (i).SetDir (vDir);
 			}
 
-		inline int32_t SetObjectSystem (int32_t nObject, int32_t i) {
+		inline int32_t SetObjectSystem (int32_t nObject, int32_t nSystem, int32_t i = 0) {
 			if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
 				return -1;
-			return m_objectSystems [nObject] = i;
+			return m_objectSystems [i][nObject] = nSystem;
 			}
 
 		inline int32_t GetType (int32_t i) {

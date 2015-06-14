@@ -130,11 +130,16 @@ if (pEmitter) {
 		return 0;
 	if (m_nObject < 0x70000000) {
 		CObject* pObj = OBJECT (m_nObject);
-		if (!pObj ||
-			 (pObj->info.nType == OBJ_NONE) ||
-			 (pObj->info.nSignature != m_nSignature) ||
-			 (particleManager.GetObjectSystem (m_nObject) < 0))
-		SetLife (0);
+		if (!pObj)
+			SetLife (0);
+		else {
+			if ((pObj == LOCALOBJECT) && !gameStates.render.bChaseCam && !gameStates.render.bFreeCam)
+				return 0;
+			if ((pObj->Type () == OBJ_NONE) ||
+				 (pObj->Signature () != m_nSignature) ||
+				 ((particleManager.GetObjectSystem (m_nObject, 0) < 0) && (particleManager.GetObjectSystem (m_nObject, 1) < 0)))
+				SetLife (0);
+			}
 		}
 	for (int32_t i = m_nEmitters; i; i--, pEmitter++)
 		h += pEmitter->Render (nThread);

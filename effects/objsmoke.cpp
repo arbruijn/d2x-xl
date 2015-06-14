@@ -274,7 +274,7 @@ if (gameOpts->render.ship.bBullets) {
 
 //------------------------------------------------------------------------------
 
-#define GATLING_MAX_PARTS	50 //35
+#define GATLING_MAX_PARTS	75 //35
 #define GATLING_PART_LIFE	-1000
 #define GATLING_PART_SPEED	50
 
@@ -295,7 +295,6 @@ if (bHires >= 0) {
 			int32_t	nGun = EquippedPlayerGun (pObj);
 			int32_t	bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) &&
 										(gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration >= GATLING_DELAY);
-			int32_t	nSmoke = gameData.multiplayer.gatlingSmoke [nPlayer];
 
 		if (bDoEffect) {
 				int32_t					bSpectate = SPECTATOR (pObj);
@@ -316,19 +315,20 @@ if (bHires >= 0) {
 			vEmitter += pPos->vPos;
 			//vDir = pPos->mOrient.m.v.f;
 			vDir = pPos->mOrient.m.dir.f * (I2X (1) / 8);
-			if (nSmoke < 0) {
+			if (gameData.multiplayer.gatlingSmoke [nPlayer] < 0) {
 				gameData.multiplayer.gatlingSmoke [nPlayer] =
 					particleManager.Create (&vEmitter, &vDir, &pPos->mOrient, pObj->info.nSegment, 1, GATLING_MAX_PARTS, I2X (1) / 2, 
 													/*1, 1,*/ 
-													GATLING_PART_LIFE, GATLING_PART_SPEED, /*SIMPLE_*/SMOKE_PARTICLES, 0x7ffffffe, smokeColors + 3, 0, -1);
+													GATLING_PART_LIFE, GATLING_PART_SPEED, /*SIMPLE_*/SMOKE_PARTICLES, 0x7ffffffe - pObj->Index (), smokeColors + 3, 0, -1);
+				particleManager.SetObjectSystem (pObj->Index (), gameData.multiplayer.gatlingSmoke [nPlayer], 1);
 				}
 			else {
-				particleManager.SetPos (nSmoke, &vEmitter, &pPos->mOrient, pObj->info.nSegment);
+				particleManager.SetPos (gameData.multiplayer.gatlingSmoke [nPlayer], &vEmitter, &pPos->mOrient, pObj->info.nSegment);
 				}
 			}
 		else {
-			if (nSmoke >= 0) {
-				particleManager.SetLife (nSmoke, 0);
+			if (gameData.multiplayer.gatlingSmoke [nPlayer] >= 0) {
+				particleManager.SetLife (gameData.multiplayer.gatlingSmoke [nPlayer], 0);
 				gameData.multiplayer.gatlingSmoke [nPlayer] = -1;
 				}
 			}
