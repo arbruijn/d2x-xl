@@ -177,7 +177,7 @@ glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_BUFWIDTH, LIGHTMAP_BUFWIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, m_pBm);
+glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_BUFWIDTH, LIGHTMAP_BUFWIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, m_lightmaps);
 return 1;
 }
 
@@ -195,7 +195,7 @@ if (m_handle) {
 
 void CLightmapBuffer::ToGrayScale (void)
 {
-CRGBColor* pColor = &m_pBm [0][0];
+CRGBColor* pColor = &m_lightmaps [0][0];
 for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
 	pColor->ToGrayScale (1);
 }
@@ -204,7 +204,7 @@ for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
 
 void CLightmapBuffer::Posterize (void)
 {
-CRGBColor* pColor = &m_pBm [0][0];
+CRGBColor* pColor = &m_lightmaps [0][0];
 for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
 	pColor->Posterize ();
 }
@@ -213,14 +213,14 @@ for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
 
 int32_t CLightmapBuffer::Read (CFile& cf, int32_t bCompressed)
 {
-return cf.Read (m_pBm, sizeof (m_pBm), 1, bCompressed) == 1;
+return cf.Read (m_lightmaps, sizeof (m_lightmaps), 1, bCompressed) == 1;
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CLightmapBuffer::Write (CFile& cf, int32_t bCompressed)
 {
-return cf.Write (m_pBm, sizeof (m_pBm), 1, bCompressed) == 1;
+return cf.Write (m_lightmaps, sizeof (m_lightmaps), 1, bCompressed) == 1;
 }
 
 //------------------------------------------------------------------------------
@@ -249,7 +249,7 @@ return true;
 void CLightmapList::Destroy (void)
 {
 if (m_buffers.Buffer ()) {
-	for (int32_t i = m_nBuffers; i; --i) {
+	for (int32_t i = 0; i < m_nBuffers; i++) {
 		if (m_buffers [i]) {
 			delete m_buffers [i];
 			m_buffers [i] = NULL;
@@ -719,7 +719,7 @@ if (!m_list.Realloc (Max (i + 1, m_list.m_nBuffers)))
 int32_t x = (i % LIGHTMAP_ROWSIZE) * LM_W;
 int32_t y = (i / LIGHTMAP_ROWSIZE) * LM_H;
 for (i = 0; i < LM_H; i++, y++, pTexColor += LM_W)
-	memcpy (&pBuffer->m_pBm [y][x], pTexColor, LM_W * sizeof (CRGBColor));
+	memcpy (&pBuffer->m_lightmaps [y][x], pTexColor, LM_W * sizeof (CRGBColor));
 return 1;
 }
 

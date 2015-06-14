@@ -35,7 +35,7 @@ typedef struct tLightmap {
 class CLightmapBuffer {
 	public:
 		GLuint		m_handle;
-		CRGBColor	m_pBm [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
+		CRGBColor	m_lightmaps [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
 
 		CLightmapBuffer () : m_handle (0) {}
 		~CLightmapBuffer () { Release (); }
