@@ -450,7 +450,7 @@ const char *fogFS =
 	"   fogVolume = vec4 (ZEYE (fogVolume.r), ZEYE (fogVolume.g), ZEYE (fogVolume.b), ZEYE (fogVolume.a));\r\n" \
 	"   float df = fogVolume.g - fogVolume.r;\r\n" \
 	"   float dz = z - fogVolume.r;\r\n" \
-	"   vec4 c1 = ((df > 0.0) && (dz > 0.0)) ? vec4 (fogColor1.rgb, min (MAX_ALPHA, min (df, dz) / fogColor1.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
+	"   vec4 c1 = ((fogColor1.a > 0.0) && (df > 0.0) && (dz > 0.0)) ? vec4 (fogColor1.rgb, min (MAX_ALPHA, min (df, dz) / fogColor1.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
 	"   df = fogVolume.a - fogVolume.b;\r\n" \
 	"   dz = z - fogVolume.b;\r\n" \
 	"   vec4 c2 = ((fogColor2.a > 0.0) && (df > 0.0) && (dz > 0.0)) ? vec4 (fogColor2.rgb, min (MAX_ALPHA, min (df, dz) / fogColor2.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
@@ -494,11 +494,12 @@ extern float quadVerts [5][4][2];
 
 void RenderFog (void)
 {
-	vec4 fogColors [FOG_TYPE_COUNT] = {
+	vec4 fogColors [FOG_TYPE_COUNT + 1] = {
 		{0.2f, 0.4f, 0.6f, 200.0f},
-		{1.0f, 0.7f, 0.4f, 60.0f},
+		{1.0f, 0.7f, 0.4f,  60.0f},
 		{0.7f, 0.7f, 0.7f, 240.0f},
-		{0.7f, 0.7f, 0.7f, 100.0f}
+		{0.7f, 0.7f, 0.7f, 100.0f},
+		{0.0f, 0.0f, 0.0f,   0.0f}
 		};
 #if 1
 if (!gameStates.render.bHaveFog [0])
@@ -513,19 +514,24 @@ shaderManager.Set ("depthTex", 1);
 shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
 glColor4f (1,1,1,1);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
+#else
+ogl.SetBlendMode (OGL_BLEND_REPLACE);
+ogl.SetDepthMode (GL_ALWAYS);
+#endif
 for (int32_t nFogType = 0; nFogType < FOG_TYPE_COUNT; nFogType += 2) {
-	if (gameStates.render.bHaveFog [nFogType / 2 + 1]) {
+	if (gameStates.render.bHaveFog [nFogType + 1] + gameStates.render.bHaveFog [nFogType + 2]) {
 		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		ogl.BindTexture (ogl.m_data.GetDrawBuffer (5 + nFogType / 2)->ColorBuffer (0));
-		shaderManager.Set ("fogColor1", fogColors [nFogType]);
-		shaderManager.Set ("fogColor2", fogColors [nFogType + 1]);
+#if 1
+		shaderManager.Set ("fogColor1", (fogColors [gameStates.render.bHaveFog [nFogType + 1] ? nFogType : 4]));
+		shaderManager.Set ("fogColor2", (fogColors [gameStates.render.bHaveFog [nFogType + 2] ? nFogType + 1 : 4]));
+#endif
 		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
 		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 		OglDrawArrays (GL_QUADS, 0, 4);
 		}
 	}
 shaderManager.Deploy (-1);
-#endif
 }
 
 //------------------------------------------------------------------------------

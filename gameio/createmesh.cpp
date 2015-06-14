@@ -1618,7 +1618,7 @@ for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, m_pSeg++, 
 #endif
 			memcpy (m_sideVerts, m_pSeg->Corners (nSide), 4 * sizeof (uint16_t));
 			InitFace (nSegment, nSide, bRebuild);
-			if ((nSegColor != nChildColor) && ((Max (nSegColor, nChildColor) < 3) || (!m_pSeg->IsWater (nSide) && !m_pSeg->IsLava (nSide))))
+			if ((nSegColor != nChildColor) && (!m_pSeg->HasWaterProp () || (!m_pSeg->IsWater (nSide)) && (m_pSeg->HasLavaProp () || !m_pSeg->IsLava (nSide))))
 				InitColoredFace (nSegment);
 			if (m_nWallType)
 				InitTexturedFace ();

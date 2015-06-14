@@ -27,48 +27,6 @@
 
 //------------------------------------------------------------------------------
 
-#if 1
-
-const char *fogVolumeFS =
-	"uniform sampler2D depthTex;\r\n" \
-	"uniform vec2 windowScale;\r\n" \
-	"void main (void) {\r\n" \
-	"   if (gl_FragCoord.z > texture2D (depthTex, gl_FragCoord.xy * windowScale).r)\r\n" \
-	"      discard;\r\n" \
-	"   gl_FragColor = vec4 (gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z);\r\n" \
-	"}\r\n"
-	;
-
-const char *fogVolumeVS =
-	"void main (void){\r\n" \
-	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
-	"gl_Position = ftransform (); //gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
-	"gl_FrontColor = gl_Color;}\r\n"
-	;
-
-int32_t		hFogVolShader = -1;
-
-//-------------------------------------------------------------------------
-
-void InitFogVolumeShader (void)
-{
-if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders && (ogl.m_features.bDepthBlending > -1)) {
-	PrintLog (0, "building fog blending shader program\n");
-	if (shaderManager.Build (hFogVolShader, fogVolumeFS, fogVolumeVS)) {
-		ogl.m_features.bDepthBlending.Available (1);
-		ogl.m_features.bDepthBlending = 1;
-		}
-	else {
-		ogl.ClearError (0);
-		ogl.m_features.bDepthBlending.Available (0);
-		}
-	}
-}
-
-#endif
-
-//------------------------------------------------------------------------------
-
 void ResetFaceList (void)
 {
 ENTER (0, 0);
@@ -873,7 +831,7 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 	if (pChildSeg && (pChildSeg->FogType () == nFogType))
 		continue;
 	gameStates.render.bHaveFog [0] = 1;
-	gameStates.render.bHaveFog [nFogBuffer] = 1;
+	gameStates.render.bHaveFog [nFogType] = 1;
 	if (!nMode)
 		DrawFace (pFace);
 	else if (pChildSeg) {
@@ -903,6 +861,45 @@ RETVAL (nFaces)
 
 //------------------------------------------------------------------------------
 
+const char *fogVolumeFS =
+	"uniform sampler2D depthTex;\r\n" \
+	"uniform vec2 windowScale;\r\n" \
+	"void main (void) {\r\n" \
+	"   if (gl_FragCoord.z > texture2D (depthTex, gl_FragCoord.xy * windowScale).r)\r\n" \
+	"      discard;\r\n" \
+	"   //gl_FragColor = gl_Color * gl_FragCoord.z;\r\n" \
+	"   gl_FragColor = vec4 (gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z);\r\n" \
+	"}\r\n"
+	;
+
+const char *fogVolumeVS =
+	"void main (void){\r\n" \
+	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
+	"gl_Position = ftransform (); //gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
+	"gl_FrontColor = gl_Color;}\r\n"
+	;
+
+int32_t		hFogVolShader = -1;
+
+//-------------------------------------------------------------------------
+
+void InitFogVolumeShader (void)
+{
+if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders && (ogl.m_features.bDepthBlending > -1)) {
+	PrintLog (0, "building fog blending shader program\n");
+	if (shaderManager.Build (hFogVolShader, fogVolumeFS, fogVolumeVS)) {
+		ogl.m_features.bDepthBlending.Available (1);
+		ogl.m_features.bDepthBlending = 1;
+		}
+	else {
+		ogl.ClearError (0);
+		ogl.m_features.bDepthBlending.Available (0);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void RenderFogSegments (void)
 {
 #if 1
@@ -925,16 +922,20 @@ shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
 ogl.SetDepthTest (false);
 ogl.SetAlphaTest (false);
 ogl.SetDepthMode (GL_ALWAYS);
+glClearDepth (1.0f);
 glClearColor (1.0f, 0.0f, 1.0f, 0.0f);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 ogl.CopyDepthTexture (1, GL_TEXTURE0);
 int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
 for (int32_t nFogType = 0; nFogType < FOG_TYPE_COUNT; nFogType++) {
+	if ((nFogType & 1) == 0) {
+		if (gameData.segData.nFogSegments [nFogType] + gameData.segData.nFogSegments [nFogType + 1] == 0)
+			continue;
+		ogl.SelectFogBuffer (nFogType / 2);
+		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		}
 	if (gameData.segData.nFogSegments [nFogType]) {
-		if ((nFogType & 1) == 0) {
-			ogl.SelectFogBuffer (nFogType / 2);
-			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			}
+#if 1
 		for (int32_t nMode = 0; nMode < 2; nMode++) {
 			if (nMode) {
 				if (nFogType & 1) {
@@ -963,6 +964,7 @@ for (int32_t nFogType = 0; nFogType < FOG_TYPE_COUNT; nFogType++) {
 				RenderFogFaces (pSegList [--i], nFogType + 1, nMode);
 			glColorMask (1, 1, 1, 1);
 			}
+#endif
 		}
 	}
 ogl.SetDepthTest (true);

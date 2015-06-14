@@ -197,8 +197,9 @@ int32_t nFogType = pSeg->FogType ();
 if (!pConnSeg) {
 	return nFogType ? 2 + nFogType : 0;
 	}
-if (nFogType != pConnSeg->FogType ())
-	return nFogType + 2;
+int32_t nOtherFogType = pConnSeg->FogType ();
+if (nFogType != nOtherFogType)
+	return (nFogType ? nFogType : nOtherFogType) + 2;
 #if 1
 return 0;
 #else
