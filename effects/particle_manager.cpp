@@ -82,13 +82,15 @@ for (i = 0; i < VERT_BUFFER_SIZE; i++, pf++) {
 	*pf++ = 1.0f;
 	}
 #endif
-if (!m_objectSystems.Buffer ()) {
-	if (!m_objectSystems.Create (LEVEL_OBJECTS)) {
-		Shutdown ();
-		extraGameInfo [0].bUseParticles = 0;
-		return;
+for (int32_t i = 0; i < 2; i++) {
+	if (!m_objectSystems [i].Buffer ()) {
+		if (!m_objectSystems [i].Create (LEVEL_OBJECTS)) {
+			Shutdown ();
+			extraGameInfo [0].bUseParticles = 0;
+			return;
+			}
+		m_objectSystems [i].Clear (0xff);
 		}
-	m_objectSystems.Clear (0xff);
 	}
 if (!m_objExplTime.Buffer ()) {
 	if (!m_objExplTime.Create (LEVEL_OBJECTS)) {
@@ -176,7 +178,8 @@ for (CParticleSystem* pSystem = GetFirst (nCurrent); pSystem; pSystem = GetNext 
 Cleanup ();
 m_systems.Destroy ();
 m_systemList.Destroy ();
-m_objectSystems.Destroy ();
+m_objectSystems [0].Destroy ();
+m_objectSystems [1].Destroy ();
 m_objExplTime.Destroy ();
 particleImageManager.FreeAll ();
 SEM_LEAVE (SEM_SMOKE)
