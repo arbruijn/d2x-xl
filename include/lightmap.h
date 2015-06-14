@@ -37,6 +37,8 @@ class CLightmapBuffer {
 		GLuint		handle;
 		CRGBColor	pBm [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
 
+		CLightmapBuffer () : handle (0) {}
+		~CLightmapBuffer () { Release (); }
 		int32_t Bind (void);
 		void Release (void);
 		void ToGrayScale (void);
@@ -55,6 +57,8 @@ class CLightmapList {
 		int32_t							m_nLights; 
 		uint16_t							m_nLightmaps;
 
+		CLightmapList () : m_nBuffers (0), m_nLights (0), m_nLightmaps (0) {}
+		~CLightmapList () { Destroy (); }
 		bool Create (int32_t nBuffers);
 		void Destroy (void);
 		int32_t Realloc (int32_t nBuffers);

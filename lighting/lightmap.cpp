@@ -547,7 +547,6 @@ if (!m_list.Create ((FACES.nFaces + LIGHTMAP_BUFSIZE + 1) / LIGHTMAP_BUFSIZE)) {
 	m_list.m_nLights = 0; 
 	return -1;
 	}
-m_list.m_buffers.Clear (); 
 m_list.m_info.Clear (); 
 m_list.m_nLights = 0; 
 //first lightmap is dummy lightmap for multi pass lighting
