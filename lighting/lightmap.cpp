@@ -166,18 +166,18 @@ if (m_pTotalProgress) {
 
 int32_t CLightmapBuffer::Bind (void)
 {
-if (handle)
+if (m_handle)
 	return 1;
-ogl.GenTextures (1, &handle);
-if (!handle)
+ogl.GenTextures (1, &m_handle);
+if (!m_handle)
 	return 0;
-ogl.BindTexture (handle); 
+ogl.BindTexture (m_handle); 
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_BUFWIDTH, LIGHTMAP_BUFWIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, pBm);
+glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_BUFWIDTH, LIGHTMAP_BUFWIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, m_pBm);
 return 1;
 }
 
@@ -185,15 +185,17 @@ return 1;
 
 void CLightmapBuffer::Release (void)
 {
-ogl.DeleteTextures (1, reinterpret_cast<GLuint*> (&handle));
-handle = 0;
+if (m_handle) {
+	ogl.DeleteTextures (1, reinterpret_cast<GLuint*> (&m_handle));
+	m_handle = 0;
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void CLightmapBuffer::ToGrayScale (void)
 {
-CRGBColor* pColor = &pBm [0][0];
+CRGBColor* pColor = &m_pBm [0][0];
 for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
 	pColor->ToGrayScale (1);
 }
@@ -202,7 +204,7 @@ for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
 
 void CLightmapBuffer::Posterize (void)
 {
-CRGBColor* pColor = &pBm [0][0];
+CRGBColor* pColor = &m_pBm [0][0];
 for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
 	pColor->Posterize ();
 }
@@ -211,14 +213,14 @@ for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
 
 int32_t CLightmapBuffer::Read (CFile& cf, int32_t bCompressed)
 {
-return cf.Read (pBm, sizeof (pBm), 1, bCompressed) == 1;
+return cf.Read (m_pBm, sizeof (m_pBm), 1, bCompressed) == 1;
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CLightmapBuffer::Write (CFile& cf, int32_t bCompressed)
 {
-return cf.Write (pBm, sizeof (pBm), 1, bCompressed) == 1;
+return cf.Write (m_pBm, sizeof (m_pBm), 1, bCompressed) == 1;
 }
 
 //------------------------------------------------------------------------------
@@ -247,7 +249,6 @@ return true;
 void CLightmapList::Destroy (void)
 {
 if (m_buffers.Buffer ()) {
-	ReleaseAll ();
 	for (int32_t i = m_nBuffers; i; --i) {
 		if (m_buffers [i]) {
 			delete m_buffers [i];
@@ -718,7 +719,7 @@ if (!m_list.Realloc (Max (i + 1, m_list.m_nBuffers)))
 int32_t x = (i % LIGHTMAP_ROWSIZE) * LM_W;
 int32_t y = (i / LIGHTMAP_ROWSIZE) * LM_H;
 for (i = 0; i < LM_H; i++, y++, pTexColor += LM_W)
-	memcpy (&pBuffer->pBm [y][x], pTexColor, LM_W * sizeof (CRGBColor));
+	memcpy (&pBuffer->m_pBm [y][x], pTexColor, LM_W * sizeof (CRGBColor));
 return 1;
 }
 
@@ -1382,7 +1383,7 @@ if ((pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSi
 int32_t i = pFace->m_info.nLightmap / LIGHTMAP_BUFSIZE;
 if (!lightmapManager.Bind (i))
 	return 0;
-GLuint h = lightmapManager.Buffer (i)->handle;
+GLuint h = lightmapManager.Buffer (i)->m_handle;
 #if 1 //!DBG
 if (0 <= ogl.IsBound (h))
 	return 1;
