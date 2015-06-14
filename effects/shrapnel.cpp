@@ -28,7 +28,7 @@ CShrapnelManager shrapnelManager;
 
 #define SHRAPNEL_MAX_PARTS			250
 #define SHRAPNEL_PART_LIFE			-1500
-#define SHRAPNEL_PART_SPEED		50
+#define SHRAPNEL_PART_SPEED		10
 
 static float fShrapnelScale [5] = {0, 5.0f, 10.0f, 15.0f, 20.0f};
 
@@ -37,18 +37,23 @@ void CShrapnel::Create (CObject* pParentObj, CObject* pObj, float fScale)
 	static CFloatVector color = {{{0.95f, 0.95f, 0.95f, 2.0f}}};
 
 m_info.vDir = CFixVector::Random ();
-m_info.vPos = pObj->info.position.vPos + m_info.vDir * (pParentObj->info.xSize / 4 + Rand (pParentObj->info.xSize / 2));
-m_info.nTurn = 1;
+m_info.vPos = pObj->info.position.vPos + m_info.vDir * (3 * pParentObj->info.xSize / 4 + Rand (pParentObj->info.xSize / 2));
+m_info.nTurn = 1 + Rand (4);
+#if 1 // slower 
 m_info.xSpeed = 3 * (I2X (1) / 20 + Rand (I2X (1) / 20)) / 4;
+float fSpeedScale = sqrt (X2F (I2X (3) / 40) / X2F (m_info.xSpeed));
+#else // faster
+m_info.xSpeed = I2X (1) / 20 + Rand (I2X (1) / 20);
+float fSpeedScale = sqrt (X2F (I2X (1) / 10) / X2F (m_info.xSpeed));
+#endif
 m_info.xLife =
 m_info.xTTL = I2X (3) / 2 + rand ();
 m_info.tUpdate = gameStates.app.nSDLTicks [0];
-float fSpeedScale = sqrt (float (SHRAPNEL_PART_SPEED) / 10.0f);
 m_info.nSmoke = 
-	particleManager.Create (&m_info.vPos, NULL, NULL, pObj->info.nSegment, 1, int32_t (float (-SHRAPNEL_MAX_PARTS) * fSpeedScale) * Max (gameOpts->render.particles.nQuality, 2),
+	particleManager.Create (&m_info.vPos, NULL, NULL, pObj->info.nSegment, 1, int32_t (float (-SHRAPNEL_MAX_PARTS) / fSpeedScale) * Max (gameOpts->render.particles.nQuality, 2),
 								   -PARTICLE_SIZE (1, fScale, 1), 
 									/*-1, 1,*/ 
-									int32_t (float (SHRAPNEL_PART_LIFE) / fSpeedScale), SHRAPNEL_PART_SPEED, SIMPLE_SMOKE_PARTICLES, 0x7fffffff, &color, 1, -1);
+									SHRAPNEL_PART_LIFE, SHRAPNEL_PART_SPEED, SIMPLE_SMOKE_PARTICLES, 0x7fffffff, &color, 1, -1);
 if (pObj->info.xLifeLeft < m_info.xLife)
 	pObj->SetLife (m_info.xLife);
 }
@@ -76,7 +81,7 @@ if ((nTicks = gameStates.app.nSDLTicks [0] - m_info.tUpdate) < 25)
 	return;
 xSpeed = (fix) (xSpeed / gameStates.gameplay.slowmo [0].fSpeed);
 for (; nTicks >= 25; nTicks -= 25) {
-#if 1
+#if 0
 	vOffs = m_info.vDir; // move straight
 #else
 	if (--(m_info.nTurn))
