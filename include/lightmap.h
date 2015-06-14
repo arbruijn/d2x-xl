@@ -39,6 +39,8 @@ class CLightmapBuffer {
 
 		int32_t Bind (void);
 		void Release (void);
+		void ToGrayScale (void);
+		void Posterize (void);
 	};
 
 //------------------------------------------------------------------------------
@@ -58,6 +60,10 @@ class CLightmapList {
 		int32_t BindAll (void);
 		void Release (int32_t nLightmap);
 		void ReleaseAll (void);
+		void ToGrayScale (int32_t nLightmap);
+		void Posterize (int32_t nLightmap);
+		void ToGrayScaleAll (void);
+		void PosterizeAll (void);
 	};
 
 typedef CSegFace* tSegFacePtr;

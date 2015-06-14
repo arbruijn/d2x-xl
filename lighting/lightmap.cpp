@@ -194,6 +194,24 @@ handle = 0;
 }
 
 //------------------------------------------------------------------------------
+
+void CLightmapBuffer::ToGrayScale (void)
+{
+CRGBColor* pColor = &pBm [0][0];
+for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
+	pColor->ToGrayScale (1);
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapBuffer::Posterize (void)
+{
+CRGBColor* pColor = &pBm [0][0];
+for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
+	pColor->Posterize ();
+}
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -293,6 +311,38 @@ void CLightmapList::ReleaseAll (void)
 {
 for (int32_t i = 0; i < m_nBuffers; i++)
 	Release (i);
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapList::ToGrayScale (int32_t nLightmap)
+{
+if (m_buffers.Buffer () && m_buffers [nLightmap]) 
+	m_buffers [nLightmap]->ToGrayScale ();
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapList::ToGrayScaleAll (void)
+{
+for (int32_t i = 0; i < m_nBuffers; i++)
+	ToGrayScale (i);
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapList::Posterize (int32_t nLightmap)
+{
+if (m_buffers.Buffer () && m_buffers [nLightmap]) 
+	m_buffers [nLightmap]->Posterize ();
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapList::PosterizeAll (void)
+{
+for (int32_t i = 0; i < m_nBuffers; i++)
+	Posterize (i);
 }
 
 //------------------------------------------------------------------------------
@@ -1027,32 +1077,21 @@ else
 
 void CLightmapManager::Realloc (int32_t nBuffers)
 {
-if (m_list.m_nBuffers > nBuffers) {
-	m_list.m_buffers.Resize (nBuffers);
-	m_list.m_nBuffers = nBuffers;
-	}
+m_list.Realloc (nBuffers);
 }
 
 //------------------------------------------------------------------------------
 
 void CLightmapManager::ToGrayScale (void)
 {
-for (int32_t i = 0; i < m_list.m_nBuffers; i++) {
-	CRGBColor* pColor = &m_list.m_buffers [i].pBm [0][0];
-	for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
-		pColor->ToGrayScale (1);
-	}
+m_list.ToGrayScaleAll ();
 }
 
 //------------------------------------------------------------------------------
 
 void CLightmapManager::Posterize (void)
 {
-for (int32_t i = 0; i < m_list.m_nBuffers; i++) {
-	CRGBColor* pColor = &m_list.m_buffers [i].pBm [0][0];
-	for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
-		pColor->Posterize ();
-	}
+m_list.PosterizeAll ();
 }
 
 //------------------------------------------------------------------------------
