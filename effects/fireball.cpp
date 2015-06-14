@@ -563,8 +563,8 @@ if (gameData.modelData.nDyingModels [ModelId ()] != -1)
 if ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER)) {
 	int32_t nModels = gameData.modelData.polyModels [0][ModelId ()].ModelCount ();
 
-	if (gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShrapnels && (nModels > 1)) {
-		int32_t j = (int32_t) FRound (X2F (info.xSize)) * (gameOpts->render.effects.nShrapnels + 1);
+	if (gameOpts->render.effects.bEnabled && gameOpts->render.effects.nDebris && (nModels > 1)) {
+		int32_t j = (int32_t) FRound (X2F (info.xSize)) * (gameOpts->render.effects.nDebris + 1);
 		for (int32_t i = 0; i < j; i++) {// "i = int32_t (j > 0)" => use the models fuselage only once
 			int32_t h = i % nModels;
 			if (/*((i == 0) || (h != 0)) &&*/

@@ -28,7 +28,7 @@ CShrapnelManager shrapnelManager;
 
 #define SHRAPNEL_MAX_PARTS			225
 #define SHRAPNEL_PART_LIFE			-1500
-#define SHRAPNEL_PART_SPEED		10
+#define SHRAPNEL_PART_SPEED		20
 
 static float fShrapnelScale [5] = {0, 5.0f, 10.0f, 15.0f, 20.0f};
 
@@ -222,7 +222,7 @@ CArray<CShrapnelCloud>::Destroy ();
 
 int32_t CShrapnelManager::Create (CObject* pObj)
 {
-#if 1
+#if 0
 return 0;
 #else
 if (!SHOW_SMOKE)
@@ -271,7 +271,7 @@ pObj->SetLifeLeft (-1);
 void CShrapnelManager::DoFrame (void)
 {
 	CObject	*pObj;
-	int32_t		i;
+	int32_t	i;
 
 if (!SHOW_SMOKE)
 	return;

@@ -143,7 +143,7 @@ if ((Segment () < 0) || (Segment () > gameData.segData.nLastSegment))
 	RETVAL (-1)
 
 if (nType == OBJ_DEBRIS) {
-	if (!gameOpts->render.effects.nShrapnels && (gameData.objData.nDebris >= gameStates.render.detail.nMaxDebrisObjects))
+	if (!gameOpts->render.effects.nDebris && (gameData.objData.nDebris >= gameStates.render.detail.nMaxDebrisObjects))
 		RETVAL (-1)
 	}
 
@@ -264,7 +264,7 @@ if ((nSegment < 0) || (nSegment > gameData.segData.nLastSegment))
 	RETVAL (-1)
 
 if (nType == OBJ_DEBRIS) {
-	if (!gameOpts->render.effects.nShrapnels && (gameData.objData.nDebris >= gameStates.render.detail.nMaxDebrisObjects))
+	if (!gameOpts->render.effects.nDebris && (gameData.objData.nDebris >= gameStates.render.detail.nMaxDebrisObjects))
 		RETVAL (-1)
 	}
 

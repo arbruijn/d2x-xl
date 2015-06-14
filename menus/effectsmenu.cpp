@@ -61,6 +61,7 @@ void SmokeDetailsMenu (void);
 
 static int32_t nShadows, nCoronas, nLightTrails;
 
+static const char* pszExplDebris [5];
 static const char* pszExplShrapnels [5];
 static const char* pszNoneBasicFull [3];
 static const char* pszNoneBasicStdFull [4];
@@ -89,6 +90,15 @@ if ((m = menu ["shockwaves"])) {
 	}
 
 if ((m = menu ["debris"])) {
+	v = m->Value ();
+	if (gameOpts->render.effects.nDebris != v) {
+		gameOpts->render.effects.nDebris = v;
+		sprintf (m->m_text, TXT_EXPLOSION_DEBRIS, pszExplDebris [v]);
+		m->Rebuild ();
+		}
+	}
+
+if ((m = menu ["shrapnel"])) {
 	v = m->Value ();
 	if (gameOpts->render.effects.nShrapnels != v) {
 		gameOpts->render.effects.nShrapnels = v;
@@ -214,7 +224,13 @@ if (bInitialized)
 	return;
 bInitialized = true;
 
-pszExplShrapnels [0] = TXT_STANDARD;
+pszExplDebris [0] = TXT_STANDARD;
+pszExplDebris [1] = TXT_FEW;
+pszExplDebris [2] = TXT_MEDIUM;
+pszExplDebris [3] = TXT_MANY;
+pszExplDebris [4] = TXT_EXTREME;
+
+pszExplShrapnels [0] = TXT_NONE;
 pszExplShrapnels [1] = TXT_FEW;
 pszExplShrapnels [2] = TXT_MEDIUM;
 pszExplShrapnels [3] = TXT_MANY;
@@ -282,7 +298,7 @@ do {
 	m.Destroy ();
 	m.Create (30);
 
-	m.AddCheck ("enable fx", TXT_ENABLE_EFFECTS, gameOpts->render.effects.bEnabled, KEY_F, HTX_ENABLE_EFFECTS);
+	m.AddCheck ("enable fx", TXT_ENABLE_EFFECTS, gameOpts->render.effects.bEnabled, KEY_E, HTX_ENABLE_EFFECTS);
 	m.AddText ("", "");
 	sprintf (szSlider + 1, TXT_SMOKE, pszSmokeQuality [gameOpts->render.particles.nQuality]);
 	*szSlider = *(TXT_SMOKE - 1);
@@ -312,9 +328,13 @@ do {
 	m.AddSlider ("energy sparks", szSlider + 1, gameOpts->render.effects.bEnergySparks, 0, 2, KEY_P, HTX_RENDER_SPARKS);
 	m.AddText ("", "");
 
+	sprintf (szSlider + 1, TXT_EXPLOSION_DEBRIS, pszExplDebris [gameOpts->render.effects.nDebris]);
+	*szSlider = *(TXT_EXPLOSION_DEBRIS - 1);
+	m.AddSlider ("debris", szSlider + 1, gameOpts->render.effects.nDebris, 0, 4, KEY_D, HTX_EXPLOSION_DEBRIS);
+
 	sprintf (szSlider + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
 	*szSlider = *(TXT_EXPLOSION_SHRAPNELS - 1);
-	m.AddSlider ("debris", szSlider + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_A, HTX_EXPLOSION_SHRAPNELS);
+	m.AddSlider ("shrapnel", szSlider + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_H, HTX_EXPLOSION_SHRAPNEL);
 
 	sprintf (szSlider + 1, TXT_EXPLOSION_BLASTS, pszNoneBasicFull [gameOpts->render.effects.nShockwaves]);
 	*szSlider = *(TXT_EXPLOSION_BLASTS - 1);

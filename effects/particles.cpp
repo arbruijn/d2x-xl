@@ -552,7 +552,7 @@ else {
 #endif
 				}
 			m_color [0].Blue () = 0.0f;
-			m_nFadeTime = 50 + Rand (150);
+			m_nFadeTime = (nParticleSystemType == SIMPLE_SMOKE_PARTICLES) ? 25 + Rand (75) : 50 + Rand (150);
 			m_color [1].Red () *= RANDOM_FADE;
 			m_color [1].Green () *= RANDOM_FADE;
 			m_color [1].Blue () *= RANDOM_FADE;

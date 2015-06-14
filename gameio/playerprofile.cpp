@@ -477,6 +477,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.effects.bFog, i, 0);
 		RP (gameOptions [i].render.effects.bSoftParticles, i, 0);
 		RP (gameOptions [i].render.effects.bWarpAppearance, i, 0);
+		RP (gameOptions [i].render.effects.nDebris, i, 0);
 		RP (gameOptions [i].render.effects.nShrapnels, i, 0);
 		RP (gameOptions [i].render.effects.bShields, i, 1);
 		RP (gameOptions [i].render.coronas.bUse, i, 0);
@@ -1428,6 +1429,8 @@ tParamValue defaultParams [] = {
 	 {"hotkeys.Weapon 9[1].value", "-1"},
 	 {"hotkeys.Weapon 10[0].value", "11"},
 	 {"hotkeys.Weapon 10[1].value", "-1"},
+	 {"gameOptions[0].render.effects.nDebris", "1"},
+	 {"gameOptions[0].render.effects.nShrapnels", "0"},
 	 {"gameOptions[0].render.particles.nDens [0]", "1"},
 	 {"gameOptions[0].render.particles.nSize [0]", "1"},
 	 {"gameOptions[0].render.particles.nLife [0]", "1"},
@@ -1504,7 +1507,6 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.nDebrisLife", "0"},
 	 {"gameOptions[0].render.effects.bAutoTransparency", "1"},
 	 {"gameOptions[0].render.effects.bMovingSparks", "0"},
-	 {"gameOptions[0].render.effects.nShrapnels", "1"},
 	 {"gameOptions[0].render.coronas.bUse", "1"},
 	 {"gameOptions[0].render.coronas.nStyle", "1"},
 	 {"gameOptions[0].render.coronas.bShots", "1"},

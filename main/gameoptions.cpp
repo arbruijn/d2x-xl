@@ -115,7 +115,8 @@ if (i) {
 	coronas.nIntensity = 1;
 	coronas.nObjIntensity = 1;
 	effects.nShockwaves = 1;
-	effects.nShrapnels = 1;
+	effects.nDebris = 1;
+	effects.nShrapnels = 0;
 	particles.bAuxViews = 0;
 	lightning.bAuxViews = 0;
 	debug.bWireFrame = 0;
@@ -267,7 +268,8 @@ else {
 	effects.bShields = 1;
 	effects.bOnlyShieldHits = 0;
 	effects.nShockwaves = 1;
-	effects.nShrapnels = 1;
+	effects.nDebris = 1;
+	effects.nShrapnels = 0;
 #if DBG
 	shadows.nLights = 1;
 #else

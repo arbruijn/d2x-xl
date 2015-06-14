@@ -27,7 +27,7 @@ static CFloatVector smokeColors [] = {
 	 {{{0.5f, 0.5f, 0.5f, 2.0f}}},	// alpha == 2.0 means that the particles are red in the beginning
 	 {{{0.75f, 0.75f, 0.75f, 2.0f}}},
 	 {{{1.0f, 1.0f, 1.0f, 2.0f}}},
-	 {{{1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, -0.25f}}},
+	 {{{1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, -0.125f}}},
 	 {{{1.0f, 1.0f, 1.0f, -0.1f}}}
 	};
 
@@ -75,12 +75,26 @@ static CFloatVector smokeColors [] = {
 
 void KillObjectSmoke (int32_t nObject)
 {
-if ((nObject >= 0) && (particleManager.GetObjectSystem (nObject) >= 0)) {
-	if (OBJECT (nObject)->Type () == OBJ_EFFECT)
+	CObject *pObj = OBJECT (nObject);
+
+if (pObj && (particleManager.GetObjectSystem (nObject) >= 0)) {
+	if (pObj->Type () == OBJ_EFFECT)
 		audio.DestroyObjectSound (nObject);
 	particleManager.SetLife (particleManager.GetObjectSystem (nObject), 0);
 	particleManager.SetObjectSystem (nObject, -1);
-	shrapnelManager.Destroy (OBJECT (nObject));
+	shrapnelManager.Destroy (pObj);
+	}
+}
+
+#else
+
+static inline void KillObjectSmoke (int32_t i)
+{
+	int32_t	j;
+
+if ((i >= 0) && ((j = particleManager.GetObjectSystem (i)) >= 0)) {
+	particleManager.SetLife (j, 0);
+	particleManager.SetObjectSystem (i, -1);
 	}
 }
 
@@ -132,8 +146,7 @@ return (int32_t) ((double) rand () * (double) n / (double) RAND_MAX);
 
 void CreateDamageExplosion (int32_t h, int32_t i)
 {
-if (EGI_FLAG (bDamageExplosions, 1, 0, 0) &&
-	 (gameStates.app.nSDLTicks [0] - *particleManager.ObjExplTime (i) > 100)) {
+if (EGI_FLAG (bDamageExplosions, 1, 0, 0) && (gameStates.app.nSDLTicks [0] - *particleManager.ObjExplTime (i) > 100)) {
 	*particleManager.ObjExplTime (i) = gameStates.app.nSDLTicks [0];
 	if (!RandN (11 - h))
 		CreateSmallFireballOnObject (OBJECT (i), I2X (1), 1);
@@ -452,7 +465,7 @@ KillGatlingSmoke (pObj);
 void DoRobotSmoke (CObject *pObj)
 {
 #if ROBOT_SMOKE
-	int32_t			h = -1, nObject, nSmoke, nShield = 0, nParts;
+	int32_t		h = -1, nObject, nSmoke, nShield = 0, nParts;
 	float			nScale;
 	CFixVector	pos, vDir;
 

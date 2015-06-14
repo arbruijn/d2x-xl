@@ -1712,7 +1712,7 @@ void LoadGameTexts(void);
 #define TXT_PROFILE_DAMAGED			GT(954)
 #define TXT_2D_THRUSTER_FLAME			GT(955)
 #define TXT_3D_THRUSTER_FLAME			GT(956)
-#define TXT_EXPLOSION_SHRAPNELS		GT(957)
+#define TXT_EXPLOSION_DEBRIS			GT(957)
 #define TXT_ENHANCED_SHAKERS			GT(958)
 #define TXT_GOOD							GT(959)
 #define TXT_SMOKE_QUALITY				GT(960)
@@ -2017,10 +2017,10 @@ void LoadGameTexts(void);
 #define TXT_CARTOON						GT(1259)
 #define TXT_UNNERF_D1_WEAPONS			GT(1260)
 #define TXT_EFFECTS_FOG					GT(1261)
+#define TXT_EXPLOSION_SHRAPNELS		GT(1262)
 
 #if 0
 
-#define TXT_					GT(1262)
 #define TXT_					GT(1263)
 #define TXT_					GT(1264)
 #define TXT_					GT(1265)
@@ -2474,7 +2474,7 @@ void LoadGameTexts(void);
 #define HTX_EXPLOSION_BLASTS			HT(295)
 #define HTX_ROBOT_SHIELDS				HT(296)
 #define HTX_COLOR_SATURATION			HT(297)
-#define HTX_EXPLOSION_SHRAPNELS		HT(298)
+#define HTX_EXPLOSION_DEBRIS			HT(298)
 #define HTX_ENHANCED_SHAKERS			HT(299)
 #define HTX_ADVRND_SMOKEQUAL			HT(300)
 #define HTX_ADVRND_SMOKEALPHA			HT(301)
@@ -2633,10 +2633,10 @@ void LoadGameTexts(void);
 #define HTX_RENDER_STYLE				HT(453)
 #define HTX_UNNERF_D1_WEAPONS			HT(454)
 #define HTX_EFFECTS_FOG					HT(455)
+#define HTX_EXPLOSION_SHRAPNEL		HT(456)
 
 #if 0
 
-#define HTX_						HT(456)
 #define HTX_						HT(457)
 #define HTX_						HT(458)
 #define HTX_						HT(459)

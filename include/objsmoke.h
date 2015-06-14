@@ -39,24 +39,4 @@ int32_t UpdateShrapnels (CObject *pObj);
 void DrawShrapnels (CObject *pObj);
 
 //------------------------------------------------------------------------------
-
-#if DBG
-
-void KillObjectParticleSystem (int32_t i);
-
-#else
-
-static inline void KillObjectSmoke (int32_t i)
-{
-	int32_t	j;
-
-if ((i >= 0) && ((j = particleManager.GetObjectSystem (i)) >= 0)) {
-	particleManager.SetLife (j, 0);
-	particleManager.SetObjectSystem (i, -1);
-	}
-}
-
-#endif
-
-//------------------------------------------------------------------------------
 #endif //__OBJSMOKE_H
