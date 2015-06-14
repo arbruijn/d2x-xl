@@ -183,7 +183,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	BRP;
 #endif
 	CSegment*	pSeg = SEGMENT (nSegment);
-	CSegment*	pConnSeg = (pSeg->m_children [nSide] < 0) ? NULL : SEGMENT (pSeg->m_children [nSide]);
+	CSegment*	pConnSeg = SEGMENT (pSeg->m_children [nSide]);
 
 if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (pSeg->m_owner > 0)) {
 	if (!pConnSeg || (pConnSeg->m_owner != pSeg->m_owner))
@@ -215,7 +215,7 @@ return (pSeg->m_function == SEGMENT_FUNC_TEAM_BLUE) ||
 // ----------------------------------------------------------------------------
 
 CFloatVector segmentColors [6] = {
-#if DBG
+#if 0 //DBG
 	 {{{1, 1, 1, 0}}},
 	 {{{1, 1, 1, 0}}},
 	 {{{1, 1, 1, 0}}},
@@ -253,24 +253,24 @@ else {
 			return NULL;
 		nColor = (pSeg->m_owner == 1);
 		}
-	char nFogType = missionConfig.m_bColoredSegments ? pSeg->FogType () : 0;
-	if (missionConfig.m_bColoredSegments && nFogType)
-		nColor = nFogType + 1;
-	else
-		return NULL;
-	if (pConnSeg >= 0) {
-		if (nFogType && (nFogType == pConnSeg->FogType ()))
+
+	char nFogType = pSeg->FogType ();
+	char nOtherFogType = pConnSeg ? pConnSeg->FogType () : 0;
+	if (nFogType != nOtherFogType) {
+		if ((ogl.m_features.bDepthBlending >= 0) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bFog &&  (gameOptions [0].render.nQuality > 1))
 			return NULL;
-#if 1
-		if (pSeg->m_function == pConnSeg->m_function)
+		if (!missionConfig.m_bColoredSegments)
 			return NULL;
-		if ((pSeg->m_function != SEGMENT_FUNC_TEAM_BLUE) &&
+		nColor = (nFogType ? nFogType : nOtherFogType) + 1;
+		}
+	if (pConnSeg && (pSeg->m_function != pConnSeg->m_function)) {
+		if ((nFogType != nOtherFogType) &&
+			 (pSeg->m_function != SEGMENT_FUNC_TEAM_BLUE) &&
 			 (pSeg->m_function != SEGMENT_FUNC_TEAM_RED) &&
 			 (pConnSeg->m_function != SEGMENT_FUNC_TEAM_BLUE) &&
 			 (pConnSeg->m_function != SEGMENT_FUNC_TEAM_RED))
 			return NULL;
 		if (IS_WALL (pSeg->WallNum (nSide)))
-#endif
 			return NULL;
 		}
 	}

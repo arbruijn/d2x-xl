@@ -208,11 +208,16 @@ pFace->m_info.bTransparent |= bTransparent;
 pFace->m_info.nSegColor = 0;
 if (pFace->m_info.bSegColor) {
 	if ((pFace->m_info.nSegColor = IsColoredSegFace (nSegment, nSide))) {
-		pFace->m_info.color = *ColoredSegmentColor (nSegment, nSide, pFace->m_info.nSegColor);
-		faceColors [2].Assign (pFace->m_info.color);
-		if (pFace->m_info.nBaseTex < 0)
-			fAlpha = pFace->m_info.color.Alpha ();
-		nColor = 2;
+		CFloatVector *pColor = ColoredSegmentColor (nSegment, nSide, pFace->m_info.nSegColor);
+		if (!pColor)
+			nColor = -1;
+		else {
+			pFace->m_info.color = *pColor;
+			faceColors [2].Assign (pFace->m_info.color);
+			if (pFace->m_info.nBaseTex < 0)
+				fAlpha = pFace->m_info.color.Alpha ();
+			nColor = 2;
+			}
 		}
 	else
 		pFace->m_info.bVisible = (pFace->m_info.nBaseTex >= 0);
