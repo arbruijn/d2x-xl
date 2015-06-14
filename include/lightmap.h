@@ -37,7 +37,7 @@ class CLightmapBuffer {
 		GLuint		m_handle;
 		CRGBColor	m_pBm [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
 
-		CLightmapBuffer () : handle (0) {}
+		CLightmapBuffer () : m_handle (0) {}
 		~CLightmapBuffer () { Release (); }
 		int32_t Bind (void);
 		void Release (void);
