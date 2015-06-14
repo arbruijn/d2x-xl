@@ -212,6 +212,20 @@ for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
 }
 
 //------------------------------------------------------------------------------
+
+int32_t CLightmapBuffer::Read (CFile& cf, int32_t bCompressed)
+{
+return cf.Read (pBm, sizeof (pBm), 1, bCompressed) == 1;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CLightmapBuffer::Write (CFile& cf, int32_t bCompressed)
+{
+return cf.Write (pBm, sizeof (pBm), 1, bCompressed) == 1;
+}
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -251,11 +265,13 @@ if (m_buffers.Buffer ()) {
 
 //------------------------------------------------------------------------------
 
-bool CLightmapList::Realloc (int32_t nBuffers)
+int32_t CLightmapList::Realloc (int32_t nBuffers)
 {
+if (nBuffers == m_nBuffers)
+	return 1;
 CArray<CLightmapBuffer*> buffers;
 if (!buffers.Create (nBuffers))
-	return false;
+	return 0;
 buffers.Clear ();
 memcpy (buffers.Buffer (), m_buffers.Buffer (), Min (nBuffers, m_nBuffers) * sizeof (CLightmapBuffer *));
 if (nBuffers < m_nBuffers) {
@@ -269,7 +285,7 @@ else {
 			for (; i > m_nBuffers; --i)
 				delete buffers [i];
 			buffers.Destroy ();
-			return false;
+			return 0;
 			}
 		}
 	}
@@ -278,6 +294,7 @@ m_buffers.Destroy ();
 m_buffers.SetBuffer (buffers.Buffer (), 0, buffers.Length ());
 buffers.SetBuffer (NULL);
 m_nBuffers = nBuffers;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -343,6 +360,40 @@ void CLightmapList::PosterizeAll (void)
 {
 for (int32_t i = 0; i < m_nBuffers; i++)
 	Posterize (i);
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CLightmapList::Read (int32_t nLightmap, CFile& cf, int32_t bCompressed)
+{
+return (m_buffers.Buffer () && m_buffers [nLightmap]) ? m_buffers [nLightmap]->Read (cf, bCompressed) : 0;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CLightmapList::ReadAll (CFile& cf, int32_t bCompressed)
+{
+for (int32_t i = 0; i < m_nBuffers; i++)
+	if (!Read (i, cf, bCompressed))
+		return 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CLightmapList::Write (int32_t nLightmap, CFile& cf, int32_t bCompressed)
+{
+return (m_buffers.Buffer () && m_buffers [nLightmap]) ? m_buffers [nLightmap]->Write (cf, bCompressed) : 0;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CLightmapList::WriteAll (CFile& cf, int32_t bCompressed)
+{
+for (int32_t i = 0; i < m_nBuffers; i++)
+	if (!Write (i, cf, bCompressed))
+		return 0;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -496,7 +547,7 @@ if (!m_list.m_info.Create (m_list.m_nLights)) {
 	m_list.m_nLights = 0; 
 	return -1;
 	}
-if (!m_list.m_Create ((FACES.nFaces + LIGHTMAP_BUFSIZE + 1) / LIGHTMAP_BUFSIZE)) { // add the black and white lightmap in - there are levels that do not have either or both of them
+if (!m_list.Create ((FACES.nFaces + LIGHTMAP_BUFSIZE + 1) / LIGHTMAP_BUFSIZE)) { // add the black and white lightmap in - there are levels that do not have either or both of them
 	m_list.m_info.Destroy ();
 	m_list.m_nLights = 0; 
 	return -1;
@@ -664,14 +715,17 @@ Blur (pFace, tempData, source, 1);
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::Copy (CRGBColor *pTexColor, uint16_t nLightmap)
+int32_t CLightmapManager::Copy (CRGBColor *pTexColor, uint16_t nLightmap)
 {
-CLightmapBuffer *pBuffer = &m_list.m_buffers [nLightmap / LIGHTMAP_BUFSIZE];
+CLightmapBuffer *pBuffer = m_list.m_buffers [nLightmap / LIGHTMAP_BUFSIZE];
 int32_t i = nLightmap % LIGHTMAP_BUFSIZE;
+if (!m_list.Realloc (Max (i + 1, m_list.m_nBuffers)))
+	return 0;
 int32_t x = (i % LIGHTMAP_ROWSIZE) * LM_W;
 int32_t y = (i / LIGHTMAP_ROWSIZE) * LM_H;
 for (i = 0; i < LM_H; i++, y++, pTexColor += LM_W)
 	memcpy (&pBuffer->pBm [y][x], pTexColor, LM_W * sizeof (CRGBColor));
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1125,13 +1179,8 @@ if (bOk) {
 			break;
 		}
 	}
-if (bOk) {
-	for (i = 0; i < m_list.m_nBuffers; i++) {
-		bOk = cf.Write (m_list.m_buffers [i].pBm, sizeof (m_list.m_buffers [i].pBm), 1, ldh.bCompressed) == 1;
-		if (!bOk)
-			break;
-		}
-	}
+if (bOk)
+	bOk = m_list.WriteAll (cf, ldh.bCompressed);
 cf.Close ();
 return bOk;
 }
@@ -1176,7 +1225,7 @@ else {
 		PrintLog (0, "lightmap data outdated (face count)\n");
 	else if (ldh.nLights != m_list.m_nLights) 
 		PrintLog (0, "lightmap data outdated (light count)\n");
-	else if (ldh.nBuffers > m_list.m_nBuffers)
+	else if (ldh.nBuffers != m_list.m_nBuffers)
 		PrintLog (0, "lightmap data outdated (buffer count)\n");
 	else if (ldh.nMaxLightRange != MAX_LIGHT_RANGE)
 		PrintLog (0, "lightmap data outdated (light range)\n");
@@ -1192,13 +1241,9 @@ if (bOk) {
 		}
 	}
 if (bOk) {
-	for (i = 0; i < ldh.nBuffers; i++) {
-		bOk = cf.Read (m_list.m_buffers [i].pBm, sizeof (m_list.m_buffers [i].pBm), 1, ldh.bCompressed) == 1;
-		if (!bOk) {
-			PrintLog (0, "error reading lightmap data\n");
-			break;
-			}
-		}
+	bOk = m_list.ReadAll (cf, ldh.bCompressed);
+	if (!bOk) 
+		PrintLog (0, "error reading lightmap data\n");
 	}
 cf.Close ();
 if (bOk) {

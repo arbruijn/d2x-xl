@@ -41,6 +41,8 @@ class CLightmapBuffer {
 		void Release (void);
 		void ToGrayScale (void);
 		void Posterize (void);
+		int32_t Read (CFile& cf, int32_t bCompressed);
+		int32_t Write (CFile& cf, int32_t bCompressed);
 	};
 
 //------------------------------------------------------------------------------
@@ -55,7 +57,7 @@ class CLightmapList {
 
 		bool Create (int32_t nBuffers);
 		void Destroy (void);
-		bool Realloc (int32_t nBuffers);
+		int32_t Realloc (int32_t nBuffers);
 		int32_t Bind (int32_t nLightmap);
 		int32_t BindAll (void);
 		void Release (int32_t nLightmap);
@@ -64,6 +66,10 @@ class CLightmapList {
 		void Posterize (int32_t nLightmap);
 		void ToGrayScaleAll (void);
 		void PosterizeAll (void);
+		int32_t Read (int32_t nLightmap, CFile& cf, int32_t bCompressed);
+		int32_t ReadAll (CFile& cf, int32_t bCompressed);
+		int32_t Write (int32_t nLightmap, CFile& cf, int32_t bCompressed);
+		int32_t WriteAll (CFile& cf, int32_t bCompressed);
 	};
 
 typedef CSegFace* tSegFacePtr;
@@ -158,7 +164,7 @@ class CLightmapManager {
 		inline void ComputePixelOffset (CFixVector& vPos, CFixVector& v1, CFixVector& v2, int32_t nOffset);
 		double SideRad (int32_t nSegment, int32_t nSide);
 		int32_t CountLights (int32_t bVariable);
-		void Copy (CRGBColor *pTexColor, uint16_t nLightmap);
+		int32_t Copy (CRGBColor *pTexColor, uint16_t nLightmap);
 		void CreateSpecial (CRGBColor *pTexColor, uint16_t nLightmap, uint8_t nColor);
 		void Realloc (int32_t nBuffers);
 		int32_t Save (int32_t nLevel);
