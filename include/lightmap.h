@@ -32,18 +32,33 @@ typedef struct tLightmap {
 	CFloatVector3	*pBm;
 } tLightmap;
 
-typedef struct tLightmapBuffer {
-	GLuint		handle;
-	CRGBColor	pBm [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
-} tLightmapBuffer;
+class CLightmapBuffer {
+	public:
+		GLuint		handle;
+		CRGBColor	pBm [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
 
-typedef struct tLightmapList {
-	CArray<tLightmapInfo>	info;
-	CArray<tLightmapBuffer>	buffers;
-	int32_t						nBuffers;
-	int32_t						nLights; 
-	uint16_t						nLightmaps;
-} tLightmapList;
+		int32_t Bind (void);
+		void Release (void);
+	};
+
+//------------------------------------------------------------------------------
+
+class CLightmapList {
+	public:
+		CArray<tLightmapInfo>		m_info;
+		CArray<CLightmapBuffer*>	m_buffers;
+		int32_t							m_nBuffers;
+		int32_t							m_nLights; 
+		uint16_t							m_nLightmaps;
+
+		bool Create (int32_t nBuffers);
+		void Destroy (void);
+		bool Realloc (int32_t nBuffers);
+		int32_t Bind (int32_t nLightmap);
+		int32_t BindAll (void);
+		void Release (int32_t nLightmap);
+		void ReleaseAll (void);
+	};
 
 typedef CSegFace* tSegFacePtr;
 
@@ -107,7 +122,7 @@ class CLightmapProgress {
 class CLightmapManager {
 	private:
 		CLightmapData		m_data;
-		tLightmapList		m_list;
+		CLightmapList		m_list;
 		CLightmapProgress	m_progress;
 		int32_t				m_bSuccess;
 
@@ -120,12 +135,12 @@ class CLightmapManager {
 		void RestoreLights (int32_t bVariable);
 		int32_t Bind (int32_t nLightmap);
 		int32_t BindAll (void);
-		void Release (void);
+		void ReleaseAll (void);
 		int32_t Create (int32_t nLevel);
 		void Build (CSegFace* pFace, int32_t nThread);
 		int32_t BuildAll (int32_t nFace);
-		inline tLightmapBuffer* Buffer (uint32_t i = 0) { return &m_list.buffers [i]; }
-		inline int32_t HaveLightmaps (void) { return !gameStates.app.bNostalgia && (m_list.buffers.Buffer () != NULL); }
+		inline CLightmapBuffer* Buffer (uint32_t i = 0) { return m_list.m_buffers [i]; }
+		inline int32_t HaveLightmaps (void) { return !gameStates.app.bNostalgia && (m_list.m_buffers.Buffer () != NULL); }
 		inline CSegFace* CurrentFace (void) { return m_data.pFace; }
 		inline CLightmapProgress& Progress (void) { return m_progress; }
 		inline void SetupProgress (void) { m_progress.Setup (); }

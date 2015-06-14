@@ -164,6 +164,141 @@ if (m_pTotalProgress) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+int32_t CLightmapBuffer::Bind (void)
+{
+if (handle)
+	return 1;
+ogl.GenTextures (1, &handle);
+if (!handle)
+	return 0;
+ogl.BindTexture (handle); 
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
+glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_BUFWIDTH, LIGHTMAP_BUFWIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, pBm);
+#if DBG
+if ((nError = glGetError ()))
+	return 0;
+#endif
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapBuffer::Release (void)
+{
+ogl.DeleteTextures (1, reinterpret_cast<GLuint*> (&handle));
+handle = 0;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+bool CLightmapList::Create (int32_t nBuffers)
+{
+if (!m_buffers.Create (nBuffers))
+	return false;
+m_buffers.Clear ();
+for (int32_t i = 0; i < nBuffers; i++) {
+	if (!(m_buffers [i] = new CLightmapBuffer)) {
+		for (; i > 0; --i)
+			delete m_buffers [i];
+		m_buffers.Destroy ();
+		return false;
+		}
+	}
+m_nBuffers = nBuffers;
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapList::Destroy (void)
+{
+if (m_buffers.Buffer ()) {
+	ReleaseAll ();
+	for (int32_t i = m_nBuffers; i; --i) {
+		if (m_buffers [i]) {
+			delete m_buffers [i];
+			m_buffers [i] = NULL;
+			}
+		}
+	m_buffers.Destroy ();
+	m_nBuffers = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+bool CLightmapList::Realloc (int32_t nBuffers)
+{
+CArray<CLightmapBuffer*> buffers;
+if (!buffers.Create (nBuffers))
+	return false;
+buffers.Clear ();
+memcpy (buffers.Buffer (), m_buffers.Buffer (), Min (nBuffers, m_nBuffers) * sizeof (CLightmapBuffer *));
+if (nBuffers < m_nBuffers) {
+	for (int32_t i = nBuffers; i < m_nBuffers; i++)
+		if (m_buffers [i])
+			delete m_buffers [i];
+	}
+else {
+	for (int32_t i = m_nBuffers; i < nBuffers; i++) {
+		if (!(buffers [i] = new CLightmapBuffer)) {
+			for (; i > m_nBuffers; --i)
+				delete buffers [i];
+			buffers.Destroy ();
+			return false;
+			}
+		}
+	}
+m_buffers.Clear ();
+m_buffers.Destroy ();
+m_buffers.SetBuffer (buffers.Buffer (), 0, buffers.Length ());
+buffers.SetBuffer (NULL);
+m_nBuffers = nBuffers;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CLightmapList::Bind (int32_t nLightmap)
+{
+return (m_buffers.Buffer () && m_buffers [nLightmap]) ? m_buffers [nLightmap]->Bind () : 0;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CLightmapList::BindAll (void)
+{
+for (int32_t i = 0; i < m_nBuffers; i++)
+	if (!Bind (i))
+		return 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapList::Release (int32_t nLightmap)
+{
+if (m_buffers.Buffer () && m_buffers [nLightmap]) 
+	m_buffers [nLightmap]->Release ();
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapList::ReleaseAll (void)
+{
+for (int32_t i = 0; i < m_nBuffers; i++)
+	Release (i);
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 void CLightmapFaceData::Setup (CSegFace* pFace)
 {
 CSide* pSide = SEGMENT (pFace->m_info.nSegment)->m_sides + pFace->m_info.nSide;
@@ -188,43 +323,14 @@ memset (m_texColor, 0, LM_W * LM_H * sizeof (CRGBColor));
 
 int32_t CLightmapManager::Bind (int32_t nLightmap)
 {
-	tLightmapBuffer	*pLightmap = &m_list.buffers [nLightmap];
-#if DBG
-	int32_t				nError;
-#endif
-
-if (pLightmap->handle)
-	return 1;
-ogl.GenTextures (1, &pLightmap->handle);
-if (!pLightmap->handle) {
-#if 0//DBG
-	nError = glGetError ();
-#endif
-	return 0;
-	}
-ogl.BindTexture (pLightmap->handle); 
-#if 0//DBG
-if ((nError = glGetError ()))
-	return 0;
-#endif
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, 3, LIGHTMAP_BUFWIDTH, LIGHTMAP_BUFWIDTH, 0, GL_RGB, GL_UNSIGNED_BYTE, pLightmap->pBm);
-#if DBG
-if ((nError = glGetError ()))
-	return 0;
-#endif
-return 1;
+return m_list.Bind (nLightmap);
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CLightmapManager::BindAll (void)
 {
-for (int32_t i = 0; i < m_list.nBuffers; i++)
+for (int32_t i = 0; i < m_list.m_nBuffers; i++)
 	if (!Bind (i))
 		return 0;
 return 1;
@@ -232,27 +338,20 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::Release (void)
+void CLightmapManager::ReleaseAll (void)
 {
-if (m_list.buffers.Buffer ()) { 
-	tLightmapBuffer *pLightmap = &m_list.buffers [0];
-	for (int32_t i = m_list.nBuffers; i; i--, pLightmap++)
-		if (pLightmap->handle) {
-			ogl.DeleteTextures (1, reinterpret_cast<GLuint*> (&pLightmap->handle));
-			pLightmap->handle = 0;
-			}
-	} 
+m_list.ReleaseAll ();
 }
 
 //------------------------------------------------------------------------------
 
 void CLightmapManager::Destroy (void)
 {
-if (m_list.info.Buffer ()) { 
-	Release ();
-	m_list.info.Destroy ();
-	m_list.buffers.Destroy ();
-	m_list.nBuffers = 0;
+if (m_list.m_info.Buffer ()) { 
+	ReleaseAll ();
+	m_list.m_info.Destroy ();
+	m_list.Destroy ();
+	m_list.m_nBuffers = 0;
 	}
 }
 
@@ -337,27 +436,26 @@ int32_t CLightmapManager::Init (int32_t bVariable)
 	double			sideRad;
 
 //first step find all the lights in the level.  By iterating through every surface in the level.
-if (!(m_list.nLights = CountLights (bVariable))) {
-	if (!m_list.buffers.Create (m_list.nBuffers = 1))
+if (!(m_list.m_nLights = CountLights (bVariable))) {
+	if (!m_list.m_buffers.Create (1))
 		return -1;
-	m_list.buffers.Clear ();
+	m_list.m_buffers.Clear ();
 	return 0;
 	}
-if (!m_list.info.Create (m_list.nLights)) {
-	m_list.nLights = 0; 
+if (!m_list.m_info.Create (m_list.m_nLights)) {
+	m_list.m_nLights = 0; 
 	return -1;
 	}
-m_list.nBuffers = (FACES.nFaces + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE;
-if (!m_list.buffers.Create (m_list.nBuffers)) {
-	m_list.info.Destroy ();
-	m_list.nLights = 0; 
+if (!m_list.m_Create ((FACES.nFaces + LIGHTMAP_BUFSIZE + 1) / LIGHTMAP_BUFSIZE)) { // add the black and white lightmap in - there are levels that do not have either or both of them
+	m_list.m_info.Destroy ();
+	m_list.m_nLights = 0; 
 	return -1;
 	}
-m_list.buffers.Clear (); 
-m_list.info.Clear (); 
-m_list.nLights = 0; 
+m_list.m_buffers.Clear (); 
+m_list.m_info.Clear (); 
+m_list.m_nLights = 0; 
 //first lightmap is dummy lightmap for multi pass lighting
-pLightmapInfo = m_list.info.Buffer (); 
+pLightmapInfo = m_list.m_info.Buffer (); 
 for (pLight = lightManager.Lights (), i = lightManager.LightCount (0); i; i--, pLight++) {
 	if (pLight->info.nType || (pLight->info.bVariable && !bVariable))
 		continue;
@@ -376,7 +474,7 @@ for (pLight = lightManager.Lights (), i = lightManager.LightCount (0); i; i--, p
 	pLightmapInfo->vDir = CFixVector::Avg(pNormal[0], pNormal[1]);
 	pLightmapInfo++; 
 	}
-return m_list.nLights = (int32_t) (pLightmapInfo - m_list.info.Buffer ()); 
+return m_list.m_nLights = (int32_t) (pLightmapInfo - m_list.m_info.Buffer ()); 
 }
 
 //------------------------------------------------------------------------------
@@ -518,7 +616,7 @@ Blur (pFace, tempData, source, 1);
 
 void CLightmapManager::Copy (CRGBColor *pTexColor, uint16_t nLightmap)
 {
-tLightmapBuffer *pBuffer = &m_list.buffers [nLightmap / LIGHTMAP_BUFSIZE];
+CLightmapBuffer *pBuffer = &m_list.m_buffers [nLightmap / LIGHTMAP_BUFSIZE];
 int32_t i = nLightmap % LIGHTMAP_BUFSIZE;
 int32_t x = (i % LIGHTMAP_ROWSIZE) * LM_W;
 int32_t y = (i / LIGHTMAP_ROWSIZE) * LM_H;
@@ -831,7 +929,7 @@ INIT_PROGRESS_LOOP (nFace, nLastFace, FACES.nFaces);
 if (nFace <= 0) {
 	CreateSpecial (m_data.m_texColor, 0, 0);
 	CreateSpecial (m_data.m_texColor, 1, 255);
-	m_list.nLightmaps = 2;
+	m_list.m_nLightmaps = 2;
 	}
 //Next Go through each surface and create a lightmap for it.
 for (m_data.pFace = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.pFace++) {
@@ -875,8 +973,8 @@ for (m_data.pFace = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.pFa
 		}
 	else {
 		Blur (m_data.pFace, m_data);
-		Copy (m_data.m_texColor, m_list.nLightmaps);
-		m_data.pFace->m_info.nLightmap = m_list.nLightmaps++;
+		Copy (m_data.m_texColor, m_list.m_nLightmaps);
+		m_data.pFace->m_info.nLightmap = m_list.m_nLightmaps++;
 		}
 	}
 return 1;
@@ -929,9 +1027,9 @@ else
 
 void CLightmapManager::Realloc (int32_t nBuffers)
 {
-if (m_list.nBuffers > nBuffers) {
-	m_list.buffers.Resize (nBuffers);
-	m_list.nBuffers = nBuffers;
+if (m_list.m_nBuffers > nBuffers) {
+	m_list.m_buffers.Resize (nBuffers);
+	m_list.m_nBuffers = nBuffers;
 	}
 }
 
@@ -939,8 +1037,8 @@ if (m_list.nBuffers > nBuffers) {
 
 void CLightmapManager::ToGrayScale (void)
 {
-for (int32_t i = 0; i < m_list.nBuffers; i++) {
-	CRGBColor* pColor = &m_list.buffers [i].pBm [0][0];
+for (int32_t i = 0; i < m_list.m_nBuffers; i++) {
+	CRGBColor* pColor = &m_list.m_buffers [i].pBm [0][0];
 	for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
 		pColor->ToGrayScale (1);
 	}
@@ -950,8 +1048,8 @@ for (int32_t i = 0; i < m_list.nBuffers; i++) {
 
 void CLightmapManager::Posterize (void)
 {
-for (int32_t i = 0; i < m_list.nBuffers; i++) {
-	CRGBColor* pColor = &m_list.buffers [i].pBm [0][0];
+for (int32_t i = 0; i < m_list.m_nBuffers; i++) {
+	CRGBColor* pColor = &m_list.m_buffers [i].pBm [0][0];
 	for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, pColor++)
 		pColor->Posterize ();
 	}
@@ -967,16 +1065,16 @@ int32_t CLightmapManager::Save (int32_t nLevel)
 										gameData.segData.nSegments, 
 										gameData.segData.nVertices, 
 										FACES.nFaces, 
-										m_list.nLights, 
+										m_list.m_nLights, 
 										MAX_LIGHT_RANGE,
-										m_list.nBuffers,
+										m_list.m_nBuffers,
 										gameStates.app.bCompressData
 										};
 	int32_t			i, bOk;
 	char				szFilename [FILENAME_LEN];
 	CSegFace			*pFace;
 
-if (!(gameStates.app.bCacheLightmaps && m_list.nLights && m_list.nBuffers))
+if (!(gameStates.app.bCacheLightmaps && m_list.m_nLights && m_list.m_nBuffers))
 	return 0;
 if (!cf.Open (Filename (szFilename, nLevel), gameFolders.var.szLightmaps, "wb", 0))
 	return 0;
@@ -989,8 +1087,8 @@ if (bOk) {
 		}
 	}
 if (bOk) {
-	for (i = 0; i < m_list.nBuffers; i++) {
-		bOk = cf.Write (m_list.buffers [i].pBm, sizeof (m_list.buffers [i].pBm), 1, ldh.bCompressed) == 1;
+	for (i = 0; i < m_list.m_nBuffers; i++) {
+		bOk = cf.Write (m_list.m_buffers [i].pBm, sizeof (m_list.m_buffers [i].pBm), 1, ldh.bCompressed) == 1;
 		if (!bOk)
 			break;
 		}
@@ -1037,9 +1135,9 @@ else {
 		PrintLog (0, "lightmap data outdated (vertex count)\n");
 	else if (ldh.nFaces != FACES.nFaces) 
 		PrintLog (0, "lightmap data outdated (face count)\n");
-	else if (ldh.nLights != m_list.nLights) 
+	else if (ldh.nLights != m_list.m_nLights) 
 		PrintLog (0, "lightmap data outdated (light count)\n");
-	else if (ldh.nBuffers > m_list.nBuffers)
+	else if (ldh.nBuffers > m_list.m_nBuffers)
 		PrintLog (0, "lightmap data outdated (buffer count)\n");
 	else if (ldh.nMaxLightRange != MAX_LIGHT_RANGE)
 		PrintLog (0, "lightmap data outdated (light range)\n");
@@ -1056,7 +1154,7 @@ if (bOk) {
 	}
 if (bOk) {
 	for (i = 0; i < ldh.nBuffers; i++) {
-		bOk = cf.Read (m_list.buffers [i].pBm, sizeof (m_list.buffers [i].pBm), 1, ldh.bCompressed) == 1;
+		bOk = cf.Read (m_list.m_buffers [i].pBm, sizeof (m_list.m_buffers [i].pBm), 1, ldh.bCompressed) == 1;
 		if (!bOk) {
 			PrintLog (0, "error reading lightmap data\n");
 			break;
@@ -1082,9 +1180,9 @@ return bOk;
 
 void CLightmapManager::Init (void)
 {
-m_list.nBuffers = 
-m_list.nLights = 0;
-m_list.nLightmaps = 0;
+m_list.m_nBuffers = 
+m_list.m_nLights = 0;
+m_list.m_nLightmaps = 0;
 memset (&m_data, 0, sizeof (m_data)); 
 }
 
@@ -1158,11 +1256,11 @@ if ((gameStates.render.bPerPixelLighting || gameStates.app.bPrecomputeLightmaps)
 		gameStates.render.bHaveLightmaps = 0;
 		gameStates.render.nState = 0;
 		gameOpts->render.color.nSaturation = nSaturation;
-		Realloc ((m_list.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE);
+		Realloc ((m_list.m_nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE);
 		}
 	else {
 		CreateSpecial (m_data.m_texColor, 0, 0);
-		m_list.nLightmaps = 1;
+		m_list.m_nLightmaps = 1;
 		for (int32_t i = 0; i < FACES.nFaces; i++)
 			FACES.faces [i].m_info.nLightmap = 0;
 		}
