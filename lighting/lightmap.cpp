@@ -1220,7 +1220,7 @@ else {
 		PrintLog (0, "lightmap data outdated (face count)\n");
 	else if (ldh.nLights != m_list.m_nLights) 
 		PrintLog (0, "lightmap data outdated (light count)\n");
-	else if (ldh.nBuffers != m_list.m_nBuffers)
+	else if (ldh.nBuffers > m_list.m_nBuffers)
 		PrintLog (0, "lightmap data outdated (buffer count)\n");
 	else if (ldh.nMaxLightRange != MAX_LIGHT_RANGE)
 		PrintLog (0, "lightmap data outdated (light range)\n");
