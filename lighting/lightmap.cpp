@@ -1077,9 +1077,9 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 
 int32_t CLightmapManager::BuildAll (int32_t nFace)
 {
-//CreateSpecial (m_data.m_texColor, 0, 0);
-//CreateSpecial (m_data.m_texColor, 1, 255);
-//m_list.m_nLightmaps = 2;
+CreateSpecial (m_data [0].m_texColor, 0, 0);
+CreateSpecial (m_data [0].m_texColor, 1, 255);
+m_list.m_nLightmaps = 2;
 #if USE_OPENMP
 if (gameStates.app.nThreads > 1) {
 #	pragma omp parallel 
@@ -1461,6 +1461,7 @@ if (nState)
 
 lightmapManager.SetupProgress ();
 lightmapManager.BuildAll (-1);
+lightmapManager.ResetProgress ();
 key = -2;
 return nCurItem;
 
