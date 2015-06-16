@@ -119,56 +119,75 @@ m_nLocalProgress = 0;
 
 //------------------------------------------------------------------------------
 
+void CLightmapProgress::Render (int32_t nThread)
+{
+#if USE_OPENMP
+#	pragma omp critical (LightmapProgressRender)
+#endif
+{
+if (m_pProgressMenu && !nThread)
+	m_pProgressMenu->Render (m_pProgressMenu->Title (), m_pProgressMenu->SubTitle ());
+}
+}
+
+//------------------------------------------------------------------------------
+
 void CLightmapProgress::Update (int32_t nThread)
 {
 #if USE_OPENMP
 #	pragma omp critical (LightmapProgressUpdate)
 #endif
+{
 if (m_pProgressMenu) {
 	if (!gameStates.app.bPrecomputeLightmaps) {
 		if (m_pTotalProgress) {
 			m_pTotalProgress->Value ()++;
-			m_pTotalProgress->Rebuild ();
-			if (!nThread)
-				m_pProgressMenu->Render (m_pProgressMenu->Title (), m_pProgressMenu->SubTitle ());
+			if (!nThread) {
+				m_pTotalProgress->Rebuild ();
+				Render ();
+				}
 			}
 		}
 	else {
 		if (m_bActive) {
 			m_pLevelProgress->Value ()++;
-			m_pLevelProgress->Rebuild ();
+			if (!nThread)
+				m_pLevelProgress->Rebuild ();
 			float fLevelProgress = float (m_pLevelProgress->Value ()) / float (FACES.nFaces);
 			int32_t nLevelProgress = int32_t (float (Scale ()) * fLevelProgress + 0.5f);
 			if (m_nLocalProgress < nLevelProgress) {
 				m_nLocalProgress = nLevelProgress;
 				m_pTotalProgress->Value ()++;
-				m_pTotalProgress->Rebuild ();
+				if (!nThread)
+					m_pTotalProgress->Rebuild ();
 				}
-			if (m_pTime) {
-				static CTimeout to (1000);
-				if (to.Expired ()) {
-					int32_t nTotalProgress = m_pTotalProgress->Value ();
-					int32_t tLeft, tPassed = SDL_GetTicks () - m_tStart;
-					if (nTotalProgress / Scale () - m_nSkipped > 0)
-						tLeft = Max (int32_t (float (tPassed) * m_fTotal / float (nTotalProgress - m_nSkipped * Scale ())) - tPassed, 0);
-					else { // for the first level, estimate the time needed for the entire level and scale with number of levels to be done
-						int32_t tLevel = int32_t (float (tPassed) / fLevelProgress);
-						tLeft = int32_t (float (tLevel) * m_fTotal / float (Scale ())) - tPassed;
+			if (!nThread) {
+				if (m_pTime) {
+					static CTimeout to (1000);
+					if (to.Expired ()) {
+						int32_t nTotalProgress = m_pTotalProgress->Value ();
+						int32_t tLeft, tPassed = SDL_GetTicks () - m_tStart;
+						if (nTotalProgress / Scale () - m_nSkipped > 0)
+							tLeft = Max (int32_t (float (tPassed) * m_fTotal / float (nTotalProgress - m_nSkipped * Scale ())) - tPassed, 0);
+						else { // for the first level, estimate the time needed for the entire level and scale with number of levels to be done
+							int32_t tLevel = int32_t (float (tPassed) / fLevelProgress);
+							tLeft = int32_t (float (tLevel) * m_fTotal / float (Scale ())) - tPassed;
+							}
+						tPassed = (tPassed + 500) / 1000;
+						tLeft = (tLeft + 500) / 1000;
+						char szTime [50];
+						sprintf (szTime, "%d:%02d:%02d / %d:%02d:%02d", 
+									tPassed / 3600, (tPassed / 60) % 60, tPassed % 60,
+									tLeft / 3600, (tLeft / 60) % 60, tLeft % 60);
+						m_pTime->SetText (szTime);
 						}
-					tPassed = (tPassed + 500) / 1000;
-					tLeft = (tLeft + 500) / 1000;
-					char szTime [50];
-					sprintf (szTime, "%d:%02d:%02d / %d:%02d:%02d", 
-								tPassed / 3600, (tPassed / 60) % 60, tPassed % 60,
-								tLeft / 3600, (tLeft / 60) % 60, tLeft % 60);
-					m_pTime->SetText (szTime);
 					}
+				Render ();
 				}
-			if (!nThread)
-				m_pProgressMenu->Render (m_pProgressMenu->Title (), m_pProgressMenu->SubTitle ());
 			}
 		}
 	}
+}
 }
 
 //------------------------------------------------------------------------------
@@ -961,10 +980,7 @@ for (y = yMin; y < yMax; y++) {
 				m_bSuccess = 0;
 			if (nKey == KEY_ALTED + KEY_F4)
 				exit (0);
-
-			CMenu* m = CMenu::Active ();
-			if (m)
-				m->Render (m->Title (), m->SubTitle ());
+			m_progress.Render (nThread);
 			}
 		}
 
