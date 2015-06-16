@@ -814,7 +814,7 @@ else {
 	}
 if (info.nSegment == nDestSeg)
 	info.bDiffuse [nThread] = 1;
-#if 1
+#if 0
 else if (!gameData.segData.LightVis (Index (), nDestSeg))
 	info.bDiffuse [nThread] = 0;
 #endif
@@ -836,12 +836,13 @@ else { // check whether light only contributes ambient light to point
 	// if point is occluded, use segment path distance to point for light range and attenuation
 	// if bDiffuse == 0 then point is completely occluded (determined by above call to SeesPoint ()), otherwise use SeesPoint() to test occlusion
 	if (!bSeesPoint) { // => ambient contribution only
-		fix xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+		fix xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 0, nThread);
 		if (xPathLength < 0)
 			RETVAL (0)
 		if (xDistance < xPathLength) {
 			// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
-			xDistance = (xDistance + xPathLength) / 2; 
+			xDistance = fix (float (xPathLength) * sqrt (float (xDistance) / float (xPathLength)));
+			//xDistance = (xDistance + xPathLength) / 2; 
 			if (xDistance - xRad > xMaxLightRange)
 				RETVAL (0)
 			}

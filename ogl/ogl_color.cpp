@@ -503,9 +503,10 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 			}
 		else {
 			NdotL = 1.0f;
+			fLightAngle = (1.0f + CFloatVector3::Dot (colorData.vertNorm, lightDir)) / 2.0f;
+			//fLightDist *= 2.0f;
 			fLightDist = X2F (pLight->render.xDistance [nThread]);
-			fLightAngle = CFloatVector3::Dot (lightRayDir, lightDir);
-			fLightAngle = (fLightAngle < 0.0f) ? 1.0f : 1.0f - fLightAngle; 
+			//fLightAngle = (fLightAngle < 0.0f) ? 1.0f : 1.0f - fLightAngle; 
 			}
 		}
 
