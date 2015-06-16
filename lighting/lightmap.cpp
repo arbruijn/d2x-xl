@@ -119,7 +119,7 @@ m_nLocalProgress = 0;
 
 //------------------------------------------------------------------------------
 
-void CLightmapProgress::Update (void)
+void CLightmapProgress::Update (int32_t nThread)
 {
 #if USE_OPENMP
 #	pragma omp critical (LightmapProgressUpdate)
@@ -129,7 +129,8 @@ if (m_pProgressMenu) {
 		if (m_pTotalProgress) {
 			m_pTotalProgress->Value ()++;
 			m_pTotalProgress->Rebuild ();
-			m_pProgressMenu->Render (m_pProgressMenu->Title (), m_pProgressMenu->SubTitle ());
+			if (!nThread)
+				m_pProgressMenu->Render (m_pProgressMenu->Title (), m_pProgressMenu->SubTitle ());
 			}
 		}
 	else {
@@ -163,7 +164,8 @@ if (m_pProgressMenu) {
 					m_pTime->SetText (szTime);
 					}
 				}
-			m_pProgressMenu->Render (m_pProgressMenu->Title (), m_pProgressMenu->SubTitle ());
+			if (!nThread)
+				m_pProgressMenu->Render (m_pProgressMenu->Title (), m_pProgressMenu->SubTitle ());
 			}
 		}
 	}
@@ -1064,11 +1066,15 @@ int32_t CLightmapManager::BuildAll (int32_t nFace)
 //m_list.m_nLightmaps = 2;
 #if USE_OPENMP
 if (gameStates.app.nThreads > 1) {
-#	pragma omp parallel for
-	for (int32_t nFace = 0; nFace < FACES.nFaces; nFace++) {
-		if (m_bSuccess) {
-			m_progress.Update ();
-			Build (FACES.faces + nFace, omp_get_thread_num ());
+#	pragma omp parallel 
+	{
+		int32_t nThread = omp_get_thread_num ();
+#	pragma omp for
+		for (int32_t nFace = 0; nFace < FACES.nFaces; nFace++) {
+			if (m_bSuccess) {
+				m_progress.Update ();
+				Build (FACES.faces + nFace, nThread);
+				}
 			}
 		}
 	}
@@ -1437,6 +1443,7 @@ if (nState)
 
 #if 1
 
+lightmapManager.SetupProgress ();
 lightmapManager.BuildAll (-1);
 key = -2;
 return nCurItem;

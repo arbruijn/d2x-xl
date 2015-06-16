@@ -126,7 +126,7 @@ class CLightmapProgress {
 			{ }
 
 		void Setup (void);
-		void Update (void);
+		void Update (int32_t nThread = 0);
 		void Skip (int32_t i);
 		inline void Reset (void) { m_bActive = false; }
 
