@@ -144,7 +144,7 @@ if (m_pProgressMenu) {
 			m_pTotalProgress->Value ()++;
 			if (!nThread) {
 				m_pTotalProgress->Rebuild ();
-				Render ();
+				//Render ();
 				}
 			}
 		}
@@ -182,7 +182,7 @@ if (m_pProgressMenu) {
 						m_pTime->SetText (szTime);
 						}
 					}
-				Render ();
+				//Render ();
 				}
 			}
 		}
