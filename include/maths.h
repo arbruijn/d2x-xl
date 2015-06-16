@@ -159,7 +159,6 @@ return double (rand ()) / double (RAND_MAX);
 
 //-----------------------------------------------------------------------------
 
-
 template<typename _T> 
 inline void Swap (_T& a, _T& b) { _T h = a; a = b; b = h; }
 

@@ -228,9 +228,9 @@ return (scanInfo.m_heap [!m_nDir].m_path [nSegment].m_bVisited == m_bFlag);
 
 #if MULTITHREADED_SCAN
 
-int32_t _CDECL_ ExpandSegmentMT (void* nThreadP)
+int32_t _CDECL_ ExpandSegmentMT (void* pnThread)
 {
-	int32_t nDir = *((int32_t *) nThreadP);
+	int32_t nDir = *((int32_t *) pnThread);
 
 while (!(ExpandSegment (nDir) || m_heap [!nDir].nLinkSeg))
 	;

@@ -361,16 +361,16 @@ class CThreadedObjectRenderer {
 		void Create (void);
 		void Destroy (void);
 		void Render (void);
-		int32_t Illuminate (void* nThreadP);
+		int32_t Illuminate (void* pnThread);
 };
 
 CThreadedObjectRenderer threadedObjectRenderer;
 
 //------------------------------------------------------------------------------
 
-int32_t _CDECL_ LightObjectsThread (void* nThreadP)
+int32_t _CDECL_ LightObjectsThread (void* pnThread)
 {
-return threadedObjectRenderer.Illuminate (nThreadP);
+return threadedObjectRenderer.Illuminate (pnThread);
 }
 
 //------------------------------------------------------------------------------
@@ -455,11 +455,11 @@ RETURN
 // tell the render process that this segment's objects can be rendered, and waits
 // for the render process to reset its semaphore before proceeding with the next 
 // segment.
-int32_t CThreadedObjectRenderer::Illuminate (void* nThreadP)
+int32_t CThreadedObjectRenderer::Illuminate (void* pnThread)
 {
 ENTER (0, 0);
 #if 1
-	int32_t	nThread = *((int32_t*) nThreadP);
+	int32_t	nThread = *((int32_t*) pnThread);
 #endif
 	int16_t nSegment;
 

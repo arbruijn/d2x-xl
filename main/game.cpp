@@ -843,7 +843,7 @@ CGameLoop gameLoop;
 
 //	-----------------------------------------------------------------------------
 
-int32_t _CDECL_ GameThreadHandler (void* nThreadP)
+int32_t _CDECL_ GameThreadHandler (void* pnThread)
 {
 gameLoop.StateLoop ();
 return 0;

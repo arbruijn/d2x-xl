@@ -1276,7 +1276,7 @@ RETVAL (nResult);
 const char *LightmapQualityText (void);
 const char *LightmapPrecisionText (void);
 
-static int32_t PrecomputeLightmapsPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+int32_t PrecomputeLightmapsPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 ENTER (0, 0);
 if (nState) {

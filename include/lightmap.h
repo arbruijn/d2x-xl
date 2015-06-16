@@ -137,7 +137,7 @@ class CLightmapProgress {
 
 class CLightmapManager {
 	private:
-		CLightmapData		m_data;
+		CLightmapData		m_data [MAX_THREADS];
 		CLightmapList		m_list;
 		CLightmapProgress	m_progress;
 		int32_t				m_bSuccess;
@@ -157,7 +157,7 @@ class CLightmapManager {
 		int32_t BuildAll (int32_t nFace);
 		inline CLightmapBuffer* Buffer (uint32_t i = 0) { return m_list.m_buffers [i]; }
 		inline int32_t HaveLightmaps (void) { return !gameStates.app.bNostalgia && (m_list.m_buffers.Buffer () != NULL); }
-		inline CSegFace* CurrentFace (void) { return m_data.pFace; }
+		inline CSegFace* CurrentFace (int32_t nThread) { return m_data [nThread].pFace; }
 		inline CLightmapProgress& Progress (void) { return m_progress; }
 		inline void SetupProgress (void) { m_progress.Setup (); }
 		inline void ResetProgress (void) { m_progress.Reset (); }

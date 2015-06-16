@@ -24,7 +24,7 @@
 CRenderThreadInfo tiRender;
 CEffectThreadInfo tiEffects;
 
-int32_t _CDECL_ LightObjectsThread (void* nThreadP);
+int32_t _CDECL_ LightObjectsThread (void* pnThread);
 
 //------------------------------------------------------------------------------
 
@@ -171,7 +171,7 @@ do {
 		LightObjectsThread (&nId);
 		}
 	else if (tiRender.nTask == rtLightmap)
-		lightmapManager.Build (lightmapManager.CurrentFace (), nId);
+		lightmapManager.Build (lightmapManager.CurrentFace (nId), nId);
 	else if (tiRender.nTask == rtParticles) 
 		particleManager.SetupParticles (nId);
 	tiRender.ti [nId].bExec = 0;

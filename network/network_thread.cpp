@@ -516,7 +516,7 @@ while (i < ToS ()) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-static int32_t _CDECL_ NetworkThreadHandler (void* nThreadP)
+static int32_t _CDECL_ NetworkThreadHandler (void* pnThread)
 {
 networkThread.Run ();
 return 0;
