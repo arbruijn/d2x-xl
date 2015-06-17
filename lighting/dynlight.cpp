@@ -846,8 +846,6 @@ else { // check whether light only contributes ambient light to point
 		if (xPathLength < 0)
 			RETVAL (0)
 		if (xDistance < xPathLength) {
-			if (xDistance < xPathLength / 2)
-				xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 0, nThread);
 			// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
 			if (xDistance < xPathLength)
 				xDistance = fix (float (xPathLength) * sqrt (float (xDistance) / float (xPathLength)));
