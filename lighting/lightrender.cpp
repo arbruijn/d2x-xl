@@ -620,7 +620,7 @@ else if (gameStates.render.bPerPixelLighting) {
 			vCenter = SEGMENT (nSegment)->Center ();
 			vcd.vertPos.Assign (vCenter);
 			}
-		vcd.vertPosP = &vcd.vertPos;
+		vcd.pVertPos = &vcd.vertPos;
 		vcd.fMatShininess = 4;
 		ComputeVertexColor (nSegment, -1, -1, reinterpret_cast<CFloatVector3*> (pSegColor), &vcd, 0);
 		}

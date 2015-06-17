@@ -466,7 +466,7 @@ CFixVector::Normalize (m_vNormal);
 m_vcd.vertNorm.Assign (m_vNormal);
 CFloatVector3::Normalize (m_vcd.vertNorm);
 InitVertColorData (m_vcd);
-m_vcd.vertPosP = &m_vcd.vertPos;
+m_vcd.pVertPos = &m_vcd.vertPos;
 m_vcd.fMatShininess = 4;
 memcpy (m_sideVerts, pSide->m_corners, sizeof (m_sideVerts));
 //memcpy (m_sideVerts, pFace->m_info.index, sizeof (m_sideVerts));
@@ -839,7 +839,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	BRP;
 #endif
 
-data.m_vcd.vertPosP = &data.m_vcd.vertPos;
+data.m_vcd.pVertPos = &data.m_vcd.vertPos;
 pPixelPos = data.m_pixelPos + yMin * w;
 
 #if 1 
@@ -1124,6 +1124,9 @@ CreateSpecial (m_data [0].m_texColor, 1, 255);
 m_list.m_nLightmaps = 2;
 #if USE_OPENMP
 if (gameStates.app.nThreads > 1) {
+	for (int32_t i = 0; i < gameStates.app.nThreads; i++)
+		uniDacsRouter [i].Create (gameData.segData.nSegments);
+
 #	pragma omp parallel 
 	{
 		int32_t nThread = omp_get_thread_num ();
@@ -1139,6 +1142,7 @@ if (gameStates.app.nThreads > 1) {
 else
 #endif
 	{
+	uniDacsRouter [0].Create (gameData.segData.nSegments);
 	for (int32_t nFace = 0; nFace < FACES.nFaces; nFace++) {
 		if (m_bSuccess) {
 			m_progress.Update ();
@@ -1189,7 +1193,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	BRP;
 #endif
 
-vcd.vertPosP = &vcd.vertPos;
+vcd.pVertPos = &vcd.vertPos;
 pPixelPos = data.m_pixelPos + yMin * w;
 
 #if 1 

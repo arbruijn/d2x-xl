@@ -594,9 +594,11 @@ return 0;
 
 int32_t CDynLight::LightPathLength (const int16_t nLightSeg, const int16_t nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int32_t bFastRoute, int32_t nThread)
 {
-fix dist = (bFastRoute) 
-			  ? gameData.segData.SegDist (nLightSeg, nDestSeg)
-			  : simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, nDestSeg, X2I (xMaxLightRange / 5), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
+fix dist = (bFastRoute == 1) 
+			  ? gameData.segData.SegDist (nLightSeg, nDestSeg, info.vPos, vDestPos)
+			  : (bFastRoute == 0) 
+			     ? simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, nDestSeg, X2I (xMaxLightRange / 5), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0)
+			     : uniDacsRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, nDestSeg, X2I (xMaxLightRange / 5), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
 if (dist < 0)
 	return -1;
 return fix (dist / info.fRange);
@@ -836,12 +838,17 @@ else { // check whether light only contributes ambient light to point
 	// if point is occluded, use segment path distance to point for light range and attenuation
 	// if bDiffuse == 0 then point is completely occluded (determined by above call to SeesPoint ()), otherwise use SeesPoint() to test occlusion
 	if (!bSeesPoint) { // => ambient contribution only
-		fix xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 0, nThread);
+		fix xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+		xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 0, nThread);
+		xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, -1, nThread);
 		if (xPathLength < 0)
 			RETVAL (0)
 		if (xDistance < xPathLength) {
+			if (xDistance < xPathLength / 2)
+				xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 0, nThread);
 			// since the path length goes via segment centers and is therefore usually to great, adjust it a bit
-			xDistance = fix (float (xPathLength) * sqrt (float (xDistance) / float (xPathLength)));
+			if (xDistance < xPathLength)
+				xDistance = fix (float (xPathLength) * sqrt (float (xDistance) / float (xPathLength)));
 			//xDistance = (xDistance + xPathLength) / 2; 
 			if (xDistance - xRad > xMaxLightRange)
 				RETVAL (0)

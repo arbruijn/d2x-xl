@@ -464,7 +464,7 @@ if (m_heap.Cost (nSegment) == 0xFFFFFFFF)
 
 if (route [0].nNode == nSegment)
 	RETVAL (0)
-if (m_nDestSeg >= 0)
+//if (m_nDestSeg >= 0)
 	h -= 2;
 
 	fix xDist = 0;
@@ -473,36 +473,32 @@ if (m_nDestSeg >= 0)
 	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], route [0].nNode, -1, 1, 0);
 	CHitResult		hitResult;
 #endif
-	CFixVector* p0, *p1;
-	int16_t			nStartSeg, nDestSeg;
+	CFixVector	* p0, *p1;
+	int16_t		nStartSeg, nDestSeg;
 
-for (int32_t i = 0, j; i < h; i = j) {
+for (int32_t i = 1, j; i < h; i = j) {
 	// beginning at segment route [i].node, traverse the route until the center of route segment route [j].nNode cannot be seen from 
 	// the center of segment route [i].nNode. That way, the distance calculation is corrected by using direct lines of sight between
 	// segments of the route that can "see" each other even if they aren't directly connected.
 	nStartSeg = route [i].nNode;
-	if ((nStartSeg < 0) || (nStartSeg >= gameData.segData.nSegments))
+	CSegment *pStartSeg = SEGMENT (nStartSeg);
+	if (!pStartSeg)
 		RETVAL (-2)
-	/*hitQuery.*/p0 = p1 = &SEGMENT (nStartSeg)->Center ();
-	for (j = i + 1; j < h; j++) { 
+	/*hitQuery.*/p0 = p1 = &pStartSeg->Center ();
+	for (j = i + 1; j <= h; j++) { 
 		nDestSeg = route [j].nNode;
-#if 1
-		if (!gameData.segData.SegVis (nStartSeg, nDestSeg))
+		if ((j > i + 1) && !gameData.segData.SegVis (nStartSeg, nDestSeg)) {
+			--j;
 			break;
+			}
 		p1 = &SEGMENT (nDestSeg)->Center ();
-#else
-		hitQuery.p1 = &SEGMENT (nDestSeg)->Center ();
-		int32_t nHitType = FindHitpoint (&hitQuery, &hitResult);
-		if (nHitType && ((nHitType != HIT_WALL) || (hitResult.nSegment != nDestSeg)))
-			break;
-		p1 = hitQuery.p1;
-#endif
 		}	
-	if (j < i + 2) // can only see next segment after route [i].nNode
-		xDist += SEGMENT (nStartSeg)->m_childDists [0][route [i].nEdge];
-	else {// skipped some segment(s)
+	//if (j < i + 2) // can only see next segment after route [i].nNode
+	//	xDist += pSeg->m_childDists [0][route [i].nEdge];
+	//else 
+		{// skipped some segment(s)
 		xDist += CFixVector::Dist (*p0, *p1);
-		--j;
+		//--j;
 		}
 	}
 if	(m_nDestSeg >= 0) {

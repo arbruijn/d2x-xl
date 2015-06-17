@@ -1775,7 +1775,7 @@ class CVertColorData {
 		CFloatVector	colorSum;
 		CFloatVector3	vertNorm;
 		CFloatVector3	vertPos;
-		CFloatVector3*	vertPosP;
+		CFloatVector3*	pVertPos;
 		float				fMatShininess;
 	public:
 		CVertColorData () { memset (this, 0, sizeof (*this)); }
@@ -2126,23 +2126,35 @@ class CSegDistHeader {
 	};
 
 
+typedef struct tSegDist {
+	uint16_t		nDist;
+	int16_t		nStartSeg;
+	int16_t		nDestSeg;
+} tSegDist;
+
 class CSegDistList : public CSegDistHeader {
 	public:
-		CArray<uint16_t> dist;
+		CArray<tSegDist> dist;
 
-	inline void Set (uint16_t nSegment, fix xDistance) {
+	inline void Set (uint16_t nSegment, fix xDistance, int16_t nStartSeg, int16_t nDestSeg) {
 		nSegment -= offset;
 		if (nSegment < length)
-			dist [nSegment] = (xDistance < 0) ? 0xFFFF : (uint16_t) ((float) xDistance / scale);
+			dist [nSegment].nDist = (xDistance < 0) ? 0xFFFF : (uint16_t) ((float) xDistance / scale);
+			dist [nSegment].nStartSeg = nStartSeg;
+			dist [nSegment].nStartSeg = nDestSeg;
 		}
 
-	inline int32_t Get (uint16_t nSegment) {
+	inline int32_t Get (uint16_t nSegment, int16_t *pnStartSeg = NULL, int16_t *pnDestSeg = NULL) {
 		nSegment -= offset;
 		if (nSegment >= length)
 			return -1;
-		uint16_t d = dist [nSegment];
+		uint16_t d = dist [nSegment].nDist;
 		if (d == 0xFFFF)
 			return -1;
+		if (pnStartSeg)
+			*pnStartSeg = dist [nSegment].nStartSeg;
+		if (pnDestSeg)
+			*pnDestSeg = dist [nSegment].nDestSeg;
 		return (fix) ((float) d * scale);
 		}
 
@@ -2391,14 +2403,12 @@ class CSegmentData {
 			return QUADMATIDX (i, j, nSegments);
 			}
 
-		inline int32_t SegDist (uint16_t i, uint16_t j) {
-			return segDistTable [i].Get (j);
-			}
-
+		int32_t SegDist (uint16_t i, uint16_t j, const CFixVector& vStart, const CFixVector& vDest);
+#if 0
 		inline void SetSegDist (uint16_t i, uint16_t j, fix xDistance) {
-			segDistTable [i].Set (j, xDistance);
+			segDistTable [i].Set (j, xDistance, -1, -1);
 			}
-
+#endif
 		inline int32_t LightVisIdx (int32_t i, int32_t j) {
 			return QUADMATIDX (i, j, nSegments);
 			}

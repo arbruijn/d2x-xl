@@ -44,7 +44,7 @@ int32_t SegmentIsVisible (CSegment *pSeg, CTransformation& transformation, int32
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 32
+#define LIGHT_DATA_VERSION 33
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segData.bVertVis.Buffer () ? gameData.segData.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
@@ -72,6 +72,21 @@ static int32_t loadIdx = 0;
 static int32_t loadOp = 0;
 static int32_t nLevel = 0;
 static int32_t bSecret = 0;
+
+//------------------------------------------------------------------------------
+
+int32_t CSegmentData::SegDist (uint16_t i, uint16_t j, const CFixVector& vStart, const CFixVector& vDest) 
+{
+int16_t nStartSeg, nDestSeg;
+int32_t nDistance = segDistTable [i].Get (j, &nStartSeg, &nDestSeg);
+if (nDistance < 0)
+	return nDistance;
+if ((nStartSeg < 0) && (nDestSeg < 0))
+	return CFixVector::Dist (vStart, vDest);
+if (nDestSeg < 0)
+	return CFixVector::Dist (SEGMENT (nStartSeg)->Center (), vStart) + CFixVector::Dist (SEGMENT (nStartSeg)->Center (), vDest);
+	return nDistance + CFixVector::Dist (SEGMENT (nStartSeg)->Center (), vStart) + CFixVector::Dist (SEGMENT (nDestSeg)->Center (), vDest);
+}
 
 //------------------------------------------------------------------------------
 
@@ -144,9 +159,19 @@ if (nSegment == nDbgSeg)
 #endif
 if (!segDist.Create ())
 	return;
-segDist.Set (nSegment, 0);
-for (int32_t i = nMinSeg; i <= nMaxSeg; i++) 
-	segDist.Set ((uint16_t) i, router.Distance (i));
+segDist.Set (nSegment, 0, -1, -1);
+for (int32_t i = nMinSeg; i <= nMaxSeg; i++) {
+	fix xDistance = router.Distance (i);
+	int16_t nStartSeg, nDestSeg;
+	int16_t l = router.RouteLength (i);
+	if (l < 3) 
+		nStartSeg = nDestSeg = -1;
+	else {
+		nStartSeg = router.Route (1)->nNode;
+		nDestSeg = (l == 3) ? nStartSeg : router.Route (l - 2)->nNode;
+		}
+	segDist.Set ((uint16_t) i, xDistance, nStartSeg, nDestSeg);
+	}
 #if DBG
 nSavedCount += gameData.segData.nSegments - segDist.length;
 #endif
@@ -528,6 +553,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, pSide++) {
 	CFixVector::Normalize (uVec);
 	CFixVector::Normalize (fVec);
 	viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
+	viewer.info.position.mOrient = CFixMatrix::CreateF (fVec);
 #if DBG
 	if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		BRP;

@@ -373,7 +373,7 @@ if (nThread == 1)
 #endif
 colorSum [0] = *colorSumP;
 colorSum [1].SetZero ();
-vertPos = *transformation.m_info.posf [1].XYZ () - *colorData.vertPosP;
+vertPos = *transformation.m_info.posf [1].XYZ () - *colorData.pVertPos;
 CFloatVector3::Normalize (vertPos);
 nLights = pLightIndex->nActive;
 if (nLights > lightManager.LightCount (0))
@@ -440,16 +440,16 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 		lightDir = *pLight->info.vDirf.XYZ ();
 
 	if (bSelf || (gameStates.render.bBuildLightmaps && (pLight->Segment () == nSegment) && (pLight->Side () == nSide))) {
-		lightPos = *colorData.vertPosP;
+		lightPos = *colorData.pVertPos;
 		fLightDist = 0.0f;
 		lightRayDir.SetZero ();
 		}
 	else {
 		if (nType < 2)
-			DistToFace (*colorData.vertPosP, pLight->info.nSegment, uint8_t (pLight->info.nSide), &lightPos); // returns 0 if a plane normal through the vertex position goes through the face
+			DistToFace (*colorData.pVertPos, pLight->info.nSegment, uint8_t (pLight->info.nSide), &lightPos); // returns 0 if a plane normal through the vertex position goes through the face
 		else 
 			lightPos = *pLight->render.vPosf [bTransform].XYZ ();
-		lightRayDir = lightPos - *colorData.vertPosP;
+		lightRayDir = lightPos - *colorData.pVertPos;
 		fLightDist = lightRayDir.Mag ();
 		}
 
@@ -458,7 +458,7 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 		BRP;
 #endif
 #if 0 //DBG
-	CFloatVector3 hDir = *pLight->render.vPosf [bTransform].XYZ () - *colorData.vertPosP;
+	CFloatVector3 hDir = *pLight->render.vPosf [bTransform].XYZ () - *colorData.pVertPos;
 	CFloatVector3::Normalize (hDir);
 	float hDot = CFloatVector3::Dot (colorData.vertNorm, hDir);
 
@@ -484,7 +484,7 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 					// for rectangular light sources, using the light source's closest point to the light receiving point
 					// can yield a incident angle too low if the point lies in an adjacent face. In that case use the angle
 					// from the light source's center if it is better
-					CFloatVector3 d = *pLight->render.vPosf [bTransform].XYZ () - *colorData.vertPosP;
+					CFloatVector3 d = *pLight->render.vPosf [bTransform].XYZ () - *colorData.pVertPos;
 					CFloatVector3::Normalize (d);
 					float dotCenter = CFloatVector3::Dot (colorData.vertNorm, d);
 					float dotNearest = CFloatVector3::Dot (colorData.vertNorm, lightRayDir);
@@ -758,7 +758,7 @@ if ((bVertexLights = !(gameStates.render.nState || pVertexColor))) {
 	vVertPosP = &vertPos;
 	lightManager.SetNearestToVertex (nSegment, nSide, nVertex, NULL, 1, 0, 1, nThread);
 	}
-colorData.vertPosP = vVertPosP;
+colorData.pVertPos = vVertPosP;
 
 #if MULTI_THREADED_LIGHTS
 if (gameStates.app.bMultiThreaded) {
