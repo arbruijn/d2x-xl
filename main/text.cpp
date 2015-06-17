@@ -2010,6 +2010,7 @@ const char *defaultGameTexts [][2] = {
  {"D1-Waffen ungenerft", "~Unnerf d1 weapons"},
  {"~Nebel: %s", "~Fog: %s"},
  {"Explosionssc~Hrapnelle: %s", "explosion s~Hrapnel: %s"},
+ {"~Kratzgeraeusche des schiffs erzeugen", "play ship scra~Pe sound"},
 
 #if 0
  {"", ""},
@@ -2781,6 +2782,7 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, haben Waffen aus Descent 1 in Descent 2-Missionen\ndieselbe Schlagkraft wie in Descent 1.", "If checked, Descent 1 have the same power in Descent 2 missions\nas they have in Descent 1."},
  {"Wenn eingeschaltet, werden unter Wasser und in Lava Dunst gezeichnet.", "If turned on, a blue or orange haze is rendered under water and in lava."},
  {"Hier kann die Menge schnellfliegender kleiner Truemmerstuecke von \nExplosionen eingestellt werden. Achtung: Dieser Effekt ist sehr rechenaufwaendig!", "Adjust the amount of fast moving explosion shrapnel here.\nCaveat: This effect can lower the frame rate significantly!"},
+ {"Wenn angekreuzt, erzeugen Spielerschiffe Kratzgeraeuschen, sobald\nsie an einer Wand entlang schleifen. ", "When checked, player ships create scrape sounds when\nsliding along a wall"},
 #if 0
  {"", ""},
 #endif

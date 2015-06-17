@@ -2018,10 +2018,10 @@ void LoadGameTexts(void);
 #define TXT_UNNERF_D1_WEAPONS			GT(1260)
 #define TXT_EFFECTS_FOG					GT(1261)
 #define TXT_EXPLOSION_SHRAPNELS		GT(1262)
+#define TXT_SCRAPE_SOUND				GT(1263)
 
 #if 0
 
-#define TXT_					GT(1263)
 #define TXT_					GT(1264)
 #define TXT_					GT(1265)
 #define TXT_					GT(1266)
@@ -2634,10 +2634,10 @@ void LoadGameTexts(void);
 #define HTX_UNNERF_D1_WEAPONS			HT(454)
 #define HTX_EFFECTS_FOG					HT(455)
 #define HTX_EXPLOSION_SHRAPNEL		HT(456)
+#define HTX_SCRAPE_SOUND				HT(457)
 
 #if 0
 
-#define HTX_						HT(457)
 #define HTX_						HT(458)
 #define HTX_						HT(459)
 #define HTX_						HT(460)

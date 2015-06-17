@@ -544,6 +544,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].sound.bShuffleMusic, i, 0);
 		RP (gameOptions [i].sound.bLinkVolumes, i, 1);
 		RP (gameOptions [i].sound.bGatling, i, 0);
+		RP (gameOptions [i].sound.bScrape, i, 0);
 		RP (gameOptions [i].sound.bMissiles, i, 0);
 		RP (gameOptions [i].sound.bShip, i, 0);
 		RP (gameOptions [i].gameplay.bInventory, i, 0);
@@ -1118,6 +1119,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].sound.bShuffleMusic", "0"},
 	 {"gameOptions[0].sound.bLinkVolumes", "1"},
 	 {"gameOptions[0].sound.bGatling", "0"},
+	 {"gameOptions[0].sound.bScrape", "0"},
 	 {"gameOptions[0].sound.bMissiles", "0"},
 	 {"gameOptions[0].sound.bShip", "0"},
 	 {"gameOptions[0].sound.xCustomVolume", "5"},

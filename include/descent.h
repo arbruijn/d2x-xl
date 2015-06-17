@@ -618,6 +618,7 @@ class CSoundOptions {
 		int32_t bShip;
 		int32_t bMissiles;
 		int32_t bGatling;
+		int32_t bScrape;
 		int32_t bSpeedUp;
 		fix xCustomSoundVolume;
 
