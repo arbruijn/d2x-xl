@@ -816,7 +816,7 @@ else {
 	}
 if (info.nSegment == nDestSeg)
 	info.bDiffuse [nThread] = 1;
-#if 0
+#if 1
 else if (!gameData.segData.LightVis (Index (), nDestSeg))
 	info.bDiffuse [nThread] = 0;
 #endif
