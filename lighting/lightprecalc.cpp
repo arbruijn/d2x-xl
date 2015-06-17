@@ -579,7 +579,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		if (!bLights)
 			SetSegVis (nStartSeg, nSegment);
 		else {
-			if (gameData.segData.SegDist (nStartSeg, nSegment) < 0)
+			if (gameData.segData.SegDist (nStartSeg, nSegment, CFixVector::ZERO, CFixVector::ZERO) < 0)
 				continue;
 			SetLightVis (nLight, nSegment);
 			}

@@ -2141,7 +2141,7 @@ class CSegDistList : public CSegDistHeader {
 		if (nSegment < length)
 			dist [nSegment].nDist = (xDistance < 0) ? 0xFFFF : (uint16_t) ((float) xDistance / scale);
 			dist [nSegment].nStartSeg = nStartSeg;
-			dist [nSegment].nStartSeg = nDestSeg;
+			dist [nSegment].nDestSeg = nDestSeg;
 		}
 
 	inline int32_t Get (uint16_t nSegment, int16_t *pnStartSeg = NULL, int16_t *pnDestSeg = NULL) {
