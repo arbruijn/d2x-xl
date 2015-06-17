@@ -839,8 +839,10 @@ else { // check whether light only contributes ambient light to point
 	// if bDiffuse == 0 then point is completely occluded (determined by above call to SeesPoint ()), otherwise use SeesPoint() to test occlusion
 	if (!bSeesPoint) { // => ambient contribution only
 		fix xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+#if 0 //DBG
 		xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 0, nThread);
 		xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, -1, nThread);
+#endif
 		if (xPathLength < 0)
 			RETVAL (0)
 		if (xDistance < xPathLength) {
