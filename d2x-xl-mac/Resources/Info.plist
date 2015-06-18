@@ -157,11 +157,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.17.57</string>
+	<string>1.18.46</string>
 	<key>CFBundleSignature</key>
 	<string>D2XL</string>
 	<key>CFBundleVersion</key>
-	<string>1A001A</string>
+	<string>1A001F</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.action-games</string>
 	<key>NSMainNibFile</key>
