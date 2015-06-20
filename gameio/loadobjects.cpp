@@ -210,13 +210,27 @@ if (Type () != OBJ_EFFECT) {
 }
 
 //------------------------------------------------------------------------------
-//static gs_skip(int32_t len,CFile *file)
-//{
-//
-//	cf.Seek (file,len,SEEK_CUR);
-//}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// -----------------------------------------------------------------------------
+void CFogData::Init (int32_t nType)
+{
+m_color.Set (0.7f, 0.7f, 0.7f, nType ? 100.0f : 240.0f);
+}
+
+//------------------------------------------------------------------------------
+
+void CFogData::Read (CFile& cf)
+{
+m_color.v.color.r = float (cf.ReadByte ()) / 255.0f;
+m_color.v.color.g = float (cf.ReadByte ()) / 255.0f;
+m_color.v.color.b = float (cf.ReadByte ()) / 255.0f;
+m_color.v.color.a = float (cf.ReadByte () + 1) * 20.0f;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 static void InitGameFileInfo (void)
 {
@@ -286,8 +300,12 @@ if (gameTopFileInfo.fileinfoVersion >= 29) {
 	gameFileInfo.lightDeltaIndices.Read (cf);
 	gameFileInfo.lightDeltas.Read (cf);
 	}
-if (gameStates.app.bD2XLevel && (gameData.segData.nLevelVersion > 15))
-	gameFileInfo.equipGen.Read (cf);
+if (gameStates.app.bD2XLevel) {
+	if (gameData.segData.nLevelVersion > 15)
+		gameFileInfo.equipGen.Read (cf);
+	if (gameData.segData.nLevelVersion > 26)
+		gameData.segData.ReadFogData (cf);
+	}
 return 0;
 }
 

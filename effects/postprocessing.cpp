@@ -492,15 +492,27 @@ if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders && (ogl.m_feature
 extern tTexCoord2f quadTexCoord [3][4];
 extern float quadVerts [5][4][2];
 
+static vec4 fogColors [FOG_TYPE_COUNT + 1] = {
+	{0.2f, 0.4f, 0.6f, 160.0f},
+	{1.0f, 0.7f, 0.4f,  60.0f},
+	{0.7f, 0.7f, 0.7f, 240.0f},
+	{0.7f, 0.7f, 0.7f, 100.0f},
+	{0.0f, 0.0f, 0.0f,   0.0f}
+	};
+
+
+static vec4 *FogColor (int32_t nFogType)
+{
+if (!gameStates.render.bHaveFog [nFogType + 1])
+	return fogColors + 4;
+if (nFogType < 2)
+	return fogColors + nFogType;
+return (vec4 *) &gameData.segData.FogColor (nFogType - 2);
+}
+
+
 void RenderFog (void)
 {
-	vec4 fogColors [FOG_TYPE_COUNT + 1] = {
-		{0.2f, 0.4f, 0.6f, 160.0f},
-		{1.0f, 0.7f, 0.4f,  60.0f},
-		{0.7f, 0.7f, 0.7f, 240.0f},
-		{0.7f, 0.7f, 0.7f, 100.0f},
-		{0.0f, 0.0f, 0.0f,   0.0f}
-		};
 #if 1
 if (!gameStates.render.bHaveFog [0])
 	return;
@@ -523,8 +535,8 @@ for (int32_t nFogType = 0; nFogType < FOG_TYPE_COUNT; nFogType += 2) {
 		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		ogl.BindTexture (ogl.m_data.GetDrawBuffer (5 + nFogType / 2)->ColorBuffer (0));
 #if 1
-		shaderManager.Set ("fogColor1", (fogColors [gameStates.render.bHaveFog [nFogType + 1] ? nFogType : 4]));
-		shaderManager.Set ("fogColor2", (fogColors [gameStates.render.bHaveFog [nFogType + 2] ? nFogType + 1 : 4]));
+		shaderManager.Set ("fogColor1", *FogColor (nFogType));
+		shaderManager.Set ("fogColor2", *FogColor (nFogType + 1));
 #endif
 		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
 		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);

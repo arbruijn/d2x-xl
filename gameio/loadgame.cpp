@@ -768,7 +768,7 @@ int32_t LoadModData (char* pszLevelName, int32_t bLoadTextures, int32_t nStage)
 ENTER (0, 0);
 
 	int32_t	nLoadRes = 0;
-	char	szFile [FILENAME_LEN];
+	char		szFile [FILENAME_LEN];
 
 // try to read mod files, and load default files if that fails
 if (nStage == 0) {
@@ -967,8 +967,9 @@ ENTER (0, 0);
 strlwr (pszLevelName = LevelName (nLevel));
 CleanupBeforeGame (nLevel, bRestore);
 gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
-gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
-									 (missionManager [missionManager.nCurrentMission].nDescentVersion == 1);
+gameStates.app.bD1Mission = gameStates.app.bAutoRunMission 
+									 ? (strstr (szAutoMission, "rdl") != NULL) 
+									 : (missionManager [missionManager.nCurrentMission].nDescentVersion == 1);
 MakeModFolders (hogFileManager.MissionName (), nLevel);
 if (!(gameStates.app.bHaveMod || missionManager.IsBuiltIn (hogFileManager.MissionName ())))
 	 MakeModFolders (gameStates.app.bD1Mission ? "Descent: First Strike" : "Descent 2: Counterstrike!", nLevel);

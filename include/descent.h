@@ -2315,6 +2315,18 @@ class CFaceGrid {
 
 //------------------------------------------------------------------------------
 
+class CFogData {
+	private:
+		CFloatVector	m_color;
+
+	public:
+		inline CFloatVector& Color (void) { return m_color; }
+		void Init (int32_t nType);
+		void Read (CFile& cf);
+	};
+
+//------------------------------------------------------------------------------
+
 class CSegmentData {
 	public:
 		int32_t						nMaxSegments;
@@ -2360,6 +2372,7 @@ class CSegmentData {
 		int16_t						nSlideSegs;
 		int32_t						bHaveSlideSegs;
 		CFaceData					faceData;
+		CFogData						fogData [2];
 
 	public:
 		CSegmentData ();
@@ -2436,6 +2449,11 @@ class CSegmentData {
 		inline int32_t GetSegList (CFixVector vPos, int16_t*& listP, int32_t bSkyBox) { return segmentGrids [bSkyBox].GetSegList (vPos, listP); }
 		inline bool HaveSegmentGrid (int32_t bSkyBox) { return segmentGrids [bSkyBox].Available (); }
 		inline bool BuildFaceGrid (int32_t nSize = 20) { return faceGrid.Create (nSize); }
+		inline void ReadFogData (CFile& cf) {
+			for (int32_t i = 0; i < 2; i++)
+				fogData [i].Read (cf);
+			}
+		inline CFloatVector FogColor (int32_t nFogType) { return m_fogData [nFogType].Color (); }
 
 		int32_t CountEdges (void);
 		int32_t FindEdge (int16_t nVertex1, int16_t nVertex2, int32_t nStart);
