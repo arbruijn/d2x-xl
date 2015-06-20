@@ -152,18 +152,19 @@ m_nLocalProgress = 0;
 
 void CLightmapProgress::Render (int32_t nThread)
 {
-Lock ();
-if (m_pProgressMenu && !nThread)
+if (m_pProgressMenu && !nThread) {
+	Lock ();
 	m_pProgressMenu->Render (m_pProgressMenu->Title (), m_pProgressMenu->SubTitle ());
-Unlock ();
+	Unlock ();
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void CLightmapProgress::Update (int32_t nThread)
 {
-Lock ();
 if (m_pProgressMenu) {
+Lock ();
 #if OPTIMIZED_THREADS
 	if (!gameStates.app.bPrecomputeLightmaps) {
 		if (m_pTotalProgress) {
@@ -216,8 +217,8 @@ if (m_pProgressMenu) {
 				}
 			}
 		}
+	Unlock ();
 	}
-Unlock ();
 }
 
 //------------------------------------------------------------------------------
@@ -226,7 +227,9 @@ void CLightmapProgress::Skip (int32_t i)
 {
 ++m_nSkipped;
 if (m_pTotalProgress) {
+	Lock ();
 	m_pTotalProgress->Value () += i * Scale ();
+	Unlock ();
 	m_fTotal = float (m_pTotalProgress->MaxValue () - m_nSkipped * Scale ());
 	}
 }
