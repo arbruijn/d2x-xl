@@ -190,11 +190,13 @@ if (m_bmText [bIsCurrent] && strcmp (m_bmText [bIsCurrent]->Name (), "String Bit
 	}
 if (!m_bmText [bIsCurrent])
 	m_bmText [bIsCurrent] = CreateStringBitmap (m_text, MENU_KEY (m_nKey, - 1), gameData.menuData.keyColor, nTabs, m_bCentered, m_w, bTiny * 2, 0);
-if (!m_bmText [bIsCurrent])
+if (!m_bmText [bIsCurrent]) {
+	m_bmText [bIsCurrent] = CreateStringBitmap (m_text, MENU_KEY (m_nKey, - 1), gameData.menuData.keyColor, nTabs, m_bCentered, m_w, bTiny * 2, 0);
 	return false;
-	float	fScale = fontManager.Scale ();
-	m_bmText [bIsCurrent]->Render (NULL, gameData.X (m_x), m_y, int32_t (m_bmText [bIsCurrent]->Width () * fScale), int32_t (m_bmText [bIsCurrent]->Height () * fScale), 
-												0, 0, m_bmText [bIsCurrent]->Width (), m_bmText [bIsCurrent]->Height (), 1, gameStates.app.bDemoData ? -1 : 0);
+	}
+float	fScale = fontManager.Scale ();
+m_bmText [bIsCurrent]->Render (NULL, gameData.X (m_x), m_y, int32_t (m_bmText [bIsCurrent]->Width () * fScale), int32_t (m_bmText [bIsCurrent]->Height () * fScale), 
+										 0, 0, m_bmText [bIsCurrent]->Width (), m_bmText [bIsCurrent]->Height (), 1, gameStates.app.bDemoData ? -1 : 0);
 return true;
 }
 

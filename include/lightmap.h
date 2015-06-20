@@ -114,6 +114,7 @@ class CLightmapProgress {
 		CMenuItem	*m_pLevelProgress;
 		CMenuItem	*m_pLevelCount;
 		CMenuItem	*m_pTime;
+		SDL_sem		*m_pLock;
 		int32_t		m_nLocalProgress;
 		float			m_fTotal;
 		int32_t		m_tStart;
@@ -122,7 +123,7 @@ class CLightmapProgress {
 
 	public:
 		CLightmapProgress () 
-			: m_pProgressMenu (NULL), m_pTotalProgress (NULL), m_pLevelProgress (NULL), m_pLevelCount (NULL), m_pTime (NULL), m_nLocalProgress (0), m_fTotal (0.0f), m_tStart (0), m_nSkipped (0), m_bActive (false)
+			: m_pProgressMenu (NULL), m_pTotalProgress (NULL), m_pLevelProgress (NULL), m_pLevelCount (NULL), m_pTime (NULL), m_pLock (NULL), m_nLocalProgress (0), m_fTotal (0.0f), m_tStart (0), m_nSkipped (0), m_bActive (false)
 			{ }
 
 		void Setup (void);
@@ -135,6 +136,15 @@ class CLightmapProgress {
 		inline CMenuItem *LevelProgress (void) { return m_pProgressMenu ? m_pLevelProgress : NULL; }
 		inline CMenuItem *LevelCount (void) { return m_pProgressMenu ? m_pLevelCount : NULL; }
 		inline CMenuItem *Time (void) { return m_pProgressMenu ? m_pTime : NULL; }
+
+		inline void Lock (void) { 
+			if (m_pLock)
+				SDL_SemWait (m_pLock); 
+			}
+		inline void Unlock (void) { 
+			if (m_pLock)
+				SDL_SemPost (m_pLock); 
+			}
 
 		static inline const int32_t Scale (void) { return 100; }
 	};

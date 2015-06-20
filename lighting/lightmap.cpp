@@ -81,6 +81,35 @@ tLightmap dummyLightmap;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+CLightmapProgress::CLightmapProgress () 
+	: m_pProgressMenu (NULL), m_pTotalProgress (NULL), m_pLevelProgress (NULL), m_pLevelCount (NULL), m_pTime (NULL), m_pLock (NULL), m_nLocalProgress (0), m_fTotal (0.0f), m_tStart (0), m_nSkipped (0), m_bActive (false)
+{ 
+m_pLock = SDL_CreateSemaphore (1);
+}
+
+//------------------------------------------------------------------------------
+
+CLightmapProgress::~CLightmapProgress () 
+{ 
+m_pProgressMenu = NULL;
+m_pTotalProgress = NULL;
+m_pLevelProgress = NULL;
+m_pLevelCount = NULL;
+m_pTime = NULL;
+m_pLock = NULL;
+m_nLocalProgress = 0;
+m_fTotal = 0.0f;
+m_tStart = 0;
+m_nSkipped = 0;
+m_bActive = false;
+if (m_pLock) {
+	SDL_DestroySemaphore (m_pLock);
+	m_pLock = NULL;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void CLightmapProgress::Setup (void)
 {
 if (!(m_pProgressMenu = CMenu::Active ()))
@@ -123,23 +152,17 @@ m_nLocalProgress = 0;
 
 void CLightmapProgress::Render (int32_t nThread)
 {
-#if USE_OPENMP
-#	pragma omp critical (LightmapProgressRender)
-#endif
-{
+Lock ();
 if (m_pProgressMenu && !nThread)
 	m_pProgressMenu->Render (m_pProgressMenu->Title (), m_pProgressMenu->SubTitle ());
-}
+Unlock ();
 }
 
 //------------------------------------------------------------------------------
 
 void CLightmapProgress::Update (int32_t nThread)
 {
-#if USE_OPENMP
-#	pragma omp critical (LightmapProgressUpdate)
-#endif
-{
+Lock ();
 if (m_pProgressMenu) {
 #if OPTIMIZED_THREADS
 	if (!gameStates.app.bPrecomputeLightmaps) {
@@ -194,7 +217,7 @@ if (m_pProgressMenu) {
 			}
 		}
 	}
-}
+Unlock ();
 }
 
 //------------------------------------------------------------------------------
@@ -802,12 +825,37 @@ return (k < m) ? -1 : (k > m) ? 1 : 0;
 
 //------------------------------------------------------------------------------
 
-void CheckMenu (void)
+#if DBG
+
+void CheckProgressMenu (int32_t nThread)
 {
+if (nThread)
+	return;
+
+static int32_t nCalls = 0;
+#pragma omp critical
+{
+if (nCalls)
+	PrintLog (0);
+++nCalls;
+}
+
 CMenuItem *pTime = lightmapManager.Progress ().Time ();
 if (pTime && pTime->m_bmText [0] && strcmp (pTime->m_bmText [0]->Name (), "String Bitmap"))
+	PrintLog (0, "Warning: Progress menu corrupted!\n");
+#pragma omp critical
+{
+if (nCalls)
 	PrintLog (0);
+--nCalls;
 }
+}
+
+#else
+
+#	define CheckProgressMenu(_nThread)
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -1007,7 +1055,9 @@ for (y = yMin; y < yMax; y++) {
 				m_bSuccess = 0;
 			if (nKey == KEY_ALTED + KEY_F4)
 				exit (0);
+			CheckProgressMenu (nThread);
 			m_progress.Render (nThread);
+			CheckProgressMenu (nThread);
 			}
 		}
 
@@ -1036,6 +1086,7 @@ for (y = yMin; y < yMax; y++) {
 				BRP;
 			}
 #endif
+		CheckProgressMenu (nThread);
 #if DBG
 		int32_t nLights = lightManager.SetNearestToPixel (nSegment, nSide, &data.m_vNormal, pPixelPos, pFace->m_info.fRads [1] / 10.0f, nThread);
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -1044,9 +1095,11 @@ for (y = yMin; y < yMax; y++) {
 #else
 		if (0 < lightManager.SetNearestToPixel (nSegment, nSide, &data.m_vNormal, pPixelPos, pFace->m_info.fRads [1] / 10.0f, nThread)) {
 #endif
+			CheckProgressMenu (nThread);
 			data.m_vcd.vertPos.Assign (*pPixelPos);
 			color.SetZero ();
 			ComputeVertexColor (nSegment, nSide, -1, &color, &data.m_vcd, nThread);
+			CheckProgressMenu (nThread);
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 				BRP;
@@ -1089,6 +1142,7 @@ for (y = yMin; y < yMax; y++) {
 			pTexColor->Red () = (uint8_t) (255 * color.Red ());
 			pTexColor->Green () = (uint8_t) (255 * color.Green ());
 			pTexColor->Blue () = (uint8_t) (255 * color.Blue ());
+			CheckProgressMenu (nThread);
 			}
 		}
 	}
@@ -1109,12 +1163,15 @@ else if (data.m_nColor == 2) {
 	data.nWhiteLightmaps++;
 	}
 else {
+	CheckProgressMenu (nThread);
 	Blur (pFace, data);
 #if USE_OPENMP
 #	pragma omp critical (BuildLightmap)
 #endif
 	{
+	CheckProgressMenu (nThread);
 	Copy (data.m_texColor, m_list.m_nLightmaps);
+	CheckProgressMenu (nThread);
 	pFace->m_info.nLightmap = m_list.m_nLightmaps++;
 	}
 	}
@@ -1133,17 +1190,21 @@ CreateSpecial (m_data [0].m_texColor, 1, 255);
 m_list.m_nLightmaps = 2;
 #if USE_OPENMP
 if (gameStates.app.nThreads > 1) {
+#if 0
 	for (int32_t i = 0; i < gameStates.app.nThreads; i++)
 		uniDacsRouter [i].Create (gameData.segData.nSegments);
-
+#endif
 #	pragma omp parallel 
 	{
 		int32_t nThread = omp_get_thread_num ();
 #	pragma omp for
 		for (int32_t nFace = 0; nFace < FACES.nFaces; nFace++) {
 			if (m_bSuccess) {
-				m_progress.Update ();
+				CheckProgressMenu (nThread);
+				m_progress.Update (nThread);
+				CheckProgressMenu (nThread);
 				Build (FACES.faces + nFace, nThread);
+				CheckProgressMenu (nThread);
 				}
 			}
 		}
