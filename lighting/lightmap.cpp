@@ -802,6 +802,15 @@ return (k < m) ? -1 : (k > m) ? 1 : 0;
 
 //------------------------------------------------------------------------------
 
+void CheckMenu (void)
+{
+CMenuItem *pTime = lightmapManager.Progress ().Time ();
+if (pTime && pTime->m_bmText [0] && strcmp (pTime->m_bmText [0]->Name (), "String Bitmap"))
+	PrintLog (0);
+}
+
+//------------------------------------------------------------------------------
+
 #if OPTIMIZED_THREADS
 
 //------------------------------------------------------------------------------

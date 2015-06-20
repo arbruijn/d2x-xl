@@ -154,9 +154,6 @@ if (!bFix && pParent && (pParent->info.nType == OBJ_PLAYER) && (pWeaponInfo->ren
 		}
 	}
 
-if (bFix)
-	PrintLog (0);
-
 fix xWeaponSpeed = WI_Speed (pWeapon->info.nId, gameStates.app.nDifficultyLevel);
 if (pWeaponInfo->speedvar != 128) {
 	fix randval = I2X (1) - ((RandShort () * pWeaponInfo->speedvar) >> 6);	//	Get a scale factor between speedvar% and 1.0.

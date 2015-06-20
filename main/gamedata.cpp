@@ -1059,7 +1059,7 @@ gameData.segData.faceGrid.Destroy ();
 nSegments = 0;
 nFaces = 0;
 nEdges = 0;
-faces.Destroy ();
+faceData.Destroy ();
 #if 0
 #	if BIDIRECTIONAL_DACS
 dialHeaps [0].Destroy ();

@@ -118,7 +118,7 @@ public:
 	char			m_text [MENU_MAX_TEXTLEN + 1];
 	char			m_savedText [MENU_MAX_TEXTLEN + 1];
 	char			*m_pszText;
-	CBitmap		*m_bmText[2];
+	CBitmap		*m_bmText [2];
 	const char	*m_szHelp;
 	char			*m_szId;
 
@@ -140,8 +140,8 @@ public:
 			int32_t& nAverageWidth, int32_t& nMenus, int32_t& nOthers, int32_t bTiny);
 	int16_t SetColor (int32_t bIsCurrent, int32_t bTiny);
 
-	void DrawHotKeyString (int32_t bIsCurrent, int32_t bTiny, int32_t bCreateTextBms,
-			int32_t nDepth);
+	void DrawHotKeyString (int32_t bIsCurrent, int32_t bTiny, int32_t bCreateTextBms, int32_t nDepth);
+	bool DrawHotKeyStringBitmap (int32_t bIsCurrent, int32_t bTiny, int32_t bCreateTextBms, int32_t nDepth);
 	void DrawString (int32_t bIsCurrent, int32_t bTiny);
 	void DrawSlider (int32_t bIsCurrent, int32_t bTiny);
 	void DrawRightString (int32_t bIsCurrent, int32_t bTiny, char* s);

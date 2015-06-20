@@ -18,13 +18,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define COMPATIBLE_VERSION  16  // Oldest version that can safely be loaded.
 
 struct mtfi {
-	uint16_t  fileinfo_signature;
+	uint16_t  fileinfoSignature;
 	uint16_t  fileinfoVersion;
 	int32_t     fileinfo_sizeof;
 };    // Should be same as first two fields below...
 
 struct mfi {
-	uint16_t  fileinfo_signature;
+	uint16_t  fileinfoSignature;
 	uint16_t  fileinfoVersion;
 	int32_t     fileinfo_sizeof;
 	int32_t     header_offset;      // Stuff common to game & editor

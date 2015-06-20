@@ -23,7 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _LOADOBJECTS_H
 
 typedef struct {
-	uint16_t  fileinfo_signature;
+	uint16_t  fileinfoSignature;
 	uint16_t  fileinfoVersion;
 	int32_t     fileinfo_sizeof;
 } game_top_fileinfo;    // Should be same as first two fields below...

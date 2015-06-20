@@ -175,9 +175,33 @@ for (i = l - 1; i >= 0; i--) {
 int32_t nTabIndex = -1;
 int32_t nTabs [] = {15, 87, 124, 162, 228, 253};
 
+bool CMenuItem::DrawHotKeyStringBitmap (int32_t bIsCurrent, int32_t bTiny, int32_t bCreateTextBms, int32_t nDepth)
+{
+if (!FAST_MENUS)
+	return false;
+if (!bCreateTextBms)
+	return false;
+
+CBitmap*&	bmText = m_bmText [bIsCurrent];
+
+if (m_bmText [bIsCurrent] && strcmp (m_bmText [bIsCurrent]->Name (), "String Bitmap")) {
+	PrintLog (0, "Warning: Menu text bitmap corrupted!\n");
+	m_bmText [bIsCurrent] = NULL;
+	}
+if (!m_bmText [bIsCurrent])
+	m_bmText [bIsCurrent] = CreateStringBitmap (m_text, MENU_KEY (m_nKey, - 1), gameData.menuData.keyColor, nTabs, m_bCentered, m_w, bTiny * 2, 0);
+if (!m_bmText [bIsCurrent])
+	return false;
+	float	fScale = fontManager.Scale ();
+	m_bmText [bIsCurrent]->Render (NULL, gameData.X (m_x), m_y, int32_t (m_bmText [bIsCurrent]->Width () * fScale), int32_t (m_bmText [bIsCurrent]->Height () * fScale), 
+												0, 0, m_bmText [bIsCurrent]->Width (), m_bmText [bIsCurrent]->Height (), 1, gameStates.app.bDemoData ? -1 : 0);
+return true;
+}
+
+//------------------------------------------------------------------------------ 
+
 void CMenuItem::DrawHotKeyString (int32_t bIsCurrent, int32_t bTiny, int32_t bCreateTextBms, int32_t nDepth)
 {
-	CBitmap	*pBm = m_bmText [bIsCurrent];
 
 if (!*m_text)
 	return;
@@ -185,19 +209,12 @@ if (m_color)
 	fontManager.SetColorRGBi (m_color, 1, 0, 0);
 else
 	SetColor (bIsCurrent, bTiny);
-if (bCreateTextBms && FAST_MENUS && 
-	 (pBm || (pBm = CreateStringBitmap (m_text, MENU_KEY (m_nKey, - 1), gameData.menuData.keyColor, nTabs, m_bCentered, m_w, bTiny * 2, 0)))) {
-	float	fScale = fontManager.Scale ();
-	pBm->Render (NULL, gameData.X (m_x), m_y, int32_t (pBm->Width () * fScale), int32_t (pBm->Height () * fScale), 
-					 0, 0, pBm->Width (), pBm->Height (), 1, gameStates.app.bDemoData ? -1 : 0);
-	m_bmText [bIsCurrent] = pBm;
-	}
-else {
 
+if (!DrawHotKeyStringBitmap (bIsCurrent, bTiny, bCreateTextBms, nDepth)) {
 		int32_t	w, h, aw, l, i, 
-				x = m_x, 
-				y = m_y;
-		char	*t, *ps = m_text, s [MENU_MAX_TEXTLEN], ch = 0, ch2;
+					x = m_x, 
+					y = m_y;
+		char		*t, *ps = m_text, s [MENU_MAX_TEXTLEN], ch = 0, ch2;
 
 	if ((t = strchr (ps, '\n'))) {
 		strncpy (s, ps, sizeof (s));
@@ -253,9 +270,9 @@ else {
 		//m_x = x + w;
 		if (i) {
 			GrString (x, y, s);
-	#if DBG
+#if DBG
 			//ogl.Update (0);
-	#endif
+#endif
 			}
 		if (i < l) {	// print the hotkey
 			x += w;
@@ -264,9 +281,9 @@ else {
 			s [i] = '\0';
 			SetColor (1, bTiny);
 			GrString (x, y, s + i - 1);
-	#if DBG
+#if DBG
 			//ogl.Update (0);
-	#endif
+#endif
 			SetColor (0, bTiny);
 			if (i < l) { // print text following the hotkey
 				fontManager.Current ()->StringSize (s + i - 1, w, h, aw);

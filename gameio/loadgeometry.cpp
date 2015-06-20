@@ -86,7 +86,7 @@ typedef struct v16_segment {
 } v16_segment;
 
 struct mfi_v19 {
-	uint16_t  fileinfo_signature;
+	uint16_t  fileinfoSignature;
 	uint16_t  fileinfoVersion;
 	int32_t     fileinfo_sizeof;
 	int32_t     header_offset;      // Stuff common to game & editor

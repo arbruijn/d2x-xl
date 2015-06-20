@@ -988,8 +988,8 @@ if ((gameStates.render.bTriangleMesh > 0) && !SplitTriangles ()) {
 	RETVAL (0)
 	}
 
-if ((m_nTriangles > (LEVEL_FACES << gameStates.render.nMeshQuality)) && !gameData.segData.faces.Resize ()) {
-	gameData.segData.faces.Destroy ();
+if ((m_nTriangles > (LEVEL_FACES << gameStates.render.nMeshQuality)) && !gameData.segData.faceData.Resize ()) {
+	gameData.segData.faceData.Destroy ();
 	gameData.renderData.Destroy ();
 	PrintLog (-1, "Not enough memory to create mesh data in requested quality\n");
 	RETVAL (0)
@@ -1551,8 +1551,8 @@ for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, m_pSeg++) 
 	}
 
 gameData.segData.nFaces = FACES.nFaces;
-if (!(gameData.segData.faces.Create () && gameData.renderData.Create ())) {
-	gameData.segData.faces.Destroy ();
+if (!(gameData.segData.faceData.Create () && gameData.renderData.Create ())) {
+	gameData.segData.faceData.Destroy ();
 	gameData.renderData.Destroy ();
 	PrintLog (-1, "Not enough memory for mesh data\n");
 	RETVAL (0)

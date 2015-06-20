@@ -750,10 +750,6 @@ int32_t CDynLight::Contribute (const int16_t nDestSeg, const int8_t nDestSide, c
 {
 ENTER (0, nThread);
 
-if (nDestSeg >= gameData.segData.nSegments)
-	PrintLog (0);
-if (nThread >= MAX_THREADS)
-	PrintLog (0);
 #if 1
 info.bDiffuse [nThread] = 1;
 #else
@@ -790,11 +786,6 @@ else
 	fix xDistance, xRad;
 
 if ((info.nSegment < 0) || (nDestSeg < 0) || (info.nSide < 0)) {
-#if 0 //DBG
-	CObject *pObj = OBJECT (info.nObject);
-	if (pObj && (pObj->info.nType == OBJ_WEAPON) && (pObj->info.nId == FLARE_ID))
-		PrintLog (0);
-#endif
 	CFixVector vLightToPoint = vDestPos - info.vPos;
 	xRad = F2X (info.fRad);
 	xDistance = vLightToPoint.Mag ();

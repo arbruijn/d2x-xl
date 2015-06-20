@@ -256,11 +256,11 @@ gameFileInfo.lightDeltas.size		=	sizeof (CLightDelta);
 
 static int32_t ReadGameFileInfo (CFile& cf, int32_t nStartOffset)
 {
-gameTopFileInfo.fileinfo_signature = cf.ReadShort ();
+gameTopFileInfo.fileinfoSignature = cf.ReadShort ();
 gameTopFileInfo.fileinfoVersion = cf.ReadShort ();
 gameTopFileInfo.fileinfo_sizeof = cf.ReadInt ();
 // Check signature
-if (gameTopFileInfo.fileinfo_signature != 0x6705)
+if (gameTopFileInfo.fileinfoSignature != 0x6705)
 	return -1;
 // Check version number
 if (gameTopFileInfo.fileinfoVersion < GAME_COMPATIBLE_VERSION)
@@ -268,10 +268,10 @@ if (gameTopFileInfo.fileinfoVersion < GAME_COMPATIBLE_VERSION)
 // Now, Read in the fileinfo
 if (cf.Seek (nStartOffset, SEEK_SET)) 
 	Error ("Error seeking to gameFileInfo in gamesave.c");
-gameFileInfo.fileinfo_signature = cf.ReadShort ();
+gameFileInfo.fileinfoSignature = cf.ReadShort ();
 gameFileInfo.fileinfoVersion = cf.ReadShort ();
 gameFileInfo.fileinfo_sizeof = cf.ReadInt ();
-cf.Read (gameFileInfo.mine_filename, sizeof (char), 15);
+cf.Read (gameFileInfo.mineFilename, sizeof (char), 15);
 gameFileInfo.level = cf.ReadInt ();
 gameFileInfo.player.offset = cf.ReadInt ();				// Player info
 gameFileInfo.player.size = cf.ReadInt ();

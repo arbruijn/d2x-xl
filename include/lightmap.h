@@ -130,6 +130,11 @@ class CLightmapProgress {
 		void Render (int32_t nThread = 0);
 		void Skip (int32_t i);
 		inline void Reset (void) { m_bActive = false; }
+		inline CMenu *Menu (void) { return m_pProgressMenu; }
+		inline CMenuItem *TotalProgress (void) { return m_pProgressMenu ? m_pTotalProgress : NULL; }
+		inline CMenuItem *LevelProgress (void) { return m_pProgressMenu ? m_pLevelProgress : NULL; }
+		inline CMenuItem *LevelCount (void) { return m_pProgressMenu ? m_pLevelCount : NULL; }
+		inline CMenuItem *Time (void) { return m_pProgressMenu ? m_pTime : NULL; }
 
 		static inline const int32_t Scale (void) { return 100; }
 	};

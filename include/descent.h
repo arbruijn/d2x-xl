@@ -2359,7 +2359,7 @@ class CSegmentData {
 		CArray<tSlideSegs>		slideSegs;
 		int16_t						nSlideSegs;
 		int32_t						bHaveSlideSegs;
-		CFaceData					faces;
+		CFaceData					faceData;
 
 	public:
 		CSegmentData ();
@@ -4104,10 +4104,10 @@ typedef struct tGameItemInfo {
 } __pack__ tGameItemInfo;
 
 typedef struct {
-	uint16_t			fileinfo_signature;
+	uint16_t			fileinfoSignature;
 	uint16_t			fileinfoVersion;
 	int32_t			fileinfo_sizeof;
-	char				mine_filename [15];
+	char				mineFilename [15];
 	int32_t			level;
 	tGameItemInfo	player;
 	tGameItemInfo	objects;
@@ -4224,7 +4224,7 @@ extern fix nDebrisLife [];
 #define FVERTICES				gameData.segData.fVertices
 #define VERTEX_OWNERS		gameData.segData.vertexOwners
 #define SEGFACES				gameData.segData.segFaces
-#define FACES					gameData.segData.faces
+#define FACES					gameData.segData.faceData
 #define TRIANGLES				FACES.tris
 #define OBJECTS				gameData.objData.objects
 #define WALLS					gameData.wallData.walls
