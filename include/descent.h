@@ -2453,7 +2453,11 @@ class CSegmentData {
 			for (int32_t i = 0; i < 2; i++)
 				fogData [i].Read (cf);
 			}
-		inline CFloatVector FogColor (int32_t nFogType) { return fogData [nFogType].Color (); }
+		inline void InitFogData (void) {
+			for (int32_t i = 0; i < 2; i++)
+				fogData [i].Init (i);
+			}
+		inline CFloatVector& FogColor (int32_t nFogType) { return fogData [nFogType].Color (); }
 
 		int32_t CountEdges (void);
 		int32_t FindEdge (int16_t nVertex1, int16_t nVertex2, int32_t nStart);

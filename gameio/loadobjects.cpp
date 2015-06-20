@@ -222,10 +222,10 @@ m_color.Set (0.7f, 0.7f, 0.7f, nType ? 100.0f : 240.0f);
 
 void CFogData::Read (CFile& cf)
 {
-m_color.v.color.r = float (cf.ReadByte ()) / 255.0f;
-m_color.v.color.g = float (cf.ReadByte ()) / 255.0f;
-m_color.v.color.b = float (cf.ReadByte ()) / 255.0f;
-m_color.v.color.a = float (cf.ReadByte () + 1) * 20.0f;
+m_color.v.color.r = float (cf.ReadUByte ()) / 255.0f;
+m_color.v.color.g = float (cf.ReadUByte ()) / 255.0f;
+m_color.v.color.b = float (cf.ReadUByte ()) / 255.0f;
+m_color.v.color.a = float (cf.ReadUByte () + 1) * 20.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -305,6 +305,8 @@ if (gameStates.app.bD2XLevel) {
 		gameFileInfo.equipGen.Read (cf);
 	if (gameData.segData.nLevelVersion > 26)
 		gameData.segData.ReadFogData (cf);
+	else
+		gameData.segData.InitFogData ();
 	}
 return 0;
 }
