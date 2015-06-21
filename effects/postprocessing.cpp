@@ -494,7 +494,7 @@ extern float quadVerts [5][4][2];
 
 static vec4 fogColors [FOG_TYPE_COUNT + 1] = {
 	{0.2f, 0.4f, 0.6f, 160.0f},
-	{1.0f, 0.7f, 0.4f,  60.0f},
+	{0.8f, 0.4f, 0.0f,  60.0f},
 	{0.7f, 0.7f, 0.7f, 240.0f},
 	{0.7f, 0.7f, 0.7f, 100.0f},
 	{0.0f, 0.0f, 0.0f,   0.0f}
@@ -505,8 +505,10 @@ static vec4 *FogColor (int32_t nFogType)
 {
 if (!gameStates.render.bHaveFog [nFogType + 1])
 	return fogColors + 4;
+#if 0
 if (nFogType < 2)
 	return fogColors + nFogType;
+#endif
 return (vec4 *) &gameData.segData.FogColor (nFogType - 2);
 }
 

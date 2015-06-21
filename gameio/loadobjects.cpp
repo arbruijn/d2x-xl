@@ -215,7 +215,12 @@ if (Type () != OBJ_EFFECT) {
 
 void CFogData::Init (int32_t nType)
 {
-m_color.Set (0.7f, 0.7f, 0.7f, nType ? 100.0f : 240.0f);
+if (nType == 0)
+	m_color.Set (0.2f, 0.4f, 0.6f, 160.0f);
+else if (nType == 1)
+	m_color.Set (0.8f, 0.4f, 0.0f, 60.0f);
+else
+	m_color.Set (0.7f, 0.7f, 0.7f, nType ? 100.0f : 240.0f);
 }
 
 //------------------------------------------------------------------------------
@@ -225,7 +230,7 @@ void CFogData::Read (CFile& cf)
 m_color.v.color.r = float (cf.ReadUByte ()) / 255.0f;
 m_color.v.color.g = float (cf.ReadUByte ()) / 255.0f;
 m_color.v.color.b = float (cf.ReadUByte ()) / 255.0f;
-m_color.v.color.a = float (cf.ReadUByte () + 1) * 20.0f;
+m_color.v.color.a = float (cf.ReadUByte ()) * 20.0f;
 }
 
 //------------------------------------------------------------------------------
