@@ -1646,16 +1646,16 @@ return pItem;
 
 int32_t CMenu::AddCheck (const char* szId, const char* szText, int32_t nValue, int32_t nKey, const char* szHelp)
 {
-CMenuItem* item = AddItem ();
-if (!item)
+CMenuItem* pItem = AddItem ();
+if (!pItem)
 	return -1;
-item->m_nType = NM_TYPE_CHECK;
-item->m_pszText = NULL;
-item->SetText (szText);
-item->Value () = NMBOOL (nValue);
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
-item->m_szHelp = szHelp;
-SetId (*item, szId);
+pItem->m_nType = NM_TYPE_CHECK;
+pItem->m_pszText = NULL;
+pItem->SetText (szText);
+pItem->Value () = NMBOOL (nValue);
+pItem->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
+pItem->m_szHelp = szHelp;
+SetId (*pItem, szId);
 return ToS () -1;
 }
 
@@ -1665,17 +1665,17 @@ int32_t CMenu::AddRadio (const char* szId, const char* szText, int32_t nValue, i
 {
 if (!ToS () || (Top ()->m_nType != NM_TYPE_RADIO))
 	NewGroup ();
-CMenuItem* item = AddItem ();
-if (!item)
+CMenuItem* pItem = AddItem ();
+if (!pItem)
 	return -1;
-item->m_nType = NM_TYPE_RADIO;
-item->m_pszText = NULL;
-item->SetText (szText);
-item->Value () = nValue;
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
-item->m_group = m_nGroup;
-item->m_szHelp = szHelp;
-SetId (*item, szId);
+pItem->m_nType = NM_TYPE_RADIO;
+pItem->m_pszText = NULL;
+pItem->SetText (szText);
+pItem->Value () = nValue;
+pItem->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
+pItem->m_group = m_nGroup;
+pItem->m_szHelp = szHelp;
+SetId (*pItem, szId);
 return ToS () -1;
 }
 
@@ -1683,15 +1683,15 @@ return ToS () -1;
 
 int32_t CMenu::AddMenu (const char* szId, const char* szText, int32_t nKey, const char* szHelp)
 {
-CMenuItem* item = AddItem ();
-if (!item)
+CMenuItem* pItem = AddItem ();
+if (!pItem)
 	return -1;
-item->m_nType = NM_TYPE_MENU;
-item->m_pszText = NULL;
-item->SetText (szText);
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
-item->m_szHelp = szHelp;
-SetId (*item, szId);
+pItem->m_nType = NM_TYPE_MENU;
+pItem->m_pszText = NULL;
+pItem->SetText (szText);
+pItem->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
+pItem->m_szHelp = szHelp;
+SetId (*pItem, szId);
 return ToS () -1;
 }
 
@@ -1699,14 +1699,14 @@ return ToS () -1;
 
 int32_t CMenu::AddText (const char* szId, const char* szText, int32_t nKey)
 {
-CMenuItem* item = AddItem ();
-if (!item)
+CMenuItem* pItem = AddItem ();
+if (!pItem)
 	return -1;
-item->m_nType = NM_TYPE_TEXT;
-item->m_pszText = NULL;
-item->SetText (szText);
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
-SetId (*item, szId);
+pItem->m_nType = NM_TYPE_TEXT;
+pItem->m_pszText = NULL;
+pItem->SetText (szText);
+pItem->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
+SetId (*pItem, szId);
 return ToS () - 1;
 }
 
@@ -1714,18 +1714,18 @@ return ToS () - 1;
 
 int32_t CMenu::AddSlider (const char* szId, const char* szText, int32_t nValue, int32_t nMin, int32_t nMax, int32_t nKey, const char* szHelp)
 {
-CMenuItem* item = AddItem ();
-if (!item)
+CMenuItem* pItem = AddItem ();
+if (!pItem)
 	return -1;
-item->m_nType = NM_TYPE_SLIDER;
-item->m_pszText = NULL;
-item->SetText (szText);
-item->Value () = NMCLAMP (nValue, nMin, nMax);
-item->MinValue () = nMin;
-item->MaxValue () = nMax;
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
-item->m_szHelp = szHelp;
-SetId (*item, szId);
+pItem->m_nType = NM_TYPE_SLIDER;
+pItem->m_pszText = NULL;
+pItem->SetText (szText);
+pItem->Value () = NMCLAMP (nValue, nMin, nMax);
+pItem->MinValue () = nMin;
+pItem->MaxValue () = nMax;
+pItem->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
+pItem->m_szHelp = szHelp;
+SetId (*pItem, szId);
 return ToS () -1;
 }
 
@@ -1733,15 +1733,15 @@ return ToS () -1;
 
 int32_t CMenu::AddInput (const char* szId, const char* szText, int32_t nLen, const char* szHelp)
 {
-CMenuItem* item = AddItem ();
-if (!item)
+CMenuItem* pItem = AddItem ();
+if (!pItem)
 	return -1;
-item->m_nType = NM_TYPE_INPUT;
-item->m_pszText = const_cast<char*> (szText);
-item->SetText (szText);
-item->m_nTextLen = nLen;
-item->m_szHelp = szHelp;
-SetId (*item, szId);
+pItem->m_nType = NM_TYPE_INPUT;
+pItem->m_pszText = const_cast<char*> (szText);
+pItem->SetText (szText);
+pItem->m_nTextLen = nLen;
+pItem->m_szHelp = szHelp;
+SetId (*pItem, szId);
 return ToS () -1;
 }
 
@@ -1766,16 +1766,16 @@ return AddInput (szId, szText, szValue, nLen, szHelp);
 
 int32_t CMenu::AddInputBox (const char* szId, const char* szText, int32_t nLen, int32_t nKey, const char* szHelp)
 {
-CMenuItem* item = AddItem ();
-if (!item)
+CMenuItem* pItem = AddItem ();
+if (!pItem)
 	return -1;
-item->m_nType = NM_TYPE_INPUT_MENU;
-item->m_pszText = (char*) (szText);
-item->SetText (szText);
-item->m_nTextLen = nLen;
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
-item->m_szHelp = szHelp;
-SetId (*item, szId);
+pItem->m_nType = NM_TYPE_INPUT_MENU;
+pItem->m_pszText = (char*) (szText);
+pItem->SetText (szText);
+pItem->m_nTextLen = nLen;
+pItem->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
+pItem->m_szHelp = szHelp;
+SetId (*pItem, szId);
 return ToS () -1;
 }
 
@@ -1783,16 +1783,16 @@ return ToS () -1;
 
 int32_t CMenu::AddNumber (const char* szId, const char* szText, int32_t nValue, int32_t nMin, int32_t nMax)
 {
-CMenuItem* item = AddItem ();
-if (!item)
+CMenuItem* pItem = AddItem ();
+if (!pItem)
 	return -1;
-item->m_nType = NM_TYPE_NUMBER;
-item->m_pszText = (char*) (szText);
-item->SetText (szText);
-item->Value () = NMCLAMP (nValue, nMin, nMax);
-item->MinValue () = nMin;
-item->MaxValue () = nMax;
-SetId (*item, szId);
+pItem->m_nType = NM_TYPE_NUMBER;
+pItem->m_pszText = (char*) (szText);
+pItem->SetText (szText);
+pItem->Value () = NMCLAMP (nValue, nMin, nMax);
+pItem->MinValue () = nMin;
+pItem->MaxValue () = nMax;
+SetId (*pItem, szId);
 return ToS () -1;
 }
 
@@ -1800,16 +1800,16 @@ return ToS () -1;
 
 int32_t CMenu::AddGauge (const char* szId, const char* szText, int32_t nValue, int32_t nMax)
 {
-CMenuItem* item = AddItem ();
-if (!item)
+CMenuItem* pItem = AddItem ();
+if (!pItem)
 	return -1;
-item->m_nType = NM_TYPE_GAUGE;
-item->m_pszText = NULL;
-item->SetText (szText);
-item->m_nTextLen = *szText ? (int32_t) strlen (szText) : 20;
-item->Value () = NMCLAMP (nValue, 0, nMax);
-item->MaxValue () = nMax;
-SetId (*item, szId);
+pItem->m_nType = NM_TYPE_GAUGE;
+pItem->m_pszText = NULL;
+pItem->SetText (szText);
+pItem->m_nTextLen = *szText ? (int32_t) strlen (szText) : 20;
+pItem->Value () = NMCLAMP (nValue, 0, nMax);
+pItem->MaxValue () = nMax;
+SetId (*pItem, szId);
 m_bThrottle = false;
 return ToS () -1;
 }

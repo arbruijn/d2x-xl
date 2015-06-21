@@ -509,7 +509,7 @@ if (!gameStates.render.bHaveFog [nFogType + 1])
 if (nFogType < 2)
 	return fogColors + nFogType;
 #endif
-return (vec4 *) &gameData.segData.FogColor (nFogType - 2);
+return (vec4 *) &gameData.segData.FogColor (nFogType);
 }
 
 

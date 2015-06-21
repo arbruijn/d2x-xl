@@ -686,11 +686,13 @@ if ((info.nType == OBJ_PLAYER) && (info.nId == N_LOCALPLAYER)) {
 	int32_t nType = ApplyWallPhysics (nHitSeg, nHitSide);
 	if ((gameData.timeData.xGame > xLastVolatileScrapeSoundTime + (nType ? I2X (1) / (Rand (4) + 1) : I2X (1) + I2X (2) / (Rand (8) + 1))) || (gameData.timeData.xGame < xLastVolatileScrapeSoundTime)) {
 		xLastVolatileScrapeSoundTime = gameData.timeData.xGame;
-		if (!nType && gameOpts->sound.bScrape) {
-			int32_t nSound = SND_ADDON_SCRAPE + Rand (4);
-			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, LOCALOBJECT->Index (), 0, /*gameOpts->sound.xCustomSoundVolume*/I2X (1) / 2, I2X (256), -1, -1, AddonSoundName (nSound), 1);
-			if (IsMultiGame)
-				MultiSendPlaySound (-nSound - 1, I2X (1) / 2);
+		if (!nType) {
+			if (gameOpts->sound.bScrape) {
+				int32_t nSound = SND_ADDON_SCRAPE + Rand (4);
+				audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, LOCALOBJECT->Index (), 0, /*gameOpts->sound.xCustomSoundVolume*/I2X (1) / 2, I2X (256), -1, -1, AddonSoundName (nSound), 1);
+				if (IsMultiGame)
+					MultiSendPlaySound (-nSound - 1, I2X (1) / 2);
+				}
 			}
 		else {
 			int16_t nSound = (nType & 1) ? SOUND_VOLATILE_WALL_HISS : SOUND_SHIP_IN_WATER;
