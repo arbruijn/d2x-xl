@@ -503,6 +503,10 @@ if (*gameFolders.user.szCache && (gameStates.app.nLogLevel > 0)) {
 
 void _CDECL_ PrintLog (const int32_t nIndent, const char *fmt, ...)
 {
+#if USE_OPENMP
+#pragma omp critical 
+	{
+#endif
 if (fLog /*&& !gameStates.app.nTraceLevel*/) {
 	if (fmt && *fmt) {
 		va_list arglist;
@@ -529,6 +533,9 @@ if (fLog /*&& !gameStates.app.nTraceLevel*/) {
 	if (nIndent)
 		IndentLog (nIndent);
 	}
+#if USE_OPENMP
+}
+#endif
 }
 
 //------------------------------------------------------------------------------

@@ -197,11 +197,25 @@ if (!m_pred.Buffer ()) { // -> Bug!
 	RETVAL (0)
 	}
 
-	int16_t	h = nNode, i = 0;
+	int16_t	h = nNode, i = 1;
 
+#if 1
+for (; i; i++) {
+	h = m_pred [h];
+	if (h >= m_nNodes) {
+		PrintLog (0, "router heap corrupted (invalid segment %d)\n", h);
+		RETVAL (-1);
+		}
+	//if (nNode == 2136)
+	//	PrintLog (0, "RouteLength [%d] = %d\n", i, h);
+	if (h < 0)
+		RETVAL (i);
+	}
+#else
 while (0 <= (h = m_pred [h]))
 	i++;
-RETVAL (i + 1)
+#endif
+RETVAL (i)
 }
 
 //-----------------------------------------------------------------------------

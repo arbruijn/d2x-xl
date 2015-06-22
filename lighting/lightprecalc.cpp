@@ -124,6 +124,7 @@ G3_SLEEP (0);
 if (nSegment == nDbgSeg)
 	BRP;
 #endif
+//PrintLog (0, "[%d] ComputeSingleSegmentDistance\n", nThread);
 router.PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, I2X (1024), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
 for (int32_t i = 0; i < gameData.segData.nSegments; i++) {
 	fix xDistance = router.Distance (i);
@@ -157,15 +158,22 @@ segDist.scale = scale;
 if (nSegment == nDbgSeg)
 	BRP;
 #endif
+//PrintLog (0, "[%d] creating distance vector for segment %d, length = %d\n", nThread, nSegment, segDist.length);
 if (!segDist.Create ())
 	return;
+//PrintLog (0, "[%d] storing distances for segment %d (nMinSeg = %d, nMaxSeg = %d)\n", nThread, nSegment, nMinSeg, nMaxSeg);
 segDist.Set (nSegment, 0, -1, -1);
 for (int32_t i = nMinSeg; i <= nMaxSeg; i++) {
 	fix xDistance = router.Distance (i);
 	int16_t nStartSeg, nDestSeg;
-	int16_t l = router.RouteLength (i);
-	if (l < 3) 
+	//PrintLog (0, "[%d] retrieving route length for segment %d\n", nThread, i);
+	int16_t l = (xDistance < 0) ? 0 : router.RouteLength (i);
+	//PrintLog (0, "[%d] route segment count for segment %d is %d\n", nThread, i, l);
+	if (l < 3) {
 		nStartSeg = nDestSeg = -1;
+		if (l < 0)
+			xDistance = -1;
+		}
 	else {
 		nStartSeg = router.Route (1)->nNode;
 		nDestSeg = (l == 3) ? nStartSeg : router.Route (l - 2)->nNode;
@@ -198,7 +206,7 @@ typedef struct tLightDist {
 
 void QSortLightDist (tLightDist *pDist, int32_t left, int32_t right)
 {
-	int32_t			l = left,
+	int32_t		l = left,
 					r = right,
 					m = pDist [(l + r) / 2].nDist;
 	tLightDist	h;
@@ -965,6 +973,7 @@ ComputeLightVisibilityMT (nId * (lightManager.LightCount (0) + gameStates.app.nT
 
 void _CDECL_ SegDistThread (int32_t nId)
 {
+nId = omp_get_thread_num ();
 ComputeSegmentDistance (nId * (gameData.segData.nSegments + gameStates.app.nThreads - 1) / gameStates.app.nThreads, nId);
 }
 
@@ -986,9 +995,13 @@ ComputeNearestVertexLights (nId * (gameData.segData.nVertices + gameStates.app.n
 
 static void StartLightPrecalcThreads (pThreadFunc threadFunc)
 {
-#pragma omp parallel for
+#	pragma omp parallel 
+	{
+		int32_t nThread = omp_get_thread_num ();
+#	pragma omp parallel for
 for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
-	threadFunc (i);
+	threadFunc (nThread);
+	}
 }
 
 //------------------------------------------------------------------------------
