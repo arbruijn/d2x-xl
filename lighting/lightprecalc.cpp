@@ -995,13 +995,9 @@ ComputeNearestVertexLights (nId * (gameData.segData.nVertices + gameStates.app.n
 
 static void StartLightPrecalcThreads (pThreadFunc threadFunc)
 {
-#	pragma omp parallel 
-	{
-		int32_t nThread = omp_get_thread_num ();
 #	pragma omp parallel for
 for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
-	threadFunc (nThread);
-	}
+	threadFunc (i);
 }
 
 //------------------------------------------------------------------------------
