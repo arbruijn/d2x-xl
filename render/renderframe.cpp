@@ -173,7 +173,6 @@ else {
 	}
 
 #if 1
-//SetBlendMode (OGL_BLEND_ALPHA);
 if (gameStates.app.bGameRunning) {
 	if (automap.Active ()) 
 		automap.RenderInfo ();
@@ -183,11 +182,13 @@ if (gameStates.app.bGameRunning) {
 		PROF_END(ptCockpit)
 		}
 	}
+#	if 1
 if (xStereoSeparation >= 0) {
 	paletteManager.RenderEffect ();
 	if (!FadeInMine ())
 		FlashMine ();
 	}
+#	endif
 #endif
 
 console.Draw ();

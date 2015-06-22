@@ -413,7 +413,7 @@ uint8_t* CFont::Load (const char *fontname, uint8_t* fontData)
 	CFile 	cf;
 	CPalette	palette;
 	char 		fileId [4];
-	int32_t 		dataSize;	//size up to (but not including) palette
+	int32_t 	dataSize;	//size up to (but not including) palette
 
 if (!cf.Open (fontname, gameFolders.game.szData [0], "rb", 0)) {
 #if TRACE

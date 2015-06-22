@@ -643,6 +643,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 						if (pBm->Bind (1))
 							continue;
 						pBm->Texture ()->Wrap (GL_REPEAT);
+						glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 #endif
 						}
 					}
@@ -744,7 +745,7 @@ void G3DrawModel (CObject *pObj, int16_t nModel, int16_t nSubModel, CArray<CBitm
 {
 ENTER (0, 0);
 	RenderModel::CModel	* pModel;
-	CDynLight*				pLight;
+	CDynLight				* pLight;
 	int32_t					nPass, iLight, nLights, nLightRange;
 	int32_t					bBright = bEdges || gameStates.render.bFullBright || (pObj && (pObj->info.nType == OBJ_MARKER));
 	int32_t					bEmissive = !bEdges && pObj && (pObj->IsProjectile ());
@@ -752,9 +753,9 @@ ENTER (0, 0);
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.modelData.nLightScale ? X2F (gameData.modelData.nLightScale) : 1.0f;
 	CFloatVector			color;
-	CDynLightIndex*		pLightIndex = bLighting ? &lightManager.Index (0,0) : NULL;
-	CActiveDynLight*		pActiveLights = pLightIndex ? lightManager.Active (0) + pLightIndex->nFirst : NULL;
-	tObjTransformation*	pPos = OBJPOS (pObj);
+	CDynLightIndex			* pLightIndex = bLighting ? &lightManager.Index (0,0) : NULL;
+	CActiveDynLight		* pActiveLights = pLightIndex ? lightManager.Active (0) + pLightIndex->nFirst : NULL;
+	tObjTransformation	* pPos = OBJPOS (pObj);
 
 #if POLYGONAL_OUTLINE
 if (bEdges && bPolygonalOutline) // only required if not transforming model outlines via OpenGL when rendering
@@ -1043,6 +1044,8 @@ if (!bRenderTransparency && gameStates.render.bCloaked) {
 		}	
 #endif
 	}
+else
+	ogl.ResetClientStates (1);
 
 //#pragma omp critical (fastModelRender)
 {

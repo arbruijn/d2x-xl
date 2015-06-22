@@ -802,10 +802,10 @@ Blur (pFace, tempData, source, 1);
 
 int32_t CLightmapManager::Copy (CRGBColor *pTexColor, uint16_t nLightmap)
 {
-CLightmapBuffer *pBuffer = m_list.m_buffers [nLightmap / LIGHTMAP_BUFSIZE];
 int32_t i = nLightmap % LIGHTMAP_BUFSIZE;
 if (!m_list.Realloc (Max (i + 1, m_list.m_nBuffers)))
 	return 0;
+CLightmapBuffer *pBuffer = m_list.m_buffers [nLightmap / LIGHTMAP_BUFSIZE];
 int32_t x = (i % LIGHTMAP_ROWSIZE) * LM_W;
 int32_t y = (i / LIGHTMAP_ROWSIZE) * LM_H;
 for (i = 0; i < LM_H; i++, y++, pTexColor += LM_W)

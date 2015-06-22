@@ -337,7 +337,7 @@ void COglData::Initialize (void)
 palette = NULL;
 memset (bUseTextures, 0, sizeof (bUseTextures));
 nTMU [0] = 
-nTMU [1] = -1;
+nTMU [1] = 0;
 if (/*gameStates.app.bInitialized &&*/ ogl.m_states.bInitialized) {
 #ifndef GL_VERSION_20
 	if (glActiveTexture) 
@@ -469,6 +469,7 @@ else
 
 void COGL::SetupProjection (CTransformation& transformation)
 {
+ogl.ClearError (0);
 gameStates.render.glAspect = m_states.bUseTransform ? gameData.renderData.frame.AspectRatio () : 1.0;
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
@@ -483,7 +484,6 @@ ZFAR = gameStates.render.nShadowMap ? 400.0f : 5000.0f;
 #else
 gameStates.render.glFOV = 180.0;
 #endif
-double _r = gameData.renderData.scene.AspectRatio ();
 if (!StereoSeparation ())
 	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), gameData.renderData.scene.AspectRatio (), ZNEAR, ZFAR);
 else if (IsOculusRift ()) {

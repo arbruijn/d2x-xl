@@ -626,7 +626,7 @@ else if (gameStates.render.bPerPixelLighting) {
 		}
 #if DBG
 	if (pSegColor->Red () + pSegColor->Green () + pSegColor->Blue () == 0)
-		pSegColor = pSegColor;
+		BRP;
 #endif
 	lightManager.ResetAllUsed (0, nThread);
 	m_data.index [0][0].nActive = -1;

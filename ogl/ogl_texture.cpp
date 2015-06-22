@@ -1040,6 +1040,10 @@ glPrioritizeTextures (1, (GLuint *) &m_info.handle, &m_info.prio);
 Bind ();
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GLint (m_info.bMipMaps && ogl.m_states.bNeedMipMaps));
 glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+if (!gameStates.menus.nInMenu || !gameStates.app.bGameRunning)
+	;
+else
+	RETVAL (1);
 if (m_info.bSmoothe > 0) {
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ogl.m_states.texMagFilter);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ogl.m_states.texMinFilter);
@@ -1061,7 +1065,7 @@ else
 	{
 	try {
 		glTexImage2D (GL_TEXTURE_2D, 0, m_info.internalFormat, m_info.tw, m_info.th, 0, m_info.format, GL_UNSIGNED_BYTE, buffer);
-	}
+		}
 	catch (...) {
 		Release ();
 		}
