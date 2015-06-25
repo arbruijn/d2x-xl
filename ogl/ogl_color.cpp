@@ -445,10 +445,14 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 		lightRayDir.SetZero ();
 		}
 	else {
+#if 0
+		DistToFace (*colorData.pVertPos, pLight->info.nSegment, uint8_t (pLight->info.nSide), &lightPos); // returns 0 if a plane normal through the vertex position goes through the face
+#else
 		if (nType < 2)
 			DistToFace (*colorData.pVertPos, pLight->info.nSegment, uint8_t (pLight->info.nSide), &lightPos); // returns 0 if a plane normal through the vertex position goes through the face
 		else 
 			lightPos = *pLight->render.vPosf [bTransform].XYZ ();
+#endif
 		lightRayDir = lightPos - *colorData.pVertPos;
 		fLightDist = lightRayDir.Mag ();
 		}
@@ -505,8 +509,9 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 			NdotL = 1.0f;
 			fLightAngle = (1.0f + CFloatVector3::Dot (colorData.vertNorm, lightDir)) / 2.0f;
 			//fLightDist *= 2.0f;
-			fLightDist = X2F (pLight->render.xDistance [nThread]);
-			//fLightAngle = (fLightAngle < 0.0f) ? 1.0f : 1.0f - fLightAngle; 
+			//fLightDist = Max (fLightDist, X2F (pLight->render.xDistance [nThread]));
+			fLightDist = (fLightDist + X2F (pLight->render.xDistance [nThread])) * 0.5f;
+			fLightAngle = (fLightAngle < 0.0f) ? 1.0f : 1.0f - fLightAngle; 
 			}
 		}
 

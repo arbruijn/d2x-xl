@@ -1131,7 +1131,7 @@ DUKickstarterNotification ();
 DonationNotification ();
 BadHardwareNotification ();
 PrintLog (-1);
-/*---*/PrintLog (1, "Invoking main menu\n");
+/*---*/PrintLog (0, "Invoking main menu\n");
 MainLoop ();
 CleanUp ();
 return 0;		//presumably successful exit

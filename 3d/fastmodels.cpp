@@ -845,6 +845,10 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 					}
 				else {
 					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.0f); //0.1f / fBrightness);
+#if 0
+					glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / fBrightness);
+					glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / fBrightness);
+#else
 					if (X2F (CFixVector::Dist (pObj->info.position.vPos, pLight->info.vPos)) <= pLight->info.fRad) {
 						glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / fBrightness);
 						glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / fBrightness);
@@ -853,6 +857,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 						glLightf (hLight, GL_LINEAR_ATTENUATION, 0.05f / fBrightness);
 						glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.005f / fBrightness);
 						}
+#endif
 					}
 				nLights--;
 				}

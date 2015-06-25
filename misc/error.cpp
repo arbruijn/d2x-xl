@@ -457,11 +457,11 @@ if (nIndent) {
 	}
 nLogIndent += nIndent;
 if (nLogIndent < 0) {
-	PrintLog (0, "Log indentation error!\n");
+	fprintf (fLog, "Log indentation error!\n");
 	nLogIndent = 0;
 	}
 else if (nLogIndent > 30) {
-	PrintLog (0, "Log indentation error!\n");
+	fprintf (fLog, "Log indentation error!\n");
 	nLogIndent = 30;
 	}
 }
@@ -504,7 +504,7 @@ if (*gameFolders.user.szCache && (gameStates.app.nLogLevel > 0)) {
 void _CDECL_ PrintLog (const int32_t nIndent, const char *fmt, ...)
 {
 #if USE_OPENMP
-#pragma omp critical 
+#pragma omp critical (PrintLog)
 	{
 #endif
 if (fLog /*&& !gameStates.app.nTraceLevel*/) {
@@ -513,12 +513,12 @@ if (fLog /*&& !gameStates.app.nTraceLevel*/) {
 			static char	szLogLine [2][100000] = {{'\0'}, {'\0'}};
 			static int32_t nLogLine = 0;
 
-		va_start (arglist, fmt);
 		if (nLogIndent > 0)
 			memset (szLogLine [nLogLine], ' ', nLogIndent);
 		else if (nLogIndent < 0)
 			nLogIndent = 0;
 		nLogLine &= 3;
+		va_start (arglist, fmt);
 		vsprintf (szLogLine [nLogLine] + nLogIndent, fmt, arglist);
 		va_end (arglist);
 #if 0

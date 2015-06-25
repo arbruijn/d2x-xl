@@ -43,7 +43,7 @@ int32_t PrecomputeLightmapsPoll (CMenu& menu, int32_t& key, int32_t nCurItem, in
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
 
-#define LIGHTMAP_DATA_VERSION 50
+#define LIGHTMAP_DATA_VERSION 51
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
 
@@ -833,7 +833,7 @@ return (k < m) ? -1 : (k > m) ? 1 : 0;
 
 //------------------------------------------------------------------------------
 
-#if DBG
+#if 0 //DBG
 
 void CheckProgressMenu (int32_t nThread)
 {
@@ -841,7 +841,7 @@ if (nThread)
 	return;
 
 static int32_t nCalls = 0;
-#pragma omp critical
+#pragma omp critical (CheckProgressMenuEntry)
 {
 if (nCalls)
 	PrintLog (0);
@@ -851,7 +851,7 @@ if (nCalls)
 CMenuItem *pTime = lightmapManager.Progress ().Time ();
 if (pTime && pTime->m_bmText [0] && strcmp (pTime->m_bmText [0]->Name (), "String Bitmap"))
 	PrintLog (0, "Warning: Progress menu corrupted!\n");
-#pragma omp critical
+#pragma omp critical (CheckProgressMenuExit)
 {
 if (nCalls)
 	PrintLog (0);
