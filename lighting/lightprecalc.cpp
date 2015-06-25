@@ -85,7 +85,7 @@ if ((nStartSeg < 0) && (nDestSeg < 0))
 	return CFixVector::Dist (vStart, vDest);
 if (nDestSeg < 0)
 	return CFixVector::Dist (SEGMENT (nStartSeg)->Center (), vStart) + CFixVector::Dist (SEGMENT (nStartSeg)->Center (), vDest);
-	return nDistance + CFixVector::Dist (SEGMENT (nStartSeg)->Center (), vStart) + CFixVector::Dist (SEGMENT (nDestSeg)->Center (), vDest);
+return nDistance + CFixVector::Dist (SEGMENT (nStartSeg)->Center (), vStart) + CFixVector::Dist (SEGMENT (nDestSeg)->Center (), vDest);
 }
 
 //------------------------------------------------------------------------------

@@ -29,7 +29,7 @@
 #include "palette.h"
 #include "transformation.h"
 
-#define LIGHTDIST_MATH		0
+#define LIGHTDIST_MATH		2
 
 #define TEST_AMBIENT			0
 #define CHECK_LIGHT_VERT	0

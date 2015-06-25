@@ -33,7 +33,7 @@
 
 class CLightManager lightManager;
 
-#define LIGHTDIST_MATH		0
+#define LIGHTDIST_MATH		2
 
 #define FAST_POINTVIS 2
 
@@ -823,13 +823,11 @@ else { // check whether light only contributes ambient light to point
 	CSegment *pLightSeg = SEGMENT (info.nSegment);
 
 #if 1
-
 	int32_t bSeesPoint = -1;
-	info.bDiffuse [nThread] = (pLightSeg && !pLightSeg->SeesConnectedSide (info.nSide, nDestSeg, nDestSide)) 
-									  ? 0
-									  : ((nDestSide >= 0) && (CFixVector::Dot (pLightSeg->Side (info.nSide)->Normal (2), SEGMENT (nDestSeg)->Side (nDestSide)->Normal (2)) < 0))
-										 ? 0
-										 : bSeesPoint = SeesPoint (nDestSeg, nDestSide, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
+	if (pLightSeg && !pLightSeg->SeesConnectedSide (info.nSide, nDestSeg, nDestSide)) 
+		info.bDiffuse [nThread] = 0;
+	else
+		 info.bDiffuse [nThread] = int32_t (bSeesPoint = SeesPoint (nDestSeg, nDestSide, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread));
 	// if point is occluded, use segment path distance to point for light range and attenuation
 	// if bDiffuse == 0 then point is completely occluded (determined by above call to SeesPoint ()), otherwise use SeesPoint() to test occlusion
 	if (!bSeesPoint) { // => ambient contribution only
@@ -848,8 +846,7 @@ else { // check whether light only contributes ambient light to point
 #	if LIGHTDIST_MATH == 1
 			xDistance = (xDistance + xPathLength) / 2; 
 #	else
-			if (xDistance < xPathLength)
-				xDistance = fix (float (xPathLength) * sqrt (float (xDistance) / float (xPathLength)));
+			xDistance = fix (float (xPathLength) * sqrt (float (xDistance) / float (xPathLength)));
 #	endif
 			}
 #endif

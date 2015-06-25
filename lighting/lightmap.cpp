@@ -43,7 +43,7 @@ int32_t PrecomputeLightmapsPoll (CMenu& menu, int32_t& key, int32_t nCurItem, in
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
 
-#define LIGHTMAP_DATA_VERSION 51
+#define LIGHTMAP_DATA_VERSION 50
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
 
@@ -1043,9 +1043,12 @@ else {
 		}
 	}
 
+#if DBG
+	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+		BRP;
+#endif
 bBlack = bWhite = true;
 for (y = yMin; y < yMax; y++) {
-
 
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
