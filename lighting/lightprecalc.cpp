@@ -44,7 +44,7 @@ int32_t SegmentIsVisible (CSegment *pSeg, CTransformation& transformation, int32
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 33
+#define LIGHT_DATA_VERSION 34
 
 #define	VERTVIS(_nSegment, _nVertex) \
 	(gameData.segData.bVertVis.Buffer () ? gameData.segData.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
