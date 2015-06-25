@@ -231,7 +231,7 @@ if (m_pProgressMenu) {
 void CLightmapProgress::Skip (int32_t i)
 {
 ++m_nSkipped;
-if (m_pTotalProgress) {
+if (m_pProgressMenu && m_pTotalProgress) {
 	//Lock ();
 	m_pTotalProgress->Value () += i * Scale ();
 	//Unlock ();

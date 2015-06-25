@@ -149,9 +149,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define FLASH_CYCLE_RATE I2X (1)
 
-#define AMBIENT_LIGHT	0.3f
-#define DIFFUSE_LIGHT	0.7f
-
 //------------------------------------------------------------------------------
 
 #ifdef _OPENMP

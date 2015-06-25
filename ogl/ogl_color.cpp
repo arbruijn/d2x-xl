@@ -29,6 +29,8 @@
 #include "palette.h"
 #include "transformation.h"
 
+#define LIGHTDIST_MATH		0
+
 #define TEST_AMBIENT			0
 #define CHECK_LIGHT_VERT	0
 #define BRIGHT_SHOTS			0
@@ -509,8 +511,13 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 			NdotL = 1.0f;
 			fLightAngle = (1.0f + CFloatVector3::Dot (colorData.vertNorm, lightDir)) / 2.0f;
 			//fLightDist *= 2.0f;
-			//fLightDist = Max (fLightDist, X2F (pLight->render.xDistance [nThread]));
+#if LIGHTDIST_MATH == 0
+			fLightDist = X2F (pLight->render.xDistance [nThread]);
+#elif LIGHTDIST_MATH == 1
 			fLightDist = (fLightDist + X2F (pLight->render.xDistance [nThread])) * 0.5f;
+#else
+			fLightDist = Max (fLightDist, X2F (pLight->render.xDistance [nThread]));
+#endif
 			fLightAngle = (fLightAngle < 0.0f) ? 1.0f : 1.0f - fLightAngle; 
 			}
 		}
@@ -554,7 +561,7 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 			if (pLight->info.fSpotExponent)
 				spotEffect = (float) pow (spotEffect, pLight->info.fSpotExponent);
 			fAttenuation /= spotEffect * ogl.m_states.fLightRange;
-			vertColor += (*gameData.renderData.vertColor.matDiffuse.XYZ () * NdotL);
+			vertColor += (*gameData.renderData.vertColor.matDiffuse.XYZ () * /*sqrt*/ (NdotL));
 			}
 		else {
 			if (NdotL < -0.01f)
@@ -569,11 +576,11 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 				else
 					NdotL += (1.0f - NdotL) / fLightDist; 
 #endif
-				vertColor += (*gameData.renderData.vertColor.matDiffuse.XYZ () * NdotL); 
+				vertColor += (*gameData.renderData.vertColor.matDiffuse.XYZ () * /*sqrt*/ (NdotL)); 
 				}
 			}
 #if 1
-		if (bSpecular && (NdotL > 0.0f) && (fLightDist > 0.0f)) {
+		if (bSpecular && bDiffuse && (NdotL > 0.0f) && (fLightDist > 0.0f)) {
 			if (!pLight->info.bSpot)	//need direction from light to vertex now
 				lightRayDir.Neg ();
 			vReflect = CFloatVector3::Reflect (lightRayDir, colorData.vertNorm);

@@ -144,6 +144,10 @@ void InitGameStates (void);
 char szAutoMission [255];
 char szAutoHogFile [255];
 
+#define DIRECT_LIGHT		0.7f
+#define SPECULAR_LIGHT	0.0f
+#define DIFFUSE_LIGHT	(DIRECT_LIGHT - SPECULAR_LIGHT) 
+#define AMBIENT_LIGHT	(1.0f - DIFFUSE_LIGHT) // indirect light
 
 int32_t nDescentCriticalError = 0;
 uint32_t descent_critical_deverror = 0;
@@ -565,18 +569,9 @@ if (gameStates.app.bMultiThreaded) {
 #endif
 		}
 	}
-gameData.renderData.vertColor.matAmbient.Red () =
-gameData.renderData.vertColor.matAmbient.Green () =
-gameData.renderData.vertColor.matAmbient.Blue () = 0.3f; //1.0f - DIFFUSE_LIGHT; //AMBIENT_LIGHT;
-gameData.renderData.vertColor.matAmbient.Alpha () = 1.0f;
-gameData.renderData.vertColor.matDiffuse.Red () =
-gameData.renderData.vertColor.matDiffuse.Green () =
-gameData.renderData.vertColor.matDiffuse.Blue () = 0.7f; //DIFFUSE_LIGHT;
-gameData.renderData.vertColor.matDiffuse.Alpha () = 1.0f;
-gameData.renderData.vertColor.matSpecular.Red () =
-gameData.renderData.vertColor.matSpecular.Green () =
-gameData.renderData.vertColor.matSpecular.Blue () = 0.0f;
-gameData.renderData.vertColor.matSpecular.Alpha () = 1.0f;
+gameData.renderData.vertColor.matAmbient.Set (AMBIENT_LIGHT, AMBIENT_LIGHT, AMBIENT_LIGHT, 1.0f);
+gameData.renderData.vertColor.matDiffuse.Set (DIFFUSE_LIGHT, DIFFUSE_LIGHT, DIFFUSE_LIGHT, 1.0f);
+gameData.renderData.vertColor.matSpecular.Set (SPECULAR_LIGHT, SPECULAR_LIGHT, SPECULAR_LIGHT, 1.0f);
 }
 
 // ------------------------------------------------------------------------------------------
