@@ -277,8 +277,10 @@ if (!vDir) {
 else {
 	m_vDir = *vDir;
 
-	if (m_nType == RAIN_PARTICLES)
+	if (m_nType == RAIN_PARTICLES) {
 		m_vDrift = m_vDir;
+		nSpeed *= 10;
+		}
 	else {
 #if 1
 		m_vDrift.v.coord.x = RandN (I2X (1) / 4) - I2X (1) / 8;
@@ -997,7 +999,7 @@ if (m_bHaveDir) {
 	fix drag = Drag ();
 	if (CFixVector::Dot (vi, vj) < 0)
 		drag = -drag;
-	m_vPos += m_vDir * drag;
+	m_vPos += m_vDrift * drag;
 	}
 
 if (nCurTime - m_nMoved < 250) 

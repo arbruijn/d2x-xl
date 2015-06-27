@@ -748,7 +748,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 												-PARTICLE_SIZE (pObj->rType.particleInfo.nSize [gameOpts->render.particles.bDisperse], (nType == 1) ? 4.0f : 2.0f, 1),
 												/*-1, 3,*/ 
 												(nType == 2) ? FIRE_PART_LIFE * int32_t (sqrt (double (pObj->rType.particleInfo.nLife))) : STATIC_SMOKE_PART_LIFE * pObj->rType.particleInfo.nLife,
-												(nType == SMOKE_TYPE_RAIN) ? pObj->rType.particleInfo.nDrift * 64 : pObj->rType.particleInfo.nDrift, 
+												(nType == SMOKE_TYPE_RAIN) ? (int32_t) sqrt (float (pObj->rType.particleInfo.nDrift)) /** 64*/ : pObj->rType.particleInfo.nDrift, 
 												particleTypes [nType], 
 												nObject, bColor ? &color : defaultColors + nType, nType != 2, pObj->rType.particleInfo.nSide - 1);
 	if (nSmoke < 0)
