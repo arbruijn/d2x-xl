@@ -370,7 +370,7 @@ if (FACES.vboDataHandle) {
 	bVBO = 1;
 	}
 #endif
-if ((nType == RENDER_TYPE_GEOMETRY) && (gameStates.render.bPerPixelLighting == 2)) {
+if ((gameStates.render.bPerPixelLighting == 2) && ((nType == RENDER_TYPE_GEOMETRY) || (nType == RENDER_TYPE_SKYBOX))) {
 	ogl.EnableLighting (1);
 	for (int32_t i = 0; i < 8; i++)
 		glEnable (GL_LIGHT0 + i);

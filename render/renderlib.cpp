@@ -261,9 +261,13 @@ else
 	char nOtherFogType = pConnSeg ? pConnSeg->FogType () : 0;
 	if (nFogType != nOtherFogType) {
 #if 1 // no colored segment faces of colored segments if volumetric fog is enabled
-		if ((ogl.m_features.bDepthBlending >= 0) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bFog &&  (gameOptions [0].render.nQuality > 1))
+		if ((ogl.m_features.bDepthBlending >= 0) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bFog && (gameOptions [0].render.nQuality > 1))
 			return NULL;
 #endif
+		if (!pConnSeg)
+			return NULL;
+		if (nFogType > 1)
+			return NULL;
 		if (!missionConfig.m_bColoredSegments)
 			return NULL;
 		nColor = (nFogType ? nFogType : nOtherFogType) + 1;
