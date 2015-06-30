@@ -925,7 +925,7 @@ ogl.SetDepthMode (GL_ALWAYS);
 glClearDepth (1.0f);
 glClearColor (1.0f, 0.0f, 1.0f, 0.0f);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-ogl.CopyDepthTexture (1, GL_TEXTURE0);
+ogl.CopyDepthTexture (1, GL_TEXTURE0, gameStates.render.nWindow [0] != 0);
 int16_t* pSegList = gameData.renderData.mine.visibility [0].segments.Buffer ();
 for (int32_t nFogType = 0; nFogType < FOG_TYPE_COUNT; nFogType++) {
 	if ((nFogType & 1) == 0) {

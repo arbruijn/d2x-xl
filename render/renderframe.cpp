@@ -484,7 +484,15 @@ gameStates.render.nShadowPass = 0;
 {
 PROF_START
 G3EndFrame (transformation, nWindow);
+if (nWindow) // set the auxiliary window viewport for fog rendering
+	gameData.renderData.window.Activate ("HUD Window (window)", &gameData.renderData.frame);
+#if DBG
+if (nWindow)
+	BRP;
+#endif
 RenderFog ();
+if (nWindow)
+	gameData.renderData.window.Deactivate ();
 //cockpit->Canvas ()->Deactivate ();
 if (nWindow)
 	ogl.SetStereoSeparation (gameStates.render.xStereoSeparation [0] = nEyeOffsetSave);

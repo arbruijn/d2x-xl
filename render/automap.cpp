@@ -493,7 +493,8 @@ if (m_bRadar || (Texturing () & 2)) {
 	DrawObjects ();
 	}
 G3EndFrame (transformation, 0);
-RenderFog ();
+if (!m_bRadar)
+	RenderFog ();
 
 if (m_bRadar) {
 	//ogl.m_states.bEnableScissor = 0;

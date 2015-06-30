@@ -555,9 +555,9 @@ void CCockpit::SetupWindow (int32_t nWindow)
 {
 tGaugeBox* pHudArea = hudWindowAreas + COCKPIT_PRIMARY_BOX + nWindow;
 gameData.renderData.window.Setup (&gameData.renderData.frame, 
-										gameData.renderData.frame.Left (false) + ScaleX (pHudArea->left),
-										gameData.renderData.frame.Top (false) + ScaleY (pHudArea->top),
-										ScaleX (pHudArea->right - pHudArea->left + 1), ScaleY (pHudArea->bot - pHudArea->top + 1));
+											 gameData.renderData.frame.Left (false) + ScaleX (pHudArea->left),
+											 gameData.renderData.frame.Top (false) + ScaleY (pHudArea->top),
+											 ScaleX (pHudArea->right - pHudArea->left + 1), ScaleY (pHudArea->bot - pHudArea->top + 1));
 gameData.renderData.window.Activate ("HUD Window (window)", &gameData.renderData.frame);
 }
 
