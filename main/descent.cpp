@@ -145,9 +145,9 @@ char szAutoMission [255];
 char szAutoHogFile [255];
 
 #define DIRECT_LIGHT		0.7f
-#define SPECULAR_LIGHT	0.0f
+#define SPECULAR_LIGHT	0.2f
 #define DIFFUSE_LIGHT	(DIRECT_LIGHT - SPECULAR_LIGHT) 
-#define AMBIENT_LIGHT	(1.0f - DIFFUSE_LIGHT) // indirect light
+#define AMBIENT_LIGHT	(1.0f - DIRECT_LIGHT) // indirect light
 
 int32_t nDescentCriticalError = 0;
 uint32_t descent_critical_deverror = 0;
