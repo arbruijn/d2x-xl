@@ -347,8 +347,11 @@ for (;;) {
 		}
 
 	m.AddText ("", "");
-	if (gameStates.app.bPrecomputeLightmaps)
+	if (gameStates.app.bPrecomputeLightmaps) {
 		AddLightmapControls (m);
+		m.AddText ("", "");
+		m.AddCheck ("rebuild lightmaps", TXT_REBUILD_LIGHTMAPS, gameStates.app.bRebuildLightmaps, KEY_R, HTX_REBUILD_LIGHTMAPS);
+		}
 	else {
 #if DBG
 		m.AddText ("", "");
@@ -423,6 +426,7 @@ else {
 	if (gameStates.app.nDifficultyLevel != i) {
 		gameStates.app.nDifficultyLevel = i;
 		gameData.bossData.InitGateIntervals ();
+		GET_VAL (gameStates.app.bRebuildLightmaps, "rebuild lightmaps");
 		}
 	GetShipSelection (m, optShip);
 	SavePlayerProfile ();

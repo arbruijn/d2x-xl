@@ -1763,9 +1763,10 @@ class CMineRenderData {
 //------------------------------------------------------------------------------
 
 #define DEFAULT_DIRECT_LIGHT		70
-#define DEFAULT_SPECULAR_LIGHT	20
+#define DEFAULT_SPECULAR_LIGHT	0
 #define DEFAULT_DIFFUSE_LIGHT		(DEFAULT_DIRECT_LIGHT - DEFAULT_SPECULAR_LIGHT) 
 #define DEFAULT_AMBIENT_LIGHT		(100 - DEFAULT_DIRECT_LIGHT) // indirect light
+#define USE_SPECULAR_LIGHT			0
 
 class CVertColorData {
 	public:

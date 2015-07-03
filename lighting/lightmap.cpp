@@ -1701,7 +1701,7 @@ if (!gameStates.app.bCacheLightmaps) {
 	PrintLog (0, "lightmap caching is disabled\n");
 	return 0;
 	}
-if (gameOpts->app.bExpertMode && gameStates.app.bRebuildLightmaps) {
+if ((gameOpts->app.bExpertMode || gameStates.app.bPrecomputeLightmaps) && gameStates.app.bRebuildLightmaps) {
 	PrintLog (0, "Rebuilding lightmap due to user request\n");
 	return 0;
 	}

@@ -1842,6 +1842,9 @@ DefaultAllSettings (false);
 if (gameStates.render.bVSyncOk)
 	wglSwapIntervalEXT (gameOpts->render.nMaxFPS < 0);
 #endif
+#if !USE_SPECULAR_LIGHT
+gameOpts->render.color.nSpecularLight = 0;
+#endif
 gameData.SetAmbientLight (gameOpts->render.color.nAmbientLight);
 gameData.SetSpecularLight (gameOpts->render.color.nSpecularLight);
 return funcRes;

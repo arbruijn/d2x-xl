@@ -187,8 +187,12 @@ if ((m = menu ["direct light"])) {
 	v = m->Value () * LIGHT_CONTRIB_SCALE;
 	if (nDirectLight != v) {
 		nDirectLight = v;
+#if USE_SPECULAR_LIGHT
 		gameOpts->render.color.nAmbientLight = Max (0, 100 - nDirectLight - gameOpts->render.color.nSpecularLight);
-		gameOpts->render.color.nSpecularLight = Min (gameOpts->render.color.nSpecularLight, 100 - nDirectLight - gameOpts->render.color.nAmbientLight);
+		gameOpts->render.color.nSpecularLight =  (gameOpts->render.color.nSpecularLight, 100 - nDirectLight - gameOpts->render.color.nAmbientLight);
+#else
+		gameOpts->render.color.nAmbientLight = Clamp (100 - nDirectLight - gameOpts->render.color.nSpecularLight, 0, 100);
+#endif
 		UpdateLightmapOptions (menu);
 		}
 	}
@@ -202,6 +206,7 @@ if ((m = menu ["diffuse light"])) {
 		}
 	}
 
+#if USE_SPECULAR_LIGHT
 if ((m = menu ["specular light"])) {
 	v = m->Value () * LIGHT_CONTRIB_SCALE;
 	if (gameOpts->render.color.nSpecularLight != v) {
@@ -210,6 +215,8 @@ if ((m = menu ["specular light"])) {
 		UpdateLightmapOptions (menu);
 		}
 	}
+#endif
+
 return nCurItem;
 }
 
@@ -597,10 +604,11 @@ if (gameOpts->app.bExpertMode || gameStates.app.bPrecomputeLightmaps) {
 	sprintf (szSlider + 1, TXT_DIFFUSE_LIGHT, gameOpts->render.color.nAmbientLight);
 	*szSlider = *(TXT_DIFFUSE_LIGHT - 1);
 	m.AddSlider ("diffuse light", szSlider + 1, gameOpts->render.color.nAmbientLight / LIGHT_CONTRIB_SCALE, 0, 20, KEY_A, HTX_DIFFUSE_LIGHT);
-
+#if USE_SPECULAR_LIGHT
 	sprintf (szSlider + 1, TXT_SPECULAR_LIGHT, gameOpts->render.color.nSpecularLight);
 	*szSlider = *(TXT_SPECULAR_LIGHT - 1);
 	m.AddSlider ("specular light", szSlider + 1, gameOpts->render.color.nSpecularLight / LIGHT_CONTRIB_SCALE, 0, 10, KEY_A, HTX_SPECULAR_LIGHT);
+#endif
 	}
 }
 
