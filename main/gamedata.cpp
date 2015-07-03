@@ -562,6 +562,8 @@ nAmbientLight = Min (nAmbientLight, 100 - nSpecularLight);
 InitLight ();
 }
 
+#endif
+
 //------------------------------------------------------------------------------
 
 CRenderData::CRenderData ()
