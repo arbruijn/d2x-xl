@@ -182,17 +182,18 @@ if ((m = menu ["lightmap precision"])) {
 		}
 	}
 
+#if CONFIGURE_LIGHT_COMPONENTS
 if ((m = menu ["direct light"])) {
 	int32_t nDirectLight = Max (0, 100 - gameOpts->render.color.nAmbientLight - gameOpts->render.color.nSpecularLight);
 	v = m->Value () * LIGHT_CONTRIB_SCALE;
 	if (nDirectLight != v) {
 		nDirectLight = v;
-#if USE_SPECULAR_LIGHT
+#	if USE_SPECULAR_LIGHT
 		gameOpts->render.color.nAmbientLight = Max (0, 100 - nDirectLight - gameOpts->render.color.nSpecularLight);
 		gameOpts->render.color.nSpecularLight =  (gameOpts->render.color.nSpecularLight, 100 - nDirectLight - gameOpts->render.color.nAmbientLight);
-#else
+#	else
 		gameOpts->render.color.nAmbientLight = Clamp (100 - nDirectLight - gameOpts->render.color.nSpecularLight, 0, 100);
-#endif
+#	endif
 		UpdateLightmapOptions (menu);
 		}
 	}
@@ -206,7 +207,7 @@ if ((m = menu ["diffuse light"])) {
 		}
 	}
 
-#if USE_SPECULAR_LIGHT
+#	if USE_SPECULAR_LIGHT
 if ((m = menu ["specular light"])) {
 	v = m->Value () * LIGHT_CONTRIB_SCALE;
 	if (gameOpts->render.color.nSpecularLight != v) {
@@ -215,6 +216,7 @@ if ((m = menu ["specular light"])) {
 		UpdateLightmapOptions (menu);
 		}
 	}
+#	endif
 #endif
 
 return nCurItem;
@@ -593,6 +595,7 @@ if (gameOpts->app.bExpertMode || gameStates.app.bPrecomputeLightmaps) {
 	*szSlider = *(TXT_LMAP_PRECISION - 1);
 	m.AddSlider ("lightmap precision", szSlider + 1, gameOpts->render.nLightmapPrecision, 0, 2, KEY_P, HTX_LMAP_PRECISION);
 
+#if CONFIGURE_LIGHT_COMPONENTS
 	if (gameStates.app.bPrecomputeLightmaps)
 		m.AddText ("", "");
 
@@ -604,10 +607,11 @@ if (gameOpts->app.bExpertMode || gameStates.app.bPrecomputeLightmaps) {
 	sprintf (szSlider + 1, TXT_DIFFUSE_LIGHT, gameOpts->render.color.nAmbientLight);
 	*szSlider = *(TXT_DIFFUSE_LIGHT - 1);
 	m.AddSlider ("diffuse light", szSlider + 1, gameOpts->render.color.nAmbientLight / LIGHT_CONTRIB_SCALE, 0, 20, KEY_A, HTX_DIFFUSE_LIGHT);
-#if USE_SPECULAR_LIGHT
+#	if USE_SPECULAR_LIGHT
 	sprintf (szSlider + 1, TXT_SPECULAR_LIGHT, gameOpts->render.color.nSpecularLight);
 	*szSlider = *(TXT_SPECULAR_LIGHT - 1);
 	m.AddSlider ("specular light", szSlider + 1, gameOpts->render.color.nSpecularLight / LIGHT_CONTRIB_SCALE, 0, 10, KEY_A, HTX_SPECULAR_LIGHT);
+#	endif
 #endif
 	}
 }
@@ -853,10 +857,12 @@ gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
 if (ogl.IsOculusRift ())
 	gameData.renderData.rift.m_magCalTO.Start (-1, true);
 #endif
+#if CONFIGURE_LIGHT_COMPONENTS
 if (gameOpts->app.bExpertMode) {
 	gameData.SetAmbientLight (gameOpts->render.color.nAmbientLight);
 	gameData.SetSpecularLight (gameOpts->render.color.nSpecularLight);
 	}
+#endif
 lightManager.SetMethod ();
 DefaultRenderSettings (false);
 }

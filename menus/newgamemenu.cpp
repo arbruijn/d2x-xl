@@ -348,9 +348,11 @@ for (;;) {
 
 	m.AddText ("", "");
 	if (gameStates.app.bPrecomputeLightmaps) {
+#if CONFIGURE_LIGHT_COMPONENTS
 		AddLightmapControls (m);
 		m.AddText ("", "");
 		m.AddCheck ("rebuild lightmaps", TXT_REBUILD_LIGHTMAPS, gameStates.app.bRebuildLightmaps, KEY_R, HTX_REBUILD_LIGHTMAPS);
+#endif
 		}
 	else {
 #if DBG
@@ -414,19 +416,23 @@ for (;;) {
 	}
 
 if (gameStates.app.bPrecomputeLightmaps) {
+#if CONFIGURE_LIGHT_COMPONENTS
 	if (!gameOpts->app.bExpertMode) {
 		gameOpts->render.color.nAmbientLight = DEFAULT_AMBIENT_LIGHT;
 		gameOpts->render.color.nSpecularLight = DEFAULT_SPECULAR_LIGHT;
 		}
 	gameData.SetAmbientLight (gameOpts->render.color.nAmbientLight);
 	gameData.SetSpecularLight (gameOpts->render.color.nSpecularLight);
+#endif
 	}
 else {
 	i = m.Value ("difficulty");
 	if (gameStates.app.nDifficultyLevel != i) {
 		gameStates.app.nDifficultyLevel = i;
 		gameData.bossData.InitGateIntervals ();
+#if CONFIGURE_LIGHT_COMPONENTS
 		GET_VAL (gameStates.app.bRebuildLightmaps, "rebuild lightmaps");
+#endif
 		}
 	GetShipSelection (m, optShip);
 	SavePlayerProfile ();
