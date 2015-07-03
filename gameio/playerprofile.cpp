@@ -1848,7 +1848,7 @@ gameOpts->render.color.nSpecularLight = 0;
 #	endif
 gameData.SetAmbientLight (gameOpts->render.color.nAmbientLight);
 gameData.SetSpecularLight (gameOpts->render.color.nSpecularLight);
-#endifk
+#endif
 return funcRes;
 }
 
