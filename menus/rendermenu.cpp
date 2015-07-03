@@ -185,7 +185,7 @@ if ((m = menu ["direct light"])) {
 		nDirectLight = v;
 		gameOpts->render.color.nAmbientLight = Clamp (gameOpts->render.color.nAmbientLight, 0, 100 - nDirectLight - gameOpts->render.color.nSpecularLight);
 		gameOpts->render.color.nSpecularLight = Min (gameOpts->render.color.nSpecularLight, 100 - nDirectLight - gameOpts->render.color.nAmbientLight);
-		UpdateLightmapOptions ();
+		UpdateLightmapOptions (menu);
 		}
 	}
 
@@ -194,7 +194,7 @@ if ((m = menu ["diffuse light"])) {
 	if (gameOpts->render.color.nAmbientLight != v) {
 		gameOpts->render.color.nAmbientLight = v;
 		gameOpts->render.color.nSpecularLight = Min (gameOpts->render.color.nSpecularLight, 100 - gameOpts->render.color.nAmbientLight);
-		UpdateLightmapOptions ();
+		UpdateLightmapOptions (menu);
 		}
 	}
 
@@ -203,7 +203,7 @@ if ((m = menu ["specular light"])) {
 	if (gameOpts->render.color.nSpecularLight != v) {
 		gameOpts->render.color.nSpecularLight = v;
 		gameOpts->render.color.nAmbientLight = Min (gameOpts->render.color.nAmbientLight, 100 - gameOpts->render.color.nSpecularLight);
-		UpdateLightmapOptions ();
+		UpdateLightmapOptions (menu);
 		}
 	}
 return nCurItem;
