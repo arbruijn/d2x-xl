@@ -138,17 +138,20 @@ void UpdateLightmapOptions (CMenu& menu)
 
 if ((m = menu ["direct light"])) {
 	int32_t nDirectLight = Max (0, 100 - gameOpts->render.color.nAmbientLight - gameOpts->render.color.nSpecularLight);
-	sprintf (m->Text (), TXT_DIRECT_LIGHT, nDirectLight);
+	sprintf (m->Text (), TXT_DIRECT_LIGHT, m->Value ());
+	m->Value () = nDirectLight / 10;
 	m->m_bRebuild = 1;
 	}
 
 if ((m = menu ["diffuse light"])) {
 	sprintf (m->Text (), TXT_DIFFUSE_LIGHT, gameOpts->render.color.nAmbientLight);
+	m->Value () = gameOpts->render.color.nAmbientLight / 10;
 	m->m_bRebuild = 1;
 	}
 
 if ((m = menu ["specular light"])) {
 	sprintf (m->Text (), TXT_SPECULAR_LIGHT, gameOpts->render.color.nSpecularLight);
+	m->Value () = gameOpts->render.color.nSpecularLight / 10;
 	m->m_bRebuild = 1;
 	}
 }
