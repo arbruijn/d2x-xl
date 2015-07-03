@@ -2398,15 +2398,17 @@ gameOptions [0].render.cameras.nFPS = 0;
 
 // ----------------------------------------------------------------------------
 
-void DefaultLightSettings (void)
+void DefaultLightSettings (bool bSetup)
 {
 	static int32_t nMaxLightsPerObject [] = {8, 8, 16, 24};
 
 //gameOptions [0].render.color.nLevel = 2;
 gameOptions [0].render.color.bMix = 1;
 gameOptions [0].render.color.nSaturation = 1;
-gameOptions [0].render.color.nAmbientLight = DEFAULT_AMBIENT_LIGHT;
-gameOptions [0].render.color.nSpecularLight = DEFAULT_SPECULAR_LIGHT;
+if (bSetup || !gameOpts->app.bExpertMode) {
+	gameOptions [0].render.color.nAmbientLight = DEFAULT_AMBIENT_LIGHT;
+	gameOptions [0].render.color.nSpecularLight = DEFAULT_SPECULAR_LIGHT;
+	}
 gameData.SetAmbientLight (gameOpts->render.color.nAmbientLight);
 gameData.SetSpecularLight (gameOpts->render.color.nSpecularLight);
 extraGameInfo [0].bPowerupLights = 0;
@@ -2501,7 +2503,7 @@ DefaultPowerupSettings ();
 DefaultShipSettings ();
 DefaultMovieSettings ();
 DefaultEffectSettings (bSetup);
-DefaultLightSettings ();
+DefaultLightSettings (bSetup);
 DefaultCameraSettings ();
 DefaultAutomapSettings ();
 }
