@@ -705,7 +705,7 @@ PROF_START
 	CFloatVector3	colorSum = CFloatVector3::Create (0.0f, 0.0f, 0.0f);
 	CFloatVector3	vertPos;
 	CFaceColor*		pColor = NULL;
-	int32_t				bVertexLights;
+	int32_t			bVertexLights;
 	CVertColorData	colorData;
 
 InitVertColorData (colorData);

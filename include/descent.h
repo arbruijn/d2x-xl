@@ -4037,7 +4037,6 @@ class CGameData {
 		CHUDData				hudData;
 		CTerrainData		terrainData;
 		CTimeData			timeData;
-		CVertColorData		vertColorData;
 		CThreadData			threadData;
 	#if DBG
 		CSpeedtestData		speedtest;
@@ -4081,13 +4080,13 @@ class CGameData {
 			objData.pViewer = pNewViewer;
 			return pOldViewer;
 			}
-		inline float AmbientLight (void) { return vertColorData.AmbientLight (); }
-		inline float SpecularLight (void) { return vertColorData.SpecularLight (); }
-		inline float DiffuseLight (void) { return vertColorData.DiffuseLight (); }
-		inline int32_t GetAmbientLight (void) { return vertColorData.GetAmbientLight (); }
-		inline int32_t GetSpecularLight (void) { return vertColorData.GetSpecularLight (); }
-		inline void SetAmbientLight (int32_t nLight) { vertColorData.SetAmbientLight (nLight); }
-		inline void SetSpecularLight (int32_t nLight) { vertColorData.SetSpecularLight (nLight); }
+		inline float AmbientLight (void) { return renderData.vertColor.AmbientLight (); }
+		inline float SpecularLight (void) { return renderData.vertColor.SpecularLight (); }
+		inline float DiffuseLight (void) { return renderData.vertColor.DiffuseLight (); }
+		inline int32_t GetAmbientLight (void) { return renderData.vertColor.GetAmbientLight (); }
+		inline int32_t GetSpecularLight (void) { return renderData.vertColor.GetSpecularLight (); }
+		inline void SetAmbientLight (int32_t nLight) { renderData.vertColor.SetAmbientLight (nLight); }
+		inline void SetSpecularLight (int32_t nLight) { renderData.vertColor.SetSpecularLight (nLight); }
 #if DBG
 
 		CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
