@@ -785,7 +785,11 @@ else
 	RETVAL (0)
 #endif
 
-	fix xDistance, xRad;
+	fix		xDistance, xRad;
+	int32_t	nLightSeg = LightSeg ();
+
+if (nLightSeg < 0)
+	RETVAL (0);
 
 if ((info.nSegment < 0) || (nDestSeg < 0) || (info.nSide < 0)) {
 	CFixVector vLightToPoint = vDestPos - info.vPos;
@@ -800,15 +804,25 @@ if ((info.nSegment < 0) || (nDestSeg < 0) || (info.nSide < 0)) {
 else {
 	CFloatVector3 v, vHit;
 	v.Assign (vDestPos);
-	DistToFace (v, info.nSegment, uint8_t (info.nSide), &vHit);
+	DistToFace (v, nLightSeg, uint8_t (info.nSide), &vHit);
 	float distance = CFloatVector3::Dist (v, vHit) / (info.fRange * fRangeMod) + X2F (xDistMod);
 	if (distance > X2F (xMaxLightRange))
 		RETVAL (0)
 	xDistance = F2X (distance);
 	xRad = 0;
 	}
-if (info.nSegment == nDestSeg)
+if (nLightSeg == nDestSeg)
 	info.bDiffuse [nThread] = 1;
+else if (info.nSegment < 0) {
+	if (nDestVertex >= 0) {
+		if (info.visibleVertices && info.visibleVertices->Buffer ())
+			info.bDiffuse [nThread] = (*info.visibleVertices) [nDestVertex];
+		else
+			info.bDiffuse [nThread] = SeesPoint (nDestSeg, nDestSide, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
+		}
+	else if (!gameData.segData.SegVis (nLightSeg, nDestSeg))
+		info.bDiffuse [nThread] = 0;
+	}
 #if 1
 else if (!gameData.segData.LightVis (Index (), nDestSeg))
 	info.bDiffuse [nThread] = 0;
@@ -820,7 +834,7 @@ else if (info.bVariable && (nDestVertex >= 0)) {
 		info.bDiffuse [nThread] = SeesPoint (nDestSeg, nDestSide, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
 	}
 else { // check whether light only contributes ambient light to point
-	CSegment *pLightSeg = SEGMENT (info.nSegment);
+	CSegment *pLightSeg = SEGMENT (nLightSeg);
 
 #if 1
 	int32_t bSeesPoint = -1;
@@ -831,10 +845,10 @@ else { // check whether light only contributes ambient light to point
 	// if point is occluded, use segment path distance to point for light range and attenuation
 	// if bDiffuse == 0 then point is completely occluded (determined by above call to SeesPoint ()), otherwise use SeesPoint() to test occlusion
 	if (!bSeesPoint) { // => ambient contribution only
-		fix xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+		fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 #if 0 //DBG
-		xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 0, nThread);
-		xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, -1, nThread);
+		xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 0, nThread);
+		xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, -1, nThread);
 #endif
 		if (xPathLength < 0)
 			RETVAL (0)
@@ -864,7 +878,7 @@ else { // check whether light only contributes ambient light to point
 		// if point is occluded, use segment path distance to point for light range and attenuation
 		// if bDiffuse == 0 then point is completely occluded (determined by above call to SeesPoint ()), otherwise use SeesPoint() to test occlusion
 		if (!bSeesPoint) { // => ambient contribution only
-			fix xPathLength = LightPathLength (info.nSegment, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
+			fix xPathLength = LightPathLength (nLightSeg, nDestSeg, vDestPos, xMaxLightRange, 1, nThread);
 			if (xPathLength < 0)
 				RETVAL (0)
 			if (xDistance < xPathLength) {
