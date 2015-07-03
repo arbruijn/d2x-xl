@@ -581,10 +581,13 @@ sprintf (szSlider + 1, TXT_LMAP_QUALITY, LightmapQualityText ());
 *szSlider = *(TXT_LMAP_QUALITY - 1);
 m.AddSlider ("lightmap quality", szSlider + 1, gameOpts->render.nLightmapQuality, 0, 3, KEY_M, HTX_LMAP_QUALITY);
 
-if (gameOpts->app.bExpertMode) {
+if (gameOpts->app.bExpertMode || gameStates.app.bPrecomputeLightmaps) {
 	sprintf (szSlider + 1, TXT_LMAP_PRECISION, LightmapPrecisionText ());
 	*szSlider = *(TXT_LMAP_PRECISION - 1);
 	m.AddSlider ("lightmap precision", szSlider + 1, gameOpts->render.nLightmapPrecision, 0, 2, KEY_P, HTX_LMAP_PRECISION);
+
+	if (gameStates.app.bPrecomputeLightmaps)
+		m.AddText ("", "");
 
 	int32_t nDirectLight = Max (0, 100 - gameOpts->render.color.nAmbientLight - gameOpts->render.color.nSpecularLight);
 	sprintf (szSlider + 1, TXT_DIRECT_LIGHT, nDirectLight);
