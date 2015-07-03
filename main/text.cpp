@@ -2011,6 +2011,8 @@ const char *defaultGameTexts [][2] = {
  {"~Nebel: %s", "~Fog: %s"},
  {"Explosionssc~Hrapnelle: %s", "explosion s~Hrapnel: %s"},
  {"~Kratzgeraeusche des schiffs erzeugen", "play ship scra~Pe sound"},
+ {"~Hintergrundlicht: %d%%", "~Ambient light: %d%%"},
+ {"~Glanzlicht: %d%%", "~Specular light: %d%%"},
 
 #if 0
  {"", ""},
@@ -2783,6 +2785,10 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn eingeschaltet, werden unter Wasser und in Lava Dunst gezeichnet.", "If turned on, a blue or orange haze is rendered under water and in lava."},
  {"Hier kann die Menge schnellfliegender kleiner Truemmerstuecke von \nExplosionen eingestellt werden. Achtung: Dieser Effekt ist sehr rechenaufwaendig!", "Adjust the amount of fast moving explosion shrapnel here.\nCaveat: This effect can lower the frame rate significantly!"},
  {"Wenn angekreuzt, erzeugen Spielerschiffe Kratzgeraeuschen, sobald\nsie an einer Wand entlang schleifen. ", "When checked, player ships create scrape sounds when\nsliding along a wall"},
+ {"Hier kann der fuer diffuses Hintergrundlicht verwendete Lichtanteil eingestellt werden.\n\nDer fuer direktes Licht verwendete Lichtanteil betraegt\n100%% - Hintergrundlicht - Glanzlicht.\nJe weniger Hintergrundlicht, desto schaerfer werden Schatten.", 
+  "Adjust the light contribution used for diffuse background light here.\n\nThe light contribution of direct light amounts to\n100%% - ambient light - specular light.\nLess ambient light will emphasize shadows more."},
+ {"Hier kann der fuer Glanzlichter verwendete Lichtanteil eingestellt werden.\n\nDer fuer direktes Licht verwendete Lichtanteil betraegt\n100%% - Hintergrundlicht - Glanzlicht.", 
+  "Adjust the light contribution used for specular highlights here.\n\nThe light contribution of direct light amounts to\n100%% - ambient light - specular light."},
 #if 0
  {"", ""},
 #endif

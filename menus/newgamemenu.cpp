@@ -410,7 +410,15 @@ for (;;) {
 #endif
 	}
 
-if (!gameStates.app.bPrecomputeLightmaps) {
+if (gameStates.app.bPrecomputeLightmaps) {
+	if (!gameOpts->app.bExpertMode) {
+		gameOpts->render.color.nAmbientLight = DEFAULT_AMBIENT_LIGHT;
+		gameOpts->render.color.nSpecularLight = DEFAULT_SPECULAR_LIGHT;
+		}
+	gameData.SetAmbientLight (gameOpts->render.color.nAmbientLight);
+	gameData.SetSpecularLight (gameOpts->render.color.nSpecularLight);
+	}
+else {
 	i = m.Value ("difficulty");
 	if (gameStates.app.nDifficultyLevel != i) {
 		gameStates.app.nDifficultyLevel = i;

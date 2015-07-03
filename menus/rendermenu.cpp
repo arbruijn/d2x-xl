@@ -154,6 +154,30 @@ if ((m = menu ["lightmap precision"])) {
 		m->m_bRebuild = 1;
 		}
 	}
+
+if ((m = menu ["ambient light"])) {
+	v = m->Value ();
+	if (gameOpts->render.color.nAmbientLight != v) {
+		gameOpts->render.color.nAmbientLight = v;
+		gameOpts->render.color.nSpecularLight = Min (gameOpts->render.color.nSpecularLight, 100 - gameOpts->render.color.nAmbientLight);
+		sprintf (m->Text (), TXT_AMBIENT_LIGHT, gameOpts->render.color.nAmbientLight);
+		m->m_bRebuild = 1;
+		if ((m = menu ["specular light"]))
+			m->m_bRebuild = 1;
+		}
+	}
+
+if ((m = menu ["specular light"])) {
+	v = m->Value ();
+	if (gameOpts->render.color.nSpecularLight != v) {
+		gameOpts->render.color.nSpecularLight = v;
+		gameOpts->render.color.nAmbientLight = Min (gameOpts->render.color.nAmbientLight, 100 - gameOpts->render.color.nSpecularLight);
+		sprintf (m->Text (), TXT_SPECULAR_LIGHT, gameOpts->render.color.nSpecularLight);
+		m->m_bRebuild = 1;
+		if ((m = menu ["ambient light"]))
+			m->m_bRebuild = 1;
+		}
+	}
 return nCurItem;
 }
 
@@ -529,8 +553,15 @@ if (gameOpts->app.bExpertMode) {
 	sprintf (szSlider + 1, TXT_LMAP_PRECISION, LightmapPrecisionText ());
 	*szSlider = *(TXT_LMAP_PRECISION - 1);
 	m.AddSlider ("lightmap precision", szSlider + 1, gameOpts->render.nLightmapPrecision, 0, 2, KEY_P, HTX_LMAP_PRECISION);
-	}
 
+	sprintf (szSlider + 1, TXT_AMBIENT_LIGHT, gameOpts->render.color.nAmbientLight);
+	*szSlider = *(TXT_AMBIENT_LIGHT - 1);
+	m.AddSlider ("ambient light", szSlider + 1, gameOpts->render.color.nAmbientLight, 0, 20, KEY_A, HTX_AMBIENT_LIGHT);
+
+	sprintf (szSlider + 1, TXT_SPECULAR_LIGHT, gameOpts->render.color.nSpecularLight);
+	*szSlider = *(TXT_SPECULAR_LIGHT - 1);
+	m.AddSlider ("specular light", szSlider + 1, gameOpts->render.color.nSpecularLight, 0, 10, KEY_A, HTX_SPECULAR_LIGHT);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -774,6 +805,10 @@ gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
 if (ogl.IsOculusRift ())
 	gameData.renderData.rift.m_magCalTO.Start (-1, true);
 #endif
+if (gameOpts->app.bExpertMode) {
+	gameData.SetAmbientLight (gameOpts->render.color.nAmbientLight);
+	gameData.SetSpecularLight (gameOpts->render.color.nSpecularLight);
+	}
 lightManager.SetMethod ();
 DefaultRenderSettings (false);
 }

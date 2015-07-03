@@ -220,6 +220,8 @@ typedef struct tColorOptions {
 	int32_t bUseLightmaps;
 	int32_t nLightmapRange;
 	int32_t nSaturation;
+	int32_t nAmbientLight;
+	int32_t nSpecularLight;
 } tColorOptions;
 
 //------------------------------------------------------------------------------
@@ -1759,6 +1761,11 @@ class CMineRenderData {
 
 //------------------------------------------------------------------------------
 
+#define DEFAULT_DIRECT_LIGHT		70
+#define DEFAULT_SPECULAR_LIGHT	20
+#define DEFAULT_DIFFUSE_LIGHT		(DEFAULT_DIRECT_LIGHT - DEFAULT_SPECULAR_LIGHT) 
+#define DEFAULT_AMBIENT_LIGHT		(100 - DEFAULT_DIRECT_LIGHT) // indirect light
+
 class CVertColorData {
 	public:
 		int32_t			bExclusive;
@@ -1767,6 +1774,8 @@ class CVertColorData {
 		int32_t			bMatEmissive;
 		int32_t			bMatSpecular;
 		int32_t			nMatLight;
+		int32_t			nAmbientLight;
+		int32_t			nSpecularLight;
 		CFloatVector	matAmbient;
 		CFloatVector	matDiffuse;
 		CFloatVector	matSpecular;
@@ -1776,7 +1785,24 @@ class CVertColorData {
 		CFloatVector3*	pVertPos;
 		float				fMatShininess;
 	public:
-		CVertColorData () { memset (this, 0, sizeof (*this)); }
+		CVertColorData ();
+		void InitLight (void);
+
+		inline float AmbientLight (void) { return float (nAmbientLight) / 100.0f; }
+		inline float SpecularLight (void) { return float (nSpecularLight) / 100.0f; }
+		inline float DiffuseLight (void) { return 1.0f - AmbientLight () - SpecularLight (); }
+		inline int32_t GetAmbientLight (void) { return nAmbientLight; }
+		inline int32_t GetSpecularLight (void) { return nSpecularLight; }
+		inline void SetAmbientLight (int32_t nLight) {
+			nAmbientLight = Clamp (nLight, 0, 100);
+			nSpecularLight = Min (nSpecularLight, 100 - nAmbientLight); 
+			InitLight ();
+			}
+		inline void SetSpecularLight (int32_t nLight) {
+			nSpecularLight = Clamp (nLight, 0, 100);
+			nAmbientLight = Min (nAmbientLight, 100 - nSpecularLight); 
+			InitLight ();
+			}
 	};
 
 //------------------------------------------------------------------------------
@@ -4049,6 +4075,13 @@ class CGameData {
 			objData.pViewer = pNewViewer;
 			return pOldViewer;
 			}
+		inline float AmbientLight (void) { return vertColorData.AmbientLight (); }
+		inline float SpecularLight (void) { return vertColorData.SpecularLight (); }
+		inline float DiffuseLight (void) { return vertColorData.DiffuseLight (); }
+		inline int32_t GetAmbientLight (void) { return vertColorData.GetAmbientLight (); }
+		inline int32_t GetSpecularLight (void) { return vertColorData.GetSpecularLight (); }
+		inline void SetAmbientLight (int32_t nLight) { vertColorData.SetAmbientLight (nLight); }
+		inline void SetSpecularLight (int32_t nLight) { vertColorData.SetSpecularLight (nLight); }
 #if DBG
 
 		CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);

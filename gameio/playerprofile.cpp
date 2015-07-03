@@ -531,6 +531,8 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.stereo.bChromAbCorr, i, 0);
 		RP (gameOptions [i].render.cameras.bHires, i, 0);
 		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
+		RP (gameOptions [i].render.color.nAmbientLight, i, 0);
+		RP (gameOptions [i].render.color.nSpecularLight, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
 		RP (gameOptions [i].app.bEpilepticFriendly, i, 0);
 		RP (gameOptions [i].app.bColorblindFriendly, i, 0);
@@ -1113,6 +1115,8 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.shadows.nClip", "1"},
 	 {"gameOptions[0].render.shadows.nReach", "2"},
 	 {"gameOptions[0].render.nMaxFPS", "60"},
+	 {"gameOptions[0].render.nAmbientLight", "30"},
+	 {"gameOptions[0].render.nSpecularLight", "20"},
 	 {"gameOptions[0].render.nImageQuality", "3"},
 	 {"gameOptions[0].render.cockpit.bFlashGauges", "1"},
 	 {"gameOptions[0].sound.bFadeMusic", "1"},
@@ -1838,6 +1842,8 @@ DefaultAllSettings (false);
 if (gameStates.render.bVSyncOk)
 	wglSwapIntervalEXT (gameOpts->render.nMaxFPS < 0);
 #endif
+gameData.SetAmbientLight (gameOpts->render.color.nAmbientLight);
+gameData.SetSpecularLight (gameOpts->render.color.nSpecularLight);
 return funcRes;
 }
 

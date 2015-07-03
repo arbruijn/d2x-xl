@@ -144,11 +144,6 @@ void InitGameStates (void);
 char szAutoMission [255];
 char szAutoHogFile [255];
 
-#define DIRECT_LIGHT		0.7f
-#define SPECULAR_LIGHT	0.2f
-#define DIFFUSE_LIGHT	(DIRECT_LIGHT - SPECULAR_LIGHT) 
-#define AMBIENT_LIGHT	(1.0f - DIRECT_LIGHT) // indirect light
-
 int32_t nDescentCriticalError = 0;
 uint32_t descent_critical_deverror = 0;
 uint32_t descent_critical_errcode = 0;
@@ -569,9 +564,6 @@ if (gameStates.app.bMultiThreaded) {
 #endif
 		}
 	}
-gameData.renderData.vertColor.matAmbient.Set (AMBIENT_LIGHT, AMBIENT_LIGHT, AMBIENT_LIGHT, 1.0f);
-gameData.renderData.vertColor.matDiffuse.Set (DIFFUSE_LIGHT, DIFFUSE_LIGHT, DIFFUSE_LIGHT, 1.0f);
-gameData.renderData.vertColor.matSpecular.Set (SPECULAR_LIGHT, SPECULAR_LIGHT, SPECULAR_LIGHT, 1.0f);
 }
 
 // ------------------------------------------------------------------------------------------

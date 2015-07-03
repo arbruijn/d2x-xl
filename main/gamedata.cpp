@@ -525,6 +525,25 @@ DESTROY (bRadarVisited);
 
 //------------------------------------------------------------------------------
 
+CVertColorData::CVertColorData ()
+{
+memset (this, 0, sizeof (*this)); 
+SetAmbientLight (DEFAULT_AMBIENT_LIGHT);
+SetSpecularLight (DEFAULT_SPECULAR_LIGHT);
+InitLight ();
+}
+
+//------------------------------------------------------------------------------
+
+void CVertColorData::InitLight (void)
+{
+matAmbient.Set (AmbientLight (), AmbientLight (), AmbientLight (), 1.0f);
+matDiffuse.Set (DiffuseLight (), DiffuseLight (), DiffuseLight (), 1.0f);
+matSpecular.Set (SpecularLight (), SpecularLight (), SpecularLight (), 1.0f);
+}
+
+//------------------------------------------------------------------------------
+
 CRenderData::CRenderData ()
 {
 transpColor = DEFAULT_TRANSPARENCY_COLOR; //transparency color bitmap index
@@ -2386,6 +2405,10 @@ void DefaultLightSettings (void)
 //gameOptions [0].render.color.nLevel = 2;
 gameOptions [0].render.color.bMix = 1;
 gameOptions [0].render.color.nSaturation = 1;
+gameOptions [0].render.color.nAmbientLight = DEFAULT_AMBIENT_LIGHT;
+gameOptions [0].render.color.nSpecularLight = DEFAULT_SPECULAR_LIGHT;
+gameData.SetAmbientLight (gameOpts->render.color.nAmbientLight);
+gameData.SetSpecularLight (gameOpts->render.color.nSpecularLight);
 extraGameInfo [0].bPowerupLights = 0;
 extraGameInfo [0].bBrightObjects = 0;
 gameOptions [0].ogl.nMaxLightsPerObject = nMaxLightsPerObject [gameOptions [0].render.nQuality];

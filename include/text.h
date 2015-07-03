@@ -2019,11 +2019,11 @@ void LoadGameTexts(void);
 #define TXT_EFFECTS_FOG					GT(1261)
 #define TXT_EXPLOSION_SHRAPNELS		GT(1262)
 #define TXT_SCRAPE_SOUND				GT(1263)
+#define TXT_AMBIENT_LIGHT				GT(1264)
+#define TXT_SPECULAR_LIGHT				GT(1265)
 
 #if 0
 
-#define TXT_					GT(1264)
-#define TXT_					GT(1265)
 #define TXT_					GT(1266)
 #define TXT_					GT(1267)
 #define TXT_					GT(1268)
@@ -2635,11 +2635,11 @@ void LoadGameTexts(void);
 #define HTX_EFFECTS_FOG					HT(455)
 #define HTX_EXPLOSION_SHRAPNEL		HT(456)
 #define HTX_SCRAPE_SOUND				HT(457)
+#define HTX_AMBIENT_LIGHT				HT(458)
+#define HTX_SPECULAR_LIGHT				HT(459)
 
 #if 0
 
-#define HTX_						HT(458)
-#define HTX_						HT(459)
 #define HTX_						HT(460)
 #define HTX_						HT(461)
 #define HTX_						HT(462)
