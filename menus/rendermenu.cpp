@@ -132,6 +132,29 @@ static const char *pszPrecision [3];
 
 //------------------------------------------------------------------------------
 
+void UpdateLightmapOptions (CMenu& menu)
+{
+	CMenuItem*	m;
+
+if ((m = menu ["direct light"])) {
+	int32_t nDirectLight = Max (0, 100 - gameOpts->render.color.nAmbientLight - gameOpts->render.color.nSpecularLight);
+	sprintf (m->Text (), TXT_DIRECT_LIGHT, nDirectLight);
+	m->m_bRebuild = 1;
+	}
+
+if ((m = menu ["diffuse light"])) {
+	sprintf (m->Text (), TXT_DIFFUSE_LIGHT, gameOpts->render.color.nAmbientLight);
+	m->m_bRebuild = 1;
+	}
+
+if ((m = menu ["specular light"])) {
+	sprintf (m->Text (), TXT_SPECULAR_LIGHT, gameOpts->render.color.nSpecularLight);
+	m->m_bRebuild = 1;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int32_t LightmapOptionsCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 	CMenuItem*	m;
@@ -155,27 +178,32 @@ if ((m = menu ["lightmap precision"])) {
 		}
 	}
 
-if ((m = menu ["ambient light"])) {
-	v = m->Value ();
+if ((m = menu ["direct light"])) {
+	int32_t nDirectLight = Max (0, 100 - gameOpts->render.color.nAmbientLight - gameOpts->render.color.nSpecularLight);
+	v = 10 * m->Value ();
+	if (nDirectLight != v) {
+		nDirectLight = v;
+		gameOpts->render.color.nAmbientLight = Clamp (gameOpts->render.color.nAmbientLight, 0, 100 - nDirectLight - gameOpts->render.color.nSpecularLight);
+		gameOpts->render.color.nSpecularLight = Min (gameOpts->render.color.nSpecularLight, 100 - nDirectLight - gameOpts->render.color.nAmbientLight);
+		UpdateLightmapOptions ();
+		}
+	}
+
+if ((m = menu ["diffuse light"])) {
+	v = 10 * m->Value ();
 	if (gameOpts->render.color.nAmbientLight != v) {
 		gameOpts->render.color.nAmbientLight = v;
 		gameOpts->render.color.nSpecularLight = Min (gameOpts->render.color.nSpecularLight, 100 - gameOpts->render.color.nAmbientLight);
-		sprintf (m->Text (), TXT_AMBIENT_LIGHT, gameOpts->render.color.nAmbientLight);
-		m->m_bRebuild = 1;
-		if ((m = menu ["specular light"]))
-			m->m_bRebuild = 1;
+		UpdateLightmapOptions ();
 		}
 	}
 
 if ((m = menu ["specular light"])) {
-	v = m->Value ();
+	v = 10 * m->Value ();
 	if (gameOpts->render.color.nSpecularLight != v) {
 		gameOpts->render.color.nSpecularLight = v;
 		gameOpts->render.color.nAmbientLight = Min (gameOpts->render.color.nAmbientLight, 100 - gameOpts->render.color.nSpecularLight);
-		sprintf (m->Text (), TXT_SPECULAR_LIGHT, gameOpts->render.color.nSpecularLight);
-		m->m_bRebuild = 1;
-		if ((m = menu ["ambient light"]))
-			m->m_bRebuild = 1;
+		UpdateLightmapOptions ();
 		}
 	}
 return nCurItem;
@@ -554,13 +582,18 @@ if (gameOpts->app.bExpertMode) {
 	*szSlider = *(TXT_LMAP_PRECISION - 1);
 	m.AddSlider ("lightmap precision", szSlider + 1, gameOpts->render.nLightmapPrecision, 0, 2, KEY_P, HTX_LMAP_PRECISION);
 
-	sprintf (szSlider + 1, TXT_AMBIENT_LIGHT, gameOpts->render.color.nAmbientLight);
-	*szSlider = *(TXT_AMBIENT_LIGHT - 1);
-	m.AddSlider ("ambient light", szSlider + 1, gameOpts->render.color.nAmbientLight, 0, 20, KEY_A, HTX_AMBIENT_LIGHT);
+	int32_t nDirectLight = Max (0, 100 - gameOpts->render.color.nAmbientLight - gameOpts->render.color.nSpecularLight);
+	sprintf (szSlider + 1, TXT_DIRECT_LIGHT, nDirectLight);
+	*szSlider = *(TXT_DIFFUSE_LIGHT - 1);
+	m.AddSlider ("direct light", szSlider + 1, nDirectLight / 10, 0, 20, KEY_D, HTX_DIRECT_LIGHT);
+
+	sprintf (szSlider + 1, TXT_DIFFUSE_LIGHT, gameOpts->render.color.nAmbientLight);
+	*szSlider = *(TXT_DIFFUSE_LIGHT - 1);
+	m.AddSlider ("diffuse light", szSlider + 1, gameOpts->render.color.nAmbientLight / 10, 0, 20, KEY_A, HTX_DIFFUSE_LIGHT);
 
 	sprintf (szSlider + 1, TXT_SPECULAR_LIGHT, gameOpts->render.color.nSpecularLight);
 	*szSlider = *(TXT_SPECULAR_LIGHT - 1);
-	m.AddSlider ("specular light", szSlider + 1, gameOpts->render.color.nSpecularLight, 0, 10, KEY_A, HTX_SPECULAR_LIGHT);
+	m.AddSlider ("specular light", szSlider + 1, gameOpts->render.color.nSpecularLight / 10, 0, 10, KEY_A, HTX_SPECULAR_LIGHT);
 	}
 }
 
