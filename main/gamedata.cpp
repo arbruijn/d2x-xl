@@ -544,6 +544,26 @@ matSpecular.Set (SpecularLight (), SpecularLight (), SpecularLight (), 1.0f);
 
 //------------------------------------------------------------------------------
 
+#if DBG
+
+void CVertColorData::SetAmbientLight (int32_t nLight) 
+{
+nAmbientLight = Clamp (nLight, 0, 100);
+nSpecularLight = Min (nSpecularLight, 100 - nAmbientLight); 
+InitLight ();
+}
+
+//------------------------------------------------------------------------------
+
+void CVertColorData::SetSpecularLight (int32_t nLight) 
+{
+nSpecularLight = Clamp (nLight, 0, 100);
+nAmbientLight = Min (nAmbientLight, 100 - nSpecularLight); 
+InitLight ();
+}
+
+//------------------------------------------------------------------------------
+
 CRenderData::CRenderData ()
 {
 transpColor = DEFAULT_TRANSPARENCY_COLOR; //transparency color bitmap index

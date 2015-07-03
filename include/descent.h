@@ -1794,6 +1794,10 @@ class CVertColorData {
 		inline float DiffuseLight (void) { return 1.0f - AmbientLight () - SpecularLight (); }
 		inline int32_t GetAmbientLight (void) { return nAmbientLight; }
 		inline int32_t GetSpecularLight (void) { return nSpecularLight; }
+#if DBG
+		void SetAmbientLight (int32_t nLight);
+		void SetSpecularLight (int32_t nLight);
+#else
 		inline void SetAmbientLight (int32_t nLight) {
 			nAmbientLight = Clamp (nLight, 0, 100);
 			nSpecularLight = Min (nSpecularLight, 100 - nAmbientLight); 
@@ -1804,6 +1808,7 @@ class CVertColorData {
 			nAmbientLight = Min (nAmbientLight, 100 - nSpecularLight); 
 			InitLight ();
 			}
+#endif
 	};
 
 //------------------------------------------------------------------------------
