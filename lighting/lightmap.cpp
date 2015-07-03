@@ -1697,8 +1697,12 @@ int32_t CLightmapManager::Load (int32_t nLevel)
 	char						szFilename [FILENAME_LEN];
 	CSegFace					*pFace;
 
-if (!(gameStates.app.bCacheLightmaps)) {
+if (!gameStates.app.bCacheLightmaps) {
 	PrintLog (0, "lightmap caching is disabled\n");
+	return 0;
+	}
+if (gameOpts->app.bExpertMode && gameStates.app.bRebuildLightmaps) {
+	PrintLog (0, "Rebuilding lightmap due to user request\n");
 	return 0;
 	}
 if (!cf.Open (Filename (szFilename, nLevel), gameFolders.var.szLightmaps, "rb", 0) &&

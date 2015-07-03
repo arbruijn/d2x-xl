@@ -1312,6 +1312,7 @@ class CApplicationStates {
 		int32_t		bCacheLights;
 		int32_t		bCacheMeshes;
 		int32_t		bCacheLightmaps;
+		int32_t		bRebuildLightmaps;
 		int32_t		bCacheModelData;
 		int32_t		bUseSwapFile;
 		int32_t		bSingleStep;

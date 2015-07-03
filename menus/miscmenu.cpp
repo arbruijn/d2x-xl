@@ -200,6 +200,8 @@ do {
 				m.AddSlider ("download timeout", szSlider + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_DLTIMEOUT);
 				}
 			}
+		m.AddText ("", "");
+		m.AddCheck ("rebuild lightmaps", TXT_REBUILD_LIGHTMAPS, gameStates.app.bRebuildLightmaps, KEY_R, HTX_REBUILD_LIGHTMAPS);
 		}
 
 	do {
@@ -218,6 +220,7 @@ do {
 		GET_VAL (gameOpts->app.bEpilepticFriendly, "epileptic friendly");
 		GET_VAL (gameOpts->app.bColorblindFriendly, "colorblind friendly");
 		GET_VAL (gameOpts->app.bNotebookFriendly, "notebook friendly");
+		GET_VAL (gameStates.app.bRebuildLightmaps, "rebuild lightmaps");
 		}
 	} while (i == -2);
 
