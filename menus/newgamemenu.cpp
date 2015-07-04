@@ -348,8 +348,8 @@ for (;;) {
 
 	m.AddText ("", "");
 	if (gameStates.app.bPrecomputeLightmaps) {
-#if CONFIGURE_LIGHT_COMPONENTS
 		AddLightmapControls (m);
+#if CONFIGURE_LIGHT_COMPONENTS
 		m.AddText ("", "");
 		m.AddCheck ("rebuild lightmaps", TXT_REBUILD_LIGHTMAPS, gameStates.app.bRebuildLightmaps, KEY_R, HTX_REBUILD_LIGHTMAPS);
 #endif
