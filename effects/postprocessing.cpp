@@ -431,7 +431,7 @@ for (CPostEffect* e = m_effects; e; e = e->Next ())
 
 #define FOG_SHADER_TYPE	0
 
-#if FOG_SHADER_TYPE == 0
+#if FOG_SHADER_TYPE == 1
 
 //Fragment shader
 const char *fogFS =
@@ -446,12 +446,12 @@ const char *fogFS =
 	"#define B (ZNEAR - ZFAR)\r\n" \
 	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
 	"#define D (ndcPos.z * B)\r\n" \
-	"#define ZEYE -(C / (A + D))\r\n" \
+	"#define ZEYE (C / (A + D))\r\n" \
 	"vec4 CalcEyeFromWindow (vec2 windowPos, float z) {\r\n" \
 	"   vec3 ndcPos = vec3 (windowPos, z);\r\n" \
 	"   ndcPos -= 0.5;\r\n" \
 	"   ndcPos *= 2.0;\r\n" \
-	"   vec4 clipPos = vec4 (ndcPos * -ZEYE, -ZEYE);\r\n" \
+	"   vec4 clipPos = vec4 (ndcPos * ZEYE, ZEYE);\r\n" \
 	"   return projectionInverse * clipPos;\r\n" \
 	"   }\r\n" \
 	"\r\n" \
@@ -462,14 +462,14 @@ const char *fogFS =
 	"   if (zFogNear > zFogFar)\r\n" \
 	"      dFog = 0.0;\r\n" \
 	"   else {\r\n" \
-	"      vec4 fogNear = CalcEyeFromWindow (windowPos.xy, zFogNear);\r\n" \
-	"      dFog = length (fogNear);\r\n" \
+	"      vec4 fogNearPos = CalcEyeFromWindow (windowPos.xy, zFogNear);\r\n" \
+	"      dFog = length (fogNearPos);\r\n" \
 	"      dTexel -= dFog;\r\n" \
 	"      if (dTexel < 0.0)\r\n" \
 	"         return vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
 	"      }\r\n" \
-	"   vec4 fogFar = CalcEyeFromWindow (windowPos.xy, zFogFar);\r\n" \
-	"   dFog = length (fogFar) - dFog;\r\n" \
+	"   vec4 fogFarPos = CalcEyeFromWindow (windowPos.xy, zFogFar);\r\n" \
+	"   dFog = length (fogFarPos) - dFog;\r\n" \
 	"   if (dFog <= 0.0)\r\n" \
 	"      return vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
 	"   return vec4 (fogColor.rgb, min (MAX_ALPHA, min (dTexel, dFog) / fogColor.a));\r\n" \
@@ -477,7 +477,7 @@ const char *fogFS =
 	"\r\n" \
 	"void main (void) {\r\n" \
 	"   vec2 windowPos = gl_FragCoord.xy * windowScale;\r\n" \
-	"   vec4 texelPos = CalcEyeFromWindow (gl_FragColor.xy, texture2D (depthTex, windowPos).x);\r\n" \
+	"   vec4 texelPos = CalcEyeFromWindow (windowPos, texture2D (depthTex, windowPos).x);\r\n" \
 	"   float dTexel = length (texelPos);\r\n" \
 	"   vec4 fogVolume = texture2D (fogTex, windowPos);\r\n" \
 	"   vec4 c1 = CalcFogColor (fogColor1, fogVolume.r, fogVolume.g, windowPos, dTexel);\r\n" \
