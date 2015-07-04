@@ -429,9 +429,9 @@ for (CPostEffect* e = m_effects; e; e = e->Next ())
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-#define FOG_SHADER_TYPE	0
+#define FOG_SHADER_TYPE	1
 
-#if FOG_SHADER_TYPE == 1
+#if FOG_SHADER_TYPE == 0
 
 //Fragment shader
 const char *fogFS =
@@ -502,28 +502,28 @@ const char *fogFS =
 	"#define D(z) (NDC (z) * B)\r\n" \
 	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
 	"\r\n"
-	"vec4 CalcFogColor (vec4 fogColor, float z, float zFogNear, float zFogFar) {\r\n" \
+	"vec4 CalcFogColor (vec4 fogColor, float zTexel, float zFogNear, float zFogFar) {\r\n" \
 	"   if (fogColor.a == 0.0)\r\n" \
 	"      return vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
 	"   if (zFogNear > zFogFar)\r\n" \
 	"      zFogNear = 0.0;\r\n" \
 	"   zFogNear = ZEYE (zFogNear);\r\n" \
-	"   zFogFar = ZEYE (zFogNear);\r\n" \
+	"   zFogFar = ZEYE (zFogFar);\r\n" \
 	"   float df = zFogFar - zFogNear;\r\n" \
 	"   if (df <= 0.0)\r\n" \
 	"      return vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
-	"   dz = z - zFogFar;\r\n" \
-	"   if (dz <= 0.0)\r\n" \
+	"   float dt = zTexel - zFogNear;\r\n" \
+	"   if (dt <= 0.0)\r\n" \
 	"      return vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
-	"   return vec4 (fogColor.rgb, min (MAX_ALPHA, min (df, dz) / fogColor.a));\r\n" \
+	"   return vec4 (fogColor.rgb, min (MAX_ALPHA, min (df, dt) / fogColor.a));\r\n" \
 	"}\r\n" \
 	"\r\n" \
 	"void main (void) {\r\n" \
 	"   vec2 windowPos = gl_FragCoord.xy * windowScale;\r\n" \
-	"   float z = ZEYE (texture2D (depthTex, windowPos).r);\r\n" \
+	"   float zTexel = ZEYE (texture2D (depthTex, windowPos).r);\r\n" \
 	"   vec4 fogVolume = texture2D (fogTex, windowPos);\r\n" \
-	"   vec4 c1 = CalcFogColor (fogColor1, z, fogVolume.r, fogVolume.g);\r\n" \
-	"   vec4 c2 = CalcFogColor (fogColor2, z, fogVolume.b, fogVolume.a);\r\n" \
+	"   vec4 c1 = CalcFogColor (fogColor1, zTexel, fogVolume.r, fogVolume.g);\r\n" \
+	"   vec4 c2 = CalcFogColor (fogColor2, zTexel, fogVolume.b, fogVolume.a);\r\n" \
 	"   gl_FragColor = vec4 (c1.r * c2.r, c1.g * c2.g, c1.b * c2.b, min (MAX_ALPHA, c1.a + c2.a));\r\n" \
 	"}\r\n"
 	;
@@ -546,21 +546,18 @@ const char *fogFS =
 	"\r\n" \
 	"void main (void) {\r\n" \
 	"   vec2 windowPos = gl_FragCoord.xy * windowScale;\r\n" \
-	"   float z = ZEYE (texture2D (depthTex, windowPos).r);\r\n" \
+	"   float zTexel = ZEYE (texture2D (depthTex, windowPos).r);\r\n" \
 	"   vec4 fogVolume = texture2D (fogTex, windowPos);\r\n" \
 	"   if (fogVolume.r > fogVolume.g) fogVolume.r = 0.0;\r\n" \
 	"   if (fogVolume.b > fogVolume.a) fogVolume.b = 0.0;\r\n" \
 	"   fogVolume = vec4 (ZEYE (fogVolume.r), ZEYE (fogVolume.g), ZEYE (fogVolume.b), ZEYE (fogVolume.a));\r\n" \
 	"   float df = fogVolume.g - fogVolume.r;\r\n" \
-	"   float dz = z - fogVolume.r;\r\n" \
-	"   vec4 c1 = ((fogColor1.a > 0.0) && (df > 0.0) && (dz > 0.0)) ? vec4 (fogColor1.rgb, min (MAX_ALPHA, min (df, dz) / fogColor1.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
+	"   float dt = zTexel - fogVolume.r;\r\n" \
+	"   vec4 c1 = ((fogColor1.a > 0.0) && (df > 0.0) && (dt > 0.0)) ? vec4 (fogColor1.rgb, min (MAX_ALPHA, min (df, dt) / fogColor1.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
 	"   df = fogVolume.a - fogVolume.b;\r\n" \
-	"   dz = z - fogVolume.b;\r\n" \
-	"   vec4 c2 = ((fogColor2.a > 0.0) && (df > 0.0) && (dz > 0.0)) ? vec4 (fogColor2.rgb, min (MAX_ALPHA, min (df, dz) / fogColor2.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
-	"   //gl_FragColor = vec4 (max (c1.r, c2.r), max (c1.g, c2.g), max (c1.b, c2.b), max (c1.a, c2.a));\r\n" \
-	"   //gl_FragColor = vec4 (c1.rgb + c2.rgb, min (0.8, c1.a + c2.a));\r\n" \
+	"   dt = zTexel - fogVolume.b;\r\n" \
+	"   vec4 c2 = ((fogColor2.a > 0.0) && (df > 0.0) && (dt > 0.0)) ? vec4 (fogColor2.rgb, min (MAX_ALPHA, min (df, dt) / fogColor2.a)) : vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
 	"   gl_FragColor = vec4 (c1.r * c2.r, c1.g * c2.g, c1.b * c2.b, min (MAX_ALPHA, c1.a + c2.a));\r\n" \
-	"   //gl_FragColor = vec4 (c1.rgb * c1.a + c2.rgb * c2.a, min (1.0, c1.a + c2.a));\r\n" \
 	"}\r\n"
 	;
 

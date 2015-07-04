@@ -792,7 +792,7 @@ else
 }
 
 //------------------------------------------------------------------------------
-// Store the distances of the near and far caps of foggy area in a 32 bit fp render buffer.
+// Store the distances of the near and far caps of a foggy area in a 32 bit fp render buffer.
 // First render foggy segment faces - these are the far caps. Store distance via simple 
 // shader which encodes distance in a color component and compares with what's already 
 // in the render buffer using glBlendEquation (GL_MAX).
@@ -835,7 +835,6 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 	if (!nMode)
 		DrawFace (pFace);
 	else if (pChildSeg) {
-
 		for (int32_t nSide = 0; nSide < 6; nSide++) {
 			if (pChildSeg->ChildId (nSide) == nSegment) {
 				tSegFaces *pSegFace = SEGFACES + nChildSeg;
@@ -848,7 +847,7 @@ for (i = pSegFace->nFaces; i; i--, pFace++) {
 				}
 			}
 		}
-#if 0
+#if 1
 	else {
 		ogl.SetCullMode (GL_FRONT);
 		DrawFace (pFace);
