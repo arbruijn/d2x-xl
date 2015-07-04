@@ -75,7 +75,7 @@ typedef struct tTransformation {
 	CFrustum			frustum;
 	CFloatMatrix	projection;
 	COGLMatrix		oglModelview;
-	COGLMatrix		oglProjection;
+	COGLMatrix		oglProjection [2];
 	int32_t			oglViewport [4];
 	fix				zoom;
 	float				zoomf;

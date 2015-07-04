@@ -83,7 +83,7 @@ if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
 	return flags;
 double x, y, z;
 gluProject ((double) p.v.coord.x, (double) p.v.coord.y, (double) p.v.coord.z, 
-				&transformation.m_info.oglModelview [0], &transformation.m_info.oglProjection [0], transformation.m_info.oglViewport, 
+				&transformation.m_info.oglModelview [0], &transformation.m_info.oglProjection [0][0], transformation.m_info.oglViewport, 
 				&x, &y, &z);
 #if 1
 s.x = fix (x);

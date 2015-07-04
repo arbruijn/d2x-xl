@@ -429,6 +429,65 @@ for (CPostEffect* e = m_effects; e; e = e->Next ())
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+#define FOG_SHADER_TYPE	0
+
+#if FOG_SHADER_TYPE == 0
+
+//Fragment shader
+const char *fogFS =
+	"uniform sampler2D fogTex, depthTex;\r\n" \
+	"uniform vec2 windowScale;\r\n" \
+	"uniform vec4 fogColor1, fogColor2;\r\n" \
+	"uniform mat4 projectionInverse;\r\n" \
+	"#define MAX_ALPHA 1.0\r\n" \
+	"#define ZNEAR 1.0\r\n" \
+	"#define ZFAR 5000.0\r\n" \
+	"#define A (ZNEAR + ZFAR)\r\n" \
+	"#define B (ZNEAR - ZFAR)\r\n" \
+	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
+	"#define D (ndcPos.z * B)\r\n" \
+	"#define ZEYE -(C / (A + D))\r\n" \
+	"vec4 CalcEyeFromWindow (vec2 windowPos, float z) {\r\n" \
+	"   vec3 ndcPos = vec3 (windowPos, z);\r\n" \
+	"   ndcPos -= 0.5;\r\n" \
+	"   ndcPos *= 2.0;\r\n" \
+	"   vec4 clipPos = vec4 (ndcPos * -ZEYE, -ZEYE);\r\n" \
+	"   return projectionInverse * clipPos;\r\n" \
+	"   }\r\n" \
+	"\r\n" \
+	"vec4 CalcFogColor (vec4 fogColor, float zFogNear, float zFogFar, vec2 windowPos, float dTexel) {\r\n" \
+	"   if (fogColor.a == 0.0)\r\n" \
+	"      return vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
+	"   float dFog;\r\n" \
+	"   if (zFogNear > zFogFar)\r\n" \
+	"      dFog = 0.0;\r\n" \
+	"   else {\r\n" \
+	"      vec4 fogNear = CalcEyeFromWindow (windowPos.xy, zFogNear);\r\n" \
+	"      dFog = length (fogNear);\r\n" \
+	"      dTexel -= dFog;\r\n" \
+	"      if (dTexel < 0.0)\r\n" \
+	"         return vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
+	"      }\r\n" \
+	"   vec4 fogFar = CalcEyeFromWindow (windowPos.xy, zFogFar);\r\n" \
+	"   dFog = length (fogFar) - dFog;\r\n" \
+	"   if (dFog <= 0.0)\r\n" \
+	"      return vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
+	"   return vec4 (fogColor.rgb, min (MAX_ALPHA, min (dTexel, dFog) / fogColor.a));\r\n" \
+	"   }\r\n" \
+	"\r\n" \
+	"void main (void) {\r\n" \
+	"   vec2 windowPos = gl_FragCoord.xy * windowScale;\r\n" \
+	"   vec4 texelPos = CalcEyeFromWindow (gl_FragColor.xy, texture2D (depthTex, windowPos).x);\r\n" \
+	"   float dTexel = length (texelPos);\r\n" \
+	"   vec4 fogVolume = texture2D (fogTex, windowPos);\r\n" \
+	"   vec4 c1 = CalcFogColor (fogColor1, fogVolume.r, fogVolume.g, windowPos, dTexel);\r\n" \
+	"   vec4 c2 = CalcFogColor (fogColor2, fogVolume.b, fogVolume.a, windowPos, dTexel);\r\n" \
+	"   gl_FragColor = vec4 (c1.r * c2.r, c1.g * c2.g, c1.b * c2.b, min (MAX_ALPHA, c1.a + c2.a));\r\n" \
+	"}\r\n"
+	;
+
+#elif FOG_SHADER_TYPE == 1
+
 const char *fogFS =
 	"uniform sampler2D fogTex, depthTex;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
@@ -442,9 +501,53 @@ const char *fogFS =
 	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
 	"#define D(z) (NDC (z) * B)\r\n" \
 	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
+	"\r\n"
+	"vec4 CalcFogColor (vec4 fogColor, float z, float zFogNear, float zFogFar) {\r\n" \
+	"   if (fogColor.a == 0.0)\r\n" \
+	"      return vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
+	"   if (zFogNear > zFogFar)\r\n" \
+	"      zFogNear = 0.0;\r\n" \
+	"   zFogNear = ZEYE (zFogNear);\r\n" \
+	"   zFogFar = ZEYE (zFogNear);\r\n" \
+	"   float df = zFogFar - zFogNear;\r\n" \
+	"   if (df <= 0.0)\r\n" \
+	"      return vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
+	"   dz = z - zFogFar;\r\n" \
+	"   if (dz <= 0.0)\r\n" \
+	"      return vec4 (1.0, 1.0, 1.0, 0.0);\r\n" \
+	"   return vec4 (fogColor.rgb, min (MAX_ALPHA, min (df, dz) / fogColor.a));\r\n" \
+	"}\r\n" \
+	"\r\n" \
 	"void main (void) {\r\n" \
-	"   float z = ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r);\r\n" \
-	"   vec4 fogVolume = texture2D (fogTex, gl_FragCoord.xy * windowScale);\r\n" \
+	"   vec2 windowPos = gl_FragCoord.xy * windowScale;\r\n" \
+	"   float z = ZEYE (texture2D (depthTex, windowPos).r);\r\n" \
+	"   vec4 fogVolume = texture2D (fogTex, windowPos);\r\n" \
+	"   vec4 c1 = CalcFogColor (fogColor1, z, fogVolume.r, fogVolume.g);\r\n" \
+	"   vec4 c2 = CalcFogColor (fogColor2, z, fogVolume.b, fogVolume.a);\r\n" \
+	"   gl_FragColor = vec4 (c1.r * c2.r, c1.g * c2.g, c1.b * c2.b, min (MAX_ALPHA, c1.a + c2.a));\r\n" \
+	"}\r\n"
+	;
+
+#else
+
+const char *fogFS =
+	"uniform sampler2D fogTex, depthTex;\r\n" \
+	"uniform vec2 windowScale;\r\n" \
+	"uniform vec4 fogColor1, fogColor2;\r\n" \
+	"#define ZNEAR 1.0\r\n" \
+	"#define ZFAR 5000.0\r\n" \
+	"#define MAX_ALPHA 1.0\r\n" \
+	"#define NDC(z) (2.0 * z - 1.0)\r\n" \
+	"#define A (ZNEAR + ZFAR)\r\n" \
+	"#define B (ZNEAR - ZFAR)\r\n" \
+	"#define C (2.0 * ZNEAR * ZFAR)\r\n" \
+	"#define D(z) (NDC (z) * B)\r\n" \
+	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
+	"\r\n" \
+	"void main (void) {\r\n" \
+	"   vec2 windowPos = gl_FragCoord.xy * windowScale;\r\n" \
+	"   float z = ZEYE (texture2D (depthTex, windowPos).r);\r\n" \
+	"   vec4 fogVolume = texture2D (fogTex, windowPos);\r\n" \
 	"   if (fogVolume.r > fogVolume.g) fogVolume.r = 0.0;\r\n" \
 	"   if (fogVolume.b > fogVolume.a) fogVolume.b = 0.0;\r\n" \
 	"   fogVolume = vec4 (ZEYE (fogVolume.r), ZEYE (fogVolume.g), ZEYE (fogVolume.b), ZEYE (fogVolume.a));\r\n" \
@@ -460,6 +563,8 @@ const char *fogFS =
 	"   //gl_FragColor = vec4 (c1.rgb * c1.a + c2.rgb * c2.a, min (1.0, c1.a + c2.a));\r\n" \
 	"}\r\n"
 	;
+
+#endif
 
 const char *fogVS =
 	"void main (void){\r\n" \
@@ -513,6 +618,12 @@ return (vec4 *) &gameData.segData.FogColor (nFogType);
 }
 
 
+inline double DegToRad (double d)
+{
+return d * (PI / 180.0);
+}
+
+
 void RenderFog (void)
 {
 #if 1
@@ -523,9 +634,17 @@ GLhandleARB fogShaderProg = GLhandleARB (shaderManager.Deploy (hFogShader, true)
 if (!fogShaderProg)
 	return;
 shaderManager.Rebuild (fogShaderProg);
+
+double h = ZNEAR * tan (DegToRad (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * 0.5));
+double w = h * CCanvas::Current ()->AspectRatio ();
+vec2 halfSizeNearPlane = { float (w), float (h) };
+
 shaderManager.Set ("fogTex", 0);
 shaderManager.Set ("depthTex", 1);
 shaderManager.Set ("windowScale", ogl.m_data.windowScale.vec);
+#if FOG_SHADER_TYPE == 0
+shaderManager.Set ("projectionInverse", transformation.m_info.oglProjection [1]);
+#endif
 glColor4f (1,1,1,1);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 #else

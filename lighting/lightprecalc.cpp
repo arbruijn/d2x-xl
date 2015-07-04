@@ -553,7 +553,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, pSide++) {
 			CFixVector::Normalize (rVec);
 			}
 		}
-
+#if 0
 	CFixVector::Cross (uVec, fVec, rVec); // create uVec perpendicular to fVec and rVec
 	CFixVector::Cross (rVec, fVec, uVec); // adjust rVec to be perpendicular to fVec and uVec (eliminate rounding errors)
 	CFixVector::Cross (uVec, fVec, rVec); // adjust uVec to be perpendicular to fVec and rVec (eliminate rounding errors)
@@ -561,7 +561,9 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, pSide++) {
 	CFixVector::Normalize (uVec);
 	CFixVector::Normalize (fVec);
 	viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
+#else
 	viewer.info.position.mOrient = CFixMatrix::CreateF (fVec);
+#endif
 #if DBG
 	if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		BRP;

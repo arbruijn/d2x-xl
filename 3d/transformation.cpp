@@ -209,7 +209,7 @@ m_info.aspect.v.coord.z = I2X (1);		//always 1
 void CTransformation::SetupProjection (float aspectRatio)
 {
 
-m_info.oglProjection.Get (GL_PROJECTION_MATRIX);
+m_info.oglProjection [0].Get (GL_PROJECTION_MATRIX);
 if (ogl.IsOculusRift () && gameData.renderData.rift.Available ()) {
 	//double riftXlatProj [16] = { 1.0, 0.0, 0.0, (ogl.StereoSeparation () < 0) ? -gameData.renderData.rift.m_projectionCenterOffset : gameData.renderData.rift.m_projectionCenterOffset,
 	//									  0.0, 1.0, 0.0, 0.0, 
@@ -223,10 +223,11 @@ if (ogl.IsOculusRift () && gameData.renderData.rift.Available ()) {
 
 	glMatrixMode (GL_PROJECTION);
 	glLoadMatrixd ((GLdouble*) riftXlatProj);
-	m_info.oglProjection.Mul ();
+	m_info.oglProjection [0].Mul ();
 	//glMultMatrixd ((GLdouble*) riftXlatProj);
 	}
-m_info.oglProjection.Get (GL_PROJECTION_MATRIX);
+m_info.oglProjection [0].Get (GL_PROJECTION_MATRIX);
+m_info.oglProjection [1].Get (GL_PROJECTION_MATRIX, true);
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
 glLoadIdentity ();
@@ -237,7 +238,7 @@ glGetIntegerv (GL_VIEWPORT, m_info.oglViewport);
 #if 1
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.m.vec);
 #else
-memcpy (m_info.projection.m.vec, &m_info.oglProjection [0], sizeof (m_info.projection.m.vec));
+memcpy (m_info.projection.m.vec, &m_info.oglProjection [0][0], sizeof (m_info.projection.m.vec));
 #endif
 m_info.projection.Flip ();
 m_info.aspectRatio = aspectRatio;

@@ -288,6 +288,10 @@ void CSide::SetupAsTriangles (bool bSolid, uint16_t* verts, uint16_t* index)
 	//		Always triangulate so segment is convex.
 	//		Use Matt's formula: Na . AD > 0, where ABCD are vertices on side, a is face formed by A, B, C, Na is Normal from face a.
 	//	If not a wall, then triangulate so whatever is on the other CSide is triangulated the same (ie, between the same absolute vertices)
+#if DBG
+if (m_nSegment == nDbgSeg)
+	BRP;
+#endif
 if (bSolid) {
 	vNormal = CFixVector::Normal (VERTICES [m_corners [0]], VERTICES [m_corners [1]], VERTICES [m_corners [2]]);
 	vec_13 = VERTICES [m_corners [3]] - VERTICES [m_corners [1]];
