@@ -806,10 +806,10 @@ return pszList;
 
 static int32_t WeaponListTop (void)
 {
-if (gameOpts->render.cockpit.nMinimalistHeight == 2)
+if (gameOpts->render.cockpit.nCompactHeight == 2)
 	return gameData.renderData.scene.Height () / 2 + cockpit->ScaleY (Y_GAUGE_OFFSET (0));
 int32_t nLineSpacing = cockpit->LineSpacing ();
-return gameData.renderData.scene.Height () / 2 - (gameStates.app.bD1Mission ? 1 : 2) * nLineSpacing + gameOpts->render.cockpit.nMinimalistHeight * nLineSpacing * 2;
+return gameData.renderData.scene.Height () / 2 - (gameStates.app.bD1Mission ? 1 : 2) * nLineSpacing + gameOpts->render.cockpit.nCompactHeight * nLineSpacing * 2;
 }
 
 //	-----------------------------------------------------------------------------
@@ -822,7 +822,7 @@ void CHUD::DrawPrimaryWeaponList (void)
 	int32_t	n = (gameStates.app.bD1Mission) ? 5 : 10;
 	int32_t	nState [2] = {-1, 0};
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
-	int32_t	x = gameData.renderData.scene.Width () / 2 - cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth) * 3);
+	int32_t	x = gameData.renderData.scene.Width () / 2 - cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nCompactWidth) * 3);
 	int32_t	y = WeaponListTop ();
 	int32_t	t = y;
 	int32_t	nMaxAutoSelect = 255;
@@ -975,7 +975,7 @@ void CHUD::DrawSecondaryWeaponList (void)
 	int32_t	nMaxAutoSelect = 255;
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
 	int32_t	nState [2] = {-1, 0};
-	int32_t	x = gameData.renderData.scene.Width () / 2 + cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth) * 3);
+	int32_t	x = gameData.renderData.scene.Width () / 2 + cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nCompactWidth) * 3);
 	int32_t	y = WeaponListTop ();
 	int32_t	t = y;
 	char		szLabel [2] = {'\0', '\0'}, szAmmo [20];
@@ -1043,8 +1043,8 @@ void CHUD::DrawSecondaryAmmoList (char* pszList)
 	int32_t	nMaxAutoSelect = 255;
 	int32_t	nState [2] = {-1, 0};
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
-	int32_t	x = gameData.renderData.scene.Width () / 2 + cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth));
-	int32_t	y = gameData.renderData.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistHeight)) + LineSpacing () * 2;
+	int32_t	x = gameData.renderData.scene.Width () / 2 + cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nCompactWidth));
+	int32_t	y = gameData.renderData.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nCompactHeight)) + LineSpacing () * 2;
 
 for (int32_t j = 0; j < n; j++) {
 	if (pszList [l] == '\01')
@@ -1153,10 +1153,10 @@ else {
 	if (nLayout == 2)
 		DrawPrimaryWeaponList ();
 	else {
-		DrawHUDText (NULL, gameData.renderData.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth)) - StringWidth (szLabel + 1), 
-						 gameData.renderData.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistHeight)) + LineSpacing () * ((nLayout == 2) ? 3 : 1), StrPrimaryWeaponList (szLabel, szAmmo));
-		DrawHUDText (NULL, gameData.renderData.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth)) - StringWidth (szAmmo), 
-						 gameData.renderData.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistHeight)) + LineSpacing () * 2, szAmmo);
+		DrawHUDText (NULL, gameData.renderData.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nCompactWidth)) - StringWidth (szLabel + 1), 
+						 gameData.renderData.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nCompactHeight)) + LineSpacing () * ((nLayout == 2) ? 3 : 1), StrPrimaryWeaponList (szLabel, szAmmo));
+		DrawHUDText (NULL, gameData.renderData.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nCompactWidth)) - StringWidth (szAmmo), 
+						 gameData.renderData.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nCompactHeight)) + LineSpacing () * 2, szAmmo);
 		}
 	//ScaleDown ();
 	}
@@ -1189,8 +1189,8 @@ else {
 	if (nLayout == 2)
 		DrawSecondaryWeaponList ();
 	else {
-		DrawHUDText (NULL, gameData.renderData.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth)), 
-						 gameData.renderData.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistHeight)) + LineSpacing (), StrSecondaryWeaponList (szLabel));
+		DrawHUDText (NULL, gameData.renderData.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nCompactWidth)), 
+						 gameData.renderData.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nCompactHeight)) + LineSpacing (), StrSecondaryWeaponList (szLabel));
 		DrawSecondaryAmmoList (szLabel + 1);
 		}
 	ScaleDown ();

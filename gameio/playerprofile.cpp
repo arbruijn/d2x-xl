@@ -495,8 +495,8 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.cockpit.nShipStateLayout, i, 0);
 		RP (gameOptions [i].render.cockpit.bSeparators, i, 0);
 		RP (gameOptions [i].render.cockpit.nColorScheme, i, 0);
-		RP (gameOptions [i].render.cockpit.nMinimalistWidth, i, 0);
-		RP (gameOptions [i].render.cockpit.nMinimalistHeight, i, 0);
+		RP (gameOptions [i].render.cockpit.nCompactWidth, i, 0);
+		RP (gameOptions [i].render.cockpit.nCompactHeight, i, 0);
 		RP (gameOptions [i].render.cockpit.bTextGauges, i, 0);
 		RP (gameOptions [i].render.cockpit.nWindowPos, i, 0);
 		RP (gameOptions [i].render.cockpit.nWindowSize, i, 0);
@@ -732,6 +732,8 @@ typedef struct tParamHistory {
 
 tParamHistory paramHistory [] = {
 	{"gameData.appData.nLifetimeChecksum", "gameData.app.nLifetimeChecksum"},
+	{"gameOptions [0].render.cockpit.nCompactWidth", "gameOptions [0].render.cockpit.nMinimalistWidth"},
+	{"gameOptions [0].render.cockpit.nCompactHeight", "gameOptions [0].render.cockpit.nMinimalistHeight"},
 	{NULL, NULL}
 };
 
@@ -1097,8 +1099,8 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.cockpit.bPlayerStats", "0"},
 	 {"gameOptions[0].render.cockpit.nShipStateLayout", "0"},
 	 {"gameOptions[0].render.cockpit.nColorScheme", "1"},
-	 {"gameOptions[0].render.cockpit.nMinimalistWidth", "0"},
-	 {"gameOptions[0].render.cockpit.nMinimalistHeight", "0"},
+	 {"gameOptions[0].render.cockpit.nCompactWidth", "0"},
+	 {"gameOptions[0].render.cockpit.nCompactHeight", "0"},
 	 {"gameOptions[0].render.cockpit.bTextGauges", "0"},
 	 {"gameOptions[0].render.cockpit.nWindowPos", "1"},
 	 {"gameOptions[0].render.cockpit.nWindowSize", "0"},

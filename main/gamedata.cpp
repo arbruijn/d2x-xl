@@ -2621,8 +2621,8 @@ gameOptions [0].render.cockpit.bFlashGauges = 1;
 gameOptions [0].render.cockpit.bPlayerStats = 0;
 
 if (!gameOpts->app.bExpertMode) {
-	gameOpts->render.cockpit.nMinimalistWidth = 0;
-	gameOpts->render.cockpit.nMinimalistHeight = 0;
+	gameOpts->render.cockpit.nCompactWidth = 0;
+	gameOpts->render.cockpit.nCompactHeight = 0;
 	}
 
 extraGameInfo [0].nRadar = (gameOpts->render.cockpit.nRadarRange > 0);

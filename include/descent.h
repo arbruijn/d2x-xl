@@ -252,8 +252,8 @@ typedef struct tCockpitOptions {
 	int32_t nRadarColor;
 	int32_t nRadarStyle;
 	int32_t nColorScheme;
-	int32_t nMinimalistWidth;
-	int32_t nMinimalistHeight;
+	int32_t nCompactWidth;
+	int32_t nCompactHeight;
 } tCockpitOptions;
 
 //------------------------------------------------------------------------------

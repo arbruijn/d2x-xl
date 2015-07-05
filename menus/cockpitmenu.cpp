@@ -238,7 +238,7 @@ if ((m = menu ["target indicators"])) {
 		}
 	}
 
-if ((m = menu ["minimalist hud"])) {
+if ((m = menu ["compact hud"])) {
 	v = m->Value ();
 	if (gameOpts->render.cockpit.nShipStateLayout != v) {
 		if (!gameOpts->render.cockpit.nShipStateLayout)
@@ -260,18 +260,18 @@ if ((m = menu ["color scheme"])) {
 
 if ((m = menu ["hud width"])) {
 	v = m->Value ();
-	if (gameOpts->render.cockpit.nMinimalistWidth != v) {
-		gameOpts->render.cockpit.nMinimalistWidth = v;
-		sprintf (m->m_text, TXT_MINIMALIST_HUD_WIDTH, szHUDWidth [v]);
+	if (gameOpts->render.cockpit.nCompactWidth != v) {
+		gameOpts->render.cockpit.nCompactWidth = v;
+		sprintf (m->m_text, TXT_COMPACT_HUD_WIDTH, szHUDWidth [v]);
 		m->Rebuild ();
 		}
 	}
 
 if ((m = menu ["hud height"])) {
 	v = m->Value ();
-	if (gameOpts->render.cockpit.nMinimalistHeight != v) {
-		gameOpts->render.cockpit.nMinimalistHeight = v;
-		sprintf (m->m_text, TXT_MINIMALIST_HUD_HEIGHT, szHUDHeight [v]);
+	if (gameOpts->render.cockpit.nCompactHeight != v) {
+		gameOpts->render.cockpit.nCompactHeight = v;
+		sprintf (m->m_text, TXT_COMPACT_HUD_HEIGHT, szHUDHeight [v]);
 		m->Rebuild ();
 		}
 	}
@@ -301,9 +301,9 @@ szHUDWidth [0] = TXT_NARROW;
 szHUDWidth [1] = TXT_MEDIUM;
 szHUDWidth [2] = TXT_WIDE;
 
-szHUDHeight [0] = TXT_MINIMALIST_HUD_HIGH;
-szHUDHeight [1] = TXT_MINIMALIST_HUD_MIDDLE;
-szHUDHeight [2] = TXT_MINIMALIST_HUD_LOW;
+szHUDHeight [0] = TXT_COMPACT_HUD_HIGH;
+szHUDHeight [1] = TXT_COMPACT_HUD_MIDDLE;
+szHUDHeight [2] = TXT_COMPACT_HUD_LOW;
 
 szColorScheme [0] = TXT_RED;
 szColorScheme [1] = TXT_YELLOW;
@@ -410,10 +410,10 @@ do {
 	m.AddCheck ("show reticle", TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_S, HTX_CPIT_SHOWRETICLE);
 	m.AddCheck ("missile view", TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_V, HTX_CPIT_MSLVIEW);
 #if 0
-	m.AddCheck ("minimalist hud", TXT_MINIMALIST_HUD, gameOpts->render.cockpit.nShipStateLayout, KEY_G, HTX_CPIT_GFXGAUGES);
+	m.AddCheck ("compact hud", TXT_COMPACT_HUD, gameOpts->render.cockpit.nShipStateLayout, KEY_G, HTX_CPIT_GFXGAUGES);
 #endif
 	if (!gameOpts->render.cockpit.nShipStateLayout)
-		m.AddCheck ("text gauges", TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_MINIMALIST_HUD);
+		m.AddCheck ("text gauges", TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_COMPACT_HUD);
 	m.AddCheck ("object tally", TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_Y, HTX_CPIT_OBJTALLY);
 	m.AddCheck ("zoom style", TXT_ZOOM_SMOOTH, extraGameInfo [IsMultiGame].nZoomMode - 1, KEY_O, HTX_GPLAY_ZOOMSMOOTH);
 	if (gameOpts->app.bExpertMode)
@@ -424,16 +424,16 @@ do {
 	m.AddText ("", "");
 #if 1
 	sprintf (szSlider, TXT_SHIP_STATE_LAYOUT, szLayout [gameOpts->render.cockpit.nShipStateLayout]);
-	m.AddSlider ("minimalist hud", szSlider, gameOpts->render.cockpit.nShipStateLayout, 0, 2, KEY_M, HTX_SHIP_STATE_LAYOUT);
+	m.AddSlider ("compact hud", szSlider, gameOpts->render.cockpit.nShipStateLayout, 0, 2, KEY_M, HTX_SHIP_STATE_LAYOUT);
 	if (gameOpts->render.cockpit.nShipStateLayout) {
 		sprintf (szSlider, TXT_HUD_COLOR_SCHEME, szColorScheme [gameOpts->render.cockpit.nColorScheme]);
 		m.AddSlider ("color scheme", szSlider, gameOpts->render.cockpit.nColorScheme, 0, 2, KEY_C, HTX_HUD_COLOR_SCHEME);
 		if (gameOpts->render.cockpit.nShipStateLayout == 2) {
 			if (gameOpts->app.bExpertMode) {
-				sprintf (szSlider, TXT_MINIMALIST_HUD_WIDTH, szHUDWidth [gameOpts->render.cockpit.nMinimalistWidth]);
-				m.AddSlider ("hud width", szSlider, gameOpts->render.cockpit.nMinimalistWidth, 0, 2, KEY_W, HTX_MINIMALIST_HUD_WIDTH);
-				sprintf (szSlider, TXT_MINIMALIST_HUD_HEIGHT, szHUDHeight [gameOpts->render.cockpit.nMinimalistHeight]);
-				m.AddSlider ("hud height", szSlider, gameOpts->render.cockpit.nMinimalistHeight, 0, 2, KEY_H, HTX_MINIMALIST_HUD_HEIGHT);
+				sprintf (szSlider, TXT_COMPACT_HUD_WIDTH, szHUDWidth [gameOpts->render.cockpit.nCompactWidth]);
+				m.AddSlider ("hud width", szSlider, gameOpts->render.cockpit.nCompactWidth, 0, 2, KEY_W, HTX_COMPACT_HUD_WIDTH);
+				sprintf (szSlider, TXT_COMPACT_HUD_HEIGHT, szHUDHeight [gameOpts->render.cockpit.nCompactHeight]);
+				m.AddSlider ("hud height", szSlider, gameOpts->render.cockpit.nCompactHeight, 0, 2, KEY_H, HTX_COMPACT_HUD_HEIGHT);
 				m.AddCheck ("hud separators", TXT_HUD_SEPARATORS, gameOpts->render.cockpit.bSeparators, KEY_P, HTX_HUD_SEPARATORS);
 				}
 			}
@@ -518,7 +518,7 @@ do {
 	if (gameOpts->app.bExpertMode)
 		GET_VAL (gameOpts->render.weaponIcons.nSort, "sort weapon icons");
 	GET_VAL (extraGameInfo [0].bHideIndicators, "hide target indicators");
-	GET_VAL (gameOpts->render.cockpit.nShipStateLayout, "minimalist hud");
+	GET_VAL (gameOpts->render.cockpit.nShipStateLayout, "compact hud");
 	GET_VAL (gameOpts->render.cockpit.bSeparators, "hud separators");
 	if (gameOpts->render.cockpit.nShipStateLayout)
 		GET_VAL (gameOpts->render.cockpit.nColorScheme, "color scheme");
