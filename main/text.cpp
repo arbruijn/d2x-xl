@@ -1985,7 +1985,7 @@ const char *defaultGameTexts [][2] = {
  {"\x01\xff\xe0\x80 Ein neues Descent entsteht!\n\nBitte unterstuetze\x01\xff\x80\x80 Descent Underground\x01\xff\xe0\x80 \n\nauf Kickstarter!", 
   "\x01\xff\xe0\x80 A NEW DESCENT IS IN THE MAKING!\n\nPLEASE SUPPORT\x01\xff\x80\x80 DESCENT:UNDERGROUND\n\n\x01\xff\xe0\x80ON KICKSTARTER!\n"},
  {"descent under~Ground", "descent under~Ground"},
- {"~Kompakt-hud: %s", "~Compact hud: %s"},
+ {"ko~Mpakt-hud: %s", "co~Mpact hud: %s"},
  {"Spalten", "Columns"},
  {"Zeilen", "Rows"},
  {"ko~Mpaktes hud", "co~Mpact hud"},
