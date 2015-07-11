@@ -660,6 +660,7 @@ int32_t nDbgTexture = -1;
 int16_t nDbgSound = -1;
 int16_t nDbgChannel = -1;
 int32_t nDbgLight = -1;
+CBitmap *pDbgBm = NULL;
 
 #endif
 

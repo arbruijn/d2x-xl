@@ -31,7 +31,7 @@
 #include "addon_bitmaps.h"
 #include "postprocessing.h"
 
-#define RENDER_TRANSPARENCY  1
+#define RENDER_TRANSPARENCY  0
 #define RENDER_TRANSP_DECALS 1
 
 #define TRANSP_POLYS			1

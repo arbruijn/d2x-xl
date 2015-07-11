@@ -538,8 +538,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+extern CBitmap *pDbgBm;
+
 static inline int32_t FaceIsTransparent (CSegFace *pFace, CBitmap *bmBot, CBitmap *bmTop)
 {
+#if DBG
+if (pFace && (pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
+	BRP;
+#endif
 if (!bmBot)
 	return pFace->m_info.nTransparent = pFace->m_info.bTransparent || (pFace->m_info.color.Alpha () < 1.0f);
 if (pFace->m_info.bTransparent || pFace->m_info.bAdditive)

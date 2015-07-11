@@ -294,7 +294,7 @@ else {
 				}
 			m_pBm->TransparentFrames () [n / 32] |= (1 << (n % 32));
 			}
-		if (nSuperTransp > w * w / 2000) {
+		if (nSuperTransp > w * w / 1000) {
 			if (!n)
 				m_pBm->AddFlags (BM_FLAG_SUPER_TRANSPARENT);
 			//m_pBm->AddFlags (BM_FLAG_SEE_THRU);

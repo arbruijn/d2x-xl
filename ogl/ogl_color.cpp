@@ -352,7 +352,7 @@ return 0;
 
 float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 
-int32_t ComputeVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex, CFloatVector3 *colorSumP, CVertColorData *colorDataP, int32_t nThread)
+int32_t ComputeVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex, CFloatVector3 *pColorSum, CVertColorData *colorDataP, int32_t nThread)
 {
 	CDynLight*			pLight;
 	CDynLightIndex*	pLightIndex = &lightManager.Index (0, nThread);
@@ -373,7 +373,7 @@ if (nThread == 0)
 if (nThread == 1)
 	BRP;
 #endif
-colorSum [0] = *colorSumP;
+colorSum [0] = *pColorSum;
 colorSum [1].SetZero ();
 vertPos = *transformation.m_info.posf [1].XYZ () - *colorData.pVertPos;
 CFloatVector3::Normalize (vertPos);
@@ -531,7 +531,7 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 	if	(fLightDist <= 0.0f) {
 		NdotL = 1.0f;
 		fLightDist = 0.0f;
-		fAttenuation = 1.0f / pLight->info.fBrightness;
+		fAttenuation = 1.0f;
 		}
 	else {	//make it decay faster
 		float decay = Min (fLightAngle, NdotL);
@@ -540,8 +540,8 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 			fLightDist /= decay * decay;
 			}
 		fAttenuation = 1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist;
-		fAttenuation /= pLight->info.fBrightness;
 		}
+	//fAttenuation /= pLight->info.fBrightness;
 
 	vertColor = *gameData.renderData.vertColor.matAmbient.XYZ ();
 	if (!bDiffuse) {
@@ -641,7 +641,7 @@ if (j) {
 			colorSum [0].Blue () /= maxColor;
 			}
 		}
-	*colorSumP = colorSum [0];
+	*pColorSum = colorSum [0];
 	}
 #if DBG
 if (nLights)
@@ -697,8 +697,8 @@ extern int32_t nDbgVertex;
 
 
 void GetVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex,
-						   CFloatVector3* vVertNormP, CFloatVector3* vVertPosP, 
-						   CFaceColor* pVertexColor, CFaceColor* baseColorP,
+						   CFloatVector3* pvVertNorm, CFloatVector3* pvVertPos, 
+						   CFaceColor* pVertexColor, CFaceColor* pBaseColor,
 						   float fScale, int32_t bSetColor, int32_t nThread)
 {
 PROF_START
@@ -756,21 +756,21 @@ if (!gameStates.render.nState && (nVertex == nDbgVertex))
 	BRP;
 #endif
 if (ogl.m_states.bUseTransform)
-	colorData.vertNorm = *vVertNormP;
+	colorData.vertNorm = *pvVertNorm;
 else {
 	if (gameStates.render.nState)
-		transformation.Rotate (colorData.vertNorm, *vVertNormP, 0);
+		transformation.Rotate (colorData.vertNorm, *pvVertNorm, 0);
 	else {
-		colorData.vertNorm = *vVertNormP;
+		colorData.vertNorm = *pvVertNorm;
 		CFloatVector3::Normalize (colorData.vertNorm);
 		}
 	}
 if ((bVertexLights = !(gameStates.render.nState || pVertexColor))) {
 	vertPos.Assign (gameData.segData.vertices [nVertex]);
-	vVertPosP = &vertPos;
+	pvVertPos = &vertPos;
 	lightManager.SetNearestToVertex (nSegment, nSide, nVertex, NULL, 1, 0, 1, nThread);
 	}
-colorData.pVertPos = vVertPosP;
+colorData.pVertPos = pvVertPos;
 
 #if MULTI_THREADED_LIGHTS
 if (gameStates.app.bMultiThreaded) {
@@ -790,8 +790,8 @@ if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
 	}
 else {
 	if (lightManager.Index (0, nThread).nActive) {
-		if (baseColorP)
-			colorSum.Assign (*baseColorP);
+		if (pBaseColor)
+			colorSum.Assign (*pBaseColor);
 #if DBG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex))
 			BRP;

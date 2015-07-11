@@ -48,6 +48,7 @@ void Int3();
 
 extern int16_t nDbgSeg, nDbgSide, nDbgFace, nDbgObj, nDbgObjType, nDbgObjId, nDbgModel, nDbgSound, nDbgChannel;
 extern int32_t nDbgVertex, nDbgBaseTex, nDbgOvlTex, nDbgTexture, nDbgLight;
+extern CBitmap *pDbgBm = NULL;
 
 #endif
 

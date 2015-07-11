@@ -398,7 +398,7 @@ static tBitmapIndex LoadExitModelIFF (const char * filename)
 {
 	tBitmapIndex	bmi;
 	CBitmap*			pBm = gameData.pigData.tex.bitmaps [0] + gameData.pigData.tex.nExtraBitmaps;
-	int32_t				iffError;		//reference parm to avoid warning message
+	int32_t			iffError;		//reference parm to avoid warning message
 	CIFF				iff;
 
 bmi.index = 0;

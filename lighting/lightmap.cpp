@@ -1099,6 +1099,8 @@ for (y = yMin; y < yMax; y++) {
 #endif
 		CheckProgressMenu (nThread);
 #if DBG
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+			BRP;
 		int32_t nLights = lightManager.SetNearestToPixel (nSegment, nSide, &data.m_vNormal, pPixelPos, pFace->m_info.fRads [1] / 10.0f, nThread);
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			BRP;

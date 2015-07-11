@@ -319,6 +319,8 @@ else
 
 void CBitmap::SetSuperTransparent (int32_t bTransparent)
 {
+if (!strcmp (Name (), "misc060#0"))
+	PrintLog (0);
 if (gameData.pigData.tex.textureIndex [0][m_info.nId] >= 0) {
 	if (bTransparent)
 		SetFlags (m_info.props.flags | BM_FLAG_SUPER_TRANSPARENT);

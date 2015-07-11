@@ -81,9 +81,9 @@ return i;
 
 int32_t CGlareRenderer::FaceHasCorona (int16_t nSegment, int16_t nSide, int32_t *bAdditiveP, float *fIntensityP)
 {
-	CSide			*pSide;
-	char			*pszName;
-	int32_t			i, bAdditive, nTexture, nBrightness;
+	CSide		*pSide;
+	char		*pszName;
+	int32_t	i, bAdditive, nTexture, nBrightness;
 
 if (IsMultiGame && extraGameInfo [1].bDarkness)
 	return 0;
@@ -185,8 +185,8 @@ return nTexture;
 float CGlareRenderer::ComputeCoronaSprite (int16_t nSegment, int16_t nSide)
 {
 	CSide*			pSide = SEGMENT (nSegment)->m_sides + nSide;
-	uint16_t*			corners;
-	int32_t				i;
+	uint16_t			*corners;
+	int32_t			i;
 	float				fLight = 0;
 	CFloatVector	v;
 
@@ -277,7 +277,7 @@ float CGlareRenderer::ComputeSoftGlare (void)
 {
 	CFloatVector 	n, e, s, t, u, v;
 	float 			ul, vl, h, cosine;
-	int32_t 				i;
+	int32_t 			i;
 
 m_vEye = CFloatVector::ZERO;
 u = m_sprite [2] + m_sprite [1];
@@ -316,9 +316,9 @@ return float (sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nInten
 
 void CGlareRenderer::RenderSoftGlare (int32_t nTexture, float fIntensity, int32_t bAdditive, int32_t bColored)
 {
-	CFloatVector color;
-	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
-	CBitmap*		pBm = NULL;
+	CFloatVector	color;
+	tTexCoord2f		tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
+	CBitmap*			pBm = NULL;
 
 if (!(pBm = (bAdditive ? glare.Bitmap () : corona.Bitmap ())))
 	return;
@@ -415,11 +415,7 @@ if (gameStates.render.bQueryCoronas == 1) {
 	return (float) (gameData.renderData.lights.coronaSamples [nQuery - 1] = nSamples);
 	}
 fIntensity = (float) nSamples / (float) gameData.renderData.lights.coronaSamples [nQuery - 1];
-#if DBG
-if (fIntensity > 1)
-	fIntensity = 1;
-#endif
-return (fIntensity > 1) ? 1 : (float) sqrt (fIntensity);
+return (fIntensity > 1.0f) ? 1.0f : (float) sqrt (fIntensity);
 }
 
 //-------------------------------------------------------------------------
@@ -515,6 +511,7 @@ const char *glareFS =
 	"   else //alpha\r\n" \
 	"      gl_FragColor = vec4 (glareColor.rgb * gl_Color.rgb, glareColor.a * gl_Color.a * dz);\r\n" \
 	"   }\r\n" \
+	"gl_FragColor = vec4 (1.0, 0.5, 0.0, 0.5);\r\n" \
 	"}\r\n"
 	;
 
