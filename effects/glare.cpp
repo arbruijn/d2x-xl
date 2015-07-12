@@ -511,7 +511,6 @@ const char *glareFS =
 	"   else //alpha\r\n" \
 	"      gl_FragColor = vec4 (glareColor.rgb * gl_Color.rgb, glareColor.a * gl_Color.a * dz);\r\n" \
 	"   }\r\n" \
-	"gl_FragColor = vec4 (1.0, 0.5, 0.0, 0.5);\r\n" \
 	"}\r\n"
 	;
 
