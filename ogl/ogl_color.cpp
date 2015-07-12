@@ -540,7 +540,6 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 			fLightDist /= decay * decay;
 			}
 		fAttenuation = 1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist;
-		fAttenuation = 1.0f + sqrt (fLightDist);
 		}
 	//fAttenuation /= pLight->info.fBrightness;
 
