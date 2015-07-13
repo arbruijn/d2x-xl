@@ -31,23 +31,23 @@
 #include "addon_bitmaps.h"
 #include "postprocessing.h"
 
-#define RENDER_TRANSPARENCY  1
-#define RENDER_TRANSP_DECALS 1
+#define RENDER_TRANSPARENCY	1
+#define RENDER_TRANSP_DECALS	1
 
-#define TRANSP_POLYS			1
-#define TRANSP_FACES			1
-#define TRANSP_OBJECTS		1
-#define TRANSP_SPRITES		1
-#define TRANSP_SPARKS		1
-#define TRANSP_BULLETS		1
-#define TRANSP_PARTICLES	1
-#define TRANSP_SPHERES		1
-#define TRANSP_LIGHTNING	1
-#define TRANSP_LIGHTTRAILS 1
-#define TRANSP_THRUSTER		1
+#define TRANSP_POLYS				1
+#define TRANSP_FACES				1
+#define TRANSP_OBJECTS			1
+#define TRANSP_SPRITES			1
+#define TRANSP_SPARKS			1
+#define TRANSP_BULLETS			1
+#define TRANSP_PARTICLES		1
+#define TRANSP_SPHERES			1
+#define TRANSP_LIGHTNING		1
+#define TRANSP_LIGHTTRAILS		1
+#define TRANSP_THRUSTER			1
 
-#define TI_POLY_OFFSET 0
-#define TI_POLY_CENTER 1
+#define TI_POLY_OFFSET			0
+#define TI_POLY_CENTER			1
 
 #if DBG
 int32_t nDbgPoly = -1, nDbgItem = -1;
