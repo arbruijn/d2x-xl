@@ -342,8 +342,8 @@ m_vMax.Set (-1e6f, -1e6f, -1e6f);
 CSegment *pSeg = SEGMENT (0);
 for (uint16_t i = gameData.segData.nSegments; i; i--, pSeg++) {
 	if (pSeg->Function () != SEGMENT_FUNC_SKYBOX) {
-		for (uint8_t j = (uint8_t) pSeg->m_nVertices; j; --j) {
-			CFloatVector v = gameData.segData.fVertices [pSeg->m_vertices [j]];
+		for (uint8_t j = (uint8_t) pSeg->m_nVertices; j; ) {
+			CFloatVector v = gameData.segData.fVertices [pSeg->m_vertices [--j]];
 			m_vMin.Set (Min (m_vMin.v.coord.x, v.v.coord.x), Min (m_vMin.v.coord.x, v.v.coord.y), Min (m_vMin.v.coord.x, v.v.coord.z));
 			m_vMax.Set (Max (m_vMax.v.coord.x, v.v.coord.x), Max (m_vMax.v.coord.x, v.v.coord.y), Max (m_vMax.v.coord.x, v.v.coord.z));
 			}

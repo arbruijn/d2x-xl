@@ -981,6 +981,7 @@ if (!nTriangles) {
 	CFixVector l0 = v2 - v1;
 	CFixVector l1 = v1 - v0;
 	for (y = yMin; y < yMax; y++) {
+		pPixelPos = data.m_pixelPos + y * w;
 		for (x = 0; x <= y; x++, pPixelPos++) {
 			dx = l0;
 			dy = l1;
