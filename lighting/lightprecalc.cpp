@@ -495,7 +495,7 @@ ENTER (0, nThread);
 	CSegment				*pStartSeg;
 	CSide					*pSide;
 	int16_t				nSegment, nSide, nLight = -1, i;
-	CFixVector			fVec, uVec, rVec;
+	CFixVector			fVec/*, uVec, rVec*/;
 	CObject				viewer;
 	CTransformation	transformation = projection;
 	CVisibilityData&	visibility = gameData.renderData.mine.visibility [nThread];
@@ -524,18 +524,24 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, pSide++) {
 #if DBG
 	pSide = pStartSeg->m_sides + nSide;
 #endif
+	if (pSide->Shape () > SIDE_SHAPE_TRIANGLE)
+		continue;
 	fVec = pSide->m_normals [2];
 	if (!bLights) {
 		viewer.info.position.vPos = SEGMENT (nStartSeg)->Center ();// + fVec;
 		fVec.Neg (); // point from segment center outwards
+#if 0
 		rVec = CFixVector::Avg (VERTICES [pSide->m_corners [0]], VERTICES [pSide->m_corners [1]]) - pSide->Center ();
 		CFixVector::Normalize (rVec);
+#endif
 		}
 	else { // point from side center across the segment
 		if (bLights == 5) { // from side center, pointing to normal
 			viewer.info.position.vPos = pSide->Center () + fVec;
+#if 0
 			rVec = CFixVector::Avg (VERTICES [pSide->m_corners [0]], VERTICES [pSide->m_corners [1]]) - pSide->Center ();
 			CFixVector::Normalize (rVec);
+#endif
 			}
 		else { // from side corner, pointing to average between vector from center to corner and side normal
 #if DBG
@@ -547,10 +553,12 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, pSide++) {
 			CFixVector::Normalize (h);
 			fVec = CFixVector::Avg (fVec, h);
 			CFixVector::Normalize (fVec);
+#if 0
 			rVec = pSide->m_normals [2];
 			h.Neg ();
 			rVec = CFixVector::Avg (rVec, h);
 			CFixVector::Normalize (rVec);
+#endif
 			}
 		}
 #if 0
