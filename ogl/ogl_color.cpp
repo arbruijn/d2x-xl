@@ -51,6 +51,13 @@
 #define OBJ_LIN_ATT	(/*0.0f*/ gameData.renderData.fAttScale [0])
 #define OBJ_QUAD_ATT	(/*0.003333f*/ gameData.renderData.fAttScale [1])
 
+#define ATTENUATION_TYPE	0
+#if ATTENUATION_TYPE
+#	define MAX_LIGHT_DIST		100.0f
+#else
+#	define MAX_LIGHT_DIST		float (MAX_LIGHT_RANGE)
+#endif
+
 //------------------------------------------------------------------------------
 
 CFaceColor lightColor;
@@ -539,7 +546,25 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 			decay += 1.0000001f;
 			fLightDist /= decay * decay;
 			}
+	if (fLightDist > float (MAX_LIGHT_DIST))
+		continue;
+#if ATTENUATION_TYPE == 0
 		fAttenuation = 1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist;
+#elif ATTENUATION_TYPE == 1
+		fAttenuation = fLightDist / float (MAX_LIGHT_DIST);
+		fAttenuation = 1.0f - fAttenuation * fAttenuation;
+#else
+#	if DBG
+		fAttenuation = fLightDist / float (2 * MAX_LIGHT_DIST) * PI;
+		fAttenuation = cos (fAttenuation);
+		fAttenuation += 1.0f;
+		fAttenuation *= 0.5f;
+#	else
+		fAttenuation = (1.0f + cos (fLightDist / float (2 * MAX_LIGHT_DIST) * PI)) * 0.5f;
+#	endif
+		fAttenuation *= fAttenuation;
+		fAttenuation *= fAttenuation;
+#endif
 		}
 	//fAttenuation /= pLight->info.fBrightness;
 
@@ -598,7 +623,11 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 		}
 
 	vertColor *= lightColor;
+#if ATTENUATION_TYPE
+	vertColor *= fAttenuation;
+#else
 	vertColor /= fAttenuation;
+#endif
 
 #if 1
 	colorSum [bSelf] += vertColor;
