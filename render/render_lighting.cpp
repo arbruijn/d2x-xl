@@ -147,7 +147,8 @@ for (int32_t i = 0; i < 8; i++) {
 #if 0 //DBG
 	RENDERPOINTS [vertices [i]].m_flags = 0;
 #endif
-	code &= points [vertices [i]].ProjectAndEncode (transformation, vertices [i]);
+	if (vertices [i] < gameData.segData.nVertices)
+		code &= points [vertices [i]].ProjectAndEncode (transformation, vertices [i]);
 	if (!code)
 		return 1;
 	}
