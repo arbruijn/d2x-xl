@@ -806,7 +806,7 @@ for (l = 0; l < nRenderDepth; l++) {
 					if (sv [i] == nDbgVertex)
 						BRP;
 #endif
-					if (sv [i] != 0xFFFF)
+					if (sv [i] < gameData.segData.nVertices)
 						renderPoints [sv [i]].ProjectAndEncode (transformation, sv [i]);
 					}
 				bRotated = 1;

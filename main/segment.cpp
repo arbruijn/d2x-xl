@@ -79,10 +79,14 @@ else {
 
 void CSegment::ReadVerts (CFile& cf)
 {
+#if DBG
+if (Index () == nDbgSeg)
+	BRP;
+#endif
 m_nShape = 0;
 m_nVertices = 8;
 for (int32_t i = 0; i < SEGMENT_VERTEX_COUNT; i++)
-	if (0xFFF8 <= (m_vertices [i] = cf.ReadShort ()))
+	if (gameData.segData.nVertices <= (m_vertices [i] = cf.ReadShort ()))
 		m_nShape++;
 m_nVertices = 8 - m_nShape;
 }
