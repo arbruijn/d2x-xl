@@ -569,7 +569,7 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 		fAttenuation *= fAttenuation;
 #endif
 		}
-	//fAttenuation /= pLight->info.fBrightness;
+	fAttenuation /= pLight->info.fBrightness;
 
 	vertColor = *gameData.renderData.vertColor.matAmbient.XYZ ();
 	if (!bDiffuse) {

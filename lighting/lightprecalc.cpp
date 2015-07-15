@@ -320,11 +320,6 @@ if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
 	RETVAL (0)
 	}
 
-#if DBG
-if (nVertex == nDbgVertex)
-	BRP;
-#endif
-
 nMaxLights = MAX_NEAREST_LIGHTS;
 nVertex = GetLoopLimits (nVertex, j, gameData.segData.nVertices, nThread);
 
@@ -410,6 +405,8 @@ static void SetLightVis (int16_t nLight, int16_t nSegment)
 ENTER (0, 0);
 #if DBG
 if ((lightManager.Lights (nLight)->info.nSegment == nDbgSeg) && (lightManager.Lights (nLight)->info.nSide == nDbgSide))
+	BRP;
+if (nSegment == nDbgSeg)
 	BRP;
 if (gameData.segData.LightVisIdx (nLight, nSegment) / 4 >= int32_t (gameData.segData.bLightVis.Length ()))
 	RETURN
