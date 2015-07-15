@@ -549,7 +549,10 @@ for (j = 0; (i > 0) && (nLights > 0); pActiveLights++, i--) {
 	if (fLightDist > float (MAX_LIGHT_DIST))
 		continue;
 #if ATTENUATION_TYPE == 0
-		fAttenuation = 1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist;
+		if (gameStates.render.bBuildLightmaps)
+			fAttenuation = 1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist;
+		else
+			fAttenuation = 1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist;
 #elif ATTENUATION_TYPE == 1
 		fAttenuation = fLightDist / float (MAX_LIGHT_DIST);
 		fAttenuation = 1.0f - fAttenuation * fAttenuation;

@@ -389,6 +389,10 @@ light.info.bSpot = 0;
 light.info.fBoost = 0;
 light.info.bPowerup = 0;
 light.info.bAmbient = bAmbient;
+#if DBG
+if (bAmbient)
+	BRP;
+#endif
 light.info.bSelf = 0;
 //0: static light
 //2: object/lightning
@@ -957,7 +961,10 @@ if (gameStates.render.nLightingMethod)
 m_data.Init ();
 for (nFace = FACES.nFaces, pFace = FACES.faces.Buffer (); nFace; nFace--, pFace++) {
 	nSegment = pFace->m_info.nSegment;
-	if (SEGMENT (nSegment)->m_function == SEGMENT_FUNC_SKYBOX)
+	CSegment *pSeg = SEGMENT (nSegment);
+	if (!pSeg)
+		continue;
+	if (pSeg->m_function == SEGMENT_FUNC_SKYBOX)
 		continue;
 #if DBG
 	if (nSegment == nDbgSeg)
@@ -968,13 +975,13 @@ for (nFace = FACES.nFaces, pFace = FACES.faces.Buffer (); nFace; nFace--, pFace+
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		BRP;
 #endif
+	pFace->m_info.nOvlTex = pSeg->Side (pFace->m_info.nSide)->m_nOvlTex;
 	nTexture = pFace->m_info.nBaseTex;
 	if ((nTexture < 0) || (nTexture >= MAX_WALL_TEXTURES))
 		continue;
 	pColor = gameData.renderData.color.textures + nTexture;
 	if ((nLight = IsLight (nTexture)))
-		Add (pFace, pColor, nLight, (int16_t) nSegment, (int16_t) nSide, -1, nTexture, NULL, 1);
-	pFace->m_info.nOvlTex = SEGMENT (pFace->m_info.nSegment)->Side (pFace->m_info.nSide)->m_nOvlTex;
+		Add (pFace, pColor, nLight, (int16_t) nSegment, (int16_t) nSide, -1, nTexture, NULL, pSeg->HasOutdoorsProp () || IsLight (pFace->m_info.nOvlTex));
 	nTexture = pFace->m_info.nOvlTex;
 #if 0//DBG
 	if (gameStates.app.bD1Mission && (nTexture == 289)) //empty, light
@@ -982,7 +989,7 @@ for (nFace = FACES.nFaces, pFace = FACES.faces.Buffer (); nFace; nFace--, pFace+
 #endif
 	if ((nTexture > 0) && (nTexture < MAX_WALL_TEXTURES) && (nLight = IsLight (nTexture)) /*gameData.pigData.tex.info.fBrightness [nTexture]*/) {
 		pColor = gameData.renderData.color.textures + nTexture;
-		Add (pFace, pColor, nLight, (int16_t) nSegment, (int16_t) nSide, -1, nTexture, NULL);
+		Add (pFace, pColor, nLight, (int16_t) nSegment, (int16_t) nSide, -1, nTexture, NULL, pSeg->HasOutdoorsProp ());
 		}
 	//if (m_data.nLights [0])
 	//	return;
@@ -1014,6 +1021,10 @@ for (; nVertex < nMax; nVertex++, pf++) {
 	lightManager.ResetAllUsed (0, nThread);
 	lightManager.SetNearestToVertex (-1, -1, nVertex, NULL, 1, 1, bColorize, nThread);
 	gameData.renderData.color.vertices [nVertex].index = 0;
+#if DBG
+	if (nVertex == nDbgVertex)
+		BRP;
+#endif
 	GetVertexColor (-1, -1, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), vVertex.XYZ (), pf, NULL, 1, 0, nThread);
 	}
 RETURN

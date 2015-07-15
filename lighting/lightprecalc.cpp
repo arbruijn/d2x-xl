@@ -527,6 +527,8 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, pSide++) {
 	if (pSide->Shape () > SIDE_SHAPE_TRIANGLE)
 		continue;
 	fVec = pSide->m_normals [2];
+	if (fVec.IsZero ()) // side degenerate for some reason; probably an error made by the level author
+		continue;
 	if (!bLights) {
 		viewer.info.position.vPos = SEGMENT (nStartSeg)->Center ();// + fVec;
 		fVec.Neg (); // point from segment center outwards
