@@ -20,18 +20,18 @@
 
 //------------------------------------------------------------------------------
 
-void RenderFaceShadow (tFaceProps *pProps)
+void RenderFaceShadow (tFaceProps *propsP)
 {
-	int32_t				i, nVertices = pProps->nVertices;
+	int				i, nVertices = propsP->nVertices;
 	CRenderPoint*	p;
 	CFloatVector	v [9];
 
 for (i = 0; i < nVertices; i++) {
-	p = RENDERPOINTS + pProps->vp [i];
+	p = RENDERPOINTS + propsP->vp [i];
 	if (p->Index () < 0)
 		v [i].Assign (p->ViewPos ());
 	else
-		memcpy (v + i, gameData.renderData.pVertex + p->Index (), sizeof (CFloatVector));
+		memcpy (v + i, gameData.render.vertP + p->Index (), sizeof (CFloatVector));
 	}
 v [nVertices] = v [0];
 ogl.EnableClientState (GL_VERTEX_ARRAY);
@@ -60,7 +60,7 @@ RenderFarShadowCapFace (v, nVertices);
 
 void RenderShadowQuad (void)
 {
-	static GLfloat shadowHue [3][4] = {{0.6f, 0.6f, 0.6f, 1.0f}, {0.25f, 0.25f, 0.25f, 1.0f}};
+	static GLfloat shadowHue [2][4] = {{0.6f, 0.6f, 0.6f, 1.0f}, {0.25f, 0.25f, 0.25f, 1.0f}};
 
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
@@ -68,11 +68,7 @@ glLoadIdentity ();
 glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
 glLoadIdentity ();
-#if 1
 glOrtho (0, 1, 1, 0, 0, 1);
-#else
-glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-#endif
 ogl.SetTexturing (false);
 ogl.SetDepthTest (false);
 ogl.SetStencilTest (true);
@@ -81,7 +77,7 @@ if (gameStates.render.nShadowBlurPass)
 	ogl.SetBlending (false);
 else
 	ogl.SetBlendMode (OGL_BLEND_MULTIPLY); 
-glColor4fv (shadowHue [labs (gameStates.render.nShadowBlurPass)]); 
+glColor4fv (shadowHue [gameStates.render.nShadowBlurPass]); 
 glBegin (GL_QUADS);
 glVertex2f (0,0);
 glVertex2f (1,0);
@@ -102,22 +98,20 @@ glPopMatrix ();
 
 //------------------------------------------------------------------------------
 
-void RenderFastShadows (fix xStereoSeparation, int32_t nWindow, int16_t nStartSeg)
+void RenderFastShadows (fix xStereoSeparation, int nWindow, short nStartSeg)
 {
-//glowRenderer.End ();
+glowRenderer.End ();
 gameStates.render.nShadowPass = 2;
 ogl.StartFrame (0, 0, xStereoSeparation);
-gameData.renderData.shadows.nFrame = !gameData.renderData.shadows.nFrame;
+gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 RenderMine (nStartSeg, xStereoSeparation, nWindow);
 
 gameStates.render.nShadowPass = 3;
 ogl.StartFrame (0, 0, xStereoSeparation);
-#if 1
 if (glowRenderer.Available (BLUR_SHADOW)) {
 	gameStates.render.nShadowBlurPass = 1;
 	glowRenderer.Begin (BLUR_SHADOW, 2 /*gameOpts->render.ShadowQuality ()*/, true, 1.0f);
 	}
-#endif
 RenderShadowQuad ();
 if (gameStates.render.nShadowBlurPass) {
 	glowRenderer.End ();
@@ -127,31 +121,31 @@ if (gameStates.render.nShadowBlurPass) {
 
 //------------------------------------------------------------------------------
 
-void RenderNeatShadows (fix xStereoSeparation, int32_t nWindow, int16_t nStartSeg)
+void RenderNeatShadows (fix xStereoSeparation, int nWindow, short nStartSeg)
 {
-	int16_t		i, n;
-	CDynLight*	pLight;
+	short			i, n;
+	CDynLight*	lightP;
 
-gameData.renderData.shadows.nLights = GatherShadowLightSources ();
+gameData.render.shadows.nLights = GatherShadowLightSources ();
 n = lightManager.LightCount (1);
 for (i = 0; i < n; i++) {
-	pLight = lightManager.RenderLights (i);
-	if (!pLight->render.bShadow)
+	lightP = lightManager.RenderLights (i);
+	if (!lightP->render.bShadow)
 		continue;
-	gameData.renderData.shadows.pLight = pLight;
-	pLight->render.bExclusive = 1;
+	gameData.render.shadows.lightP = lightP;
+	lightP->render.bExclusive = 1;
 #if 1
 	gameStates.render.nShadowPass = 2;
 	ogl.StartFrame (0, 0, xStereoSeparation);
-	memcpy (&gameData.renderData.shadows.vLightPos, pLight->render.vPosf + 1, sizeof (CFloatVector));
-	gameData.renderData.shadows.nFrame = !gameData.renderData.shadows.nFrame;
+	memcpy (&gameData.render.shadows.vLightPos, lightP->render.vPosf + 1, sizeof (CFloatVector));
+	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 	RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #endif
 	gameStates.render.nShadowPass = 3;
 	ogl.StartFrame (0, 0, xStereoSeparation);
-	gameData.renderData.shadows.nFrame = !gameData.renderData.shadows.nFrame;
+	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 	RenderMine (nStartSeg, xStereoSeparation, nWindow);
-	pLight->render.bExclusive = 0;
+	lightP->render.bExclusive = 0;
 	}
 #if 0
 gameStates.render.nShadowPass = 4;
@@ -165,8 +159,8 @@ RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #define STB_SIZE_Y	2048
 
 CBitmap	shadowBuf;
-uint8_t			shadowTexBuf [STB_SIZE_X * STB_SIZE_Y * 4];
-static int32_t	bHaveShadowBuf = 0;
+ubyte			shadowTexBuf [STB_SIZE_X * STB_SIZE_Y * 4];
+static int	bHaveShadowBuf = 0;
 
 void CreateShadowTexture (void)
 {
@@ -191,7 +185,7 @@ glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, 128, 128);
 
 //------------------------------------------------------------------------------
 
-int32_t shadowProg = -1;
+int shadowProg = -1;
 
 #if DBG_SHADERS
 
@@ -257,20 +251,20 @@ glPopMatrix ();
 
 #if 0
 
-int32_t RenderShadowMap (CDynLight *pLight)
+int RenderShadowMap (CDynLight *pLight)
 {
-	CCamera	*pCamera;
+	CCamera	*cameraP;
 
-if (pLight->shadow.nFrame == gameData.renderData.shadows.nFrame)
+if (pLight->shadow.nFrame == gameData.render.shadows.nFrame)
 	return 0;
-if (gameData.renderData.shadows.nShadowMaps == MAX_SHADOW_MAPS)
+if (gameData.render.shadows.nShadowMaps == MAX_SHADOW_MAPS)
 	return 0;
 pLight->shadow.nFrame = !pLight->shadow.nFrame;
 gameStates.render.nShadowPass = 2;
-pCamera = cameraManager.ShadowMap (gameData.renderData.shadows.nShadowMaps);
-//pCamera->Create (gameData.renderData.shadows.nShadowMaps++, pLight->info.nSegment, 
+cameraP = cameraManager.ShadowMap (gameData.render.shadows.nShadowMaps);
+//cameraP->Create (gameData.render.shadows.nShadowMaps++, pLight->info.nSegment, 
 //					  pLight->info.nSide, pLight->info.nSegment, pLight->info.nSide, NULL, 1, 0);
-pCamera->Render ();
+cameraP->Render ();
 gameStates.render.nShadowPass = 2;
 return 1;
 }
@@ -285,21 +279,22 @@ return 1;
 
 void RenderObjectShadows (void)
 {
-	CObject* pObj;
-	int32_t	j, bSee;
-	CObject	fakePlayerPos = *gameData.objData.pViewer;
+	CObject		*objP;
+	//int			i; 
+	int			j, bSee;
+	CObject		fakePlayerPos = *gameData.objs.viewerP;
 
-FORALL_ACTOR_OBJS (pObj)
-	if (pObj == gameData.objData.pConsole)
-		RenderObject (pObj, 0, 0);
-	else if ((pObj->info.nType == OBJ_PLAYER) || 
-				(gameOpts->render.shadows.bRobots && (pObj->info.nType == OBJ_ROBOT))) {
-		for (j = gameData.renderData.mine.visibility [0].nSegments; j--;) {
-			fakePlayerPos.info.nSegment = gameData.renderData.mine.visibility [0].segments [j];
-			fakePlayerPos.info.position.vPos = SEGMENT (fakePlayerPos.info.nSegment)->Center ();
-			bSee = ObjectToObjectVisibility (pObj, &fakePlayerPos, FQ_TRANSWALL);
+FORALL_ACTOR_OBJS (objP, i)
+	if (objP == gameData.objs.consoleP)
+		RenderObject (objP, 0, 0);
+	else if ((objP->info.nType == OBJ_PLAYER) || 
+				(gameOpts->render.shadows.bRobots && (objP->info.nType == OBJ_ROBOT))) {
+		for (j = gameData.render.mine.visibility [0].nSegments; j--;) {
+			fakePlayerPos.info.nSegment = gameData.render.mine.visibility [0].segments [j];
+			fakePlayerPos.info.position.vPos = SEGMENTS [fakePlayerPos.info.nSegment].Center ();
+			bSee = ObjectToObjectVisibility (objP, &fakePlayerPos, FQ_TRANSWALL);
 			if (bSee) {
-				RenderObject (pObj, 0, 0);
+				RenderObject (objP, 0, 0);
 				break;
 				}
 			}
@@ -311,8 +306,8 @@ FORALL_ACTOR_OBJS (pObj)
 void DestroyShadowMaps (void)
 {
 #if MAX_SHADOWMAPS
-for (; gameData.renderData.shadows.nShadowMaps;)
-	cameraManager.DestroyShadowMap (--gameData.renderData.shadows.nShadowMaps);
+for (; gameData.render.shadows.nShadowMaps;)
+	cameraManager.DestroyShadowMap (--gameData.render.shadows.nShadowMaps);
 #endif
 }
 
@@ -320,7 +315,7 @@ for (; gameData.renderData.shadows.nShadowMaps;)
 
 #if MAX_SHADOWMAPS
 
-void ApplyShadowMaps (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow)
+void ApplyShadowMaps (short nStartSeg, fix xStereoSeparation, int nWindow)
 {
 	static float mTexBiasf [] = {
 		0.5f, 0.0f, 0.0f, 0.0f, 
@@ -339,8 +334,8 @@ void ApplyShadowMaps (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow)
 	CFloatMatrix mProjection;
 	CFloatMatrix mModelView;
 
-	int32_t			i;
-	CCamera		*pCamera;
+	int			i;
+	CCamera		*cameraP;
 
 #if 1
 ogl.SelectTMU (GL_TEXTURE0);
@@ -359,13 +354,13 @@ for (i = 0; i < 4; i++)
 glGetFloatv (GL_PROJECTION_MATRIX, mProjection.m.vec);
 glMatrixMode (GL_TEXTURE);
 for (i = 0; i < lightManager.LightCount (2); i++) {
-	pCamera = cameraManager.ShadowMap (0);
-	ogl.BindTexture (pCamera->FrameBuffer ().DepthBuffer ());
+	cameraP = cameraManager.ShadowMap (0);
+	ogl.BindTexture (cameraP->FrameBuffer ().DepthBuffer ());
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
 	glLoadMatrixf (mTexBiasf);
 	glMultMatrixf (mProjection.m.vec);
-	CFixMatrix::Transpose (mModelView, pCamera->GetObject ()->info.position.mOrient);
+	CFixMatrix::Transpose (mModelView, cameraP->GetObject ()->info.position.mOrient);
 	glMultMatrixf (mModelView.m.vec);
 	}
 glMatrixMode (GL_MODELVIEW);
@@ -388,49 +383,49 @@ ogl.SetTexturing (false);
 
 //------------------------------------------------------------------------------
 
-int32_t GatherShadowLightSources (void)
+int GatherShadowLightSources (void)
 {
-	CObject*			pObj;
-	CDynLight*		pLight;
+	CObject*			objP;
+	CDynLight*		lightP;
 	CFixVector		vLightDir;
-	int16_t*			nearestLightP;
-	int32_t			h, i, j, k, l, n, m = gameOpts->render.shadows.nLights;
+	short*			nearestLightP;
+	int				h, i, j, k, l, n, m = gameOpts->render.shadows.nLights;
 
 n = lightManager.LightCount (1);
 for (h = l = 0; l < n; l++) {
-	pLight = lightManager.RenderLights (h);
-	pLight->render.bShadow =
-	pLight->render.bExclusive = 0;
+	lightP = lightManager.RenderLights (h);
+	lightP->render.bShadow =
+	lightP->render.bExclusive = 0;
 	}
 
-FORALL_OBJS (pObj) {
-	h = pObj->Index ();
-	if (gameData.renderData.mine.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
+FORALL_OBJS (objP, h) {
+	h = objP->Index ();
+	if (gameData.render.mine.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
 		continue;
-	nearestLightP = lightManager.NearestSegLights () + pObj->info.nSegment * MAX_NEAREST_LIGHTS;
+	nearestLightP = lightManager.NearestSegLights () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 	k = h * MAX_SHADOW_LIGHTS;
 	for (i = n = 0; (n < m) && (*nearestLightP >= 0); i++, nearestLightP++) {
-		pLight = lightManager.RenderLights (*nearestLightP);
-		if (pLight->info.nObject >= 0) // only use moving dynamic lights
+		lightP = lightManager.RenderLights (*nearestLightP);
+		if (lightP->info.nObject >= 0) // only use moving dynamic lights
 			continue;
-		if (!pLight->render.bState)
+		if (!lightP->render.bState)
 			continue;
-		if (!CanSeePoint (pObj, &pObj->info.position.vPos, &pLight->info.vPos, pObj->info.nSegment, 0, -1.0f, 0))
+		if (!CanSeePoint (objP, &objP->info.position.vPos, &lightP->info.vPos, objP->info.nSegment))
 			continue;
-		vLightDir = pObj->info.position.vPos - pLight->info.vPos;
+		vLightDir = objP->info.position.vPos - lightP->info.vPos;
 		CFixVector::Normalize (vLightDir);
 		if (n) {
 			for (j = 0; j < n; j++)
-				if (abs (CFixVector::Dot (vLightDir, gameData.renderData.shadows.vLightDir[j])) > I2X (2) / 3) // 60 deg
+				if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir[j])) > I2X (2) / 3) // 60 deg
 					break;
 			if (j < n)
 				continue;
 			}
-		gameData.renderData.shadows.vLightDir [n] = vLightDir;
-		gameData.renderData.shadows.objLights [k + n++] = *nearestLightP;
-		pLight->render.bShadow = 1;
+		gameData.render.shadows.vLightDir [n] = vLightDir;
+		gameData.render.shadows.objLights [k + n++] = *nearestLightP;
+		lightP->render.bShadow = 1;
 		}
-	gameData.renderData.shadows.objLights [k + n] = -1;
+	gameData.render.shadows.objLights [k + n] = -1;
 	}
 n = lightManager.LightCount (1);
 for (h = i = 0; i < h; i++)

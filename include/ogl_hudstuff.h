@@ -10,6 +10,6 @@
 #include "descent.h"
 
 void OglDrawMouseIndicator (void);
-void OglDrawReticle (int32_t cross, int32_t primary, int32_t secondary);
+void OglDrawReticle (int cross, int primary, int secondary);
 
 #endif

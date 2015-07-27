@@ -70,7 +70,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // -----------------------------------------------------------------------------
 // Set detail level based stuff.
 // Note: Highest detail level (gameStates.render.detail.nLevel == NUM_DETAIL_LEVELS-1) is custom detail level.
-int32_t InitDetailLevels (int32_t nDetailLevel)
+int InitDetailLevels (int nDetailLevel)
 {
 if ((nDetailLevel < 0) || (nDetailLevel >= NUM_DETAIL_LEVELS))
 	nDetailLevel = NUM_DETAIL_LEVELS - 1;
@@ -81,7 +81,7 @@ if (nDetailLevel < NUM_DETAIL_LEVELS - 1) {
 	gameStates.render.detail.nMaxLinearDepthObjects = detailData.maxLinearDepthObjects [nDetailLevel];
 	gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [nDetailLevel];
 	gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [nDetailLevel];
-	gameData.modelData.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [nDetailLevel];
+	gameData.models.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [nDetailLevel];
 	audio.SetMaxChannels (detailData.nSoundChannels [nDetailLevel]);
 	//      Set custom menu defaults.
 	gameStates.render.detail.nObjectComplexity = nDetailLevel;
@@ -99,7 +99,7 @@ return nDetailLevel;
 
 void DetailLevelMenu (void)
 {
-	int32_t		i, choice = gameStates.app.nDetailLevel;
+	int		i, choice = gameStates.app.nDetailLevel;
 	CMenu		m (8);
 
 	char szMenuDetails [5][20];
@@ -132,7 +132,7 @@ gameOpts->movies.bHires = m [7].Value ();
 
 // -----------------------------------------------------------------------------
 
-int32_t CustomDetailsCallback (CMenu& m, int32_t& nLastKey, int32_t nCurItem, int32_t nState)
+int CustomDetailsCallback (CMenu& m, int& nLastKey, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
@@ -153,13 +153,13 @@ return nCurItem;
 
 void SetMaxCustomDetails (void)
 {
-gameStates.render.detail.nRenderDepth = detailData.renderDepths [DIFFICULTY_LEVEL_COUNT - 1];
-gameStates.render.detail.nMaxPerspectiveDepth = detailData.maxPerspectiveDepths [DIFFICULTY_LEVEL_COUNT - 1];
-gameStates.render.detail.nMaxLinearDepth = detailData.maxLinearDepths [DIFFICULTY_LEVEL_COUNT - 1];
-gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [DIFFICULTY_LEVEL_COUNT - 1];
-gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [DIFFICULTY_LEVEL_COUNT - 1];
-gameData.modelData.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [DIFFICULTY_LEVEL_COUNT - 1];
-gameStates.render.detail.nMaxLinearDepthObjects = detailData.maxLinearDepthObjects [DIFFICULTY_LEVEL_COUNT - 1];
+gameStates.render.detail.nRenderDepth = detailData.renderDepths [NDL - 1];
+gameStates.render.detail.nMaxPerspectiveDepth = detailData.maxPerspectiveDepths [NDL - 1];
+gameStates.render.detail.nMaxLinearDepth = detailData.maxLinearDepths [NDL - 1];
+gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [NDL - 1];
+gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [NDL - 1];
+gameData.models.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [NDL - 1];
+gameStates.render.detail.nMaxLinearDepthObjects = detailData.maxLinearDepthObjects [NDL - 1];
 }
 
 // -----------------------------------------------------------------------------
@@ -171,7 +171,7 @@ gameStates.render.detail.nMaxPerspectiveDepth = detailData.maxPerspectiveDepths 
 gameStates.render.detail.nMaxLinearDepth = detailData.maxLinearDepths [gameStates.render.detail.nWallDetail];
 gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [gameStates.render.detail.nDebrisAmount];
 gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [gameStates.render.detail.nObjectComplexity];
-gameData.modelData.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [gameStates.render.detail.nObjectComplexity];
+gameData.models.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [gameStates.render.detail.nObjectComplexity];
 gameStates.render.detail.nMaxLinearDepthObjects = detailData.maxLinearDepthObjects [gameStates.render.detail.nObjectDetail];
 audio.SetMaxChannels (detailData.nSoundChannels [gameStates.sound.nSoundChannels]);
 }
@@ -182,19 +182,19 @@ audio.SetMaxChannels (detailData.nSoundChannels [gameStates.sound.nSoundChannels
 
 void CustomDetailsMenu (void)
 {
-	int32_t	i;
+	int	i;
 	CMenu m;
 
-	static int32_t choice = 0;
+	static int choice = 0;
 
 do {
 	m.Destroy ();
 	m.Create (DL_MAX);
-	m.AddSlider ("object complexity", TXT_OBJ_COMPLEXITY, gameStates.render.detail.nObjectComplexity, 0, DIFFICULTY_LEVEL_COUNT-1, 0, HTX_ONLINE_MANUAL);
-	m.AddSlider ("object detail", TXT_OBJ_DETAIL, gameStates.render.detail.nObjectDetail, 0, DIFFICULTY_LEVEL_COUNT-1, 0, HTX_ONLINE_MANUAL);
-	m.AddSlider ("wall detail", TXT_WALL_DETAIL, gameStates.render.detail.nWallDetail, 0, DIFFICULTY_LEVEL_COUNT-1, 0, HTX_ONLINE_MANUAL);
-	m.AddSlider ("render depth", TXT_WALL_RENDER_DEPTH, gameStates.render.detail.nWallRenderDepth, 0, DIFFICULTY_LEVEL_COUNT-1, 0, HTX_ONLINE_MANUAL);
-	m.AddSlider ("debris amount", TXT_DEBRIS_AMOUNT, gameStates.render.detail.nDebrisAmount, 0, DIFFICULTY_LEVEL_COUNT-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("object complexity", TXT_OBJ_COMPLEXITY, gameStates.render.detail.nObjectComplexity, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("object detail", TXT_OBJ_DETAIL, gameStates.render.detail.nObjectDetail, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("wall detail", TXT_WALL_DETAIL, gameStates.render.detail.nWallDetail, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("render depth", TXT_WALL_RENDER_DEPTH, gameStates.render.detail.nWallRenderDepth, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+	m.AddSlider ("debris amount", TXT_DEBRIS_AMOUNT, gameStates.render.detail.nDebrisAmount, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
 	if (!gameStates.app.bGameRunning)
 		m.AddSlider ("sound channels", TXT_SOUND_CHANNELS, gameStates.sound.nSoundChannels, 0, sizeofa (detailData.nSoundChannels) - 1, 0, HTX_ONLINE_MANUAL);
 	m.AddText ("", TXT_LO_HI, 0);

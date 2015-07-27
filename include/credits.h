@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _CREDITS_H
 #define _CREDITS_H
 
-class CCreditsRenderer {
+class CCreditsManager {
 
 #define NUM_LINES_HIRES 21
 #define NUM_LINES (gameStates.menus.bHires ? NUM_LINES_HIRES : 20)
@@ -24,25 +24,29 @@ class CCreditsRenderer {
 		char				m_buffer [NUM_LINES_HIRES][80];
 		CFont*			m_fonts [3];
 		CBitmap			m_bmBackdrop;
-		uint32_t			m_bDone;
-		uint32_t			m_nLines [2];
-		int32_t			m_nExtraInc;
-		int32_t			m_bBinary;
-		int32_t			m_nFirstLineOffs;
-		CBackground		m_background;
+		uint				m_bDone;
+		uint				m_nLines [2];
+		int				m_xDelay;
+		int				m_xTimeout;
+		int				m_nExtraInc;
+		int				m_bBinary;
+		int				m_xOffs;
+		int				m_yOffs;
+		int				m_nFirstLineOffs;
 
 	public:
-		CCreditsRenderer () { Init (); }
-		~CCreditsRenderer () { Destroy (); }
+		CCreditsManager () { Init (); }
+		~CCreditsManager () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
+		void RenderBackdrop (void);
 		bool HandleInput (void);
-		uint32_t Read (void);
+		uint Read (void);
 		bool Open (char* creditsFilename);
 		void Render (void);
 		void Show (char* creditsFilename);
 };
 
-extern CCreditsRenderer creditsRenderer;
+extern CCreditsManager creditsManager;
 
 #endif /* _CREDITS_H */

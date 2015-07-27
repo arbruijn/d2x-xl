@@ -38,11 +38,11 @@
 
 void OglDrawMouseIndicator (void)
 {
-	float 	scale = float (gameData.renderData.screen.Width ()) / float (gameData.renderData.screen.Height ());
+	float 	scale = float (screen.Width ()) / float (screen.Height ());
 
 	static tSinCosf sinCos30 [30];
 	static tSinCosf sinCos12 [12];
-	static int32_t bInitSinCos = 1;
+	static int bInitSinCos = 1;
 
 	static CCanvasColor color;// = {-1, 1, {255, 255, 255, 96}};
 
@@ -72,19 +72,19 @@ else {
 		}
 	else {
 		glPushMatrix ();
-		glTranslatef ((float) (mouseData.x) / (float) gameData.renderData.screen.Width (), 1.0f - (float) (mouseData.y) / (float) gameData.renderData.screen.Height (), 0);
+		glTranslatef ((float) (mouseData.x) / (float) screen.Width (), 1.0f - (float) (mouseData.y) / (float) screen.Height (), 0);
 		glScalef (scale / 320.0f, scale / 200.0f, scale);//the positions are based upon the standard reticle at 320x200 res.
 		ogl.SetTexturing (false);
 		ogl.SetLineSmooth (true);
 		glColor4f (1.0f, 0.8f, 0.0f, 0.9f);
 		glLineWidth (3);
-		OglDrawEllipse (12, GL_LINE_LOOP, 1.5f, 0, 1.5f * float (gameData.renderData.screen.Height ()) / float (gameData.renderData.screen.Width ()), 0, sinCos12);
+		OglDrawEllipse (12, GL_LINE_LOOP, 1.5f, 0, 1.5f * float (screen.Height ()) / float (screen.Width ()), 0, sinCos12);
 		glPopMatrix ();
 		}
 	if (deadzone.Load ()) {
 		r = float (controls.CalcDeadzone (0, gameOpts->input.mouse.nDeadzone));
-		w = r / float (gameData.renderData.screen.Width ());
-		h = r / float (gameData.renderData.screen.Height ());
+		w = r / float (screen.Width ());
+		h = r / float (screen.Height ());
 		ogl.SetBlendMode (OGL_BLEND_ALPHA);
 		glPushMatrix ();
 		glTranslatef (0.5f, 0.5f, 0);
@@ -109,7 +109,7 @@ else {
 		glLineWidth (4); //(GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
 		r = float (controls.CalcDeadzone (0, gameOpts->input.mouse.nDeadzone)) / 4;
 		ogl.SetTexturing (false);
-		OglDrawEllipse (30, GL_LINES, r, 0, r * float (gameData.renderData.screen.Height ()) / float (gameData.renderData.screen.Width ()), 0, sinCos30);
+		OglDrawEllipse (30, GL_LINES, r, 0, r * float (screen.Height ()) / float (screen.Width ()), 0, sinCos30);
 		glPopMatrix ();
 		}
 	ogl.SetLineSmooth (false);

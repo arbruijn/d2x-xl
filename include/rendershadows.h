@@ -4,29 +4,29 @@
 #include "descent.h"
 #include "renderlib.h"
 
-void RenderFaceShadow (tFaceProps *pProps);
+void RenderFaceShadow (tFaceProps *propsP);
 void RenderShadowQuad (void);
 void CreateShadowTexture (void);
 void RenderShadowTexture (void);
-int32_t RenderShadowMap (CDynLight *pLight);
+int RenderShadowMap (CDynLight *pLight);
 void RenderObjectShadows (void);
 void DestroyShadowMaps (void);
-void ApplyShadowMaps (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow);
-int32_t GatherShadowLightSources (void);
-void RenderFastShadows (fix xStereoSeparation, int32_t nWindow, int16_t nStartSeg);
-void RenderNeatShadows (fix xStereoSeparation, int32_t nWindow, int16_t nStartSeg);
+void ApplyShadowMaps (short nStartSeg, fix xStereoSeparation, int nWindow);
+int GatherShadowLightSources (void);
+void RenderFastShadows (fix xStereoSeparation, int nWindow, short nStartSeg);
+void RenderNeatShadows (fix xStereoSeparation, int nWindow, short nStartSeg);
 
 #if DBG_SHADOWS
-extern int32_t bShadowTest;
-extern int32_t bFrontCap;
-extern int32_t bRearCap;
-extern int32_t bShadowVolume;
-extern int32_t bFrontFaces;
-extern int32_t bBackFaces;
-extern int32_t bSWCulling;
-extern int32_t bWallShadows;
+extern int bShadowTest;
+extern int bFrontCap;
+extern int bRearCap;
+extern int bShadowVolume;
+extern int bFrontFaces;
+extern int bBackFaces;
+extern int bSWCulling;
+extern int bWallShadows;
 #endif
-extern int32_t bZPass;
+extern int bZPass;
 
 #endif //_RENDERSHADOWS_H
 

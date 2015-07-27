@@ -22,33 +22,33 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _MULTIBOT_H
 #define _MULTIBOT_H
 
-int32_t MultiCanControlRobot (int32_t nObject, int32_t agitation);
-void MultiSendRobotPosition (int32_t nObject, int32_t fired);
-void MultiSendRobotFire (int32_t nObject, int32_t nGun, CFixVector *fire);
-void MultiSendClaimRobot (int32_t nObject);
-void MultiSendRobotExplode (int32_t, int32_t, char);
-void MultiSendCreateRobot (int32_t robotcen, int32_t nObject, int32_t nType);
-void MultiSendBossActions (int32_t bossobjnum, int32_t action, int32_t secondary, int32_t nObject);
-int32_t MultiSendRobotFrame (int32_t sent);
+int MultiCanRemoveRobot (int nObject, int agitation);
+void MultiSendRobotPosition (int nObject, int fired);
+void MultiSendRobotFire (int nObject, int nGun, CFixVector *fire);
+void MultiSendClaimRobot (int nObject);
+void MultiSendRobotExplode (int, int, char);
+void MultiSendCreateRobot (int robotcen, int nObject, int nType);
+void MultiSendBossActions (int bossobjnum, int action, int secondary, int nObject);
+int MultiSendRobotFrame (int sent);
 
-void MultiDoRobotExplode (uint8_t* buf);
-void MultiDoRobotPosition (uint8_t* buf);
-void MultiDoClaimRobot (uint8_t* buf);
-void MultiDoReleaseRobot (uint8_t* buf);
-void MultiDoRobotFire (uint8_t* buf);
-void MultiDoCreateRobot (uint8_t* buf);
-void MultiDoBossActions (uint8_t* buf);
-void MultiDoCreateRobotPowerups (uint8_t* buf);
+void MultiDoRobotExplode (char *buf);
+void MultiDoRobotPosition (char *buf);
+void MultiDoClaimRobot (char *buf);
+void MultiDoReleaseRobot (char *buf);
+void MultiDoRobotFire (char *buf);
+void MultiDoCreateRobot (char *buf);
+void MultiDoBossActions (char *buf);
+void MultiDoCreateRobotPowerups (char *buf);
 
-int32_t MultiDestroyRobot (CObject* pRobot, char bIsThief = 0);
-CObject* MultiExplodeRobot (int32_t nRobot, int32_t nkiller, char bIsThief);
+int MultiDestroyRobot (CObject* robotP, char bIsThief = 01);
+int MultiExplodeRobotSub (int nRobot, int nkiller, char bIsThief);
 
-void MultiDropRobotPowerups (int32_t nObject);
+void MultiDropRobotPowerups (int nObject);
 void MultiDumpRobots (void);
 
-void MultiStripRobots (int32_t playernum);
+void MultiStripRobots (int playernum);
 void MultiCheckRobotTimeout (void);
 
-void MultiRobotRequestChange (CObject *robot, int32_t playernum);
+void MultiRobotRequestChange (CObject *robot, int playernum);
 
 #endif /* _MULTIBOT_H */

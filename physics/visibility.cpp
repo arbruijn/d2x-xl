@@ -35,51 +35,49 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
-int32_t PixelTranspType (int16_t nTexture, int16_t nOrient, int16_t nFrame, fix u, fix v)
+int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v)
 {
-ENTER (2, 0);
-
-	CBitmap *pBm;
-	int32_t bmx, bmy, w, h, offs;
-	uint8_t	c;
+	CBitmap *bmP;
+	int bmx, bmy, w, h, offs;
+	ubyte	c;
 #if 0
-	tBitmapIndex *pBmIndex;
+	tBitmapIndex *bmiP;
 
-pBmIndex = gameData.pigData.tex.pBmIndex + (nTexture);
-LoadTexture (*pBmIndex, 0, gameStates.app.bD1Data);
-pBm = BmOverride (gameData.pigData.tex.pBitmap + pBmIndex->index);
+bmiP = gameData.pig.tex.bmIndexP + (nTexture);
+LoadTexture (*bmiP, gameStates.app.bD1Data);
+bmP = BmOverride (gameData.pig.tex.bitmapP + bmiP->index);
 #else
-pBm = LoadFaceBitmap (nTexture, nFrame);
-if (!pBm->Buffer ())
-	RETVAL (0)
+bmP = LoadFaceBitmap (nTexture, nFrame);
+if (!bmP->Buffer ())
+	return 0;
 #endif
-if (pBm->Flags () & BM_FLAG_RLE)
-	pBm = rle_expand_texture (pBm);
-w = pBm->Width ();
-h = ((pBm->Type () == BM_TYPE_ALT) && pBm->Frames ()) ? w : pBm->Height ();
+if (bmP->Flags () & BM_FLAG_RLE)
+	bmP = rle_expand_texture (bmP);
+w = bmP->Width ();
+h = ((bmP->Type () == BM_TYPE_ALT) && bmP->Frames ()) ? w : bmP->Height ();
 if (nOrient == 0) {
-	bmx = ((uint32_t) X2I (u * w)) % w;
-	bmy = ((uint32_t) X2I (v * h)) % h;
+	bmx = ((unsigned) X2I (u * w)) % w;
+	bmy = ((unsigned) X2I (v * h)) % h;
 	}
 else if (nOrient == 1) {
-	bmx = ((uint32_t) X2I ((I2X (1) - v) * w)) % w;
-	bmy = ((uint32_t) X2I (u * h)) % h;
+	bmx = ((unsigned) X2I ((I2X (1) - v) * w)) % w;
+	bmy = ((unsigned) X2I (u * h)) % h;
 	}
 else if (nOrient == 2) {
-	bmx = ((uint32_t) X2I ((I2X (1) - u) * w)) % w;
-	bmy = ((uint32_t) X2I ((I2X (1) - v) * h)) % h;
+	bmx = ((unsigned) X2I ((I2X (1) - u) * w)) % w;
+	bmy = ((unsigned) X2I ((I2X (1) - v) * h)) % h;
 	}
 else {
-	bmx = ((uint32_t) X2I (v * w)) % w;
-	bmy = ((uint32_t) X2I ((I2X (1) - u) * h)) % h;
+	bmx = ((unsigned) X2I (v * w)) % w;
+	bmy = ((unsigned) X2I ((I2X (1) - u) * h)) % h;
 	}
 offs = bmy * w + bmx;
-if (pBm->Flags () & BM_FLAG_TGA) {
-	uint8_t *p;
+if (bmP->Flags () & BM_FLAG_TGA) {
+	ubyte *p;
 
-	if (pBm->BPP () == 3)	//no alpha -> no transparency
-		RETVAL (0)
-	p = pBm->Buffer () + offs * pBm->BPP ();
+	if (bmP->BPP () == 3)	//no alpha -> no transparency
+		return 0;
+	p = bmP->Buffer () + offs * bmP->BPP ();
 	// check super transparency color
 #if 1
 	if ((p [0] == 120) && (p [1] == 88) && (p [2] == 128))
@@ -87,169 +85,148 @@ if (pBm->Flags () & BM_FLAG_TGA) {
 	if ((gameOpts->ogl.bGlTexMerge) ?
 	    (p [3] == 1) : ((p [0] == 120) && (p [1] == 88) && (p [2] == 128)))
 #endif
-		RETVAL (-1)
+		return -1;
 	// check alpha
 	if (!p [3])
-		RETVAL (1)
+		return 1;
 	}
 else {
-	c = pBm->Buffer () [offs];
+	c = bmP->Buffer () [offs];
 	if (c == SUPER_TRANSP_COLOR)
-		RETVAL (-1)
+		return -1;
 	if (c == TRANSPARENCY_COLOR)
-		RETVAL (1)
+		return 1;
 	}
-RETVAL (0)
+return 0;
 }
 
 //	-----------------------------------------------------------------------------
-//check if a particular pRef on a CWall is a transparent pixel
+//check if a particular refP on a CWall is a transparent pixel
 //returns 1 if can pass though the CWall, else 0
-int32_t CSide::CheckForTranspPixel (CFixVector& intersection, int16_t iFace)
+int CSide::CheckForTranspPixel (CFixVector& intersection, short iFace)
 {
-ENTER (2, 0);
 	fix	u, v;
-	int32_t	nTranspType;
+	int	nTranspType;
 
 HitPointUV (&u, &v, NULL, intersection, iFace);	//	Don't compute light value.
 if (m_nOvlTex) {
 	nTranspType = PixelTranspType (m_nOvlTex, m_nOvlOrient, m_nFrame, u, v);
 	if (nTranspType < 0)
-		RETVAL (1)
+		return 1;
 	if (!nTranspType)
-		RETVAL (0)
+		return 0;
 	}
 nTranspType = PixelTranspType (m_nBaseTex, 0, m_nFrame, u, v) != 0;
-RETVAL (nTranspType)
+return nTranspType;
 }
 
 //------------------------------------------------------------------------------
 
-bool CHitQuery::InFoV (CObject *pObj, float fov)
+int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment, fix xRad)
 {
-if (!pObj)
-	return true;
-if (fov == -1.0f)
-	return true;
-CFixVector v = *p1 - *p0;
-CFixVector::Normalize (v);
-fix dot = CFixVector::Dot (v, OBJPOS (pObj)->mOrient.m.dir.f);
-return dot >= ((fov < -1.0f) ? pObj->FoV () : fov);
-}
-
-//------------------------------------------------------------------------------
-
-int32_t CanSeePoint (CObject *pObj, CFixVector *pvSource, CFixVector *pvDest, int16_t nSegment, fix xRad, float fov, int32_t nThread)
-{
-ENTER (2, nThread);
-	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_VISIBILITY, pvSource, pvDest, -1, pObj ? pObj->Index () : -1, 1, xRad);
+	CHitQuery	hitQuery (FQ_TRANSWALL, vSource, vDest, -1, objP ? objP->Index () : -1, 1, xRad);
 	CHitResult	hitResult;
-#if 1
-if (!hitQuery.InFoV (pObj, fov))
-	RETVAL (0)
-#endif
-hitQuery.nSegment = FindSegByPos (OBJPOS (pObj)->vPos, pObj->info.nSegment, 1, 0);
-int32_t nHitType = FindHitpoint (hitQuery, hitResult, 0, nThread);
-RETVAL (nHitType != HIT_WALL)
+
+if (SPECTATOR (objP))
+	hitQuery.nSegment = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
+else
+	hitQuery.nSegment = objP ? objP->info.nSegment : nSegment;
+
+int nHitType = FindHitpoint (hitQuery, hitResult);
+return nHitType != HIT_WALL;
 }
 
 //	-----------------------------------------------------------------------------
-//returns true if pViewer can see CObject
+//returns true if viewerP can see CObject
 
-int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs, int32_t nThread)
+int CanSeeObject (int nObject, int bCheckObjs)
 {
-ENTER (0, nThread);
-	CHitQuery	hitQuery (bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL | FQ_VISIBILITY : FQ_TRANSWALL | FQ_VISIBILITY,
-								 &gameData.objData.pViewer->info.position.vPos,
-								 &OBJECT (nObject)->info.position.vPos,
-								 gameData.objData.pViewer->info.nSegment,
-								 gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objData.pViewer),
+	CHitQuery	hitQuery (bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL,
+								 &gameData.objs.viewerP->info.position.vPos,
+								 &OBJECTS [nObject].info.position.vPos,
+								 gameData.objs.viewerP->info.nSegment,
+								 gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP),
 								 0, 0,
-								 ++gameData.physicsData.bIgnoreObjFlag
+								 ++gameData.physics.bIgnoreObjFlag
 								);
 	CHitResult		hitResult;
 
-int32_t nHitType = FindHitpoint (hitQuery, hitResult, 0, nThread);
-RETVAL (bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) : (nHitType != HIT_WALL))
+int nHitType = FindHitpoint (hitQuery, hitResult);
+return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 //	Determine if two OBJECTS are on a line of sight.  If so, return true, else return false.
 //	Calls fvi.
-int32_t ObjectToObjectVisibility (CObject *pViewer, CObject *pTarget, int32_t transType, float fov, int32_t nThread)
+int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType)
 {
-ENTER (0, nThread);
 	CHitQuery	hitQuery;
 	CHitResult	hitResult;
-	int32_t		fate, nTries = 0, bSpectate = SPECTATOR (pViewer);
+	int			fate, nTries = 0, bSpectate = SPECTATOR (objP1);
 
 do {
-	hitQuery.flags = transType | FQ_CHECK_OBJS | FQ_VISIBILITY;
-	hitQuery.p0 = &OBJPOS (pViewer)->vPos;
-	hitQuery.p1 = &OBJPOS (pTarget)->vPos;
-	if (!hitQuery.InFoV (pViewer, fov))
-		RETVAL (false)
-
+	hitQuery.flags = transType | FQ_CHECK_OBJS;
+	hitQuery.p0 = bSpectate ? &gameStates.app.playerPos.vPos : &objP1->info.position.vPos;
+	hitQuery.p1 = SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->info.position.vPos;
 	hitQuery.radP0 =
 	hitQuery.radP1 = 0x10;
-	hitQuery.nObject = OBJ_IDX (pViewer);
+	hitQuery.nObject = OBJ_IDX (objP1);
 	if (nTries++) {
 		hitQuery.nSegment	= bSpectate 
 								  ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) 
-								  : FindSegByPos (pViewer->info.position.vPos, pViewer->info.nSegment, 1, 0);
+								  : FindSegByPos (objP1->info.position.vPos, objP1->info.nSegment, 1, 0);
 		if (hitQuery.nSegment < 0) {
 			fate = HIT_BAD_P0;
-			RETVAL (false)
+			return false;
 			}
 		}
 	else
-		hitQuery.nSegment	= bSpectate ? gameStates.app.nPlayerSegment : pViewer->info.nSegment;
-	fate = gameData.segData.SegVis (hitQuery.nSegment, pTarget->Segment ()) ? FindHitpoint (hitQuery, hitResult, 0, nThread) : HIT_WALL;
+		hitQuery.nSegment	= bSpectate ? gameStates.app.nPlayerSegment : objP1->info.nSegment;
+	fate = gameData.segs.SegVis (hitQuery.nSegment, objP2->Segment ()) ? FindHitpoint (hitQuery, hitResult) : HIT_WALL;
 	}
 while ((fate == HIT_BAD_P0) && (nTries < 2));
-RETVAL ((fate == HIT_NONE) || (fate == HIT_BAD_P0) || ((fate == HIT_OBJECT) && (hitResult.nObject == pTarget->Index ())))
+return (fate == HIT_NONE) || (fate == HIT_BAD_P0) || ((fate == HIT_OBJECT) && (hitResult.nObject == objP2->Index ()));
 }
 
 //	-----------------------------------------------------------------------------
 
-int32_t TargetInLineOfFire (void)
+int TargetInLineOfFire (void)
 {
-#if 0 //DBG
+#if DBG
 return 0;
 #else
-ENTER (0, 0);
-	int32_t		nType;
-	CHitResult	hitResult;
-	CObject*		pObj;
+	int			nType;
+	CHitResult		hitResult;
+	CObject*		objP;
 
 	//see if we can see this CPlayerData
 
-CFixVector vEndPos = gameData.objData.pViewer->info.position.vPos + gameData.objData.pViewer->info.position.mOrient.m.dir.f * I2X (2000);
+CFixVector vEndPos = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient.m.dir.f * I2X (2000);
 CHitQuery hitQuery (FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TRANSWALL | FQ_VISIBILITY,
-						  &gameData.objData.pViewer->info.position.vPos,
+						  &gameData.objs.viewerP->info.position.vPos,
 						  &vEndPos,
-						  gameData.objData.pViewer->info.nSegment,
-						  OBJ_IDX (gameData.objData.pViewer),
+						  gameData.objs.viewerP->info.nSegment,
+						  OBJ_IDX (gameData.objs.viewerP),
 						  0, 0,
-						  ++gameData.physicsData.bIgnoreObjFlag
+						  ++gameData.physics.bIgnoreObjFlag
 						  );
 
-int32_t nHitType = FindHitpoint (hitQuery, hitResult);
+int nHitType = FindHitpoint (hitQuery, hitResult);
 if (nHitType != HIT_OBJECT)
-	RETVAL (0)
-pObj = OBJECT (hitResult.nObject);
-nType = pObj->Type ();
+	return 0;
+objP = OBJECTS + hitResult.nObject;
+nType = objP->Type ();
 if (nType == OBJ_ROBOT) 
-	RETVAL (int32_t (!pObj->IsGuideBot ()))
+	return int (!objP->IsGuideBot ());
 if (nType == OBJ_REACTOR)
-	RETVAL (1)
+	return 1;
 if (nType != OBJ_PLAYER)
-	RETVAL (0)
+	return 0;
 if (IsCoopGame)
-	RETVAL (0)
+	return 0;
 if (!IsTeamGame)
-	RETVAL (1)
-RETVAL (GetTeam (gameData.objData.pConsole->info.nId) != GetTeam (pObj->info.nId))
+	return 1;
+return GetTeam (gameData.objs.consoleP->info.nId) != GetTeam (objP->info.nId);
 #endif
 }
 

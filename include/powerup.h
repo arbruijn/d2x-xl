@@ -89,7 +89,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define	POW_ENTROPY_VIRUS		POW_HOARD_ORB
 #endif
 
-#define VULCAN_CLIP_CAPACITY        (49 * 2)
+#define VULCAN_CLIP_CAPACITY          (49 * 2)
 #define VULCAN_WEAPON_AMMO_AMOUNT   (VULCAN_CLIP_CAPACITY * 2)
 #define GAUSS_WEAPON_AMMO_AMOUNT    (VULCAN_WEAPON_AMMO_AMOUNT * 2)
 #define VULCAN_AMMO_MAX             (VULCAN_CLIP_CAPACITY * 16)
@@ -97,24 +97,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define POWERUP_NAME_LENGTH 16      // Length of a robot or powerup name.
 extern char Powerup_names[MAX_POWERUP_TYPES][POWERUP_NAME_LENGTH];
 
-extern int32_t Headlight_active_default;    // is headlight on when picked up?
+extern int Headlight_active_default;    // is headlight on when picked up?
 
 typedef struct tPowerupTypeInfo {
-	int32_t nClipIndex;
-	int32_t hitSound;
+	int nClipIndex;
+	int hitSound;
 	fix size;       // 3d size of longest dimension
 	fix light;      // amount of light cast by this powerup, set in bitmaps.tbl
 } __pack__ tPowerupTypeInfo;
 
-extern int32_t N_powerupTypes;
+extern int N_powerupTypes;
 extern tPowerupTypeInfo powerupInfo[MAX_POWERUP_TYPES];
 
 void InitPowerupTables (void);
 
-void DrawPowerup(CObject *pObj);
+void DrawPowerup(CObject *objP);
 
 //returns true if powerup consumed
-int32_t DoPowerup(CObject *pObj, int32_t nPlayer);
+int DoPowerup(CObject *objP, int nPlayer);
 
 //process (animate) a powerup for one frame
 void UpdateFlagClips (void);
@@ -122,34 +122,34 @@ void UpdateFlagClips (void);
 // Diminish shield and energy towards max in case they exceeded it.
 void diminish_towards_max(void);
 
-void DoMegaWowPowerup(int32_t quantity);
+void DoMegaWowPowerup(int quantity);
 
-void _CDECL_ PickupEffect(int32_t redadd, int32_t greenadd, int32_t blueadd, int32_t score, const char *format, ...);
+void _CDECL_ PowerupBasic(int redadd, int greenadd, int blueadd, int score, const char *format, ...);
 
 /*
  * reads n tPowerupTypeInfo structs from a CFILE
  */
-int32_t ReadPowerupTypeInfos (tPowerupTypeInfo *pti, int32_t n, CFile& cf);
+int ReadPowerupTypeInfos (tPowerupTypeInfo *pti, int n, CFile& cf);
 
-int32_t ApplyCloak (int32_t bForce, int32_t nPlayer);
-int32_t ApplyInvul (int32_t bForce, int32_t nPlayer);
+int ApplyCloak (int bForce, int nPlayer);
+int ApplyInvul (int bForce, int nPlayer);
 
-int32_t PowerupToDevice (int16_t nPowerup, int32_t *nType);
-char PowerupToWeaponCount (int16_t nPowerup);
-char PowerupClass (int16_t nPowerup);
-char PowerupToObject (int16_t nPowerup);
-int16_t PowerupToModel (int16_t nPowerup);
-int16_t WeaponToModel (int16_t nWeapon);
-int16_t PowerupsOnShips (int32_t nPowerup);
-void SpawnLeftoverPowerups (int16_t nObject);
+int PowerupToDevice (short nPowerup, int *nType);
+char PowerupToWeaponCount (short nPowerup);
+char PowerupClass (short nPowerup);
+char PowerupToObject (short nPowerup);
+short PowerupToModel (short nPowerup);
+short WeaponToModel (short nWeapon);
+short PowerupsOnShips (int nPowerup);
+void SpawnLeftoverPowerups (short nObject);
 void CheckInventory (void);
 
-int32_t PickupEnergyBoost (CObject *pObj, int32_t nPlayer);
-int32_t PickupEquipment (CObject *pObj, int32_t nEquipment, const char *pszHave, const char *pszGot, int32_t nPlayer);
+int PickupEnergyBoost (CObject *objP, int nPlayer);
+int PickupEquipment (CObject *objP, int nEquipment, const char *pszHave, const char *pszGot, int nPlayer);
 
 extern const char *pszPowerup [MAX_POWERUP_TYPES];
-extern uint8_t powerupType [MAX_POWERUP_TYPES];
-extern uint8_t powerupFilter [MAX_POWERUP_TYPES];
+extern ubyte powerupType [MAX_POWERUP_TYPES];
+extern ubyte powerupFilter [MAX_POWERUP_TYPES];
 extern void * pickupHandler [MAX_POWERUP_TYPES];
 
 #define POWERUP_IS_UNDEFINED	-1
@@ -161,7 +161,7 @@ extern void * pickupHandler [MAX_POWERUP_TYPES];
 
 //------------------------------------------------------------------------------
 
-static inline int32_t IsEnergyPowerup (int32_t nId)
+static inline int IsEnergyPowerup (int nId)
 {
 return (nId == POW_EXTRA_LIFE) || (nId == POW_ENERGY) || (nId == POW_SHIELD_BOOST) ||
 		 (nId == POW_HOARD_ORB) || (nId == POW_CLOAK) || (nId == POW_INVUL);
@@ -169,12 +169,12 @@ return (nId == POW_EXTRA_LIFE) || (nId == POW_ENERGY) || (nId == POW_SHIELD_BOOS
 
 //------------------------------------------------------------------------------
 
-void AddAllowedPowerup (int32_t nPowerup, uint32_t nCount = 1);
-void RemoveAllowedPowerup (int32_t nPowerup, uint32_t nCount = 1);
-void AddPowerupInMine (int32_t nPowerup, uint32_t nCount = 1, bool bIncreaseLimit = false);
-void RemovePowerupInMine (int32_t nPowerup, uint32_t nCount = 1);
-int32_t PowerupsInMine (int32_t nPowerup);
-int32_t MissingPowerups (int32_t nPowerup, int32_t bBreakDown = 0);
+void AddAllowedPowerup (int nPowerup, int nCount = 1);
+void RemoveAllowedPowerup (int nPowerup);
+void AddPowerupInMine (int nPowerup, bool bIncreaseLimit = false);
+void RemovePowerupInMine (int nPowerup);
+int PowerupsInMine (int nPowerup);
+int MissingPowerups (int nPowerup, int bBreakDown = 0);
 
 //------------------------------------------------------------------------------
 

@@ -71,20 +71,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #if !SIMPLE_MENUS
 
 static struct {
-	int32_t	nPlayer;
-	int32_t	nRobots;
-	int32_t	nMissiles;
-	int32_t	nDebris;
-	int32_t	nDensity [5];
-	int32_t	nLife [5];
-	int32_t	nSize [5];
-	int32_t	nAlpha [5];
-	int32_t	nSyncSizes;
+	int	nPlayer;
+	int	nRobots;
+	int	nMissiles;
+	int	nDebris;
+	int	nDensity [5];
+	int	nLife [5];
+	int	nSize [5];
+	int	nAlpha [5];
+	int	nSyncSizes;
 } smokeOpts;
 
 //------------------------------------------------------------------------------
 
-static int32_t HaveSmokeSliders (int32_t i)
+static int HaveSmokeSliders (int i)
 {
 switch (i) {
 	case 1:
@@ -108,13 +108,13 @@ static const char* pszSmokeLife [3];
 static const char* pszSmokeQual [3];
 static const char* pszSmokeAlpha [5];
 
-int32_t SmokeOptionsCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+int SmokeOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem	*m;
-	int32_t			i, v;
+	int			i, v;
 	char			szId [100];
 
 if ((m = menu ["sync sizes"])) {
@@ -234,7 +234,7 @@ static char szSmokeSize [5][50];
 static char szSmokeLife [5][50];
 static char szSmokeAlpha [5][50];
 
-void AddSmokeSliders (CMenu& m, int32_t i)
+void AddSmokeSliders (CMenu& m, int i)
 {
 if (gameOpts->render.particles.bSyncSizes && (i > 0))
 	return;
@@ -276,10 +276,10 @@ if (!gameOpts->render.particles.bSyncSizes && bNeedSpace)
 
 void SmokeDetailsMenu (void)
 {
-	static int32_t choice = 0;
+	static int choice = 0;
 
 	CMenu m;
-	int32_t	i, j;
+	int	i, j;
 
 pszSmokeSize [0] = TXT_SMALL;
 pszSmokeSize [1] = TXT_MEDIUM;

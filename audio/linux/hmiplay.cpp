@@ -55,20 +55,20 @@
 
 SEQ_DEFINEBUF(1024);
 
-int32_t drumflag = 1<<9;
-int32_t seqfd;
-int32_t synth_dev;
-int32_t program[16];
-int32_t stop;
+int drumflag = 1<<9;
+int seqfd;
+int synth_dev;
+int program[16];
+int stop;
 double volume=1;
 
-int32_t ipc_queue_id = -1;
+int ipc_queue_id = -1;
 struct msgbuf *snd;
 
 SDL_Thread *player_thread=NULL;
 
 Voice_info *voices;
-uint8_t *data=NULL;
+ubyte *data=NULL;
 
 struct synth_info card_info;
 
@@ -91,9 +91,9 @@ void my_quit()
 //	exit(0);
 }
 
-int32_t seq_init()
+int seq_init()
 {
-	int32_t nrmidis,nrsynths,i;
+	int nrmidis,nrsynths,i;
 
 	if ((seqfd = open(SEQ_DEV, O_WRONLY, 0)) < 0)
 	{
@@ -222,7 +222,7 @@ void seq_close()
 	voices = NULL;
 }
 
-void set_program(int32_t channel, int32_t pgm)
+void set_program(int channel, int pgm)
 {
 #ifdef WANT_AWE32
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
@@ -235,9 +235,9 @@ void set_program(int32_t channel, int32_t pgm)
 	  program[channel]=pgm;
 }
 
-void start_note(int32_t channel, int32_t note, int32_t vel)
+void start_note(int channel, int note, int vel)
 {
-	int32_t i;
+	int i;
 
 #ifdef WANT_AWE32
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
@@ -268,9 +268,9 @@ void start_note(int32_t channel, int32_t note, int32_t vel)
 	}
 }
 
-void stop_note(int32_t channel, int32_t note, int32_t vel)
+void stop_note(int channel, int note, int vel)
 {
-	int32_t i;
+	int i;
 
 #ifdef WANT_AWE32
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
@@ -293,9 +293,9 @@ void stop_note(int32_t channel, int32_t note, int32_t vel)
 	}
 }
 
-void set_control(int32_t channel,int32_t ctrl,int32_t value)
+void set_control(int channel,int ctrl,int value)
 {
-	int32_t i;
+	int i;
 
 #ifdef WANT_AWE32
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
@@ -313,9 +313,9 @@ void set_control(int32_t channel,int32_t ctrl,int32_t value)
 	}
 }
 
-void set_pitchbend(int32_t channel, int32_t bend)
+void set_pitchbend(int channel, int bend)
 {
-	int32_t i;
+	int i;
 
 #ifdef WANT_AWE32
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
@@ -335,9 +335,9 @@ void set_pitchbend(int32_t channel, int32_t bend)
 	}
 }
 
-void set_key_pressure(int32_t channel, int32_t note, int32_t vel)
+void set_key_pressure(int channel, int note, int vel)
 {
-	int32_t i;
+	int i;
 
 #ifdef WANT_AWE32
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
@@ -354,9 +354,9 @@ void set_key_pressure(int32_t channel, int32_t note, int32_t vel)
 	}
 }
 
-void set_chn_pressure(int32_t channel, int32_t vel)
+void set_chn_pressure(int channel, int vel)
 {    
-	int32_t i;
+	int i;
 
 #ifdef WANT_AWE32
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
@@ -375,10 +375,10 @@ void set_chn_pressure(int32_t channel, int32_t vel)
 
 void stop_all()
 {
-	int32_t i;
+	int i;
 
 #ifdef WANT_AWE32
-	int32_t j;
+	int j;
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)    
 	{
@@ -398,10 +398,10 @@ void stop_all()
 	}    
 }
 
-int32_t get_dtime(uint8_t *data, int32_t *coord)
+int get_dtime(ubyte *data, int *coord)
 {
 	char buf;
-	int32_t result;
+	int result;
 	result =0;
 
 	buf = data[*coord];
@@ -412,17 +412,17 @@ int32_t get_dtime(uint8_t *data, int32_t *coord)
 	{
 		buf = data[*coord];
 		*coord +=1;
-		result |=(int32_t) (((int32_t) 0x7f & (int32_t) buf)<<7);
+		result |=(int) (((int) 0x7f & (int) buf)<<7);
 		if (!(buf & 0x80))
 		{
 			buf = data[*coord];
 			*coord +=1;
-			result |=(int32_t) (((int32_t) 0x7f & (int32_t) buf)<<14);
+			result |=(int) (((int) 0x7f & (int) buf)<<14);
 			if (!(buf & 0x80))
 			{
 				buf = data[*coord];
 				*coord +=1;
-				result |=(int32_t) (((int32_t) 0x7f & (int32_t) buf)<<21);
+				result |=(int) (((int) 0x7f & (int) buf)<<21);
 			}
 		}
 	}
@@ -430,10 +430,10 @@ int32_t get_dtime(uint8_t *data, int32_t *coord)
 	return result;
 }
 
-int32_t do_track_event(uint8_t *data, int32_t *coord)
+int do_track_event(ubyte *data, int *coord)
 {
 	char channel;
-	uint8_t buf[5];
+	ubyte buf[5];
 
 	buf[0]=data[*coord];
 	*coord +=1;
@@ -472,7 +472,7 @@ int32_t do_track_event(uint8_t *data, int32_t *coord)
 		*coord +=1;
 		buf[2]=data[*coord];
 		*coord +=1;
-		stop_note((int32_t) channel, (int32_t) buf[1], (int32_t) buf[2]);
+		stop_note((int) channel, (int) buf[1], (int) buf[2]);
 		break;
 	 case 0x90:
 		buf[1]=data[*coord];
@@ -481,11 +481,11 @@ int32_t do_track_event(uint8_t *data, int32_t *coord)
 		*coord +=1;
 		if(buf[2] == 0)
 		{
-			stop_note((int32_t) channel, (int32_t) buf[1], (int32_t) buf[2]);
+			stop_note((int) channel, (int) buf[1], (int) buf[2]);
 		}
 		else
 		{
-			start_note((int32_t) channel, (int32_t) buf[1], (int32_t) buf[2]);
+			start_note((int) channel, (int) buf[1], (int) buf[2]);
 		}
 		break;
 	 case 0xa0:
@@ -493,31 +493,31 @@ int32_t do_track_event(uint8_t *data, int32_t *coord)
 		*coord +=1;
 		buf[2]=data[*coord];
 		*coord +=1;
-		set_key_pressure((int32_t) channel, (int32_t) buf[1], (int32_t) buf[2]);
+		set_key_pressure((int) channel, (int) buf[1], (int) buf[2]);
 		break;
 	 case 0xb0:
 		buf[1]=data[*coord];
 		*coord +=1;
 		buf[2]=data[*coord];
 		*coord +=1;
-		set_control((int32_t) channel, (int32_t) buf[1], (int32_t) buf[2]);
+		set_control((int) channel, (int) buf[1], (int) buf[2]);
 		break;
 	 case 0xe0:
 		buf[1]=data[*coord];
 		*coord +=1;
 		buf[2]=data[*coord];
 		*coord +=1;
-		set_pitchbend((int32_t) channel, (int32_t) ((buf[2] << 7) + buf[1]);
+		set_pitchbend((int) channel, (int) ((buf[2] << 7) + buf[1]);
 		break;
 	 case 0xc0:
 		buf[1]=data[*coord];
 		*coord +=1;
-		set_program((int32_t) channel, (int32_t) buf[1] );
+		set_program((int) channel, (int) buf[1] );
 		break;
 	 case 0xd0:
 		buf[1]=data[*coord];
 		*coord +=1;
-		set_chn_pressure((int32_t) channel, (int32_t) buf[1]);
+		set_chn_pressure((int) channel, (int) buf[1]);
 		break;
 	 case 0xf0:
 		return 1;
@@ -535,7 +535,7 @@ void send_ipc(char *message)
 	{
 		ipc_queue_id=msgget ((key_t) ('l'<<24) | ('d'<<16) | ('e'<<8) | 's', 
 				     IPC_CREAT | 0660);
-		snd= reinterpret_cast<struct msgbuf*> (new uint8_t [sizeof(long) + 32]);
+		snd= reinterpret_cast<struct msgbuf*> (new ubyte [sizeof(long) + 32]);
 		snd->mType=1;
 		player_thread=SDL_CreateThread(play_hmi, NULL);
 //		player_pid = play_hmi();
@@ -558,11 +558,11 @@ void kill_ipc()
 //	player_pid = 0;
 }
 
-int32_t do_ipc(int32_t qid, struct msgbuf *buf, int32_t flags)
+int do_ipc(int qid, struct msgbuf *buf, int flags)
 {
-	int32_t ipc_read;
+	int ipc_read;
 	CFile cf;
-	int32_t l=0;
+	int l=0;
 
 	ipc_read = msgrcv(qid,buf,16,0,flags | MSG_NOERROR);
 
@@ -606,16 +606,16 @@ int32_t do_ipc(int32_t qid, struct msgbuf *buf, int32_t flags)
 
 void play_hmi (void * arg)
 {
-	int32_t i;
-	int32_t coord = 0x308;
-	int32_t n_chunks = 0;
-	int32_t low_dtime;
-	int32_t low_chunk;
-	int32_t csec;
+	int i;
+	int coord = 0x308;
+	int n_chunks = 0;
+	int low_dtime;
+	int low_chunk;
+	int csec;
 //	pid_t loc_pid;
-	int32_t qid;
-	int32_t ipc_read = 0;
-	int32_t k=0;
+	int qid;
+	int ipc_read = 0;
+	int k=0;
 
 	struct msgbuf *rcv;
 
@@ -639,7 +639,7 @@ void play_hmi (void * arg)
 	}*/
 
 //	signal(SIGTERM, my_quit);
-	rcv = reinterpret_cast<struct msgbuf*> (new uint8_t [sizeof(long) + 16]);
+	rcv = reinterpret_cast<struct msgbuf*> (new ubyte [sizeof(long) + 16]);
 
 	rcv->mType=1;
 	rcv->mtext[0]='0';
@@ -772,14 +772,14 @@ void play_hmi (void * arg)
 
 }
 
-int32_t DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, int32_t loop ) {
+int DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, int loop ) {
         char buf[128];
     
         sprintf(buf,"p%s",filename);
         send_ipc(buf);
         return 0;
 }
-void DigiSetMidiVolume( int32_t mvolume ) { 
+void DigiSetMidiVolume( int mvolume ) { 
         char buf[128];
     
         sprintf(buf,"v%i",mvolume);

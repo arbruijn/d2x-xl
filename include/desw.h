@@ -81,7 +81,7 @@ typedef struct WinJoystickDesc {
 
 extern HWND             _hAppWnd;           // Descent Window
 extern HINSTANCE        _hAppInstance;
-extern int32_t              _DDraw;             // Direct X Implementation
+extern int              _DDraw;             // Direct X Implementation
 extern BOOL             _AppActive;
 extern BOOL             SOS_DLLInit;
 extern BOOL             _RedrawScreen;
@@ -105,12 +105,12 @@ extern HPALETTE _hAppPalette;               // Application Palette
 extern RECT     ViewportRect;               // Viewport rect for window
 extern char     *_OffscreenCanvasBits;      // Pointer to DIB Bits.
 extern fix      WinFrameTime;               // Time per frame
-extern int32_t      Platform_system;            // Tells us the platform
+extern int      Platform_system;            // Tells us the platform
 
 
 // Functions
 
-extern void WinDelay(int32_t msecs);
+extern void WinDelay(int msecs);
 
 // misc functions
 extern void WErrorPrint(char *msg);
@@ -122,7 +122,7 @@ extern void SOSUnInit();
 #define MOUSE_DEFAULT_CURSOR 1
 #define MOUSE_WAIT_CURSOR 2
 
-extern void LoadCursorWin(int32_t cursor);
+extern void LoadCursorWin(int cursor);
 extern void ShowCursorW();
 extern void HideCursorW();
 
@@ -132,7 +132,7 @@ extern void HideCursorW();
 #define CanvasHeight(C) (((C).bmiHeader.biHeight > 0) ? \
                          (C).bmiHeader.biHeight : -(C).bmiHeader.biHeight)
 
-#define DebugMessageBox(c) (InfoBox(NULL,c,"Message",MB_OK))
+#define DebugMessageBox(c) (MsgBox(NULL,c,"Message",MB_OK))
 
 #define DEFINE_SCREEN(fn) (_SCRContext.bkg_filename = fn)
 

@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define FP_DOWN         4
 #define FP_FIRST_TIME   5
 
-extern int32_t ft_preference;
+extern int ft_preference;
 
 // The following bits define the game modes.
 #define GM_EDITOR       1       // You came into the game from the editor
@@ -63,45 +63,45 @@ extern int32_t ft_preference;
 #define GM_NORMAL       0       // You are in normal play mode, no multiplayer stuff
 #define GM_MULTI        (GM_SERIAL | GM_NETWORK | GM_MODEM)      // You are in some nType of multiplayer game
 
-#define IsNetworkGame	(gameData.appData.GameMode (GM_NETWORK) != 0)
-#define IsMultiGame		(gameData.appData.GameMode (GM_MULTI) != 0)
-#define IsTeamGame		(gameData.appData.GameMode (GM_TEAM) != 0)
-#define IsCoopGame		(gameData.appData.GameMode (GM_MULTI_COOP) != 0)
-#define IsRobotGame		(!IsMultiGame || (gameData.appData.GameMode (GM_MULTI_ROBOTS | GM_MULTI_COOP) != 0))
-#define IsHoardGame		(gameData.appData.GameMode (GM_HOARD) != 0)
-#define IsEntropyGame	(gameData.appData.GameMode (GM_ENTROPY) != 0)
+#define IsNetworkGame	(gameData.app.GameMode (GM_NETWORK) != 0)
+#define IsMultiGame		(gameData.app.GameMode (GM_MULTI) != 0)
+#define IsTeamGame		(gameData.app.GameMode (GM_TEAM) != 0)
+#define IsCoopGame		(gameData.app.GameMode (GM_MULTI_COOP) != 0)
+#define IsRobotGame		(!IsMultiGame || (gameData.app.GameMode (GM_MULTI_ROBOTS | GM_MULTI_COOP) != 0))
+#define IsHoardGame		(gameData.app.GameMode (GM_HOARD) != 0)
+#define IsEntropyGame	(gameData.app.GameMode (GM_ENTROPY) != 0)
 // Examples:
 // Deathmatch mode on a network is GM_NETWORK
 // Deathmatch mode via modem with robots is GM_MODEM | GM_MULTI_ROBOTS
 // Cooperative mode via serial link is GM_SERIAL | GM_MULTI_COOP
 
-#define DIFFICULTY_LEVEL_COUNT 5       // Number of difficulty levels.
+#define NDL 5       // Number of difficulty levels.
 
 //------------------------------------------------------------------------------
 
 #define NUM_DETAIL_LEVELS   6
 
 typedef struct tDetailData {
-	uint8_t		renderDepths [NUM_DETAIL_LEVELS - 1];
-	int8_t		maxPerspectiveDepths [NUM_DETAIL_LEVELS - 1];
-	int8_t		maxLinearDepths [NUM_DETAIL_LEVELS - 1];
-	int8_t		maxLinearDepthObjects [NUM_DETAIL_LEVELS - 1];
-	int8_t		maxDebrisObjects [NUM_DETAIL_LEVELS - 1];
-	int8_t		maxObjsOnScreenDetailed [NUM_DETAIL_LEVELS - 1];
-	int8_t		simpleModelThresholdScales [NUM_DETAIL_LEVELS - 1];
-	uint8_t		nSoundChannels [NUM_DETAIL_LEVELS - 1];
+	ubyte		renderDepths [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxPerspectiveDepths [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxLinearDepths [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxLinearDepthObjects [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxDebrisObjects [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxObjsOnScreenDetailed [NUM_DETAIL_LEVELS - 1];
+	sbyte		simpleModelThresholdScales [NUM_DETAIL_LEVELS - 1];
+	ubyte		nSoundChannels [NUM_DETAIL_LEVELS - 1];
 } __pack__ tDetailData;
 
 extern tDetailData detailData;
 
 //------------------------------------------------------------------------------
 
-extern int32_t gauge_message_on;
+extern int gauge_message_on;
 
 #if DBG      // if debugging, these are variables
 
-extern int32_t Slew_on;                 // in slew or sim mode?
-extern int32_t bGameDoubleBuffer;      // double buffering?
+extern int Slew_on;                 // in slew or sim mode?
+extern int bGameDoubleBuffer;      // double buffering?
 
 
 #else               // if not debugging, these are constants
@@ -121,41 +121,41 @@ extern int32_t bGameDoubleBuffer;      // double buffering?
 #define SUSP_POWERUPS   4           // powerups aren't rendered and cannot be picked up
 #define SUSP_TEMPORARY	128
 
-extern int32_t Game_suspended;          // if non-zero, nothing moves but CPlayerData
+extern int Game_suspended;          // if non-zero, nothing moves but CPlayerData
 
 // from game.c
-bool InitGame(int32_t nSegments, int32_t nVertices);
+bool InitGame(int nSegments, int nVertices);
 void RunGame (void);
 void CleanupAfterGame (bool bHaveLevel = true);
-void _CDECL_ CloseGame (void);
-void CalcFrameTime (int32_t fps = 0);
+void _CDECL_ CloseGame(void);
+void CalcFrameTime(void);
 
-int32_t do_flythrough(CObject *obj,int32_t firstTime);
+int do_flythrough(CObject *obj,int firstTime);
 
 extern jmp_buf gameExitPoint;       // Do a long jump to this when game is over.
-extern int32_t DifficultyLevel;    // Difficulty level in 0..DIFFICULTY_LEVEL_COUNT-1, 0 = easiest, DIFFICULTY_LEVEL_COUNT-1 = hardest
-extern int32_t nDifficultyLevel;
-extern int32_t DetailLevel;        // Detail level in 0..NUM_DETAIL_LEVELS-1, 0 = boringest, NUM_DETAIL_LEVELS = coolest
-extern int32_t Global_laser_firingCount;
-extern int32_t Global_missile_firingCount;
-extern int32_t Render_depth;
+extern int DifficultyLevel;    // Difficulty level in 0..NDL-1, 0 = easiest, NDL-1 = hardest
+extern int nDifficultyLevel;
+extern int DetailLevel;        // Detail level in 0..NUM_DETAIL_LEVELS-1, 0 = boringest, NUM_DETAIL_LEVELS = coolest
+extern int Global_laser_firingCount;
+extern int Global_missile_firingCount;
+extern int Render_depth;
 extern fix Auto_fire_fusion_cannonTime, Fusion_charge;
 
-extern int32_t draw_gauges_on;
+extern int draw_gauges_on;
 
 extern void init_game_screen(void);
 
 extern void GameFlushInputs();    // clear all inputs
 
-extern int32_t Playing_game;    // True if playing game
-extern int32_t Auto_flythrough; // if set, start flythough automatically
-extern int32_t MarkCount;      // number of debugging marks set
+extern int Playing_game;    // True if playing game
+extern int Auto_flythrough; // if set, start flythough automatically
+extern int MarkCount;      // number of debugging marks set
 extern char faded_in;
 
 void StopTime (void);
-void StartTime (int32_t bReset);
+void StartTime (int bReset);
 void ResetTime (void);       // called when starting level
-int32_t TimeStopped (void);
+int TimeStopped (void);
 
 // If automapFlag == 1, then call automap routine to write message.
 
@@ -169,18 +169,20 @@ void ShowHelp();
 
 // show a message in a nice little box
 // turns off rear view & rear view cockpit
-extern int32_t Game_turbo_mode;
+void ResetRearView(void);
+
+extern int Game_turbo_mode;
 
 // returns ptr to escort robot, or NULL
 CObject *FindEscort();
 
 extern void ApplyModifiedPalette(void);
 
-int32_t GrToggleFullScreenGame(void);
+int GrToggleFullScreenGame(void);
 
 void ShowInGameWarning (const char *s);
 
-int32_t MarkPathToExit ();
+int MarkPathToExit ();
 
 void DoEffectsFrame (void);
 void UpdateEffects (void);
@@ -190,18 +192,18 @@ void TurnCheatsOff ();
 
 void GetSlowTicks (void);
 
-void SetFunctionMode (int32_t newFuncMode);
-int32_t DoGameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t bFrameTime = 1);
-int32_t GameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t fps = 0);
+void SetFunctionMode (int newFuncMode);
+int DoGameFrame (int bRenderFrame, int bReadControls, int bFrameTime = 1);
+int GameFrame (int bRenderFrame, int bReadControls, int fps = 60);
 
 void FullPaletteSave (void);
 
 /*
  * reads a CVariableLight structure from a CFILE
  */
-extern int16_t maxfps;
-extern int32_t timer_paused;
-extern uint32_t nCurrentVGAMode;
+extern short maxfps;
+extern int timer_paused;
+extern u_int32_t nCurrentVGAMode;
 
 
 #endif /* _GAME_H */

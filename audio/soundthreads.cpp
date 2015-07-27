@@ -16,7 +16,7 @@ CSoundThreadInfo tiSound;
 
 //------------------------------------------------------------------------------
 
-int32_t _CDECL_ SoundThread (void *pThreadId)
+int _CDECL_ SoundThread (void *pThreadId)
 {
 do {
 	while (!tiSound.bExec) {
@@ -102,12 +102,12 @@ if (tiSound.pThread) {
 
 //------------------------------------------------------------------------------
 
-int32_t StartSoundThread (tSoundTask nTask)
+int StartSoundThread (tSoundTask nTask)
 {
 #if 1
 if (tiSound.pThread) {
 #else
-if (tiSound.pThread && gameData.appData.bUseMultiThreading [rtSound]) {
+if (tiSound.pThread && gameData.app.bUseMultiThreading [rtSound]) {
 #endif
 	WaitForSoundThread ();
 	tiSound.nTask = nTask;

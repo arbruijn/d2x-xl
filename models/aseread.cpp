@@ -22,10 +22,10 @@
 
 static char	szLine [1024];
 static char	szLineBackup [1024];
-static int32_t nLine = 0;
+static int nLine = 0;
 static CFile *aseFile = NULL;
 static char *pszToken = NULL;
-static int32_t bErrMsg = 0;
+static int bErrMsg = 0;
 
 #define ASE_ROTATE_MODEL	1
 #define ASE_FLIP_TEXCOORD	1
@@ -38,7 +38,7 @@ using namespace ASE;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int32_t CModel::Error (const char *pszMsg)
+int CModel::Error (const char *pszMsg)
 {
 if (!bErrMsg) {
 	if (pszMsg)
@@ -64,7 +64,7 @@ return pszToken ? (float) atof (pszToken) : 0;
 
 //------------------------------------------------------------------------------
 
-static int32_t IntTok (const char *delims)
+static int IntTok (const char *delims)
 {
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
@@ -106,7 +106,7 @@ static void ReadVector (CFile& cf, CFloatVector3 *pv)
 	float y = FloatTok (" \t");
 	*pv = CFloatVector3::Create(x, y, z);
 #else	// need to rotate model for Descent
-	int32_t	i;
+	int	i;
 
 for (i = 0; i < 3; i++)
 	pv [i] = FloatTok (" \t");
@@ -132,30 +132,30 @@ return NULL;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int32_t ASE_ReleaseTextures (void)
+int ASE_ReleaseTextures (void)
 {
-	CModel*	pModel;
-	int32_t		bCustom, i;
+	CModel*	modelP;
+	int		bCustom, i;
 
 PrintLog (1, "releasing ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.modelData.nHiresModels, pModel = gameData.modelData.aseModels [bCustom].Buffer (); i; i--, pModel++)
-		pModel->ReleaseTextures ();
+	for (i = gameData.models.nHiresModels, modelP = gameData.models.aseModels [bCustom].Buffer (); i; i--, modelP++)
+		modelP->ReleaseTextures ();
 PrintLog (-1);
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t ASE_ReloadTextures (void)
+int ASE_ReloadTextures (void)
 {
-	CModel*	pModel;
-	int32_t		bCustom, i;
+	CModel*	modelP;
+	int		bCustom, i;
 
 PrintLog (1, "reloading ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.modelData.nHiresModels, pModel = gameData.modelData.aseModels [bCustom].Buffer (); i; i--, pModel++)
-		if (!pModel->ReloadTextures ()) {
+	for (i = gameData.models.nHiresModels, modelP = gameData.models.aseModels [bCustom].Buffer (); i; i--, modelP++)
+		if (!modelP->ReloadTextures ()) {
 			PrintLog (-1);
 			return 0;
 			}
@@ -210,9 +210,9 @@ Init ();
 
 //------------------------------------------------------------------------------
 
-int32_t CSubModel::ReadNode (CFile& cf)
+int CSubModel::ReadNode (CFile& cf)
 {
-	int32_t	i;
+	int	i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -229,10 +229,10 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int32_t CSubModel::ReadMeshVertexList (CFile& cf)
+int CSubModel::ReadMeshVertexList (CFile& cf)
 {
 	CVertex*	pv;
-	int32_t		i;
+	int		i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -263,10 +263,10 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int32_t CSubModel::ReadMeshFaceList (CFile& cf)
+int CSubModel::ReadMeshFaceList (CFile& cf)
 {
-	CFace*	pf;
-	int32_t	i;
+	CFace	*pf;
+	int	i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -297,10 +297,10 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int32_t CSubModel::ReadVertexTexCoord (CFile& cf)
+int CSubModel::ReadVertexTexCoord (CFile& cf)
 {
-	tTexCoord2f*	pt;
-	int32_t			i;
+	tTexCoord2f		*pt;
+	int				i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -328,10 +328,10 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int32_t CSubModel::ReadFaceTexCoord (CFile& cf)
+int CSubModel::ReadFaceTexCoord (CFile& cf)
 {
-	CFace*	pf;
-	int32_t	i;
+	CFace	*pf;
+	int	i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -354,11 +354,11 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int32_t CSubModel::ReadMeshNormals (CFile& cf)
+int CSubModel::ReadMeshNormals (CFile& cf)
 {
 	CFace*	pf;
 	CVertex*	pv;
-	int32_t		i;
+	int		i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -389,7 +389,7 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int32_t CSubModel::ReadMesh (CFile& cf, int32_t& nFaces, int32_t& nVerts)
+int CSubModel::ReadMesh (CFile& cf, int& nFaces, int& nVerts)
 {
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -453,7 +453,7 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int32_t CSubModel::Read (CFile& cf, int32_t& nFaces, int32_t& nVerts)
+int CSubModel::Read (CFile& cf, int& nFaces, int& nVerts)
 {
 while ((pszToken = ReadLine (cf))) {
 	if (*pszToken == '}')
@@ -587,7 +587,7 @@ Init ();
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::ReleaseTextures (void)
+int CModel::ReleaseTextures (void)
 {
 m_textures.Release ();
 return 0;
@@ -595,41 +595,40 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::ReloadTextures (void)
+int CModel::ReloadTextures (void)
 {
 return m_textures.Bind (m_bCustom);
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::FreeTextures (void)
+int CModel::FreeTextures (void)
 {
 m_textures.Destroy ();
 return 0;
 }
 //------------------------------------------------------------------------------
 
-int32_t CModel::ReadTexture (CFile& cf, int32_t nBitmap)
+int CModel::ReadTexture (CFile& cf, int nBitmap)
 {
-	CBitmap	*pBm = m_textures.m_bitmaps + nBitmap;
+	CBitmap	*bmP = m_textures.m_bitmaps + nBitmap;
 	char		fn [FILENAME_LEN], *ps;
-	int32_t		l;
+	int		l;
 
-sprintf (pBm->Name (), "ASE model %d texture %d", m_nModel, nBitmap);
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
-pBm->SetFlat (0);
+bmP->SetFlat (0);
 while ((pszToken = ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*BITMAP")) {
-		if (pBm->Buffer ())	//duplicate
+		if (bmP->Buffer ())	//duplicate
 			return CModel::Error ("duplicate bitmap");
 		CFile::SplitPath (StrTok ("\""), NULL, fn, NULL);
-		CTGA tga (pBm);
+		CTGA tga (bmP);
 		if (!tga.ReadModelTexture (::strlwr (fn), m_bCustom))
 			return CModel::Error ("texture not found");
-		l = (int32_t) strlen (fn) + 1;
+		l = (int) strlen (fn) + 1;
 		if (!m_textures.m_names [nBitmap].Create (l))
 			return CModel::Error ("out of memory");
 		memcpy (m_textures.m_names [nBitmap].Buffer (), fn, l);
@@ -637,7 +636,7 @@ while ((pszToken = ReadLine (cf))) {
 			m_textures.m_nTeam [nBitmap] = atoi (ps + 5) + 1;
 		else
 			m_textures.m_nTeam [nBitmap] = 0;
-		pBm->SetTeam (m_textures.m_nTeam [nBitmap]);
+		bmP->SetTeam (m_textures.m_nTeam [nBitmap]);
 		}
 	}
 return CModel::Error ("unexpected end of file");
@@ -645,18 +644,18 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::ReadOpacity (CFile& cf, int32_t nBitmap)
+int CModel::ReadOpacity (CFile& cf, int nBitmap)
 {
-	CBitmap	*pBm = m_textures.m_bitmaps + nBitmap;
+	CBitmap	*bmP = m_textures.m_bitmaps + nBitmap;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
-pBm->SetFlat (0);
+bmP->SetFlat (0);
 while ((pszToken = ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*BITMAP")) {
-		if (!pBm->Buffer ())	//duplicate
+		if (!bmP->Buffer ())	//duplicate
 			return CModel::Error ("missing glow bitmap");
 		}
 	}
@@ -665,27 +664,27 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::ReadMaterial (CFile& cf)
+int CModel::ReadMaterial (CFile& cf)
 {
-	int32_t		i;
-	CBitmap	*pBm;
+	int		i;
+	CBitmap	*bmP;
 
 i = IntTok (" \t");
 if ((i < 0) || (i >= m_textures.m_nBitmaps))
 	return CModel::Error ("invalid bitmap number");
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
-pBm = m_textures.m_bitmaps + i;
-pBm->SetFlat (1);
+bmP = m_textures.m_bitmaps + i;
+bmP->SetFlat (1);
 while ((pszToken = ReadLine (cf))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MATERAL_DIFFUSE")) {
 		CRGBColor	avgRGB;
-		avgRGB.Red () = (uint8_t) FRound (FloatTok (" \t") * 255);
-		avgRGB.Green () = (uint8_t) FRound (FloatTok (" \t") * 255);
-		avgRGB.Blue () = (uint8_t) FRound (FloatTok (" \t") * 255);
-		pBm->SetAvgColor (avgRGB);
+		avgRGB.Red () = (ubyte) (FloatTok (" \t") * 255 + 0.5);
+		avgRGB.Green () = (ubyte) (FloatTok (" \t") * 255 + 0.5);
+		avgRGB.Blue () = (ubyte) (FloatTok (" \t") * 255 + 0.5);
+		bmP->SetAvgColor (avgRGB);
 		}
 	else if (!strcmp (pszToken, "*MAP_DIFFUSE")) {
 		if (!ReadTexture (cf, i))
@@ -701,7 +700,7 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::ReadMaterialList (CFile& cf)
+int CModel::ReadMaterialList (CFile& cf)
 {
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -709,7 +708,7 @@ if (!(pszToken = ReadLine (cf)))
 	return CModel::Error ("unexpected end of file");
 if (strcmp (pszToken, "*MATERIAL_COUNT"))
 	return CModel::Error ("material count missing");
-int32_t nBitmaps = IntTok (" \t");
+int nBitmaps = IntTok (" \t");
 if (!nBitmaps)
 	return CModel::Error ("no bitmaps specified");
 if (!(m_textures.Create (nBitmaps)))
@@ -731,7 +730,7 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::ReadSubModel (CFile& cf)
+int CModel::ReadSubModel (CFile& cf)
 {
 	CSubModel	*psm;
 
@@ -747,7 +746,7 @@ return psm->Read (cf, m_nFaces, m_nVerts);
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::FindSubModel (const char* pszName)
+int CModel::FindSubModel (const char* pszName)
 {
 	CSubModel *psm;
 
@@ -769,38 +768,35 @@ for (psm = m_subModels; psm; psm = psm->m_next)
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::Read (const char* filename, int16_t nModel, int32_t bCustom)
+int CModel::Read (const char* filename, short nModel, int bCustom)
 {
 #if DBG
 if (nModel == nDbgModel)
-	BRP;
+	nDbgModel = nDbgModel;
 #endif
 
 	CFile		cf;
-	int32_t		nResult = 1;
+	int		nResult = 1;
 
 if (m_nModel >= 0)
 	return 0;
 
 if (gameStates.app.bCacheModelData) {
-	Destroy ();
 	try {
 		if ((IsPlayerShip (nModel) || (nModel == COCKPIT_MODEL))
-			 ? ReadBinary (filename, bCustom, cf.Date (filename, gameFolders.var.szModels [bCustom], 0))
-			 : ReadBinary (nModel, bCustom, cf.Date (filename, gameFolders.var.szModels [bCustom], 0)))
+			 ? ReadBinary (filename, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0))
+			 : ReadBinary (nModel, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0)))
 			return 1;
 		}
 	catch(...) {
 		PrintLog (0, "Compiled model file 'model%03d.bin' is damaged and will be replaced\n", nModel);
+		Destroy ();
 		}
 	}
 
-if (bCustom 
-	 ? !cf.Open (filename, gameFolders.mods.szModels [bCustom - 1], "rb", 0)
-	 : !cf.Open (filename, gameFolders.game.szModels, "rb", 0))
+if (!cf.Open (filename, gameFolders.szModelDir [bCustom], "rb", 0)) {
 	return 0;
-
-Destroy ();
+	}
 bErrMsg = 0;
 aseFile = &cf;
 Init ();
@@ -808,7 +804,7 @@ m_nModel = nModel;
 m_bCustom = bCustom;
 #if DBG
 if (nModel == nDbgModel)
-	BRP;
+	nDbgModel = nDbgModel;
 nLine = 0;
 #endif
 while ((pszToken = ReadLine (cf))) {
@@ -826,7 +822,7 @@ if (!nResult)
 	Destroy ();
 else {
 	LinkSubModels ();
-	gameData.modelData.bHaveHiresModel [uint32_t (this - gameData.modelData.aseModels [bCustom != 0].Buffer ())] = 1;
+	gameData.models.bHaveHiresModel [uint (this - gameData.models.aseModels [bCustom != 0].Buffer ())] = 1;
 	if (gameStates.app.bCacheModelData) {
 		if (IsPlayerShip (nModel))
 			SaveBinary (filename);
@@ -840,11 +836,11 @@ return nResult;
 
 //------------------------------------------------------------------------------
 
-int32_t CSubModel::SaveBinary (CFile& cf)
+int CSubModel::SaveBinary (CFile& cf)
 {
 #if DBG
 if (!strcmp (m_szName, "$WINGTIP2-0"))
-	BRP;
+	nDbgModel = nDbgModel;
 #endif
 cf.Write (m_szName, 1, sizeof (m_szName));
 cf.Write (m_szParent, 1, sizeof (m_szParent));
@@ -855,14 +851,14 @@ cf.WriteShort (m_nFaces);
 cf.WriteShort (m_nVerts);
 cf.WriteShort (m_nTexCoord);
 cf.WriteShort (m_nIndex);
-cf.WriteByte (int8_t (m_bRender));
-cf.WriteByte (int8_t (m_bGlow));
-cf.WriteByte (int8_t (m_bFlare));
-cf.WriteByte (int8_t (m_bBillboard));
-cf.WriteByte (int8_t (m_bThruster));
-cf.WriteByte (int8_t (m_bWeapon));
-cf.WriteByte (int8_t (m_bHeadlight));
-cf.WriteByte (int8_t (m_bBombMount));
+cf.WriteByte (sbyte (m_bRender));
+cf.WriteByte (sbyte (m_bGlow));
+cf.WriteByte (sbyte (m_bFlare));
+cf.WriteByte (sbyte (m_bBillboard));
+cf.WriteByte (sbyte (m_bThruster));
+cf.WriteByte (sbyte (m_bWeapon));
+cf.WriteByte (sbyte (m_bHeadlight));
+cf.WriteByte (sbyte (m_bBombMount));
 cf.WriteByte (m_nGun);
 cf.WriteByte (m_nBomb);
 cf.WriteByte (m_nMissile);
@@ -880,7 +876,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::SaveBinary (void)
+int CModel::SaveBinary (void)
 {
 	char		szFilename [FILENAME_LEN];
 
@@ -890,9 +886,9 @@ return SaveBinary (szFilename);
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::SaveBinary (const char* szFilename)
+int CModel::SaveBinary (const char* szFilename)
 {
-if (!*gameFolders.var.szModels [m_bCustom])
+if (!*gameFolders.szModelDir [m_bCustom])
 	return 0;
 
 	CFile		cf;
@@ -901,9 +897,7 @@ if (!*gameFolders.var.szModels [m_bCustom])
 strcpy (szBin, szFilename);
 strcpy (strrchr (szBin, '.'), ".bin");
 
-if (m_bCustom == 2)
-	CFile::MkDir (gameFolders.var.szModels [m_bCustom]);
-if (!cf.Open (szBin, gameFolders.var.szModels [m_bCustom], "wb", 0))
+if (!cf.Open (szBin, gameFolders.szModelDir [m_bCustom], "wb", 0))
 	return 0;
 cf.WriteInt (MODEL_DATA_VERSION);
 cf.WriteInt (m_nModel);
@@ -913,25 +907,26 @@ cf.WriteInt (m_nFaces);
 cf.WriteInt (m_bCustom);
 cf.WriteInt (m_textures.m_nBitmaps);
 
-int32_t h, i;
+int h, i;
 
 for (i = 0; i < m_textures.m_nBitmaps; i++) {
-	h = int32_t (m_textures.m_names [i].Length ());
+	h = int (m_textures.m_names [i].Length ());
 	cf.WriteInt (h);
 	cf.Write (m_textures.m_names [i].Buffer (), 1, h);
 	}
 cf.Write (m_textures.m_nTeam.Buffer (), 1, m_textures.m_nBitmaps);
 
-CSubModel *pSubModel = m_subModels;
-for (i = 0; i < m_nSubModels; i++, pSubModel = pSubModel->m_next)
-	pSubModel->SaveBinary (cf);
+CSubModel*	smP = m_subModels;
+
+for (i = 0; i < m_nSubModels; i++, smP = smP->m_next)
+	smP->SaveBinary (cf);
 cf.Close ();
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CSubModel::ReadBinary (CFile& cf)
+int CSubModel::ReadBinary (CFile& cf)
 {
 m_next = NULL;
 cf.Read (m_szName, 1, sizeof (m_szName));
@@ -943,14 +938,14 @@ m_nFaces = cf.ReadShort ();
 m_nVerts = cf.ReadShort ();
 m_nTexCoord = cf.ReadShort ();
 m_nIndex = cf.ReadShort ();
-m_bRender = uint8_t (cf.ReadByte ());
-m_bGlow = uint8_t (cf.ReadByte ());
-m_bFlare = uint8_t (cf.ReadByte ());
-m_bBillboard = uint8_t (cf.ReadByte ());
-m_bThruster = uint8_t (cf.ReadByte ());
-m_bWeapon = uint8_t (cf.ReadByte ());
-m_bHeadlight = uint8_t (cf.ReadByte ());
-m_bBombMount = uint8_t (cf.ReadByte ());
+m_bRender = ubyte (cf.ReadByte ());
+m_bGlow = ubyte (cf.ReadByte ());
+m_bFlare = ubyte (cf.ReadByte ());
+m_bBillboard = ubyte (cf.ReadByte ());
+m_bThruster = ubyte (cf.ReadByte ());
+m_bWeapon = ubyte (cf.ReadByte ());
+m_bHeadlight = ubyte (cf.ReadByte ());
+m_bBombMount = ubyte (cf.ReadByte ());
 m_nGun = cf.ReadByte ();
 m_nBomb = cf.ReadByte ();
 m_nMissile = cf.ReadByte ();
@@ -974,7 +969,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::ReadBinary (int16_t nModel, int32_t bCustom, time_t tASE)
+int CModel::ReadBinary (short nModel, int bCustom, time_t tASE)
 {
 	char		szFilename [FILENAME_LEN];
 
@@ -984,24 +979,24 @@ return ReadBinary (szFilename, bCustom, tASE);
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::ReadBinary (const char* szFilename, int32_t bCustom, time_t tASE)
+int CModel::ReadBinary (const char* szFilename, int bCustom, time_t tASE)
 {
 if (!(szFilename && *szFilename))
 	return 0;
 
 	CFile		cf;
-	int32_t	h, i;
+	int		h, i;
 	char		szBin [FILENAME_LEN];
 
 strcpy (szBin, szFilename);
 strcpy (strrchr (szBin, '.'), ".bin");
 
-time_t tBIN = cf.Date (szBin, gameFolders.var.szModels [bCustom], 0);
+time_t tBIN = cf.Date (szBin, gameFolders.szModelDir [bCustom], 0);
 
-if ((tBIN < 0) || (tASE > tBIN))
+if (tASE > tBIN)
 	return 0;
 
-if (!cf.Open (szBin, gameFolders.var.szModels [bCustom], "rb", 0))
+if (!cf.Open (szBin, gameFolders.szModelDir [bCustom], "rb", 0))
 	return 0;
 h = cf.ReadInt ();
 if (h != MODEL_DATA_VERSION) {
@@ -1052,22 +1047,22 @@ m_textures.m_nTeam.Read (cf);
 for (i = 0; i < m_textures.m_nBitmaps; i++)
 	m_textures.m_bitmaps [i].SetTeam (m_textures.m_nTeam [i]);
 
-CSubModel*	pSubModel, * pTail = NULL;
+CSubModel*	smP, * tailP = NULL;
 
 m_subModels = NULL;
 for (i = 0; i < m_nSubModels; i++) {
-	if (!(pSubModel = new CSubModel)) {
+	if (!(smP = new CSubModel)) {
 		cf.Close ();
 		Destroy ();
 		return 0;
 		}
 	if (m_subModels)
-		pTail->m_next = pSubModel;
+		tailP->m_next = smP;
 	else
-		m_subModels = pSubModel;
-	pTail = pSubModel;
+		m_subModels = smP;
+	tailP = smP;
 	try {
-		if (!pSubModel->ReadBinary (cf)) {
+		if (!smP->ReadBinary (cf)) {
 			cf.Close ();
 			Destroy ();
 			return 0;

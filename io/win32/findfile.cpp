@@ -1,3 +1,16 @@
+/*
+THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
+SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
+END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
+ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
+IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
+SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
+FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
+CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
+AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.  
+COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
+*/
+
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -17,7 +30,7 @@ char *UnicodeToAsc (char *str, const wchar_t *w_str)
 {
 if (!w_str)
 	return NULL;
-int32_t len = wcslen (w_str) + 1;
+int len = wcslen (w_str) + 1;
 if (WideCharToMultiByte (CP_ACP, 0, w_str, -1, str, len, NULL, NULL)) 
 	return str;
 return NULL;
@@ -30,7 +43,7 @@ wchar_t *AscToUnicode (wchar_t *w_str, const char *str)
 	bool bAlloc = false;
 if (!str)
 	return NULL;
-int32_t len = (int32_t) strlen (str) + 1;
+int len = (int) strlen (str) + 1;
 if (!w_str) {
 	bAlloc = true;
 	w_str = new wchar_t [len];
@@ -50,26 +63,15 @@ return NULL;
 
 // ----------------------------------------------------------------------------
 
-int32_t FileFindFirst (const char *pszFilter, FILEFINDSTRUCT *ffstruct, int32_t bFindDirs)
+int FileFindFirst (const char *pszFilter, FILEFINDSTRUCT *ffstruct, int bFindDirs)
 {
 	WIN32_FIND_DATA find;
-	char		szFilter [FILENAME_LEN];
 #ifdef _WIN32_WCE
 	wchar_t	w_str [FILENAME_LEN];
 	char		str [FILENAME_LEN];
 #endif
 
 find.dwFileAttributes = bFindDirs ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
-if (bFindDirs) {
-	int32_t l = (int32_t) strlen (pszFilter);
-	if (!l)
-		return 1;
-	if ((pszFilter [l - 1] == '/') || (pszFilter [l - 1] == '\\')) {
-		memcpy (szFilter, pszFilter, l - 1);
-		szFilter [l - 1] = '\0';
-		pszFilter = szFilter;
-		}
-	}
 _FindFileHandle = FindFirstFile (AscToUnicode (w_str, pszFilter), &find);
 if (_FindFileHandle == INVALID_HANDLE_VALUE) 
 	return 1;
@@ -82,7 +84,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int32_t FileFindNext (FILEFINDSTRUCT *ffstruct, int32_t bFindDirs)
+int FileFindNext (FILEFINDSTRUCT *ffstruct, int bFindDirs)
 {
 	WIN32_FIND_DATA find;
 #ifdef _WIN32_WCE
@@ -101,7 +103,7 @@ return 1;
  
 // ----------------------------------------------------------------------------
 
-int32_t FileFindClose(void)
+int FileFindClose(void)
 {
 return FindClose (_FindFileHandle) ? 0 : 1;
 }
@@ -109,10 +111,10 @@ return FindClose (_FindFileHandle) ? 0 : 1;
 // ----------------------------------------------------------------------------
 
 #if 0
-int32_t GetFileDateTime(int32_t filehandle, FILETIMESTRUCT *ftstruct)
+int GetFileDateTime(int filehandle, FILETIMESTRUCT *ftstruct)
 {
 	FILETIME filetime;
-	int32_t retval;
+	int retval;
 
 	retval = GetFileTime((HANDLE)filehandle, NULL, NULL, &filetime);
 	if (retval) {
@@ -124,10 +126,10 @@ int32_t GetFileDateTime(int32_t filehandle, FILETIMESTRUCT *ftstruct)
 
 // ----------------------------------------------------------------------------
 //returns 0 if no error
-int32_t SetFileDateTime(int32_t filehandle, FILETIMESTRUCT *ftstruct)
+int SetFileDateTime(int filehandle, FILETIMESTRUCT *ftstruct)
 {
 	FILETIME ft;
-	int32_t retval;
+	int retval;
 
 	DosDateTimeToFileTime(ftstruct->date, ftstruct->time, &ft);
 	retval = SetFileTime((HANDLE)filehandle, NULL, NULL, &ft);

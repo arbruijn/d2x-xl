@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include "pstypes.h"
 
-extern int32_t bShowMemInfo;
+extern int bShowMemInfo;
 
 #if DBG
 #	define DBG_MALLOC	1
@@ -25,10 +25,10 @@ extern int32_t bShowMemInfo;
 #if DBG_MALLOC
 
 void _CDECL_ MemDisplayBlocks (void);
-void * MemAlloc (uint32_t size, const char * var, const char * file, int32_t line, int32_t fill_zero);
-void * MemRealloc (void * buffer, uint32_t size, const char * var, const char * file, int32_t line);
+void * MemAlloc (uint size, const char * var, const char * file, int line, int fill_zero);
+void * MemRealloc (void * buffer, uint size, const char * var, const char * file, int line);
 void MemFree (void * buffer);
-char * MemStrDup (const char * str, const char * var, const char * file, int32_t line);
+char * MemStrDup (const char * str, const char * var, const char * file, int line);
 void MemInit ();
 
 /* DPH: Changed malloc, etc. to d_malloc. Overloading system calls is very evil and error prone */
@@ -44,8 +44,8 @@ void MemValidateHeap ();
 
 #else
 
-void *MemAlloc (uint32_t size);
-void *MemRealloc (void * buffer, uint32_t size);
+void *MemAlloc (uint size);
+void *MemRealloc (void * buffer, uint size);
 void MemFree (void * buffer);
 char *MemStrDup (const char * str);
 
@@ -59,7 +59,7 @@ char *MemStrDup (const char * str);
 
 #endif
 
-extern uint32_t nCurAllocd, nMaxAllocd;
+extern uint nCurAllocd, nMaxAllocd;
 
 #define CREATE(_p,_s,_f)	if ((_p).Create (_s)) (_p).Clear (_f); else return false
 #define RESIZE(_p,_s)		if (!(_p).Resize (_s)) return false

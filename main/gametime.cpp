@@ -33,20 +33,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 
 // limit framerate to 30 while recording demo and to 40 when in automap and framerate display is disabled
+#define MAXFPS		((gameData.demo.nState == ND_STATE_RECORDING) ? 30 : \
+                   (automap.Display () && !(automap.Radar () || (gameStates.render.bShowFrameRate == 1))) ? 40 : \
+						 ((gameOpts->render.stereo.nGlasses == 5) && (gameOpts->render.nMaxFPS < 120)) ? 2 * gameOpts->render.nMaxFPS : gameOpts->render.nMaxFPS)
+
 #define EXACT_FRAME_TIME	1
-
-//------------------------------------------------------------------------------
-
-int32_t MaxFPS (void)
-{
-if (gameData.demoData.nState == ND_STATE_RECORDING) 
-	return 30;
-if (automap.Active () && !(automap.Radar () || (gameStates.render.bShowFrameRate == 1)))
-	return 40;
-if ((gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_NVIDIA) && (gameOpts->render.nMaxFPS < 120)) 
-	return 2 * gameOpts->render.nMaxFPS;
-return gameOpts->render.nMaxFPS;
-}
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -64,9 +55,7 @@ class CGenericFrameTime {
 		virtual time_t Elapsed (void) = 0;
 
 	public:
-		CGenericFrameTime () : m_tMinFrame (0) {}
-		virtual ~CGenericFrameTime () {}
-		virtual void Compute (int32_t fps = 0) = 0;
+		virtual void Compute (void) = 0;
 	};
 
 //------------------------------------------------------------------------------
@@ -84,9 +73,7 @@ class CFrameTime : public CGenericFrameTime {
 			}
 
 	public:
-		CFrameTime () {}
-		virtual ~CFrameTime () {}
-		virtual void Compute (int32_t fps = 0) {
+		virtual void Compute (void) {
 			while (Elapsed () < m_tMinFrame)
 				G3_SLEEP (0);
 			m_tLast = m_tick;
@@ -109,7 +96,7 @@ class CWindowsFrameTime : public CFrameTime <LARGE_INTEGER> {
 		virtual time_t Elapsed (void);
 
 	public:
-		virtual void Compute (int32_t fps = 0);
+		virtual void Compute (void);
 		explicit CWindowsFrameTime() { Setup (); }
 	};
 
@@ -139,7 +126,7 @@ return time_t (m_tick.QuadPart - m_tLast.QuadPart);
 
 //------------------------------------------------------------------------------
 
-void CWindowsFrameTime::Compute (int32_t fps)
+void CWindowsFrameTime::Compute (void)
 {
 m_ticksPerMSec = time_t (m_ticksPerSec.QuadPart) / 1000;
 m_tError += time_t (m_ticksPerSec.QuadPart) - m_ticksPerMSec * 1000;
@@ -148,7 +135,7 @@ if (tSlack > 0) {
 	m_ticksPerMSec += tSlack;
 	m_tError -= tSlack * m_ticksPerMSec;
 	}
-m_tMinFrame = fps ? time_t (m_ticksPerSec.QuadPart / LONGLONG (fps)) : 0;
+m_tMinFrame = time_t (m_ticksPerSec.QuadPart / LONGLONG (MAXFPS));
 CFrameTime<LARGE_INTEGER>::Compute ();
 }
 
@@ -163,7 +150,6 @@ class CUnixFrameTime : public CFrameTime <int64_t> {
 
 	public:
 		virtual void Setup (void);
-		virtual void Compute (int32_t fps = 0);
 
 		explicit CUnixFrameTime() { Setup (); }
 	};
@@ -172,15 +158,8 @@ class CUnixFrameTime : public CFrameTime <int64_t> {
 
 void CUnixFrameTime::Setup (void)
 {
+m_tMinFrame = time_t (1000000 / MAXFPS);
 CFrameTime<int64_t>::Setup ();
-}
-
-//------------------------------------------------------------------------------
-
-void CUnixFrameTime::Compute (int32_t fps)
-{
-m_tMinFrame = fps ? time_t (1000000 / fps) : 0;
-CFrameTime<int64_t>::Compute ();
 }
 
 //------------------------------------------------------------------------------
@@ -210,7 +189,7 @@ class CSDLFrameTime : public CFrameTime <time_t> {
 		virtual time_t FrameTime (void);
 
 	public:
-		virtual void Compute (int32_t fps = 0);
+		virtual void Compute (void);
 
 		explicit CSDLFrameTime() { Setup (); }
 	};
@@ -232,9 +211,9 @@ return time_t (m_tick - m_tLast);
 
 //------------------------------------------------------------------------------
 
-void CSDLFrameTime::Compute (int32_t fps = 0)
+void CSDLFrameTime::Compute (void)
 {
-m_tMinFrame = fps ? 1000 / fps : 0;
+m_tMinFrame = 1000 / MAXFPS;
 CFrameTime<time_t>::Compute ();
 }
 
@@ -284,27 +263,31 @@ void StopTime (void)
 {
 if (pfnTIRStop)
 	pfnTIRStop ();
-if (++gameData.timeData.nPaused == 1) {
-	gameData.timeData.xStopped = SDL_GetTicks ();
+if (++gameData.time.nPaused == 1) {
+	gameData.time.xStopped = SDL_GetTicks ();
 	fix xTime = TimerGetFixedSeconds ();
-	gameData.timeData.xSlack = xTime - gameData.timeData.xLast;
-	if (gameData.timeData.xSlack < 0)
-		gameData.timeData.xLast = 0;
+	gameData.time.xSlack = xTime - gameData.time.xLast;
+	if (gameData.time.xSlack < 0)
+		gameData.time.xLast = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void StartTime (int32_t bReset)
+void StartTime (int bReset)
 {
-if (gameData.timeData.nPaused <= 0)
+if (gameData.time.nPaused <= 0)
 	return;
 if (bReset)
-	gameData.timeData.nPaused = 1;
-if (!--gameData.timeData.nPaused) {
+	gameData.time.nPaused = 1;
+if (!--gameData.time.nPaused) {
 	fix xTime = TimerGetFixedSeconds ();
-	gameData.timeData.xLast = xTime - gameData.timeData.xSlack;
-	gameData.physicsData.fLastTick += float (SDL_GetTicks () - gameData.timeData.xStopped);
+#if defined (TIMER_TEST) && defined (_DEBUG)
+	if (gameData.time.xLast < 0)
+		Int3 ();		//get Matt!!!!
+#endif
+	gameData.time.xLast = xTime - gameData.time.xSlack;
+	gameData.physics.fLastTick += float (SDL_GetTicks () - gameData.time.xStopped);
 	}
 if (pfnTIRStart)
 	pfnTIRStart ();
@@ -312,107 +295,159 @@ if (pfnTIRStart)
 
 //------------------------------------------------------------------------------
 
-int32_t TimeStopped (void)
+int TimeStopped (void)
 {
-return gameData.timeData.nPaused > 0;
+return gameData.time.nPaused > 0;
 }
 
 //------------------------------------------------------------------------------
 
 void ResetTime (void)
 {
-gameData.timeData.SetTime (0);
-gameData.timeData.xLast = TimerGetFixedSeconds ();
+gameData.time.SetTime (0);
+gameData.time.xLast = TimerGetFixedSeconds ();
 }
 
 //------------------------------------------------------------------------------
 
-void CalcFrameTime (int32_t fps)
+void CalcFrameTime (void)
 {
-if (gameData.appData.bGamePaused) {
-	gameData.timeData.xLast = TimerGetFixedSeconds ();
-	gameData.timeData.SetTime (0);
-	gameData.timeData.xRealFrame = 0;
+if (gameData.app.bGamePaused) {
+	gameData.time.xLast = TimerGetFixedSeconds ();
+	gameData.time.SetTime (0);
+	gameData.time.xRealFrame = 0;
 	return;
 	}
 
 fix 	timerValue,
-		xLastFrameTime = gameData.timeData.xFrame;
+		xLastFrameTime = gameData.time.xFrame;
 
 GetSlowTicks ();
 
-if (fps <= 0)
-	fps = MaxFPS ();
-
 #if EXACT_FRAME_TIME
 
-	int32_t nDeltaTime;
+	int nDeltaTime;
 
-if (fps <= 1) 
+if (MAXFPS <= 1) 
 	nDeltaTime = 0;
 else {
 #ifdef RELEASE
 	if (!gameOpts->app.bExpertMode && (gameOpts->render.nMaxFPS > 1))
 		gameOpts->render.nMaxFPS = MAX_FRAMERATE;
 #endif
-	if (!gameData.timeData.tLast)
+	if (!gameData.time.tLast)
 		nDeltaTime = 0;
-	else 
-		CFrameTimeFactory::GetInstance ()->GetTimer ()->Compute (fps);
+	else {
+#if 1
+		CFrameTimeFactory::GetInstance ()->GetTimer ()->Compute ();
+#elif defined(_WIN32)
+		static time_t tError = 0, ticksPerMSec = 0;
+		static LARGE_INTEGER tLast = {0}, ticksPerSec;
+
+		if (!ticksPerMSec) 
+			QueryPerformanceFrequency (&ticksPerSec);
+		ticksPerMSec = time_t (ticksPerSec.QuadPart) / 1000;
+		tError += time_t (ticksPerSec.QuadPart) - ticksPerMSec * 1000;
+		time_t tSlack = tError / ticksPerMSec;
+		if (tSlack > 0) {
+			ticksPerMSec += tSlack;
+			tError -= tSlack * ticksPerMSec;
+			}
+		LARGE_INTEGER tick;
+		time_t tFrame, tMinFrame = time_t (ticksPerSec.QuadPart / LONGLONG (MAXFPS));
+		for (;;) {
+  			QueryPerformanceCounter (&tick);
+			tFrame = time_t (tick.QuadPart - tLast.QuadPart);
+			if (tFrame >= tMinFrame) 
+				break;
+			G3_SLEEP (0);
+			}
+		tLast = tick;
+#elif defined(__unix__) || defined(__macosx__)
+		static int64_t tLast = 0;
+
+		int64_t tick, tFrame, tMinFrame = int64_t (1000000 / MAXFPS);
+		for (;;) {
+  			tFrame = tick - tLast;
+			if (tFrame >= tMinFrame) 
+				break;
+			G3_SLEEP (0);
+			}
+		tLast = tick;
+#else
+		static float fSlack = 0;
+
+		int nFrameTime = gameStates.app.nSDLTicks [0] - gameData.time.tLast;
+		int nMinFrameTime = 1000 / MAXFPS;
+		nDeltaTime = nMinFrameTime - nFrameTime;
+		fSlack += 1000.0f / MAXFPS - nMinFrameTime;
+		if (fSlack >= 1.0f) {
+			nDeltaTime += int (fSlack);
+			fSlack -= int (fSlack);
+			}
+		if (0 < nDeltaTime)
+			G3_SLEEP (nDeltaTime);
+		else
+			nDeltaTime = 0;
+#endif
+		}
 	}
 
 timerValue = MSEC2X (gameStates.app.nSDLTicks [0]);
 
 #else
 
-fix xMinFrameTime = ((fps > 1) ? I2X (1) / fps : 1);
+fix xMinFrameTime = ((MAXFPS > 1) ? I2X (1) / MAXFPS : 1);
 do {
 	timerValue = TimerGetFixedSeconds ();
-   gameData.timeData.SetTime (timerValue - gameData.timeData.xLast);
-	if (fps < 2)
+   gameData.time.SetTime (timerValue - gameData.time.xLast);
+	if (MAXFPS < 2)
 		break;
 	G3_SLEEP (0);
-	} while (gameData.timeData.xFrame < xMinFrameTime);
+	} while (gameData.time.xFrame < xMinFrameTime);
 
 #endif
 
-gameData.timeData.SetTime (timerValue - gameData.timeData.xLast);
-gameData.timeData.xRealFrame = gameData.timeData.xFrame;
+gameData.time.SetTime (timerValue - gameData.time.xLast);
+gameData.time.xRealFrame = gameData.time.xFrame;
 if (gameStates.app.cheats.bTurboMode)
-	gameData.timeData.xFrame *= 2;
-gameData.timeData.xLast = timerValue;
+	gameData.time.xFrame *= 2;
+gameData.time.xLast = timerValue;
 
 #if EXACT_FRAME_TIME
 #	ifdef _WIN32
-gameData.timeData.tLast = SDL_GetTicks ();
+gameData.time.tLast = SDL_GetTicks ();
 #else
 if (nDeltaTime > 0)
-	gameData.timeData.tLast += nDeltaTime;
+	gameData.time.tLast += nDeltaTime;
 #	endif
 #else
 
-gameData.timeData.tLast = SDL_GetTicks ();
+gameData.time.tLast = SDL_GetTicks ();
 
 #endif
 
-if (gameData.timeData.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
-	gameData.timeData.SetTime (xLastFrameTime);	//d:\temp\dm_test.then use time from last frame
+if (gameData.time.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
+	gameData.time.SetTime (xLastFrameTime);	//d:\temp\dm_test.then use time from last frame
 #if Arcade_mode
-gameData.timeData.xFrame /= 2;
+gameData.time.xFrame /= 2;
+#endif
+#if defined (TIMER_TEST) && defined (_DEBUG)
+gameData.time.xStops = gameData.time.xStarts = 0;
 #endif
 //	Set value to determine whether homing missile can see target.
 //	The lower frametime is, the more likely that it can see its target.
 #if 0
 if (gameStates.limitFPS.bHomers)
-	gameData.weaponData.xMinTrackableDot = MIN_TRACKABLE_DOT;
-else if (gameData.timeData.xFrame <= I2X (1)/64)
-	gameData.weaponData.xMinTrackableDot = MIN_TRACKABLE_DOT;	// -- 3* (I2X (1) - MIN_TRACKABLE_DOT)/4 + MIN_TRACKABLE_DOT;
-else if (gameData.timeData.xFrame < I2X (1)/32)
-	gameData.weaponData.xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - 2*gameData.timeData.xFrame;	// -- FixMul (I2X (1) - MIN_TRACKABLE_DOT, I2X (1)-4*gameData.timeData.xFrame) + MIN_TRACKABLE_DOT;
-else if (gameData.timeData.xFrame < I2X (1)/4)
-	gameData.weaponData.xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - I2X (1)/16 - gameData.timeData.xFrame;	// -- FixMul (I2X (1) - MIN_TRACKABLE_DOT, I2X (1)-4*gameData.timeData.xFrame) + MIN_TRACKABLE_DOT;
+	xMinTrackableDot = MIN_TRACKABLE_DOT;
+else if (gameData.time.xFrame <= I2X (1)/64)
+	xMinTrackableDot = MIN_TRACKABLE_DOT;	// -- 3* (I2X (1) - MIN_TRACKABLE_DOT)/4 + MIN_TRACKABLE_DOT;
+else if (gameData.time.xFrame < I2X (1)/32)
+	xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - 2*gameData.time.xFrame;	// -- FixMul (I2X (1) - MIN_TRACKABLE_DOT, I2X (1)-4*gameData.time.xFrame) + MIN_TRACKABLE_DOT;
+else if (gameData.time.xFrame < I2X (1)/4)
+	xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - I2X (1)/16 - gameData.time.xFrame;	// -- FixMul (I2X (1) - MIN_TRACKABLE_DOT, I2X (1)-4*gameData.time.xFrame) + MIN_TRACKABLE_DOT;
 else
-	gameData.weaponData.xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - I2X (1)/8;
+	xMinTrackableDot = MIN_TRACKABLE_DOT + I2X (1)/64 - I2X (1)/8;
 #endif
 }
 
@@ -420,7 +455,7 @@ else
 
 void GetSlowTicks (void)
 {
-gameData.timeData.tLast = gameStates.app.nSDLTicks [0];
+gameData.time.tLast = gameStates.app.nSDLTicks [0];
 gameStates.app.nSDLTicks [0] = SDL_GetTicks ();
 gameStates.app.tick40fps.nTime = gameStates.app.nSDLTicks [0] - gameStates.app.tick40fps.nLastTick;
 if ((gameStates.app.tick40fps.bTick = (gameStates.app.tick40fps.nTime >= 25)))
@@ -440,12 +475,12 @@ void GameDrawTimeLeft (void)
 {
 	char temp_string[30];
 	fix timevar;
-	int32_t i;
-	static int32_t nId = 0;
+	int i;
+	static int nId = 0;
 
 fontManager.SetCurrent (GAME_FONT);    //GAME_FONT
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-timevar = I2X (netGameInfo.GetPlayTimeAllowed () * 5 * 60);
+timevar = I2X (netGame.GetPlayTimeAllowed () * 5 * 60);
 i = X2I (timevar - gameStates.app.xThisLevelTime) + 1;
 sprintf (temp_string, TXT_TIME_LEFT, i);
 if (i >= 0)

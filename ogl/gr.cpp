@@ -42,14 +42,13 @@
 #include "menu.h"
 #include "menubackground.h"
 #include "addon_bitmaps.h"
-#include "cockpit.h"
 
 #define DECLARE_VARS
 
 void GrPaletteStepClear(void); // Function prototype for GrInit;
 void ResetHoardData (void);
 
-extern int32_t screenShotIntervals [];
+extern int screenShotIntervals [];
 
 //------------------------------------------------------------------------------
 
@@ -57,63 +56,73 @@ CArray<CDisplayModeInfo> displayModeInfo;
 
 //------------------------------------------------------------------------------
 
-int32_t GrVideoModeOK (uint32_t mode)
+void GrUpdate (int bClear)
+{
+if (ogl.m_states.bInitialized) {
+	if (ogl.m_states.nDrawBuffer == GL_FRONT)
+		glFlush ();
+	else
+		ogl.SwapBuffers (1, bClear);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int GrVideoModeOK (u_int32_t mode)
 {
 return SdlGlVideoModeOK (SM_W (mode), SM_H (mode)); // platform specific code
 }
 
 //------------------------------------------------------------------------------
 
-int32_t GrSetMode (uint32_t mode)
+int GrSetMode (u_int32_t mode)
 {
-	uint32_t w, h, i;
-	//int32_t bForce = (nCurrentVGAMode < 0);
+	uint w, h, i;
+	//int bForce = (nCurrentVGAMode < 0);
 
 if (mode <= 0)
 	return 0;
 w = SM_W (mode);
 h = SM_H (mode);
 nCurrentVGAMode = mode;
-gameData.renderData.screen.Destroy ();
-gameData.renderData.screen.Init ();
-gameData.renderData.screen.SetMode (mode);
-gameData.renderData.screen.Setup (NULL, 0, 0, w, h);
-gameData.renderData.screen.SetWidth (w);
-gameData.renderData.screen.SetHeight (h);
-gameData.renderData.screen.Setup (&gameData.renderData.screen);
-SetupCanvasses ();
-//gameData.renderData.screen.Aspect () = FixDiv(gameData.renderData.screen.Width ()*3,gameData.renderData.screen.Height ()*4);
-gameData.renderData.screen.SetAspect (FixDiv (gameData.renderData.screen.Width (), (fix) (gameData.renderData.screen.Height () * ((double) w / (double) h))));
-gameData.renderData.screen.CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);
-gameData.renderData.screen.CreateBuffer ();
-gameData.renderData.screen.CCanvas::SetPalette (paletteManager.Default ()); //just need some valid palette here
-//gameData.renderData.screen.props.rowSize = screen->pitch;
-//gameData.renderData.screen.Buffer () = reinterpret_cast<uint8_t*> (screen->pixels);
+screen.Destroy ();
+screen.Init ();
+screen.SetMode (mode);
+screen.SetWidth (w);
+screen.SetHeight (h);
+//screen.Aspect () = FixDiv(screen.Width ()*3,screen.Height ()*4);
+screen.SetAspect (FixDiv (screen.Width (), (fix) (screen.Height () * ((double) w / (double) h))));
+screen.Canvas ()->CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);
+screen.Canvas ()->CreateBuffer ();
+screen.Canvas ()->SetPalette (paletteManager.Default ()); //just need some valid palette here
+//screen.Canvas ()->props.rowSize = screen->pitch;
+//screen.Canvas ()->Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
+CCanvas::SetCurrent (NULL);
+CCanvas::Current ()->SetFont (fontManager.Current ());
 /***/PrintLog (1, "initializing OpenGL window\n");
 i = SdlGlInitWindow (w, h, 0);	//platform specific code
 PrintLog (-1);
 if (!i)
 	return 0;
 /***/PrintLog (1, "initializing OpenGL view port\n");
-gameData.renderData.screen.Activate ("GetScreenMode (screen)", NULL, true);
-CCanvas::Current ()->SetFont (fontManager.Current ());
+ogl.Viewport (0, 0, w, h);
 PrintLog (-1);
 /***/PrintLog (1, "initializing OpenGL screen mode\n");
 ogl.SetScreenMode ();
 ogl.GetVerInfo ();
-ogl.Update (0);
+GrUpdate (0);
 PrintLog (-1);
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-void ResetTextures (int32_t bReload, int32_t bGame)
+void ResetTextures (int bReload, int bGame)
 {
 if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 	textureManager.Destroy (); 
 	if (lightmapManager.HaveLightmaps ())
-		lightmapManager.ReleaseAll ();
+		lightmapManager.Release ();
 	ogl.DestroyDepthTexture (0);
 	ogl.DestroyDepthTexture (1);
 	if (bReload)
@@ -132,7 +141,7 @@ if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 				try {
 					OglCacheLevelTextures ();
 				}
-				catch (int32_t e) {
+				catch (int e) {
 					if (e == EX_OUT_OF_MEMORY) {
 						if (!gameOpts->render.textures.nQuality) {
 							throw (e);
@@ -157,10 +166,10 @@ if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 
 //------------------------------------------------------------------------------
 
-int32_t FindDisplayMode (int16_t w, int16_t h)
+int FindDisplayMode (short w, short h)
 {
 	CDisplayModeInfo	dmi;
-	int32_t				i;
+	int					i;
 
 dmi.w = w;
 dmi.h = h;
@@ -174,7 +183,7 @@ return i - 1;
 
 //------------------------------------------------------------------------------
 
-int32_t FindDisplayMode (int32_t nScrSize)
+int FindDisplayMode (int nScrSize)
 {
 return FindDisplayMode (SM_W (nScrSize), SM_H (nScrSize));
 }
@@ -210,26 +219,11 @@ SDL_Rect defaultDisplayModes [] = {
 	};
 
 
-//------------------------------------------------------------------------------
 
-void CreateDisplayModeInfo (int32_t i, int32_t w, int32_t h, int32_t bFullScreen)
-{
-displayModeInfo [i].w = w;
-displayModeInfo [i].h = h;
-displayModeInfo [i].dim = SM (displayModeInfo [i].w, displayModeInfo [i].h);
-displayModeInfo [i].renderMethod = VR_NONE;
-displayModeInfo [i].flags = VRF_COMPATIBLE_MENUS + VRF_ALLOW_COCKPIT;
-displayModeInfo [i].bWideScreen = float (displayModeInfo [i].w) / float (displayModeInfo [i].h) >= 1.5f;
-displayModeInfo [i].bFullScreen = bFullScreen;
-displayModeInfo [i].bAvailable = 1;
-}
-
-//------------------------------------------------------------------------------
-
-void CreateDisplayModeInfoTable (void)
+void CreateDisplayModeInfo (void)
 {
 	SDL_Rect**	displayModes, * displayModeP;
-	int32_t			h, i;
+	int			h, i;
 
 displayModes = SDL_ListModes (NULL, SDL_FULLSCREEN | SDL_HWSURFACE);
 if (displayModes == (SDL_Rect**) -1) {
@@ -246,7 +240,14 @@ else {
 displayModeInfo.Create (h + 1);
 displayModeInfo.Clear ();
 for (i = 0; i < h; i++) {
-	CreateDisplayModeInfo (i, displayModeP [i].w, displayModeP [i].h, 1);
+	displayModeInfo [i].w = displayModeP [i].w;
+	displayModeInfo [i].h = displayModeP [i].h;
+	displayModeInfo [i].dim = SM (displayModeInfo [i].w, displayModeInfo [i].h);
+	displayModeInfo [i].renderMethod = VR_NONE;
+	displayModeInfo [i].flags = VRF_COMPATIBLE_MENUS + VRF_ALLOW_COCKPIT;
+	displayModeInfo [i].bWideScreen = float (displayModeInfo [i].w) / float (displayModeInfo [i].h) >= 1.5f;
+	displayModeInfo [i].bFullScreen = 1;
+	displayModeInfo [i].bAvailable = 1;
 	}
 if (displayModes != (SDL_Rect**) -1)
 	delete displayModeP;
@@ -255,9 +256,9 @@ displayModeInfo.SortAscending (0, h - 1);
 
 //------------------------------------------------------------------------------
 
-int32_t GrInit (void)
+int GrInit (void)
 {
-	int32_t i;
+	int i;
 
 // Only do this function once!
 if (gameStates.gfx.bInstalled)
@@ -286,9 +287,9 @@ else
 /***/PrintLog (0, "initializing texture manager\n");
 textureManager.Init ();
 /***/PrintLog (0, "allocating screen buffer\n");
-gameData.renderData.screen.SetBuffer (NULL);
+screen.Canvas ()->SetBuffer (NULL);
 
-CreateDisplayModeInfoTable ();
+CreateDisplayModeInfo ();
 // Set the mode.
 for (i = 0; i < NUM_DISPLAY_MODES - 1; i++)
 	if (FindArg (ScrSizeArg (displayModeInfo [i].w, displayModeInfo [i].h))) {
@@ -325,7 +326,7 @@ void _CDECL_ GrClose (void)
 {
 PrintLog (1, "shutting down graphics subsystem\n");
 SdlGlClose ();//platform specific code
-gameData.renderData.screen.Destroy ();
+screen.Destroy ();
 #ifdef OGL_RUNTIME_LOAD
 if (ogl_rt_loaded)
 	OpenGL_LoadLibrary(false);
@@ -335,7 +336,7 @@ PrintLog (-1);
 
 //------------------------------------------------------------------------------
 
-char *ScrSizeArg (int32_t x, int32_t y)
+char *ScrSizeArg (int x, int y)
 {
 	static	char	szScrMode [20];
 
@@ -345,18 +346,34 @@ return szScrMode;
 
 //------------------------------------------------------------------------------
 
-int32_t SetCustomDisplayMode (int32_t w, int32_t h, int32_t bFullScreen)
+int SetCustomDisplayMode (int w, int h)
 {
-if (w && h)
-	CreateDisplayModeInfo (CUSTOM_DISPLAY_MODE, w, h, bFullScreen);
+if (w && h) {
+		int i = CUSTOM_DISPLAY_MODE;
+
+	displayModeInfo [i].dim = SM (w, h);
+	displayModeInfo [i].w = w;
+	displayModeInfo [i].h = h;
+	if (!(displayModeInfo [i].bAvailable = GrVideoModeOK (displayModeInfo [i].dim))) {
+		displayModeInfo [i].dim = 0;
+		displayModeInfo [i].w = 0;
+		displayModeInfo [i].h = 0;
+		return 0;
+		}
+	displayModeInfo [i].renderMethod = VR_NONE;
+	displayModeInfo [i].flags = VRF_COMPATIBLE_MENUS + VRF_ALLOW_COCKPIT;
+	displayModeInfo [i].bWideScreen = float (displayModeInfo [i].w) / float (displayModeInfo [i].h) >= 1.5f;
+	displayModeInfo [i].bFullScreen = 1;
+	displayModeInfo [i].bAvailable = 1;
+	}
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t GetDisplayMode (int32_t mode)
+int GetDisplayMode (int mode)
 {
-	int32_t h, i;
+	int h, i;
 
 for (i = 0, h = NUM_DISPLAY_MODES; i < h; i++)
 	if (mode == displayModeInfo [i].dim)
@@ -374,10 +391,12 @@ return -1;
 #endif
 
 
-int32_t SetDisplayMode (int32_t nMode, int32_t bOverride)
+void SetDisplayMode (int nMode, int bOverride)
 {
-	CDisplayModeInfo *dpInfo;
+	CDisplayModeInfo *dmiP;
 
+if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode != VR_NONE))	//special VR nMode
+	return;	//...don't change
 if (!bOverride)
 	gameStates.gfx.bOverride = 0;
 else if (gameStates.gfx.bOverride)
@@ -389,39 +408,16 @@ if (!gameStates.menus.bHiresAvailable && (nMode != 1))
 if (!GrVideoModeOK (displayModeInfo [nMode].dim))		//can't do nMode
 	nMode = 0;
 gameStates.video.nDisplayMode = nMode;
-dpInfo = displayModeInfo + nMode;
+dmiP = displayModeInfo + nMode;
 if (gameStates.video.nDisplayMode != -1) {
-	GameInitRenderBuffers (dpInfo->dim, dpInfo->w, dpInfo->h, dpInfo->renderMethod, dpInfo->flags);
+	GameInitRenderBuffers (dmiP->dim, dmiP->w, dmiP->h, dmiP->renderMethod, dmiP->flags);
 	gameStates.video.nDefaultDisplayMode = gameStates.video.nDisplayMode;
 	}
 gameStates.video.nScreenMode = -1;		//force screen reset
-return nMode;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t SetSideBySideDisplayMode (void)
-{
-if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT)
-	SetCustomDisplayMode (gameData.renderData.rift.HResolution (), gameData.renderData.rift.VResolution (), 0);
-else if (gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_HDMI)
-	SetCustomDisplayMode (1920, 1080, 0);
-else
-	return true;
-if (!SetDisplayMode (CUSTOM_DISPLAY_MODE, 0))
-	return false;
-if (ogl.IsOculusRift ())
-	cockpit->Activate (CM_FULL_SCREEN, true);
-
-#if /*DBG ==*/ 0
-ogl.SetFullScreen (1);
-#endif
-SetScreenMode (SCREEN_MENU);
-SetupCanvasses ();
-return true;
-}
-
-//------------------------------------------------------------------------------
 //called to get the screen in a mode compatible with popup menus.
 //if we can't have popups over the game screen, switch to menu mode.
 
@@ -433,16 +429,16 @@ if (!gameOpts->menus.nStyle)
 
 //------------------------------------------------------------------------------
 
-int32_t SetMenuScreenMode (uint32_t sm)
+int SetMenuScreenMode (u_int32_t sm)
 {
-	uint32_t nMenuMode;
+	u_int32_t nMenuMode;
 
 gameStates.menus.bHires = gameStates.menus.bHiresAvailable;		//do highres if we can
 nMenuMode = gameStates.gfx.bOverride 
 		? gameStates.gfx.nStartScrSize
 		: gameStates.menus.bHires 
-			? (gameData.renderData.screen.Area () >= 640 * 480) 
-				? gameData.renderData.screen.Scalar ()
+			? (gameStates.render.vr.nScreenSize >= SM (640, 480)) 
+				? gameStates.render.vr.nScreenSize
 				: SM (800, 600)
 			: SM (320, 200);
 gameStates.video.nLastScreenMode = -1;
@@ -454,17 +450,22 @@ if (nCurrentVGAMode != nMenuMode) {
 	ogl.RebuildContext (gameStates.app.bGameRunning);
 	}
 
-SetupCanvasses ();
+screen.Canvas ()->SetupPane (
+	gameStates.render.vr.buffers.screenPages, 0, 0, 
+	screen.Width (), screen.Height ());
+screen.Canvas ()->SetupPane (
+	gameStates.render.vr.buffers.screenPages + 1, 0, 0, 
+	screen.Width (), screen.Height ());
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t SetGameScreenMode (uint32_t sm)
+int SetGameScreenMode (u_int32_t sm)
 {
-if (nCurrentVGAMode != gameData.renderData.screen.Scalar ()) {
-	if (GrSetMode (gameData.renderData.screen.Scalar ())) {
+if (nCurrentVGAMode != gameStates.render.vr.nScreenSize) {
+	if (GrSetMode (gameStates.render.vr.nScreenSize)) {
 		Error ("Cannot set desired screen mode for game!");
 		//we probably should do something else here, like select a standard mode
 		}
@@ -473,16 +474,33 @@ if (nCurrentVGAMode != gameData.renderData.screen.Scalar ()) {
 		JoyDefsCalibrate ();
 #endif
 	}
-if (!gameData.renderData.frame.Height () || (gameData.renderData.frame.Height () > gameData.renderData.screen.Height ()) || 
-	 !gameData.renderData.frame.Width () || (gameData.renderData.frame.Width () > gameData.renderData.screen.Width ())) {
-	gameData.renderData.frame.SetWidth (gameData.renderData.screen.Width ());
-	gameData.renderData.frame.SetHeight (gameData.renderData.screen.Height ());
+gameData.render.window.wMax = screen.Width ();
+gameData.render.window.hMax = screen.Height ();
+if (!gameData.render.window.h || (gameData.render.window.h > gameData.render.window.hMax) || 
+	 !gameData.render.window.w || (gameData.render.window.w > gameData.render.window.wMax)) {
+	gameData.render.window.w = gameData.render.window.wMax;
+	gameData.render.window.h = gameData.render.window.hMax;
 	}
 //	Define screen pages for game mode
 // If we designate through screenFlags to use paging, then do so.
-gameData.renderData.frame.Setup (&gameData.renderData.screen);
+screen.Canvas ()->SetupPane (&gameStates.render.vr.buffers.screenPages[0], 
+										0, 0, screen.Width (), screen.Height ());
+
+if (gameStates.render.vr.nScreenFlags&VRF_USE_PAGING) {
+	screen.Canvas ()->SetupPane (&gameStates.render.vr.buffers.screenPages[1], 0, screen.Height (), screen.Width (), screen.Height ());
+	}
+else {
+	screen.Canvas ()->SetupPane (&gameStates.render.vr.buffers.screenPages[1], 0, 0, screen.Width (), screen.Height ());
+	}
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && (gameStates.menus.bHires = (gameStates.video.nDisplayMode > 1));
-console.Resize (0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height () / 2);
+if (gameStates.render.vr.nRenderMode != VR_NONE) {
+	// for 640x480 or higher, use hires font.
+	if (gameStates.render.fonts.bHiresAvailable && (screen.Height () > 400))
+		gameStates.render.fonts.bHires = 1;
+	else
+		gameStates.render.fonts.bHires = 0;
+	}
+console.Resize (0, 0, screen.Width (), screen.Height () / 2);
 return 1;
 }
 
@@ -490,47 +508,48 @@ return 1;
 //called to change the screen mode. Parameter sm is the new mode, one of
 //SMODE_GAME or SMODE_EDITOR. returns mode acutally set (could be other
 //mode if cannot init requested mode)
-int32_t SetScreenMode (uint32_t sm)
+int SetScreenMode (u_int32_t sm)
 {
 #if 0
 	GLint nError = glGetError ();
 #endif
-if ((gameStates.video.nScreenMode == sm) && 
-	 (nCurrentVGAMode == gameData.renderData.screen.Scalar ()) && 
-	 (gameData.renderData.screen.Mode () == gameData.renderData.screen.Scalar ())) {
+if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.render.vr.nScreenSize) && 
+		(screen.Mode () == gameStates.render.vr.nScreenSize)) {
+	CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 	ogl.SetScreenMode ();
 	return 1;
 	}
-
-gameStates.video.nScreenMode = sm;
-switch (gameStates.video.nScreenMode) {
-	case SCREEN_MENU:
-		paletteManager.DisableEffect ();
-		gameStates.render.nFlashScale = 0;
-		gameStates.render.bRenderIndirect = -1;
-		ogl.ChooseDrawBuffer ();
-		SetMenuScreenMode (sm);
-		break;
+	gameStates.video.nScreenMode = sm;
+	switch (gameStates.video.nScreenMode) {
+		case SCREEN_MENU:
+			paletteManager.DisableEffect ();
+			gameStates.render.nFlashScale = 0;
+			gameStates.render.bRenderIndirect = -1;
+			ogl.ChooseDrawBuffer ();
+			SetMenuScreenMode (sm);
+			break;
 
 	case SCREEN_GAME:
 		SetGameScreenMode (sm);
 		break;
 
+
 	default:
 		Error ("Invalid screen mode %d",sm);
 	}
-
+gameStates.render.vr.nCurrentPage = 0;
+CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 ogl.SetScreenMode ();
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t GrToggleFullScreenGame (void)
+int GrToggleFullScreenGame (void)
 {
 	static char szFullscreen [2][30] = {"toggling fullscreen mode off", "toggling fullscreen mode on"};
 
-int32_t i = ogl.ToggleFullScreen ();
+int i = ogl.ToggleFullScreen ();
 controls.FlushInput ();
 if (gameStates.app.bGameRunning) {
 	HUDMessage (MSGC_GAME_FEEDBACK, szFullscreen [i]);

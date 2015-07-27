@@ -67,7 +67,7 @@
 #define GL_DEPTH24_STENCIL8_EXT		0x88F0
 #define GL_TEXTURE_STENCIL_SIZE_EXT 0x88F1
 
-GLuint COGL::CreateDepthTexture (int32_t nTMU, int32_t bFBO, int32_t nType, int32_t nWidth, int32_t nHeight)
+GLuint COGL::CreateDepthTexture (int nTMU, int bFBO, int nType, int nWidth, int nHeight)
 {
 	GLuint	hBuffer;
 
@@ -88,10 +88,10 @@ glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY); 	
 //glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
 if (nType == 1) // depth + stencil
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8_EXT, (nWidth > 0) ? nWidth : DrawBufferWidth (), (nHeight > 0) ? nHeight : DrawBufferHeight (), 
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8_EXT, (nWidth > 0) ? nWidth : m_states.nCurWidth, (nHeight > 0) ? nHeight : m_states.nCurHeight, 
 					  0, GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, NULL);
 else
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, (nWidth > 0) ? nWidth : DrawBufferWidth (), (nHeight > 0) ? nHeight : DrawBufferHeight (), 
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, (nWidth > 0) ? nWidth : m_states.nCurWidth, (nHeight > 0) ? nHeight : m_states.nCurHeight, 
 					  0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 if (glGetError ()) {
 	DeleteTextures (1, &hBuffer);
@@ -103,7 +103,7 @@ return hBuffer;
 
 // -----------------------------------------------------------------------------------
 
-void COGL::DestroyDepthTexture (int32_t bFBO)
+void COGL::DestroyDepthTexture (int bFBO)
 {
 if (m_states.hDepthBuffer [bFBO]) {
 	DeleteTextures (1, &m_states.hDepthBuffer [bFBO]);
@@ -113,10 +113,10 @@ if (m_states.hDepthBuffer [bFBO]) {
 
 // -----------------------------------------------------------------------------------
 
-GLuint COGL::CopyDepthTexture (int32_t nId, int32_t nTMU, int32_t bForce)
+GLuint COGL::CopyDepthTexture (int nId, int nTMU)
 {
-	static int32_t nSamples = -1;
-	static int32_t nDuration = 0;
+	static int nSamples = -1;
+	static int nDuration = 0;
 
 	GLenum nError = glGetError ();
 
@@ -128,30 +128,25 @@ if (!gameOpts->render.bUseShaders)
 	return m_states.hDepthBuffer [nId] = 0;
 if (ogl.m_features.bDepthBlending < 0) // too slow on the current hardware
 	return m_states.hDepthBuffer [nId] = 0;
-int32_t t = (nSamples >= 5) ? -1 : SDL_GetTicks ();
+int t = (nSamples >= 5) ? -1 : SDL_GetTicks ();
 SelectTMU (nTMU);
 SetTexturing (true);
 if (!m_states.hDepthBuffer [nId])
 	m_states.bDepthBuffer [nId] = 0;
 if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTexture (-1, nId, nId))) {
 	BindTexture (m_states.hDepthBuffer [nId]);
-	if (bForce || !m_states.bDepthBuffer [nId]) {
-#if 0
-		if (ogl.StereoDevice () == -GLASSES_SHUTTER_NVIDIA)
+	if (!m_states.bDepthBuffer [nId]) {
+		if (ogl.Enhance3D () < 0)
 			ogl.SetReadBuffer ((ogl.StereoSeparation () < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
 		else
-#endif
-			ogl.SetReadBuffer (GL_BACK, (gameStates.render.bRenderIndirect > 0) || gameStates.render.cameras.bActive); // side effect: If the current render target is an FBO, it will be activated!
-		SaveViewport ();
-		SetViewport (0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
-		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
-		RestoreViewport ();
+			ogl.SetReadBuffer (GL_BACK, (gameStates.render.bRenderIndirect > 0) || gameStates.render.cameras.bActive);
+		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
 		if ((nError = glGetError ())) {
 			DestroyDepthTexture (nId);
 			return m_states.hDepthBuffer [nId] = 0;
 			}
 		m_states.bDepthBuffer [nId] = 1;
-		gameData.renderData.nStateChanges++;
+		gameData.render.nStateChanges++;
 		}
 	}
 if (t > 0) {
@@ -170,7 +165,7 @@ return m_states.hDepthBuffer [nId];
 
 // -----------------------------------------------------------------------------------
 
-GLuint COGL::CreateColorTexture (int32_t nTMU, int32_t bFBO)
+GLuint COGL::CreateColorTexture (int nTMU, int bFBO)
 {
 	GLuint	hBuffer;
 
@@ -182,7 +177,7 @@ if (glGetError ())
 	return hBuffer = 0;
 BindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, DrawBufferWidth (), DrawBufferHeight (), 0, GL_RGB, GL_UNSIGNED_SHORT, NULL);
+glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, m_states.nCurWidth, m_states.nCurHeight, 0, GL_RGB, GL_UNSIGNED_SHORT, NULL);
 if (glGetError ()) {
 	DeleteTextures (1, &hBuffer);
 	return hBuffer = 0;
@@ -229,16 +224,16 @@ if (!m_states.hColorBuffer)
 if (m_states.hColorBuffer || (m_states.hColorBuffer = CreateColorTexture (-1, 0))) {
 	BindTexture (m_states.hColorBuffer);
 	if (!m_states.bColorBuffer) {
-		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
+		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
 		if ((nError = glGetError ())) {
-			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
+			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
 			if ((nError = glGetError ())) {
 				DestroyColorTexture ();
 				return m_states.hColorBuffer = 0;
 				}
 			}
 		m_states.bColorBuffer = 1;
-		gameData.renderData.nStateChanges++;
+		gameData.render.nStateChanges++;
 		}
 	}
 return m_states.hColorBuffer;
@@ -248,7 +243,7 @@ return m_states.hColorBuffer;
 
 #if 0
 
-GLuint COGL::CreateStencilTexture (int32_t nTMU, int32_t bFBO)
+GLuint COGL::CreateStencilTexture (int nTMU, int bFBO)
 {
 	GLuint	hBuffer;
 
@@ -260,7 +255,7 @@ if (glGetError ())
 	return hDepthBuffer = 0;
 ogl.BindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, DrawBufferWidth (), DrawBufferHeight (),
+glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, m_states.nCurWidth, m_states.nCurHeight,
 				  0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);

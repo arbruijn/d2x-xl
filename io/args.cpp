@@ -36,7 +36,7 @@ CConfigManager appConfig;
 
 void CConfigManager::Destroy (void)
 {
-for (int32_t i = Count (); i > 0; ) {
+for (int i = Count (); i > 0; ) {
 	if (m_properties [--i])
 		delete[] m_properties [i];
 	}
@@ -45,9 +45,9 @@ m_properties.Destroy ();
 
 //------------------------------------------------------------------------------
 
-int32_t CConfigManager::Find (const char * s)
+int CConfigManager::Find (const char * s)
 {
-for (int32_t i = 0, j = Count (); i < j; i++) 
+for (int i = 0, j = Count (); i < j; i++) 
 	if (m_properties [i] && *m_properties [i] && !stricmp (m_properties [i], s))
 		return i + 1;
 return 0;
@@ -55,21 +55,37 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-char* CConfigManager::Filename (int32_t bDebug)
+char* CConfigManager::Filename (int bDebug)
 {
-	int32_t	i;
+	int	i;
+	char*	p;
 	CFile	cf;
 
 if ((i = Find ("-ini")))
-	strncpy (m_filename, m_properties [i], sizeof (m_filename) - 1);
+	strncpy (m_filename, m_properties [i + 1], sizeof (m_filename) - 1);
 else {
 #if defined(__unix__)
 	FFS		ffs;
-	if (FFF (gameFolders.user.szConfig, &ffs, 1) <= 0) {
+	strcpy (m_filename, gameFolders.szHomeDir);
+	strcat (m_filename, "/.d2x-xl");
+	if (FFF (m_filename, &ffs, 0) <= 0) {
 #endif
-	sprintf (m_filename, "%s%s", gameFolders.user.szConfig, bDebug ? "d2xdebug.ini" : "d2x.ini");
+	strcpy (m_filename, gameFolders.szConfigDir);
+	i = int (strlen (m_filename));
+	if (i) {
+		p = m_filename + i - 1;
+		if ((*p == '\\') || (*p == '/'))
+			p++;
+		else {
+			strcat (m_filename, "/");
+			p += 2;
+			}
+		}
+	else
+		p = m_filename;
+	strcpy (p, bDebug ? "d2xdebug.ini" : "d2x.ini");
 	if (!cf.Exist (m_filename, "", false)) 
-		sprintf (m_filename, "%s%s", gameFolders.user.szConfig, bDebug ? "d2xdebug-default.ini" : "d2x-default.ini");
+		strcpy (p, bDebug ? "d2xdebug-default.ini" : "d2x-default.ini");
 #if defined(__unix__)
    }
 #endif //!__unix__
@@ -81,14 +97,14 @@ return m_filename;
 
 char* Trim (char* s);
 
-int32_t CConfigManager::Parse (CFile* pFile)
+int CConfigManager::Parse (CFile* cfP)
 {
 	char 		lineBuf [1024], *token;
 
-if (pFile == NULL)
-	pFile = &m_cf;
-while (!pFile->EoF ()) {
-	pFile->GetS (lineBuf, sizeof (lineBuf));
+if (cfP == NULL)
+	cfP = &m_cf;
+while (!cfP->EoF ()) {
+	cfP->GetS (lineBuf, sizeof (lineBuf));
 	if (*lineBuf && (*lineBuf != ';')) {
 		token = strtok (lineBuf, " ");
 		if (!m_properties.Push (StrDup (Trim (token))))
@@ -108,7 +124,7 @@ return Count ();
 void CConfigManager::PrintLog (void)
 {
 ::PrintLog (1, "");
-for (int32_t i = 0, j = 0; i < Count (); i++, j++) {
+for (int i = 0, j = 0; i < Count (); i++, j++) {
 	if (!m_properties [i]) 
 		continue;
 	if ((m_properties [i][0] == '-') && (isalpha (m_properties [i][1]) || (j == 2))) {
@@ -134,11 +150,11 @@ m_null [0] = '\0';
 
 //------------------------------------------------------------------------------
 
-void CConfigManager::Load (int32_t argC, char **argV)
+void CConfigManager::Load (int argC, char **argV)
 {
-for (int32_t i = 0; i < argC; i++) {
+for (int i = 0; i < argC; i++) {
 	m_properties.Push (StrDup (argV [i]));
-	if (*m_properties [i] == '-')
+	if (*m_properties [i]== '-')
 		strlwr (m_properties [i]);  // Convert all args to lowercase
 	}
 }
@@ -158,35 +174,26 @@ if (m_cf.Open (filename, "", "rb", 0)) {
 
 // ----------------------------------------------------------------------------
 
-int32_t CConfigManager::Int (int32_t t, int32_t nDefault)
+int CConfigManager::Value (int t, int nDefault)
 {
 	char *psz = m_properties [t];
 
-if (!psz || !*psz)
+if (!psz)
 	return nDefault;
-if (isdigit (*psz))
+if (psz && isdigit (*psz))
 	return atoi (psz);
-if (((*psz == '-') || (*psz == '+')) && isdigit (*(psz + 1)))
+if (((*psz == '-') || (*psz == '+')) && isdigit (*psz + 1))
 	return atoi (psz);
 return nDefault;
 }
 
 // ----------------------------------------------------------------------------
 
-int32_t CConfigManager::Int (const char* szArg, int32_t nDefault)
+int CConfigManager::Value (const char* szArg, int nDefault)
 {
-	int32_t t = Find (szArg);
+	int t = Find (szArg);
 
-return t ? Int (t, nDefault) : nDefault;
-}
-
-// ----------------------------------------------------------------------------
-
-const char* CConfigManager::Text (const char* szArg, const char* pszDefault)
-{
-	int32_t t = Find (szArg);
-
-return t ? m_properties [t] : pszDefault;
+return t ? Value (t, nDefault) : nDefault;
 }
 
 //------------------------------------------------------------------------------

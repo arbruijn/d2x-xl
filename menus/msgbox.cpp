@@ -75,48 +75,35 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define LHY(y) (gameStates.menus.bHires? (24 * (y)) / 10 : y)
 
 //------------------------------------------------------------------------------ 
-// Creates a message box with a brief notification in the message box' subtitle
-// The message box offers several choices to pick from (like 'yes' / 'no' / 'maybe'
 
-int32_t _CDECL_ InfoBox (const char* pszTitle, pMenuCallback callback, int32_t nWallpaper, int32_t nChoices, ...)
+int _CDECL_ MsgBox (const char* pszTitle, pMenuCallback callback, char* filename, int nChoices, ...)
 {
-	int32_t			i;
+	int				i;
 	char*				format, * s;
 	va_list			args;
 	char				szSubTitle [MSGBOX_TEXT_SIZE];
-	int32_t			bTiny;
-	CMenu				mm;
+	CMenu	mm;
 
 if (!mm.Create (5))
 	return - 1;
 
-if ((bTiny = nChoices < 0))
-	nChoices = -nChoices;
 va_start (args, nChoices);
 for (i = 0; i < nChoices; i++) {
 	s = va_arg (args, char *);
-	int32_t nItem = mm.AddText ("msgbox", s, - 1);
-	mm [nItem].m_bCentered = 1;
+	mm.AddMenu ("msgbox", s, - 1);
 	}
 format = va_arg (args, char*);
-if (*format)
-	vsprintf (szSubTitle, format, args);
-else
-	*szSubTitle = '\0';
+vsprintf (szSubTitle, format, args);
 va_end (args);
 Assert (strlen (szSubTitle) < MSGBOX_TEXT_SIZE);
-return mm.Menu (pszTitle, szSubTitle, callback, NULL, BG_SUBMENU, nWallpaper, -1, -1, bTiny);
+return mm.Menu (pszTitle, szSubTitle, callback, NULL, filename);
 }
 
 //------------------------------------------------------------------------------ 
-// Creates a message box with a longer text placed in static text menu entries
-// of the message box's underlying menu
-// The text box doesn't offer choices to pick from, only an 'ok' button
-// since it's purpose is to display a longer text (e.g. a help text)
 
-int32_t _CDECL_ TextBox (const char* pszTitle, int32_t nWallpaper, int32_t nChoices, ...)
+int _CDECL_ MsgBox (const char* pszTitle, char* filename, int nChoices, ...)
 {
-	int32_t			h, i, l, bTiny, nInMenu;
+	int				h, i, l, bTiny, nInMenu;
 	char				*format, *s;
 	va_list			args;
 	char				nm_text [MSGBOX_TEXT_SIZE];
@@ -130,7 +117,7 @@ if ((bTiny = (nChoices < 0)))
 va_start (args, nChoices);
 for (i = l = 0; i < nChoices; i++) {
 	s = va_arg (args, char* );
-	h = (int32_t) strlen (s);
+	h = (int) strlen (s);
 	if (l + h > MSGBOX_TEXT_SIZE)
 		break;
 	l += h;
@@ -151,17 +138,17 @@ if (!bTiny) {
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
 i = bTiny 
-	 ? mm.Menu (NULL, pszTitle, NULL, NULL, BG_SUBMENU, nWallpaper, LHX (340), -1, 1)
-	 : mm.Menu (pszTitle, nm_text, NULL, NULL);
+	 ? mm.Menu (NULL, pszTitle, NULL, NULL, NULL, LHX (340), - 1, 1)
+	 : mm.Menu (pszTitle, nm_text, NULL, NULL, filename);
 gameStates.menus.nInMenu = nInMenu;
 return i;
 }
 
 //------------------------------------------------------------------------------ 
 //added on 10/14/98 by Victor Rachels to attempt a fixedwidth font messagebox
-int32_t _CDECL_ FixedFontMsgBox (char* pszTitle, int32_t nChoices, ...)
+int _CDECL_ FixedFontMsgBox (char* pszTitle, int nChoices, ...)
 {
-	int32_t				i;
+	int				i;
 	char*				format;
 	va_list			args;
 	char*				s;
@@ -180,7 +167,7 @@ format = va_arg (args, char* );
 vsprintf (szSubTitle, format, args);
 va_end (args);
 Assert (strlen (szSubTitle) < MSGBOX_TEXT_SIZE);
-return mm.FixedFontMenu (pszTitle, szSubTitle, NULL, NULL);
+return mm.FixedFontMenu (pszTitle, szSubTitle, NULL, 0, NULL, - 1, - 1);
 }
 //end this section addition - Victor Rachels
 

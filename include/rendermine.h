@@ -24,33 +24,33 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define	APPEND_LAYERED_TEXTURES 0
 
-extern int32_t nClearWindow;    // 1 = Clear whole background window, 2 = clear view portals into rest of world, 0 = no clear
+extern int nClearWindow;    // 1 = Clear whole background window, 2 = clear view portals into rest of world, 0 = no clear
 
 void GameRenderFrame (void);
-void RenderFrame (fix eye_offset, int32_t window_num);  //draws the world into the current canvas
-int32_t RenderMissileView (void);
+void RenderFrame (fix eye_offset, int window_num);  //draws the world into the current canvas
+int RenderMissileView (void);
 
 // cycle the flashing light for when mine destroyed
 void FlashFrame (void);
 
-int32_t FindSegSideFace (int16_t x,int16_t y,int32_t *seg,int32_t *CSide,int32_t *face,int32_t *poly);
+int FindSegSideFace (short x,short y,int *seg,int *CSide,int *face,int *poly);
 
 // these functions change different rendering parameters
 // all return the new value of the parameter
 
 // how may levels deep to render
-int32_t inc_render_depth(void);
-int32_t dec_render_depth(void);
-int32_t reset_render_depth(void);
+int inc_render_depth(void);
+int dec_render_depth(void);
+int reset_render_depth(void);
 
 // how many levels deep to render in perspective
-int32_t inc_perspective_depth(void);
-int32_t dec_perspective_depth(void);
-int32_t reset_perspective_depth(void);
+int inc_perspective_depth(void);
+int dec_perspective_depth(void);
+int reset_perspective_depth(void);
 
 // misc toggles
-int32_t ToggleOutlineMode(void);
-int32_t ToggleShowOnlyCurSide(void);
+int ToggleOutlineMode(void);
+int ToggleShowOnlyCurSide(void);
 
 // When any render function needs to know what's looking at it, it
 // should access RenderViewerObject members.
@@ -59,7 +59,7 @@ extern fix xRenderZoom;     // the player's zoom factor
 // This is used internally to RenderFrame(), but is included here so AI
 // can use it for its own purposes.
 
-extern int16_t nRenderList [MAX_SEGMENTS_D2X];
+extern short nRenderList [MAX_SEGMENTS_D2X];
 
 // Set the following to turn on player head turning
 // If the above flag is set, these angles specify the orientation of the head
@@ -70,28 +70,33 @@ extern CAngleVector Player_head_angles;
 //
 
 void RenderStartFrame (void);
-void SetupRenderView (fix xStereoSeparation, int16_t *nStartSegP, int32_t bOglScale);
+void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale);
 
-void RenderMine (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow);
-void RenderMeshOutline (int32_t nScale = -1, float fScale = 1.0f);
+void RenderMine (short nStartSeg, fix xExeOffset, int nWindow);
 void RenderShadowQuad (void);
-void UpdateRenderedData (int32_t window_num, CObject *viewer, int32_t rearViewFlag, int32_t user);
-void RenderObjList (int32_t nListPos, int32_t nWindow);
-void RenderMineSegment (int32_t nn);
-void RenderEffects (int32_t nWindow);
-void RenderSkyBox (int32_t nWindow);
+void UpdateRenderedData (int window_num, CObject *viewer, int rearViewFlag, int user);
+void RenderObjList (int nListPos, int nWindow);
+void RenderMineSegment (int nn);
+void RenderEffects (int nWindow);
+void RenderSkyBox (int nWindow);
 
-void BuildRenderObjLists (int32_t nSegCount, int32_t nThread = 0);
-void BuildRenderSegList (int16_t nStartSeg, int32_t nWindow, bool bIgnoreDoors = false, int32_t nThread = 0);
+void BuildRenderObjLists (int nSegCount, int nThread = 0);
+void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors = false, int nThread = 0);
 
 void ResetFaceList (void);
-int32_t AddFaceListItem (CSegFace *pFace, int32_t nThread);
+int AddFaceListItem (CSegFace *faceP, int nThread);
 
 //------------------------------------------------------------------------------
 
 static inline bool GuidedMslView (CObject ** objPP)
 {
-return (*objPP = gameData.objData.GetGuidedMissile (N_LOCALPLAYER)) != NULL;
+	CObject *objP = gameData.objs.guidedMissile [N_LOCALPLAYER].objP;
+
+*objPP = objP;
+return objP && 
+		 (objP->info.nType == OBJ_WEAPON) && 
+		 (objP->info.nId == GUIDEDMSL_ID) && 
+		 (objP->info.nSignature == gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature);
 }
 
 //------------------------------------------------------------------------------
@@ -101,9 +106,9 @@ static inline CObject *GuidedInMainView (void)
 if (!gameOpts->render.cockpit.bGuidedInMainView)
 	return NULL;
 
-CObject *pObj;
+CObject *objP;
 
-return GuidedMslView (&pObj) ? pObj : NULL;
+return GuidedMslView (&objP) ? objP : NULL;
 }
 
 //------------------------------------------------------------------------------

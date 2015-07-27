@@ -59,38 +59,33 @@
 #define WEAPON_ICONS 0
 
 //typedef struct tWindowOpts {
-//	int32_t	nPos;
-//	int32_t	nSize;
-//	int32_t	nAlign;
-//	int32_t	nZoom;
-//	int32_t	nType [2];
+//	int	nPos;
+//	int	nSize;
+//	int	nAlign;
+//	int	nZoom;
+//	int	nType [2];
 //} tWindowOpts;
 //
 //typedef struct tRadarOpts {
-//	int32_t	nPos;
-//	int32_t	nSize;
-//	int32_t	nRange;
-//	int32_t	nColor;
-//	int32_t	nStyle;
+//	int	nPos;
+//	int	nSize;
+//	int	nRange;
+//	int	nColor;
+//	int	nStyle;
 //} tRadarOpts;
 //
 //static struct {
 //	tWindowOpts	windows;
 //	tRadarOpts	radar;
-//	int32_t			nTgtInd;
+//	int			nTgtInd;
 //} cockpitOpts;
 
-static int32_t nWindowPos, nWindowAlign, nTgtInd;
+static int nWindowPos, nWindowAlign, nTgtInd;
 
 #if WEAPON_ICONS
-static int32_t	optWeaponIcons, bShowWeaponIcons, optIconAlpha;
+static int	optWeaponIcons, bShowWeaponIcons, optIconAlpha;
 #endif
 
-static const char* szHUDType [3];
-static const char* szHUDWidth [3];
-static const char* szHUDHeight [3];
-static const char* szLayout [3];
-static const char* szColorScheme [3];
 static const char* szWindowType [7];
 static const char* szWindowSize [4];
 static const char* szWindowPos [2];
@@ -101,19 +96,19 @@ static const char* szRadarRange [5];
 static const char* szRadarColor [3];
 static const char* szRadarStyle [2];
 
-static int32_t nWinFuncs, winFunc [2], winFuncList [CV_FUNC_COUNT], winFuncMap [CV_FUNC_COUNT];
+static int nWinFuncs, winFunc [2], winFuncList [CV_FUNC_COUNT], winFuncMap [CV_FUNC_COUNT];
 
 //------------------------------------------------------------------------------
 
-static const char* windowTypeIds [2] = {"left window type", "right window type"};
+static char* windowTypeIds [2] = {"left window type", "right window type"};
 
-int32_t CockpitOptionsCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+int CockpitOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem*	m;
-	int32_t		v;
+	int			v;
 
 #if WEAPON_ICONS
 mat = menu + optWeaponIcons;
@@ -125,16 +120,7 @@ if (dir != bShowWeaponIcons) {
 	}
 #endif
 
-if ((m = menu ["show hud"])) {
-	v = m->Value ();
-	if (gameOpts->render.cockpit.bHUD != v) {
-		gameOpts->render.cockpit.bHUD = v;
-		sprintf (m->m_text, TXT_SHOW_HUD, szHUDType [v]);
-		m->Rebuild ();
-		}
-	}
-
-for (int32_t i = 0; i < 2; i++) {
+for (int i = 0; i < 2; i++) {
 	if ((m = menu [windowTypeIds [i]])) {
 		v = m->Value ();
 		if (v != winFunc [i]) {
@@ -234,45 +220,6 @@ if ((m = menu ["target indicators"])) {
 		nTgtInd = v;
 		sprintf (m->m_text, TXT_TARGET_INDICATORS, szTgtInd [v]);
 		m->Rebuild ();
-		key = -2;
-		}
-	}
-
-if ((m = menu ["compact hud"])) {
-	v = m->Value ();
-	if (gameOpts->render.cockpit.nShipStateLayout != v) {
-		if (!gameOpts->render.cockpit.nShipStateLayout)
-			nCurItem = -nCurItem;
-		gameOpts->render.cockpit.nShipStateLayout = v;
-		m->Rebuild ();
-		key = -2;
-		}
-	}
-
-if ((m = menu ["color scheme"])) {
-	v = m->Value ();
-	if (gameOpts->render.cockpit.nColorScheme != v) {
-		gameOpts->render.cockpit.nColorScheme = v;
-		sprintf (m->m_text, TXT_HUD_COLOR_SCHEME, szColorScheme [v]);
-		m->Rebuild ();
-		}
-	}
-
-if ((m = menu ["hud width"])) {
-	v = m->Value ();
-	if (gameOpts->render.cockpit.nCompactWidth != v) {
-		gameOpts->render.cockpit.nCompactWidth = v;
-		sprintf (m->m_text, TXT_COMPACT_HUD_WIDTH, szHUDWidth [v]);
-		m->Rebuild ();
-		}
-	}
-
-if ((m = menu ["hud height"])) {
-	v = m->Value ();
-	if (gameOpts->render.cockpit.nCompactHeight != v) {
-		gameOpts->render.cockpit.nCompactHeight = v;
-		sprintf (m->m_text, TXT_COMPACT_HUD_HEIGHT, szHUDHeight [v]);
-		m->Rebuild ();
 		}
 	}
 
@@ -288,26 +235,6 @@ static void InitStrings (void)
 if (bInitialized)
 	return;
 bInitialized = true;
-
-szHUDType [0] = TXT_OFF;
-szHUDType [1] = TXT_MINIMAL;
-szHUDType [2] = TXT_FULL;
-
-szLayout [0] = TXT_OFF;
-szLayout [1] = TXT_HORIZONTAL;
-szLayout [2] = TXT_VERTICAL;
-
-szHUDWidth [0] = TXT_NARROW;
-szHUDWidth [1] = TXT_MEDIUM;
-szHUDWidth [2] = TXT_WIDE;
-
-szHUDHeight [0] = TXT_COMPACT_HUD_HIGH;
-szHUDHeight [1] = TXT_COMPACT_HUD_MIDDLE;
-szHUDHeight [2] = TXT_COMPACT_HUD_LOW;
-
-szColorScheme [0] = TXT_RED;
-szColorScheme [1] = TXT_YELLOW;
-szColorScheme [2] = TXT_BLUE;
 
 szWindowSize [0] = TXT_AUXWIN_SMALL;
 szWindowSize [1] = TXT_AUXWIN_MEDIUM;
@@ -346,9 +273,9 @@ szTgtInd [2] = TXT_FULL;
 //------------------------------------------------------------------------------
 // build a list of all available cockpit window functions
 
-int32_t GatherWindowFunctions (int32_t winFuncList [CV_FUNC_COUNT], int32_t winFuncMap [CV_FUNC_COUNT])
+int GatherWindowFunctions (int winFuncList [CV_FUNC_COUNT], int winFuncMap [CV_FUNC_COUNT])
 {
-	int32_t	i = 0;
+	int	i = 0;
 
 winFuncList [i++] = CV_NONE;
 if (FindEscort())
@@ -356,29 +283,29 @@ if (FindEscort())
 winFuncList [i++] = CV_REAR;
 if (IsCoopGame || IsTeamGame) 
 	winFuncList [i++] = CV_COOP;
-if (!IsMultiGame || IsCoopGame || netGameInfo.m_info.bAllowMarkerView)
+if (!IsMultiGame || IsCoopGame || netGame.m_info.bAllowMarkerView)
 	winFuncList [i++] = CV_MARKER;
 if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
-	 (!IsMultiGame || (netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+	 (!IsMultiGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 	winFuncList [i++] = CV_RADAR_TOPDOWN;
 	winFuncList [i++] = CV_RADAR_HEADSUP;
 	}
 memset (winFuncMap, 0xFF, sizeofa (winFuncMap));
-for (int32_t j = 0; j < i; j++)
+for (int j = 0; j < i; j++)
 	winFuncMap [winFuncList [j]] = j;
 return i;
 }
 
 //------------------------------------------------------------------------------
 
-void DefaultCockpitSettings (bool bSetup = false);
+void DefaultCockpitSettings (void);
 
 void CockpitOptionsMenu (void)
 {
-	static int32_t choice = 0;
+	static int choice = 0;
 
 	CMenu m;
-	int32_t	i;
+	int	i;
 
 	char	szSlider [50];
 
@@ -403,47 +330,20 @@ do {
 	m.Destroy ();
 	m.Create (20);
 
-	sprintf (szSlider, TXT_SHOW_HUD, szHUDType [gameOpts->render.cockpit.bHUD]);
-	m.AddSlider ("show hud", szSlider, gameOpts->render.cockpit.bHUD, 0, 2, KEY_U, HTX_CPIT_SHOWHUD);
-	m.AddText ("", "");
-
+	m.AddCheck ("show hud", TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
 	m.AddCheck ("show reticle", TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_S, HTX_CPIT_SHOWRETICLE);
-	m.AddCheck ("missile view", TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_V, HTX_CPIT_MSLVIEW);
-#if 0
-	m.AddCheck ("compact hud", TXT_COMPACT_HUD, gameOpts->render.cockpit.nShipStateLayout, KEY_G, HTX_CPIT_GFXGAUGES);
-#endif
-	if (!gameOpts->render.cockpit.nShipStateLayout)
-		m.AddCheck ("text gauges", TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_COMPACT_HUD);
-	m.AddCheck ("object tally", TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_Y, HTX_CPIT_OBJTALLY);
+	m.AddCheck ("missile view", TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_M, HTX_CPIT_MSLVIEW);
+	m.AddCheck ("text gauges", TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_CPIT_GFXGAUGES);
+	m.AddCheck ("object tally", TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_T, HTX_CPIT_OBJTALLY);
 	m.AddCheck ("zoom style", TXT_ZOOM_SMOOTH, extraGameInfo [IsMultiGame].nZoomMode - 1, KEY_O, HTX_GPLAY_ZOOMSMOOTH);
-	if (gameOpts->app.bExpertMode)
-		m.AddCheck ("sort weapon icons", TXT_SORT_WPNICONS, gameOpts->render.weaponIcons.nSort	, KEY_S, HTX_CPIT_SORTICONS);
 #if 0
 	m.AddCheck ("target indicators", TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
 #else
 	m.AddText ("", "");
-#if 1
-	sprintf (szSlider, TXT_SHIP_STATE_LAYOUT, szLayout [gameOpts->render.cockpit.nShipStateLayout]);
-	m.AddSlider ("compact hud", szSlider, gameOpts->render.cockpit.nShipStateLayout, 0, 2, KEY_M, HTX_SHIP_STATE_LAYOUT);
-	if (gameOpts->render.cockpit.nShipStateLayout) {
-		sprintf (szSlider, TXT_HUD_COLOR_SCHEME, szColorScheme [gameOpts->render.cockpit.nColorScheme]);
-		m.AddSlider ("color scheme", szSlider, gameOpts->render.cockpit.nColorScheme, 0, 2, KEY_C, HTX_HUD_COLOR_SCHEME);
-		if (gameOpts->render.cockpit.nShipStateLayout == 2) {
-			if (gameOpts->app.bExpertMode) {
-				sprintf (szSlider, TXT_COMPACT_HUD_WIDTH, szHUDWidth [gameOpts->render.cockpit.nCompactWidth]);
-				m.AddSlider ("hud width", szSlider, gameOpts->render.cockpit.nCompactWidth, 0, 2, KEY_W, HTX_COMPACT_HUD_WIDTH);
-				sprintf (szSlider, TXT_COMPACT_HUD_HEIGHT, szHUDHeight [gameOpts->render.cockpit.nCompactHeight]);
-				m.AddSlider ("hud height", szSlider, gameOpts->render.cockpit.nCompactHeight, 0, 2, KEY_H, HTX_COMPACT_HUD_HEIGHT);
-				m.AddCheck ("hud separators", TXT_HUD_SEPARATORS, gameOpts->render.cockpit.bSeparators, KEY_P, HTX_HUD_SEPARATORS);
-				}
-			}
-		m.AddText ("", "");
-		}
-#endif
 	sprintf (szSlider, TXT_TARGET_INDICATORS, szTgtInd [nTgtInd]);
-	m.AddSlider ("target indicators", szSlider, nTgtInd, 0, 2, KEY_I, HTX_CPIT_TGTIND);
+	m.AddSlider ("target indicators", szSlider, nTgtInd, 0, 2, KEY_T, HTX_CPIT_TGTIND);
 	if (nTgtInd)
-		m.AddCheck ("hide target indicators", TXT_HIDE_TGTIND, extraGameInfo [0].bHideIndicators, KEY_B, HTX_HIDE_TGTIND);
+		m.AddCheck ("hide target indicators", TXT_HIDE_TGTIND, extraGameInfo [0].bHideIndicators, KEY_H, HTX_HIDE_TGTIND);
 #endif
 #if WEAPON_ICONS
 	m.AddText ("", "");
@@ -500,7 +400,7 @@ do {
 			break;
 #if WEAPON_ICONS
 		if (bShowWeaponIcons && (optIconPos >= 0)) {
-			for (int32_t j = 0; j < 4; j++)
+			for (int j = 0; j < 4; j++)
 				if (mat [optIconPos + j].Value ()) {
 					extraGameInfo [0].nWeaponIcons = j + 1;
 					break;
@@ -509,30 +409,23 @@ do {
 #endif
 	} while (i >= 0);
 
-	for (int32_t j = 0; j < 2; j++)
-		gameStates.render.cockpit.n3DView [i] = winFuncList [winFunc [j]];
+	for (i = 0; i < 2; i++)
+		gameStates.render.cockpit.n3DView [i] = winFuncList [winFunc [i]];
 	GET_VAL (gameOpts->render.cockpit.bReticle, "show reticle");
 	GET_VAL (gameOpts->render.cockpit.bHUD, "show hud");
 	GET_VAL (gameOpts->render.cockpit.bMissileView, "missile view");
 	GET_VAL (gameOpts->render.cockpit.bObjectTally, "object tally");
-	if (gameOpts->app.bExpertMode)
-		GET_VAL (gameOpts->render.weaponIcons.nSort, "sort weapon icons");
 	GET_VAL (extraGameInfo [0].bHideIndicators, "hide target indicators");
-	GET_VAL (gameOpts->render.cockpit.nShipStateLayout, "compact hud");
-	GET_VAL (gameOpts->render.cockpit.bSeparators, "hud separators");
-	if (gameOpts->render.cockpit.nShipStateLayout)
-		GET_VAL (gameOpts->render.cockpit.nColorScheme, "color scheme");
 	//GET_VAL (extraGameInfo [0].bTargetIndicators, "target indicators");
-	if (m.Available ( "text gauges"))
-		gameOpts->render.cockpit.bTextGauges = !m.Value ("text gauges");
+	gameOpts->render.cockpit.bTextGauges = !m.Value ("text gauges");
 	gameOpts->render.cockpit.nWindowPos = nWindowPos * 3 + nWindowAlign;
 //if (gameOpts->app.bExpertMode)
 	extraGameInfo [IsMultiGame].nZoomMode = m.Value ("zoom style") + 1;
 #if WEAPON_ICONS
 	if (bShowWeaponIcons) {
-		int32_t h = m.IndexOf ("weapon icons top");
+		int h = m.IndexOf ("weapon icons top");
 		if (h >= 0) {
-			for (int32_t j = 0; j < 4; j++)
+			for (int j = 0; j < 4; j++)
 				if (mat [h + j].Value ()) {
 					extraGameInfo [0].nWeaponIcons = j + 1;
 					break;

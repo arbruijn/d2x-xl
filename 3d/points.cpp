@@ -27,13 +27,13 @@ COPYRIGHT 1993-1998PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef _WIN32
 inline
 #endif
-int32_t CheckMulDiv (fix *r, fix a, fix b, fix c)
+int CheckMulDiv (fix *r, fix a, fix b, fix c)
 {
 #ifdef _WIN32
-	int64_t	q;
+	QLONG	q;
 	if (!c)
 		return 0;
-	q = mul64 (a, b) / (int64_t) c;
+	q = mul64 (a, b) / (QLONG) c;
 	if ((q > 0x7fffffff) || (q < -0x7fffffff))
 		return 0;
 	*r = (fix) q;
@@ -60,30 +60,30 @@ int32_t CheckMulDiv (fix *r, fix a, fix b, fix c)
 
 //------------------------------------------------------------------------------
 
-inline int32_t ScreenScale (void)
+inline int ScreenScale (void)
 {
 return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? 1 : 2;
 }
 
-inline int32_t ScreenWidth (void)
+inline int ScreenWidth (void)
 {
-return gameData.renderData.screen.Width () /*/ ScreenScale ()*/;
+return screen.Width () /*/ ScreenScale ()*/;
 }
 
-inline int32_t ScreenHeight (void)
+inline int ScreenHeight (void)
 {
-return gameData.renderData.screen.Height () /*/ ScreenScale ()*/;
+return screen.Height () /*/ ScreenScale ()*/;
 }
 
 // -----------------------------------------------------------------------------------
 
-uint8_t OglProjectPoint (CFloatVector3& p, tScreenPos& s, uint8_t flags, uint8_t codes)
+ubyte OglProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
 {
 if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
 	return flags;
 double x, y, z;
 gluProject ((double) p.v.coord.x, (double) p.v.coord.y, (double) p.v.coord.z, 
-				&transformation.m_info.oglModelview [0], &transformation.m_info.oglProjection [0][0], transformation.m_info.oglViewport, 
+				&transformation.m_info.oglModelview [0], &transformation.m_info.oglProjection [0], transformation.m_info.oglViewport, 
 				&x, &y, &z);
 #if 1
 s.x = fix (x);
@@ -104,7 +104,7 @@ return flags | PF_PROJECTED;
 // -----------------------------------------------------------------------------------
 //projects a point
 
-uint8_t ProjectPoint (CFloatVector3& p, tScreenPos& s, uint8_t flags, uint8_t codes)
+ubyte ProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
 {
 if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
 	return flags;
@@ -117,7 +117,7 @@ return flags | PF_PROJECTED;
 
 // -----------------------------------------------------------------------------------
 
-uint8_t ProjectPoint (CFixVector& v, tScreenPos& s, uint8_t flags, uint8_t codes)
+ubyte ProjectPoint (CFixVector& v, tScreenPos& s, ubyte flags, ubyte codes)
 {
 CFloatVector3 h;
 h.Assign (v);
@@ -128,7 +128,7 @@ return ProjectPoint (h, s, flags);
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
 
-void CRenderPoint::Transform (int32_t nVertex) 
+void CRenderPoint::Transform (int nVertex) 
 {
 if (nVertex >= 0)
 	m_vertex [0] = VERTICES [nVertex];
@@ -137,19 +137,14 @@ transformation.Transform (m_vertex [1], m_vertex [0]);
 
 // -----------------------------------------------------------------------------------
 
-uint8_t CRenderPoint::Project (CTransformation& transformation, CFloatVector3& pViewos)
+ubyte CRenderPoint::Project (CTransformation& transformation, CFloatVector3& viewPos)
 {
 if ((m_flags & PF_PROJECTED) || (m_codes & CC_BEHIND))
 	return m_flags;
-CFloatVector3 v = transformation.m_info.projection * pViewos;
-float z = fabs (pViewos.v.coord.z);
-#if 0
-m_screen.x = fix ((float) gameData.renderData.screen.Width () * 0.5f * (1.0f + v.v.coord.x / z));
-m_screen.y = fix ((float) gameData.renderData.screen.Height () * 0.5f * (1.0f + v.v.coord.y / z));
-#else
+CFloatVector3 v = transformation.m_info.projection * viewPos;
+float z = fabs (viewPos.v.coord.z);
 m_screen.x = fix (CCanvas::fCanvW2 * (1.0f + v.v.coord.x / z));
 m_screen.y = fix (CCanvas::fCanvH2 * (1.0f + v.v.coord.y / z));
-#endif
 m_flags |= PF_PROJECTED;
 return m_flags;
 }
@@ -158,37 +153,37 @@ return m_flags;
 
 void CRenderPoint::Project (void)
 {
-CFloatVector3 pViewosf;
-pViewosf.Assign (ViewPos ());
-m_flags = Project (transformation, pViewosf);
+CFloatVector3 viewPosf;
+viewPosf.Assign (ViewPos ());
+m_flags = Project (transformation, viewPosf);
 }
 
 // -----------------------------------------------------------------------------------
 
-uint8_t CRenderPoint::ProjectAndEncode (CTransformation& transformation, int32_t nVertex)
+ubyte CRenderPoint::ProjectAndEncode (CTransformation& transformation, int nVertex)
 {
 #if DBG
 if (nVertex == nDbgVertex)
-	BRP;
+	nDbgVertex = nDbgVertex;
 #endif
 if (!Projected ()) {
 	WorldPos () = VERTICES [nVertex];
-	CFloatVector3 pViewosf;
-	transformation.Transform (pViewosf, *FVERTICES [nVertex].XYZ ());
-	ViewPos ().Assign (pViewosf);
-	Project (transformation, pViewosf);
+	CFloatVector3 viewPosf;
+	transformation.Transform (viewPosf, *FVERTICES [nVertex].XYZ ());
+	ViewPos ().Assign (viewPosf);
+	Project (transformation, viewPosf);
 	Encode ();
 	AddFlags (PF_PROJECTED);
-	SetCodes ((pViewosf.v.coord.z < 0.0f) ? CC_BEHIND : 0);
+	SetCodes ((viewPosf.v.coord.z < 0.0f) ? CC_BEHIND : 0);
 #if TRANSP_DEPTH_HASH
 	fix d = ViewPos ().Mag ();
-	if (gameData.renderData.zMin > d)
-		gameData.renderData.zMin = d;
-	if (gameData.renderData.zMax < d)
-		gameData.renderData.zMax = d;
+	if (gameData.render.zMin > d)
+		gameData.render.zMin = d;
+	if (gameData.render.zMax < d)
+		gameData.render.zMax = d;
 #else
-	if (gameData.renderData.zMax < point.m_vertex [1].dir.coord.z)
-		gameData.renderData.zMax = point.m_vertex [1].dir.coord.z;
+	if (gameData.render.zMax < point.m_vertex [1].dir.coord.z)
+		gameData.render.zMax = point.m_vertex [1].dir.coord.z;
 #endif
 	}
 return Codes ();
@@ -196,18 +191,18 @@ return Codes ();
 
 // -----------------------------------------------------------------------------------
 
-uint8_t CRenderPoint::Encode (void) 
+ubyte CRenderPoint::Encode (void) 
 {
 if (!Projected ())
 	m_codes = transformation.Codes (m_vertex [1]); 
 else {
 	if (m_screen.x < 0)
 		m_codes |= CC_OFF_LEFT;
-	else if (m_screen.x > gameData.renderData.screen.Width ())
+	else if (m_screen.x > screen.Width ())
 		m_codes |= CC_OFF_RIGHT;
 	if (m_screen.y < 0)
 		m_codes |= CC_OFF_BOT;
-	else if (m_screen.y > gameData.renderData.screen.Height ())
+	else if (m_screen.y > screen.Height ())
 		m_codes |= CC_OFF_TOP;
 	}
 return m_codes;
@@ -215,7 +210,7 @@ return m_codes;
 
 // -----------------------------------------------------------------------------------
 
-uint8_t CRenderPoint::Add (CRenderPoint& src, CFixVector& vDelta)
+ubyte CRenderPoint::Add (CRenderPoint& src, CFixVector& vDelta)
 {
 ViewPos () = src.ViewPos () + vDelta;
 m_flags = 0;		//not projected
@@ -227,7 +222,7 @@ return Encode ();
 fix G3CalcPointDepth (const CFixVector& v)
 {
 #ifdef _WIN32
-	int64_t q = mul64 (v.v.coord.x - transformation.m_info.pos.v.coord.x, transformation.m_info.view [0].m.dir.f.v.coord.x);
+	QLONG q = mul64 (v.v.coord.x - transformation.m_info.pos.v.coord.x, transformation.m_info.view [0].m.dir.f.v.coord.x);
 	q += mul64 (v.v.coord.y - transformation.m_info.pos.v.coord.y, transformation.m_info.view [0].m.dir.f.v.coord.y);
 	q += mul64 (v.v.coord.z - transformation.m_info.pos.v.coord.z, transformation.m_info.view [0].m.dir.f.v.coord.z);
 	return (fix) (q >> 16);

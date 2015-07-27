@@ -334,15 +334,15 @@ DECLARE_HANDLE(HPBUFFEREXT);
 #ifndef WGL_ARB_buffer_region
 #define WGL_ARB_buffer_region 1
 #ifdef WGL_WGLEXT_PROTOTYPES
-extern HANDLE WINAPI wglCreateBufferRegionARB (HDC, int32_t, UINT);
+extern HANDLE WINAPI wglCreateBufferRegionARB (HDC, int, UINT);
 extern VOID WINAPI wglDeleteBufferRegionARB (HANDLE);
-extern BOOL WINAPI wglSaveBufferRegionARB (HANDLE, int32_t, int32_t, int32_t, int32_t);
-extern BOOL WINAPI wglRestoreBufferRegionARB (HANDLE, int32_t, int32_t, int32_t, int32_t, int32_t, int32_t);
+extern BOOL WINAPI wglSaveBufferRegionARB (HANDLE, int, int, int, int);
+extern BOOL WINAPI wglRestoreBufferRegionARB (HANDLE, int, int, int, int, int, int);
 #endif /* WGL_WGLEXT_PROTOTYPES */
-typedef HANDLE (WINAPI * PFNWGLCREATEBUFFERREGIONARBPROC) (HDC hDC, int32_t iLayerPlane, UINT uType);
+typedef HANDLE (WINAPI * PFNWGLCREATEBUFFERREGIONARBPROC) (HDC hDC, int iLayerPlane, UINT uType);
 typedef VOID (WINAPI * PFNWGLDELETEBUFFERREGIONARBPROC) (HANDLE hRegion);
-typedef BOOL (WINAPI * PFNWGLSAVEBUFFERREGIONARBPROC) (HANDLE hRegion, int32_t x, int32_t y, int32_t width, int32_t height);
-typedef BOOL (WINAPI * PFNWGLRESTOREBUFFERREGIONARBPROC) (HANDLE hRegion, int32_t x, int32_t y, int32_t width, int32_t height, int32_t xSrc, int32_t ySrc);
+typedef BOOL (WINAPI * PFNWGLSAVEBUFFERREGIONARBPROC) (HANDLE hRegion, int x, int y, int width, int height);
+typedef BOOL (WINAPI * PFNWGLRESTOREBUFFERREGIONARBPROC) (HANDLE hRegion, int x, int y, int width, int height, int xSrc, int ySrc);
 #endif
 
 #ifndef WGL_ARB_multisample
@@ -360,13 +360,13 @@ typedef const char * (WINAPI * PFNWGLGETEXTENSIONSSTRINGARBPROC) (HDC hdc);
 #ifndef WGL_ARB_pixel_format
 #define WGL_ARB_pixel_format 1
 #ifdef WGL_WGLEXT_PROTOTYPES
-extern BOOL WINAPI wglGetPixelFormatAttribivARB (HDC, int32_t, int32_t, UINT, const int32_t *, int32_t *);
-extern BOOL WINAPI wglGetPixelFormatAttribfvARB (HDC, int32_t, int32_t, UINT, const int32_t *, FLOAT *);
-extern BOOL WINAPI wglChoosePixelFormatARB (HDC, const int32_t *, const FLOAT *, UINT, int32_t *, UINT *);
+extern BOOL WINAPI wglGetPixelFormatAttribivARB (HDC, int, int, UINT, const int *, int *);
+extern BOOL WINAPI wglGetPixelFormatAttribfvARB (HDC, int, int, UINT, const int *, FLOAT *);
+extern BOOL WINAPI wglChoosePixelFormatARB (HDC, const int *, const FLOAT *, UINT, int *, UINT *);
 #endif /* WGL_WGLEXT_PROTOTYPES */
-typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBIVARBPROC) (HDC hdc, int32_t iPixelFormat, int32_t iLayerPlane, UINT nAttributes, const int32_t *piAttributes, int32_t *piValues);
-typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBFVARBPROC) (HDC hdc, int32_t iPixelFormat, int32_t iLayerPlane, UINT nAttributes, const int32_t *piAttributes, FLOAT *pfValues);
-typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int32_t *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int32_t *piFormats, UINT *nNumFormats);
+typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBIVARBPROC) (HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, const int *piAttributes, int *piValues);
+typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBFVARBPROC) (HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, const int *piAttributes, FLOAT *pfValues);
+typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int *piFormats, UINT *nNumFormats);
 #endif
 
 #ifndef WGL_ARB_make_current_read
@@ -382,29 +382,29 @@ typedef HDC (WINAPI * PFNWGLGETCURRENTREADDCARBPROC) (void);
 #ifndef WGL_ARB_pbuffer
 #define WGL_ARB_pbuffer 1
 #ifdef WGL_WGLEXT_PROTOTYPES
-extern HPBUFFERARB WINAPI wglCreatePbufferARB (HDC, int32_t, int32_t, int32_t, const int32_t *);
+extern HPBUFFERARB WINAPI wglCreatePbufferARB (HDC, int, int, int, const int *);
 extern HDC WINAPI wglGetPbufferDCARB (HPBUFFERARB);
-extern int32_t WINAPI wglReleasePbufferDCARB (HPBUFFERARB, HDC);
+extern int WINAPI wglReleasePbufferDCARB (HPBUFFERARB, HDC);
 extern BOOL WINAPI wglDestroyPbufferARB (HPBUFFERARB);
-extern BOOL WINAPI wglQueryPbufferARB (HPBUFFERARB, int32_t, int32_t *);
+extern BOOL WINAPI wglQueryPbufferARB (HPBUFFERARB, int, int *);
 #endif /* WGL_WGLEXT_PROTOTYPES */
-typedef HPBUFFERARB (WINAPI * PFNWGLCREATEPBUFFERARBPROC) (HDC hDC, int32_t iPixelFormat, int32_t iWidth, int32_t iHeight, const int32_t *piAttribList);
+typedef HPBUFFERARB (WINAPI * PFNWGLCREATEPBUFFERARBPROC) (HDC hDC, int iPixelFormat, int iWidth, int iHeight, const int *piAttribList);
 typedef HDC (WINAPI * PFNWGLGETPBUFFERDCARBPROC) (HPBUFFERARB hPbuffer);
-typedef int32_t (WINAPI * PFNWGLRELEASEPBUFFERDCARBPROC) (HPBUFFERARB hPbuffer, HDC hDC);
+typedef int (WINAPI * PFNWGLRELEASEPBUFFERDCARBPROC) (HPBUFFERARB hPbuffer, HDC hDC);
 typedef BOOL (WINAPI * PFNWGLDESTROYPBUFFERARBPROC) (HPBUFFERARB hPbuffer);
-typedef BOOL (WINAPI * PFNWGLQUERYPBUFFERARBPROC) (HPBUFFERARB hPbuffer, int32_t iAttribute, int32_t *piValue);
+typedef BOOL (WINAPI * PFNWGLQUERYPBUFFERARBPROC) (HPBUFFERARB hPbuffer, int iAttribute, int *piValue);
 #endif
 
 #ifndef WGL_ARB_render_texture
 #define WGL_ARB_render_texture 1
 #ifdef WGL_WGLEXT_PROTOTYPES
-extern BOOL WINAPI wglBindTexImageARB (HPBUFFERARB, int32_t);
-extern BOOL WINAPI wglReleaseTexImageARB (HPBUFFERARB, int32_t);
-extern BOOL WINAPI wglSetPbufferAttribARB (HPBUFFERARB, const int32_t *);
+extern BOOL WINAPI wglBindTexImageARB (HPBUFFERARB, int);
+extern BOOL WINAPI wglReleaseTexImageARB (HPBUFFERARB, int);
+extern BOOL WINAPI wglSetPbufferAttribARB (HPBUFFERARB, const int *);
 #endif /* WGL_WGLEXT_PROTOTYPES */
-typedef BOOL (WINAPI * PFNWGLBINDTEXIMAGEARBPROC) (HPBUFFERARB hPbuffer, int32_t iBuffer);
-typedef BOOL (WINAPI * PFNWGLRELEASETEXIMAGEARBPROC) (HPBUFFERARB hPbuffer, int32_t iBuffer);
-typedef BOOL (WINAPI * PFNWGLSETPBUFFERATTRIBARBPROC) (HPBUFFERARB hPbuffer, const int32_t *piAttribList);
+typedef BOOL (WINAPI * PFNWGLBINDTEXIMAGEARBPROC) (HPBUFFERARB hPbuffer, int iBuffer);
+typedef BOOL (WINAPI * PFNWGLRELEASETEXIMAGEARBPROC) (HPBUFFERARB hPbuffer, int iBuffer);
+typedef BOOL (WINAPI * PFNWGLSETPBUFFERATTRIBARBPROC) (HPBUFFERARB hPbuffer, const int *piAttribList);
 #endif
 
 #ifndef WGL_ARB_pixel_format_float
@@ -446,39 +446,39 @@ typedef HDC (WINAPI * PFNWGLGETCURRENTREADDCEXTPROC) (void);
 #ifndef WGL_EXT_pbuffer
 #define WGL_EXT_pbuffer 1
 #ifdef WGL_WGLEXT_PROTOTYPES
-extern HPBUFFEREXT WINAPI wglCreatePbufferEXT (HDC, int32_t, int32_t, int32_t, const int32_t *);
+extern HPBUFFEREXT WINAPI wglCreatePbufferEXT (HDC, int, int, int, const int *);
 extern HDC WINAPI wglGetPbufferDCEXT (HPBUFFEREXT);
-extern int32_t WINAPI wglReleasePbufferDCEXT (HPBUFFEREXT, HDC);
+extern int WINAPI wglReleasePbufferDCEXT (HPBUFFEREXT, HDC);
 extern BOOL WINAPI wglDestroyPbufferEXT (HPBUFFEREXT);
-extern BOOL WINAPI wglQueryPbufferEXT (HPBUFFEREXT, int32_t, int32_t *);
+extern BOOL WINAPI wglQueryPbufferEXT (HPBUFFEREXT, int, int *);
 #endif /* WGL_WGLEXT_PROTOTYPES */
-typedef HPBUFFEREXT (WINAPI * PFNWGLCREATEPBUFFEREXTPROC) (HDC hDC, int32_t iPixelFormat, int32_t iWidth, int32_t iHeight, const int32_t *piAttribList);
+typedef HPBUFFEREXT (WINAPI * PFNWGLCREATEPBUFFEREXTPROC) (HDC hDC, int iPixelFormat, int iWidth, int iHeight, const int *piAttribList);
 typedef HDC (WINAPI * PFNWGLGETPBUFFERDCEXTPROC) (HPBUFFEREXT hPbuffer);
-typedef int32_t (WINAPI * PFNWGLRELEASEPBUFFERDCEXTPROC) (HPBUFFEREXT hPbuffer, HDC hDC);
+typedef int (WINAPI * PFNWGLRELEASEPBUFFERDCEXTPROC) (HPBUFFEREXT hPbuffer, HDC hDC);
 typedef BOOL (WINAPI * PFNWGLDESTROYPBUFFEREXTPROC) (HPBUFFEREXT hPbuffer);
-typedef BOOL (WINAPI * PFNWGLQUERYPBUFFEREXTPROC) (HPBUFFEREXT hPbuffer, int32_t iAttribute, int32_t *piValue);
+typedef BOOL (WINAPI * PFNWGLQUERYPBUFFEREXTPROC) (HPBUFFEREXT hPbuffer, int iAttribute, int *piValue);
 #endif
 
 #ifndef WGL_EXT_pixel_format
 #define WGL_EXT_pixel_format 1
 #ifdef WGL_WGLEXT_PROTOTYPES
-extern BOOL WINAPI wglGetPixelFormatAttribivEXT (HDC, int32_t, int32_t, UINT, int32_t *, int32_t *);
-extern BOOL WINAPI wglGetPixelFormatAttribfvEXT (HDC, int32_t, int32_t, UINT, int32_t *, FLOAT *);
-extern BOOL WINAPI wglChoosePixelFormatEXT (HDC, const int32_t *, const FLOAT *, UINT, int32_t *, UINT *);
+extern BOOL WINAPI wglGetPixelFormatAttribivEXT (HDC, int, int, UINT, int *, int *);
+extern BOOL WINAPI wglGetPixelFormatAttribfvEXT (HDC, int, int, UINT, int *, FLOAT *);
+extern BOOL WINAPI wglChoosePixelFormatEXT (HDC, const int *, const FLOAT *, UINT, int *, UINT *);
 #endif /* WGL_WGLEXT_PROTOTYPES */
-typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBIVEXTPROC) (HDC hdc, int32_t iPixelFormat, int32_t iLayerPlane, UINT nAttributes, int32_t *piAttributes, int32_t *piValues);
-typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBFVEXTPROC) (HDC hdc, int32_t iPixelFormat, int32_t iLayerPlane, UINT nAttributes, int32_t *piAttributes, FLOAT *pfValues);
-typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATEXTPROC) (HDC hdc, const int32_t *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int32_t *piFormats, UINT *nNumFormats);
+typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBIVEXTPROC) (HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, int *piAttributes, int *piValues);
+typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBFVEXTPROC) (HDC hdc, int iPixelFormat, int iLayerPlane, UINT nAttributes, int *piAttributes, FLOAT *pfValues);
+typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATEXTPROC) (HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int *piFormats, UINT *nNumFormats);
 #endif
 
 #ifndef WGL_EXT_swap_control
 #define WGL_EXT_swap_control 1
 #ifdef WGL_WGLEXT_PROTOTYPES
-extern BOOL WINAPI wglSwapIntervalEXT (int32_t);
-extern int32_t WINAPI wglGetSwapIntervalEXT (void);
+extern BOOL WINAPI wglSwapIntervalEXT (int);
+extern int WINAPI wglGetSwapIntervalEXT (void);
 #endif /* WGL_WGLEXT_PROTOTYPES */
-typedef BOOL (WINAPI * PFNWGLSWAPINTERVALEXTPROC) (int32_t interval);
-typedef int32_t (WINAPI * PFNWGLGETSWAPINTERVALEXTPROC) (void);
+typedef BOOL (WINAPI * PFNWGLSWAPINTERVALEXTPROC) (int interval);
+typedef int (WINAPI * PFNWGLGETSWAPINTERVALEXTPROC) (void);
 #endif
 
 #ifndef WGL_EXT_depth_float
@@ -509,14 +509,14 @@ typedef void (WINAPI * PFNWGLFREEMEMORYNVPROC) (void *pointer);
 extern BOOL WINAPI wglGetSyncValuesOML (HDC, INT64 *, INT64 *, INT64 *);
 extern BOOL WINAPI wglGetMscRateOML (HDC, INT32 *, INT32 *);
 extern INT64 WINAPI wglSwapBuffersMscOML (HDC, INT64, INT64, INT64);
-extern INT64 WINAPI wglSwapLayerBuffersMscOML (HDC, int32_t, INT64, INT64, INT64);
+extern INT64 WINAPI wglSwapLayerBuffersMscOML (HDC, int, INT64, INT64, INT64);
 extern BOOL WINAPI wglWaitForMscOML (HDC, INT64, INT64, INT64, INT64 *, INT64 *, INT64 *);
 extern BOOL WINAPI wglWaitForSbcOML (HDC, INT64, INT64 *, INT64 *, INT64 *);
 #endif /* WGL_WGLEXT_PROTOTYPES */
 typedef BOOL (WINAPI * PFNWGLGETSYNCVALUESOMLPROC) (HDC hdc, INT64 *ust, INT64 *msc, INT64 *sbc);
 typedef BOOL (WINAPI * PFNWGLGETMSCRATEOMLPROC) (HDC hdc, INT32 *numerator, INT32 *denominator);
 typedef INT64 (WINAPI * PFNWGLSWAPBUFFERSMSCOMLPROC) (HDC hdc, INT64 target_msc, INT64 divisor, INT64 remainder);
-typedef INT64 (WINAPI * PFNWGLSWAPLAYERBUFFERSMSCOMLPROC) (HDC hdc, int32_t fuPlanes, INT64 target_msc, INT64 divisor, INT64 remainder);
+typedef INT64 (WINAPI * PFNWGLSWAPLAYERBUFFERSMSCOMLPROC) (HDC hdc, int fuPlanes, INT64 target_msc, INT64 divisor, INT64 remainder);
 typedef BOOL (WINAPI * PFNWGLWAITFORMSCOMLPROC) (HDC hdc, INT64 target_msc, INT64 divisor, INT64 remainder, INT64 *ust, INT64 *msc, INT64 *sbc);
 typedef BOOL (WINAPI * PFNWGLWAITFORSBCOMLPROC) (HDC hdc, INT64 target_sbc, INT64 *ust, INT64 *msc, INT64 *sbc);
 #endif
@@ -524,25 +524,25 @@ typedef BOOL (WINAPI * PFNWGLWAITFORSBCOMLPROC) (HDC hdc, INT64 target_sbc, INT6
 #ifndef WGL_I3D_digital_video_control
 #define WGL_I3D_digital_video_control 1
 #ifdef WGL_WGLEXT_PROTOTYPES
-extern BOOL WINAPI wglGetDigitalVideoParametersI3D (HDC, int32_t, int32_t *);
-extern BOOL WINAPI wglSetDigitalVideoParametersI3D (HDC, int32_t, const int32_t *);
+extern BOOL WINAPI wglGetDigitalVideoParametersI3D (HDC, int, int *);
+extern BOOL WINAPI wglSetDigitalVideoParametersI3D (HDC, int, const int *);
 #endif /* WGL_WGLEXT_PROTOTYPES */
-typedef BOOL (WINAPI * PFNWGLGETDIGITALVIDEOPARAMETERSI3DPROC) (HDC hDC, int32_t iAttribute, int32_t *piValue);
-typedef BOOL (WINAPI * PFNWGLSETDIGITALVIDEOPARAMETERSI3DPROC) (HDC hDC, int32_t iAttribute, const int32_t *piValue);
+typedef BOOL (WINAPI * PFNWGLGETDIGITALVIDEOPARAMETERSI3DPROC) (HDC hDC, int iAttribute, int *piValue);
+typedef BOOL (WINAPI * PFNWGLSETDIGITALVIDEOPARAMETERSI3DPROC) (HDC hDC, int iAttribute, const int *piValue);
 #endif
 
 #ifndef WGL_I3D_gamma
 #define WGL_I3D_gamma 1
 #ifdef WGL_WGLEXT_PROTOTYPES
-extern BOOL WINAPI wglGetGammaTableParametersI3D (HDC, int32_t, int32_t *);
-extern BOOL WINAPI wglSetGammaTableParametersI3D (HDC, int32_t, const int32_t *);
-extern BOOL WINAPI wglGetGammaTableI3D (HDC, int32_t, USHORT *, USHORT *, USHORT *);
-extern BOOL WINAPI wglSetGammaTableI3D (HDC, int32_t, const USHORT *, const USHORT *, const USHORT *);
+extern BOOL WINAPI wglGetGammaTableParametersI3D (HDC, int, int *);
+extern BOOL WINAPI wglSetGammaTableParametersI3D (HDC, int, const int *);
+extern BOOL WINAPI wglGetGammaTableI3D (HDC, int, USHORT *, USHORT *, USHORT *);
+extern BOOL WINAPI wglSetGammaTableI3D (HDC, int, const USHORT *, const USHORT *, const USHORT *);
 #endif /* WGL_WGLEXT_PROTOTYPES */
-typedef BOOL (WINAPI * PFNWGLGETGAMMATABLEPARAMETERSI3DPROC) (HDC hDC, int32_t iAttribute, int32_t *piValue);
-typedef BOOL (WINAPI * PFNWGLSETGAMMATABLEPARAMETERSI3DPROC) (HDC hDC, int32_t iAttribute, const int32_t *piValue);
-typedef BOOL (WINAPI * PFNWGLGETGAMMATABLEI3DPROC) (HDC hDC, int32_t iEntries, USHORT *puRed, USHORT *puGreen, USHORT *puBlue);
-typedef BOOL (WINAPI * PFNWGLSETGAMMATABLEI3DPROC) (HDC hDC, int32_t iEntries, const USHORT *puRed, const USHORT *puGreen, const USHORT *puBlue);
+typedef BOOL (WINAPI * PFNWGLGETGAMMATABLEPARAMETERSI3DPROC) (HDC hDC, int iAttribute, int *piValue);
+typedef BOOL (WINAPI * PFNWGLSETGAMMATABLEPARAMETERSI3DPROC) (HDC hDC, int iAttribute, const int *piValue);
+typedef BOOL (WINAPI * PFNWGLGETGAMMATABLEI3DPROC) (HDC hDC, int iEntries, USHORT *puRed, USHORT *puGreen, USHORT *puBlue);
+typedef BOOL (WINAPI * PFNWGLSETGAMMATABLEI3DPROC) (HDC hDC, int iEntries, const USHORT *puRed, const USHORT *puGreen, const USHORT *puBlue);
 #endif
 
 #ifndef WGL_I3D_genlock

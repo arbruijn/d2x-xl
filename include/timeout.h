@@ -40,13 +40,9 @@ class CTimeout {
 				m_t0 -= m_duration + 1;
 			}
 
-		inline time_t Progress (void) { return SDL_GetTicks () - m_t0; }
+		inline time_t Progress (void) { return m_t0 - SDL_GetTicks (); }
 
 		bool Expired (bool bRestart = true) {
-			if (m_duration == 0)
-				return true;
-			if (m_duration < 0)
-				return false;
 			time_t t = SDL_GetTicks ();
 			if (t - m_t0 < m_duration)
 				return false;
@@ -61,26 +57,12 @@ class CTimeout {
 			time_t t = SDL_GetTicks ();
 			time_t dt = t - m_t0;
 			if (dt < m_duration) {
-				G3_SLEEP (int32_t (m_duration - dt));
+				G3_SLEEP (int (m_duration - dt));
 				m_t0 += m_duration;
 				}
 			else
 				m_t0 = t;
 			}
-
-		inline time_t Duration (void) { return m_duration; }
-
-		inline void Suspend (void) {
-			if (m_duration > 0)
-				m_duration = -m_duration;
-			}
-
-		inline void Resume (void) {
-			if (m_duration < 0)
-				m_duration = -m_duration;
-			}
-
-		inline bool Suspended (void) { return m_duration < 0; }
 	};
 
 

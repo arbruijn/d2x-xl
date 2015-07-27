@@ -27,11 +27,11 @@
 
 class CString : public CArray < char > {
 	private:
-		uint32_t	m_length;
+		uint	m_length;
 
 	public:
 		explicit CString (char* s, int l = -1) {
-			m_length = (uint32_t) ((l < 0) ? strlen (s) : l);
+			m_length = (uint) ((l < 0) ? strlen (s) : l);
 			Init (); 
 			Create (Length () + 1);
 			memcpy (Buffer (), s, Length ());
@@ -42,12 +42,12 @@ class CString : public CArray < char > {
 			m_length = other.Length ();
 		}
 
-		inline uint32_t Length (void) const { return m_length; }
+		inline uint Length (void) const { return m_length; }
 
 		inline operator char*() { return Buffer (); }
 
 		inline CString& operator= (char* s) {
-			uint32_t l = (uint32_t) strlen (s);
+			uint l = (uint) strlen (s);
 			if (l + 1 > m_data.Length ()) {
 				Resize (l + 1);
 				if (l + 1 > m_data.Length ())
@@ -66,7 +66,7 @@ class CString : public CArray < char > {
 			}
 
 		inline CString& operator+= (char* s) {
-			uint32_t l = (uint32_t) strlen (s);
+			uint l = (uint) strlen (s);
 			if (Length () + l + 1 > m_data.Length ()) {
 				Resize (Length () + l + 1);
 				if (Length () + l + 1 > m_data.Length ())
@@ -82,7 +82,7 @@ class CString : public CArray < char > {
 			}
 
 		inline CString operator+ (const CString& other) {
-			uint32_t l = Length () + other.Length ();
+			uint l = Length () + other.Length ();
 			if (l > m_data.Length ()) {
 				Resize (l + 1);
 				if (l > m_data.Length ())
@@ -93,7 +93,7 @@ class CString : public CArray < char > {
 			return s;
 			}
 		
-		inline CString SubStr (uint32_t nOffset, uint32_t nLength) {
+		inline CString SubStr (uint nOffset, uint nLength) {
 			if (nOffset > Length ())
 				nLength = 0;
 			else if (nLength > Length () + 1 - nOffset)
@@ -101,7 +101,7 @@ class CString : public CArray < char > {
 			return CString (Buffer () + nOffset, nLength);
 			}
 
-		inline CString& Delete (uint32_t nOffset, uint32_t nLength) {
+		inline CString& Delete (uint nOffset, uint nLength) {
 			if (nOffset > Length ())
 				return *this;
 			if (nLength > Length () + 1 - nOffset)

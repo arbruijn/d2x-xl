@@ -27,26 +27,26 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "tga.h"
 #include "palette.h"
 
-int32_t PCXEncodeByte (uint8_t byt, uint8_t cnt, CFile& cf);
-int32_t PCXEncodeLine (uint8_t *inBuff, int32_t inLen, CFile& cf);
+int PCXEncodeByte (ubyte byt, ubyte cnt, CFile& cf);
+int PCXEncodeLine (ubyte *inBuff, int inLen, CFile& cf);
 
 /* PCX Header data nType */
 typedef struct {
-	uint8_t   Manufacturer;
-	uint8_t   Version;
-	uint8_t   Encoding;
-	uint8_t   BitsPerPixel;
-	int16_t   Xmin;
-	int16_t   Ymin;
-	int16_t   Xmax;
-	int16_t   Ymax;
-	int16_t   Hdpi;
-	int16_t   Vdpi;
-	uint8_t   ColorMap[16][3];
-	uint8_t   Reserved;
-	uint8_t   Nplanes;
-	int16_t   BytesPerLine;
-	uint8_t   filler[60];
+	ubyte   Manufacturer;
+	ubyte   Version;
+	ubyte   Encoding;
+	ubyte   BitsPerPixel;
+	short   Xmin;
+	short   Ymin;
+	short   Xmax;
+	short   Ymax;
+	short   Hdpi;
+	short   Vdpi;
+	ubyte   ColorMap[16][3];
+	ubyte   Reserved;
+	ubyte   Nplanes;
+	short   BytesPerLine;
+	ubyte   filler[60];
 } __pack__ PCXHeader;
 
 #define PCXHEADER_SIZE 128
@@ -77,9 +77,9 @@ cf.Read (&ph.filler, 60, 1);
 /*
  * reads n PCXHeader structs from a CFile
  */
-int32_t ReadPCXHeaders (PCXHeader *ph, int32_t n, CFile& cf)
+int ReadPCXHeaders (PCXHeader *ph, int n, CFile& cf)
 {
-	int32_t i;
+	int i;
 
 for (i = 0; i < n; i++)
 	ReadPCXHeader (ph [i], cf);
@@ -88,12 +88,12 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int32_t PCXGetDimensions (const char *filename, int32_t *width, int32_t *height)
+int PCXGetDimensions (const char *filename, int *width, int *height)
 {
 	CFile cf;
 	PCXHeader header;
 
-if (!cf.Open (filename, gameFolders.game.szData [0], "rb", 0))
+if (!cf.Open (filename, gameFolders.szDataDir [0], "rb", 0))
 	return PCX_ERROR_OPENING;
 
 	if (ReadPCXHeaders (&header, 1, cf) != 1) {
@@ -110,15 +110,15 @@ if (!cf.Open (filename, gameFolders.game.szData [0], "rb", 0))
 
 //------------------------------------------------------------------------------
 
-int32_t PCXReadBitmap (const char * filename, CBitmap * pBm, int32_t bitmapType, int32_t bD1Mission)
+int PCXReadBitmap (const char * filename, CBitmap * bmP, int bitmapType, int bD1Mission)
 {
 	PCXHeader 	header;
 	CFile 		cf;
-	int32_t 			i, row, col, count, xsize, ysize;
-	uint8_t			data, *pixdata;
+	int 			i, row, col, count, xsize, ysize;
+	ubyte			data, *pixdata;
 	CPalette		palette;
 
-if (!cf.Open (filename, gameFolders.game.szData [0], "rb", bD1Mission))
+if (!cf.Open (filename, gameFolders.szDataDir [0], "rb", bD1Mission))
 	return PCX_ERROR_OPENING;
 
 // read 128 char PCX header
@@ -137,7 +137,7 @@ if ((header.Manufacturer != 10)|| (header.Encoding != 1)|| (header.Nplanes != 1)
 xsize = header.Xmax - header.Xmin + 1;
 ysize = header.Ymax - header.Ymin + 1;
 
-if (!pBm) {
+if (!bmP) {
 	cf.Seek (-PALETTE_SIZE * 3, SEEK_END);
 	palette.Read (cf);
 	cf.Seek (PCXHEADER_SIZE, SEEK_SET);
@@ -148,14 +148,14 @@ if (!pBm) {
 	}
 
 if (bitmapType == BM_LINEAR) {
-	if (pBm->Buffer () == NULL) 
-		pBm->Setup (bitmapType, xsize, ysize, 1, "PCX");
+	if (bmP->Buffer () == NULL) 
+		bmP->Setup (bitmapType, xsize, ysize, 1, "PCX");
 
 	}
 
-if (pBm->Mode () == BM_LINEAR) {
+if (bmP->Mode () == BM_LINEAR) {
 	for (row = 0; row < ysize ; row++) {
-		pixdata = pBm->Buffer (pBm->RowSize () * row);
+		pixdata = bmP->Buffer (bmP->RowSize () * row);
 		for (col = 0; col < xsize ;) {
 			if (cf.Read (&data, 1, 1) != 1) {
 				cf.Close ();
@@ -192,11 +192,11 @@ else {
 					return PCX_ERROR_READING;
 					}
 				for (i=0;i<count;i++)
-					pBm->DrawPixel (col+i, row, data);
+					bmP->DrawPixel (col+i, row, data);
 				col += count;
 				} 
 			else {
-				pBm->DrawPixel (col, row, data);
+				bmP->DrawPixel (col, row, data);
 				col++;
 				}
 			}
@@ -219,18 +219,18 @@ else {
 	cf.Close ();
 	return PCX_ERROR_NO_PALETTE;
 	}
-pBm->SetPalette (&palette);
+bmP->SetPalette (&palette);
 cf.Close ();
 return PCX_ERROR_NONE;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t pcx_write_bitmap (const char * filename, CBitmap * pBm)
+int pcx_write_bitmap (const char * filename, CBitmap * bmP)
 {
-	int32_t retval;
-	int32_t i;
-	uint8_t data;
+	int retval;
+	int i;
+	ubyte data;
 	PCXHeader header;
 	CFile cf;
 	CPalette	palette;
@@ -242,11 +242,11 @@ int32_t pcx_write_bitmap (const char * filename, CBitmap * pBm)
 	header.Nplanes = 1;
 	header.BitsPerPixel = 8;
 	header.Version = 5;
-	header.Xmax = pBm->Width () - 1;
-	header.Ymax = pBm->Height () - 1;
-	header.BytesPerLine = pBm->Width ();
+	header.Xmax = bmP->Width () - 1;
+	header.Ymax = bmP->Height () - 1;
+	header.BytesPerLine = bmP->Width ();
 
-	if (!cf.Open (filename, gameFolders.game.szData [0], "wb", 0))
+	if (!cf.Open (filename, gameFolders.szDataDir [0], "wb", 0))
 		return PCX_ERROR_OPENING;
 
 	if (cf.Write (&header, PCXHEADER_SIZE, 1) != 1)
@@ -255,8 +255,8 @@ int32_t pcx_write_bitmap (const char * filename, CBitmap * pBm)
 		return PCX_ERROR_WRITING;
 	}
 
-	for (i=0; i < pBm->Height (); i++) {
-		if (!PCXEncodeLine (&pBm->Buffer ()[pBm->RowSize ()*i], pBm->Width (), cf)) {
+	for (i=0; i < bmP->Height (); i++) {
+		if (!PCXEncodeLine (&bmP->Buffer ()[bmP->RowSize ()*i], bmP->Width (), cf)) {
 			cf.Close ();
 			return PCX_ERROR_WRITING;
 		}
@@ -272,7 +272,7 @@ int32_t pcx_write_bitmap (const char * filename, CBitmap * pBm)
 
 	// Write the extended palette
 	for (i=0; i<768; i++)
-		palette.Raw () [i] = pBm->Palette ()->Raw ()  [i] << 2;
+		palette.Raw () [i] = bmP->Palette ()->Raw ()  [i] << 2;
 
 	retval = palette.Write (cf);
 
@@ -291,12 +291,12 @@ int32_t pcx_write_bitmap (const char * filename, CBitmap * pBm)
 
 //------------------------------------------------------------------------------
 // returns number of bytes written into outBuff, 0 if failed
-int32_t PCXEncodeLine (uint8_t *inBuff, int32_t inLen, CFile& cf)
+int PCXEncodeLine (ubyte *inBuff, int inLen, CFile& cf)
 {
-	uint8_t current, last;
-	int32_t srcIndex, i;
-	int32_t total;
-	uint8_t runCount; 	// max single runlength is 63
+	ubyte current, last;
+	int srcIndex, i;
+	int total;
+	ubyte runCount; 	// max single runlength is 63
 	total = 0;
 	last = * (inBuff);
 	runCount = 1;
@@ -333,17 +333,17 @@ int32_t PCXEncodeLine (uint8_t *inBuff, int32_t inLen, CFile& cf)
 //------------------------------------------------------------------------------
 // subroutine for writing an encoded byte pair
 // returns count of bytes written, 0 if error
-int32_t PCXEncodeByte (uint8_t byt, uint8_t cnt, CFile& cf)
+int PCXEncodeByte (ubyte byt, ubyte cnt, CFile& cf)
 {
 	if (cnt) {
 		if ( (cnt==1) && (0xc0 != (0xc0 & byt))) {
-			if (EOF == cf.PutC ( (int32_t)byt))
+			if (EOF == cf.PutC ( (int)byt))
 				return 0; 	// disk write error (probably full)
 			return 1;
 		} else {
-			if (EOF == cf.PutC ( (int32_t)0xC0 | cnt))
+			if (EOF == cf.PutC ( (int)0xC0 | cnt))
 				return 0; 	// disk write error
-			if (EOF == cf.PutC ( (int32_t)byt))
+			if (EOF == cf.PutC ( (int)byt))
 				return 0; 	// disk write error
 			return 2;
 		}
@@ -366,14 +366,14 @@ const char pcx_error_messages[] = {
 
 //------------------------------------------------------------------------------
 //function to return pointer to error message
-const char *PcxErrorMsg (int32_t error_number)
+const char *PcxErrorMsg (int error_number)
 {
 	const char *p = pcx_error_messages;
 
 while (error_number--) {
 	if (!p)
 		return NULL;
-	p += (int32_t) strlen (p) + 1;
+	p += (int) strlen (p) + 1;
 	}
 return p;
 }
@@ -381,14 +381,14 @@ return p;
 //------------------------------------------------------------------------------
 // fullscreen loading, 10/14/99 Jan Bobrowski
 
-int32_t PcxReadFullScrImage (const char * filename, int32_t bD1Mission)
+int PcxReadFullScrImage (const char * filename, int bD1Mission)
 {
-	int32_t		pcxError;
+	int		pcxError;
 	CBitmap	bm;
 	CTGA		tga (&bm);
 
 if (strstr (filename, ".tga"))
-	pcxError = tga.Read (filename, gameFolders.game.szData [0], -1, 1.0, 0) ? PCX_ERROR_NONE : PCX_ERROR_OPENING;
+	pcxError = tga.Read (filename, gameFolders.szDataDir [0], -1, 1.0, 0) ? PCX_ERROR_NONE : PCX_ERROR_OPENING;
 else {
 	bm.SetMask (NULL);
 	pcxError = PCXReadBitmap (filename, &bm, BM_LINEAR, bD1Mission);

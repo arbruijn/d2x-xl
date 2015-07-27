@@ -31,15 +31,15 @@ class CMarkerData {
 		CStaticArray< CFixVector, NUM_MARKERS >	position; // [NUM_MARKERS];	//three markers (two regular + one spawn) per player in multi
 		char					szMessage [NUM_MARKERS][MARKER_MESSAGE_LEN];
 		char					szOwner [NUM_MARKERS][CALLSIGN_LEN+1];
-		CStaticArray< int16_t, NUM_MARKERS >			objects; // [NUM_MARKERS];
-		int16_t					viewers [2];
-		int32_t					nHighlight;
+		CStaticArray< short, NUM_MARKERS >			objects; // [NUM_MARKERS];
+		short					viewers [2];
+		int					nHighlight;
 		float					fScale;
 		bool					bDefiningMsg;
 		char					szInput [40];
-		int32_t					nIndex;
-		int32_t					nCurrent;
-		int32_t					nLast;
+		int					nIndex;
+		int					nCurrent;
+		int					nLast;
 		bool					bRotate;
 
 	public:
@@ -57,48 +57,48 @@ class CMarkerManager {
 		CMarkerManager () {}
 		~CMarkerManager () {}
 		void Init (void) { m_data.Init (); }
-		void Drop (char nPlayerMarker, int32_t bSpawn);
-		void DropForGuidebot (CObject *pObj);
+		void Drop (char nPlayerMarker, int bSpawn);
+		void DropForGuidebot (CObject *objP);
 		void DropSpawnPoint (void);
 		void Render (void);
 		void Rotate (void);
-		void Delete (int32_t bForce);
+		void Delete (int bForce);
 		void Teleport (void);
 		void Clear (void);
-		int32_t Last (void);
+		int Last (void);
 		void InitInput (bool bRotate = false);
-		void InputMessage (int32_t key);
-		int32_t SpawnIndex (int32_t nPlayer);
-		CObject *SpawnObject (int32_t nPlayer);
-		int32_t IsSpawnObject (CObject *pObj);
-		int32_t MoveSpawnPoint (tObjTransformation *pPos, int16_t nSegment);
-		inline int32_t MaxDrop (void) {
+		void InputMessage (int key);
+		int SpawnIndex (int nPlayer);
+		CObject *SpawnObject (int nPlayer);
+		int IsSpawnObject (CObject *objP);
+		int MoveSpawnPoint (tObjTransformation *posP, short nSegment);
+		inline int MaxDrop (void) {
 			return IsMultiGame ? IsCoopGame ? MAX_DROP_COOP : MAX_DROP_MULTI : MAX_DROP_SINGLE;
 			}
 
-		inline int32_t Highlight (void) { return m_data.nHighlight; }
-		inline int32_t SetHighlight (int32_t nHighlight) { 
+		inline int Highlight (void) { return m_data.nHighlight; }
+		inline int SetHighlight (int nHighlight) { 
 			m_data.nHighlight = nHighlight; 
 			return m_data.nHighlight;
 			}
-		inline char* Owner (int32_t nMarker) { return m_data.szOwner [nMarker]; }
-		inline void SetOwner (int32_t nMarker, char* szOwner) { strcpy (m_data.szOwner [nMarker], szOwner); }
-		inline char* Message (int32_t nMarker = -1) { return m_data.szMessage [(nMarker < 0) ? m_data.nHighlight : nMarker]; }
-		inline int16_t Objects (int32_t nMarker) { return m_data.objects [nMarker]; }
-		inline void SetObject (int32_t nMarker, int32_t nObject) { m_data.objects [nMarker] = nObject; }
+		inline char* Owner (int nMarker) { return m_data.szOwner [nMarker]; }
+		inline void SetOwner (int nMarker, char* szOwner) { strcpy (m_data.szOwner [nMarker], szOwner); }
+		inline char* Message (int nMarker = -1) { return m_data.szMessage [(nMarker < 0) ? m_data.nHighlight : nMarker]; }
+		inline short Objects (int nMarker) { return m_data.objects [nMarker]; }
+		inline void SetObject (int nMarker, int nObject) { m_data.objects [nMarker] = nObject; }
 		inline bool DefiningMsg (void) { return m_data.bDefiningMsg; }
 		inline char* Input (void) { return m_data.szInput; }
-		inline int16_t Viewer (int32_t nWindow) { return m_data.viewers [nWindow]; }
-		inline void SetViewer (int32_t nWindow, int16_t nViewer) { m_data.viewers [nWindow] = nViewer; }
-		inline CFixVector Position (int32_t nMarker) { return m_data.position [nMarker]; }
-		inline void SetPosition (int32_t nMarker, CFixVector vPos) { m_data.position [nMarker] = vPos; }
+		inline short Viewer (int nWindow) { return m_data.viewers [nWindow]; }
+		inline void SetViewer (int nWindow, short nViewer) { m_data.viewers [nWindow] = nViewer; }
+		inline CFixVector Position (int nMarker) { return m_data.position [nMarker]; }
+		inline void SetPosition (int nMarker, CFixVector vPos) { m_data.position [nMarker] = vPos; }
 
 		void SaveState (CFile& cf);
 		void LoadState (CFile& cf, bool bBinary = false);
 
 	private:
-		void DrawNumber (int32_t nMarker);
-		inline CObject *GetObject (int32_t nPlayer, int32_t nMarker);
+		void DrawNumber (int nMarker);
+		inline CObject *GetObject (int nPlayer, int nMarker);
 };
 
 extern CMarkerManager markerManager;

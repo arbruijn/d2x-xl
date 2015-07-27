@@ -35,7 +35,7 @@ extern tIrrData irrData;
 #define IRRSCENE	irrData.sceneP
 #define IRRGUI		irrData.guiP
 
-bool IrrInit (int32_t nWidth, int32_t nHeight, bool bFullScreen);
+bool IrrInit (int nWidth, int nHeight, bool bFullScreen);
 void IrrClose (void);
 
 #endif //USE_IRRLICHT

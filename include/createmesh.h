@@ -6,19 +6,19 @@
 namespace Mesh {
 
 	typedef struct tEdge {
-		int32_t			nNext;
-		uint16_t			verts [2];
-		int32_t			tris [2];
-		float				fLength;
+		int			nNext;
+		ushort		verts [2];
+		int			tris [2];
+		float			fLength;
 		} __pack__ tEdge;
 
 	typedef struct tTriangle {
-		int32_t			nFace;
-		int32_t			nIndex;
-		int32_t			lines [3];
-		uint16_t			index [3];
-		int16_t			nPass;
-		int16_t			nId;
+		int			nFace;
+		int			nIndex;
+		int			lines [3];
+		ushort		index [3];
+		short			nPass;
+		short			nId;
 		tTexCoord2f	texCoord [3];
 		tTexCoord2f	ovlTexCoord [3];
 		CFloatVector	color [3];
@@ -28,88 +28,88 @@ class CTriMeshBuilder {
 	private:
 		CArray<tEdge>		m_edges;
 		CArray<tTriangle>	m_triangles;
-		int32_t				m_nEdges;
-		int32_t				m_nFreeEdges;
-		int32_t				m_nTriangles;
-		int32_t				m_nMaxTriangles;
-		int32_t				m_nMaxEdges;
-		int32_t				m_nVertices;
-		int32_t				m_nTris;
-		int32_t				m_nQuality;
+		int					m_nEdges;
+		int					m_nFreeEdges;
+		int					m_nTriangles;
+		int					m_nMaxTriangles;
+		int					m_nMaxEdges;
+		int					m_nVertices;
+		int					m_nTris;
+		int					m_nQuality;
 
 	private:
 		void FreeData (void);
-		int32_t AllocData (void);
-		tEdge *FindEdge (uint16_t nVert1, uint16_t nVert2, int32_t i);
-		int32_t AddEdge (int32_t nTri, uint16_t nVert1, uint16_t nVert2);
-		tTriangle *CreateTriangle (tTriangle *mtP, uint16_t index [], int32_t nFace, int32_t nIndex);
-		tTriangle *AddTriangle (tTriangle *mtP, uint16_t index [], tFaceTriangle *pTriangle);
+		int AllocData (void);
+		tEdge *FindEdge (ushort nVert1, ushort nVert2, int i);
+		int AddEdge (int nTri, ushort nVert1, ushort nVert2);
+		tTriangle *CreateTriangle (tTriangle *mtP, ushort index [], int nFace, int nIndex);
+		tTriangle *AddTriangle (tTriangle *mtP, ushort index [], tFaceTriangle *triP);
 		void DeleteEdge (tEdge *mlP);
 		void DeleteTriangle (tTriangle *mtP);
-		int32_t CreateTriangles (void);
-		int32_t SplitTriangleByEdge (int32_t nTri, uint16_t nVert1, uint16_t nVert2, int16_t nPass);
-		int32_t SplitEdge (CSegFace* pFace, tEdge *mlP, int16_t nPass);
-		float NewEdgeLen (int32_t nTri, int32_t nVert1, int32_t nVert2);
-		int32_t SplitTriangle (CSegFace* pFace, tTriangle *mtP, int16_t nPass);
-		int32_t SplitTriangles (void);
-		void QSortTriangles (int32_t left, int32_t right);
+		int CreateTriangles (void);
+		int SplitTriangleByEdge (int nTri, ushort nVert1, ushort nVert2, short nPass);
+		int SplitEdge (tEdge *mlP, short nPass);
+		float NewEdgeLen (int nTri, int nVert1, int nVert2);
+		int SplitTriangle (tTriangle *mtP, short nPass);
+		int SplitTriangles (void);
+		void QSortTriangles (int left, int right);
 		void CreateSegFaceList (void);
 		void SetupVertexNormals (void);
-		int32_t InsertTriangles (void);
+		int InsertTriangles (void);
 		void CreateFaceVertLists (void);
-		void SortFaceVertList (uint16_t *vertList, int32_t left, int32_t right);
-		char *DataFilename (char *pszFilename, int32_t nLevel);
-		bool Load (int32_t nLevel, bool bForce = false);
-		bool Save (int32_t nLevel);
+		void SortFaceVertList (ushort *vertList, int left, int right);
+		char *DataFilename (char *pszFilename, int nLevel);
+		bool Load (int nLevel, bool bForce = false);
+		bool Save (int nLevel);
 
 	public:
 		CTriMeshBuilder (void) {};
 		~CTriMeshBuilder (void) {};
-		int32_t Build (int32_t nLevel, int32_t nQuality);
+		int Build (int nLevel, int nQuality);
 	};
 
 class CQuadMeshBuilder {
 	private:
-		CSegFace*			m_pFace;
-		tFaceTriangle*		m_pFaceTriangle;
-		CFloatVector3*		m_pVertex;
-		CFloatVector3*		m_pNormal;
-		tTexCoord2f*		m_pTexCoord;
-		tTexCoord2f*		m_pOvlTexCoord;
-		tTexCoord2f*		m_pLightmapTexCoord;
-		CFloatVector*		m_pFaceColor;
-		CFaceColor*			m_pColor;
-		CSegment*			m_pSeg;
-		tSegFaces*			m_pSegFace;
-		CSide*				m_pSide;
+		CSegFace*		m_faceP;
+		tFaceTriangle*	m_triP;
+		CFloatVector3*	m_vertexP;
+		CFloatVector3*	m_normalP;
+		tTexCoord2f*	m_texCoordP;
+		tTexCoord2f*	m_ovlTexCoordP;
+		tTexCoord2f*	m_lMapTexCoordP;
+		CFloatVector*	m_faceColorP;
+		CFaceColor*		m_colorP;
+		CSegment*		m_segP;
+		tSegFaces*		m_segFaceP;
+		CSide*			m_sideP;
 
-		uint16_t				m_sideVerts [5];
-		int16_t				m_nOvlTexCount;
-		int16_t				m_nWall;
-		int16_t				m_nWallType;
+		ushort			m_sideVerts [5];
+		short				m_nOvlTexCount;
+		short				m_nWall;
+		short				m_nWallType;
 		//bool				m_bColoredSeg;
 
 		CTriMeshBuilder	m_triMeshBuilder;
 
 	private:
-		void InitFace (int16_t nSegment, uint8_t nSide, bool bRebuild);
-		void SetupLMapTexCoord (tTexCoord2f *pTexCoord);
+		void InitFace (short nSegment, ubyte nSide, bool bRebuild);
+		void SetupLMapTexCoord (tTexCoord2f *texCoordP);
 		void SetupFace (void);
 		void InitTexturedFace (void);
-		void InitColoredFace (int16_t nSegment);
+		void InitColoredFace (short nSegment);
 		void SplitIn1or2Tris (void);
 		void SplitIn4Tris (void);
 		void BuildSlidingFaceList (void);
-		int32_t IsBigFace (uint16_t* sideVerts);
-		CFloatVector3 *SetTriNormals (tFaceTriangle *pTriangle, CFloatVector3 *m_pNormal);
+		int IsBigFace (ushort* sideVerts);
+		CFloatVector3 *SetTriNormals (tFaceTriangle *triP, CFloatVector3 *m_normalP);
 
-		static int32_t CompareFaceKeys (const CSegFace** pf, const CSegFace** pm);
+		static int CompareFaceKeys (const CSegFace** pf, const CSegFace** pm);
 
 	public:
 		CQuadMeshBuilder (void) {};
 		~CQuadMeshBuilder (void) {};
 		void RebuildLightmapTexCoord (void);
-		int32_t Build (int32_t nLevel, bool bRebuild = false);
+		int Build (int nLevel, bool bRebuild = false);
 		bool BuildVBOs ();
 		void DestroyVBOs ();
 		void ComputeFaceKeys (void);

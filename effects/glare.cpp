@@ -32,29 +32,29 @@
 
 float coronaIntensities [] = {0.35f, 0.5f, 0.75f, 1};
 
-int32_t hGlareShader = -1;
+int hGlareShader = -1;
 
 CGlareRenderer glareRenderer;
 
 // -----------------------------------------------------------------------------------
 
-int32_t CGlareRenderer::Style (void)
+int CGlareRenderer::Style (void)
 {
 return (ogl.m_features.bDepthBlending > 0) && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle && !gameStates.render.cameras.bActive;
 }
 
 // -----------------------------------------------------------------------------------
 
-int32_t CGlareRenderer::CalcFaceDimensions (int16_t nSegment, int16_t nSide, fix *w, fix *h, uint16_t* corners)
+int CGlareRenderer::CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* corners)
 {
 	fix		d1, d2, dMax = -1;
-	int32_t	i, j;
+	int		i, j;
 
 if (!corners) 
-	corners = SEGMENT (nSegment)->Corners (nSide);
-m_nVertices = SEGMENT (nSegment)->Side (nSide)->CornerCount ();
+	corners = SEGMENTS [nSegment].Corners (nSide);
+m_nVertices = SEGMENTS [nSegment].Side (nSide)->CornerCount ();
 for (i = j = 0; j < m_nVertices; j++) {
-	fix d = CFixVector::Dist (gameData.segData.vertices [corners [j]], gameData.segData.vertices [corners [(j + 1) % m_nVertices]]);
+	fix d = CFixVector::Dist (gameData.segs.vertices [corners [j]], gameData.segs.vertices [corners [(j + 1) % m_nVertices]]);
 	if (dMax < d) {
 		dMax = d;
 		i = j;
@@ -65,13 +65,13 @@ if (w)
 if (i > 2)
 	i--;
 j = i + 1;
-d1 = VmLinePointDist (gameData.segData.vertices [corners [i]],
-                      gameData.segData.vertices [corners [j]],
-                      gameData.segData.vertices [corners [(j + 1) % m_nVertices]]);
+d1 = VmLinePointDist (gameData.segs.vertices [corners [i]],
+                      gameData.segs.vertices [corners [j]],
+                      gameData.segs.vertices [corners [(j + 1) % m_nVertices]]);
 if (m_nVertices == 4)
-	d2 = VmLinePointDist (gameData.segData.vertices [corners [i]],
-								 gameData.segData.vertices [corners [j]],
-								 gameData.segData.vertices [corners [(j + 2) % m_nVertices]]);
+	d2 = VmLinePointDist (gameData.segs.vertices [corners [i]],
+								 gameData.segs.vertices [corners [j]],
+								 gameData.segs.vertices [corners [(j + 2) % m_nVertices]]);
 if (h)
 	*h = (m_nVertices < 3) ? d1 : (d1 > d2) ? d1 : d2;
 return i;
@@ -79,34 +79,34 @@ return i;
 
 // -----------------------------------------------------------------------------------
 
-int32_t CGlareRenderer::FaceHasCorona (int16_t nSegment, int16_t nSide, int32_t *bAdditiveP, float *fIntensityP)
+int CGlareRenderer::FaceHasCorona (short nSegment, short nSide, int *bAdditiveP, float *fIntensityP)
 {
-	CSide		*pSide;
-	char		*pszName;
-	int32_t	i, bAdditive, nTexture, nBrightness;
+	CSide			*sideP;
+	char			*pszName;
+	int			i, bAdditive, nTexture, nBrightness;
 
 if (IsMultiGame && extraGameInfo [1].bDarkness)
 	return 0;
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	BRP;
+	nDbgSeg = nDbgSeg;
 #endif
-pSide = SEGMENT (nSegment)->m_sides + nSide;
-CWall* pWall = pSide->Wall ();
-if (pWall) {
-	uint8_t nType = pWall->nType;
+sideP = SEGMENTS [nSegment].m_sides + nSide;
+CWall* wallP = sideP->Wall ();
+if (wallP) {
+	ubyte nType = wallP->nType;
 
 	if ((nType == WALL_BLASTABLE) || (nType == WALL_DOOR) || (nType == WALL_OPEN) || (nType == WALL_CLOAKED))
 		return 0;
-	if (pWall->flags & (WALL_BLASTED | WALL_ILLUSION_OFF))
+	if (wallP->flags & (WALL_BLASTED | WALL_ILLUSION_OFF))
 		return 0;
 	}
 // get and check the corona emitting texture
-nBrightness = (nTexture = pSide->m_nOvlTex) ? IsLight (nTexture) : 0;
+nBrightness = (nTexture = sideP->m_nOvlTex) ? IsLight (nTexture) : 0;
 if (nBrightness >= I2X (1) / 8) {
 	bAdditive = gameOpts->render.coronas.bAdditive;
 	}
-else if ((nBrightness = IsLight (nTexture = pSide->m_nBaseTex))) {
+else if ((nBrightness = IsLight (nTexture = sideP->m_nBaseTex))) {
 	if (fIntensityP)
 		*fIntensityP /= 2;
 	bAdditive = gameOpts->render.coronas.bAdditive;
@@ -172,7 +172,7 @@ else {
 			break;
 		}
 	}
-pszName = gameData.pigData.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pigData.tex.pBmIndex [nTexture].index].name;
+pszName = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.bmIndexP [nTexture].index].name;
 if (strstr (pszName, "metl") || strstr (pszName, "rock") || strstr (pszName, "water"))
 	return 0;
 if (bAdditiveP)
@@ -182,21 +182,21 @@ return nTexture;
 
 // -----------------------------------------------------------------------------------
 
-float CGlareRenderer::ComputeCoronaSprite (int16_t nSegment, int16_t nSide)
+float CGlareRenderer::ComputeCoronaSprite (short nSegment, short nSide)
 {
-	CSide*			pSide = SEGMENT (nSegment)->m_sides + nSide;
-	uint16_t			*corners;
-	int32_t			i;
+	CSide*			sideP = SEGMENTS [nSegment].m_sides + nSide;
+	ushort*			corners;
+	int				i;
 	float				fLight = 0;
 	CFloatVector	v;
 
-corners = SEGMENT (nSegment)->Corners (nSide);
-m_nVertices = SEGMENT (nSegment)->Side (nSide)->CornerCount ();
+corners = SEGMENTS [nSegment].Corners (nSide);
+m_nVertices = SEGMENTS [nSegment].Side (nSide)->CornerCount ();
 for (i = 0; i < m_nVertices; i++) {
-	fLight += X2F (pSide->m_uvls [i].l);
-	transformation.Transform (m_sprite [i], gameData.segData.fVertices [corners [i]], 0);
+	fLight += X2F (sideP->m_uvls [i].l);
+	transformation.Transform (m_sprite [i], gameData.segs.fVertices [corners [i]], 0);
 	}
-v.Assign (SEGMENT (nSegment)->SideCenter (nSide));
+v.Assign (SEGMENTS [nSegment].SideCenter (nSide));
 transformation.Transform (m_vCenter, v, 0);
 return fLight;
 }
@@ -207,7 +207,7 @@ void CGlareRenderer::ComputeSpriteZRange (void)
 {
 m_zRange.fMin = 1000000000.0f;
 m_zRange.fMax = -1000000000.0f;
-for (int32_t i = 0; i < 4; i++) {
+for (int i = 0; i < 4; i++) {
 	float z = m_sprite [i].v.coord.z;
 	if (m_zRange.fMin > z)
 		m_zRange.fMin = z;
@@ -242,7 +242,7 @@ return fIntensity;
 
 void RenderCoronaOutline(CFloatVector *m_sprite, CFloatVector m_vCenter)
 {
-	int32_t	i;
+	int	i;
 
 ogl.SetTexturing (false);
 glColor4d (1,1,1,1);
@@ -277,7 +277,7 @@ float CGlareRenderer::ComputeSoftGlare (void)
 {
 	CFloatVector 	n, e, s, t, u, v;
 	float 			ul, vl, h, cosine;
-	int32_t 			i;
+	int 				i;
 
 m_vEye = CFloatVector::ZERO;
 u = m_sprite [2] + m_sprite [1];
@@ -314,16 +314,16 @@ return float (sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nInten
 
 // -----------------------------------------------------------------------------------
 
-void CGlareRenderer::RenderSoftGlare (int32_t nTexture, float fIntensity, int32_t bAdditive, int32_t bColored)
+void CGlareRenderer::RenderSoftGlare (int nTexture, float fIntensity, int bAdditive, int bColored)
 {
-	CFloatVector	color;
-	tTexCoord2f		tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
-	CBitmap*			pBm = NULL;
+	CFloatVector color;
+	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
+	CBitmap*		bmP = NULL;
 
-if (!(pBm = (bAdditive ? glare.Bitmap () : corona.Bitmap ())))
+if (!(bmP = (bAdditive ? glare.Bitmap () : corona.Bitmap ())))
 	return;
 if (gameStates.render.bAmbientColor)
-	color = gameData.renderData.color.textures [nTexture];
+	color = gameData.render.color.textures [nTexture];
 else
 	color.Red () = color.Green () = color.Blue () = X2F (IsLight (nTexture)) / 2;
 if (!bColored)
@@ -332,7 +332,7 @@ if (bAdditive)
 	glColor4f (fIntensity * color.Red (), fIntensity * color.Green (), fIntensity * color.Blue (), 1);
 else
 	glColor4f (color.Red (), color.Green (), color.Blue (), fIntensity);
-pBm->Bind (1);
+bmP->Bind (1);
 OglTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_sprite);
 if (m_nVertices == 3)
@@ -344,18 +344,18 @@ RenderCoronaOutline (m_sprite, m_vCenter);
 
 // -----------------------------------------------------------------------------------
 
-void CGlareRenderer::Render (int16_t nSegment, int16_t nSide, float fIntensity, float fSize)
+void CGlareRenderer::Render (short nSegment, short nSide, float fIntensity, float fSize)
 {
 if (!Style ())
 	return;
 if (fIntensity < 0.01f)
 	return;
 
-	int32_t	nTexture, bAdditive;
+	int				nTexture, bAdditive;
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	BRP;
+	nDbgSeg = nDbgSeg;
 #endif
 
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
@@ -363,20 +363,20 @@ if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 ComputeCoronaSprite (nSegment, nSide);
 fIntensity *= ComputeSoftGlare ();
 //shaderManager.Set ("dMax"), 20.0f);
-RenderSoftGlare (nTexture, fIntensity, bAdditive, !automap.Active () || automap.m_visited [nSegment] || !gameOpts->render.automap.bGrayOut);
+RenderSoftGlare (nTexture, fIntensity, bAdditive, !automap.Display () || automap.m_visited [nSegment] || !gameOpts->render.automap.bGrayOut);
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	BRP;
+	nDbgSeg = nDbgSeg;
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-float CGlareRenderer::Visibility (int32_t nQuery)
+float CGlareRenderer::Visibility (int nQuery)
 {
 	GLuint	nSamples = 0;
 	GLint		bAvailable = 0;
-	int32_t	nAttempts = 2;
+	int		nAttempts = 2;
 	float		fIntensity;
 #if DBG
 	GLint		nError;
@@ -384,13 +384,13 @@ float CGlareRenderer::Visibility (int32_t nQuery)
 
 if (! (ogl.m_features.bOcclusionQuery && nQuery) || (Style () != 1))
 	return 1;
-if (!(gameStates.render.bQueryCoronas || gameData.renderData.lights.coronaSamples [nQuery - 1]))
+if (!(gameStates.render.bQueryCoronas || gameData.render.lights.coronaSamples [nQuery - 1]))
 	return 0;
 for (;;) {
-	glGetQueryObjectiv (gameData.renderData.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
+	glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
 	if (glGetError ()) {
 #if DBG
-		glGetQueryObjectiv (gameData.renderData.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
+		glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
 		if ((nError = glGetError ()))
 #endif
 			return 0;
@@ -401,7 +401,7 @@ for (;;) {
 		return 0;
 	G3_SLEEP (1);
 	};
-glGetQueryObjectuiv (gameData.renderData.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_ARB, &nSamples);
+glGetQueryObjectuiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_ARB, &nSamples);
 if (glGetError ())
 	return 0;
 if (gameStates.render.bQueryCoronas == 1) {
@@ -409,13 +409,17 @@ if (gameStates.render.bQueryCoronas == 1) {
 	if (!nSamples) {
 		GLint nBits;
 		glGetQueryiv (GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS, &nBits);
-		glGetQueryObjectuiv (gameData.renderData.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_ARB, &nSamples);
+		glGetQueryObjectuiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_ARB, &nSamples);
 		}
 #endif
-	return (float) (gameData.renderData.lights.coronaSamples [nQuery - 1] = nSamples);
+	return (float) (gameData.render.lights.coronaSamples [nQuery - 1] = nSamples);
 	}
-fIntensity = (float) nSamples / (float) gameData.renderData.lights.coronaSamples [nQuery - 1];
-return (fIntensity > 1.0f) ? 1.0f : (float) sqrt (fIntensity);
+fIntensity = (float) nSamples / (float) gameData.render.lights.coronaSamples [nQuery - 1];
+#if DBG
+if (fIntensity > 1)
+	fIntensity = 1;
+#endif
+return (fIntensity > 1) ? 1 : (float) sqrt (fIntensity);
 }
 
 //-------------------------------------------------------------------------
@@ -427,10 +431,10 @@ return (hGlareShader >= 0) && (shaderManager.Current () == hGlareShader);
 
 //-------------------------------------------------------------------------
 
-bool CGlareRenderer::LoadShader (float dMax, int32_t nBlendMode)
+bool CGlareRenderer::LoadShader (float dMax, int nBlendMode)
 {
 	static float dMaxPrev = -1;
-	static int32_t nBlendPrev = -1;
+	static int nBlendPrev = -1;
 
 ogl.ClearError (0);
 if (!gameOpts->render.bUseShaders)

@@ -49,8 +49,8 @@ typedef struct CFILE {
 	size_t	libOffset;
 	size_t	rawPosition;
 	char		buffer [16384];
-	int32_t	bufLen;
-	int32_t	pBufferos;
+	int		bufLen;
+	int		bufPos;
 } CFILE;
 
 class CFile {
@@ -59,40 +59,40 @@ class CFile {
 #ifdef _WIN32
 		inline // g++ can be such a PITA
 #endif
-		int32_t FillBuffer (void);
+		int FillBuffer (void);
 
 	public:
 		CFile () { Init (); }
 		~CFile () { Close (); };
 		void Init (void);
-		int32_t Open (const char *filename, const char *folder, const char *mode, int32_t bUseD1Hog);
+		int Open (const char *filename, const char *folder, const char *mode, int bUseD1Hog);
 		size_t Length (void);							// Returns actual size of file...
-		size_t Read (void *buf, size_t elsize, size_t nelem, int32_t bCompressed = 0);
-		int32_t Close (void);
-		size_t Size (const char *hogname, const char *folder, int32_t bUseD1Hog);
-		size_t Seek (long offset, int32_t where);
+		size_t Read (void *buf, size_t elsize, size_t nelem, int bCompressed = 0);
+		int Close (void);
+		size_t Size (const char *hogname, const char *folder, int bUseD1Hog);
+		size_t Seek (long offset, int where);
 		size_t Tell (void);
 		char *GetS (char *buf, size_t n);
-		int32_t EoF (void);
-		int32_t Error (void);
-		size_t Write (const void *buf, int32_t elsize, int32_t nelem, int32_t bCompressed = 0);
-		inline int32_t GetC (void) { return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.pBufferos++]; }
+		int EoF (void);
+		int Error (void);
+		size_t Write (const void *buf, int elsize, int nelem, int bCompressed = 0);
+		inline int GetC (void) { return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.bufPos++]; }
 
-		size_t ReadCompressed (const void* buf, uint32_t bufLen);
-		size_t WriteCompressed (const void* buf, uint32_t bufLen);
+		size_t ReadCompressed (const void* buf, uint bufLen);
+		size_t WriteCompressed (const void* buf, uint bufLen);
 
-		int32_t PutC (int32_t c);
-		int32_t PutS (const char *str);
+		int PutC (int c);
+		int PutS (const char *str);
 
 		inline size_t Size (void) { return m_info.size; }
 
 		// prototypes for reading basic types from fp
-		int32_t ReadInt (void);
-		uint32_t ReadUInt (void);
-		int16_t ReadShort (void);
-		uint16_t ReadUShort (void);
-		int8_t ReadByte (void);
-		uint8_t ReadUByte (void);
+		int ReadInt (void);
+		uint ReadUInt (void);
+		short ReadShort (void);
+		ushort ReadUShort (void);
+		sbyte ReadByte (void);
+		ubyte ReadUByte (void);
 		fix ReadFix (void);
 		fixang ReadFixAng (void);
 		void ReadVector (CFixVector& v);
@@ -101,126 +101,85 @@ class CFile {
 		void ReadMatrix (CFixMatrix& v);
 		float ReadFloat (void);
 		double ReadDouble (void);
-		void ReadString (char *buf, int32_t n);
-		char *ReadData (const char *filename, const char *folder, int32_t bUseD1Hog);
+		void ReadString (char *buf, int n);
+		char *ReadData (const char *filename, const char *folder, int bUseD1Hog);
 
-		int32_t WriteFix (fix x);
-		int32_t WriteInt (int32_t i);
-		int32_t WriteShort (int16_t s);
-		int32_t WriteByte (int8_t u);
-		int32_t WriteFixAng (fixang a);
-		int32_t WriteFloat (float f);
-		int32_t WriteDouble (double d);
+		int WriteFix (fix x);
+		int WriteInt (int i);
+		int WriteShort (short s);
+		int WriteByte (sbyte u);
+		int WriteFixAng (fixang a);
+		int WriteFloat (float f);
+		int WriteDouble (double d);
 		void WriteAngVec (const CAngleVector& v);
 		void WriteVector (const CFixVector& v);
 		void WriteVector (const CFloatVector3& v);
 		void WriteMatrix (const CFixMatrix& m);
-		int32_t WriteString (const char *buf);
+		int WriteString (const char *buf);
 
-		int32_t Copy (const char *pszSrc, const char *pszDest);
-		int32_t Extract (const char *filename, const char *folder, int32_t bUseD1Hog, const char *szDest);
-		time_t Date (const char *filename, const char *folder, int32_t bUseD1Hog);
+		int Copy (const char *pszSrc, const char *pszDest);
+		int Extract (const char *filename, const char *folder, int bUseD1Hog, const char *szDest);
+		time_t Date (const char *filename, const char *folder, int bUseD1Hog);
 
-		static int32_t Exist (const char *filename, const char *folder, int32_t bUseD1Hog);	// Returns true if file exists on disk (1) or in hog (2).
-		static int32_t Delete (const char *filename, const char* folder);
-		static int32_t Rename (const char *oldname, const char *newname, const char *folder);
-		static int32_t MkDir (const char *pathname);
+		static int Exist (const char *filename, const char *folder, int bUseD1Hog);	// Returns true if file exists on disk (1) or in hog (2).
+		static int Delete (const char *filename, const char* folder);
+		static int Rename (const char *oldname, const char *newname, const char *folder);
+		static int MkDir (const char *pathname);
 		static FILE *GetFileHandle (const char *filename, const char *folder, const char *mode);
 		static void SplitPath (const char *szFullPath, char *szFolder, char *szFile, char *szExt);
 		static void ChangeFilenameExtension (char *dest, const char *src, const char *new_ext);
 
 		inline FILE*& File () { return m_info.file; }
 		inline char* Name () { return m_info.filename; }
-		int32_t LineCount (const char* filename, const char* folder, const char* delims);
+		int LineCount (const char* filename, const char* folder, char* delims);
 	};
 
-typedef struct tStaticFolders {
-	char	szRoot [FILENAME_LEN];
-	char	szData [2][FILENAME_LEN];
-	char	szTextures [3][FILENAME_LEN];
-	char	szModels [FILENAME_LEN];
-	char	szSounds [5][FILENAME_LEN];
-	char	szMusic [2][FILENAME_LEN];
-	char	szMovies [FILENAME_LEN];
-	char	szShaders [FILENAME_LEN];
-	char	szAltHogs [FILENAME_LEN];
-	} tStaticFolders;
-
-typedef struct tSharedFolders {
-	char	szRoot [FILENAME_LEN];
-	char	szCache [FILENAME_LEN];
-	char	szTextures [5][FILENAME_LEN];
-	char	szModels [3][FILENAME_LEN];
-	char	szLightmaps [FILENAME_LEN];
-	char	szLightData [FILENAME_LEN];
-	char	szMeshes [FILENAME_LEN];
-	char	szMods [FILENAME_LEN];
-	char	szDownloads [FILENAME_LEN];
-	} tSharedFolders;
-
-typedef struct tPrivateFolders {
-	char	szRoot [FILENAME_LEN];
-	char	szCache [FILENAME_LEN];
-	char	szConfig [FILENAME_LEN];
-	char	szProfiles [FILENAME_LEN];
-	char	szSavegames [FILENAME_LEN];
-	char	szScreenshots [FILENAME_LEN];
-	char	szDemos [FILENAME_LEN];
-	char	szWallpapers [FILENAME_LEN];
-	} tPrivateFolders;
-
-typedef struct tModFolders {
-	char	szRoot [FILENAME_LEN];
-	char	szCache [FILENAME_LEN];
-	char	szCurrent [FILENAME_LEN];
-	char	szName [FILENAME_LEN];
-	char	szTextures [2][FILENAME_LEN];
-	char	szSounds [2][FILENAME_LEN];
-	char	szModels [2][FILENAME_LEN];
-	char	szWallpapers [FILENAME_LEN];
-	char	szMusic [FILENAME_LEN];
-	char	szLevel [FILENAME_LEN];
-	} tModFolders;
-
-typedef struct tMissionFolders {
-	char	szRoot [FILENAME_LEN];
-	char	szCache [FILENAME_LEN];
-	char	szCurrent [2][FILENAME_LEN];
-	char	szSubFolder [FILENAME_LEN];
-	char	szStates [FILENAME_LEN];
-	char	szDownloads [FILENAME_LEN];
-	} tMissionFolders;
 
 typedef struct tGameFolders {
-	tModFolders			mods;
-	tMissionFolders	missions;
-	tStaticFolders		game;
-	tSharedFolders		var;
-	tPrivateFolders	user;
+	char szHomeDir [FILENAME_LEN];
 #if defined (__unix__) || defined (__macosx__)
 	char szSharePath [FILENAME_LEN];
 #endif
-	int32_t bAltHogDirInited;
+	char szAltHogDir [FILENAME_LEN];
+	char szCacheDir [FILENAME_LEN];
+	char szConfigDir [FILENAME_LEN];
+	char szDataDir [2][FILENAME_LEN];
+	char szDemoDir [FILENAME_LEN];
+	char szDownloadDir [FILENAME_LEN];
+	char szGameDir [FILENAME_LEN];
+	char szMissionDir [FILENAME_LEN];
+	char szMissionDirs [2][FILENAME_LEN];
+	char szMissionDownloadDir [FILENAME_LEN];
+	char szModDir [2][FILENAME_LEN];
+	char szModelDir [3][FILENAME_LEN];
+	char szModelCacheDir [3][FILENAME_LEN];
+	char szModName [FILENAME_LEN];
+	char szMovieDir [FILENAME_LEN];
+	char szMsnSubDir [FILENAME_LEN];
+	char szMusicDir [FILENAME_LEN];
+	char szProfDir [FILENAME_LEN];
+	char szSaveDir [FILENAME_LEN];
+	char szScrShotDir [FILENAME_LEN];
+	char szShaderDir [FILENAME_LEN];
+	char szSoundDir [7][FILENAME_LEN];
+	char szTextureCacheDir [4][FILENAME_LEN];
+	char szTextureDir [4][FILENAME_LEN];
+	char szWallpaperDir [2][FILENAME_LEN];
+	int bAltHogDirInited;
 } tGameFolders;
 
-int32_t GetAppFolder (const char *szMainFolder, char *szDestFolder, const char *szSubFolder, const char *szFilter);
-char *GameDataFilename (char *pszFilename, const char *pszExt, int32_t nLevel, int32_t nType);
-int32_t MakeTexSubFolders (char* pszParentFolder);
-void MakeModFolders (const char* pszMission, int32_t nLevel = 0);
+int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, const char *szFilter);
+char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);
+void MakeTexSubFolders (char* pszParentFolder);
+void MakeModFolders (const char* pszMission, int nLevel = 0);
 void ResetModFolders (void);
-char* LevelFolder (int32_t nLevel);
-char* FlipBackslash (char* pszFile);
-char* FlipSlash (char* pszFile);
-char* AppendSlash (char* pszFile);
-
-int64_t FreeDiskSpace (const char* pszFolder);
 
 #ifdef _WIN32
 char *UnicodeToAsc (char *str, const wchar_t *w_str);
 wchar_t *AscToUnicode (wchar_t *w_str, const char *str);
 #endif
 
-extern int32_t nCFileError;
+extern int nCFileError;
 extern tGameFolders	gameFolders;
 
 #ifdef _WIN32_WCE

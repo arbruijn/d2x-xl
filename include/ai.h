@@ -39,63 +39,63 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define BOSS_ALIEN1 25
 #define BOSS_ALIEN2 26
 
-fix MoveTowardsSegmentCenter (CObject *pObj);
-fix MoveTowardsPoint (CObject *pObj, CFixVector *vGoal, fix xMinDist);
-int32_t GateInRobot (int16_t nObject, uint8_t nType, int16_t nSegment);
-void DoAIMovement (CObject *pObj);
-void AIMoveToNewSegment ( CObject * obj, int16_t newseg, int32_t firstTime );
-// void AIFollowPath ( CObject * obj, int16_t newseg, int32_t firstTime );
-void AIRecoverFromWallHit (CObject *obj, int32_t nSegment);
-void AIMoveOne (CObject *pObj);
-void DoAIFrame (CObject *pObj);
-void DoD1AIFrame (CObject *pObj);
-void InitAIObject (int16_t nObject, int16_t initial_mode, int16_t nHideSegment);
-void UpdatePlayerAwareness (CObject *pObj, fix new_awareness);
-void CreateAwarenessEvent (CObject *pObj, int32_t nType);         // CObject *pObj can create awareness of player, amount based on "nType"
+fix MoveTowardsSegmentCenter (CObject *objP);
+fix MoveTowardsPoint (CObject *objP, CFixVector *vGoal, fix xMinDist);
+int GateInRobot (short nObject, ubyte nType, short nSegment);
+void DoAIMovement (CObject *objP);
+void AIMoveToNewSegment ( CObject * obj, short newseg, int firstTime );
+// void AIFollowPath ( CObject * obj, short newseg, int firstTime );
+void AIRecoverFromWallHit (CObject *obj, int nSegment);
+void AIMoveOne (CObject *objP);
+void DoAIFrame (CObject *objP);
+void DoD1AIFrame (CObject *objP);
+void InitAIObject (short nObject, short initial_mode, short nHideSegment);
+void UpdatePlayerAwareness (CObject *objP, fix new_awareness);
+void CreateAwarenessEvent (CObject *objP, int nType);         // CObject *objP can create awareness of player, amount based on "nType"
 void DoAIFrameAll (void);
 void DoD1AIFrameAll (void);
 void InitAISystem (void);
-void ResetAIStates (CObject *pObj);
-int32_t CreatePathPoints (CObject *pObj, int32_t start_seg, int32_t end_seg, tPointSeg *tPointSegs, int16_t *num_points, int32_t max_depth, int32_t randomFlag, int32_t safetyFlag, int32_t avoid_seg);
+void ResetAIStates (CObject *objP);
+int CreatePathPoints (CObject *objP, int start_seg, int end_seg, tPointSeg *tPointSegs, short *num_points, int max_depth, int randomFlag, int safetyFlag, int avoid_seg);
 void CreateAllPaths (void);
-void CreatePathToStation (CObject *pObj, int32_t max_length);
-void AIFollowPath (CObject *pObj, int32_t player_visibility, int32_t previousVisibility, CFixVector *vec_to_player);
+void CreatePathToStation (CObject *objP, int max_length);
+void AIFollowPath (CObject *objP, int player_visibility, int previousVisibility, CFixVector *vec_to_player);
 fix AITurnTowardsVector (CFixVector *vec_to_player, CObject *obj, fix rate);
-void AITurnTowardsVelVec (CObject *pObj, fix rate);
+void AITurnTowardsVelVec (CObject *objP, fix rate);
 void InitAIObjects (void);
-void DoAIRobotHit (CObject *robot, int32_t nType);
-void DoD1AIRobotHit (CObject *pObj, int32_t type);
-void CreateNSegmentPath (CObject *pObj, int32_t nPathLength, int16_t avoid_seg);
-void CreateNSegmentPathToDoor (CObject *pObj, int32_t nPathLength, int16_t avoid_seg);
+void DoAIRobotHit (CObject *robot, int nType);
+void DoD1AIRobotHit (CObject *objP, int type);
+void CreateNSegmentPath (CObject *objP, int nPathLength, short avoid_seg);
+void CreateNSegmentPathToDoor (CObject *objP, int nPathLength, short avoid_seg);
 void InitRobotsForLevel (void);
-int32_t AIBehaviorToMode (int32_t behavior);
-void CreatePathToSegment (CObject *pObj, int16_t goalseg, int32_t max_length, int32_t safetyFlag);
-int32_t ReadyToFire (tRobotInfo *robptr, tAILocalInfo *ailp);
-int32_t SmoothPath (CObject *pObj, tPointSeg *psegs, int32_t num_points);
-void MoveTowardsPlayer (CObject *pObj, CFixVector *vec_to_player);
+int AIBehaviorToMode (int behavior);
+void CreatePathToSegment (CObject *objP, short goalseg, int max_length, int safetyFlag);
+int ReadyToFire (tRobotInfo *robptr, tAILocalInfo *ailp);
+int SmoothPath (CObject *objP, tPointSeg *psegs, int num_points);
+void MoveTowardsPlayer (CObject *objP, CFixVector *vec_to_player);
 
-int32_t AICanFireAtTarget (CObject *pObj, CFixVector *vGun, CFixVector *vPlayer);
+int AICanFireAtTarget (CObject *objP, CFixVector *vGun, CFixVector *vPlayer);
 
-void DoBossDyingFrame (CObject *pObj);
+void DoBossDyingFrame (CObject *objP);
 
 // max_length is maximum depth of path to create.
 // If -1, use default: MAX_DEPTH_TO_SEARCH_FOR_PLAYER
-void CreatePathToTarget (CObject *pObj, int32_t max_length, int32_t safetyFlag);
-void AttemptToResumePath (CObject *pObj);
+void CreatePathToTarget (CObject *objP, int max_length, int safetyFlag);
+void AttemptToResumePath (CObject *objP);
 
 // When a robot and a player collide, some robots attack!
 void DoAIRobotHitAttack (CObject *robot, CObject *player, CFixVector *collision_point);
 void DoD1AIRobotHitAttack(CObject *robot, CObject *player, CFixVector *collision_point);
 void AIOpenDoorsInSegment (CObject *robot);
-int32_t AIDoorIsOpenable (CObject *pObj, CSegment *segp, int16_t nSide);
-int32_t AICanSeeTarget (CObject *pObj, CFixVector *pos, fix fieldOfView, CFixVector *vec_to_player);
+int AIDoorIsOpenable (CObject *objP, CSegment *segp, short nSide);
+int AICanSeeTarget (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vec_to_player);
 void AIResetAllPaths (void);   // Reset all paths.  Call at the start of a level.
-int32_t AILocalPlayerControlsRobot (CObject *pObj, int32_t awarenessLevel);
+int AIMultiplayerAwareness (CObject *objP, int awarenessLevel);
 
 // In escort.c
-void DoEscortFrame (CObject *pObj, fix dist_to_player, int32_t player_visibility);
-void DoSnipeFrame (CObject *pObj);
-void DoThiefFrame (CObject *pObj);
+void DoEscortFrame (CObject *objP, fix dist_to_player, int player_visibility);
+void DoSnipeFrame (CObject *objP);
+void DoThiefFrame (CObject *objP);
 
 #if DBG
 void force_dump_aiObjects_all (char *msg);
@@ -103,8 +103,8 @@ void force_dump_aiObjects_all (char *msg);
 #define force_dump_aiObjects_all (msg)
 #endif
 
-void StartBossDeathSequence (CObject *pObj);
-extern int32_t Boss_been_hit;
+void StartBossDeathSequence (CObject *objP);
+extern int Boss_been_hit;
 extern fix AI_procTime;
 
 // Stuff moved from ai.c by MK on 05/25/95.
@@ -117,7 +117,7 @@ extern fix AI_procTime;
 
 typedef struct {
 	fix         lastTime;
-	int32_t         nLastSeg;
+	int         nLastSeg;
 	CFixVector   vLastPos;
 } __pack__ tAICloakInfo;
 
@@ -129,8 +129,8 @@ extern CFixVector vLastTargetPosFiredAt;
 
 #define MAX_AWARENESS_EVENTS 256
 typedef struct tAwarenessEvent {
-	int16_t       nSegment; // CSegment the event occurred in
-	int16_t       nType;   // nType of event, defines behavior
+	short       nSegment; // CSegment the event occurred in
+	short       nType;   // nType of event, defines behavior
 	CFixVector	pos;    // absolute 3 space location of event
 } __pack__ tAwarenessEvent;
 
@@ -173,7 +173,7 @@ typedef struct tAwarenessEvent {
 #define PRODUCER_CHECK           1000
 
 extern fix Escort_last_path_created;
-extern int32_t Escort_goalObject, Escort_special_goal, Escort_goal_index;
+extern int Escort_goalObject, Escort_special_goal, Escort_goal_index;
 
 #define GOAL_WIDTH 11
 
@@ -188,28 +188,28 @@ extern int32_t Escort_goalObject, Escort_special_goal, Escort_goal_index;
 
 extern void  CreateBuddyBot (void);
 
-extern void  AIMultiSendRobotPos (int16_t nObject, int32_t force);
+extern void  AIMultiSendRobotPos (short nObject, int force);
 
-extern int32_t   Flinch_scale;
-extern int32_t   Attack_scale;
-extern int8_t Mike_to_matt_xlate [];
+extern int   Flinch_scale;
+extern int   Attack_scale;
+extern sbyte Mike_to_matt_xlate [];
 
 // Amount of time since the current robot was last processed for things such as movement.
 // It is not valid to use FrameTime because robots do not get moved every frame.
 
 
-// -- extern int32_t              Boss_been_hit;
+// -- extern int              Boss_been_hit;
 // ------ John: End of variables which must be saved as part of gamesave. -----
 
-extern int32_t  ai_evaded;
+extern int  ai_evaded;
 
-extern int8_t Super_boss_gate_list [];
+extern sbyte Super_boss_gate_list [];
 #define MAX_GATE_INDEX  25
 
 // These globals are set by a call to FindHitpoint, which is a slow routine,
 // so we don't want to call it again (for this CObject) unless we have to.
 //extern CFixVector   Hit_pos;
-//extern int32_t          HitType, Hit_seg;
+//extern int          HitType, Hit_seg;
 
 #if DBG
 // Index into this array with ailp->mode
@@ -219,51 +219,51 @@ extern char behavior_text [6][9];
 // Index into this array with aip->GOAL_STATE or aip->CURRENT_STATE
 extern char state_text [8][5];
 
-extern int32_t bDoAIFlag, nBreakOnObject;
+extern int bDoAIFlag, nBreakOnObject;
 
-extern void mprintf_animation_info (CObject *pObj);
+extern void mprintf_animation_info (CObject *objP);
 
 #endif //if DBG
 
-void AIFrameAnimation (CObject *pObj);
-void AIDoRandomPatrol (CObject *pObj, tAILocalInfo *pLocalInfo);
-int32_t DoSillyAnimation (CObject *pObj);
-void ComputeVisAndVec (CObject *pObj, CFixVector *pos, tAILocalInfo *pLocalInfo, tRobotInfo *robptr, int32_t *flag, fix xMaxVisibleDist);
-void DoFiringStuff (CObject *obj, int32_t player_visibility, CFixVector *vec_to_player);
-int32_t AIMaybeDoActualFiringStuff (CObject *obj, tAIStaticInfo *aip);
-void AIDoActualFiringStuff (CObject *obj, tAIStaticInfo *aip, tAILocalInfo *ailp, tRobotInfo *robptr, int32_t gun_num);
-void DoSuperBossStuff (CObject *pObj, fix dist_to_player, int32_t player_visibility);
-void DoBossStuff (CObject *pObj, int32_t player_visibility);
-// -- unused, 08/07/95 -- void ai_turn_randomly (CFixVector *vec_to_player, CObject *obj, fix rate, int32_t previousVisibility);
-void AIMoveRelativeToTarget (CObject *pObj, tAILocalInfo *ailp, fix dist_to_player, CFixVector *vec_to_player, fix circleDistance, int32_t evade_only, int32_t player_visibility);
-void MoveAwayFromTarget (CObject *pObj, CFixVector *vec_to_player, int32_t attackType);
-void MoveTowardsVector (CObject *pObj, CFixVector *vec_goal, int32_t dot_based);
+void AIFrameAnimation (CObject *objP);
+void AIIdleAnimation (CObject *objP);
+int DoSillyAnimation (CObject *objP);
+void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailp, tRobotInfo *robptr, int *flag, fix xMaxVisibleDist);
+void DoFiringStuff (CObject *obj, int player_visibility, CFixVector *vec_to_player);
+int AIMaybeDoActualFiringStuff (CObject *obj, tAIStaticInfo *aip);
+void AIDoActualFiringStuff (CObject *obj, tAIStaticInfo *aip, tAILocalInfo *ailp, tRobotInfo *robptr, int gun_num);
+void DoSuperBossStuff (CObject *objP, fix dist_to_player, int player_visibility);
+void DoBossStuff (CObject *objP, int player_visibility);
+// -- unused, 08/07/95 -- void ai_turn_randomly (CFixVector *vec_to_player, CObject *obj, fix rate, int previousVisibility);
+void AIMoveRelativeToTarget (CObject *objP, tAILocalInfo *ailp, fix dist_to_player, CFixVector *vec_to_player, fix circleDistance, int evade_only, int player_visibility);
+void MoveAwayFromTarget (CObject *objP, CFixVector *vec_to_player, int attackType);
+void MoveTowardsVector (CObject *objP, CFixVector *vec_goal, int dot_based);
 void InitAIFrame (void);
 void MakeNearbyRobotSnipe (void);
 
-void CreateBfsList (int32_t start_seg, int16_t bfs_list [], int32_t *length, int32_t max_segs);
+void CreateBfsList (int start_seg, short bfs_list [], int *length, int max_segs);
 void InitThiefForLevel ();
 
-int32_t AISaveBinState (CFile& cf);
-int32_t AISaveUniState (CFile& cf);
-int32_t AIRestoreBinState (CFile& cf, int32_t version);
-int32_t AIRestoreUniState (CFile& cf, int32_t version);
+int AISaveBinState (CFile& cf);
+int AISaveUniState (CFile& cf);
+int AIRestoreBinState (CFile& cf, int version);
+int AIRestoreUniState (CFile& cf, int version);
 
-int32_t CheckObjectObjectIntersection (CFixVector *pos, fix size, CSegment *pSeg);
-int32_t DoRobotDyingFrame (CObject *pObj, fix StartTime, fix xRollDuration, int8_t *bDyingSoundPlaying, int16_t deathSound, fix xExplScale, fix xSoundScale);
+int CheckObjectObjectIntersection (CFixVector *pos, fix size, CSegment *segP);
+int DoRobotDyingFrame (CObject *objP, fix StartTime, fix xRollDuration, sbyte *bDyingSoundPlaying, short deathSound, fix xExplScale, fix xSoundScale);
 
-void TeleportBoss (CObject *pObj);
-int32_t BossFitsInSeg (CObject *pBossObj, int32_t nSegment);
+void TeleportBoss (CObject *objP);
+int BossFitsInSeg (CObject *bossObjP, int nSegment);
 
-void StartRobotDeathSequence (CObject *pObj);
-int32_t DoAnyRobotDyingFrame (CObject *pObj);
+void StartRobotDeathSequence (CObject *objP);
+int DoAnyRobotDyingFrame (CObject *objP);
 
 #define SPECIAL_REACTOR_ROBOT   65
 extern void SpecialReactorStuff (void);
 
 // --------------------------------------------------------------------------------------------------------------------
 
-static inline fix AIMaxDist (int32_t i, tRobotInfo *pRobotInfo)
+static inline fix AIMaxDist (int i, tRobotInfo *botInfoP)
 {
 if (gameOpts->gameplay.nAIAwareness) {
 	switch (i) {
@@ -276,7 +276,7 @@ if (gameOpts->gameplay.nAIAwareness) {
 		case 3:
 			return I2X (750);
 		case 4:
-			return I2X (50 * (2 * gameStates.app.nDifficultyLevel + pRobotInfo->pursuit));
+			return I2X (50 * (2 * gameStates.app.nDifficultyLevel + botInfoP->pursuit));
 		}
 	}
 else {
@@ -290,7 +290,7 @@ else {
 		case 3:
 			return I2X (200);
 		case 4:
-			return I2X (20 * (2 * gameStates.app.nDifficultyLevel + pRobotInfo->pursuit));
+			return I2X (20 * (2 * gameStates.app.nDifficultyLevel + botInfoP->pursuit));
 		}
 	}
 return 0;

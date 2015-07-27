@@ -19,14 +19,14 @@
 //------------------------------------------------------------------------------
 
 typedef struct tVertLightIndex {
-	int16_t			nVertex;
-	int16_t			nLights;
+	short			nVertex;
+	short			nLights;
 	CFloatVector	color;
 } __pack__ tVertLightIndex;
 
 typedef struct tVertLightData {
-	int16_t					nVertices;
-	int16_t					nLights;
+	short					nVertices;
+	short					nLights;
 	CFloatVector		buffers [GPGPU_LIGHT_BUFFERS][GPGPU_LIGHT_BUF_SIZE];
 	CFloatVector		colors [GPGPU_LIGHT_BUF_SIZE];
 	tVertLightIndex	index [GPGPU_LIGHT_BUF_SIZE];
@@ -36,7 +36,7 @@ typedef struct tVertLightData {
 
 class CGPGPULighting {
 	private:
-		int32_t				m_nShaderProg;
+		int				m_nShaderProg;
 		tVertLightData	m_vld;
 
 
@@ -46,12 +46,12 @@ class CGPGPULighting {
 		void Begin (void);
 		void End (void);
 		void InitShader (void);
-		int32_t Compute (int32_t nVertex, int32_t nState, CFaceColor *pColor);
+		int Compute (int nVertex, int nState, CFaceColor *colorP);
 
 	private:
-		GLuint CreateBuffer (int32_t i);
+		GLuint CreateBuffer (int i);
 		void ComputeFragLight (float lightRange);
-		int32_t Render (void);
+		int Render (void);
 	};
 
 extern CGPGPULighting gpgpuLighting;

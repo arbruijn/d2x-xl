@@ -748,12 +748,12 @@ const char *defaultGameTexts [][2] = {
  {"gross", "large"},
  {"riesig", "huge"},
  {"Zoom: %dx", "Zoom: %dx"},
- {"~HUD anzeigen: %s", "Show HUD: %s"},
+ {"~HUD anzeigen", "Show HUD"},
  {"~Fadenkreuz anzeigen", "Show Reticle"},
  {"~Grafische Skalen anzeigen", "Show ~Graphical gauges"},
  {"~Skalen an Aufloesung anpassen", "SCale gauges to screen resolution"},
  {"Skalen blinken wenn fast ~Leer", "Flash gauges on low values"},
- {"~Raketensicht zeigen", "show mIssile ~View"},
+ {"~Raketensicht zeigen", "Show ~MIssile View"},
  {"~Vollbild-Lenkraketensicht", "~Fullscreen Guided Missile View"},
  {"~Powerups auf Uebersichtskarte zeigen", "Show ~Powerups on automap"},
  {"~Robots auf Uebersichtskarte zeigen", "Show ~Robots on automap"},
@@ -771,7 +771,7 @@ const char *defaultGameTexts [][2] = {
  {"min", "low"},
  {"mittel", "medium"},
  {"hoch", "high"},
- {"max", "max"},
+ {"max", "highest"},
  {"b~Ildqualitaet", "~Image quality: %s"},
  {"~Darstellungsqualitaet", "~Render quality: %s"},
  {"~Bildwiederholrate: %d fps", "Framecap: %d fps"},
@@ -857,12 +857,12 @@ const char *defaultGameTexts [][2] = {
  {"TCP/~IP-Spiel beitreten", "Join a TCP/IP game"},
  {"Unzulaessige Adresse", "That address is not valid!"},
  {"hochaufgeloeste ~Filme", "Show High Res movies"},
- {"Max. # ~Spieler: %d", "Maximum ~Players: %d"},
+ {"Max. # Spieler: %d", "Maximum players: %d"},
  {"Game Host: IP-Adresse nicht gefunden", "Game Host: Failed to get IP address"},
  {"M~Ission", "MIssion:"},
- {"~Koop", "COOP"},
- {"~CTF", "~CTF"},
- {"~Verbessertes CTF", "~ENHANCED CTF"},
+ {"~Kooperativ", "COOPERATIVE"},
+ {"~Flagge erobern", "CAPTURE THE FLAG"},
+ {"Flagge erobern (~Verbessert)", "ENHANCED CTF"},
  {"~Horten", "HOARD"},
  {"Team-H~Orten", "TEAM HOARD"},
  {"~Offenes Spiel", "OPEN GAME"},
@@ -956,10 +956,10 @@ const char *defaultGameTexts [][2] = {
  {"Kurze Daten~Pakete", "SHort Packets"},
  {"Zugelassene ~Objekte...", "SET objects ALLOWED..."},
  {"Netzwerk-Socket", "NETWORK SOCKET"},
- {"Datenpakete pro Sekunde (%d - %d)", "PACKETS PER SECOND (%d - %d)"},
+ {"Datenpakete pro Sekunde (2-20)", "PACKETS PER SECOND (2 - 20)"},
  {"Weitere Netzwerkeinstellungen", "Additional netgame options"},
- {"Unzulaessige Paketrate\nstelle 100 ein", "Packet value out of range\nSetting value to 100"},
- {"Unzulaessige Paketrate\nstelle 5 ein", "Packet value out of range\nSetting value to 5"},
+ {"Unzulaessige Paketrate\nstelle 20 ein", "Packet value out of range\nSetting value to 20"},
+ {"Unzulaessige Paketrate\nstelle 2 ein", "Packet value out of range\nSetting value to 2"},
  {"Unzulaessiger Socket\nstelle %d ein", "Socket value out of range\nSetting value to %d"},
  {"Bei Koop-Spielen nicht moeglich", "You can't change those for coop!"},
  {"(keine ausgewaehlt)", "(none selected)"},
@@ -1167,7 +1167,7 @@ const char *defaultGameTexts [][2] = {
  {"Unzulaessige Spielernr. zum %s", "Invalid player number for %s."},
  {"Du kannst in der Teamansicht nicht nach # %s", "You cannot %s by # within team display."},
  {"Entsorge %s...", "Dumping %s..."},
- {"Fuer Ping musst Du einen Namen angeben", "You must specify a name to ping"},
+ {"Fuer Ping musst Due einen Namen angeben", "You must specify a name to ping"},
  {"Pinge %s...", "Pinging %s..."},
  {"Pinge Gegenspieler", "Pinging opponent..."},
  {"Nur %s kann Spieler verschieben!", "Only %s can move players!"},
@@ -1264,9 +1264,9 @@ const char *defaultGameTexts [][2] = {
  {"Boje %d: %s", "Marker %d: %s"},
  {"Verbleibende Zeit: %d Sek.", "Time left: %d secs"},
  {"PAUSE\n\nKoennen:  %s\nGeiseln an Bord:  %d\nZeit im Level: %s\nGesamte Spielzeit: %s",
-  "PAUSE\n\nSkill level:  %s\nHostages on board:  %d\nTime on level: %s\nTotal time in game: %s"},
- {"PAUSE\n\nKoennen:  %s\nGeiseln an Bord:  %d\n",
-  "PAUSE\n\nSkill level:  %s\nHostages on board:  %d\n"},
+	 "PAUSE\n\nSkill level:  %s\nHostages on board:  %d\nTime on level: %s\nTotal time in game: %s"},
+ {"PAUSE\n\nKoennen:  %s\nGeisen an Bord:  %d\n",
+	 "PAUSE\n\nSkill level:  %s\nHostages on board:  %d\n"},
  {"Anarchie", "Anarchy"},
  {"Team-Anarchie", "Team Anarchy"},
  {"Robo-Anarchie", "Robo Anarchy"},
@@ -1274,7 +1274,7 @@ const char *defaultGameTexts [][2] = {
  {"Flagge erobern", "Capture the Flag"},
  {"Horten", "Hoard"},
  {"Team-Horten", "Team Hoard"},
- {"Entropie", "Entropy"},
+ {"Entr~Opie", "Entrop~Y"},
  {"Unbekannt", "Unknown"},
  {"ruiniert", "trashing"},
  {"verschlechert wirklich", "really hurting"},
@@ -1310,11 +1310,11 @@ const char *defaultGameTexts [][2] = {
  {"Kehre zu Level %i zurueck", "Returning to level %i"},
  {"SCHREIBE...", "TYPING..."},
  {"SlagelSlagel!!", "SlagelSlagel!!"},
- {"Das Spiel bei dem Du Namen angefragt hast\nist nicht mehr vorhanden.\n", "The game you have requested\nnames from is gone.\n"},
+ {"Das Spiel bei dem Du Namen angefragt hast\nist nicht mehr da.\n", "The game you have requested\nnames from is gone.\n"},
  {"Spieler von Spiel '%s':", "players of game '%s':"},
  {"Kurze Datenpakete: %s", "Short packets: %s"},
  {"Datenpakete/Sek.: %d", "Packets Per Second: %d"},
- {"Netzspiel-Information", "netGameInfo Information"},
+ {"Netzspiel-Information", "netGame Information"},
  {"Spiel: %s%s", "Game: %s%s"},
  {"Mission: %s%s", "Mission: %s%s"},
  {"Aktueller Level: %s%d", "Current Level: %s%d"},
@@ -1343,8 +1343,8 @@ const char *defaultGameTexts [][2] = {
  {"%s Joystickhats gefunden, aber nur %s unterstuetzt.\n", "Found joystick %d hats, only %d supported.\n"},
  {"Kennung der HXM-Datei unzulaessig", "ID of HXM! file incorrect"},
  {"Version der HXM-Datei zu alt (%d)", "HXM! version too old (%d)"},
- {"%s: Roboter # %d unzulaessig\n(zulaessiger Bereich: 0 - %d).\n\nEventuell ist die Vertigo-Erweiterung\nnicht installiert.\n\nPlatzieren Sie dazu D2X.HOG und D2X.MN2\nin Ihrem Missions-Ordner.",
-	 "%s: Invalid robot # %d\n(allowed range: 0 - %d).\n\nYou probably do not have\nthe Vertigo extension installed.\n\nTo do so, place D2X.HOG and D2X.MN2\nin your missions folder."},
+ {"%s: Roboter # %d unzulaessig (Bereich = 0 - %d).\nEventuell ist die Vertigo-Erweiterung nicht installiert.\nPlatzieren Sie dazu D2X.HOG und D2X.MN2 in Ihrem Missions-Ordner.",
+	 "%s: Invalid robot # %d (Range = 0 - %d).\nYou probably do not have the Vertigo extension installed.\nTo do so, place D2X.HOG and D2X.MN2 in your missions folder."},
  {"Konnte Leveldatei <%s> nicht laden", "Couldn't load level file\n<%s>"},
  {"Dieser Level ist nicht fuer Entropie geeignet!\nWechsle zu Team-Anarchie.", "This level is not Entropy enabled!\nChanging game mode to Team Anarchy."},
  {"Kann Hilfetexte nicht laden", "Cannot load help text file."},
@@ -1410,7 +1410,7 @@ const char *defaultGameTexts [][2] = {
  {"gross", "large"},
  {"sehr gross", "very large"},
  {"sehr hoch", "very high"},
- {"ultrahoch", "ultra high"},
+ {"extrem", "extreme"},
  {"E~Xplosionen wenn beschaedigt", "Show eXplosions if damaged"},
  {"kein ~Abgasstrahl", "no thruster ~Flames"},
  {"~Kollisionserkennung Rauch", "smoke collIsion detection"},
@@ -1513,7 +1513,7 @@ const char *defaultGameTexts [][2] = {
  {"Missionsdatei fehlerhaft", "invalid mission file"},
  {"Spielerbotschaften se~Parat anzeigen", "Show se~Parate player messages"},
  {"Alternativer Ausgang gefunden!", "Alternate Exit Found!"},
- {"Monsterball", "Monsterball"},
+ {"Monster~Ball", "Monster~Ball"},
  {"Konnte keine Zielgebiete finden.\nSchalte zu Team-Anarchie um.",
 	 "Couldn't find team goals.\nSwitching to Team Anarchy."},
  {"Konnte keinen Monsterball erzeugen.\nSchalte zu Team-Anarchie um.",
@@ -1599,7 +1599,7 @@ const char *defaultGameTexts [][2] = {
  {"~Kompatibles Demo-Format", "use ~Compatible demo format"},
  {"Roboter", "Robots"},
  {"3D-p~Owerups: %s", "3D p~Owerups: %s"},
- {"objekt-~Zaehler anzeigen", "show object tall~Y"},
+ {"Objekt-Zaehler anzeigen", "show object ~Tally"},
  {"Traeume werden wahr...", "Dreams are coming true..."},
  {"D2~X-Einstellungen...", "D2~X options..."},
  {"D2X-Einstellungen", "D2X options"},
@@ -1770,13 +1770,13 @@ const char *defaultGameTexts [][2] = {
  {"Hochgeschwindigkeit!!", "Bullet Time!!"},
  {"Waffen-Ausstattung", "Gun Loadout"},
  {"Geraete-Ausstattung", "Device Loadout"},
- {"eingebaute Ausruestung", "built-in equipment"},
- {"e~Ingebaute Ausruestung...", "built-in e~Quipment..."},
+ {"Eingebaute Ausruestung", "Built-in equipment"},
+ {"~Eingebaute Ausruestung...", "~Built-in equipment..."},
  {"Boje loeschen?", "Delete Marker?"},
  {"zu Boje teleportieren?", "Teleport to marker?"},
  {"Kann nicht teleportieren: Zuwenig Energie", "Cannot teleport: Not enough energy"},
  {"Prozent erkundet", "percent explored"},
- {"3d-energie~Funken: %s", "3d energy s~Parks: %s"},
+ {"Energiefunken zeichnen", "render energy s~Parks"},
  {"aktuelle ~Waffen zeigen", "show equipped ~Weapons"},
  {"~Patronenhuelsen zeigen", "show ~Bullet casings"},
  {"l~Aaser an den Tragflaechenenden", "l~Asers on wingtips"},
@@ -1821,13 +1821,13 @@ const char *defaultGameTexts [][2] = {
  {"Descent 1 K~I verwenden", "use Descent 1 A~I"},
  {"treibende ~Funken", "mo~Ving sparks"},
  {"~Sprites weichzeichnen", "soften spr~Ite edges"},
- {"~Partikel weichzeichnen", "soften p~Article edges"},
- {"ver~Werfungseffekt beim erscheinen: %s", "~Warp appearance effect: %s"},
+ {"~Funken weichzeichnen", "soften sp~Ark edges"},
+ {"~Rauch weichzeichnen", "soften sm~Oke edges"},
  {"~Dieb unterdruecken", "suppress ~Thief bots"},
  {"moderat", "moderate"},
  {"~AI-aggressivitaet: %s", "~AI aggressivity: %s"},
  {"Savegame inkompatibel:\nMax. Segmentzahl unterschiedlich (savegame: %d).\nDer Wert kann in d2x.ini gesetzt werden.",
-  "Savegame incompatible:\nMaximum segment count differs (savegame: %d).\nYou can change the value in d2x.ini."},
+	 "Savegame incompatible:\nMaximum segment count differs (savegame: %d).\nYou can change the value in d2x.ini."},
  {"Musik aus~Blenden", "~Fade out music"},
  {"~Hochaufloesende Kameras", "~High resolution cameras"},
  {"Schnellspeichern erfolgreich", "Quicksave successful"},
@@ -1854,7 +1854,7 @@ const char *defaultGameTexts [][2] = {
  {"~Franzoesisch (azerty)", "~French (azerty)"},
  {"D~Vorak (U.S.)", "~Dvorak (U.S.)"},
  {"Tastaturlayout:", "Keyboard layout:"},
- {"z~Iielmarkierungen: %s", "target ~Indicators: %s"},
+ {"~Zielmarkierungen: %s", "~Target indicators: %s"},
  {"~Leuchtspuren: %s", "light ~Trails: %s"},
  {"standard", "basic"},
  {"einfach", "simple"},
@@ -1894,12 +1894,12 @@ const char *defaultGameTexts [][2] = {
  {"zur naechsten Flaeche", "to closest face"},
  {"zur Mine", "to mine"},
  {"Waffen", "weapons"},
- {"~Effekte einschalten", "~Enable effects"},
+ {"e~Ffekte einschalten", "enable e~Ffects"},
  {"auf ~Updates ueberpruefen", "check for ~Updates"},
  {"~Umgebungs-Lautstaerke", "~Ambient sound volume"},
  {"Lautstaerke ~koppeln", "~Link volume controls"},
  {"Spielende: %d Punkte", "End match: %d Points"},
- {"Sekundaerwaffen-~Kapazität...", "Secondary Weapon ~Capacity..."},
+ {"Sekundaerwaffen-Kapazität...", "Secondary Weapon Capacity..."},
  {"Sekundaerwaffen-Kapazität", "Secondary Weapon Capacity"},
  {"kein", "none"},
  {"Guidebot", "guidebot"},
@@ -1911,11 +1911,11 @@ const char *defaultGameTexts [][2] = {
  {"Links: %s", "Left: %s"},
  {"Rechts: %s", "Right: %s"},
  {"3D-~Brille: %s", "3D ~Glasses: %s"},
- {"st~Ereo-Trennung (IPD): %s", "st~Ereo Separation (IPD): %s"},
+ {"st~Ereo-Trennung: %s", "st~Ereo Separation: %s"},
  {"gelb/blau", "amber/blue"},
  {"rot/tuerkis", "red/cyan"},
  {"gruen/magenta", "green/magenta"},
- {"NVidia-Shutterbrille", "NVidia shutter glasses"},
+ {"shutter", "shutter"},
  {"farb~Verbesserung: %s", "color ~Gain: %s"},
  {"3~D Effekt verstaerken", "enhance 3-~D effect"},
  {"~Frames tauschen", "~Flip frames"},
@@ -1946,7 +1946,7 @@ const char *defaultGameTexts [][2] = {
  {"mehrfarbig", "multi color"},
  {"~Helligkeit: %s", "~Brightness: %s"},
  {"Gespeicherte Spiele loeschen", "Delete saved games"},
- {"hinter ~Hindernissen verbergen", "hide ~Behind obstacles"},
+ {"hinter ~Hindernissen verbergen", "~Hide behind obstacles"},
  {"modifizierte waffen ~Zulassen", "allow ~Custom weapons"},
  {"Kein Update verfuegbar.", "No updates were found."},
  {"Ein Update wurde gefunden.\nSoll es heruntergeladen werden?", "An update has been found.\nDownload it?"},
@@ -1957,65 +1957,7 @@ const char *defaultGameTexts [][2] = {
  {"Spiel~Geschwindigkeit: x %d.%d", "game ~Speed: x %d.%d"},
  {"Deine Version von D2X-XL\npasst nicht zu der Version,\ndie fuer dieses Spiel verwendet wird.", "Your version of D2X-XL\ndoes not match the version\nin use for that game."},
  {"\nerlaubte Schiffe:", "\nships allowed:"},
- {"Oculus Rift", "Oculus Rift"},
- {"3D TV (1080p)", "3D TV (1080p)"},
- {"~FOV: %s", "~FOV: %s"},
- {"~Pupillenabstand: %d mm", "I~PD: %d mm"},
- {"Anaglyphenbrille", "Anaglyph Glasses"},
- {"Glas~Farben: %s", "Glass ~Colors: %s"},
- {"Neutrale Zone: %s", "Deadzone: %s"},
- {"Oculus Rift-Konfiguration", "Oculus Rift Configuration"},
- {"Oculus Rift konfigurieren..", "Configure Oculus Rift..."},
- {"minimal", "minimal"},
- {"maximal", "maximal"},
- {"Farbabweichungs-~Korrektur", "~Chromatic Aberration Correction"},
- {"M~Usik mischen", "sh~Uffle music"},
- {"Spielt~Yp: %s", "Game ~Type: %s"},
- {"spiel~Zugang: %s", "game ~Access: %s"},
- {"jeder", "everybody"},
- {"mit bestaetigung", "confirmation"},
- {"auf einladung", "invitation"},
- {"~Beobachtermodus erlauben", "allow o~Bserver mode"},
- {"~Schildeffekt: %s", "~Shield effect: %s"},
- {"Spieler", "Players"},
- {"Spieler & Roboter", "Players & Robots"},
- {"Lightmaps ~Vorberechnen", "precompute lightm~Aps"},
- {"Berechne...", "Computing..."},
- {"Start", "Start"},
- {"\x01\xff\xe0\x80 Ein neues Descent entsteht!\n\nBitte unterstuetze\x01\xff\x80\x80 Descent Underground\x01\xff\xe0\x80 \n\nauf Kickstarter!", 
-  "\x01\xff\xe0\x80 A NEW DESCENT IS IN THE MAKING!\n\nPLEASE SUPPORT\x01\xff\x80\x80 DESCENT:UNDERGROUND\n\n\x01\xff\xe0\x80ON KICKSTARTER!\n"},
- {"descent under~Ground", "descent under~Ground"},
- {"ko~Mpakt-hud: %s", "co~Mpact hud: %s"},
- {"Spalten", "Columns"},
- {"Zeilen", "Rows"},
- {"ko~Mpaktes hud", "co~Mpact hud"},
- {"horizontal", "horizontal"},
- {"vertikal", "vertical"},
- {"energie auf~Laden", "~Recharge energy"},
- {"lade~Verzoegerung: %d s", "recharge dela~Y: %d s"},
- {"lade~Geschwindigkeit: %s", "recharge ~Speed: %s"},
- {"~Farbschema: %s", "~Color scheme: %s"},
- {"hud-~Breite: %s", "hud ~Width: %s"},
- {"schmal", "narrow"},
- {"weit", "wide"},
- {"hud-~Hoehe: %s", "hud ~Height: %s"},
- {"oben", "high"},
- {"mitte", "middle"},
- {"unten", "low"},
- {"hud-~Trenner", "hud se~Parators"},
- {"hab dich!", "dodge this!"},
- {"~Darstellung: %s", "~Style: %s"},
- {"realistisch", "realistic"},
- {"cartoon", "cartoon"},
- {"D1-Waffen ungenerft", "~Unnerf d1 weapons"},
- {"~Nebel: %s", "~Fog: %s"},
- {"Explosionssc~Hrapnelle: %s", "explosion s~Hrapnel: %s"},
- {"~Kratzgeraeusche des schiffs erzeugen", "play ship scra~Pe sound"},
- {"~Streulicht: %d%%", "~Ambient light: %d%%"},
- {"~Glanzlicht: %d%%", "~Specular light: %d%%"},
- {"~Direktes Licht: %d%%", "~Direct light: %d%%"},
- {"~Lightmaps neu berechnen", "~Rebuild lightmaps"},
-
+ 
 #if 0
  {"", ""},
 #endif
@@ -2110,15 +2052,15 @@ const char *defaultHelpTexts [][2] = {
  {"Ankreuzen, um Sicht abgefeuerter Raketen in einem Cockpit-Infofenster anzeigen",
 	 "Check to show view of missiles fired by you in a cockpit window."},
  {"Ankreuzen, um die Sicht von Lenkraketen auf den ganzen Bildschirm\nzu bringen.",
-	 "Check to have the sight of guided missiles displayed on the entire\ngameData.render.screen."},
+	 "Check to have the sight of guided missiles displayed on the entire\nscreen."},
  {"Ankreuzen, um Powerups auf der Uebersichtskarte sehen zu koennen.",
 	 "Check to have powerups displayed on the automap."},
  {"Ankreuzen, um Roboter auf der Uebersichtskarte sehen zu koennen. Roboter sind pink.\nBoss-Roboter sind besonders grosse Punkte. Der Guidebot erscheint als blauer Punkt.",
 	 "Check to have robots displayed on the automap. Robots are shown pink.\nBoss robots are bigger blips. The Guidebot is shown as blue blip."},
  {"Wenn angekreuzt werden Symbole fuer die vorhandenen Waffen auf dem Bildschirm angezeigt.\nVerfuegbare Waffen und Gegenstaende\nwerden gruen markiert, nicht verfuegbare grau. Die selektierte\nWaffe wird gelb markiert. Leergeschossene Waffen werden rot angezeigt.",
-	 "If checked, icons for the available weapons are displayed on the\ngameData.render.screen. Available weapons and equipment are marked green,\nunavailable ones gray. The selected weapons are marked yellow.\nEmpty guns are marked red."},
+	 "If checked, icons for the available weapons are displayed on the\nscreen. Available weapons and equipment are marked green,\nunavailable ones gray. The selected weapons are marked yellow.\nEmpty guns are marked red."},
  {"Wenn angekreuzt werden Symbole fuer die vorhandenen Ausruestungs-\ngegenstaende auf dem Bildschirm angezeigt.",
-	 "If checked, icons for the available equipment are displayed on\nthe gameData.renderData.screen."},
+	 "If checked, icons for the available equipment are displayed on\nthe screen."},
  {"Wenn angekreuzt werden kleinere Waffen- und Ausruestungssymbole verwendet.",
 	 "If checked, smaller weapon and equipment icons are used."},
  {"Ankreuzen, wenn die Waffensymbole entsprechend der gewaehlten Rangfolge der Waffen\ngeordnet werden sollen.",
@@ -2231,13 +2173,13 @@ const char *defaultHelpTexts [][2] = {
 	 "Adjust the xInterval in which a camera image is updated. Moving\nthe slider to the far left means the camera image is rendered\n every frame (provided its output is visible by the player)."},
  {"Geschwindigkeit rotierender Kameras einstellen. Rotierende\nKameras ueberstreichen einen Winkel von 90 Grad in der Anzahl\neingestellter Sekunden.",
 	 "Adjust the movement speed of rotating cameras here. Rotating\ncameras cover an angle of 90 degrees in the amount of seconds\nspecified."},
- {"Ankreuzen, um die Erzeugung von Raucheffekten einzuschalten.",
+ {"Ankreuzen um die Erzeugung von Raucheffekten einzuschalten.",
 	 "Check to enable creation of smoke effects."},
- {"Ankreuzen, um die Erzeugung von Raucheffekten fuer Schiffsduesen\nund beschaedigte Schiffe einzuschalten.",
+ {"Ankreuzen um die Erzeugung von Raucheffekten fuer Schiffsduesen\nund beschaedigte Schiffe einzuschalten.",
 	 "Check to enable creation of smoke effects for ship thrusters and\ndamaged ships."},
- {"Ankreuzen, um die Erzeugung von Raucheffekten fuer beschaedigte\nRoboter einzuschalten.",
+ {"Ankreuzen um die Erzeugung von Raucheffekten fuer beschaedigte\nRoboter einzuschalten.",
 	 "Check to neable creation of smoke effects for damaged robots."},
- {"Ankreuzen, um die Erzeugung von Rauchschleppen von Raketen\neinzuschalten.",
+ {"Ankreuzen um die Erzeugung von Rauchschleppen von Raketen\neinzuschalten.",
 	 "Check to enable creation of smoke trails for missiles."},
  {"Ankreuzen, um die Erkennung von Kollisionen von Rauchpartikeln\nmit Waenden einzuschalten. Dies kann Raucheffekte realistischer\nerscheinen lassen, macht sich in der Praxis jedoch kaum\nbemerkbar und verursacht eine spuerbare Leistungseinbusse.",
 	 "Check to enable the detection of collisions of smoke particles\nwith walls. This may make smoke effects appear more realis-\ntically, but usually is hardly noticed and causes a tangible\nperformance hit."},
@@ -2387,8 +2329,8 @@ const char *defaultHelpTexts [][2] = {
 	 "Check to make D2X-XL use smaller network data packets. The\nbackdraw of this is reduced precision in the player position\nthat is reported to the other participants.\n\nFor high bandwidth connections and LAN games, this option\nshould therefore remain unchecked."},
  {"Einen alternativen Netzwerk-Port angeben. Wird ein Vorzeichen\nvorangestellt, wird der Wert zum Standardport addiert bzw.\ndavon subtrahiert.\n\nWird dieser Wert fuer UDP/IP-Verbindungen geaendert, sollten\ndie anderen Teilnehmer davon erfahren, oder sie erhalten\nkeine Verbindung mit dem Server. ;)",
 	 "Specify an alternative networking port here. If you prefix\nthe number with a sign, it is added to or subtracted from\nthe standard port.\n\nIf you change the socket for UDP/IP\ngames, make sure the other participants know about it, or they\nwill not be able to connect to your game. ;)"},
- {"Anzahl der Datenpakete vorgeben, die D2X-XL pro Sekunde versen-\nden soll. Je hoeher der Wert (max. 100), desto praeziser werden\ndie Statusaktualisierungen, die zwischen den Spielern ausge-\ntauscht werden, aber desto hoeher wird auch die Verbindungs-\nbelastung. 20 ist ein guter Wert fuer die meisten Verbindungen.",
-	 "Set the number of network data packets D2X-XL should transmit\nper second. The higher the number (max. 100), the more precise\nare status updates exchanged between the players, but the\nhigher the network load gets. 20 is a good value suiting most\nconnections."},
+ {"Anzahl der Datenpakete vorgeben, die D2X-XL pro Sekunde versen-\nden soll. Je hoeher der Wert (max. 20), desto praeziser werden\ndie Statusaktualisierungen, die zwischen den Spielern ausge-\ntauscht werden, aber desto hoeher wird auch die Verbindungs-\nbelastung. 10 ist ein guter Wert fuer die meisten Verbindungen.",
+	 "Set the number of network data packets D2X-XL should transmit\nper second. The higher the number (max. 20), the more precise\nare status updates exchanged between the players, but the\nhigher the network load gets. 10 is a good value suiting most\nconnections."},
  {"Menue aufrufen, in dem angegeben werden kann, welche Waffen\nund Powerups zugelassen sind und im Level erscheinen falls\nvorhanden, und welche nicht.",
 	 "Invoke a menu where you can specify which weapons and powerups\nare allowed and will appear in the level if present, and\nwhich don't."},
  {"Bitte konsultieren Sie das Online-Handbuch auf www.descent2.de.",
@@ -2490,7 +2432,7 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt werden Demos in mit anderen Descent 2-Versionen\nkompatiblem Format abgespeichert. Die Qualitaet dieses Formats ist\nallerdings etwas schlechter.",
 	 "If checked, demos are saved in a format compatible to other\nDescent 2 versions. The quality is worse though."},
  {"Wenn angekreuzt wird die Anzahl verbliebener Roboter und\nPowerups rechts oben am Bildschirm angezeigt.\n\nJe nach Einstellung grafischer Skalen werden Bildchen oder nur Text\nangezeigt.",
-	 "If checked, the number of remaining robots and powerups is\ndisplayed in the upper left corner of the gameData.renderData.screen.\n\nDepending on the setting of graphical gauges, icons or pure text\nis displayed."},
+	 "If checked, the number of remaining robots and powerups is\ndisplayed in the upper left corner of the screen.\n\nDepending on the setting of graphical gauges, icons or pure text\nis displayed."},
  {"Hier koennen D2X-XL-spezifische Einstellungen vorgenommen werden.", "Adjust D2X-XL specific options here."},
  {"Hier kann die Reichweite der Lichter eingestellt werden.", "Adjust the reach of lights here."},
  {"Wenn angekreuzt werden einige Erweiterungen von D2X-XL waehrend\nMultiplayer-Spielen abgeschaltet.",
@@ -2578,7 +2520,7 @@ const char *defaultHelpTexts [][2] = {
 	 "If checked, transparent objects are being sorted according to\n their distance from the viewer, ensuring that far\naway transparent objects aren't hidden behind closer ones.\n"},
  {"Wenn angekreuzt werden elektrische Entladungen gezeichnet.", "Check to have electric discharges rendered."},
  {"Bei hoher Qualitaet haben Blitze kurze Seitenkanaele; die dafuer\nerforderliche Rechenleistung ist allerdings hoch. Bei niedriger\nQualitaet fehlen die seitlichen Entladungen, dafuer wird aber\nauch weniger Rechenleistung benoetigt.",
-	 "At high quality lightning have int16_t secondary discharges; you\nneed however a lot of computing power for these. At low quality\nno secondary discharges are created, but you also need less\ncomputing power."},
+	 "At high quality lightning have short secondary discharges; you\nneed however a lot of computing power for these. At low quality\nno secondary discharges are created, but you also need less\ncomputing power."},
  {"Hier kann zwischen gezackten und wellenfoermigen Entladungs-\nkanaelen gewaehlt werden.", "Here you can choose between jaggy and smooth discharge\npaths of lightings."},
  {"Wenn angekreuzt werden Blitze mit einem Plasmakanal gezeichnet.", "If checked lightings are render with a plasma channel."},
  {"Wenn angekreuzt schlagen Blitze aus beschaedigten Objekten.", "If checked damaged objects show electric discharges."},
@@ -2670,9 +2612,8 @@ const char *defaultHelpTexts [][2] = {
 	 "If checked, robots are controlled by the original Descent 1\nAI in Descent missions."},
  {"Wenn angekreuzt, treiben Funken langsam herum.", "If checked, energy sparks slowly drift around."},
  {"Wenn angekreuzt, sehen Sprite-Uebergaenge (Explosionen, Schuesse)\nan Waenden weicher und natuerlicher aus.", "If checked, sprite transitions (explosions, shots)\nat walls look smoother and more natural."},
- {"Wenn angekreuzt, sehen Rauch- und Funken-Uebergaenge an Waenden weicher\nund natuerlicher aus.", "If checked, spark and smoke transitions at walls look smoother\nand more natural."},
- {"Bei Einstellung 'Standard' erscheint das Spielerschiff bei Eintritt\nin einen neuen Level oder nach seiner Zerstoerung in einer\nleuchtenden, blitzenden Energieblase. Bei Einstellung 'voll'\nwird der Effekt auch bei Nutzung von Level-internen Teleportern\nangezeigt.\n", 
-  "At the 'standard' setting, player ships appear in a bright energy\nbubble emitting lightning bolts when entering a new level or\nafter having been destroyed. At the 'full' setting, this effect\nwill also be shown when using in-level teleports.\n"},
+ {"Wenn angekreuzt, sehen Funken-Uebergaenge an Waenden weicher\nund natuerlicher aus.", "If checked, spark transitions at walls look smoother\nand more natural."},
+ {"Wenn angekreuzt, sehen Rauch-Uebergaenge an Waenden weicher\nund natuerlicher aus.", "If checked, smoke transitions at walls look smoother\nand more natural."},
  {"Wenn angekreuzt werden alle Diebe aus dem aktuellen Level\nentfernt.", "If checked, all thief bots are removed when playing a level."},
  {"Je nach Einstellung verfolgen Roboter die Spieler zunehmend\naggressiv.", "Depending on the setting, robots pursue players increasingly\naggressive."},
  {"Wenn angekreuzt, wird Musik sanft ausgeblendet; andernfalls\nkann sie abrupt aufhoeren.\n\nFalls beim Ausblenden der Ton ganz abgeschaltet wird (besonders\nunter Windows Vista), sollte es deaktiviert werden.",
@@ -2699,14 +2640,14 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann ausgewaehlt werden, ob Ausruestungsgegenstaende als\n3D-Modelle dargestellt werden oder nicht.",
   "Chose whether to display powerups as 3D models or not."},
  {"Hier kann die Art der Beleuchtung eingestellt werden:\n\n- Basis: althergebrachte Methode\n- Standard: Dynamisch (Per Vertex)\n- Fortgeschritten: Dynamisch + Lightmaps\n- Beste: Per Pixel",
- "Chose the lighting method here:\n\n- basic: old style\nstandard: dynamic (per vertex)\n-advanced: dynamic + lightmaps\n- best: per pixel"},
+ "Chose the lighting method here:\n\n- basic: old style\nstandard: dynamic (per vertex)\n-advanced: dynamic + lightmaps\nbest: per pixel"},
  {"Hier koennen Verwendung und Aufloesung von Kameras\neingestellt werden.", "Chose the camera usage and resolution here."},
  {"Hier kann Verwendung und Aussehen des Abgasstrahls von Spieler-\nschiffen, Robotern und Raketen ausgewaehlt werden.",
   "Chose the appearance of thruster flames from player ships,\nrobots and missiles here."},
  {"Hier kann die Verwendung von Blitzen ausgewaehlt werden.", "Adjust the usage of lightning here."},
  {"Hier kann das Radar eingeschaltet und positioniert werden.", "Enable RADAR and chose its position here."},
  {"Hier kann eingestellt werden, wann und ob das Spiel automatisch\ndie Waffe umschaltet.", "Adjust whether and when the game will automatically switch\nweapons for you."},
- {"Wenn angekreuzt, werden blinkende Lichter und Blinkeffekte reduziert\nund das Schiff schwingt nicht auf und ab.", "If checked flashing lights and flash effects will be reduced\nand the ship won't wiggle."},
+ {"Wenn angekreuzt, werden blinkende Lichter und Blinkeffekte reduziert.", "If checked flashing lights and flash effects will be reduced."},
  {"Wenn angekreuzt, erhalten einige Cockpitelemente eine andere Farbe.", "If checked some cockpit elements get a different color."},
  {"Wenn angekreuzt, erscheinen in einigen Menues zusaetzliche\nEinstellungsmoeglichkeiten.", "If checked, additional settings are displayed in some menus."},
  {"Beim Standardmodell werden einfach die Schutzschilde abgenutzt\nund schliesslich der Gegner zerstoert. Beim erweiterten\nModell koennen je nach Zustand des gegnerischen\nSchutzschildes kritische Treffer erzielt werden, die seine\nGeschwindigkeit, Zielsicherheit oder Feuerrate verringern.",
@@ -2743,57 +2684,6 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, werden Zielmarkierungen von Hindernissen\nverborgen, die sich vor Ihnen befinden.", "If checked, target indicators are hidden behind obstacles\nin front of them"},
  {"Wenn angekreuzt, werden von Levelautoren modifizierte Waffen\nverwendet; andernfalls kommen die Standardwaffen zum Einsatz.", 
   "If checked, weapon modifications made by level authors are\nused;otherwise standard weapons are deployed."},
- {"Hier kann die Geschwindigkeit von Spielerschiffen, Robotern, Raketen und Schuessen eingestellt werden.", "Adjust the speed of player ships, robots, missiles and shots here."},
- {"Hier kann die Breite des Sichtfelds eingestellt werden.", "Adjust the width of your periphal vision here."},
- {"Diese Einstellung fuer 3D-Brillen mit zwei verschieden\nfarbigen Glaesern waehlen.", "Chose this setting for 3D glasses with two differently colored glasses."},
- {"Hier kann die Farbkombination der Anaglyphenbrille eingestellt werden.", "Chose the color combination of the anaglyph glasses here."},
- {"Hier kann die Empfindlichkeit des Positionssensors eingestellt werden.", "Adjust the sensitivity of the head tracking sensor here."},
- {"Hier kann ein Oculus Rift konfiguriert werden.", "Configure an Oculus Rift here."},
- {"Wenn angekreuzt, werden auf dem Oculus Rift auftretende\nFarbabweichungen korrigiert.", "When checked, chromatic aberrations (color seams) appearing\non the Oculus Rift are corrected."},
- {"Wenn angekreuzt, wird die Levelmusik in zufaelliger\nReihenfolge abgespielt.", "If checked, level music will be played in random sequence."},
- {"Hier kann der gewuenschte Spieltyp ausgewaehlt werden.", "Chose the desired type of the match here."},
- {"Hier kann eingestellt werden, wer Zutritt zum Spiel hat.", "Restrict the access to your match here."},
- {"Hier kann der Beobachter-Modus aktiviert werden.", "Activate observer mode here."},
- {"Hier kann eingestellt werden, bei welchen Objekten Beschuss\neinen Energieschild aufleuchten laesst.", "Chose which objects will show a bright energy shield when being\nhit here."},
- {"Hier kann die Beleuchtung fuer eine komplette Mission vorberechnet\nwerden.\n\n"
-  "Mission, Start-Level und Beleuchtungsqualitaet koennen vor der\n"
-  "Berechnung eingestellt werden. Die Berechnung kann jederzeit\n"
-  "mit Escape unterbrochen undspaeter fortgesetzt werden. Es wird\n"
-  "dann beim ersten Level weiter gemacht, dessen Beleuchtung noch\n"
-  "nicht berechnet wurde.\n\n"
-  "Hinweis: Je nach Beleuchtungsqualitaet kann die Berechnung sehr\n"
-  "lange dauern", 
-  "Precompute the level lighting for an entire mission.\n\n"
-  "Mission, start level and lighting quality can be set before the\n"
-  "computation starts. The computation can be interrupted by\n"
-  "the Escape key at any time and can be continued at a later.\n"
-  "point of time. D2X-XL will pick up at the first level the lighting\n"
-  "of which has not been computed.\n\n"
-  "Caveat: Depending on lighting quality settings, lighting\n"
-  "precalculation can take a long time."},
- {"Hiermit kann die Anordnung der Anzeige von Waffen-,\nSchild- und Energiestatus kontrolliert werden.\n\nStandard: In den Bildschirmecken.\nSpalten: Energie links, Waffen rechts am Fadenkreuz.\nZeilen: Schilde und Energie oben, darunter Waffen.", 
-  "Control the layout of weapon, shield and energy\n states with this option.\n\nStandard: In the corners of the screen.\nColums: Energy left, weapons right of the reticle.\nRows: Shields and energy on top, weapons below."},
- {"Wenn angekreuzt, werden alle wichtigen Schiffsdaten, wie Bewaffnung\nund Energiestati in Kurzform direkt am Fadenkreuz angezeigt.\n\nAktive Waffen sind gelb, verfuegbare Waffen sind gruen und\nnicht verfuegbare Waffen sind grau.\n\nUnterhalb der Primaerwaffen wird die verfuegbare Munition\nbzw. bei Lasern die Leistung und die Ausstattung mit Quad-Lasern\nangezeigt.\n\nUnterhalb der Raketen wird die verfuegbare Menge angezeigt.\nEin Stern bedeutet, dass es 10 oder Raketen gibt.", 
-  "If checked, all important ship data, like weapon loadout and\nenergy levels are displayed in short form directly at the reticle.\n\nEquipped weapons are yellow, available ones are green\nand unavailable ones are gray.\n\nBelow the primary weapons, available ammunition is displayed.\nFor lasers, their level and whether a Quad Laser is equipped is shown.\n\nBelow the missiles the missile count is displayed.\nAn asterisk means that there are 10 or more missiles."},
- {"Wenn angekreuzt, werden Energie und Schild des Spielerschiffs\nnach einer Weile automatisch aufgeladen.", "If checked, the player ship's energy and shield will start to\nrecharge after a while."},
- {"Hier kann die Verzoegerung eingestellt werden,\nmit der Schiffsenergie und -schilde auf-\ngeladen werden, nachdem ihr Stand zuletzt reduziert wurde.", "Set the delay for recharging of ship energy and shields after\ntheir supply has been last decreased."},
- {"Mit diesem Regler kann die Ladegeschwindigkeit von Schiffsenergie\nund -schild angepasst werden.", "Adjust the speed at which ship energy and shields are recharged\nwith this slider."},
- {"Hier kann die Farbe ausgeruesteter Waffen ausgewaehlt werden.", "Chose the color of equipped weapons here."},
- {"Hier kann der Abstand des Kompakt-HUDs vom Fadenkreuz angepasst werden.", "Adjust the distance of the compact HUD from the reticle here."},
- {"Hier kann der Abstand des Kompakt-HUDs vom oberen Bildschirmrand\nangepasst werden.", "Adjust the distance of the compact HUD from the\nupper screen border here."},
- {"Wenn angekreuzt, wird das Kompakt-HUD mit zusätzlichen Linien\nversehen, um seine Elemente besser abzusetzen.", "If checked, the compact HUD is drawn with additional\nlines to better separate it from the reticle."},
- {"Hier kann ausgewaehlt werden, ob das Spiel realistisch oder wie\nein Cartoon aussieht.", "Select whether the game looks realistic or like a\ncartoon here."},
- {"Wenn angekreuzt, haben Waffen aus Descent 1 in Descent 2-Missionen\ndieselbe Schlagkraft wie in Descent 1.", "If checked, Descent 1 have the same power in Descent 2 missions\nas they have in Descent 1."},
- {"Wenn eingeschaltet, werden unter Wasser und in Lava Dunst gezeichnet.", "If turned on, a blue or orange haze is rendered under water and in lava."},
- {"Hier kann die Menge schnellfliegender kleiner Truemmerstuecke von \nExplosionen eingestellt werden. Achtung: Dieser Effekt ist sehr rechenaufwaendig!", "Adjust the amount of fast moving explosion shrapnel here.\nCaveat: This effect can lower the frame rate significantly!"},
- {"Wenn angekreuzt, erzeugen Spielerschiffe Kratzgeraeuschen, sobald\nsie an einer Wand entlang schleifen. ", "When checked, player ships create scrape sounds when\nsliding along a wall"},
- {"Hier kann der fuer diffuses Streulicht verwendete Lichtanteil eingestellt werden.\n\nDer fuer direktes Licht verwendete Lichtanteil betraegt\n100%% - Streulicht - Glanzlicht.\nJe weniger Streulicht, desto schaerfer werden Schatten.", 
-  "Adjust the light contribution used for diffuse background light here.\n\nThe light contribution of direct light amounts to\n100%% - ambient light - specular light.\nLess ambient light will emphasize shadows more."},
- {"Hier kann der fuer Glanzlichter verwendete Lichtanteil eingestellt werden.\n\nDer fuer direktes Licht verwendete Lichtanteil betraegt\n100%% - Hintergrundlicht - Glanzlicht.", 
-  "Adjust the light contribution used for specular highlights here.\n\nThe light contribution of direct light amounts to\n100%% - ambient light - specular light."},
- {"Hier kann der fuer direkten Lichteinfall verwendete Lichtanteil eingestellt\nwerden.", "Adjust the light contribution of direct light here."},
- {"Wenn angekreuzt, werden die Lightmaps fuer jede Mission,\ndie gestartet oder geladen wird, neu berechnet.\n\nDiese Einstellung wird nicht gespeichert, wenn das Programm beendet wird.", 
-  "If checked, lightmaps are recomputed\nfor every mission being started or loaded.\n\nThis setting is not stored when the program is terminated."},
 #if 0
  {"", ""},
 #endif
@@ -2802,22 +2692,22 @@ const char *defaultHelpTexts [][2] = {
 
 //------------------------------------------------------------------------------
 
-inline int32_t GameTextCount (void)
+inline int GameTextCount (void)
 {
 return sizeof (defaultGameTexts) / (2 * sizeof (char *)) - 1;	//last entry always empty!
 }
 
 //------------------------------------------------------------------------------
 
-int32_t GameTextSize (void)
+int GameTextSize (void)
 {
-	int32_t	h, i, j = GameTextCount ();
+	int	h, i, j = GameTextCount ();
 
 for (h = i = 0; i < j; i++)
-	h += (int32_t) strlen (defaultGameTexts [i][gameStates.app.bEnglish]) + 2;
+	h += (int) strlen (defaultGameTexts [i][gameStates.app.bEnglish]) + 2;
 for (i = 0; i < BASE_TEXT_COUNT; i++)
 	if (baseGameTexts [i][0])
-		h += (int32_t) strlen (baseGameTexts [i][0]) + 2;
+		h += (int) strlen (baseGameTexts [i][0]) + 2;
 	else
 		h += 2;
 return h;
@@ -2825,9 +2715,9 @@ return h;
 
 //------------------------------------------------------------------------------
 
-char **InitTexts (char *szTextFile, int32_t bInitHotKeys)
+char **InitTexts (char *szTextFile, int bInitHotKeys)
 {
-	int32_t	h, i, j, l, bHotKeys = 0;
+	int	h, i, j, l, bHotKeys = 0;
 	char	k;
 	char	*pk, *pDest, *pSrc, **pszTexts;
 #if DUMP_TEXTS == 1
@@ -2886,7 +2776,7 @@ for (i = 0; i < j; i++) {
 		k = -1;
 		}
 	else {
-		l = (int32_t) strlen (pSrc) + 1;
+		l = (int) strlen (pSrc) + 1;
 		if ((pk = strchr (pSrc, '~'))) {
 			bHotKeys = 1;
 			--l;
@@ -2899,7 +2789,7 @@ for (i = 0; i < j; i++) {
 			k = -1;
 			}
 		}
-	*(pDest - 1) = (k < 0) ? 0 : toupper (pDest [(int32_t) k]);
+	*(pDest - 1) = (k < 0) ? 0 : toupper (pDest [(int) k]);
 	pszTexts [i] = pDest;
 	pszTexts [i + 1] = pDest + l;
 	}
@@ -2913,7 +2803,7 @@ return pszTexts;
 
 //------------------------------------------------------------------------------
 
-void SetupText (char* ph, const char* pszFile, int32_t nLine)
+void SetupText (char* ph, const char* pszFile, int nLine)
 {
 char *pi, *pj;
 
@@ -2940,10 +2830,10 @@ void LoadModTexts (void)
 {
 	CFile	cf;
 	char	szFile [FILENAME_LEN], szText [200], *p, *t;
-	int32_t	i, l, nLine;
+	int	i, l, nLine;
 
 FreeModTexts ();
-sprintf (szFile, "%s%s.txt", gameFolders.mods.szCurrent, gameFolders.mods.szName);
+sprintf (szFile, "%s/%s.txt", gameFolders.szModDir [1], gameFolders.szModName);
 if (!cf.Open (szFile, "", "rb", 0))
 	return;
 for (nLine = 0; cf.GetS (szText, sizeof (szText)); nLine++) {
@@ -2954,7 +2844,7 @@ for (nLine = 0; cf.GetS (szText, sizeof (szText)); nLine++) {
 		continue;
 	for (; *p && (isdigit (*p) || isspace (*p)); p++)
 		;
-	l = int32_t (strlen (p));
+	l = int (strlen (p));
 	if (!l)
 		continue;
 	if (!(t = new char [l + 1]))
@@ -2969,7 +2859,7 @@ for (nLine = 0; cf.GetS (szText, sizeof (szText)); nLine++) {
 
 void FreeModTexts (void)
 {
-for (int32_t i = 0; i < BASE_TEXT_COUNT; i++)
+for (int i = 0; i < BASE_TEXT_COUNT; i++)
 	if (d2GameTexts [i][1]) {
 		delete[] d2GameTexts [i][1];
 		d2GameTexts [i][1] = NULL;
@@ -2998,7 +2888,7 @@ pszHelpTexts = InitTexts (szHelpFiles [gameStates.app.bEnglish], 0);
 // rotates a byte left one bit, preserving the bit falling off the right
 char EncodeRotateLeft (char c)
 {
-int32_t b = (c & 0x80);
+int b = (c & 0x80);
 c <<= 1;
 if (b)
 	c |= 0x01;
@@ -3056,7 +2946,7 @@ void LoadGameTexts (void)
 #endif
 	CFile	tFile;
 	CFile	iFile;
-	int32_t	len, h, i, j, bBinary = 0;
+	int	len, h, i, j, bBinary = 0;
 	char	*psz;
 	const char	*filename = "descent.tex";
 
@@ -3067,24 +2957,24 @@ fclose (fTxt);
 #endif
 if ((i = FindArg ("-text")))
 	filename = appConfig [i+1];
-if (!tFile.Open (filename, gameFolders.game.szData [0], "rb", 0)) {
+if (!tFile.Open (filename, gameFolders.szDataDir [0], "rb", 0)) {
 	filename = "descent.txb";
-	if (!iFile.Open (filename, gameFolders.game.szData [0], "rb", 0)) {
+	if (!iFile.Open (filename, gameFolders.szDataDir [0], "rb", 0)) {
 		Warning (TXT_NO_TEXTFILES);
 		return;
 	}
 	bBinary = 1;
-	len = (int32_t) iFile.Length ();
+	len = (int) iFile.Length ();
 	text = new char [len];
 	atexit (free_text);
 	iFile.Read (text, 1, len);
 	iFile.Close ();
 	}
 else {
-	int32_t i;
+	int i;
 	char *pi, *pj;
 
-	len = (int32_t) tFile.Length ();
+	len = (int) tFile.Length ();
 	text = new char [len];
 	atexit (free_text);
 #if 1
@@ -3092,7 +2982,7 @@ else {
 	for (i = len, pi = pj = text; i; i--, pi++)
 		if (*pi != 13)
 			*pj++ = *pi;
-	len = (int32_t) (pj - text);
+	len = (int) (pj - text);
 #else
 	p = text;
 	do {
@@ -3163,12 +3053,14 @@ InitGameTexts ();
 
 //------------------------------------------------------------------------------
 
-const char *GAMETEXT (int32_t _i)
+#if DBG
+
+const char *GAMETEXT (int _i)
 {
 if ((_i < BASE_TEXT_COUNT) && d2GameTexts [_i][1])
 	 return d2GameTexts [_i][1] ;
 else if (pszGameTexts)
-	return const_cast<char*>(pszGameTexts [_i]);
+	return pszGameTexts [_i];
 else if (_i < BASE_TEXT_COUNT)
 	return d2GameTexts [_i][0];
 else
@@ -3176,13 +3068,15 @@ else
 }
 
 
-const char *HELPTEXT (int32_t _i)
+const char *HELPTEXT (int _i)
 {
 if (pszHelpTexts)
-	return const_cast<char*>(pszHelpTexts [_i]);
+	return pszHelpTexts [_i];
 else
 	return defaultHelpTexts [_i][gameStates.app.bEnglish];
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 //eof

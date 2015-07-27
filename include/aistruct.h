@@ -118,16 +118,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // This is the stuff that is permanent for an AI CObject and is
 // therefore saved to disk.
 typedef struct tAIStaticInfo {
-	uint8_t  behavior;               //
-	int8_t   flags[MAX_AI_FLAGS];    // various flags, meaning defined by constants
-	int16_t  nHideSegment;           // Segment to go to for hiding.
-	int16_t  nHideIndex;             // Index in Path_seg_points
-	int16_t  nPathLength;            // Length of hide path.
-	int8_t	nCurPathIndex;         // Current index in path.
-	int8_t	bDyingSoundPlaying;    // !0 if this robot is playing its dying sound.
-	int16_t	nDangerLaser;
-	int32_t	nDangerLaserSig;
-	fix		xDyingStartTime;       // Time at which this robot started dying.
+	ubyte   behavior;               //
+	sbyte   flags[MAX_AI_FLAGS];    // various flags, meaning defined by constants
+	short   nHideSegment;           // Segment to go to for hiding.
+	short   nHideIndex;             // Index in Path_seg_points
+	short   nPathLength;            // Length of hide path.
+	sbyte   nCurPathIndex;         // Current index in path.
+	sbyte   bDyingSoundPlaying;    // !0 if this robot is playing its dying sound.
+	short   nDangerLaser;
+	int     nDangerLaserSig;
+	fix     xDyingStartTime;       // Time at which this robot started dying.
 } __pack__ tAIStaticInfo;
 
 class CAIStaticInfo {
@@ -135,15 +135,15 @@ class CAIStaticInfo {
 		tAIStaticInfo m_info;
 	public:
 		inline tAIStaticInfo* GetInfo (void) { return &m_info; }
-		inline uint8_t Behavior() { return m_info.behavior; }
-		inline int8_t Flags(int32_t i) { return m_info.flags [i]; }
-		inline int16_t HideSegment() { return m_info.nHideSegment; }
-		inline int16_t HideIndex() { return m_info.nHideIndex; }
-		inline int16_t PathLength() { return m_info.nPathLength; }
-		inline int8_t CurPathIndex() { return m_info.nCurPathIndex; }
-		inline int8_t DyingSoundPlaying() { return m_info.bDyingSoundPlaying; }
-		inline int16_t DangerLaser() { return m_info.nDangerLaser; }
-		inline int32_t DangerLaserSig() { return m_info.nDangerLaserSig; }
+		inline ubyte Behavior() { return m_info.behavior; }
+		inline sbyte Flags(int i) { return m_info.flags [i]; }
+		inline short HideSegment() { return m_info.nHideSegment; }
+		inline short HideIndex() { return m_info.nHideIndex; }
+		inline short PathLength() { return m_info.nPathLength; }
+		inline sbyte CurPathIndex() { return m_info.nCurPathIndex; }
+		inline sbyte DyingSoundPlaying() { return m_info.bDyingSoundPlaying; }
+		inline short DangerLaser() { return m_info.nDangerLaser; }
+		inline int DangerLaserSig() { return m_info.nDangerLaserSig; }
 		inline fix DyingStartTime() { return m_info.xDyingStartTime; }
 };
 
@@ -151,19 +151,19 @@ class CAIStaticInfo {
 typedef struct tAILocalInfo {
 // These used to be bytes, changed to ints so I could set watchpoints on them.
 // targetAwarenessType..nRapidFireCount used to be bytes
-// nGoalSegment used to be int16_t.
-	int32_t     targetAwarenessType;	// nType of awareness of player
-	int32_t     nRetryCount;          // number of retries in physics last time this CObject got moved.
-	int32_t     nConsecutiveRetries;  // number of retries in consecutive frames (ie, without a nRetryCount of 0)
-	int32_t     mode;                 // current mode within behavior
-	int32_t     nPrevVisibility;		// Visibility of player last time we checked.
-	int32_t     nRapidFireCount;      // number of shots fired rapidly
-	int32_t     nGoalSegment;         // goal CSegment for current path
+// nGoalSegment used to be short.
+	int     targetAwarenessType;	// nType of awareness of player
+	int     nRetryCount;          // number of retries in physics last time this CObject got moved.
+	int     nConsecutiveRetries;  // number of retries in consecutive frames (ie, without a nRetryCount of 0)
+	int     mode;                 // current mode within behavior
+	int     nPrevVisibility;		// Visibility of player last time we checked.
+	int     nRapidFireCount;      // number of shots fired rapidly
+	int     nGoalSegment;         // goal CSegment for current path
 
 	// -- MK, 10/21/95, unused -- fix     last_seeTime, last_attackTime; // For sound effects, time at which player last seen, attacked
 
 	fix     nextActionTime;						// time in seconds until something happens, mode dependent
-	fix     pNextrimaryFire;               // time in seconds until can fire again
+	fix     nextPrimaryFire;               // time in seconds until can fire again
 	fix     nextSecondaryFire;             // time in seconds until can fire again from second weapon
 	fix     targetAwarenessTime;				// time in seconds robot will be aware of player, 0 means not aware of player
 	fix     timeTargetSeen;						// absolute time in seconds at which player was last seen, might cause to go into follow_path mode
@@ -172,19 +172,19 @@ typedef struct tAILocalInfo {
 	fix     timeSinceProcessed;				// time since this robot last processed in DoAIFrame
 	CAngleVector goalAngles [MAX_SUBMODELS];  // angles for each subobject
 	CAngleVector deltaAngles [MAX_SUBMODELS]; // angles for each subobject
-	int8_t   goalState [MAX_SUBMODELS];     // Goal state for this sub-CObject
-	int8_t   achievedState [MAX_SUBMODELS]; // Last achieved state
+	sbyte   goalState [MAX_SUBMODELS];     // Goal state for this sub-CObject
+	sbyte   achievedState [MAX_SUBMODELS]; // Last achieved state
 } __pack__ tAILocalInfo;
 
 typedef struct {
-	int32_t         nSegment;
+	int         nSegment;
 	CFixVector	point;
-	uint8_t			nConnSide;
+	ubyte			nConnSide;
 } __pack__ tPointSeg;
 
 typedef struct {
-	int16_t       start, end;
-	uint8_t			nConnSide;
+	short       start, end;
+	ubyte			nConnSide;
 } __pack__ segQueueEntry;
 
 #define MAX_POINT_SEGS_D2  2500

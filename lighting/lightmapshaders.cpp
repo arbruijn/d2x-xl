@@ -70,7 +70,7 @@ const char *pszLMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), min (texColor.a + decalColor.a, 1.0));\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * min (vec3 (1.0, 1.0, 1.0), color.rgb), texColor.a * gl_Color.a);\r\n" \
+	"	gl_FragColor =  vec4 (texColor.rgb * min (vec3 (1.0, 1.0, 1.0), color.rgb), texColor.a * gl_Color.a);\r\n" \
 	"	}\r\n" \
 	"}"
 	};
@@ -111,11 +111,11 @@ const char *pszLMLightingVS [] = {
 
 // ----------------------------------------------------------------------------------------------
 
-int32_t lightmapShaderProgs [4] = {-1,-1,-1,-1};
+int lightmapShaderProgs [4] = {-1,-1,-1,-1};
 
-int32_t CreateLightmapShader (int32_t nType)
+int CreateLightmapShader (int nType)
 {
-	int32_t	h, j;
+	int	h, j;
 
 if (!(ogl.m_features.bShaders && ogl.m_features.bPerPixelLighting)) {
 	gameStates.render.bPerPixelLighting = 0;
@@ -142,7 +142,7 @@ return 1;
 
 void InitLightmapShaders (void)
 {
-for (int32_t nType = 0; nType < 4; nType++)
+for (int nType = 0; nType < 4; nType++)
 	CreateLightmapShader (nType);
 }
 
@@ -155,7 +155,7 @@ void ResetLightmapShaders (void)
 
 //------------------------------------------------------------------------------
 
-int32_t SetupLightmapShader (CSegFace *pFace, int32_t nType, bool bHeadlight)
+int SetupLightmapShader (CSegFace *faceP, int nType, bool bHeadlight)
 {
 PROF_START
 	//static CBitmap	*nullBmP = NULL;
@@ -163,10 +163,10 @@ PROF_START
 if (!CreateLightmapShader (nType))
 	return 0;
 #if DBG
-if (pFace && (pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSide == nDbgSide)))
-	BRP;
+if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
 #endif
-if (!SetupLightmap (pFace))
+if (!SetupLightmap (faceP))
 	return 0;
 #if CONST_LIGHT_COUNT
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (lightmapShaderProgs [nType]));
@@ -177,11 +177,11 @@ if (!shaderProg)
 	return -1;
 
 if (shaderManager.Rebuild (shaderProg))
-	/*nothing*/;
+	;
 	{
 	ogl.ClearError (0);
 	glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"), 
-					 (ogl.StereoDevice () && (!gameOpts->app.bExpertMode || gameOpts->render.stereo.bBrighten)) 
+					 ((gameOpts->render.stereo.nGlasses > 0) && (!gameOpts->app.bExpertMode || gameOpts->render.stereo.bBrighten)) 
 					 ? 2.0f 
 					 : paletteManager.Brightness ());
 	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
@@ -195,7 +195,7 @@ if (shaderManager.Rebuild (shaderProg))
 		}
 	}
 //if (!nType)
-//	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&pFace->m_info.color));
+//	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 #if CONST_LIGHT_COUNT

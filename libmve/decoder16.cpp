@@ -6,27 +6,27 @@
 
 #include "decoders.h"
 
-static uint16_t *backBuf1, *backBuf2;
-static int32_t lookup_initialized;
+static ushort *backBuf1, *backBuf2;
+static int lookup_initialized;
 
-static void dispatchDecoder16(uint16_t **pFrame, uint8_t codeType, uint8_t **pData, uint8_t **pOffData, int32_t *pDataRemain, int32_t *curXb, int32_t *curYb);
+static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ubyte **pOffData, int *pDataRemain, int *curXb, int *curYb);
 static void genLoopkupTable();
 
-void decodeFrame16(uint8_t *pFrame, uint8_t *pMap, int32_t mapRemain, uint8_t *pData, int32_t dataRemain)
+void decodeFrame16(ubyte *pFrame, ubyte *pMap, int mapRemain, ubyte *pData, int dataRemain)
 {
-    uint8_t *pOffData;
-    uint16_t offset;
-    uint16_t *FramePtr = reinterpret_cast<uint16_t*> (pFrame);
-    uint8_t op;
-    int32_t i, j;
-    int32_t xb, yb;
+    ubyte *pOffData;
+    ushort offset;
+    ushort *FramePtr = reinterpret_cast<ushort*> (pFrame);
+    ubyte op;
+    int i, j;
+    int xb, yb;
 
 	if (!lookup_initialized) {
 		genLoopkupTable();
 	}
 
-    backBuf1 = reinterpret_cast<uint16_t*> (g_vBackBuf1);
-    backBuf2 = reinterpret_cast<uint16_t*> (g_vBackBuf2);
+    backBuf1 = reinterpret_cast<ushort*> (g_vBackBuf1);
+    backBuf2 = reinterpret_cast<ushort*> (g_vBackBuf2);
 
     xb = g_width >> 3;
     yb = g_height >> 3;
@@ -74,22 +74,22 @@ void decodeFrame16(uint8_t *pFrame, uint8_t *pMap, int32_t mapRemain, uint8_t *p
 #endif
 }
 
-static uint16_t GETPIXEL(uint8_t **buf, int32_t off)
+static ushort GETPIXEL(ubyte **buf, int off)
 {
-	uint16_t val = (*buf)[0+off] | ((*buf)[1+off] << 8);
+	ushort val = (*buf)[0+off] | ((*buf)[1+off] << 8);
 	return val;
 }
 
-static uint16_t GETPIXELI(uint8_t **buf, int32_t off)
+static ushort GETPIXELI(ubyte **buf, int off)
 {
-	uint16_t val = (*buf)[0+off] | ((*buf)[1+off] << 8);
+	ushort val = (*buf)[0+off] | ((*buf)[1+off] << 8);
 	(*buf) += 2;
 	return val;
 }
 
-static void relClose(int32_t i, int32_t *x, int32_t *y)
+static void relClose(int i, int *x, int *y)
 {
-    int32_t ma, mi;
+    int ma, mi;
 
     ma = i >> 4;
     mi = i & 0xf;
@@ -98,7 +98,7 @@ static void relClose(int32_t i, int32_t *x, int32_t *y)
     *y = ma - 8;
 }
 
-static void relFar(int32_t i, int32_t sign, int32_t *x, int32_t *y)
+static void relFar(int i, int sign, int *x, int *y)
 {
     if (i < 56)
     {
@@ -112,14 +112,14 @@ static void relFar(int32_t i, int32_t sign, int32_t *x, int32_t *y)
     }
 }
 
-static int32_t close_table[512];
-static int32_t far_p_table[512];
-static int32_t far_n_table[512];
+static int close_table[512];
+static int far_p_table[512];
+static int far_n_table[512];
 
 static void genLoopkupTable()
 {
-	int32_t i;
-	int32_t x, y;
+	int i;
+	int x, y;
 
 	for (i = 0; i < 256; i++) {
 		relClose(i, &x, &y);
@@ -141,9 +141,9 @@ static void genLoopkupTable()
 	lookup_initialized = 1;
 }
 
-static void copyFrame(uint16_t *pDest, uint16_t *pSrc)
+static void copyFrame(ushort *pDest, ushort *pSrc)
 {
-    int32_t i;
+    int i;
 
     for (i=0; i<8; i++)
     {
@@ -153,13 +153,13 @@ static void copyFrame(uint16_t *pDest, uint16_t *pSrc)
     }
 }
 
-static void patternRow4Pixels(uint16_t *pFrame,
-                              uint8_t pat0, uint8_t pat1,
-                              uint16_t *p)
+static void patternRow4Pixels(ushort *pFrame,
+                              ubyte pat0, ubyte pat1,
+                              ushort *p)
 {
-    uint16_t mask=0x0003;
-    uint16_t shift=0;
-    uint16_t pattern = (pat1 << 8) | pat0;
+    ushort mask=0x0003;
+    ushort shift=0;
+    ushort pattern = (pat1 << 8) | pat0;
 
     while (mask != 0)
     {
@@ -169,15 +169,15 @@ static void patternRow4Pixels(uint16_t *pFrame,
     }
 }
 
-static void patternRow4Pixels2(uint16_t *pFrame,
-                               uint8_t pat0,
-                               uint16_t *p)
+static void patternRow4Pixels2(ushort *pFrame,
+                               ubyte pat0,
+                               ushort *p)
 {
-    uint8_t mask=0x03;
-    uint8_t shift=0;
-    uint16_t pel;
+    ubyte mask=0x03;
+    ubyte shift=0;
+    ushort pel;
 	/* ORIGINAL VERSION IS BUGGY
-	   int32_t skip=1;
+	   int skip=1;
 
 	   while (mask != 0)
 	   {
@@ -205,12 +205,12 @@ static void patternRow4Pixels2(uint16_t *pFrame,
     }
 }
 
-static void patternRow4Pixels2x1(uint16_t *pFrame, uint8_t pat,
-								 uint16_t *p)
+static void patternRow4Pixels2x1(ushort *pFrame, ubyte pat,
+								 ushort *p)
 {
-    uint8_t mask=0x03;
-    uint8_t shift=0;
-    uint16_t pel;
+    ubyte mask=0x03;
+    ubyte shift=0;
+    ushort pel;
 
     while (mask != 0)
     {
@@ -223,14 +223,14 @@ static void patternRow4Pixels2x1(uint16_t *pFrame, uint8_t pat,
     }
 }
 
-static void patternQuadrant4Pixels(uint16_t *pFrame,
-								   uint8_t pat0, uint8_t pat1, uint8_t pat2,
-								   uint8_t pat3, uint16_t *p)
+static void patternQuadrant4Pixels(ushort *pFrame,
+								   ubyte pat0, ubyte pat1, ubyte pat2,
+								   ubyte pat3, ushort *p)
 {
-    uint32_t mask = 3;
-    int32_t shift=0;
-    int32_t i;
-    uint32_t pat = (pat3 << 24) | (pat2 << 16) | (pat1 << 8) | pat0;
+    uint mask = 3;
+    int shift=0;
+    int i;
+    uint pat = (pat3 << 24) | (pat2 << 16) | (pat1 << 8) | pat0;
 
     for (i=0; i<16; i++)
     {
@@ -245,10 +245,10 @@ static void patternQuadrant4Pixels(uint16_t *pFrame,
 }
 
 
-static void patternRow2Pixels(uint16_t *pFrame, uint8_t pat,
-							  uint16_t *p)
+static void patternRow2Pixels(ushort *pFrame, ubyte pat,
+							  ushort *p)
 {
-    uint8_t mask=0x01;
+    ubyte mask=0x01;
 
     while (mask != 0)
     {
@@ -257,14 +257,14 @@ static void patternRow2Pixels(uint16_t *pFrame, uint8_t pat,
     }
 }
 
-static void patternRow2Pixels2(uint16_t *pFrame, uint8_t pat,
-							   uint16_t *p)
+static void patternRow2Pixels2(ushort *pFrame, ubyte pat,
+							   ushort *p)
 {
-    uint16_t pel;
-    uint8_t mask=0x1;
+    ushort pel;
+    ubyte mask=0x1;
 
 	/* ORIGINAL VERSION IS BUGGY
-	   int32_t skip=1;
+	   int skip=1;
 	   while (mask != 0x10)
 	   {
 	   pel = p[(mask & pat) ? 1 : 0];
@@ -290,12 +290,12 @@ static void patternRow2Pixels2(uint16_t *pFrame, uint8_t pat,
 	}
 }
 
-static void patternQuadrant2Pixels(uint16_t *pFrame, uint8_t pat0,
-								   uint8_t pat1, uint16_t *p)
+static void patternQuadrant2Pixels(ushort *pFrame, ubyte pat0,
+								   ubyte pat1, ushort *p)
 {
-    uint16_t mask = 0x0001;
-    int32_t i;
-    uint16_t pat = (pat1 << 8) | pat0;
+    ushort mask = 0x0001;
+    int i;
+    ushort pat = (pat1 << 8) | pat0;
 
     for (i=0; i<16; i++)
     {
@@ -308,13 +308,13 @@ static void patternQuadrant2Pixels(uint16_t *pFrame, uint8_t pat0,
     }
 }
 
-static void dispatchDecoder16(uint16_t **pFrame, uint8_t codeType, uint8_t **pData, uint8_t **pOffData, int32_t *pDataRemain, int32_t *curXb, int32_t *curYb)
+static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ubyte **pOffData, int *pDataRemain, int *curXb, int *curYb)
 {
-    uint16_t p[4];
-    uint8_t pat[16];
-    int32_t i, j, k;
-    int32_t x, y;
-    uint16_t *pDstBak;
+    ushort p[4];
+    ubyte pat[16];
+    int i, j, k;
+    int x, y;
+    ushort *pDstBak;
 
     pDstBak = *pFrame;
 
@@ -398,9 +398,9 @@ static void dispatchDecoder16(uint16_t **pFrame, uint8_t codeType, uint8_t **pDa
 		{
 			for (i=0; i<2; i++)
 			{
-				patternRow2Pixels2(*pFrame, (uint8_t) (*(*pData) & 0xf), p);
+				patternRow2Pixels2(*pFrame, (ubyte) (*(*pData) & 0xf), p);
 				*pFrame += 2*g_width;
-				patternRow2Pixels2(*pFrame, (uint8_t) (*(*pData) >> 4), p);
+				patternRow2Pixels2(*pFrame, (ubyte) (*(*pData) >> 4), p);
 				(*pData)++;
 
 				*pFrame += 2*g_width;

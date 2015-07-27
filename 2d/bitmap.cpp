@@ -31,102 +31,12 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "palette.h"
 #include "pcx.h"
 
-CStack< CBitmap* > bitmapList;
-bool bRegisterBitmaps = false;
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-bool CheckBitmaps (void)
-{
-#if DBG
-uint32_t j = bitmapList.ToS ();
-
-if (j--) {
-	for (uint32_t i = 0; i < j; i++)
-		if (bitmapList [i] && (!bitmapList [i]->m_info.szName [0] || (bitmapList [i]->m_info.szName [0] == -51)))
-			return false;
-	}
-#endif
-return true;
-}
-
-//------------------------------------------------------------------------------
-
-#if DBG
-
-uint32_t FindBitmap (CBitmap* pBm)
-{
-for (uint32_t i = 0, j = bitmapList.ToS (); i < j; i++)
-	if (bitmapList [i] == pBm)
-		return i + 1;
-return 0;
-}
-
-#endif
-
-//------------------------------------------------------------------------------
-
-void RegisterBitmap (CBitmap* pBm)
-{
-#if DBG
-if (bRegisterBitmaps) {
-	if (!bitmapList.Buffer ()) {
-		bitmapList.Create (1000);
-		bitmapList.SetGrowth (1000);
-		}
-	if ((int32_t) bitmapList.ToS () == nDbgTexture)
-		BRP;
-	if (!FindBitmap (pBm))
-		bitmapList.Push (pBm);
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-void UnregisterBitmap (CBitmap* pBm)
-{
-#if DBG
-uint32_t i = FindBitmap (pBm);
-if (i) {
-	if (i < bitmapList.ToS ()) 
-		bitmapList [i - 1] = *bitmapList.Top ();
-	*bitmapList.Top () = NULL;
-	bitmapList.Shrink ();
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
-CBitmap::CBitmap ()
-{
-#if DBG
-RegisterBitmap (this);
-#endif
-Reset (); 
-};
-
-//------------------------------------------------------------------------------
-
-CBitmap::~CBitmap () 
-{ 
-Destroy (); 
-#if DBG
-UnregisterBitmap (this);
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-uint8_t* CBitmap::CreateBuffer (void)
+ubyte* CBitmap::CreateBuffer (void)
 {
 if (m_info.props.rowSize * m_info.props.h) {
-	CArray<uint8_t>::Resize ((m_info.nBPP > 1) ? m_info.props.h * m_info.props.rowSize : MAX_BMP_SIZE (m_info.props.w, m_info.props.h));
+	CArray<ubyte>::Resize ((m_info.nBPP > 1) ? m_info.props.h * m_info.props.rowSize : MAX_BMP_SIZE (m_info.props.w, m_info.props.h));
 #if DBG
 	Clear ();
 #endif
@@ -136,23 +46,18 @@ return Buffer ();
 
 //------------------------------------------------------------------------------
 
-static int32_t _w, _h, _bpp;
-
-CBitmap* CBitmap::Create (uint8_t mode, int32_t w, int32_t h, int32_t bpp, const char* pszName)
+CBitmap* CBitmap::Create (ubyte mode, int w, int h, int bpp, const char* pszName)
 {
-	CBitmap	*pBm = new CBitmap; 
+	CBitmap	*bmP = new CBitmap; 
 
-_w = w;
-_h = h;
-_bpp = bpp;
-if (pBm)
-	pBm->Setup (mode, w, h, bpp, pszName);
-return pBm;
+if (bmP)
+	bmP->Setup (mode, w, h, bpp, pszName);
+return bmP;
 }
 
 //------------------------------------------------------------------------------
 
-bool CBitmap::Setup (uint8_t mode, int32_t w, int32_t h, int32_t bpp, const char* pszName, uint8_t* buffer)
+bool CBitmap::Setup (ubyte mode, int w, int h, int bpp, const char* pszName, ubyte* buffer)
 {
 Init (mode, 0, 0, w, h, bpp);
 SetName (pszName);
@@ -165,11 +70,11 @@ return Buffer () != NULL;
 
 void CBitmap::DestroyBuffer (void)
 {
-if ((m_info.nType != BM_TYPE_ALT) && m_info.pParent)
+if ((m_info.nType != BM_TYPE_ALT) && m_info.parentP)
 	SetBuffer (NULL, 0);
 else {
 	if (Buffer ())
-		CArray<uint8_t>::Destroy ();
+		CArray<ubyte>::Destroy ();
 #if TEXTURE_COMPRESSION
 	m_info.compressed.buffer.Destroy ();
 #endif
@@ -185,28 +90,22 @@ SetPalette (NULL);
 DestroyBuffer ();
 DestroyFrames ();
 DestroyMask ();
-if (m_info.pTexture == &m_info.texture)
+if (m_info.texP == &m_info.texture)
 	ReleaseTexture ();
 else
-#if DBG
-	if (m_info.pTexture)
-#endif
-	m_info.pTexture = NULL;
-
-char szName [FILENAME_LEN];
-memcpy (szName, m_info.szName, sizeof (szName));
-Reset ();
-memcpy (m_info.szName, szName, sizeof (szName));
+	m_info.texP = NULL;
+m_info.texture.Init ();
+m_info.texture.SetBitmap (NULL);
 }
 
 //------------------------------------------------------------------------------
 
 void CBitmap::DestroyFrames (void)
 {
-if (m_info.frames.pBm) {
-	delete[] m_info.frames.pBm;
-	m_info.frames.pBm =
-	m_info.frames.pCurrent = NULL;
+if (m_info.frames.bmP) {
+	delete[] m_info.frames.bmP;
+	m_info.frames.bmP =
+	m_info.frames.currentP = NULL;
 	m_info.frames.nCount = 0;
 	}
 }
@@ -215,35 +114,29 @@ if (m_info.frames.pBm) {
 
 void CBitmap::DestroyMask (void)
 {
-delete m_info.pMask;
-m_info.pMask = NULL;
-}
-
-//------------------------------------------------------------------------------
-
-void CBitmap::Reset (void) 
-{
-memset (&m_info, 0, sizeof (m_info));
-m_info.bCartoonizable = 1;
-m_info.texture.Init ();
-m_info.pTexture = &m_info.texture;
-m_info.texture.SetBitmap (this);
+delete m_info.maskP;
+m_info.maskP = NULL;
 }
 
 //------------------------------------------------------------------------------
 
 void CBitmap::Init (void) 
 {
-//Destroy ();
-Reset ();
+	static int nSignature = 0;
+	char szSignature [20];
+
+memset (&m_info, 0, sizeof (m_info));
+m_info.texP = &m_info.texture;
+m_info.texture.SetBitmap (this);
+sprintf (szSignature, "Bitmap %d", nSignature++);
+SetName (szSignature);
 }
 
 //------------------------------------------------------------------------------
 
-void CBitmap::Init (int32_t mode, int32_t x, int32_t y, int32_t w, int32_t h, int32_t bpp, uint8_t *buffer, bool bReset) 
+void CBitmap::Init (int mode, int x, int y, int w, int h, int bpp, ubyte *buffer) 
 {
-if (bReset)
-	Init ();
+Init ();
 m_info.props.x = x;
 m_info.props.y = y;
 m_info.props.w = w;
@@ -251,16 +144,16 @@ m_info.props.h = h;
 m_info.props.nMode = mode;
 m_info.nBPP = bpp ? bpp : 1;
 m_info.props.rowSize = w * bpp;
-m_info.pTexture = &m_info.texture;
+m_info.texP = &m_info.texture;
 m_info.texture.SetBitmap (this);
 if (bpp > 2)
-	m_info.props.flags = (uint16_t) BM_FLAG_TGA;
+	m_info.props.flags = (ushort) BM_FLAG_TGA;
 SetBuffer (buffer, 0, FrameSize ());
 }
 
 //------------------------------------------------------------------------------
 
-CBitmap *CBitmap::CreateChild (int32_t x, int32_t y, int32_t w, int32_t h)
+CBitmap *CBitmap::CreateChild (int x, int y, int w, int h)
 {
     CBitmap *child;
 
@@ -272,15 +165,14 @@ return child;
 
 //------------------------------------------------------------------------------
 
-bool CBitmap::InitChild (CBitmap *parent, int32_t x, int32_t y, int32_t w, int32_t h)
+bool CBitmap::InitChild (CBitmap *parent, int x, int y, int w, int h)
 {
-//*this = *parent;
-memcpy (this, parent, sizeof (*this));
-m_info.pParent =
-m_info.pOverride =
-m_info.pMask = NULL;
+*this = *parent;
+m_info.parentP =
+m_info.overrideP =
+m_info.maskP = NULL;
 memset (&m_info.texture, 0, sizeof (m_info.texture));
-m_info.pTexture = &m_info.texture;
+m_info.texP = &m_info.texture;
 memset (&m_info.frames, 0, sizeof (m_info.frames));
 m_info.bChild = 1;
 m_info.props.x += x;
@@ -297,8 +189,8 @@ if (h > parent->Height () - m_info.props.y)
 m_info.props.h = h;
 SetParent (parent ? parent : this);
 SetBuffer (NULL);	//force buffer to being a child even if identical with parent buffer
-uint32_t nOffset = uint32_t ((m_info.props.y * m_info.props.rowSize) + m_info.props.x * m_info.nBPP);
-uint32_t nSize = uint32_t (h * m_info.props.rowSize);
+uint nOffset = uint ((m_info.props.y * m_info.props.rowSize) + m_info.props.x * m_info.nBPP);
+uint nSize = uint (h * m_info.props.rowSize);
 if (nOffset + nSize > parent->Size ())
 	return false;
 SetBuffer (parent->Buffer () + nOffset, 1, nSize);
@@ -307,7 +199,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-void CBitmap::SetTransparent (int32_t bTransparent)
+void CBitmap::SetTransparent (int bTransparent)
 {
 if (bTransparent)
 	SetFlags (m_info.props.flags | BM_FLAG_TRANSPARENT);
@@ -317,11 +209,9 @@ else
 
 //------------------------------------------------------------------------------
 
-void CBitmap::SetSuperTransparent (int32_t bTransparent)
+void CBitmap::SetSuperTransparent (int bTransparent)
 {
-if (!strcmp (Name (), "misc060#0"))
-	PrintLog (0);
-if (gameData.pigData.tex.textureIndex [0][m_info.nId] >= 0) {
+if (gameData.pig.tex.textureIndex [0][m_info.nId] >= 0) {
 	if (bTransparent)
 		SetFlags (m_info.props.flags | BM_FLAG_SUPER_TRANSPARENT);
 	else
@@ -331,7 +221,7 @@ if (gameData.pigData.tex.textureIndex [0][m_info.nId] >= 0) {
 
 //------------------------------------------------------------------------------
 
-void CBitmap::SetPalette (CPalette *palette, int32_t transparentColor, int32_t superTranspColor, uint8_t* pBuffer, int32_t bufLen)
+void CBitmap::SetPalette (CPalette *palette, int transparentColor, int superTranspColor, ubyte* bufP, int bufLen)
 {
 if (!palette) {
 	m_info.palette = NULL;
@@ -339,19 +229,17 @@ if (!palette) {
 	}
 m_info.palette = paletteManager.Add (*palette, transparentColor, superTranspColor);
 
-	int32_t colorFrequencies [256];
+	int colorFrequencies [256];
 
-memset (colorFrequencies, 0, 256 * sizeof (int32_t));
-if (pBuffer)
-	CountColors (pBuffer, bufLen, colorFrequencies);
-else if (Buffer ()) {
-	if (m_info.props.w == m_info.props.rowSize)
-		CountColors (Buffer (), m_info.props.w * m_info.props.h, colorFrequencies);
-	else {
-		uint8_t *p = Buffer ();
-		for (int32_t y = m_info.props.h; y; y--, p += m_info.props.rowSize)
-			CountColors (p, m_info.props.w, colorFrequencies);
-		}	
+memset (colorFrequencies, 0, 256 * sizeof (int));
+if (bufP)
+	CountColors (bufP, bufLen, colorFrequencies);
+else if (m_info.props.w == m_info.props.rowSize)
+	CountColors (Buffer (), m_info.props.w * m_info.props.h, colorFrequencies);
+else {
+	ubyte *p = Buffer ();
+	for (int y = m_info.props.h; y; y--, p += m_info.props.rowSize)
+		CountColors (p, m_info.props.w, colorFrequencies);
 	}
 if (transparentColor <= 255) {
 	if (transparentColor < 0)
@@ -370,23 +258,21 @@ SetTranspType ((Flags () | (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 
 
 void CBitmap::CheckTransparency (void)
 {
-if (Buffer ()) {
-	uint8_t *data = Buffer ();
+	ubyte *data = Buffer ();
 
-for (int32_t i = m_info.props.w * m_info.props.h; i; i--, data++)
+for (int i = m_info.props.w * m_info.props.h; i; i--, data++)
 	if  (*data++ == TRANSPARENCY_COLOR) {
 		SetTransparent (1);
 		return;
 		}
-	}
 m_info.props.flags = 0;
 }
 
 //---------------------------------------------------------------
 
-int32_t CBitmap::HasTransparency (void)
+int CBitmap::HasTransparency (void)
 {
-	int32_t	i, nFrames;
+	int	i, nFrames;
 
 if (m_info.nType && (m_info.nBPP == 4))
 	return 1;
@@ -408,12 +294,12 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-CBitmap *CBitmap::ReleaseTexture (CBitmap *pBm)
+CBitmap *CBitmap::ReleaseTexture (CBitmap *bmP)
 {
-while ((pBm->Type () != BM_TYPE_ALT) && pBm->Parent () && (pBm != pBm->Parent ()))
-	pBm = pBm->Parent ();
-pBm->ReleaseTexture ();
-return pBm;
+while ((bmP->Type () != BM_TYPE_ALT) && bmP->Parent () && (bmP != bmP->Parent ()))
+	bmP = bmP->Parent ();
+bmP->ReleaseTexture ();
+return bmP;
 }
 
 //------------------------------------------------------------------------------
@@ -423,56 +309,56 @@ void CBitmap::ReleaseTexture (void)
 	CBitmap	*frames = Frames ();
 
 if (frames) {
-	int32_t i, nFrames = m_info.props.h / m_info.props.w;
+	int i, nFrames = m_info.props.h / m_info.props.w;
 
 	for (i = 0; i < nFrames; i++) {
 		frames [i].ReleaseTexture ();
 		}
 	}
-else if (m_info.pTexture && (m_info.pTexture == &m_info.texture)) 
-	m_info.pTexture->Destroy ();
+else if (m_info.texP && (m_info.texP == &m_info.texture)) 
+	m_info.texP->Destroy ();
 else
-	m_info.pTexture = &m_info.texture;
+	m_info.texP = &m_info.texture;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CBitmap::AvgColor (CFloatVector3* pColor, bool bForce)
+int CBitmap::AvgColor (CFloatVector3* colorP, bool bForce)
 {
-	int32_t			c, h, i, j = 0, r = 0, g = 0, b = 0;
+	int			c, h, i, j = 0, r = 0, g = 0, b = 0;
 	CFloatVector3	*color;
 	CRGBColor	*colorBuf;
 	CPalette		*palette;
-	uint8_t			*pBuffer;
+	ubyte			*bufP;
 
 if (!bForce && (m_info.avgColor.Red () || m_info.avgColor.Green () || m_info.avgColor.Blue ()))
 	return 0;
 if (m_info.nBPP > 1)
 	return 0;
-if (!(pBuffer = Buffer ())) {
+if (!(bufP = Buffer ())) {
 	m_info.avgColor.Red () = 
 	m_info.avgColor.Green () =
 	m_info.avgColor.Blue () = 0;
 	return -1;
 	}
-if (gameData.pigData.tex.pBitmap.IsElement (this))
-	h = int32_t (this - gameData.pigData.tex.pBitmap);
-else if (gameData.pigData.tex.pAltBitmap.IsElement (this))
-	h = int32_t (this - gameData.pigData.tex.pAltBitmap);
-else if (gameData.pigData.tex.bitmaps [0].IsElement (this))
-	h = int32_t (this - gameData.pigData.tex.bitmaps [0]);
+if (gameData.pig.tex.bitmapP.IsElement (this))
+	h = int (this - gameData.pig.tex.bitmapP);
+else if (gameData.pig.tex.altBitmapP.IsElement (this))
+	h = int (this - gameData.pig.tex.altBitmapP);
+else if (gameData.pig.tex.bitmaps [0].IsElement (this))
+	h = int (this - gameData.pig.tex.bitmaps [0]);
 else
 	return -1;
-color = gameData.pigData.tex.bitmapColors + h;
-if (!(h = (int32_t) ((color->Red () + color->Green () + color->Blue ()) * 255.0f))) {
+color = gameData.pig.tex.bitmapColors + h;
+if (!(h = (int) ((color->Red () + color->Green () + color->Blue ()) * 255.0f))) {
 	m_info.avgColor.Red () = 
 	m_info.avgColor.Green () =
 	m_info.avgColor.Blue () = 0;
 	if (!(palette = m_info.palette))
 		palette = paletteManager.Default ();
 	colorBuf = palette->Color ();
-	for (h = i = m_info.props.w * m_info.props.h; i; i--, pBuffer++) {
-		if ((c = *pBuffer) && (c != TRANSPARENCY_COLOR) && (c != SUPER_TRANSP_COLOR)) {
+	for (h = i = m_info.props.w * m_info.props.h; i; i--, bufP++) {
+		if ((c = *bufP) && (c != TRANSPARENCY_COLOR) && (c != SUPER_TRANSP_COLOR)) {
 			r += colorBuf [c].Red ();
 			g += colorBuf [c].Green ();
 			b += colorBuf [c].Blue ();
@@ -480,9 +366,9 @@ if (!(h = (int32_t) ((color->Red () + color->Green () + color->Blue ()) * 255.0f
 			}
 		}
 	if (j) {
-		m_info.avgColor.Red () = 4 * (uint8_t) (r / j);
-		m_info.avgColor.Green () = 4 * (uint8_t) (g / j);
-		m_info.avgColor.Blue () = 4 * (uint8_t) (b / j);
+		m_info.avgColor.Red () = 4 * (ubyte) (r / j);
+		m_info.avgColor.Green () = 4 * (ubyte) (g / j);
+		m_info.avgColor.Blue () = 4 * (ubyte) (b / j);
 		j *= 63;	//palette entries are all /4, so do not divide by 256
 		color->Red () = (float) r / (float) j;
 		color->Green () = (float) g / (float) j;
@@ -499,25 +385,25 @@ if (!(h = (int32_t) ((color->Red () + color->Green () + color->Blue ()) * 255.0f
 		h = 0;
 		}
 	}
-if (pColor)
-	*pColor = *color;
+if (colorP)
+	*colorP = *color;
 return h;
 }
 
 //------------------------------------------------------------------------------
 
-inline int32_t sqr(int32_t i) { return i * i; }
+inline int sqr(int i) { return i * i; }
 
-int32_t CBitmap::AvgColorIndex (void)
+int CBitmap::AvgColorIndex (void)
 {
-	uint8_t *p = Buffer ();
+	ubyte *p = Buffer ();
 
 if (!(p && m_info.palette))
 	return 0;
 if (m_info.avgColorIndex) 
 	return m_info.avgColorIndex;
 
-	int32_t			c, i, j = 0, r = 0, g = 0, b = 0;
+	int			c, i, j = 0, r = 0, g = 0, b = 0;
 	CRGBColor	*palette = m_info.palette->Color ();
 
 for (i = m_info.props.w * m_info.props.h; i; i--, p++) {
@@ -533,43 +419,43 @@ return m_info.avgColorIndex = j ? m_info.palette->ClosestColor (r / j, g / j, b 
 
 //------------------------------------------------------------------------------
 
-CFloatVector *CBitmap::GetAvgColor (CFloatVector *pColor)
+CFloatVector *CBitmap::GetAvgColor (CFloatVector *colorP)
 { 
 CRGBColor* pc;
 
-pColor->Alpha () = 1.0f;
+colorP->Alpha () = 1.0f;
 #if 0
 if (!m_data.buffer) {
-	pColor->Red () = 
-	pColor->Green () =
-	pColor->Blue () = 0;
-	return pColor;
+	colorP->Red () = 
+	colorP->Green () =
+	colorP->Blue () = 0;
+	return colorP;
 	}
 #endif
 if (m_info.nBPP == 1) {
 	if (!m_info.palette) {
-		pColor->Red () = 
-		pColor->Green () =
-		pColor->Blue () = 0;
-		return pColor;
+		colorP->Red () = 
+		colorP->Green () =
+		colorP->Blue () = 0;
+		return colorP;
 		}	
 	pc = m_info.palette->Color () + AvgColorIndex ();
 	}
 else
 	pc = &m_info.avgColor;
-pColor->Red () = float (pc->Red ()) / 255.0f;
-pColor->Green () = float (pc->Green ()) / 255.0f;
-pColor->Blue () = float (pc->Blue ()) / 255.0f;
-return pColor;
+colorP->Red () = float (pc->Red ()) / 255.0f;
+colorP->Green () = float (pc->Green ()) / 255.0f;
+colorP->Blue () = float (pc->Blue ()) / 255.0f;
+return colorP;
 }
 
 //------------------------------------------------------------------------------
 
-void CBitmap::SwapTransparencyColor (void)
+void CBitmap::Swap_0_255 (void)
 {
-	uint8_t*	p = Buffer ();
+	ubyte*	p = Buffer ();
 
-for (int32_t i = m_info.props.h * m_info.props.w; i; i--, p++) {
+for (int i = m_info.props.h * m_info.props.w; i; i--, p++) {
 	if (!*p)
 		*p = 255;
 	else if (*p == 255)
@@ -579,20 +465,23 @@ for (int32_t i = m_info.props.h * m_info.props.w; i; i--, p++) {
 
 //------------------------------------------------------------------------------
 
-void CBitmap::RenderStretched (CRectangle* pDest, int32_t x, int32_t y)
+void CBitmap::RenderStretched (CBitmap* dest, int x, int y)
 { 
-Render (pDest, x, y, pDest ? pDest->Width () : -1, pDest ? pDest->Height () : -1, 0, 0, Width (), Height ()); 
+if (!dest)
+	dest = CCanvas::Current ();
+if (dest)
+	Render (dest, x, y, dest->Width (), dest->Height (), 0, 0, Width (), Height ()); 
 }
 
 //------------------------------------------------------------------------------
 
-void CBitmap::RenderFixed (CRectangle* dest, int32_t x, int32_t y, int32_t w, int32_t h)
+void CBitmap::RenderFixed (CBitmap* dest, int x, int y, int w, int h)
 { 
 if ((w <= 0) || (w > Width ()))
 	w = Width ();
 if ((h <= 0) || (h > Height ()))
 	h = Height ();
-Render (dest, x, y, w, h, 0, 0, w, h); 
+Render (dest ? dest : CCanvas::Current (), x, y, w, h, 0, 0, w, h); 
 }
 
 //------------------------------------------------------------------------------
@@ -601,17 +490,17 @@ void CBitmap::NeedSetup (void)
 { 
 m_info.bSetup = false; 
 m_info.nMasks = 0; 
-if (m_info.pParent && (m_info.pParent != this))
-	m_info.pParent->NeedSetup ();
+if (m_info.parentP && (m_info.parentP != this))
+	m_info.parentP->NeedSetup ();
 #if 0
-if (m_info.pOverride)
-	m_info.pOverride->NeedSetup ();
+if (m_info.overrideP)
+	m_info.overrideP->NeedSetup ();
 else {
-	CBitmap* pBmf = m_info.frames.pBm;
+	CBitmap* bmfP = m_info.frames.bmP;
 
-	if (pBmf)
-		for (int32_t i = m_info.frames.nCount; i; i--, pBmf++)
-			pBmf->NeedSetup ();
+	if (bmfP)
+		for (int i = m_info.frames.nCount; i; i--, bmfP++)
+			bmfP->NeedSetup ();
 	}
 #endif
 }
@@ -621,7 +510,7 @@ else {
 void CBitmap::FreeData (void)
 {
 if (Buffer ()) {
-	UseBitmapCache (this, -int32_t (Size ()));
+	UseBitmapCache (this, -int (Size ()));
 	DestroyBuffer ();
 	}
 }
@@ -640,10 +529,10 @@ if ((mask = Mask ())) {
 
 //------------------------------------------------------------------------------
 
-int32_t CBitmap::FreeHiresFrame (int32_t bD1)
+int CBitmap::FreeHiresFrame (int bD1)
 {
 if (m_info.nId < 0x8000)
-	gameData.pigData.tex.bitmaps [bD1][m_info.nId].SetOverride (NULL);
+	gameData.pig.tex.bitmaps [bD1][m_info.nId].SetOverride (NULL);
 ReleaseTexture ();
 FreeMask ();
 SetType (0);
@@ -655,43 +544,47 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CBitmap::FreeHiresAnimation (int32_t bD1)
+int CBitmap::FreeHiresAnimation (int bD1)
 {
-	CBitmap*	pAltBm, * pBmf;
-	int32_t		i;
+	CBitmap*	altBmP, * bmfP;
+	int		i;
 
-if (!(pAltBm = Override ()))
-	pAltBm = this; //return 0;
+if (!(altBmP = Override ()))
+	return 0;
 SetOverride (NULL);
 if (BPP () == 1)
 	DelFlags (BM_FLAG_TGA);
-if ((pAltBm->Type () == BM_TYPE_FRAME) && !(pAltBm = pAltBm->Parent ()))
+if ((altBmP->Type () == BM_TYPE_FRAME) && !(altBmP = altBmP->Parent ()))
 	return 1;
-if (pAltBm->Type () != BM_TYPE_ALT)
+if (altBmP->Type () != BM_TYPE_ALT)
 	return 0;	//actually this would be an error
-if ((pBmf = pAltBm->Frames ()))
-	for (i = pAltBm->FrameCount (); i; i--, pBmf++)
-		pBmf->FreeHiresFrame (bD1);
+if ((bmfP = altBmP->Frames ()))
+	for (i = altBmP->FrameCount (); i; i--, bmfP++)
+		bmfP->FreeHiresFrame (bD1);
 else
-	pAltBm->FreeMask ();
-pAltBm->ReleaseTexture ();
-pAltBm->DestroyFrames ();
-pAltBm->FreeData ();
-pAltBm->SetPalette (NULL);
-pAltBm->SetType (0);
-pAltBm->NeedSetup ();
+	altBmP->FreeMask ();
+altBmP->ReleaseTexture ();
+altBmP->DestroyFrames ();
+altBmP->FreeData ();
+altBmP->SetPalette (NULL);
+altBmP->SetType (0);
+altBmP->NeedSetup ();
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void CBitmap::Unload (int32_t i, int32_t bD1)
+void CBitmap::Unload (int i, int bD1)
 {
 m_info.bSetup = false;
 m_info.nMasks = 0;
 m_info.nTranspType = 0;
 if (i < 0)
-	i = int32_t (this - gameData.pigData.tex.bitmaps [bD1]);
+	i = int (this - gameData.pig.tex.bitmaps [bD1]);
+#if DBG
+if ((nDbgTexture >= 0) && (i == nDbgTexture))
+	nDbgTexture = nDbgTexture;
+#endif
 FreeMask ();
 if (!FreeHiresAnimation (bD1))
 	ReleaseTexture ();
@@ -702,27 +595,6 @@ if (BPP () == 1)
 SetFromPog (0);
 SetPalette (NULL);
 FreeData ();
-}
-
-//------------------------------------------------------------------------------
-
-CBitmap* CBitmap::SetOverride (CBitmap *pOverride) 
-{
-if (pOverride == this)
-	return m_info.pOverride;
-CBitmap*	oldOverrideP = m_info.pOverride;
-m_info.pOverride = pOverride;
-return oldOverrideP;
-}
-
-//------------------------------------------------------------------------------
-
-void CBitmap::SetName (const char* pszName) 
-{ 
-if (pszName) {
-	strncpy (m_info.szName, pszName, sizeof (m_info.szName)); 
-	m_info.szName [sizeof (m_info.szName) - 1] = '\0';
-	}
 }
 
 //------------------------------------------------------------------------------

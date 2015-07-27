@@ -69,35 +69,34 @@ class CConsole {
 		static bool				m_bInitialized;
 		static CCvar*			m_threshold;
 
-		int32_t						m_Visible;			//! enum that tells which visible state we are in CON_HIDE, CON_SHOW, CON_RAISE, CON_LOWER
-		int32_t						m_RaiseOffset;			//! Offset used when scrolling in the console
-		int32_t						m_HideKey;			//! the key that can hide the console
+		int						m_Visible;			//! enum that tells which visible state we are in CON_HIDE, CON_SHOW, CON_RAISE, CON_LOWER
+		int						m_RaiseOffset;			//! Offset used when scrolling in the console
+		int						m_HideKey;			//! the key that can hide the console
 		CArray<CCharArray>	m_ConsoleLines;		//! List of all the past lines
 		CArray<CCharArray>	m_CommandLines;		//! List of all the past commands
-		int32_t						m_TotalConsoleLines;		//! Total number of lines in the console
-		int32_t						m_ConsoleScrollBack;		//! How much the user scrolled back in the console
-		int32_t						m_TotalCommands;		//! Number of commands in the Back Commands
-		int32_t						m_LineBuffer;			//! The number of visible lines in the console (autocalculated)
-		int32_t						m_VChars;			//! The number of visible characters in one console line (autocalculated)
+		int						m_TotalConsoleLines;		//! Total number of lines in the console
+		int						m_ConsoleScrollBack;		//! How much the user scrolled back in the console
+		int						m_TotalCommands;		//! Number of commands in the Back Commands
+		int						m_LineBuffer;			//! The number of visible lines in the console (autocalculated)
+		int						m_VChars;			//! The number of visible characters in one console line (autocalculated)
 		char*						m_Prompt;			//! Prompt displayed in command line
 		char						m_Command [CON_CHARS_PER_LINE];	//! current command in command line = lcommand + rcommand
 		char						m_RCommand [CON_CHARS_PER_LINE];	//! left hand CSide of cursor
 		char						m_LCommand [CON_CHARS_PER_LINE];	//! right hand CSide of cursor
 		char						m_VCommand [CON_CHARS_PER_LINE];	//! current visible command line
-		int32_t						m_CursorPos;			//! Current cursor position in CurrentCommand
-		int32_t						m_Offset;			//! CommandOffset (first visible char of command) - if command is too long to fit into console
-		int32_t						m_InsMode;			//! Insert or Overwrite characters?
+		int						m_CursorPos;			//! Current cursor position in CurrentCommand
+		int						m_Offset;			//! CommandOffset (first visible char of command) - if command is too long to fit into console
+		int						m_InsMode;			//! Insert or Overwrite characters?
+		CCanvas*					m_surface;	//! Canvas of the console
 		CScreen*					m_output;	//! This is the screen to draw the console to
-		CCanvas					m_canvas;
-		CBitmap*					m_surface;	//! Canvas of the console
 		CBitmap*					m_background;	//! Background image for the console
 		CBitmap*					m_input;	//! Dirty rectangle to draw over behind the users background
-		int32_t						m_DispX;
-		int32_t						m_DispY;		//! The top left x and y coords of the console on the display screen
+		int						m_DispX;
+		int						m_DispY;		//! The top left x and y coords of the console on the display screen
 #if 0
-		uint8_t ConsoleAlpha;	//! The consoles alpha level
+		ubyte ConsoleAlpha;	//! The consoles alpha level
 #endif
-		int32_t m_CommandScrollBack;		//! How much the users scrolled back in the command lines
+		int m_CommandScrollBack;		//! How much the users scrolled back in the command lines
 		void ( _CDECL_ *m_CmdFunction) (char* command);	//! The Function that is executed if you press <Return> in the console
 		char* ( _CDECL_ *m_TabFunction) (char* command);	//! The Function that is executed if you press <Tab> in the console
 
@@ -110,46 +109,46 @@ class CConsole {
 		/*! Takes keys from the keyboard and inputs them to the console if the console isVisible ().
 			If the event was not handled (i.e. WM events or unknown ctrl- or alt-sequences)
 			the function returns the event for further processing. */
-		int32_t Events (int32_t event);
+		int Events (int event);
 		/*! Makes the console visible */
 		void Show (void);
 		/*! Hides the console */
 		void Hide (void);
 		/*! Returns 1 if the console is visible, 0 else */
-		int32_t IsVisible (void);
+		int IsVisible (void);
 		/*! Internal: Updates visible state. Used in DrawConsole () */
 		void UpdateOffset (void);
 		/*! Draws the console to the screen if it isVisible ()*/
 		void Draw (void);
 		/*! Initializes a new console */
-		void Setup (CFont *Font, CScreen *DisplayScreen, int32_t lines, int32_t x, int32_t y, int32_t w, int32_t h);
+		void Setup (CFont *Font, CScreen *DisplayScreen, int lines, int x, int y, int w, int h);
 		/*! printf for the console */
 		void _CDECL_ Out (const char *str, ...);
 	#if 0
 		/*! Sets the alpha channel of an SDL_Surface to the specified value (0 - transparend,
 			255 - opaque). Use this function also for OpenGL. */
-		void Alpha (uint8_t alpha);
+		void Alpha (ubyte alpha);
 		/*! Internal: Sets the alpha channel of an SDL_Surface to the specified value.
 			Preconditions: the surface in question is RGBA. 0 <= a <= 255, where 0 is transparent and 255 opaque */
-		void AlphaGL (SDL_Surface *s, int32_t alpha);
+		void AlphaGL (SDL_Surface *s, int alpha);
 		/*! Sets a background image for the console */
 	#endif
 		void LoadBackground (const char *filename);
-		int32_t SetBackground (CBitmap *image);
+		int SetBackground (CBitmap *image);
 		/*! Sets font info for the console */
-		void SetFont (CFont *font, uint32_t fg, uint32_t bg);
+		void SetFont (CFont *font, uint fg, uint bg);
 		/*! Changes current position of the console */
-		void Position (int32_t x, int32_t y);
+		void Position (int x, int y);
 		/*! Changes the size of the console */
-		int32_t Resize (int32_t x, int32_t y, int32_t w, int32_t h);
+		int Resize (int x, int y, int w, int h);
 		/*! Beams a console to another screen surface. Needed if you want to make a Video restart in your program. This
 			function first changes the output Pointer then calls Resize to adjust the new size. */
-		int32_t Transfer (CScreen* newOutput, int32_t x, int32_t y, int32_t w, int32_t h);
+		int Transfer (CScreen* newOutput, int x, int y, int w, int h);
 		/*! Modify the prompt of the console */
 		void SetPrompt (char* newprompt);
 		/*! Set the key, that invokes a Hide () after press. default is ESCAPE and you can always hide using
 			ESCAPE and the HideKey. compared against event->key.keysym.sym !! */
-		void SetHideKey (int32_t key);
+		void SetHideKey (int key);
 		/*! Internal: executes the command typed in at the console (called if you press ENTER)*/
 		void Execute (char* command);
 		/*! Sets the callback function that is called if a command was typed in. The function could look like this:
@@ -176,7 +175,7 @@ class CConsole {
 		/*! Internal: Default TabCompletion callback */
 		static char* _CDECL_ DefaultTabFunction (char* command);
 
-		/*! Internal: draws the commandline the user is typing in to the gameData.renderData.screen. called by update? */
+		/*! Internal: draws the commandline the user is typing in to the screen. called by update? */
 		void DrawCommandLine ();
 
 		/*! Internal: Gets called if you press the LEFT key (move cursor left) */
@@ -193,7 +192,7 @@ class CConsole {
 		/*! Internal: Called if you press BACKSPACE (deletes character left of cursor) */
 		void CursorBSpace (void);
 		/*! Internal: Called if you nType in a character (add the char to the command) */
-		void CursorAdd (int32_t event);
+		void CursorAdd (int event);
 
 		/*! Internal: Called if you press Ctrl-C (deletes the commandline) */
 		void ClearCommand (void);
@@ -205,10 +204,10 @@ class CConsole {
 		/*! Internal: Called if you press DOWN key (switches through recent typed in commands */
 		void CommandDown (void);
 
-		void _CDECL_ printf (int32_t priority, const char *fmt, ...);
+		void _CDECL_ printf (int priority, const char *fmt, ...);
 	};
 
-#define CON_BG WallpaperName (BG_SCORES, gameData.renderData.screen.Width () >= 640)
+#define CON_BG BackgroundName (BG_SCORES, screen.Width () >= 640)
 
 extern CConsole console;
 

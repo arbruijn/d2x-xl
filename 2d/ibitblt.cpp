@@ -31,17 +31,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_SCANLINES   1200
 #define MAX_HOLES       5
 
-static int16_t start_points[MAX_SCANLINES][MAX_HOLES];
-static int16_t hole_length[MAX_SCANLINES][MAX_HOLES];
+static short start_points[MAX_SCANLINES][MAX_HOLES];
+static short hole_length[MAX_SCANLINES][MAX_HOLES];
 static double *scanline = NULL;
 
 //	-----------------------------------------------------------------------------
 
-void gr_ibitblt(CBitmap *src_bmp, CBitmap *dest_bmp, uint8_t pixel_double)
+void gr_ibitblt(CBitmap *src_bmp, CBitmap *dest_bmp, ubyte pixel_double)
 {
-	int32_t x, y, sw, sh, srowSize, drowSize, dstart, sy, dy;
-	uint8_t *src, *dest;
-	int16_t *current_hole, *current_hole_length;
+	int x, y, sw, sh, srowSize, drowSize, dstart, sy, dy;
+	ubyte *src, *dest;
+	short *current_hole, *current_hole_length;
 
 // variable setup
 
@@ -59,7 +59,7 @@ void gr_ibitblt(CBitmap *src_bmp, CBitmap *dest_bmp, uint8_t pixel_double)
 	}
 
  	if (pixel_double) {
-		uint8_t *scan = reinterpret_cast<uint8_t*> (scanline);    // set up for byte processing of scanline
+		ubyte *scan = reinterpret_cast<ubyte*> (scanline);    // set up for byte processing of scanline
 
 		dy = sy;
 		for (y = sy; y < sy + sh; y++) {
@@ -108,11 +108,11 @@ void gr_ibitblt(CBitmap *src_bmp, CBitmap *dest_bmp, uint8_t pixel_double)
 
 //	-----------------------------------------------------------------------------
 
-void gr_ibitblt_create_mask(CBitmap *mask_bmp, int32_t sx, int32_t sy, int32_t sw, int32_t sh, int32_t srowSize)
+void gr_ibitblt_create_mask(CBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowSize)
 {
-	int32_t x, y;
-	uint8_t mode;
-	int32_t count = 0;
+	int x, y;
+	ubyte mode;
+	int count = 0;
 
 	Assert( (!(mask_bmp->Flags () & BM_FLAG_RLE)) );
 
@@ -146,10 +146,10 @@ void gr_ibitblt_create_mask(CBitmap *mask_bmp, int32_t sx, int32_t sy, int32_t s
 
 //	-----------------------------------------------------------------------------
 
-void gr_ibitblt_find_hole_size(CBitmap *mask_bmp, int32_t *minx, int32_t *miny, int32_t *maxx, int32_t *maxy)
+void gr_ibitblt_find_hole_size(CBitmap *mask_bmp, int *minx, int *miny, int *maxx, int *maxy)
 {
-	uint8_t c;
-	int32_t x, y, count = 0;
+	ubyte c;
+	int x, y, count = 0;
 
 	Assert( (!(mask_bmp->Flags () &BM_FLAG_RLE)) );
 	Assert( mask_bmp->Flags () &BM_FLAG_TRANSPARENT );

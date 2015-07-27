@@ -26,20 +26,15 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #if defined(__unix__) || defined(__macosx__)
 #include <unistd.h>
 #include <sys/stat.h>
-#endif
-
 #include <sys/types.h>
-#include <sys/stat.h>
+#endif
 
 #ifdef __macosx__
 #	include "SDL/SDL_main.h"
 #	include "SDL/SDL_keyboard.h"
-#	include "SDL_net/SDL_net.h"
+#	include "SDL/SDL_net.h"
 #	include "FolderDetector.h"
 #else
-#	ifdef _WIN32
-#		include <WinSock.h>
-#	endif
 #	include "SDL_main.h"
 #	include "SDL_keyboard.h"
 #	include "SDL_net.h"
@@ -96,16 +91,9 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "console.h"
 #include "IpToCountry.h"
 
-#ifndef DESCENT_EXECUTABLE_VERSION
-#	ifdef __macosx__
-#		define	DESCENT_EXECUTABLE_VERSION "OS X"
-#	else
-#		define	DESCENT_EXECUTABLE_VERSION "Linux"
-#	endif
-#endif
-//extern int32_t SDL_HandleSpecialKeys;
+extern int SDL_HandleSpecialKeys;
 extern const char *pszOglExtensions;
-extern int32_t glHWHash;
+extern int glHWHash;
 
 #ifdef __macosx__
 #	include <SDL/SDL.h>
@@ -126,16 +114,16 @@ CGameData		gameData;
 
 //static const char desc_id_checksum_str[] = DESC_ID_CHKSUM_TAG "0000"; // 4-byte checksum
 
-void DefaultAllSettings (bool bSetup);
+void DefaultAllSettings (void);
 void CheckJoystickCalibration (void);
 void ShowOrderForm (void);
 
 CGameOptions* gameOpts = gameOptions;
 
 void EvalArgs (void);
-void GetAppFolders (bool bInit);
+void GetAppFolders (void);
 #if defined (_WIN32) || defined(__unix__)
-int32_t CheckAndFixSetup (void);
+int CheckAndFixSetup (void);
 #else
 #define CheckAndFixSetup()
 #endif
@@ -144,35 +132,35 @@ void InitGameStates (void);
 char szAutoMission [255];
 char szAutoHogFile [255];
 
-int32_t nDescentCriticalError = 0;
-uint32_t descent_critical_deverror = 0;
-uint32_t descent_critical_errcode = 0;
+
+int nDescentCriticalError = 0;
+unsigned descent_critical_deverror = 0;
+unsigned descent_critical_errcode = 0;
 
 // ----------------------------------------------------------------------------
 
 #if defined (__unix__) || defined (__macosx__)
-void D2SignalHandler (int32_t nSignal)
+void D2SignalHandler (int nSignal)
 #else
-void __cdecl D2SignalHandler (int32_t nSignal)
+void __cdecl D2SignalHandler (int nSignal)
 #endif
 {
-	static int32_t nErrors = 0;
+	static int nErrors = 0;
 
-PrintCallStack ();
 if (nSignal == SIGABRT)
-	PrintLog (0, "\n+++ Abnormal program termination\n");
+	PrintLog (0, "+++ Abnormal program termination\n");
 else if (nSignal == SIGFPE)
-	PrintLog (0, "\n+++ Floating point error\n");
+	PrintLog (0, "+++ Floating point error\n");
 else if (nSignal == SIGILL)
-	PrintLog (0, "\n+++ Illegal instruction\n");
+	PrintLog (0, "+++ Illegal instruction\n");
 else if (nSignal == SIGINT)
-	PrintLog (0, "\n+++ Ctrl+C signal\n");
+	PrintLog (0, "+++ Ctrl+C signal\n");
 else if (nSignal == SIGSEGV)
-	PrintLog (0, "\n+++ Memory access violation\n");
+	PrintLog (0, "+++ Memory access violation\n");
 else if (nSignal == SIGTERM)
-	PrintLog (0, "\n+++ Termination request\n");
+	PrintLog (0, "+++ Termination request\n");
 else
-	PrintLog (0, "\n+++ Unknown signal\n");
+	PrintLog (0, "+++ Unknown signal\n");
 if (++nErrors > 4)
 	exit (1);
 }
@@ -181,17 +169,10 @@ if (++nErrors > 4)
 
 void D2SetCaption (void)
 {
-#if defined(__linux__)
-
-SDL_WM_SetCaption ("", "D2X-XL");
-
-#else
-
-#	if USE_IRRLICHT
-
+#if USE_IRRLICHT
 	char		szCaption [200];
 	wchar_t	wszCaption [200];
-	int32_t		i;
+	int		i;
 
 strcpy (szCaption, DESCENT_VERSION);
 if (*LOCALPLAYER.callsign) {
@@ -208,11 +189,9 @@ for (i = 0; szCaption [i]; i++)
 	wszCaption [i] = (wchar_t) szCaption [i];
 wszCaption [i] = (wchar_t) 0;
 IRRDEVICE->setWindowCaption (wszCaption);
-
-#	else
+#else
 	char	szCaption [200];
 	strcpy (szCaption, DESCENT_VERSION);
-
 if (*LOCALPLAYER.callsign) {
 	strcat (szCaption, " [");
 	strcat (szCaption, LOCALPLAYER.callsign);
@@ -223,9 +202,7 @@ if (*missionManager.szCurrentLevel) {
 	strcat (szCaption, " - ");
 	strcat (szCaption, missionManager.szCurrentLevel);
 	}
-
-#	endif
-SDL_WM_SetCaption (szCaption, "D2X-XL");
+SDL_WM_SetCaption (szCaption, "Descent II");
 #endif
 }
 
@@ -235,31 +212,26 @@ SDL_WM_SetCaption (szCaption, "D2X-XL");
 
 void PrintVersionInfo (void)
 {
-if (!gameStates.app.bShowVersionInfo)
-	return;
-
-int32_t nInfoType;
-
+	int nInfoType;
+	
 if (!(gameStates.app.bGameRunning || gameStates.app.bBetweenLevels))
 	nInfoType = 0;
-else if (gameStates.app.bSaveScreenShot || (gameData.demoData.nState == ND_STATE_PLAYBACK))
+else if (gameStates.app.bShowVersionInfo || gameStates.app.bSaveScreenShot || (gameData.demo.nState == ND_STATE_PLAYBACK))
 	nInfoType = 1;
 else
 	return;
 
-	static int32_t bVertigo = -1;
+	static int bVertigo = -1;
 
-	int32_t y, w, ws, h, hs, aw;
+	int y, w, ws, h, hs, aw;
 	float grAlpha = gameStates.render.grAlpha;
-
-gameData.renderData.frame.Activate ("PrintVersionInfo (frame)");
 
 gameStates.render.grAlpha = 1.0f;
 if (gameStates.menus.bHires) {
 	if (gameOpts->menus.altBg.bHave > 0)
 		y = 8; //102
 	else {
-		y = 88 * CCanvas::Current ()->Height () / 480;
+		y = (88 * (gameStates.render.vr.nScreenSize % 65536)) / 480;
 		if (y < 88)
 			y = 88;
 		}
@@ -269,12 +241,14 @@ else
 
 gameStates.menus.bDrawCopyright = 0;
 if (!nInfoType) {
+	CCanvas::Push ();
+	CCanvas::SetCurrent (NULL);
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.Current ()->StringSize ("V2.2", w, h, aw);
 	fontManager.SetColorRGBi (RGB_PAL (63, 47, 0), 1, 0, 0);
 	h += 2;
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - h, "visit www.descent2.de");
-	//fontManager.SetColorRGBi (RGB_PAL (51, 34, 0), 1, 0, 0);
+	fontManager.SetColorRGBi (RGB_PAL (51, 34, 0), 1, 0, 0);
 	fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 3 * h - 6, "Press F1 for help in menus");
 	fontManager.SetColorRGBi (RGB_PAL (31, 31, 31), 1, 0, 0);
@@ -294,7 +268,7 @@ if (!nInfoType) {
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 2 * h - 2, TXT_COPYRIGHT);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2, CCanvas::Current ()->Height () - 2 * h - 2, "V%d.%d", D2X_MAJOR, D2X_MINOR);
 	if (bVertigo < 0)
-		bVertigo = CFile::Exist ("d2x.hog", gameFolders.missions.szRoot, 0);
+		bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionDir, 0);
 	if (bVertigo) {
 		fontManager.SetCurrent (MEDIUM2_FONT);
 		fontManager.Current ()->StringSize (TXT_VERTIGO, w, h, aw);
@@ -319,16 +293,17 @@ if (!nInfoType) {
 	fontManager.SetCurrent (MEDIUM2_FONT);
 	fontManager.Current ()->StringSize (D2X_NAME, w, h, aw);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
+	CCanvas::Pop ();
 	}
 else {
 	//gameStates.render.grAlpha = 0.75f;
-	int32_t w2, h2;
+	int w2, h2;
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.Current ()->StringSize ("www.descent2.de", w2, h2, aw);
 	fontManager.SetCurrent (MEDIUM2_FONT);
 	fontManager.Current ()->StringSize ("D2X-XL", w, h, aw);
-	int32_t l = CCanvas::Current ()->Width () - 70 - w;
-	int32_t t = CCanvas::Current ()->Height () - 40 - h - h2 - 2;
+	int l = CCanvas::Current ()->Width () - 70 - w;
+	int t = CCanvas::Current ()->Height () - 40 - h - h2 - 2;
 	GrPrintF (NULL, l, t, "D2X-XL");
 	fontManager.SetCurrent (GAME_FONT);
 #if 0
@@ -343,7 +318,6 @@ else {
 fontManager.SetCurrent (NORMAL_FONT);
 fontManager.SetColorRGBi (RGB_PAL (6, 6, 6), 1, 0, 0);
 gameStates.render.grAlpha = grAlpha;
-gameData.renderData.frame.Deactivate ();
 }
 
 // ----------------------------------------------------------------------------
@@ -351,8 +325,8 @@ gameData.renderData.frame.Deactivate ();
 void CheckEndian (void)
 {
 	union {
-		int16_t	s;
-		uint8_t	b [2];
+		short	s;
+		ubyte	b [2];
 	} h;
 
 h.b [0] = 0;
@@ -381,7 +355,7 @@ if (!FindArg ("-nojoystick")) {
 void DoSelectPlayer (void)
 {
 LOCALPLAYER.callsign[0] = '\0';
-if (!gameData.demoData.bAuto)  {
+if (!gameData.demo.bAuto)  {
 	KeyFlush ();
 	//now, before we bring up the register player menu, we need to
 	//do some stuff to make sure the palette is ok.  First, we need to
@@ -403,7 +377,7 @@ void PrintVersion (void)
 	FILE	*f;
 	char	fn [FILENAME_LEN];
 
-sprintf (fn, "%sd2x-xl-version.txt", gameFolders.game.szData [0]);
+sprintf (fn, "%s%sd2x-xl-version.txt", gameFolders.szDataDir [0], *gameFolders.szDataDir [0] ? "/" : "");
 if ((f = fopen (fn, "wa"))) {
 	fprintf (f, "%s\n", VERSION);
 	fclose (f);
@@ -421,7 +395,7 @@ console.printf (CON_NORMAL, "\nDESCENT 2 %s v%d.%d.%d\n", VERSION_TYPE, D2X_MAJO
 console.printf (CON_NORMAL, "\nDESCENT 2 %s -- %s\n", VERSION_TYPE, DESCENT_VERSION);
 #endif
 if (hogFileManager.D2XFiles ().bInitialized)
-	console.printf ((int32_t) CON_NORMAL, "  Vertigo Enhanced\n");
+	console.printf ((int) CON_NORMAL, "  Vertigo Enhanced\n");
 console.printf (CON_NORMAL, "\nBuilt: %s %s\n", __DATE__, __TIME__);
 #ifdef __VERSION__
 console.printf (CON_NORMAL, "Compiler: %s\n", __VERSION__);
@@ -431,16 +405,16 @@ console.printf (CON_NORMAL, "\n");
 
 // ----------------------------------------------------------------------------
 
-int32_t ShowTitleScreens (void)
+int ShowTitleScreens (void)
 {
-	int32_t nPlayed = MOVIE_NOT_PLAYED;	//default is not nPlayed
+	int nPlayed = MOVIE_NOT_PLAYED;	//default is not nPlayed
 #if DBG
 if (FindArg ("-notitles"))
 	songManager.Play (SONG_TITLE, 1);
 else
 #endif
  {	//NOTE LINK TO ABOVE!
-	int32_t bSongPlaying = 0;
+	int bSongPlaying = 0;
 	if (movieManager.m_bHaveExtras) {
 		nPlayed = movieManager.Play ("starta.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 		if (nPlayed == MOVIE_ABORTED)
@@ -462,17 +436,33 @@ return (nPlayed != MOVIE_NOT_PLAYED);	//default is not nPlayed
 
 void ShowLoadingScreen (void)
 {
-GrSetMode (
-	gameStates.menus.bHires 
-		? (gameStates.gfx.nStartScrMode < 0) 
-			? SM (800, 600)
-			: displayModeInfo [gameStates.gfx.nStartScrMode].dim
-		: SM (320, 200));
-SetScreenMode (SCREEN_MENU);
-gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
-backgroundManager.Rebuild ();
-backgroundManager.Draw (gameStates.app.bNostalgia ? BG_LOADING : BG_STANDARD);
-ogl.Update (0);
+if (!gameStates.app.bNostalgia)
+	backgroundManager.Rebuild ();
+else {
+		char filename [14];
+
+#if TRACE
+	console.printf(CON_DBG, "\nShowing loading screen...\n"); fflush (fLog);
+#endif
+	strcpy (filename, gameStates.menus.bHires ? "descentb.pcx" : "descent.pcx");
+	if (!CFile::Exist (filename, gameFolders.szDataDir [0], 0))
+		strcpy (filename, gameStates.menus.bHires ? "descntob.pcx" : "descento.pcx"); // OEM
+	if (!CFile::Exist (filename, gameFolders.szDataDir [0], 0))
+		strcpy (filename, "descentd.pcx"); // SHAREWARE
+	if (!CFile::Exist (filename, gameFolders.szDataDir [0], 0))
+		strcpy (filename, "descentb.pcx"); // MAC SHAREWARE
+	GrSetMode (
+		gameStates.menus.bHires 
+			? (gameStates.gfx.nStartScrMode < 0) 
+				? SM (800, 600)
+				: displayModeInfo [gameStates.gfx.nStartScrMode].dim
+			: SM (320, 200));
+	SetScreenMode (SCREEN_MENU);
+	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
+	backgroundManager.Init ();
+	backgroundManager.Setup (filename, 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+	GrUpdate (0);
+	}
 }
 
 // ----------------------------------------------------------------------------
@@ -483,10 +473,12 @@ void LoadHoardData (void)
 
 // ----------------------------------------------------------------------------
 
-void GrabMouse (int32_t bGrab, int32_t bForce)
+void GrabMouse (int bGrab, int bForce)
 {
-//if (gameStates.input.bGrabMouse && (bForce || gameStates.app.bGameRunning))
-SDL_WM_GrabInput (((bGrab && gameStates.input.bGrabMouse) || ogl.m_states.bFullScreen) ? SDL_GRAB_ON : SDL_GRAB_OFF);
+#ifdef SDL_INPUT
+if (gameStates.input.bGrabMouse && (bForce || gameStates.app.bGameRunning))
+	SDL_WM_GrabInput ((bGrab || ogl.m_states.bFullScreen) ? SDL_GRAB_ON : SDL_GRAB_OFF);
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -505,9 +497,9 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 				if (gameStates.app.nFunctionMode == FMODE_GAME)
 					break;
 				}
-			if (gameData.demoData.bAuto && !gameOpts->demo.bRevertFormat) {
+			if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
 				NDStartPlayback (NULL);		// Randomly pick a file
-				if (gameData.demoData.nState != ND_STATE_PLAYBACK)
+				if (gameData.demo.nState != ND_STATE_PLAYBACK)
 				Error ("No demo files were found for autodemo mode!");
 				}
 			else {
@@ -545,25 +537,37 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 void InitThreads (void)
 {
 if (gameStates.app.bMultiThreaded) {
-	int32_t	i;
+	int	i;
 	for (i = 0; i < 2; i++) {
 #if MULTI_THREADED_LIGHTS
-		gameData.threadData.vertColor.info [i].done = SDL_CreateSemaphore (0);
-		gameData.threadData.vertColor.info [i].exec = SDL_CreateSemaphore (0);
-		gameData.threadData.vertColor.info [i].bDone =
-		gameData.threadData.vertColor.info [i].bExec =
-		gameData.threadData.vertColor.info [i].bQuit = 0;
-		gameData.threadData.vertColor.info [i].nId = i;
-		gameData.threadData.vertColor.info [i].pThread = SDL_CreateThread (VertexColorThread, &gameData.threadData.vertColor.info [i].nId);
+		gameData.threads.vertColor.info [i].done = SDL_CreateSemaphore (0);
+		gameData.threads.vertColor.info [i].exec = SDL_CreateSemaphore (0);
+		gameData.threads.vertColor.info [i].bDone =
+		gameData.threads.vertColor.info [i].bExec =
+		gameData.threads.vertColor.info [i].bQuit = 0;
+		gameData.threads.vertColor.info [i].nId = i;
+		gameData.threads.vertColor.info [i].pThread = SDL_CreateThread (VertexColorThread, &gameData.threads.vertColor.info [i].nId);
 #endif
 #if MULTI_THREADED_SHADOWS
-		gameData.threadData.clipDist.info [i].done = SDL_CreateSemaphore (0);
-		gameData.threadData.clipDist.info [i].exec = SDL_CreateSemaphore (0);
-		gameData.threadData.clipDist.info [i].nId = i;
-		gameData.threadData.clipDist.info [i].pThread = SDL_CreateThread (ClipDistThread, &gameData.threadData.clipDist.info [i].nId);
+		gameData.threads.clipDist.info [i].done = SDL_CreateSemaphore (0);
+		gameData.threads.clipDist.info [i].exec = SDL_CreateSemaphore (0);
+		gameData.threads.clipDist.info [i].nId = i;
+		gameData.threads.clipDist.info [i].pThread = SDL_CreateThread (ClipDistThread, &gameData.threads.clipDist.info [i].nId);
 #endif
 		}
 	}
+gameData.render.vertColor.matAmbient.Red () =
+gameData.render.vertColor.matAmbient.Green () =
+gameData.render.vertColor.matAmbient.Blue () = 0.2f; //1.0f - DIFFUSE_LIGHT; //AMBIENT_LIGHT;
+gameData.render.vertColor.matAmbient.Alpha () = 1.0f;
+gameData.render.vertColor.matDiffuse.Red () =
+gameData.render.vertColor.matDiffuse.Green () =
+gameData.render.vertColor.matDiffuse.Blue () = 0.8f; //DIFFUSE_LIGHT;
+gameData.render.vertColor.matDiffuse.Alpha () = 1.0f;
+gameData.render.vertColor.matSpecular.Red () =
+gameData.render.vertColor.matSpecular.Green () =
+gameData.render.vertColor.matSpecular.Blue () = 0.0f;
+gameData.render.vertColor.matSpecular.Alpha () = 1.0f;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -585,7 +589,7 @@ static HINSTANCE hTIRDll = 0;
 
 // ------------------------------------------------------------------------------------------
 
-int32_t TIRUnload (void)
+int TIRUnload (void)
 {
 #ifdef _WIN32
 if (hTIRDll)
@@ -603,7 +607,7 @@ return gameStates.input.bHaveTrackIR = 0;
 
 // ------------------------------------------------------------------------------------------
 
-int32_t TIRLoad (void)
+int TIRLoad (void)
 {
 #ifdef _WIN32
 if (hTIRDll)
@@ -634,9 +638,9 @@ return gameStates.input.bHaveTrackIR = 0;
 
 // ----------------------------------------------------------------------------
 
-int32_t InitGraphics (bool bFull = true)
+int InitGraphics (bool bFull = true)
 {
-	int32_t			t;
+	int			t;
 
 /*---*/PrintLog (1, "Initializing graphics\n");
 if ((t = GrInit ())) {		//doesn't do much
@@ -644,8 +648,9 @@ if ((t = GrInit ())) {		//doesn't do much
 	Error (TXT_CANT_INIT_GFX, t);
 	return 0;
 	}
-gameData.renderData.rift.Create ();
 /*---*/PrintLog (1, "Initializing render buffers\n");
+if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
+	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
 PrintLog (-1);
 if (bFull) {
 	/*---*/PrintLog (1, "Loading default palette\n");
@@ -668,16 +673,16 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static inline int32_t InitGaugeSize (void)
+static inline int InitGaugeSize (void)
 {
 return 19;
 }
 
 //------------------------------------------------------------------------------
 
-static int32_t loadOp = 0;
+static int loadOp = 0;
 
-static int32_t InitializePoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+static int InitializePoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
@@ -710,7 +715,7 @@ switch (loadOp) {
 		PrintLog (-1);
 		break;
 	case 5:
-		int32_t i;
+		int i;
 		if ((i = FindArg ("-xcontrol")) > 0)
 			externalControls.Init (strtol (appConfig [i+1], NULL, 0), strtol (appConfig [i+2], NULL, 0));
 		break;
@@ -790,12 +795,12 @@ return nCurItem;
 void InitializeGauge (void)
 {
 loadOp = 0;
-ProgressBar (TXT_INITIALIZING, 1, 0, InitGaugeSize (), InitializePoll);
+ProgressBar (TXT_INITIALIZING, 0, InitGaugeSize (), InitializePoll);
 }
 
 // ----------------------------------------------------------------------------
 
-void InitArgs (int32_t argC, char **argV) 
+void InitArgs (int argC, char **argV) 
 { 
 appConfig.Destroy ();
 appConfig.Init ();
@@ -808,12 +813,12 @@ PrintLog (-1);
 
 // ----------------------------------------------------------------------------
 
-int32_t Initialize (int32_t argc, char *argv[])
+int Initialize (int argc, char *argv[])
 {
 /*---*/PrintLog (1, "Initializing data\n");
-gameData.timeData.xGameTotal = 0;
-gameData.appData.argC = argc;
-gameData.appData.argV = reinterpret_cast<char**>(argv);
+gameData.time.xGameTotal = 0;
+gameData.app.argC = argc;
+gameData.app.argV = reinterpret_cast<char**>(argv);
 signal (SIGABRT, D2SignalHandler);
 signal (SIGFPE, D2SignalHandler);
 signal (SIGILL, D2SignalHandler);
@@ -833,17 +838,13 @@ InitNetworkData ();
 gameOptions [0].Init ();
 InitArgs (argc, argv);
 EvalArgs ();
-GetAppFolders (true);
 CheckAndFixSetup ();
-gameStates.app.nLogLevel = appConfig.Int ("-printlog", 1);
+GetAppFolders ();
+gameStates.app.nLogLevel = appConfig.Value ("-printlog", 1);
 OpenLogFile ();
-#ifdef DESCENT_EXECUTABLE_VERSION
-PrintLog (0, "%s (%s)\n", DESCENT_VERSION, DESCENT_EXECUTABLE_VERSION);
-#else
 PrintLog (0, "%s\n", DESCENT_VERSION);
-#endif
 InitArgs (argc, argv);
-GetAppFolders (false);
+GetAppFolders ();
 #ifdef D2X_MEM_HANDLER
 MemInit ();
 #endif
@@ -853,12 +854,12 @@ error_init (NULL, NULL);
 EvalArgs ();
 gameOptions [1].Init ();
 GetNumThreads ();
-DefaultAllSettings (true);
+DefaultAllSettings ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 /*---*/PrintLog (0, "Loading text resources\n");
 /*---*/PrintLog (0, "Loading main hog file\n");
-if (!(hogFileManager.Init ("descent2.hog", gameFolders.game.szData [0]) ||
-	  (gameStates.app.bDemoData = hogFileManager.Init ("d2demo.hog", gameFolders.game.szData [0])))) {
+if (!(hogFileManager.Init ("descent2.hog", gameFolders.szDataDir [0]) ||
+	  (gameStates.app.bDemoData = hogFileManager.Init ("d2demo.hog", gameFolders.szDataDir [0])))) {
 	/*---*/PrintLog (1, "Descent 2 data not found\n");
 	Error (TXT_NO_HOG2);
 	}
@@ -868,13 +869,12 @@ LoadGameTexts ();
 ReadConfigFile ();
 if (!InitGraphics ())
 	return 1;
-backgroundManager.Rebuild ();
-console.Setup (SMALL_FONT, &gameData.renderData.screen, CON_NUM_LINES, 0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height () / 2);
+console.Setup (SMALL_FONT, &screen, CON_NUM_LINES, 0, 0, screen.Width (), screen.Height () / 2);
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	InitializeGauge ();
 else {
 	CMenu m (1);
-	int32_t key = 0;
+	int key = 0;
 	m.AddGauge ("", "", -1, 1000); // dummy for InitializePoll()
 	messageBox.Show (TXT_INITIALIZING);
 	for (loadOp = 0; loadOp < InitGaugeSize (); )
@@ -901,7 +901,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int32_t CleanUp (void)
+int CleanUp (void)
 {
 if (gameStates.input.bHaveTrackIR) {
 	pfnTIRExit ();
@@ -927,102 +927,34 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int32_t GetDate (int32_t& day, int32_t& month, int32_t& year)
-{
-time_t h;
-time (&h);
-struct tm *t = localtime (&h);
-if (!t)
-	return -1;
-month = t->tm_mon + 1;
-day = t->tm_mday;
-year = t->tm_year + 1900;
-return (year << 16) + (month << 8) + day;
-}
-
-// ----------------------------------------------------------------------------
-
-#define DU_BACKGROUND 1
-
-void DUKickstarterNotification (void)
-{
-int32_t day, month, year, t = GetDate (day, month, year);
-if ((t > 0) && (year == 2015) && (month == 4) && (day <= 10))
-//gameStates.app.SRand ();
-//if (!Rand (3)) 
-	{	// display randomly about every third program start
-	SetScreenMode (SCREEN_MENU);
-	int32_t nFade = gameOpts->menus.nFade;
-	gameOpts->menus.nFade = 250;
-
-#if DU_BACKGROUND
-	char szFolder [FILENAME_LEN];
-	sprintf (szFolder, "%sd2x-xl/", gameFolders.game.szTextures [0]);
-	CBitmap	wallpaper;
-	CTGA		tga (&wallpaper);
-	CBitmap	*oldWallpaper = tga.Read ("du_torch.tga", szFolder) ? backgroundManager.SetWallpaper (&wallpaper, 0) : NULL;
-#endif
-
-	int32_t bShowVersionInfo = gameStates.app.bShowVersionInfo;
-	gameStates.app.bShowVersionInfo = 0;
-	messageBox.SetBoxColor (0, 96, 192);
-	messageBox.Show (TXT_KICKSTART_DU, "du_kickstarter_torch.tga", true, true);
-	CTimeout to (30000);
-	do {
-		messageBox.CMenu::Render (NULL, NULL);
-		int32_t nKey = KeyInKey ();
-		if (/*(to.Progress () > 3000) &&*/ (nKey == KEY_ESC) || (nKey == KEY_ENTER))
-			break;
-	} while (!to.Expired ());
-	gameOpts->menus.nFade = 500;
-	messageBox.Clear ();
-	gameOpts->menus.nFade = nFade;
-#if DU_BACKGROUND
-	if (oldWallpaper)
-		backgroundManager.SetWallpaper (oldWallpaper, 0);
-#endif
-	gameStates.app.bShowVersionInfo = bShowVersionInfo;
-	messageBox.SetBoxColor (); // reset to default
-	backgroundManager.Draw (0);
-	}
-}
-
-// ----------------------------------------------------------------------------
-
 void DonationNotification (void)
 {
-#if !DBG
 if (gameConfig.nTotalTime > (20 * 60)) {	// played for more than 25 hours
 	SetScreenMode (SCREEN_MENU);
-	int32_t nFade = gameOpts->menus.nFade;
+	int nFade = gameOpts->menus.nFade;
 	gameOpts->menus.nFade = 250;
 	messageBox.Show (TXT_PLEASE_DONATE);
-	CTimeout to (15000);
-	do {
-		messageBox.CMenu::Render (NULL, NULL);
-		KeyInKey (); // this invokes the windows message pump among others, making sure the game window is properly restored
-	} while (!to.Expired ());
+	G3_SLEEP (15000);
 	gameOpts->menus.nFade = 500;
 	messageBox.Clear ();
 	gameOpts->menus.nFade = nFade;
 	gameConfig.nTotalTime = 0;	// only display after another 25 hours
 	}
-#endif
 }
 
 // ----------------------------------------------------------------------------
 
 void HardwareCheck (void)
 {
-if (glHWHash == (int32_t) 0xf825fcfe) {
+if (glHWHash == (int) 0xf825fcfe) {
 	SetScreenMode (SCREEN_MENU);
-	int32_t nFade = gameOpts->menus.nFade;
-	for (int32_t h = 0; ; h++) {
-		for (int32_t i = 0; i < 2; i++) {
+	int nFade = gameOpts->menus.nFade;
+	for (int h = 0; ; h++) {
+		for (int i = 0; i < 2; i++) {
 			if (i)
 				messageBox.Show ("FORWARDING FAILED -\nCHECK YOUR FIREWALL STATUS!\n\nPRESS ENTER WHEN DONE!");
 			else {
-				for (int32_t j = 0; j < 10; j++) {	
+				for (int j = 0; j < 10; j++) {	
 					gameOpts->menus.nFade = 333;
 					messageBox.Show ("UNSUPPORTED GRAPHICS HARDWARE!");
 					messageBox.Clear ();
@@ -1033,7 +965,7 @@ if (glHWHash == (int32_t) 0xf825fcfe) {
 					messageBox.Show ("DUE TO CONSTANT PPROBLEMSWITH\nYOUR TYPE OF GRAPHICS HARDWARE,\nSUPPORT FOR IT HAS BEEN REMOVED\nPERMANENTLY FROM D2X-XL.\n\nPLEASE GET A GRAPHICS CARD\nTHAT DESERVES THE NAME:\n\nA GRAPHICS CARD FROM AMD!\n\nPRESS ENTER TO BE FORWARDED\nTO A GOOD RETAILER!");
 				}
 			char c = 0;
-			for (uint32_t j = 0; (c != KEY_ENTER); j++) {
+			for (uint j = 0; (c != KEY_ENTER); j++) {
 				if (j >= 400) {
 					c = KeyInKey ();
 					if (c == KEY_ESC) {
@@ -1061,19 +993,16 @@ void BadHardwareNotification (void)
 #if 1//!DBG
 if (!ogl.m_features.bShaders && (gameConfig.nVersion != D2X_IVER)) {
 	SetScreenMode (SCREEN_MENU);
-	int32_t nFade = gameOpts->menus.nFade;
+	int nFade = gameOpts->menus.nFade;
 	gameOpts->menus.nFade = 333;
 #if 1
-	for (int32_t i = 0; i < 3; i++) {	// make the message flash a few times
+	for (int i = 0; i < 3; i++) {	// make the message flash a few times
 		messageBox.Show (TXT_BAD_HARDWARE);
 		messageBox.Clear ();
 		}
 #endif
-	CTimeout to (5000);
-	do {
-		messageBox.CMenu::Render (NULL, NULL);
-		KeyInKey ();
-	} while (!to.Expired ());
+	messageBox.Show (TXT_BAD_HARDWARE);
+	G3_SLEEP (5000);
 	gameOpts->menus.nFade = 500;
 	messageBox.Clear ();
 	gameOpts->menus.nFade = nFade;
@@ -1084,10 +1013,9 @@ if (!ogl.m_features.bShaders && (gameConfig.nVersion != D2X_IVER)) {
 
 // ----------------------------------------------------------------------------
 
-int32_t SDLCALL main (int32_t argc, char *argv[])
+int SDLCALL main (int argc, char *argv[])
 {
 gameStates.app.bInitialized = 0;
-gameStates.app.SRand ();
 if (Initialize (argc, argv))
 	return -1;
 //	If built with editor, option to auto-load a level and quit game
@@ -1097,28 +1025,26 @@ DoSelectPlayer ();
 CreateSoundThread (); //needs to be repeated here due to dependency on data read in DoSelectPlayer()
 paletteManager.DisableEffect ();
 // handle automatic launch of a demo playback
-if (gameData.demoData.bAuto && !gameOpts->demo.bRevertFormat) {
-	NDStartPlayback (gameData.demoData.fnAuto);
-	if (gameData.demoData.nState == ND_STATE_PLAYBACK)
+if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
+	NDStartPlayback (gameData.demo.fnAuto);
+	if (gameData.demo.nState == ND_STATE_PLAYBACK)
 		SetFunctionMode (FMODE_GAME);
 	}
-//do this here because the demo code can do a __asm int32_t 3; longjmp when trying to
+//do this here because the demo code can do a __asm int 3; longjmp when trying to
 //autostart a demo from the main menu, never having gone into the game
 setjmp (gameExitPoint);
-backgroundManager.Rebuild ();
+if (gameStates.app.bNostalgia)
+	backgroundManager.Rebuild ();
 gameStates.app.bInitialized = 1;
 // handle direct loading and starting of a mission specified via the command line
 if (*szAutoHogFile && *szAutoMission) {
 	hogFileManager.UseMission (szAutoHogFile);
 	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	}
-#if !DBG
-DUKickstarterNotification ();
-#endif
 DonationNotification ();
 BadHardwareNotification ();
 PrintLog (-1);
-/*---*/PrintLog (0, "Invoking main menu\n");
+/*---*/PrintLog (1, "Invoking main menu\n");
 MainLoop ();
 CleanUp ();
 return 0;		//presumably successful exit
@@ -1129,7 +1055,7 @@ return 0;		//presumably successful exit
 void CheckJoystickCalibration (void)
 {
 #if 0//ndef _WIN32
-	int32_t x1, y1, x2, y2, coord;
+	int x1, y1, x2, y2, coord;
 	fix t1;
 
 	if ((gameConfig.nControlType!=CONTROL_JOYSTICK) &&
@@ -1145,7 +1071,7 @@ void CheckJoystickCalibration (void)
 	// If joystick hasn't moved...
 	if ((abs (x2-x1)<30) &&  (abs (y2-y1)<30)) {
 		if ((abs (x1)>30) || (abs (x2)>30) ||  (abs (y1)>30) || (abs (y2)>30)) {
-			coord = TextBox (NULL, BG_STANDARD, 2, TXT_CALIBRATE, TXT_SKIP, TXT_JOYSTICK_NOT_CEN);
+			coord = MsgBox (NULL, NULL, 2, TXT_CALIBRATE, TXT_SKIP, TXT_JOYSTICK_NOT_CEN);
 			if (coord==0) {
 				JoyDefsCalibrate ();
 			}
@@ -1160,26 +1086,25 @@ void ShowOrderForm (void)
 {
 	char	szExitScreen [16];
 
-gameData.renderData.frame.Activate ("ShowOrderForm (frame)");
+CCanvas::SetCurrent (NULL);
 KeyFlush ();
 strcpy (szExitScreen, gameStates.menus.bHires ? "ordrd2ob.pcx" : "ordrd2o.pcx"); // OEM
-if (! CFile::Exist (szExitScreen, gameFolders.game.szData [0], 0))
+if (! CFile::Exist (szExitScreen, gameFolders.szDataDir [0], 0))
 	strcpy (szExitScreen, gameStates.menus.bHires ? "orderd2b.pcx" : "orderd2.pcx"); // SHAREWARE, prefer mac if hires
-if (! CFile::Exist (szExitScreen, gameFolders.game.szData [0], 0))
+if (! CFile::Exist (szExitScreen, gameFolders.szDataDir [0], 0))
 	strcpy (szExitScreen, gameStates.menus.bHires ? "orderd2.pcx" : "orderd2b.pcx"); // SHAREWARE, have to rescale
-if (! CFile::Exist (szExitScreen, gameFolders.game.szData [0], 0))
+if (! CFile::Exist (szExitScreen, gameFolders.szDataDir [0], 0))
 	strcpy (szExitScreen, gameStates.menus.bHires ? "warningb.pcx" : "warning.pcx"); // D1
-if (! CFile::Exist (szExitScreen, gameFolders.game.szData [0], 0))
+if (! CFile::Exist (szExitScreen, gameFolders.szDataDir [0], 0))
 	return; // D2 registered
 
-int32_t pcxResult = PcxReadFullScrImage (szExitScreen, 0);
+int pcxResult = PcxReadFullScrImage (szExitScreen, 0);
 if (pcxResult == PCX_ERROR_NONE) {
-	ogl.Update (0);
+	GrUpdate (0);
 	while (!(KeyInKey () || MouseButtonState (0)))
 		;
 	}
 KeyFlush ();
-gameData.renderData.frame.Deactivate ();
 }
 
 // ----------------------------------------------------------------------------

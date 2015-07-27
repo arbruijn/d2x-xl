@@ -68,38 +68,37 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //could also use flags for one-shots
 
-#define TF_NO_MESSAGE        1   // Don't show a message when triggered
-#define TF_ONE_SHOT          2   // Only trigger once
-#define TF_DISABLED          4   // Set after one-shot fires
-#define TF_PERMANENT			  8
+#define TF_NO_MESSAGE       1   // Don't show a message when triggered
+#define TF_ONE_SHOT         2   // Only CTrigger once
+#define TF_DISABLED         4   // Set after one-shot fires
+#define TF_PERMANENT			 8
 #define TF_ALTERNATE			 16
 #define TF_SET_ORIENT		 32
 #define TF_SILENT				 64
 #define TF_AUTOPLAY			128
-#define TF_PLAYING_SOUND	256	// only used internally
-#define TF_FLY_THROUGH		512	// helper flag to quickly identify non-wall switch based triggers
+#define TF_PLAYING_SOUND	256  // only used internally
 
 //old CTrigger structs
 
 typedef struct tTriggerV29 {
-	int8_t   nType;
-	int16_t   flags;
+	sbyte   nType;
+	short   flags;
 	fix     value;
 	fix     time;
-	int8_t   link_num;
-	int16_t   nLinks;
-	int16_t   segments [MAX_TRIGGER_TARGETS];
-	int16_t   sides [MAX_TRIGGER_TARGETS];
+	sbyte   link_num;
+	short   nLinks;
+	short   segments [MAX_TRIGGER_TARGETS];
+	short   sides [MAX_TRIGGER_TARGETS];
 } __pack__ tTriggerV29;
 
 typedef struct tTriggerV30 {
-	int16_t   flags;
-	int8_t   nLinks;
-	int8_t   pad;                        //keep alignment
+	short   flags;
+	sbyte   nLinks;
+	sbyte   pad;                        //keep alignment
 	fix     value;
 	fix     time;
-	int16_t   segments [MAX_TRIGGER_TARGETS];
-	int16_t   sides [MAX_TRIGGER_TARGETS];
+	short   segments [MAX_TRIGGER_TARGETS];
+	short   sides [MAX_TRIGGER_TARGETS];
 } __pack__ tTriggerV30;
 
 //flags for V30 & below triggers
@@ -123,42 +122,37 @@ typedef struct tTriggerV30 {
 //flags bits are exclusive of the others.
 
 typedef struct tCompatibleTrigger {
-	uint8_t   type;       //what this trigger does
-	uint8_t   flags;      //currently unused
-	int8_t   num_links;  //how many doors, etc. linked to this
-	int8_t   pad;        //keep alignment
+	ubyte   type;       //what this trigger does
+	ubyte   flags;      //currently unused
+	sbyte   num_links;  //how many doors, etc. linked to this
+	sbyte   pad;        //keep alignment
 	fix     value;
 	fix     time;
-	int16_t   seg [MAX_TRIGGER_TARGETS];
-	int16_t   side [MAX_TRIGGER_TARGETS];
+	short   seg [MAX_TRIGGER_TARGETS];
+	short   side [MAX_TRIGGER_TARGETS];
 } __pack__ tCompatibleTrigger;
 
-class CTriggerInfo {
+class __pack__ CTriggerInfo {
 	public:
-		uint16_t	nWall;
-
-		uint8_t		nType;   //what this CTrigger does
-		uint16_t	flags;   
-		uint16_t	flagsD1;
+		ubyte		nType;   //what this CTrigger does
+		short		flags;   
+		short		flagsD1;
 		fix		value;
 		fix		time [2];
 
-		uint16_t	nTeleportDest;
-		int32_t		nChannel;
-		int32_t		nObject;
-		int32_t		nPlayer;
-		int32_t		bShot;
+		short		nSegment;
+		int		nChannel;
+		int		nObject;
+		int		nPlayer;
+		int		bShot;
 		fix		tOperated;
-
-	public:
-		inline void Clear (void) { memset (this, 0, sizeof (*this)); }
 	};
 
 class CTriggerTargets {
 	public:
-		int16_t		m_nLinks;
-		int16_t		m_segments [MAX_TRIGGER_TARGETS];
-		int16_t		m_sides [MAX_TRIGGER_TARGETS];
+		short		m_nLinks;
+		short		m_segments [MAX_TRIGGER_TARGETS];
+		short		m_sides [MAX_TRIGGER_TARGETS];
 
 		void Read (CFile& cf);
 		void SaveState (CFile& cf);
@@ -173,87 +167,71 @@ class CTrigger : public CTriggerTargets {
 		CTriggerInfo	m_info;
 
 	public:
-		void Read (CFile& cf, int32_t bObjTrigger);
-		int32_t Operate (int16_t nObject, int32_t nPlayer, int32_t shot, bool bObjTrigger);
-		int32_t OperateD1 (int16_t nObject, int32_t nPlayer, int32_t shot);
+		void Read (CFile& cf, int bObjTrigger);
+		int Operate (short nObject, int nPlayer, int shot, bool bObjTrigger);
+		int OperateD1 (short nObject, int nPlayer, int shot);
 		void Countdown (bool bObjTrigger);
-		void PrintMessage (int32_t nPlayer, int32_t shot, const char *message);
+		void PrintMessage (int nPlayer, int shot, const char *message);
 		void DoLink (void);
 		void DoChangeTexture (void);
-		int32_t DoExecObjTrigger (int16_t nObject, int32_t bDamage);
-		void DoSpawnBots (CObject* pObj);
-		bool DoExit (int32_t nPlayer);
-		bool DoSecretExit (int32_t nPlayer);
-		void DoTeleportBot (CObject* pObj);
+		int DoExecObjTrigger (short nObject, int bDamage);
+		void DoSpawnBots (CObject* objP);
+		bool DoExit (int nPlayer);
+		bool DoSecretExit (int nPlayer);
+		void DoTeleportBot (CObject* objP);
 		void DoCloseDoor (void);
-		int32_t DoLightOn (void);
-		int32_t DoLightOff (void);
+		int DoLightOn (void);
+		int DoLightOff (void);
 		void DoUnlockDoors (void);
 		void DoLockDoors (void);
-		int32_t DoSetSpawnPoints (void);
-		int32_t DoMasterTrigger (int16_t nObject, int32_t nPlayer, bool bObjTrigger);
-		int32_t DoEnableTrigger (void);
-		int32_t DoDisableTrigger (void);
-		void DoTeleport (int16_t nObject);
-		int32_t DoShowMessage (void);
-		int32_t DoPlaySound (int16_t nObject);
-		int32_t DoChangeWalls (void);
-		void DoObjectProducer (int32_t bMessage);
+		int DoSetSpawnPoints (void);
+		int DoMasterTrigger (short nObject, int nPlayer, bool bObjTrigger);
+		int DoEnableTrigger (void);
+		int DoDisableTrigger (void);
+		void DoTeleport (short nObject);
+		int DoShowMessage (void);
+		int DoPlaySound (short nObject);
+		int DoChangeWalls (void);
+		void DoObjectProducer (int bMessage);
 		void DoIllusionOn (void);
 		void DoIllusionOff (void);
-		void DoSpeedBoost (int16_t nObject);
-		void StopSpeedBoost (int16_t nObject);
-		int32_t DoDisarmRobots (void);
-		int32_t DoReprogramRobots (void);
-		int32_t DoShakeMine (void);
-		bool TargetsWall (int32_t nWall);
-		inline int32_t Index (void);
-		inline int32_t HasTarget (int16_t nSegment, int16_t nSide);
+		void DoSpeedBoost (short nObject);
+		void StopSpeedBoost (short nObject);
+		int DoDisarmRobots (void);
+		int DoReprogramRobots (void);
+		int DoShakeMine (void);
+		bool TargetsWall (int nWall);
+		inline int Index (void);
+		inline int HasTarget (short nSegment, short nSide);
 		inline bool ClientOnly (void) { return (m_info.nType == TT_SPEEDBOOST) || (m_info.nType == TT_SHIELD_DAMAGE) || (m_info.nType == TT_ENERGY_DRAIN); }
-		int32_t Delay (void);
+		int Delay (void);
 		bool IsDelayed (void);
 		bool IsExit (void);
-		bool IsFlyThrough (void);
 		void LoadState (CFile& cf, bool bObjTrigger = false);
 		void SaveState (CFile& cf, bool bObjTrigger = false);
 
-		inline uint8_t& Type (void) { return m_info.nType; }
-		inline uint16_t& Flags (void) { return (Type () == TT_DESCENT1) ? m_info.flagsD1 : m_info.flags; }
-		inline fix& Value (void) { return m_info.value; }
-		inline fix GetValue (void) { return m_info.value; }
-		inline void SetValue (fix value) { m_info.value = value; }
-		inline fix GetTime (int32_t i) { return m_info.time [i]; }
-		inline void SetTime (int32_t i, fix time) { m_info.time [i] = time; }
-		//inline uint16_t& Segment (void) { return m_info.nTeleportDest; }
-		inline int32_t& Player (void) { return m_info.nPlayer; }
-		inline int32_t& Object (void) { return m_info.nObject; }
-		inline int32_t& Channel (void) { return m_info.nChannel; }
-		inline bool Flagged (uint16_t mask, uint16_t match = 0) { return match ? (Flags () & mask) == match : (Flags () & mask) != 0; }
-		inline void SetFlags (uint16_t flags) { Flags () |= flags; }
-		inline void ClearFlags (uint16_t flags) { Flags () &= ~flags; }
-
 	private:
-		int32_t WallIsForceField (void);
+		int WallIsForceField (void);
 };
 
-inline int32_t operator- (CTrigger* t, CArray<CTrigger>& a) { return a.Index (t); }
+inline int operator- (CTrigger* t, CArray<CTrigger>& a) { return a.Index (t); }
 
 //------------------------------------------------------------------------------
 
 typedef struct tObjTriggerRef {
 #if 1
-	uint8_t		nFirst;
-	uint8_t		nCount;
+	ubyte		nFirst;
+	ubyte		nCount;
 #else
-	int16_t		prev;
-	int16_t		next;
-	int16_t		nObject;
+	short		prev;
+	short		next;
+	short		nObject;
 #endif
 } __pack__ tObjTriggerRef;
 
 void TriggerInit();
 void TriggersFrameProcess();
-void ExecObjTriggers (int16_t nObject, int32_t bDamage);
+void ExecObjTriggers (short nObject, int bDamage);
 
 /*
  * reads a tTriggerV29 structure from a CFILE
@@ -269,22 +247,22 @@ void V30TriggerRead (tTriggerV30& trigger, CFile& cf);
  * reads a CTrigger structure from a CFILE
  */
 
-void SetSpeedBoostVelocity (int16_t nObject, fix speed, 
-									 int16_t srcSegnum, int16_t srcSidenum,
-									 int16_t destSegnum, int16_t destSidenum,
+void SetSpeedBoostVelocity (short nObject, fix speed, 
+									 short srcSegnum, short srcSidenum,
+									 short destSegnum, short destSidenum,
 									 CFixVector *pSrcPt, CFixVector *pDestPt,
-									 int32_t bSetOrient);
+									 int bSetOrient);
 
-void TriggerSetOrient (tObjTransformation *pPos, int16_t nSegment, int16_t nSide, int32_t bSetPos, int32_t nStep);
-void TriggerSetObjOrient (int16_t nObject, int16_t nSegment, int16_t nSide, int32_t bSetPos, int32_t nStep);
-void TriggerSetObjPos (int16_t nObject, int16_t nSegment);
+void TriggerSetOrient (tObjTransformation *posP, short nSegment, short nSide, int bSetPos, int nStep);
+void TriggerSetObjOrient (short nObject, short nSegment, short nSide, int bSetPos, int nStep);
+void TriggerSetObjPos (short nObject, short nSegment);
 void UpdatePlayerOrient (void);
-int32_t FindTriggerTarget (int16_t nSegment, int16_t nSide, int32_t i = 0);
-CTrigger *FindObjTrigger (int16_t nObject, int16_t nType, int16_t nTrigger);
-int32_t OpenExits (void);
+int FindTriggerTarget (short nSegment, short nSide, int i = 0);
+CTrigger *FindObjTrigger (short nObject, short nType, short nTrigger);
+int OpenExits (void);
 void StartTriggeredSounds (void);
 void StopTriggeredSounds (void);
-int32_t FindNextLevel (void);
+int FindNextLevel (void);
 
 extern CFixVector	speedBoostSrc, speedBoostDest;
 

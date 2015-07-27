@@ -22,19 +22,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "grdef.h"
 #include "rle.h"
 #include "mono.h"
-#include "byteswap.h"       // because of rle code that has int16_t for row offsets
+#include "byteswap.h"       // because of rle code that has short for row offsets
 #include "bitmap.h"
 #include "ogl_defs.h"
 #include "ogl_bitmap.h"
 #include "ogl_defs.h"
 
-int32_t gr_bitblt_dest_step_shift = 0;
-int32_t gr_bitblt_double = 0;
-uint8_t *grBitBltFadeTable=NULL;
+int gr_bitblt_dest_step_shift = 0;
+int gr_bitblt_double = 0;
+ubyte *grBitBltFadeTable=NULL;
 
-extern void gr_vesa_bitmap(CBitmap * source, CBitmap * dest, int32_t x, int32_t y);
+extern void gr_vesa_bitmap(CBitmap * source, CBitmap * dest, int x, int y);
 
-void gr_linear_movsd(uint8_t * source, uint8_t * dest, uint32_t nbytes);
+void gr_linear_movsd(ubyte * source, ubyte * dest, uint nbytes);
 // This code aligns edi so that the destination is aligned to a dword boundry before rep movsd
 
 //------------------------------------------------------------------------------
@@ -44,15 +44,15 @@ void gr_linear_movsd(uint8_t * source, uint8_t * dest, uint32_t nbytes);
 #if !DBG
 #define test_byteblit   0
 #else
-uint8_t test_byteblit = 0;
+ubyte test_byteblit = 0;
 #endif
 
-void gr_linear_movsd(uint8_t * src, uint8_t * dest, uint32_t num_pixels)
+void gr_linear_movsd(ubyte * src, ubyte * dest, uint num_pixels)
 {
-	uint32_t i;
-	uint32_t n, r;
+	uint i;
+	uint n, r;
 	double *d, *s;
-	uint8_t *d1, *s1;
+	ubyte *d1, *s1;
 
 // check to see if we are starting on an even byte boundry
 // if not, move appropriate number of bytes to even
@@ -65,7 +65,7 @@ void gr_linear_movsd(uint8_t * src, uint8_t * dest, uint32_t num_pixels)
 	}
 
 	i = 0;
-	if ((r = (uint32_t) ((size_t)src & 0x7))) {
+	if ((r = (uint) ((size_t)src & 0x7))) {
 		for (i = 0; i < 8 - r; i++)
 			*dest++ = *src++;
 	}
@@ -77,19 +77,19 @@ void gr_linear_movsd(uint8_t * src, uint8_t * dest, uint32_t num_pixels)
 	d = reinterpret_cast<double*> (dest);
 	for (i = 0; i < n; i++)
 		*d++ = *s++;
-	s1 = reinterpret_cast<uint8_t*> (s);
-	d1 = reinterpret_cast<uint8_t*> (d);
+	s1 = reinterpret_cast<ubyte*> (s);
+	d1 = reinterpret_cast<ubyte*> (d);
 	for (i = 0; i < r; i++)
 		*d1++ = *s1++;
 }
 
 //------------------------------------------------------------------------------
 
-static void gr_linear_rep_movsdm(uint8_t * src, uint8_t * dest, uint32_t num_pixels);
+static void gr_linear_rep_movsdm(ubyte * src, ubyte * dest, uint num_pixels);
 
-static void gr_linear_rep_movsdm(uint8_t * src, uint8_t * dest, uint32_t num_pixels)
+static void gr_linear_rep_movsdm(ubyte * src, ubyte * dest, uint num_pixels)
 {
-	uint32_t i;
+	uint i;
 	for (i=0; i<num_pixels; i++) {
 		if (*src != TRANSPARENCY_COLOR)
 			*dest = *src;
@@ -100,26 +100,26 @@ static void gr_linear_rep_movsdm(uint8_t * src, uint8_t * dest, uint32_t num_pix
 
 //------------------------------------------------------------------------------
 
-static void gr_linear_rep_movsdm_faded(uint8_t * src, uint8_t * dest, uint32_t num_pixels, 
-													uint8_t fadeValue, CPalette *srcPalette, CPalette *destPalette);
+static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, uint num_pixels, 
+													ubyte fadeValue, CPalette *srcPalette, CPalette *destPalette);
 
-static void gr_linear_rep_movsdm_faded(uint8_t * src, uint8_t * dest, uint32_t num_pixels, 
-													uint8_t fadeValue, CPalette *srcPalette, CPalette *destPalette)
+static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, uint num_pixels, 
+													ubyte fadeValue, CPalette *srcPalette, CPalette *destPalette)
 {
-	int32_t	i;
-	int16_t c;
+	int	i;
+	short c;
 	float fade = (float) fadeValue / 31.0f;
 
 	if (!destPalette)
 		destPalette = srcPalette;
 	for (i=num_pixels; i != 0; i--) {
-		c= (int16_t) *src;
-		if ((uint8_t) c != (uint8_t) TRANSPARENCY_COLOR) {
+		c= (short) *src;
+		if ((ubyte) c != (ubyte) TRANSPARENCY_COLOR) {
 			c *= 3;
-			c = destPalette->ClosestColor ((uint8_t) FRound (srcPalette->Raw () [c] * fade), 
-												    (uint8_t) FRound (srcPalette->Raw () [c + 1] * fade), 
-													 (uint8_t) FRound (srcPalette->Raw () [c + 2] * fade));
-			*dest = (uint8_t) c;
+			c = destPalette->ClosestColor ((ubyte) (srcPalette->Raw () [c] * fade + 0.5), 
+												    (ubyte) (srcPalette->Raw () [c + 1] * fade + 0.5), 
+													 (ubyte) (srcPalette->Raw () [c + 2] * fade + 0.5));
+			*dest = (ubyte) c;
 			}
 		dest++;
 		src++;
@@ -128,40 +128,37 @@ static void gr_linear_rep_movsdm_faded(uint8_t * src, uint8_t * dest, uint32_t n
 
 //------------------------------------------------------------------------------
 
-void gr_linear_rep_movsd_2x (uint8_t *src, uint8_t *dest, uint32_t num_dest_pixels);
+void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, uint num_dest_pixels);
 
-void gr_linear_rep_movsd_2x (uint8_t *src, uint8_t *dest, uint32_t num_pixels)
+void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, uint num_pixels)
 {
 	double*	d = reinterpret_cast<double*> (dest);
-	uint32_t*		s = reinterpret_cast<uint32_t*> (src);
+	uint*		s = reinterpret_cast<uint*> (src);
+	uint		doubletemp[2];
+	uint		temp, work;
+	uint     i;
 
 if (num_pixels & 0x3) {
 	// not a multiple of 4?  do single pixel at a time
-	for (uint32_t i = 0; i < num_pixels; i++) {
+	for (i=0; i<num_pixels; i++) {
 		*dest++ = *src;
 		*dest++ = *src++;
 		}
 	return;
 	}
 
-union doubleCast {
-	uint32_t		u [2];
-	double	d;
-} doubleCast;
-
-for (uint32_t i = 0; i < num_pixels / 4; i++) {
-	uint32_t	temp, work;
+for (i = 0; i < num_pixels / 4; i++) {
 	temp = work = *s++;
 
 	temp = ((temp >> 8) & 0x00FFFF00) | (temp & 0xFF0000FF); // 0xABCDEFGH -> 0xABABCDEF
 	temp = ((temp >> 8) & 0x000000FF) | (temp & 0xFFFFFF00); // 0xABABCDEF -> 0xABABCDCD
-	doubleCast.u [0] = temp;
+	doubletemp[0] = temp;
 
 	work = ((work << 8) & 0x00FFFF00) | (work & 0xFF0000FF); // 0xABCDEFGH -> 0xABEFGHGH
 	work = ((work << 8) & 0xFF000000) | (work & 0x00FFFFFF); // 0xABEFGHGH -> 0xEFEFGHGH
-	doubleCast.u [1] = work;
+	doubletemp[1] = work;
 
-	*d = doubleCast.d;
+	*d = *((double*) &doubletemp [0]);
 	d++;
 	}
 }
@@ -169,18 +166,18 @@ for (uint32_t i = 0; i < num_pixels / 4; i++) {
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap00(int32_t x, int32_t y, CBitmap *pBm)
+void gr_ubitmap00(int x, int y, CBitmap *bmP)
 {
-int32_t srcRowSize = pBm->RowSize ();
-int32_t destRowSize = CCanvas::Current ()->RowSize () << gr_bitblt_dest_step_shift;
-uint8_t* dest = &(CCanvas::Current ()->Buffer ()[ destRowSize*y+x ]);
-uint8_t* src = pBm->Buffer ();
+int srcRowSize = bmP->RowSize ();
+int destRowSize = CCanvas::Current ()->RowSize () << gr_bitblt_dest_step_shift;
+ubyte* dest = &(CCanvas::Current ()->Buffer ()[ destRowSize*y+x ]);
+ubyte* src = bmP->Buffer ();
 
-for (int32_t y1 = 0; y1 < pBm->Height (); y1++) {
+for (int y1 = 0; y1 < bmP->Height (); y1++) {
 	if (gr_bitblt_double)
-		gr_linear_rep_movsd_2x(src, dest, pBm->Width ());
+		gr_linear_rep_movsd_2x(src, dest, bmP->Width ());
 	else
-		gr_linear_movsd(src, dest, pBm->Width ());
+		gr_linear_movsd(src, dest, bmP->Width ());
 	src += srcRowSize;
 	dest+= destRowSize;
 	}
@@ -188,46 +185,46 @@ for (int32_t y1 = 0; y1 < pBm->Height (); y1++) {
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap00m(int32_t x, int32_t y, CBitmap *pBm)
+void gr_ubitmap00m(int x, int y, CBitmap *bmP)
 {
-	register int32_t y1;
-	int32_t destRowSize;
+	register int y1;
+	int destRowSize;
 
-	uint8_t * dest;
-	uint8_t * src;
+	ubyte * dest;
+	ubyte * src;
 
 	destRowSize=CCanvas::Current ()->RowSize () << gr_bitblt_dest_step_shift;
 	dest = &(CCanvas::Current ()->Buffer ()[ destRowSize*y+x ]);
 
-	src = pBm->Buffer ();
+	src = bmP->Buffer ();
 
 	if (grBitBltFadeTable==NULL) {
-		for (y1=0; y1 < pBm->Height (); y1++)    {
-			gr_linear_rep_movsdm(src, dest, pBm->Width ());
-			src += pBm->RowSize ();
-			dest+= (int32_t)(destRowSize);
+		for (y1=0; y1 < bmP->Height (); y1++)    {
+			gr_linear_rep_movsdm(src, dest, bmP->Width ());
+			src += bmP->RowSize ();
+			dest+= (int)(destRowSize);
 		}
 	} else {
-		for (y1=0; y1 < pBm->Height (); y1++)    {
-			gr_linear_rep_movsdm_faded (src, dest, pBm->Width (), grBitBltFadeTable [y1+y], 
-												 pBm->Palette (), CCanvas::Current ()->Palette ());
-			src += pBm->RowSize ();
-			dest+= (int32_t)(destRowSize);
+		for (y1=0; y1 < bmP->Height (); y1++)    {
+			gr_linear_rep_movsdm_faded (src, dest, bmP->Width (), grBitBltFadeTable [y1+y], 
+												 bmP->Palette (), CCanvas::Current ()->Palette ());
+			src += bmP->RowSize ();
+			dest+= (int)(destRowSize);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap012(int32_t x, int32_t y, CBitmap *pBm)
+void gr_ubitmap012(int x, int y, CBitmap *bmP)
 {
-	register int32_t x1, y1;
-	uint8_t * src;
+	register int x1, y1;
+	ubyte * src;
 
-	src = pBm->Buffer ();
+	src = bmP->Buffer ();
 
-	for (y1=y; y1 < (y+pBm->Height ()); y1++)    {
-		for (x1=x; x1 < (x+pBm->Width ()); x1++)    {
+	for (y1=y; y1 < (y+bmP->Height ()); y1++)    {
+		for (x1=x; x1 < (x+bmP->Width ()); x1++)    {
 			CCanvas::Current ()->SetColor(*src++);
 			DrawPixel(x1, y1);
 		}
@@ -236,15 +233,15 @@ void gr_ubitmap012(int32_t x, int32_t y, CBitmap *pBm)
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmap012m(int32_t x, int32_t y, CBitmap *pBm)
+void gr_ubitmap012m(int x, int y, CBitmap *bmP)
 {
-	register int32_t x1, y1;
-	uint8_t * src;
+	register int x1, y1;
+	ubyte * src;
 
-	src = pBm->Buffer ();
+	src = bmP->Buffer ();
 
-	for (y1=y; y1 < (y+pBm->Height ()); y1++) {
-		for (x1=x; x1 < (x+pBm->Width ()); x1++) {
+	for (y1=y; y1 < (y+bmP->Height ()); y1++) {
+		for (x1=x; x1 < (x+bmP->Width ()); x1++) {
 			if (*src != TRANSPARENCY_COLOR) {
 				CCanvas::Current ()->SetColor(*src);
 				DrawPixel(x1, y1);
@@ -256,13 +253,13 @@ void gr_ubitmap012m(int32_t x, int32_t y, CBitmap *pBm)
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmapGENERIC(int32_t x, int32_t y, CBitmap * pBm)
+void gr_ubitmapGENERIC(int x, int y, CBitmap * bmP)
 {
-	register int32_t x1, y1;
+	register int x1, y1;
 
-	for (y1=0; y1 < pBm->Height (); y1++)    {
-		for (x1=0; x1 < pBm->Width (); x1++)    {
-			CCanvas::Current ()->SetColor(pBm->GetPixel (x1,y1));
+	for (y1=0; y1 < bmP->Height (); y1++)    {
+		for (x1=0; x1 < bmP->Width (); x1++)    {
+			CCanvas::Current ()->SetColor(bmP->GetPixel (x1,y1));
 			DrawPixel(x+x1, y+y1);
 		}
 	}
@@ -270,14 +267,14 @@ void gr_ubitmapGENERIC(int32_t x, int32_t y, CBitmap * pBm)
 
 //------------------------------------------------------------------------------
 
-void gr_ubitmapGENERICm(int32_t x, int32_t y, CBitmap * pBm)
+void gr_ubitmapGENERICm(int x, int y, CBitmap * bmP)
 {
-	register int32_t x1, y1;
-	uint8_t c;
+	register int x1, y1;
+	ubyte c;
 
-	for (y1=0; y1 < pBm->Height (); y1++) {
-		for (x1=0; x1 < pBm->Width (); x1++) {
-			c = pBm->GetPixel (x1,y1);
+	for (y1=0; y1 < bmP->Height (); y1++) {
+		for (x1=0; x1 < bmP->Width (); x1++) {
+			c = bmP->GetPixel (x1,y1);
 			if (c != TRANSPARENCY_COLOR) {
 				CCanvas::Current ()->SetColor(c);
 				DrawPixel(x+x1, y+y1);
@@ -287,17 +284,17 @@ void gr_ubitmapGENERICm(int32_t x, int32_t y, CBitmap * pBm)
 }
 
 //------------------------------------------------------------------------------
-//@extern int32_t Interlacing_on;
+//@extern int Interlacing_on;
 
 // From Linear to Linear
-void SWBlitToBitmap (int32_t w, int32_t h, int32_t dx, int32_t dy, int32_t sx, int32_t sy, CBitmap * src, CBitmap * dest)
+void SWBlitToBitmap (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
-uint8_t* sbits = src->Buffer ()  + (src->RowSize () * sy) + sx;
-uint8_t* dbits = dest->Buffer () + (dest->RowSize () * dy) + dx;
-int32_t dstep = dest->RowSize () << gr_bitblt_dest_step_shift;
+ubyte* sbits = src->Buffer ()  + (src->RowSize () * sy) + sx;
+ubyte* dbits = dest->Buffer () + (dest->RowSize () * dy) + dx;
+int dstep = dest->RowSize () << gr_bitblt_dest_step_shift;
 
 // No interlacing, copy the whole buffer.
-for (int32_t i = 0; i < h; i++) {
+for (int i = 0; i < h; i++) {
 	if (gr_bitblt_double)
 		gr_linear_rep_movsd_2x (sbits, dbits, w);
 	else
@@ -309,22 +306,22 @@ for (int32_t i = 0; i < h; i++) {
 
 //------------------------------------------------------------------------------
 // From Linear to Linear Masked
-void BlitToBitmapMasked (int32_t w, int32_t h, int32_t dx, int32_t dy, int32_t sx, int32_t sy, CBitmap * src, CBitmap * dest)
+void BlitToBitmapMasked (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
-uint8_t* sbits = src->Buffer ()  + (src->RowSize () * sy) + sx;
-uint8_t* dbits = dest->Buffer () + (dest->RowSize () * dy) + dx;
+ubyte* sbits = src->Buffer ()  + (src->RowSize () * sy) + sx;
+ubyte* dbits = dest->Buffer () + (dest->RowSize () * dy) + dx;
 
 	// No interlacing, copy the whole buffer.
 
 if (grBitBltFadeTable == NULL) {
-	for (int32_t i = 0; i < h; i++) {
+	for (int i = 0; i < h; i++) {
 		gr_linear_rep_movsdm (sbits, dbits, w);
 		sbits += src->RowSize ();
 		dbits += dest->RowSize ();
 		}
 	} 
 else {
-	for (int32_t i = 0; i < h; i++) {
+	for (int i = 0; i < h; i++) {
 		gr_linear_rep_movsdm_faded (sbits, dbits, w, grBitBltFadeTable [dy+i], src->Palette (), dest->Palette ());
 		sbits += src->RowSize ();
 		dbits += dest->RowSize ();
@@ -334,11 +331,11 @@ else {
 
 //------------------------------------------------------------------------------
 
-void BlitToBitmapRLE (int32_t w, int32_t h, int32_t dx, int32_t dy, int32_t sx, int32_t sy, CBitmap * src, CBitmap * dest)
+void BlitToBitmapRLE (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
-	uint8_t * dbits;
-	uint8_t * sbits;
-	int32_t i, data_offset;
+	ubyte * dbits;
+	ubyte * sbits;
+	int i, data_offset;
 
 	data_offset = 1;
 	if (src->Flags () & BM_FLAG_RLE_BIG)
@@ -347,7 +344,7 @@ void BlitToBitmapRLE (int32_t w, int32_t h, int32_t dx, int32_t dy, int32_t sx, 
 	sbits = &src->Buffer ()[4 + (src->Height ()*data_offset)];
 
 	for (i=0; i<sy; i++)
-		sbits += (int32_t)(INTEL_SHORT(src->Buffer ()[4+(i*data_offset)]));
+		sbits += (int)(INTEL_SHORT(src->Buffer ()[4+(i*data_offset)]));
 
 	dbits = dest->Buffer () + (dest->RowSize () * dy) + dx;
 
@@ -355,20 +352,20 @@ void BlitToBitmapRLE (int32_t w, int32_t h, int32_t dx, int32_t dy, int32_t sx, 
 	for (i=0; i < h; i++)    {
 		gr_rle_expand_scanline(dbits, sbits, sx, sx+w-1);
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int32_t)INTEL_SHORT(*(reinterpret_cast<int16_t*> (src->Buffer (4 + (i + sy) * data_offset))));
+			sbits += (int)INTEL_SHORT(*(reinterpret_cast<short*> (src->Buffer (4 + (i + sy) * data_offset))));
 		else
-			sbits += (int32_t)(src->Buffer ()[4+i+sy]);
+			sbits += (int)(src->Buffer ()[4+i+sy]);
 		dbits += dest->RowSize () << gr_bitblt_dest_step_shift;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void BlitToBitmapMaskedRLE (int32_t w, int32_t h, int32_t dx, int32_t dy, int32_t sx, int32_t sy, CBitmap * src, CBitmap * dest)
+void BlitToBitmapMaskedRLE (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
-	uint8_t * dbits;
-	uint8_t * sbits;
-	int32_t i, data_offset;
+	ubyte * dbits;
+	ubyte * sbits;
+	int i, data_offset;
 
 	data_offset = 1;
 	if (src->Flags () & BM_FLAG_RLE_BIG)
@@ -376,7 +373,7 @@ void BlitToBitmapMaskedRLE (int32_t w, int32_t h, int32_t dx, int32_t dy, int32_
 
 	sbits = &src->Buffer ()[4 + (src->Height ()*data_offset)];
 	for (i=0; i<sy; i++)
-		sbits += (int32_t)(INTEL_SHORT(src->Buffer ()[4+(i*data_offset)]));
+		sbits += (int)(INTEL_SHORT(src->Buffer ()[4+(i*data_offset)]));
 
 	dbits = dest->Buffer () + (dest->RowSize () * dy) + dx;
 
@@ -384,9 +381,9 @@ void BlitToBitmapMaskedRLE (int32_t w, int32_t h, int32_t dx, int32_t dy, int32_
 	for (i=0; i < h; i++)    {
 		gr_rle_expand_scanline_masked(dbits, sbits, sx, sx+w-1);
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int32_t) INTEL_SHORT (*reinterpret_cast<int16_t*> (src->Buffer () + 4 + (i + sy) * data_offset));
+			sbits += (int) INTEL_SHORT (*reinterpret_cast<short*> (src->Buffer () + 4 + (i + sy) * data_offset));
 		else
-			sbits += (int32_t) (*src) [4 + i + sy];
+			sbits += (int) (*src) [4 + i + sy];
 		dbits += dest->RowSize () << gr_bitblt_dest_step_shift;
 	}
 }
@@ -394,15 +391,15 @@ void BlitToBitmapMaskedRLE (int32_t w, int32_t h, int32_t dx, int32_t dy, int32_
 //------------------------------------------------------------------------------
 // in rle.c
 
-extern void gr_rle_expand_scanline_generic(CBitmap * dest, int32_t dx, int32_t dy, uint8_t *src, int32_t x1, int32_t x2 );
-extern void gr_rle_expand_scanline_generic_masked(CBitmap * dest, int32_t dx, int32_t dy, uint8_t *src, int32_t x1, int32_t x2 );
-extern void gr_rle_expand_scanline_svga_masked(CBitmap * dest, int32_t dx, int32_t dy, uint8_t *src, int32_t x1, int32_t x2 );
+extern void gr_rle_expand_scanline_generic(CBitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 );
+extern void gr_rle_expand_scanline_generic_masked(CBitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 );
+extern void gr_rle_expand_scanline_svga_masked(CBitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 );
 
-void StretchToBitmapRLE (int32_t w, int32_t h, int32_t dx, int32_t dy, int32_t sx, int32_t sy, CBitmap * src, CBitmap * dest)
+void StretchToBitmapRLE (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest)
 {
-	int32_t i, data_offset;
-	register int32_t y1;
-	uint8_t * sbits;
+	int i, data_offset;
+	register int y1;
+	ubyte * sbits;
 
 	data_offset = 1;
 	if (src->Flags () & BM_FLAG_RLE_BIG)
@@ -410,25 +407,25 @@ void StretchToBitmapRLE (int32_t w, int32_t h, int32_t dx, int32_t dy, int32_t s
 
 	sbits = &src->Buffer ()[4 + (src->Height ()*data_offset)];
 	for (i=0; i<sy; i++)
-		sbits += (int32_t)(INTEL_SHORT(src->Buffer ()[4+(i*data_offset)]));
+		sbits += (int)(INTEL_SHORT(src->Buffer ()[4+(i*data_offset)]));
 
 	for (y1=0; y1 < h; y1++)    {
 		gr_rle_expand_scanline_generic(dest, dx, dy+y1,  sbits, sx, sx+w-1 );
 		if (src->Flags () & BM_FLAG_RLE_BIG)
-			sbits += (int32_t)INTEL_SHORT (*reinterpret_cast<int16_t*> (src->Buffer () + 4 + (y1 + sy) * data_offset));
+			sbits += (int)INTEL_SHORT (*reinterpret_cast<short*> (src->Buffer () + 4 + (y1 + sy) * data_offset));
 		else
-			sbits += (int32_t) (*src) [4 + y1 + sy];
+			sbits += (int) (*src) [4 + y1 + sy];
 	}
 }
 
 //------------------------------------------------------------------------------
 // rescaling bitmaps, 10/14/99 Jan Bobrowski jb@wizard.ae.krakow.pl
 
-inline void ScaleLine (uint8_t *src, uint8_t *dest, int32_t ilen, int32_t olen)
+inline void ScaleLine (ubyte *src, ubyte *dest, int ilen, int olen)
 {
-	int32_t a = olen /ilen, b = olen % ilen;
-	int32_t c = 0, i;
-	uint8_t *end = dest + olen;
+	int a = olen /ilen, b = olen % ilen;
+	int c = 0, i;
+	ubyte *end = dest + olen;
 
 while (dest < end) {
 	i = a;
@@ -447,13 +444,13 @@ inside:
 
 //------------------------------------------------------------------------------
 
-void CBitmap::BlitScaled (CBitmap* pDest)
+void CBitmap::BlitScaled (CBitmap* destP)
 {
-	uint8_t *s = Buffer ();
-	uint8_t *d = pDest->Buffer ();
-	int32_t h = Height ();
-	int32_t a = pDest->Height () / h, b = pDest->Height () % h;
-	int32_t c = 0, i, y;
+	ubyte *s = Buffer ();
+	ubyte *d = destP->Buffer ();
+	int h = Height ();
+	int a = destP->Height () / h, b = destP->Height () % h;
+	int c = 0, i, y;
 
 for (y = 0; y < h; y++) {
 	i = a;
@@ -464,8 +461,8 @@ for (y = 0; y < h; y++) {
 		}
 	while(--i >= 0) {
 inside:
-		ScaleLine (s, d, Width (), pDest->Width ());
-		d += pDest->RowSize ();
+		ScaleLine (s, d, Width (), destP->Width ());
+		d += destP->RowSize ();
 		}
 	s += RowSize ();
 	}
@@ -473,44 +470,41 @@ inside:
 
 //------------------------------------------------------------------------------
 
-void CBitmap::Blit (CBitmap* pDest, int32_t xDest, int32_t yDest, int32_t w, int32_t h, int32_t xSrc, int32_t ySrc, int32_t bTransp)
+void CBitmap::Blit (CBitmap* dest, int xDest, int yDest, int w, int h, int xSrc, int ySrc, int bTransp)
 {
 if (Mode () == BM_LINEAR) {
-	if (pDest->Mode () == BM_LINEAR) {
+	if (dest->Mode () == BM_LINEAR) {
 		if (Flags () & BM_FLAG_RLE)
-			BlitToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, pDest);
+			BlitToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, dest);
 		else
-			SWBlitToBitmap (w, h, xDest, yDest, xSrc, ySrc, this, pDest);
+			SWBlitToBitmap (w, h, xDest, yDest, xSrc, ySrc, this, dest);
 		}
-	else if (pDest->Mode () == BM_OGL) {
-		CRectangle rc;
-		if (pDest)
-			rc = (CRectangle) (*pDest);
-		Render (pDest ? &rc : NULL, xDest, yDest, w, h, xSrc, ySrc, w, h, bTransp);
+	else if (dest->Mode () == BM_OGL) {
+		Render (dest, xDest, yDest, w, h, xSrc, ySrc, w, h, bTransp);
 		}
 	else if (Flags () & BM_FLAG_RLE) {
-		StretchToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, pDest);
+		StretchToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, dest);
 		}
 	else {
-		for (int32_t y1 = 0; y1 < h; y1++)  
-			for (int32_t x1 = 0; x1 < w; x1++)  
-				pDest->DrawPixel (xDest + x1, yDest + y1, GetPixel (xSrc + x1, ySrc + y1));
+		for (int y1 = 0; y1 < h; y1++)  
+			for (int x1 = 0; x1 < w; x1++)  
+				dest->DrawPixel (xDest + x1, yDest + y1, GetPixel (xSrc + x1, ySrc + y1));
 		}
 	}
 else if (Mode () == BM_OGL) {
-	if (pDest->Mode () == BM_LINEAR)
-		ScreenCopy (pDest, xDest, yDest, w, h, xSrc, ySrc);
+	if (dest->Mode () == BM_LINEAR)
+		ScreenCopy (dest, xDest, yDest, w, h, xSrc, ySrc);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void CBitmap::BlitClipped (int32_t xSrc, int32_t ySrc)
+void CBitmap::BlitClipped (int xSrc, int ySrc)
 {
 	CBitmap* const dest = CCanvas::Current ();
 
-	int32_t destLeft = xSrc, destRight = xSrc + Width () - 1;
-	int32_t destTop = ySrc, destBottom = ySrc + Height () - 1;
+	int destLeft = xSrc, destRight = xSrc + Width () - 1;
+	int destTop = ySrc, destBottom = ySrc + Height () - 1;
 
 if ((destLeft >= dest->Width ()) || (destRight < 0)) 
 	return;
@@ -537,15 +531,15 @@ Blit (dest, destLeft, destTop, destRight - destLeft + 1, destBottom - destTop + 
 
 //------------------------------------------------------------------------------
 // GrBmBitBlt 
-void CBitmap::BlitClipped (CBitmap* dest, int32_t destLeft, int32_t destTop, int32_t w, int32_t h, int32_t srcLeft, int32_t srcTop)
+void CBitmap::BlitClipped (CBitmap* dest, int destLeft, int destTop, int w, int h, int srcLeft, int srcTop)
 {
 if (!dest)
 	dest = CCanvas::Current ();
 
-	int32_t	destRight = destLeft + w - 1;
-	int32_t	destBottom = destTop + h - 1;
-	int32_t	srcRight = srcLeft + w - 1;
-	int32_t	srcBottom = srcTop + h - 1;
+	int	destRight = destLeft + w - 1;
+	int	destBottom = destTop + h - 1;
+	int	srcRight = srcLeft + w - 1;
+	int	srcBottom = srcTop + h - 1;
 
 if ((destLeft >= dest->Width ()) || (destRight < 0)) 
 	return;
@@ -585,7 +579,7 @@ if (srcBottom >= Height ()) {
 	srcBottom = Height () - 1; 
 	}
 
-// Draw bitmap pBm[x,y] into (destLeft,destTop)-(destRight,destBottom)
+// Draw bitmap bmP[x,y] into (destLeft,destTop)-(destRight,destBottom)
 if (w < 0)
 	w = Width ();
 if (h < 0)
@@ -607,11 +601,8 @@ Blit (dest, destLeft, destTop, w, h, srcLeft, srcTop, 1);
 
 void CBitmap::RenderFullScreen (void)
 {
-	CCanvas* const dest = CCanvas::Current ();
+	CBitmap * const dest = CCanvas::Current ();
 
-#if 1
-Render (NULL, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), (m_info.props.flags & BM_FLAG_TRANSPARENT) != 0, 0);
-#else
 if ((Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL)) {
 	Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), (m_info.props.flags & BM_FLAG_TRANSPARENT) != 0, 0);
 	}
@@ -623,7 +614,6 @@ else if (dest->Mode () != BM_LINEAR) {
 	}
 else
 	BlitScaled (dest);
-#endif
 }
 
 //------------------------------------------------------------------------------

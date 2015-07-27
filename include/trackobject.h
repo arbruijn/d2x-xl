@@ -16,7 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // Constants governing homing missile behavior.
 // MIN_TRACKABLE_DOT gets inversely scaled by FrameTime and stuffed in
-// gameData.weaponData.xMinTrackableDot
+// xMinTrackableDot
 #define MIN_TRACKABLE_DOT          (I2X (7) / 8)
 #define MAX_TRACKABLE_DIST         I2X (250)
 #define HOMINGMSL_STRAIGHT_TIME    (I2X (1) / 8)    //  Changed as per request of John, Adam, Yuan, but mostly John

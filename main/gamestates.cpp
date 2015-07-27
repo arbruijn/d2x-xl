@@ -173,7 +173,7 @@ gameStates.zoom.nChannel = -1;
 
 void InitRenderStates (void)
 {
-gameStates.render.xZoom = DEFAULT_ZOOM;
+gameStates.render.xZoom = 0x9000;
 gameStates.render.xZoomScale = 1;
 gameStates.render.nFrameCount = -1;
 gameStates.render.bQueryOcclusion = 0;
@@ -222,6 +222,11 @@ gameStates.render.cockpit.nCoopPlayerView [0] =
 gameStates.render.cockpit.nCoopPlayerView [1] = -1;
 gameStates.render.cockpit.n3DView [0] =
 gameStates.render.cockpit.n3DView [1] = CV_NONE;
+gameStates.render.vr.xEyeWidth = I2X (1);
+gameStates.render.vr.nRenderMode	= VR_NONE;
+gameStates.render.vr.nLowRes = 3;
+gameStates.render.vr.bShowHUD	= 1;
+gameStates.render.vr.nSensitivity = 1;
 gameStates.render.detail.nRenderDepth = DEFAULT_RENDER_DEPTH;
 gameStates.render.detail.nObjectComplexity = 4; 
 gameStates.render.detail.nObjectDetail = 4;
@@ -232,16 +237,6 @@ gameStates.render.bUsePerPixelLighting = 1;
 gameStates.render.nMaxLightsPerPass = 8;
 gameStates.render.nMaxLightsPerFace = 16;
 gameStates.render.xPlaneDistTolerance = DEFAULT_PLANE_DIST_TOLERANCE;
-gameStates.render.bBlurTextures = 1;
-gameStates.render.bPosterizeTextures = 1;
-gameStates.render.outlineColor.r = 2;
-gameStates.render.outlineColor.g = 2;
-gameStates.render.outlineColor.b = 2;
-gameStates.render.outlineColor.a = 255;
-gameStates.render.outlineWidth [0][0] = 3.0f;
-gameStates.render.outlineWidth [0][1] = 2.0f;
-gameStates.render.outlineWidth [1][0] = 2.0f;
-gameStates.render.outlineWidth [1][1] = 1.0f;
 }
 
 // ----------------------------------------------------------------------------
@@ -262,8 +257,8 @@ void InitVideoStates (void)
 {
 gameStates.video.nDisplayMode = 2;
 gameStates.video.nDefaultDisplayMode = 2;
-gameStates.video.nScreenMode = (uint32_t) -1;
-gameStates.video.nLastScreenMode = (uint32_t) -1;
+gameStates.video.nScreenMode = (u_int32_t) -1;
+gameStates.video.nLastScreenMode = (u_int32_t) -1;
 gameStates.video.nWidth = -1;
 gameStates.video.nHeight = -1;
 gameStates.video.bFullScreen = -1;
@@ -282,7 +277,7 @@ gameStates.app.nCriticalError = 0;
 gameStates.app.bNostalgia = 0;
 gameStates.app.iNostalgia = 0;
 gameStates.app.bD2XLevel = 0;
-gameStates.app.bShowVersionInfo = 1;
+gameStates.app.bShowVersionInfo = 0;
 gameStates.app.bSaveScreenShot = 0;
 gameStates.app.bGameRunning = 0;
 gameStates.app.bGameAborted = 0;
@@ -290,7 +285,6 @@ gameStates.app.bGameSuspended = 0;
 gameStates.app.bEnterGame = 0;
 gameStates.app.bUseSound = 1;
 gameStates.app.bLunacy = 0;
-gameStates.app.nTraceLevel = -1;
 gameStates.app.bHaveExtraGameInfo [0] = 1;
 gameStates.app.bHaveExtraGameInfo [1] = 0;
 gameStates.app.nSDLTicks [0] = -1;
@@ -314,7 +308,7 @@ gameStates.app.bHaveD1Textures = 0;
 gameStates.app.bEndLevelDataLoaded = 0;
 gameStates.app.bEndLevelSequence = 0;
 gameStates.app.bPlayerIsDead = 0;
-LOCALPLAYER.m_bExploded = 0;
+gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded = 0;
 gameStates.app.bPlayerEggsDropped = 0;
 gameStates.app.bDeathSequenceAborted = 0;
 gameStates.app.bUseDefaults = 0;
@@ -379,30 +373,6 @@ InitGfxStates ();
 InitRenderStates ();
 InitSoundStates ();
 InitVideoStates ();
-}
-
-// ----------------------------------------------------------------------------
-
-#include "ogl_lib.h"
-#include "automap.h"
-
-float CRenderStates::OutlineWidth (int32_t bPartial, float fScale, int32_t nScale)
-{
-if (fScale == 0.0f)
-	fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
-float w = fScale * outlineWidth [bPartial][automap.Active ()];
-if (bPartial)
-	w *= 2.0f / 3.0f;
-if (nScale)
-	w /= float (nScale * 2);
-return Clamp (w, ogl.m_data.lineWidthRange [0], Min (ogl.m_data.lineWidthRange [1], 10.f));
-}
-
-// ----------------------------------------------------------------------------
-
-int32_t CRenderStates::EnableCartoonStyle (int32_t bBlur, int32_t bPosterize, int32_t bOutline) 
-{
-return SetCartoonStyle (gameOpts->render.bCartoonize, bBlur, bPosterize, bOutline);
 }
 
 // ----------------------------------------------------------------------------

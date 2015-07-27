@@ -55,9 +55,7 @@ typedef struct kaliaddr_ipx_tag {
 //edited on 10/04/98 by Matt Mueller to show correct ver in kali
 #define KALI_PROCESS_NAME "D2X" VERSION
 //end edit -MM
-#ifndef MAX_PACKET_SIZE
-#	define MAX_PACKET_SIZE 1500
-#endif
+#define MAX_PACKET_SIZE 1500
 
 // struct ipx_helper ipx_kali = {
 //	ipx_kali_GetMyAddress,

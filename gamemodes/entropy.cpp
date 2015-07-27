@@ -9,44 +9,44 @@
 
 //	------------------------------------------------------------------------------------------------------
 
-int32_t FindProducer (int32_t nSegment)
+int FindProducer (int nSegment)
 {
-for (int32_t i = 0; i < gameData.producerData.nProducers; i++)
-	if (gameData.producerData.producers [i].nSegment == nSegment)
+for (int i = 0; i < gameData.producers.nProducers; i++)
+	if (gameData.producers.producers [i].nSegment == nSegment)
 		return i;
 return -1;
 }
 
 //-----------------------------------------------------------------------------
 
-int32_t CountRooms (void)
+int CountRooms (void)
 {
-	int32_t		i;
-	CSegment	*pSeg = SEGMENTS.Buffer ();
+	int		i;
+	CSegment	*segP = SEGMENTS.Buffer ();
 
-memset (gameData.entropyData.nRoomOwners, 0xFF, sizeof (gameData.entropyData.nRoomOwners));
-memset (gameData.entropyData.nTeamRooms, 0, sizeof (gameData.entropyData.nTeamRooms));
-for (i = 0; i <= gameData.segData.nLastSegment; i++, pSeg++)
-	if ((pSeg->m_owner >= 0) && (pSeg->m_group >= 0) && 
-		 /* (pSeg->m_group <= N_MAX_ROOMS) &&*/ (gameData.entropyData.nRoomOwners [(int32_t) pSeg->m_group] < 0))
-		gameData.entropyData.nRoomOwners [(int32_t) pSeg->m_group] = pSeg->m_owner;
+memset (gameData.entropy.nRoomOwners, 0xFF, sizeof (gameData.entropy.nRoomOwners));
+memset (gameData.entropy.nTeamRooms, 0, sizeof (gameData.entropy.nTeamRooms));
+for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++)
+	if ((segP->m_owner >= 0) && (segP->m_group >= 0) && 
+		 /* (segP->m_group <= N_MAX_ROOMS) &&*/ (gameData.entropy.nRoomOwners [(int) segP->m_group] < 0))
+		gameData.entropy.nRoomOwners [(int) segP->m_group] = segP->m_owner;
 for (i = 0; i < N_MAX_ROOMS; i++)
-	if (gameData.entropyData.nRoomOwners [i] >= 0) {
-		gameData.entropyData.nTeamRooms [(int32_t) gameData.entropyData.nRoomOwners [i]]++;
-		gameData.entropyData.nTotalRooms++;
+	if (gameData.entropy.nRoomOwners [i] >= 0) {
+		gameData.entropy.nTeamRooms [(int) gameData.entropy.nRoomOwners [i]]++;
+		gameData.entropy.nTotalRooms++;
 		}
-return gameData.entropyData.nTotalRooms;
+return gameData.entropy.nTotalRooms;
 }
 
 //-----------------------------------------------------------------------------
 
-void ConquerRoom (int32_t newOwner, int32_t oldOwner, int32_t roomId)
+void ConquerRoom (int newOwner, int oldOwner, int roomId)
 {
-	int32_t			f, h, i, j, jj, k, kk, nObject;
-	CSegment*		pSeg;
-	CObject*			pObj;
-	tProducerInfo*	pFuel;
-	int16_t			virusGens [MAX_FUEL_CENTERS];
+	int				f, h, i, j, jj, k, kk, nObject;
+	CSegment*		segP;
+	CObject*			objP;
+	tProducerInfo*	fuelP;
+	short				virusGens [MAX_FUEL_CENTERS];
 
 // this loop with
 // a) convert all segments with group 'roomId' to newOwner 'newOwner'
@@ -58,31 +58,31 @@ void ConquerRoom (int32_t newOwner, int32_t oldOwner, int32_t roomId)
 //    conquered virus centers converted from fuel/repair centers
 // So if j > jj or k < kk, all virus centers placed in virusGens can be converted
 // back to their original type
-gameData.entropyData.nTeamRooms [oldOwner]--;
-gameData.entropyData.nTeamRooms [newOwner]++;
-for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, pSeg = SEGMENTS.Buffer (); 
-	  i < gameData.segData.nSegments; 
-	  i++, pSeg++) {
-	if ((pSeg->m_group == roomId) && (pSeg->m_owner == oldOwner)) {
-		pSeg->m_owner = newOwner;
-		pSeg->ChangeTexture (oldOwner);
-		if (pSeg->m_function == SEGMENT_FUNC_VIRUSMAKER) {
+gameData.entropy.nTeamRooms [oldOwner]--;
+gameData.entropy.nTeamRooms [newOwner]++;
+for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (); 
+	  i < gameData.segs.nSegments; 
+	  i++, segP++) {
+	if ((segP->m_group == roomId) && (segP->m_owner == oldOwner)) {
+		segP->m_owner = newOwner;
+		segP->ChangeTexture (oldOwner);
+		if (segP->m_function == SEGMENT_FUNC_VIRUSMAKER) {
 			--k;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindProducer (i))) &&
-				 (gameData.producerData.origProducerTypes [f] != SEGMENT_FUNC_NONE))
+				 (gameData.producers.origProducerTypes [f] != SEGMENT_FUNC_NONE))
 				virusGens [--kk] = f;
-			for (nObject = pSeg->m_objects; nObject >= 0; nObject = pObj->info.nNextInSeg) {
-				pObj = OBJECT (nObject);
-				if ((pObj->info.nType == OBJ_POWERUP) && (pObj->info.nType == POW_ENTROPY_VIRUS))
-					pObj->info.nCreator = newOwner;
+			for (nObject = segP->m_objects; nObject >= 0; nObject = objP->info.nNextInSeg) {
+				objP = OBJECTS + nObject;
+				if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nType == POW_ENTROPY_VIRUS))
+					objP->info.nCreator = newOwner;
 				}
 			}
 		}
 	else {
-		if ((pSeg->m_owner == newOwner) && (pSeg->m_function == SEGMENT_FUNC_VIRUSMAKER)) {
+		if ((segP->m_owner == newOwner) && (segP->m_function == SEGMENT_FUNC_VIRUSMAKER)) {
 			j++;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindProducer (i))) &&
-				 (gameData.producerData.origProducerTypes [f] != SEGMENT_FUNC_NONE))
+				 (gameData.producers.origProducerTypes [f] != SEGMENT_FUNC_NONE))
 				virusGens [jj++] = f;
 			}
 		}
@@ -92,14 +92,14 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, pSeg = SEGMENTS.Buffer ();
 // back to their original nType
 if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && ((j > jj) || (k < kk))) {
 	if (kk < MAX_FUEL_CENTERS) {
-		memcpy (virusGens + jj, virusGens + kk, (MAX_FUEL_CENTERS - kk) * sizeof (int16_t));
+		memcpy (virusGens + jj, virusGens + kk, (MAX_FUEL_CENTERS - kk) * sizeof (short));
 		jj += (MAX_FUEL_CENTERS - kk);
 		for (j = 0; j < jj; j++) {
-			pFuel = gameData.producerData.producers + virusGens [j];
-			CSegment* pFuelSeg = SEGMENT (pFuel->nSegment);
-			pFuelSeg->m_function = gameData.producerData.origProducerTypes [uint32_t (pFuel - gameData.producerData.producers.Buffer ())];
-			pFuelSeg->CreateProducer (pFuelSeg->m_function);
-			pFuelSeg->ChangeTexture (newOwner);
+			fuelP = gameData.producers.producers + virusGens [j];
+			h = fuelP->nSegment;
+			SEGMENTS [h].m_function = gameData.producers.origProducerTypes [uint (fuelP - gameData.producers.producers.Buffer ())];
+			SEGMENTS [h].CreateProducer (SEGMENTS [h].m_function);
+			SEGMENTS [h].ChangeTexture (newOwner);
 			}
 		}
 	}
@@ -107,9 +107,9 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 // check if the old owner's last virus center has been conquered
 // if so, find a fuel or repair center owned by that and turn it into a virus generator
 // preferrably convert repair centers
-for (i = 0, h = -1, pSeg = SEGMENTS.Buffer (); i <= gameData.segData.nLastSegment; i++, pSeg++)
-	if (pSeg->m_owner == oldOwner) 
-		switch (SEGMENT (i)->m_function) {
+for (i = 0, h = -1, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++)
+	if (segP->m_owner == oldOwner) 
+		switch (SEGMENTS [i].m_function) {
 			case SEGMENT_FUNC_VIRUSMAKER:
 				return;
 			case SEGMENT_FUNC_FUELCENTER:
@@ -117,16 +117,15 @@ for (i = 0, h = -1, pSeg = SEGMENTS.Buffer (); i <= gameData.segData.nLastSegmen
 					h = i;
 				break;
 			case SEGMENT_FUNC_REPAIRCENTER:
-				if ((h < 0) || (SEGMENT (h)->m_function == SEGMENT_FUNC_FUELCENTER))
+				if ((h < 0) || (SEGMENTS [h].m_function == SEGMENT_FUNC_FUELCENTER))
 					h = i;
 			}
 if (h < 0)
 	return;
-pSeg = SEGMENT (h);
-i = pSeg->m_function;
-pSeg->m_function = SEGMENT_FUNC_VIRUSMAKER;
-pSeg->CreateRobotMaker (i);
-pSeg->ChangeTexture (newOwner);
+i = SEGMENTS [h].m_function;
+SEGMENTS [h].m_function = SEGMENT_FUNC_VIRUSMAKER;
+SEGMENTS [h].CreateRobotMaker (i);
+SEGMENTS [h].ChangeTexture (newOwner);
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -154,10 +153,10 @@ if (gameStates.entropy.bConquerWarning) {
 
 //	------------------------------------------------------------------------------------------------------
 
-int32_t CSegment::ConquerCheck (void)
+int CSegment::ConquerCheck (void)
 {
-	CPlayerData	*pPlayer = gameData.multiplayer.players + N_LOCALPLAYER;
-	int32_t		team = GetTeam (N_LOCALPLAYER) + 1;
+	CPlayerData	*playerP = gameData.multiplayer.players + N_LOCALPLAYER;
+	int		team = GetTeam (N_LOCALPLAYER) + 1;
 	time_t	t;
 
 gameStates.entropy.bConquering = 0;
@@ -169,12 +168,12 @@ if (gameStates.entropy.nTimeLastMoved < 0) {
 	StopConquerWarning ();
 	return 0;
 	}
-if (pPlayer->Shield () < 0) {
+if (playerP->Shield () < 0) {
 	HUDMessage (0, "you are dead");
 	StopConquerWarning ();
 	return 0;
 	}
-if (pPlayer->secondaryAmmo [PROXMINE_INDEX] < extraGameInfo [1].nCaptureVirusThreshold) {
+if (playerP->secondaryAmmo [PROXMINE_INDEX] < extraGameInfo [1].nCaptureVirusThreshold) {
 	HUDMessage (0, "too few viruses");
 	StopConquerWarning ();
 	return 0;
@@ -191,8 +190,8 @@ if (m_owner == team) {
 	}
 #else
 if ((gameStates.entropy.nTimeLastMoved < 0) || 
-	 (pPlayer->Shield () < 0) || 
-	 (pPlayer->secondaryAmmo [PROXMINE_INDEX] < extraGameInfo [1].entropy.nCaptureVirusThreshold) ||
+	 (playerP->Shield () < 0) || 
+	 (playerP->secondaryAmmo [PROXMINE_INDEX] < extraGameInfo [1].entropy.nCaptureVirusThreshold) ||
 	 (m_owner < 0) || 
 	 (m_owner == team)) {
 	StopConquerWarning ();
@@ -201,7 +200,7 @@ if ((gameStates.entropy.nTimeLastMoved < 0) ||
 #endif
 t = SDL_GetTicks ();
 if (!gameStates.entropy.nTimeLastMoved)
-	gameStates.entropy.nTimeLastMoved = (int32_t) t;
+	gameStates.entropy.nTimeLastMoved = (int) t;
 if (t - gameStates.entropy.nTimeLastMoved < extraGameInfo [1].entropy.nCaptureTimeThreshold * 1000) {
 	gameStates.entropy.bConquering = 1;
 	if (m_owner > 0)
@@ -210,12 +209,12 @@ if (t - gameStates.entropy.nTimeLastMoved < extraGameInfo [1].entropy.nCaptureTi
 	}
 StopConquerWarning ();
 if (m_owner)
-	MultiSendCaptureBonus (N_LOCALPLAYER);
-pPlayer->secondaryAmmo [PROXMINE_INDEX] -= extraGameInfo [1].entropy.nCaptureVirusThreshold;
-if (pPlayer->secondaryAmmo [SMARTMINE_INDEX] > extraGameInfo [1].entropy.nBashVirusCapacity)
-	pPlayer->secondaryAmmo [SMARTMINE_INDEX] -= extraGameInfo [1].entropy.nBashVirusCapacity;
+	MultiSendCaptureBonus ((char) N_LOCALPLAYER);
+playerP->secondaryAmmo [PROXMINE_INDEX] -= extraGameInfo [1].entropy.nCaptureVirusThreshold;
+if (playerP->secondaryAmmo [SMARTMINE_INDEX] > extraGameInfo [1].entropy.nBashVirusCapacity)
+	playerP->secondaryAmmo [SMARTMINE_INDEX] -= extraGameInfo [1].entropy.nBashVirusCapacity;
 else
-	pPlayer->secondaryAmmo [SMARTMINE_INDEX] = 0;
+	playerP->secondaryAmmo [SMARTMINE_INDEX] = 0;
 MultiSendConquerRoom (char (team), char (m_owner), char (m_group));
 ConquerRoom (char (team), char (m_owner), char (m_group));
 return 1;

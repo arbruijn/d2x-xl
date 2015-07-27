@@ -24,25 +24,25 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "mission.h"
 #include "player.h"
 
-extern int32_t ReadConfigFile(void);
-extern int32_t WriteConfigFile(bool bExitProgram = false);
+extern int ReadConfigFile(void);
+extern int WriteConfigFile(bool bExitProgram = false);
 
 typedef struct tGameConfig {
 	char		szLastPlayer [CALLSIGN_LEN+1];
 	char		szLastMission [MISSION_NAME_LEN+1];
-	int32_t		nDigiType;
-	int32_t		nDigiDMA;
-	int32_t		nMidiType;
-	uint8_t		nAudioVolume [2];
-	uint8_t		nMidiVolume;
-	uint8_t		nRedbookVolume;
-	uint8_t		bReverseChannels;
-	uint8_t		nControlType;
-	int32_t		vrType;
-	int32_t		vrResolution;
-	int32_t		vrTracking;
-	uint32_t		nVersion;
-	int32_t		nTotalTime;
+	int		nDigiType;
+	int		nDigiDMA;
+	int		nMidiType;
+	ubyte		nAudioVolume [2];
+	ubyte		nMidiVolume;
+	ubyte		nRedbookVolume;
+	ubyte		bReverseChannels;
+	ubyte		nControlType;
+	int		vrType;
+	int		vrResolution;
+	int		vrTracking;
+	uint		nVersion;
+	int		nTotalTime;
 } __pack__ tGameConfig;
 
 extern tGameConfig gameConfig;
@@ -60,7 +60,7 @@ extern tGameConfig gameConfig;
 #define CONTROL_MAX_TYPES 8
 
 void InitGameConfig (void);
-void SetNostalgia (int32_t nLevel);
+void SetNostalgia (int nLevel);
 
 #endif
 

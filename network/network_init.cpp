@@ -40,67 +40,16 @@ networkData.tLastPingStat = 0;
 
 //------------------------------------------------------------------------------
 
-void ResetNetworkData (void)
-{
-networkData.localAddress.Reset ();
-networkData.serverAddress.Reset ();
-networkData.nActiveGames = 0;
-networkData.nLastActiveGames = 0;
-networkData.nNamesInfoSecurity = 0;
-networkData.nMinPPS = 0;
-networkData.nNetLifeKills = 0;
-networkData.nNetLifeKilled = 0;
-networkData.bDebug = 0;
-networkData.bActive = 0;
-networkData.nStatus = 0;
-networkData.bGamesChanged = 0;
-networkData.nPortOffset = 0;
-networkData.bAllowSocketChanges = 0;
-networkData.nSecurityFlag = 0;
-networkData.nSecurityNum = 0;
-networkData.nJoinState = 0;
-networkData.bNewGame = 0;       
-networkData.bPlayerAdded = 0;   
-networkData.bD2XData = 0;
-networkData.nSecurityCheck = 0;
-networkData.bPacketUrgent = 0;
-networkData.nGameType = 0;
-networkData.nTotalMissedPackets = 0;
-networkData.nTotalPacketsGot = 0;
-networkData.nMissedPackets = 0;
-networkData.nConsistencyErrorCount = 0;
-networkData.bSyncPackInited = 0;       
-networkData.bWantPlayersInfo = 0;
-networkData.bWaitingForPlayerInfo = 0;
-networkData.nSegmentCheckSum = 0;
-networkData.nStartWaitAllTime = 0;
-memset (networkData.nLastPacketTime, 0, sizeof (networkData.nLastPacketTime));
-networkData.xLastSendTime = 0;
-networkData.xLastTimeoutCheck = 0;
-networkData.xPingReturnTime = 0;
-networkData.tLastPingStat = 0;
-networkData.bWaitAllChoice = 0;
-networkData.bShowPingStats = 0;
-networkData.bHaveSync = 0;
-networkData.nPrevFrame = 0;
-networkData.bTraceFrames = 0;
-networkData.nJoining = 0;
-networkData.xmlGameInfoRequestTime = 0;
-memset (&networkData.refuse, 0, sizeof (networkData.refuse));
-memset (&networkData.pThislayer, 0, sizeof (networkData.pThislayer));
-memset (networkData.syncInfo, 0, sizeof (networkData.syncInfo));
-}
-
-//------------------------------------------------------------------------------
-
 void InitNetworkData (void)
 {
-ResetNetworkData ();
+memset (&networkData, 0, sizeof (networkData));
 networkData.xmlGameInfoRequestTime = -1;
 networkData.nActiveGames = 0;
+networkData.nActiveGames = 0;
 networkData.nLastActiveGames = 0;
-networkData.nMinPPS = DEFAULT_PPS;
+networkData.nPacketsPerSec = 10;
 networkData.nNamesInfoSecurity = -1;
+networkData.nMaxXDataSize = NET_XDATA_SIZE;
 networkData.nNetLifeKills = 0;
 networkData.nNetLifeKilled = 0;
 networkData.bDebug = 0;
@@ -129,7 +78,7 @@ networkData.bWaitingForPlayerInfo = 0;
 
 void NetworkInit (void)
 {
-	int32_t nPlayerSave = N_LOCALPLAYER;
+	int nPlayerSave = N_LOCALPLAYER;
 
 GameDisableCheats ();
 gameStates.multi.bIWasKicked = 0;
@@ -145,45 +94,48 @@ gameData.multiplayer.maxPowerupsAllowed.Clear (0);
 gameData.multiplayer.powerupsInMine.Clear (0);
 networkData.nTotalMissedPackets = 0; 
 networkData.nTotalPacketsGot = 0;
-memset (&netGameInfo, 0, sizeof (netGameInfo));
+memset (&netGame, 0, sizeof (netGame));
 memset (&netPlayers [0], 0, sizeof (netPlayers [0]));
-networkData.pThislayer.nType = PID_REQUEST;
-memcpy (networkData.pThislayer.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
-networkData.pThislayer.player.versionMajor = D2X_MAJOR;
-networkData.pThislayer.player.versionMinor = D2X_MINOR | (IS_D2_OEM ? NETWORK_OEM : 3);
-networkData.pThislayer.player.rank=GetMyNetRanking ();
+networkData.thisPlayer.nType = PID_REQUEST;
+memcpy (networkData.thisPlayer.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
+networkData.thisPlayer.player.versionMajor = D2X_MAJOR;
+networkData.thisPlayer.player.versionMinor = D2X_MINOR | (IS_D2_OEM ? NETWORK_OEM : 0);
+networkData.thisPlayer.player.rank=GetMyNetRanking ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	memcpy (networkData.pThislayer.player.network.Node (), IpxGetMyLocalAddress (), 6);
-	networkData.pThislayer.player.network.SetNetwork (IpxGetMyServerAddress ());
+	memcpy (networkData.thisPlayer.player.network.Node (), IpxGetMyLocalAddress (), 6);
+	//if (gameStates.multi.nGameType == UDP_GAME)
+	//	networkData.thisPlayer.player.network.Port () = htons (networkData.thisPlayer.player.network.Port ());
+//		if (gameStates.multi.nGameType == UDP_GAME)
+//			memcpy (networkData.thisPlayer.player.network.Node (), networkData.localAddress + 4, 4);
+	memcpy (networkData.thisPlayer.player.network.Server (), IpxGetMyServerAddress (), 4);
 	}
-networkData.pThislayer.player.computerType = DOS;
+networkData.thisPlayer.player.computerType = DOS;
 N_LOCALPLAYER = nPlayerSave;         
 MultiNewGame ();
 networkData.bNewGame = 1;
-gameData.reactorData.bDestroyed = 0;
+gameData.reactor.bDestroyed = 0;
 NetworkFlush ();
-netGameInfo.SetMinPPS (mpParams.nMinPPS);
+netGame.SetPacketsPerSec (mpParams.nPPS);
 memcpy (extraGameInfo + 2, extraGameInfo, sizeof (extraGameInfo [0]));
-//networkThread.Start ();
 }
 
 //------------------------------------------------------------------------------
 
-int32_t NetworkCreateMonitorVector (void)
+int NetworkCreateMonitorVector (void)
 {
 	#define MAX_BLOWN_BITMAPS 100
 	
-	int32_t      blownBitmaps [MAX_BLOWN_BITMAPS];
-	int32_t      nBlownBitmaps = 0;
-	int32_t      nMonitor = 0;
-	int32_t      vector = 0;
-	CSegment *pSeg = SEGMENTS.Buffer ();
-	CSide    *pSide;
-	int32_t      h, i, j, k;
-	int32_t      tm, ec;
+	int      blownBitmaps [MAX_BLOWN_BITMAPS];
+	int      nBlownBitmaps = 0;
+	int      nMonitor = 0;
+	int      vector = 0;
+	CSegment *segP = SEGMENTS.Buffer ();
+	CSide    *sideP;
+	int      h, i, j, k;
+	int      tm, ec;
 
-for (i = 0; i < gameData.effectData.nEffects [gameStates.app.bD1Data]; i++) {
-	if ((h = gameData.effectData.pEffect [i].destroyed.nTexture) > 0) {
+for (i = 0; i < gameData.effects.nEffects [gameStates.app.bD1Data]; i++) {
+	if ((h = gameData.effects.effectP [i].nDestBm) > 0) {
 		for (j = 0; j < nBlownBitmaps; j++)
 			if (blownBitmaps [j] == h)
 				break;
@@ -194,13 +146,13 @@ for (i = 0; i < gameData.effectData.nEffects [gameStates.app.bD1Data]; i++) {
 		}
 	}               
 	
-for (i = 0; i <= gameData.segData.nLastSegment; i++, pSeg++) {
-	for (j = 0, pSide = pSeg->m_sides; j < SEGMENT_SIDE_COUNT; j++, pSide++) {
-		if (!pSide->FaceCount ())
+for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
+	for (j = 0, sideP = segP->m_sides; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
+		if (!sideP->FaceCount ())
 			continue;
-		if ((tm = pSide->m_nOvlTex) != 0) {
-			if (((ec = gameData.pigData.tex.pTexMapInfo [tm].nEffectClip) != -1) &&
-					(gameData.effectData.pEffect[ec].destroyed.nTexture != -1)) {
+		if ((tm = sideP->m_nOvlTex) != 0) {
+			if (((ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip) != -1) &&
+					(gameData.effects.effectP[ec].nDestBm != -1)) {
 				nMonitor++;
 				//Assert (nMonitor < 32);
 				}
@@ -222,72 +174,72 @@ return vector;
 
 //------------------------------------------------------------------------------
 
-void InitMonsterballSettings (tMonsterballInfo *pMonsterBall)
+void InitMonsterballSettings (tMonsterballInfo *monsterballP)
 {
-	tMonsterballForce *pForce = pMonsterBall->forces;
+	tMonsterballForce *forceP = monsterballP->forces;
 
 // primary weapons
-pForce [0].nWeaponId = LASER_ID; 
-pForce [0].nForce = 10;
-pForce [1].nWeaponId = LASER_ID + 1; 
-pForce [1].nForce = 20;
-pForce [2].nWeaponId = LASER_ID + 2; 
-pForce [2].nForce = 30;
-pForce [3].nWeaponId = LASER_ID + 3; 
-pForce [3].nForce = 50;
-pForce [4].nWeaponId = SPREADFIRE_ID; 
-pForce [4].nForce = 100;
-pForce [5].nWeaponId = VULCAN_ID; 
-pForce [5].nForce = 20;
-pForce [6].nWeaponId = PLASMA_ID; 
-pForce [6].nForce = 100;
-pForce [7].nWeaponId = FUSION_ID; 
-pForce [7].nForce = 500;
+forceP [0].nWeaponId = LASER_ID; 
+forceP [0].nForce = 10;
+forceP [1].nWeaponId = LASER_ID + 1; 
+forceP [1].nForce = 20;
+forceP [2].nWeaponId = LASER_ID + 2; 
+forceP [2].nForce = 30;
+forceP [3].nWeaponId = LASER_ID + 3; 
+forceP [3].nForce = 50;
+forceP [4].nWeaponId = SPREADFIRE_ID; 
+forceP [4].nForce = 100;
+forceP [5].nWeaponId = VULCAN_ID; 
+forceP [5].nForce = 20;
+forceP [6].nWeaponId = PLASMA_ID; 
+forceP [6].nForce = 100;
+forceP [7].nWeaponId = FUSION_ID; 
+forceP [7].nForce = 500;
 // primary "super" weapons
-pForce [8].nWeaponId = SUPERLASER_ID; 
-pForce [8].nForce = 75;
-pForce [9].nWeaponId = SUPERLASER_ID + 1; 
-pForce [9].nForce = 100;
-pForce [10].nWeaponId = HELIX_ID; 
-pForce [10].nForce = 200;
-pForce [11].nWeaponId = GAUSS_ID; 
-pForce [11].nForce = 30;
-pForce [12].nWeaponId = PHOENIX_ID; 
-pForce [12].nForce = 200;
-pForce [13].nWeaponId = OMEGA_ID; 
-pForce [13].nForce = 1;
-pForce [14].nWeaponId = FLARE_ID; 
-pForce [14].nForce = 1;
+forceP [8].nWeaponId = SUPERLASER_ID; 
+forceP [8].nForce = 75;
+forceP [9].nWeaponId = SUPERLASER_ID + 1; 
+forceP [9].nForce = 100;
+forceP [10].nWeaponId = HELIX_ID; 
+forceP [10].nForce = 200;
+forceP [11].nWeaponId = GAUSS_ID; 
+forceP [11].nForce = 30;
+forceP [12].nWeaponId = PHOENIX_ID; 
+forceP [12].nForce = 200;
+forceP [13].nWeaponId = OMEGA_ID; 
+forceP [13].nForce = 1;
+forceP [14].nWeaponId = FLARE_ID; 
+forceP [14].nForce = 1;
 // missiles
-pForce [15].nWeaponId = CONCUSSION_ID; 
-pForce [15].nForce = 500;
-pForce [16].nWeaponId = HOMINGMSL_ID; 
-pForce [16].nForce = 500;
-pForce [17].nWeaponId = SMARTMSL_ID; 
-pForce [17].nForce = 1000;
-pForce [18].nWeaponId = MEGAMSL_ID; 
-pForce [18].nForce = 5000;
+forceP [15].nWeaponId = CONCUSSION_ID; 
+forceP [15].nForce = 500;
+forceP [16].nWeaponId = HOMINGMSL_ID; 
+forceP [16].nForce = 500;
+forceP [17].nWeaponId = SMARTMSL_ID; 
+forceP [17].nForce = 1000;
+forceP [18].nWeaponId = MEGAMSL_ID; 
+forceP [18].nForce = 5000;
 // "super" missiles
-pForce [19].nWeaponId = FLASHMSL_ID; 
-pForce [19].nForce = 500;
-pForce [20].nWeaponId = GUIDEDMSL_ID; 
-pForce [20].nForce = 500;
-pForce [21].nWeaponId = MERCURYMSL_ID; 
-pForce [21].nForce = 300;
-pForce [22].nWeaponId = EARTHSHAKER_ID; 
-pForce [22].nForce = 10000;
-pForce [23].nWeaponId = EARTHSHAKER_MEGA_ID; 
-pForce [23].nForce = 2500;
+forceP [19].nWeaponId = FLASHMSL_ID; 
+forceP [19].nForce = 500;
+forceP [20].nWeaponId = GUIDEDMSL_ID; 
+forceP [20].nForce = 500;
+forceP [21].nWeaponId = MERCURYMSL_ID; 
+forceP [21].nForce = 300;
+forceP [22].nWeaponId = EARTHSHAKER_ID; 
+forceP [22].nForce = 10000;
+forceP [23].nWeaponId = EARTHSHAKER_MEGA_ID; 
+forceP [23].nForce = 2500;
 // CPlayerData ships
-pForce [24].nWeaponId = 255;
-pForce [24].nForce = 4;
-pMonsterBall->nBonus = 1;
-pMonsterBall->nSizeMod = 7;	// that is actually shield orb size * 3, because it's divided by 2, thus allowing for half sizes
+forceP [24].nWeaponId = 255;
+forceP [24].nForce = 4;
+monsterballP->nBonus = 1;
+monsterballP->nSizeMod = 7;	// that is actually shield orb size * 3, because it's divided by 2, thus allowing for half sizes
 }
 
 //------------------------------------------------------------------------------
 
-void InitEntropySettings (int32_t i)
+void InitEntropySettings (int i)
 {
 extraGameInfo [i].entropy.nEnergyFillRate = 25;
 extraGameInfo [i].entropy.nShieldFillRate = 11;
@@ -311,7 +263,7 @@ extraGameInfo [i].entropy.bPlayerHandicap = 0;
 
 void InitExtraGameInfo (void)
 {
-	int32_t	i;
+	int	i;
 
 for (i = 0; i < 2; i++) {
 	extraGameInfo [i].nType = 0;
@@ -353,7 +305,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bDamageExplosions = 1;
 	extraGameInfo [i].bThrusterFlames = 1;
 	extraGameInfo [i].bShadows = 1;
-	extraGameInfo [i].nShieldEffect = gameOpts->render.effects.bShields;
+	extraGameInfo [i].bPlayerShield = 1;
 	extraGameInfo [i].bTeleporterCams = 0;
 	extraGameInfo [i].bDarkness = 0;
 	extraGameInfo [i].bTeamDoors = 0;
@@ -374,7 +326,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bBrightObjects = i;
 	extraGameInfo [i].bCheckUDPPort = 1;
 	extraGameInfo [i].bSmokeGrenades = 0;
-	extraGameInfo [i].nWeaponTurnSpeed = 0;
+	extraGameInfo [i].nMslTurnSpeed = 2;
 	extraGameInfo [i].nMslStartSpeed = 0;
 	extraGameInfo [i].nMaxSmokeGrenades = 2;
 	extraGameInfo [i].nCoopPenalty = 0;
@@ -391,10 +343,6 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].nLightRange = 0;
 	extraGameInfo [i].headlight.bAvailable = 1;
 	extraGameInfo [i].headlight.bDrainPower = 1;
-	extraGameInfo [i].timeout.nDisconnectPlayer = TIMEOUT_DISCONNECT;
-	extraGameInfo [i].timeout.nKickPlayer = TIMEOUT_KICK;
-	extraGameInfo [i].timeout.nKeepMessage = TIMEOUT_MSG_KEEP_COOP;
-	extraGameInfo [i].timeout.nResendMessage = TIMEOUT_MSG_RESEND_COOP;
 	InitEntropySettings (i);
 	InitMonsterballSettings (&extraGameInfo [i].monsterball);
 	}
@@ -402,32 +350,7 @@ for (i = 0; i < 2; i++) {
 
 //------------------------------------------------------------------------------
 
-void NetworkSetTimeoutValues (void)
-{
-networkData.nCompetitionLevel = COMPETITION_LEVEL;
-for (int32_t i = 0; i < 2; i++) {
-	switch (networkData.nCompetitionLevel) {
-		case 2:
-			extraGameInfo [i].timeout.nKeepMessage = TIMEOUT_MSG_KEEP_COMP;
-			extraGameInfo [i].timeout.nResendMessage = TIMEOUT_MSG_RESEND_COMP;
-			break;
-
-		case 1:
-			extraGameInfo [i].timeout.nKeepMessage = TIMEOUT_MSG_KEEP_STD;
-			extraGameInfo [i].timeout.nResendMessage = TIMEOUT_MSG_RESEND_STD;
-			break;
-
-		default:
-			extraGameInfo [i].timeout.nKeepMessage = TIMEOUT_MSG_KEEP_COOP;
-			extraGameInfo [i].timeout.nResendMessage = TIMEOUT_MSG_RESEND_COOP;
-			break;
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-int32_t InitAutoNetGame (void)
+int InitAutoNetGame (void)
 {
 if (gameData.multiplayer.autoNG.bValid <= 0)
 	return 0;
@@ -473,7 +396,7 @@ if (gameData.multiplayer.autoNG.bHost) {
 	mpParams.nGameType = mpParams.nGameMode;
 	}
 else {
-	networkData.serverAddress.SetServer (gameData.multiplayer.autoNG.ipAddr);
+	memcpy (networkData.serverAddress + 4, gameData.multiplayer.autoNG.ipAddr, sizeof (gameData.multiplayer.autoNG.ipAddr));
 	mpParams.udpPorts [0] = gameData.multiplayer.autoNG.nPort;
 	}
 PrintLog (-1);
@@ -530,7 +453,7 @@ else {
 	PrintLog (0, "bDamageExplosions: %d\n", extraGameInfo [1].bDamageExplosions);
 	PrintLog (0, "bThrusterFlames: %d\n", extraGameInfo [1].bThrusterFlames);
 	PrintLog (0, "bShadows: %d\n", extraGameInfo [1].bShadows);
-	PrintLog (0, "nShieldEffect: %d\n", extraGameInfo [1].nShieldEffect);
+	PrintLog (0, "bPlayerShield: %d\n", extraGameInfo [1].bPlayerShield);
 	PrintLog (0, "bTeleporterCams: %d\n", extraGameInfo [1].bTeleporterCams);
 	PrintLog (0, "bEnableCheats: %d\n", extraGameInfo [1].bEnableCheats);
 	PrintLog (0, "bTargetIndicators: %d\n", extraGameInfo [1].bTargetIndicators);
@@ -550,9 +473,9 @@ else {
 	PrintLog (0, "bFlickerLights: %d\n", extraGameInfo [1].bFlickerLights);
 	PrintLog (0, "bCheckUDPPort: %d\n", extraGameInfo [1].bCheckUDPPort);
 	PrintLog (0, "bSmokeGrenades: %d\n", extraGameInfo [1].bSmokeGrenades);
-	PrintLog (0, "nWeaponTurnSpeed: %d\n", extraGameInfo [1].nWeaponTurnSpeed);
+	PrintLog (0, "nMslTurnSpeed: %d\n", extraGameInfo [1].nMslTurnSpeed);
 	PrintLog (0, "nMslStartSpeed: %d\n", extraGameInfo [1].nMslStartSpeed);
-	PrintLog (0, "nCoopPenalty: %d\n", (int32_t) nCoopPenalties [(int32_t) extraGameInfo [1].nCoopPenalty]);
+	PrintLog (0, "nCoopPenalty: %d\n", (int) nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty]);
 	PrintLog (0, "bKillMissiles: %d\n", extraGameInfo [1].bKillMissiles);
 	PrintLog (0, "bTripleFusion: %d\n", extraGameInfo [1].bTripleFusion);
 	PrintLog (0, "bShowWeapons: %d\n", extraGameInfo [1].bShowWeapons);

@@ -75,6 +75,22 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	D1_AIE_COLL		2
 #define	D1_AIE_HURT		3
 
+//typedef struct opath {
+//	byte			path_index;					// current index of path
+//	byte			path_direction;			// current path direction
+//	byte			path_length;				//	length of current path
+//	byte			nothing;
+//	short			path[MAX_SEGMENTS_PER_PATH];
+//	short			always_0xabc;				//	If this is ever not 0xabc, then someone overwrote
+//} opath;
+//
+//typedef struct oD1_AI_state {
+//	short			mode;							// 
+//	short			counter;						// kind of a hack, frame countdown until switch modes
+//	opath			paths[2];
+//	CFixVector	movement_vector;			// movement vector for one second
+//} oD1_AI_state;
+
 //	Constants defining meaning of flags in D1_AI_state
 #define	MAX_D1_AI_FLAGS	11					//	This MUST cause word (4 bytes) alignment in D1_AI_static, allowing for one byte mode
 

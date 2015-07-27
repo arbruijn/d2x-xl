@@ -20,11 +20,11 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"
 #include "grdef.h"
 
-#if 0 //software renderer
+#ifndef OGL
 
-int32_t gr_circle(fix xc1,fix yc1,fix r1)
+int gr_circle(fix xc1,fix yc1,fix r1)
 {
-	int32_t p,x, y, xc, yc, r;
+	int p,x, y, xc, yc, r;
 
 	r = X2I(r1);
 	xc = X2I(xc1);
@@ -69,9 +69,9 @@ int32_t gr_circle(fix xc1,fix yc1,fix r1)
 	return 0;
 }
 
-int32_t GRUCircle(fix xc1,fix yc1,fix r1)
+int GRUCircle(fix xc1,fix yc1,fix r1)
 {
-	int32_t p,x, y, xc, yc, r;
+	int p,x, y, xc, yc, r;
 
 	r = X2I(r1);
 	xc = X2I(xc1);

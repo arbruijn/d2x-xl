@@ -11,7 +11,7 @@
 
 # define FD_ZERO(set)  \
   do {                                                                        \
-	      uint32_t __i;                                                         \
+	      uint __i;                                                         \
 			      for (__i = 0; __i < sizeof (__fd_set) / sizeof (__fd_mask); ++__i)        \
 					        (reinterpret_cast<__fd_mask *> set)[__i] = 0;                                           \
 								  } while (0)
@@ -25,10 +25,10 @@
 #undef longjmp(env,val)
 #define longjmp(env,val) __chcklongjmp(env,val)
 
-int32_t __chcklongjmp(jmp_buf buf,int32_t val);
-int32_t __chcksetjmp(jmp_buf buf);
+int __chcklongjmp(jmp_buf buf,int val);
+int __chcksetjmp(jmp_buf buf);
 
-void chcksetwritable(char * p, int32_t size);
-void chcksetunwritable(char * p, int32_t size);
+void chcksetwritable(char * p, int size);
+void chcksetunwritable(char * p, int size);
 
 #endif

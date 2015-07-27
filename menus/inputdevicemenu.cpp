@@ -26,34 +26,34 @@
 //------------------------------------------------------------------------------
 
 static struct {
-	int32_t	nUse;
-	int32_t	nMode;
-	int32_t	nDeadzone;
-	int32_t	nSensitivity;
-	int32_t	nMove;
-	int32_t	nSyncAxes;
+	int	nUse;
+	int	nMode;
+	int	nDeadzone;
+	int	nSensitivity;
+	int	nMove;
+	int	nSyncAxes;
 } tirOpts;
 
 static struct {
-	int32_t	nUse;
-	int32_t	nMouselook;
-	int32_t	nSyncAxes;
-	int32_t	nJoystick;
-	int32_t	nDeadzone;
-	int32_t	nSensitivity;
+	int	nUse;
+	int	nMouselook;
+	int	nSyncAxes;
+	int	nJoystick;
+	int	nDeadzone;
+	int	nSensitivity;
 } mouseOpts;
 
 static struct {
-	int32_t	nUse;
-	int32_t	nSyncAxes;
-	int32_t	nDeadzone;
-	int32_t	nSensitivity;
-	int32_t	nLinearSens;
+	int	nUse;
+	int	nSyncAxes;
+	int	nDeadzone;
+	int	nSensitivity;
+	int	nLinearSens;
 } joyOpts;
 
-int32_t nCustomizeAboveOpt;
+int nCustomizeAboveOpt;
 
-int32_t nJoyDeadzones [] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 40, 50};
+int nJoyDeadzones [] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 40, 50};
 
 char szAxis3D [3] = {'X', 'Y', 'R'};
 
@@ -67,7 +67,7 @@ char joyHotkeys [UNIQUE_JOY_AXES] = {KEY_X, KEY_Y, KEY_R, KEY_T, KEY_Z};
 
 static const char *szDZoneSizes [5];
 
-int32_t joydefs_calibrateFlag = 0;
+int joydefs_calibrateFlag = 0;
 
 //------------------------------------------------------------------------------
 
@@ -76,7 +76,7 @@ void JoyDefsCalibrate (void)
 	joydefs_calibrateFlag = 0;
 
 	if (!gameStates.input.nJoysticks) {
-		InfoBox (NULL, NULL, BG_STANDARD, 1, TXT_OK, TXT_NO_JOYSTICK);
+		MsgBox( NULL, NULL, 1, TXT_OK, TXT_NO_JOYSTICK );
 		return;
 	}
 	//Actual calibration if necessary
@@ -84,7 +84,7 @@ void JoyDefsCalibrate (void)
 
 //------------------------------------------------------------------------------
 
-int32_t AddDeadzoneControl (CMenu& m, char* szText, const char *szFmt, const char *szHelp, const char **szSizes, uint8_t nValue, char nKey)
+int AddDeadzoneControl (CMenu& m, char* szText, const char *szFmt, const char *szHelp, const char **szSizes, ubyte nValue, char nKey)
 {
 if (szSizes)
 	sprintf (szText + 1, szFmt, szSizes [nValue]);
@@ -96,11 +96,11 @@ return m.AddSlider ("deadzone", szText + 1, nValue, 0, szSizes ? 4 : 15, nKey, s
 
 //------------------------------------------------------------------------------
 
-int32_t AddAxisControls (CMenu& menu, const char* szType, char *szText, const char *szFmtSyncd, const char *szFmt, const char *szLabel, const char *szHelp,
-							int32_t nControls, int32_t *pnValues, int32_t nValues, int32_t *pnIntervals, 
-							char nKeySyncd, char *pnKeys, int32_t bSyncControls)
+int AddAxisControls (CMenu& menu, char* szType, char *szText, const char *szFmtSyncd, const char *szFmt, const char *szLabel, const char *szHelp, 
+							int nControls, int *pnValues, int nValues, int *pnIntervals, 
+							char nKeySyncd, char *pnKeys, int bSyncControls)
 {
-	int32_t	h = 0, i, j, v, opt; 
+	int	h = 0, i, j, v, opt; 
 	char	szId [100];
 
 j = bSyncControls ? 1 : nControls;
@@ -135,19 +135,19 @@ return h;
 
 //------------------------------------------------------------------------------
 
-int32_t MouseConfigCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+int MouseConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
 
-	int32_t h, i, v;
-	int32_t ocType = gameConfig.nControlType;
+	int h, i, v;
+	int ocType = gameConfig.nControlType;
 	CMenuItem * m;
 	char szId [100];
 
 controls.SetType ();
 if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
-	InfoBox (TXT_IMPORTANT_NOTE, NULL, BG_STANDARD, 1, TXT_OK, TXT_FCS);
+	MsgBox (TXT_IMPORTANT_NOTE, NULL, 1, TXT_OK, TXT_FCS);
 	}
 if (ocType != gameConfig.nControlType) {
 	switch (gameConfig.nControlType) {
@@ -228,11 +228,11 @@ return nCurItem;
 void MouseConfigMenu (void)
 {
 	CMenu	m;
-	int32_t	i, j;
+	int	i, j;
 	char	szMouseSens [3][50];
 	char	szMouseDeadzone [50];
 
-	static int32_t choice = 0;
+	static int choice = 0;
 
 szDZoneSizes [0] = TXT_NONE;
 szDZoneSizes [1] = TXT_SMALL;
@@ -290,29 +290,26 @@ do {
 		if (i == -1)
 			return;
 		gameConfig.nControlType = gameOpts->input.mouse.bUse ? CONTROL_MOUSE : gameConfig.nControlType;
-		if (choice == m.IndexOf ("customize device")) {
-			GrabMouse (1, 1);
+		if (choice == m.IndexOf ("customize device"))
 			controlConfig.Run (2, TXT_CFG_MOUSE);
-			GrabMouse (0, 1);
-			}
 	} while (i >= 0);
 }
 
 //------------------------------------------------------------------------------
 
-int32_t JoystickConfigCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+int JoystickConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem * m;
-	int32_t h, i, v;
-	int32_t ocType = gameConfig.nControlType;
+	int h, i, v;
+	int ocType = gameConfig.nControlType;
 	char szId [100];
 
 controls.SetType ();
 if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
-	InfoBox (TXT_IMPORTANT_NOTE, NULL, BG_STANDARD, 1, TXT_OK, TXT_FCS);
+	MsgBox (TXT_IMPORTANT_NOTE, NULL, 1, TXT_OK, TXT_FCS);
 	}
 
 if (ocType != gameConfig.nControlType) {
@@ -401,11 +398,11 @@ return nCurItem;
 void JoystickConfigMenu (void)
 {
 	CMenu m;
-	int32_t	h, i, j;
+	int	h, i, j;
 	char	szJoySens [UNIQUE_JOY_AXES][50];
 	char	szJoyDeadzone [UNIQUE_JOY_AXES][50];
 
-	static int32_t choice = 0;
+	static int choice = 0;
 
 do {
 	do {
@@ -460,56 +457,14 @@ do {
 
 //------------------------------------------------------------------------------
 
-int32_t OculusRiftConfigCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
-{
-	CMenuItem*	m;
+char* trackirModeIds [] = {"aim", "steer", "look"};
 
-if (!(m = menu ["deadzone"]))
-	return nCurItem;
-int32_t v = m->Value ();
-if (gameOpts->input.oculusRift.nDeadzone != v) {
-	gameOpts->input.oculusRift.nDeadzone = v;
-	sprintf (m->Text (), TXT_RIFT_DEADZONE, szDZoneSizes [v]);
-	m->Rebuild ();
-	}
-return nCurItem;
-}
-
-//------------------------------------------------------------------------------
-
-void OculusRiftConfigMenu (void)
-{
-	CMenu	m;
-	int32_t	i;
-	char	szDeadzone [50];
-
-	static int32_t choice = 0;
-
-szDZoneSizes [0] = TXT_NONE;
-szDZoneSizes [1] = TXT_SMALL;
-szDZoneSizes [2] = TXT_MEDIUM;
-szDZoneSizes [3] = TXT_LARGE;
-szDZoneSizes [4] = TXT_VERY_LARGE;
-
-do {
-	m.Destroy ();
-	m.Create (5);
-
-	AddDeadzoneControl (m, szDeadzone, TXT_RIFT_DEADZONE, HTX_RIFT_DEADZONE, szDZoneSizes, gameOpts->input.oculusRift.nDeadzone, KEY_U);
-	i = m.Menu (NULL, TXT_RIFT_CONFIG, OculusRiftConfigCallback, &choice);
-	} while ((i >= 0) || (i == -2));
-}
-
-//------------------------------------------------------------------------------
-
-const char* trackirModeIds [] = {"aim", "steer", "look"};
-
-int32_t TrackIRConfigCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+int TrackIRConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
 
-	int32_t			h, i, v;
+	int			h, i, v;
 	CMenuItem*	m;
 	char			szId [100];
 
@@ -590,12 +545,12 @@ return nCurItem;
 void TrackIRConfigMenu (void)
 {
 	CMenu	m;
-	int32_t	i;
+	int	i;
 	char	szTrackIRSens [3][50];
 	char	szTrackIRDeadzone [50];
 	char	szId [100];
 
-	static int32_t choice = 0;
+	static int choice = 0;
 
 szDZoneSizes [0] = TXT_NONE;
 szDZoneSizes [1] = TXT_SMALL;
@@ -629,7 +584,7 @@ do {
 			m.AddCheck ("sync axis", TXT_SYNC_TRACKIR_AXES, gameOpts->input.trackIR.bSyncAxis, KEY_K, HTX_SYNC_TRACKIR_AXES);
 			AddAxisControls (m, "sensitivity", &szTrackIRSens [0][0], TXT_TRACKIR_SENS, TXT_TRACKIR_SENS_N, szAxis3D, HTX_TRACKIR_SENS, 
 								  3, gameOpts->input.trackIR.sensitivity, 16, NULL, KEY_S, axis3DHotkeys, gameOpts->input.trackIR.bSyncAxis);
-			AddDeadzoneControl (m, szTrackIRDeadzone, TXT_TRACKIR_DEADZONE, HTX_TRACKIR_DEADZONE, szDZoneSizes, gameOpts->input.trackIR.nDeadzone, KEY_U);
+			AddDeadzoneControl (m, szTrackIRDeadzone, TXT_TRACKIR_DEADZONE, HTX_TRACKIR_DEADZONE, NULL, gameOpts->input.trackIR.nDeadzone, KEY_U);
 			}
 		}
 	i = m.Menu (NULL, TXT_TRACKIR_CONFIG, TrackIRConfigCallback, &choice);
@@ -640,15 +595,15 @@ do {
 
 //------------------------------------------------------------------------------
 
-static const char* kbdRampIds [] = {"acceleration", "rotation", "sliding"};
-static const char* kbdLayoutIds [] = {"qwerty", "qwertz", "azerty", "dvorak"};
+static char* kbdRampIds [] = {"acceleration", "rotation", "sliding"};
+static char* kbdLayoutIds [] = {"qwerty", "qwertz", "azerty", "dvorak"};
 
-int32_t KeyboardConfigCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+int KeyboardConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
 
-	int32_t			i, v;
+	int			i, v;
 	CMenuItem*	m;
 
 if (gameOpts->app.bExpertMode || gameOpts->app.bNotebookFriendly) {
@@ -678,15 +633,15 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-void DefaultKeyboardSettings (bool bSetup = false);
+void DefaultKeyboardSettings (void);
 
 void KeyboardConfigMenu (void)
 {
 	CMenu	m;
-	int32_t	i;
+	int	i;
 	char	szKeyRampScale [50];
 
-	static int32_t choice = 0;
+	static int choice = 0;
 
 do {
 	do {
@@ -721,13 +676,13 @@ do {
 		m.AddRadio (kbdLayoutIds [3], TXT_DVORAK, gameOpts->input.keyboard.nType == 3, KEY_D, HTX_KEYBOARD_LAYOUT);
 		i = m.Menu (NULL, TXT_KEYBOARD_CONFIG, KeyboardConfigCallback, &choice);
 		} while (i == -2);
-	for (int32_t j = 0; j < 4; j++)
+	if (i == -1)
+		return;
+	for (int j = 0; j < 4; j++)
 		if (m.Value (kbdLayoutIds [j]) != 0) {
 			gameOpts->input.keyboard.nType = j;
 			break;
 			}
-	if (i == -1)
-		return;
 	if (choice == m.IndexOf ("customize device"))
 		controlConfig.Run (0, TXT_CFG_KBD);
 	else if (choice == m.IndexOf ("customize hotkeys"))
@@ -741,9 +696,9 @@ DefaultKeyboardSettings ();
 void InputDeviceConfig (void)
 {
 	CMenu	m;
-	int32_t	i;
+	int	i;
 
-	static int32_t choice = 0;
+	static int choice = 0;
 
 do {
 	if (TIRLoad ())
@@ -760,8 +715,6 @@ do {
 	if (gameStates.input.nJoysticks)
 		m.AddMenu ("joystick options", TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
 #endif
-	if (!gameStates.app.bNostalgia && gameData.renderData.rift.Available ()) 
-		m.AddMenu ("oculus rift options", TXT_RIFTCFG_MENUCALL, KEY_I, HTX_RIFT_CONFIG);
 	if (!gameStates.app.bNostalgia && gameStates.input.bHaveTrackIR) 
 		m.AddMenu ("trackir options", TXT_TRACKIRCFG_MENUCALL, KEY_I, HTX_TRACKIR_CONFIG);
 	m.AddText ("", "");
@@ -780,8 +733,6 @@ do {
 		MouseConfigMenu ();
 	else if (choice == m.IndexOf ("joystick options"))
 		JoystickConfigMenu ();
-	else if (choice == m.IndexOf ("oculus rift options"))
-		OculusRiftConfigMenu ();
 	else if (choice == m.IndexOf ("trackir options"))
 		TrackIRConfigMenu ();
 	} while (i >= 0);

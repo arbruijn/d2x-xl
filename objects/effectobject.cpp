@@ -43,63 +43,64 @@
 
 //------------------------------------------------------------------------------
 
-void ConvertSmokeObject (CObject *pObj)
+void ConvertSmokeObject (CObject *objP)
 {
-	int32_t		j;
-	CTrigger*	pTrigger;
+	int			j;
+	CTrigger		*trigP;
 
-pObj->SetType (OBJ_EFFECT);
-pObj->info.nId = PARTICLE_ID;
-pObj->info.renderType = RT_PARTICLES;
-pTrigger = FindObjTrigger (pObj->Index (), TT_SMOKE_LIFE, -1);
+objP->SetType (OBJ_EFFECT);
+objP->info.nId = SMOKE_ID;
+objP->info.renderType = RT_SMOKE;
+trigP = FindObjTrigger (objP->Index (), TT_SMOKE_LIFE, -1);
 #if 1
-j = (pTrigger && pTrigger->m_info.value) ? pTrigger->m_info.value : 5;
-pObj->rType.particleInfo.nLife = (j * (j + 1)) / 2;
+j = (trigP && trigP->m_info.value) ? trigP->m_info.value : 5;
+objP->rType.particleInfo.nLife = (j * (j + 1)) / 2;
 #else
-pObj->rType.particleInfo.nLife = (pTrigger && pTrigger->m_info.value) ? pTrigger->m_info.value : 5;
+objP->rType.particleInfo.nLife = (trigP && trigP->m_info.value) ? trigP->m_info.value : 5;
 #endif
-pTrigger = FindObjTrigger (pObj->Index (), TT_SMOKE_BRIGHTNESS, -1);
-pObj->rType.particleInfo.nBrightness = (pTrigger && pTrigger->m_info.value) ? pTrigger->m_info.value * 10 : 75;
-pTrigger = FindObjTrigger (pObj->Index (), TT_SMOKE_SPEED, -1);
-j = (pTrigger && pTrigger->m_info.value) ? pTrigger->m_info.value : 5;
+trigP = FindObjTrigger (objP->Index (), TT_SMOKE_BRIGHTNESS, -1);
+objP->rType.particleInfo.nBrightness = (trigP && trigP->m_info.value) ? trigP->m_info.value * 10 : 75;
+trigP = FindObjTrigger (objP->Index (), TT_SMOKE_SPEED, -1);
+j = (trigP && trigP->m_info.value) ? trigP->m_info.value : 5;
 #if 1
-pObj->rType.particleInfo.nSpeed = (j * (j + 1)) / 2;
+objP->rType.particleInfo.nSpeed = (j * (j + 1)) / 2;
 #else
-pObj->rType.particleInfo.nSpeed = j;
+objP->rType.particleInfo.nSpeed = j;
 #endif
-pTrigger = FindObjTrigger (pObj->Index (), TT_SMOKE_DENS, -1);
-pObj->rType.particleInfo.nParts = j * ((pTrigger && pTrigger->m_info.value) ? pTrigger->m_info.value * 50 : STATIC_SMOKE_MAX_PARTS);
-pTrigger = FindObjTrigger (pObj->Index (), TT_SMOKE_DRIFT, -1);
-pObj->rType.particleInfo.nDrift = (pTrigger && pTrigger->m_info.value) ? j * pTrigger->m_info.value * 50 : pObj->rType.particleInfo.nSpeed * 50;
-pTrigger = FindObjTrigger (pObj->Index (), TT_SMOKE_SIZE, -1);
-j = (pTrigger && pTrigger->m_info.value) ? pTrigger->m_info.value : 5;
-pObj->rType.particleInfo.nSize [0] = j + 1;
-pObj->rType.particleInfo.nSize [1] = (j * (j + 1)) / 2;
+trigP = FindObjTrigger (objP->Index (), TT_SMOKE_DENS, -1);
+objP->rType.particleInfo.nParts = j * ((trigP && trigP->m_info.value) ? trigP->m_info.value * 50 : STATIC_SMOKE_MAX_PARTS);
+trigP = FindObjTrigger (objP->Index (), TT_SMOKE_DRIFT, -1);
+objP->rType.particleInfo.nDrift = (trigP && trigP->m_info.value) ? j * trigP->m_info.value * 50 : objP->rType.particleInfo.nSpeed * 50;
+trigP = FindObjTrigger (objP->Index (), TT_SMOKE_SIZE, -1);
+j = (trigP && trigP->m_info.value) ? trigP->m_info.value : 5;
+objP->rType.particleInfo.nSize [0] = j + 1;
+objP->rType.particleInfo.nSize [1] = (j * (j + 1)) / 2;
 }
 
 //------------------------------------------------------------------------------
 
 void ConvertObjects (void)
 {
-	CObject*	pObj = OBJECTS.Buffer ();
+	CObject	*objP;
+	//int		i;
 
 PrintLog (0, "converting deprecated smoke objects\n");
-FORALL_STATIC_OBJS (pObj)
-	if (pObj->info.nType == OBJ_SMOKE)
-		ConvertSmokeObject (pObj);
+FORALL_STATIC_OBJS (objP, i)
+	if (objP->info.nType == OBJ_SMOKE)
+		ConvertSmokeObject (objP);
 }
 
 //------------------------------------------------------------------------------
 
 void CObject::SetupSmoke (void)
 {
-if ((info.nType != OBJ_EFFECT) || (info.nId != PARTICLE_ID))
+if ((info.nType != OBJ_EFFECT) || (info.nId != SMOKE_ID))
 	return;
 
 	tParticleInfo*	psi = &rType.particleInfo;
-	int32_t			nLife, nSpeed, nParts, nSize;
+	int				nLife, nSpeed, nParts, nSize;
 
-info.renderType = RT_PARTICLES;
+info.renderType = RT_SMOKE;
 nLife = psi->nLife ? psi->nLife : 5;
 #if 1
 psi->nLife = (nLife * (nLife + 1)) / 2;
@@ -122,13 +123,13 @@ psi->nSize [0] = nSize + 1;
 psi->nSize [1] = (nSize * (nSize + 1)) / 2;
 psi->nParts = 90 + (nParts * psi->nLife * 3 * (1 << nSpeed)) / (11 - nParts);
 if (psi->nSide > 0) {
-	float faceSize = SEGMENT (info.nSegment)->FaceSize (psi->nSide - 1);
-	psi->nParts = (int32_t) (psi->nParts * ((faceSize < 1) ? sqrt (faceSize) : faceSize));
-	if (gameData.segData.nLevelVersion >= 18) {
+	float faceSize = SEGMENTS [info.nSegment].FaceSize (psi->nSide - 1);
+	psi->nParts = (int) (psi->nParts * ((faceSize < 1) ? sqrt (faceSize) : faceSize));
+	if (gameData.segs.nLevelVersion >= 18) {
 		if (psi->nType == SMOKE_TYPE_SPRAY)
 			psi->nParts *= 4;
 		}
-	else if ((gameData.segData.nLevelVersion < 18) && IsWaterTexture (SEGMENT (info.nSegment)->m_sides [psi->nSide - 1].m_nBaseTex)) {
+	else if ((gameData.segs.nLevelVersion < 18) && IsWaterTexture (SEGMENTS [info.nSegment].m_sides [psi->nSide - 1].m_nBaseTex)) {
 		psi->nParts *= 4;
 		//psi->nSize [1] /= 2;
 		}
@@ -144,12 +145,13 @@ if (psi->nType == SMOKE_TYPE_BUBBLES) {
 
 void SetupEffects (void)
 {
-	CObject*	pObj = OBJECTS.Buffer ();
+	CObject	*objP;
+	//int		i;
 
 PrintLog (1, "setting up effects\n");
-FORALL_EFFECT_OBJS (pObj) 
-	if (pObj->info.nId == PARTICLE_ID)
-		pObj->SetupSmoke ();
+FORALL_EFFECT_OBJS (objP, i) 
+	if (objP->info.nId == SMOKE_ID)
+		objP->SetupSmoke ();
 PrintLog (-1);
 }
 

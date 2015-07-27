@@ -3,108 +3,39 @@
 
 //-----------------------------------------------------------------------------
 
-class CRGBColor {
-	public:
-		uint8_t	r, g, b;
-
-	inline uint8_t& Red (void) { return r; }
-	inline uint8_t& Green (void) { return g; }
-	inline uint8_t& Blue (void) { return b; }
-
-	inline void Set (uint8_t red, uint8_t green, uint8_t blue) {
-		r = red, g = green, b = blue;
-		}
-
-	inline void ToGrayScale (int32_t bWeighted = 0) {
-		if (bWeighted)
-			r = g = b = (uint8_t) FRound (((float) r + (float) g + (float) b) / 3.0f);
-		else
-			r = g = b = (uint8_t) FRound ((float) r * 0.30f + (float) g * 0.584f + (float) b * 0.116f);
-		}
-
-	inline uint8_t Posterize (int32_t nColor, int32_t nSteps) {
-		return Max (0, ((nColor + nSteps / 2) / nSteps) * nSteps - nSteps);
-		}
-
-	inline void Posterize (int32_t nSteps = 15) {
-		r = Posterize (r, nSteps);
-		g = Posterize (g, nSteps);
-		b = Posterize (b, nSteps);
-		}
-
-	inline void Saturate (int32_t nMethod = 1) {
-		uint8_t m = Max (r, Max (g, b));
-		if (nMethod) {
-			float s = 255.0f / float (m);
-			r = uint8_t (float (r) * s);
-			g = uint8_t (float (g) * s);
-			b = uint8_t (float (b) * s);
-			}
-		else {
-			if ((m = 255 - m)) {
-				r += m;
-				g += m;
-				b += m;
-				}
-			}
-		}
-
-	inline void Assign (CRGBColor& other) { r = other.r, g = other.g, b = other.b;	}
-	};
-
-//-----------------------------------------------------------------------------
-
 class CRGBAColor {
 	public:
-		uint8_t	r, g, b, a;
+		ubyte	r, g, b, a;
 
-	inline void Set (uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255) {
+	inline void Set (ubyte red, ubyte green, ubyte blue, ubyte alpha = 255) {
 		r = red, g = green, b = blue, a = alpha;
 		}
-
-	inline uint8_t& Red (void) { return r; }
-	inline uint8_t& Green (void) { return g; }
-	inline uint8_t& Blue (void) { return b; }
-	inline uint8_t& Alpha (void) { return a; }
-
-	inline void ToGrayScale (int32_t bWeighted = 0) {
-		if (bWeighted)
-			r = g = b = (uint8_t) FRound (((float) r + (float) g + (float) b) / 3.0f);
-		else
-			r = g = b = (uint8_t) FRound ((float) r * 0.30f + (float) g * 0.584f + (float) b * 0.116f);
-		}
-
-	inline uint8_t Posterize (int32_t nColor, int32_t nSteps) {
-		return Max (0, ((nColor + nSteps / 2) / nSteps) * nSteps - nSteps);
-		}
-
-	inline void Posterize (int32_t nSteps = 15) {
-		r = Posterize (r, nSteps);
-		g = Posterize (g, nSteps);
-		b = Posterize (b, nSteps);
-		}
-
-	inline void Saturate (int32_t nMethod = 1) {
-		uint8_t m = Max (r, Max (g, b));
-		if (nMethod) {
-			float s = 255.0f / float (m);
-			r = uint8_t (float (r) * s);
-			g = uint8_t (float (g) * s);
-			b = uint8_t (float (b) * s);
-			}
-		else {
-			if ((m = 255 - m)) {
-				r += m;
-				g += m;
-				b += m;
-				}
-			}
-		}
+	inline ubyte& Red (void) { return r; }
+	inline ubyte& Green (void) { return g; }
+	inline ubyte& Blue (void) { return b; }
+	inline ubyte& Alpha (void) { return a; }
 
 	inline void Assign (CRGBAColor& other) { r = other.r, g = other.g, b = other.b, a = other.a;	}
 	};
 
-//-----------------------------------------------------------------------------
+class CRGBColor {
+	public:
+		ubyte	r, g, b;
+
+	inline ubyte& Red (void) { return r; }
+	inline ubyte& Green (void) { return g; }
+	inline ubyte& Blue (void) { return b; }
+	inline void Set (ubyte red, ubyte green, ubyte blue) {
+		r = red, g = green, b = blue;
+		}
+	inline void ToGrayScale (int bWeighted = 0) {
+		if (bWeighted)
+			r = g = b = ubyte (((float) r + (float) g + (float) b) / 3.0f + 0.5f);
+		else
+			r = g = b = ubyte ((float) r * 0.30f + (float) g * 0.584f + (float) b * 0.116f + 0.5f);
+		}
+	inline void Assign (CRGBColor& other) { r = other.r, g = other.g, b = other.b;	}
+	};
 
 class CFaceColor : public CFloatVector {
 	public:
@@ -115,11 +46,11 @@ class CFaceColor : public CFloatVector {
 
 class CCanvasColor : public CRGBAColor {
 	public:
-		int16_t				index;       // current color
-		uint8_t				rgb;
+		short				index;       // current color
+		ubyte				rgb;
 	};
 
-template <uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha>
+template <ubyte red, ubyte green, ubyte blue, ubyte alpha>
 class CStaticFaceColor : public CFaceColor {
 	public:
 		explicit CStaticFaceColor () { 
@@ -128,7 +59,7 @@ class CStaticFaceColor : public CFaceColor {
 			}
 	};
 
-template <uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha>
+template <ubyte red, ubyte green, ubyte blue, ubyte alpha>
 class CStaticCanvasColor : public CCanvasColor {
 	public:
 		explicit CStaticCanvasColor () { 
@@ -138,33 +69,28 @@ class CStaticCanvasColor : public CCanvasColor {
 			}
 	};
 
+
 //-----------------------------------------------------------------------------
 
-#if 1
-
-#	define DEFAULT_TRANSPARENCY_COLOR  255 // palette entry of transparency color -- 255 on the PC
-
-#else
-
 #ifdef MACDATA
-#	define SWAP_TRANSPARENCY_COLOR       // swap black and transparency color codes in palettes
+#	define SWAP_0_255              // swap black and white
 #	define DEFAULT_TRANSPARENCY_COLOR  0 // palette entry of transparency color -- 255 on the PC
+#	define TRANSPARENCY_COLOR_STR  "0"
 #else
-//#undef  SWAP_TRANSPARENCY_COLOR         // no swapping for PC people
+/* #undef  SWAP_0_255 */        // no swapping for PC people
 #	define DEFAULT_TRANSPARENCY_COLOR  255 // palette entry of transparency color -- 255 on the PC
+#	define TRANSPARENCY_COLOR_STR  "255"
 #endif /* MACDATA */
 
-#endif
+#define TRANSPARENCY_COLOR  gameData.render.transpColor // palette entry of transparency color -- 255 on the PC
+#define SUPER_TRANSP_COLOR  254   // palette entry of super transparency color
 
-#define TRANSPARENCY_COLOR			gameData.renderData.transpColor // palette entry of transparency color -- 255 on the PC
-#define SUPER_TRANSP_COLOR			254   // palette entry of super transparency color
-
-#define RGBA(_r,_g,_b,_a)			((uint32_t (_r) << 24) | (uint32_t (_g) << 16) | (uint32_t (_b) << 8) | (uint32_t (_a)))
-#define RGBA_RED(_i)					((uint32_t (_i) >> 24) & 0xff)
-#define RGBA_GREEN(_i)				((uint32_t (_i) >> 16) & 0xff)
-#define RGBA_BLUE(_i)				((uint32_t (_i) >> 8) & 0xff)
-#define RGBA_ALPHA(_i)				((uint32_t (_i)) & 0xff)
-#define PAL2RGBA(_c)					(((_c) >= 63) ? 255 : uint8_t ((uint32_t (_c) * 255) / 63))
+#define RGBA(_r,_g,_b,_a)			((uint (_r) << 24) | (uint (_g) << 16) | (uint (_b) << 8) | (uint (_a)))
+#define RGBA_RED(_i)					((uint (_i) >> 24) & 0xff)
+#define RGBA_GREEN(_i)				((uint (_i) >> 16) & 0xff)
+#define RGBA_BLUE(_i)				((uint (_i) >> 8) & 0xff)
+#define RGBA_ALPHA(_i)				((uint (_i)) & 0xff)
+#define PAL2RGBA(_c)					(((_c) >= 63) ? 255 : ubyte ((uint (_c) * 255) / 63))
 #define RGBA_PAL(_r,_g,_b,_a)		RGBA (PAL2RGBA (_r), PAL2RGBA (_g), PAL2RGBA (_b), _a)
 #define RGB_PAL(_r,_g,_b)			RGBA_PAL (_r, _g, _b, 255)
 #define RGBA_PALX(_r,_g,_b,_x)	RGB_PAL ((_r) * (_x), (_g) * (_x), (_b) * (_x))
@@ -187,17 +113,15 @@ class CStaticCanvasColor : public CCanvasColor {
 #define DKBLUE_RGBA					RGBA (0,0,80,255)
 #define ORANGE_RGBA					RGBA (255,128,0,255)
 #define GOLD_RGBA						RGBA (255,224,0,255)
-#define CYAN_RGBA						RGBA (0,255,255,255)
 
-#define D2BLUE_RGBA					RGB_PAL (35,35,55)
+#define D2BLUE_RGBA			RGB_PAL (35,35,55)
 
 //-----------------------------------------------------------------------------
 
-static inline void CountColors (uint8_t *data, int32_t i, int32_t *freq)
+static inline void CountColors (ubyte *data, int i, int *freq)
 {
-if (data)
-	for (; i; i--)
-		freq [*data++]++;
+for (; i; i--)
+	freq [*data++]++;
 }
 
 //-----------------------------------------------------------------------------

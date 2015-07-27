@@ -21,11 +21,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // -1,-2,-3 are secret levels
 // 0 means not a real level loaded
 #if 0
-extern int32_t CurrentLevel_num, NextLevel_num;
+extern int CurrentLevel_num, NextLevel_num;
 extern char CurrentLevel_name [LEVEL_NAME_LEN];
 extern tObjPosition Player_init[MAX_PLAYERS];
-extern int32_t bPlayerIsTyping [MAX_PLAYERS];
-extern int32_t nTypingTimeout;
+extern int bPlayerIsTyping [MAX_PLAYERS];
+extern int nTypingTimeout;
 #endif
 // This is the highest level the player has ever reached
 //
@@ -33,51 +33,51 @@ extern int32_t nTypingTimeout;
 //
 
 // starts a new game on the given level
-int32_t StartNewGame (int32_t nStartLevel);
+int StartNewGame (int nStartLevel);
 
 // starts the next level
-int32_t StartNewLevel (int32_t nLevel, bool bNewGame);
+int StartNewLevel (int nLevel, bool bNewGame);
 
 // Actually does the work to start new level
-void ResetPlayerData (bool bNewGame, bool bSecret, bool bRestore, int32_t nPlayer = -1);      //clear all stats
+void ResetPlayerData (bool bNewGame, bool bSecret, bool bRestore, int nPlayer = -1);      //clear all stats
 
-int32_t PrepareLevel (int32_t nLevel, bool bLoadTextures, bool bSecret, bool bRestore, bool bNewGame);
-void StartLevel (int32_t nLevel, int32_t bRandom);
-int32_t LoadLevel (int32_t nLevel, bool bLoadTextures, bool bRestore);
+int PrepareLevel (int nLevel, bool bLoadTextures, bool bSecret, bool bRestore, bool bNewGame);
+void StartLevel (int nLevel, int bRandom);
+int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore);
 
 void GameStartInitNetworkPlayers (void);
 
 // starts a resumed game loaded from disk
-void ResumeSavedGame (int32_t startLevel);
+void ResumeSavedGame (int startLevel);
 
 // called when the player has finished a level
 // if secret flag is true, advance to secret level, else next normal level
-void PlayerFinishedLevel (int32_t secretFlag);
+void PlayerFinishedLevel (int secretFlag);
 
 // called when the player has died
 void DoPlayerDead (void);
 
-void SetPosFromReturnSegment (int32_t bRelink);
+void SetPosFromReturnSegment (int bRelink);
 // load a level off disk. level numbers start at 1.
 // Secret levels are -1,-2,-3
-void UnloadLevelData (int32_t bRestore = 0, bool bQuit = true);
+void UnloadLevelData (int bRestore = 0, bool bQuit = true);
 void AddPlayerLoadout (bool bRestore = false);
-void ResetShipData (int32_t nPlayer = -1, int32_t nMode = 0);
+void ResetShipData (bool bRestore = false, int nPlayer = -1);
 
 void GameStartRemoveUnusedPlayers (void);
 
-int32_t CountRobotsInLevel (void);
+int CountRobotsInLevel (void);
 
 void ShowHelp (void);
 void UpdatePlayerStats (void);
 
 // from scores.c
 
-void show_high_scores(int32_t place);
-void draw_high_scores(int32_t place);
-int32_t add_player_to_high_scores(CPlayerInfo *pPlayer);
-void input_name (int32_t place);
-int32_t reset_high_scores();
+void show_high_scores(int place);
+void draw_high_scores(int place);
+int add_player_to_high_scores(CPlayerInfo *playerP);
+void input_name (int place);
+int reset_high_scores();
 
 void open_message_window(void);
 void close_message_window(void);
@@ -89,21 +89,21 @@ void goto_secretLevel();
 void editor_reset_stuff_onLevel();
 
 // Show endlevel bonus scores
-void DoEndLevelScoreGlitz(int32_t network);
+void DoEndLevelScoreGlitz(int network);
 
 // stuff for multiplayer
-extern int32_t MaxNumNetPlayers;
-extern int32_t NumNetPlayerPositions;
+extern int MaxNumNetPlayers;
+extern int NumNetPlayerPositions;
 
-void BashToShield(int32_t, const char *);
-void BashToEnergy(int32_t, const char *);
+void BashToShield(int, const char *);
+void BashToEnergy(int, const char *);
 
-fix RobotDefaultShield (CObject *pObj);
+fix RobotDefaultShield (CObject *objP);
 
-char *LevelName (int32_t nLevel);
-char *LevelSongName (int32_t nLevel);
-char *MakeLevelFilename (int32_t nLevel, char *pszFilename, const char *pszFileExt);
+char *LevelName (int nLevel);
+char *LevelSongName (int nLevel);
+char *MakeLevelFilename (int nLevel, char *pszFilename, const char *pszFileExt);
 
-int32_t GetRandomPlayerPosition (int32_t nPlayer);
+int GetRandomPlayerPosition (void);
 
 #endif /* _LOADGAME_H */

@@ -46,17 +46,6 @@
 #define DEFAULT_FOV				105.0
 #define FISHEYE_FOV				135.0
 
-#define STEREO_MIN_FOV			90
-#define STEREO_MAX_FOV			160
-#define STEREO_FOV_STEP			5
-
-#define RIFT_MIN_IPD				54
-#define RIFT_DEFAULT_IPD		64
-#define RIFT_MAX_IPD				72
-#define RIFT_MIN_FOV				0
-#define RIFT_MAX_FOV				4
-#define RIFT_DEFAULT_FOV		RIFT_MAX_FOV
-
 extern double glFOV, glAspect;
 
 void OglSetFOV (double fov);

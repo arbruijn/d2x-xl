@@ -57,42 +57,42 @@
 #define MVE_AUDIO_FLAGS_16BIT      2
 #define MVE_AUDIO_FLAGS_COMPRESSED 4
 
-int32_t g_spdFactorNum=0;
-static int32_t g_spdFactorDenom=10;
-static int32_t g_frameUpdated = 0;
+int g_spdFactorNum=0;
+static int g_spdFactorDenom=10;
+static int g_frameUpdated = 0;
 
 //-----------------------------------------------------------------------
 
-static int16_t get_short (uint8_t *data)
+static short get_short (ubyte *data)
 {
-	int16_t value = data[0] | (data[1] << 8);
+	short value = data[0] | (data[1] << 8);
 
 return value;
 }
 
 //-----------------------------------------------------------------------
 
-static uint16_t get_ushort (uint8_t *data)
+static ushort get_ushort (ubyte *data)
 {
-	uint16_t value = data[0] | (data[1] << 8);
+	ushort value = data[0] | (data[1] << 8);
 
 return value;
 }
 
 //-----------------------------------------------------------------------
 
-static int32_t get_int (uint8_t *data)
+static int get_int (ubyte *data)
 {
-	int32_t value = data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
+	int value = data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
 
 return value;
 }
 
 //-----------------------------------------------------------------------
 
-static uint32_t unhandled_chunks[32*256];
+static uint unhandled_chunks[32*256];
 
-static int32_t default_seg_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
+static int default_seg_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
 unhandled_chunks[major<<8|minor]++;
 //fprintf (stderr, "unknown chunk nType %02x/%02x\n", major, minor);
@@ -104,7 +104,7 @@ return 1;
  * general handlers
  *************************/
 
-static int32_t end_movie_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
+static int end_movie_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
 return 0;
 }
@@ -124,25 +124,25 @@ struct timeval
 /*
  * timer variables
  */
-static int32_t timer_created = 0;
-static int32_t micro_frame_delay=0;
-static int32_t timer_started=0;
+static int timer_created = 0;
+static int micro_frame_delay=0;
+static int timer_started=0;
 static struct timeval timer_expire = {0, 0};
 
 #if !HAVE_STRUCT_TIMESPEC
 struct timespec
 {
-	int32_t tv_sec;            /* Seconds.  */
-	int32_t tv_nsec;           /* Nanoseconds.  */
+	long int tv_sec;            /* Seconds.  */
+	long int tv_nsec;           /* Nanoseconds.  */
 };
 #endif
 
 //-----------------------------------------------------------------------
 
 #ifdef _WIN32
-int32_t gettimeofday (struct timeval *tv, void *tz)
+int gettimeofday (struct timeval *tv, void *tz)
 {
-	static int32_t counter = 0;
+	static int counter = 0;
 	DWORD now;
 
 counter++;
@@ -156,19 +156,23 @@ return 0;
 
 //-----------------------------------------------------------------------
 
-static int32_t createTimer_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
+static int createTimer_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
-	int64_t temp;
+#ifndef _WIN32 //FIXME
+	__extension__ long long temp;
+#else
+	QLONG temp;
+#endif
 
 if (timer_created)
 	return 1;
 timer_created = 1;
-micro_frame_delay = get_int (data) * (int32_t)get_short (data+4);
+micro_frame_delay = get_int (data) * (int)get_short (data+4);
 if (g_spdFactorNum != 0) {
 	temp = micro_frame_delay;
 	temp *= g_spdFactorNum;
 	temp /= g_spdFactorDenom;
-	micro_frame_delay = (int32_t)temp;
+	micro_frame_delay = (int)temp;
 	}
 return 1;
 }
@@ -186,7 +190,7 @@ timer_started = 0;
 
 static void timer_start (void)
 {
-	int32_t nsec=0;
+	int nsec=0;
 
 gettimeofday (&timer_expire, NULL);
 timer_expire.tv_usec += micro_frame_delay;
@@ -202,7 +206,7 @@ timer_started=1;
 
 static void doTimer_wait (void)
 {
-	int32_t nsec=0;
+	int nsec=0;
 	struct timespec ts;
 	struct timeval tv;
 	if (! timer_started)
@@ -241,25 +245,25 @@ if (timer_expire.tv_usec > 1000000) {
 #ifdef AUDIO
 #define TOTAL_AUDIO_BUFFERS 64
 
-static int32_t audiobuf_created = 0;
-static void _CDECL_ mve_audio_callback (void *userdata, uint8_t *stream, int32_t len);
-static int16_t *mve_audio_buffers[TOTAL_AUDIO_BUFFERS];
-static int32_t mve_audio_buflens[TOTAL_AUDIO_BUFFERS];
-static int32_t mve_audio_curbuf_curpos=0;
-static int32_t mve_audio_bufhead=0;
-static int32_t mve_audio_buftail=0;
-static int32_t mve_audio_playing=0;
-static int32_t mve_audio_canplay=0;
-static int32_t mve_audio_compressed=0;
-static int32_t mve_audio_enabled = 1;
+static int audiobuf_created = 0;
+static void _CDECL_ mve_audio_callback (void *userdata, Uint8 *stream, int len);
+static short *mve_audio_buffers[TOTAL_AUDIO_BUFFERS];
+static int    mve_audio_buflens[TOTAL_AUDIO_BUFFERS];
+static int    mve_audio_curbuf_curpos=0;
+static int mve_audio_bufhead=0;
+static int mve_audio_buftail=0;
+static int mve_audio_playing=0;
+static int mve_audio_canplay=0;
+static int mve_audio_compressed=0;
+static int mve_audio_enabled = 1;
 static SDL_AudioSpec *mve_audio_spec=NULL;
 
 //-----------------------------------------------------------------------
 
-static void _CDECL_ mve_audio_callback (void *userdata, uint8_t* stream, int32_t len)
+static void _CDECL_ mve_audio_callback (void *userdata, Uint8* stream, int len)
 {
-	int32_t total=0;
-	int32_t length;
+	int total=0;
+	int length;
 
 if (mve_audio_bufhead == mve_audio_buftail)
 	return /* 0 */;
@@ -267,7 +271,7 @@ while (mve_audio_bufhead != mve_audio_buftail                                   
 		 &&  len > (mve_audio_buflens[mve_audio_bufhead]-mve_audio_curbuf_curpos)) {      /* and while we need more data */
 	length = mve_audio_buflens[mve_audio_bufhead]-mve_audio_curbuf_curpos;
 	memcpy (stream, /* cur output position */
-		      reinterpret_cast<uint8_t*> (mve_audio_buffers[mve_audio_bufhead])+mve_audio_curbuf_curpos, /* cur input position  */
+		      reinterpret_cast<ubyte*> (mve_audio_buffers[mve_audio_bufhead])+mve_audio_curbuf_curpos, /* cur input position  */
 		      length);                                                                 /* cur input length    */
 	total += length;
 	stream += length;                                                               /* advance output */
@@ -281,7 +285,7 @@ while (mve_audio_bufhead != mve_audio_buftail                                   
 	}
 if ((len > 0) && (mve_audio_bufhead != mve_audio_buftail)) {								/* ospace remaining && buffers remaining */
 	memcpy (stream, /* dest */
-			 reinterpret_cast<uint8_t*> (mve_audio_buffers[mve_audio_bufhead]) + mve_audio_curbuf_curpos, /* src */
+			 reinterpret_cast<ubyte*> (mve_audio_buffers[mve_audio_bufhead]) + mve_audio_curbuf_curpos, /* src */
 			len);                                                                    /* length */
 	mve_audio_curbuf_curpos += len;                                                 /* advance input */
 	stream += len;                                                                  /* advance output (unnecessary) */
@@ -300,15 +304,15 @@ if ((len > 0) && (mve_audio_bufhead != mve_audio_buftail)) {								/* ospace re
 
 //-----------------------------------------------------------------------
 
-static int32_t create_audiobuf_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
+static int create_audiobuf_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
 #ifdef AUDIO
-	int32_t flags;
-	int32_t sample_rate;
-	int32_t stereo;
-	int32_t bitsize;
-	int32_t compressed;
-	int32_t format;
+	int flags;
+	int sample_rate;
+	int stereo;
+	int bitsize;
+	int compressed;
+	int format;
 
 if (!mve_audio_enabled)
 	return 1;
@@ -358,7 +362,7 @@ return 1;
 
 //-----------------------------------------------------------------------
 
-static int32_t play_audio_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
+static int play_audio_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
 #ifdef AUDIO
 if (mve_audio_canplay  &&  !mve_audio_playing  &&  mve_audio_bufhead != mve_audio_buftail) {
@@ -371,12 +375,12 @@ return 1;
 
 //-----------------------------------------------------------------------
 
-static int32_t audio_data_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
+static int audio_data_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
 #ifdef AUDIO
-	static const int32_t selected_chan=1;
-	int32_t chan;
-	int32_t nsamp;
+	static const int selected_chan=1;
+	int chan;
+	int nsamp;
 
 if (mve_audio_canplay) {
 	if (mve_audio_playing)
@@ -390,20 +394,20 @@ if (mve_audio_canplay) {
 				nsamp += 4;
 
 				mve_audio_buflens[mve_audio_buftail] = nsamp;
-				mve_audio_buffers[mve_audio_buftail] = reinterpret_cast<int16_t*> (mve_alloc (nsamp));
+				mve_audio_buffers[mve_audio_buftail] = reinterpret_cast<short*> (mve_alloc (nsamp));
 				mveaudio_uncompress (mve_audio_buffers[mve_audio_buftail], data, -1); /* XXX */
 				}
 			else {
 				nsamp -= 8;
 				data += 8;
 				mve_audio_buflens[mve_audio_buftail] = nsamp;
-				mve_audio_buffers[mve_audio_buftail] = reinterpret_cast<int16_t*> (mve_alloc (nsamp));
+				mve_audio_buffers[mve_audio_buftail] = reinterpret_cast<short*> (mve_alloc (nsamp));
 				memcpy (mve_audio_buffers[mve_audio_buftail], data, nsamp);
 				}
 			}
 		else {
 			mve_audio_buflens[mve_audio_buftail] = nsamp;
-			mve_audio_buffers[mve_audio_buftail] = reinterpret_cast<int16_t*> (mve_alloc (nsamp));
+			mve_audio_buffers[mve_audio_buftail] = reinterpret_cast<short*> (mve_alloc (nsamp));
 			memset (mve_audio_buffers[mve_audio_buftail], 0, nsamp); /* XXX */
 			}
 		if (++mve_audio_buftail == TOTAL_AUDIO_BUFFERS)
@@ -424,23 +428,23 @@ return 1;
  * video handlers
  *************************/
 
-static int32_t videobuf_created = 0;
-static int32_t video_initialized = 0;
-int32_t g_width, g_height;
+static int videobuf_created = 0;
+static int video_initialized = 0;
+int g_width, g_height;
 void *g_vBuffers = NULL, *g_vBackBuf1, *g_vBackBuf2;
 
-static int32_t g_destX, g_destY;
-static int32_t g_screenWidth, g_screenHeight;
-static uint8_t *g_pCurMap=NULL;
-static int32_t g_nMapLength=0;
-static int32_t g_truecolor;
+static int g_destX, g_destY;
+static int g_screenWidth, g_screenHeight;
+static ubyte *g_pCurMap=NULL;
+static int g_nMapLength=0;
+static int g_truecolor;
 
 //-----------------------------------------------------------------------
 
-static int32_t create_videobuf_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
+static int create_videobuf_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
-	int16_t w, h;
-	int16_t truecolor;
+	short w, h;
+	short truecolor;
 
 if (videobuf_created)
 	return 1;
@@ -455,9 +459,9 @@ g_height = h << 3;
 if (g_vBuffers == NULL)
 	g_vBackBuf1 = g_vBuffers = mve_alloc (g_width * g_height * 8);
 if (truecolor)
-	g_vBackBuf2 = reinterpret_cast<uint16_t*> (g_vBackBuf1) + (g_width * g_height);
+	g_vBackBuf2 = reinterpret_cast<ushort*> (g_vBackBuf1) + (g_width * g_height);
 else
-	g_vBackBuf2 = reinterpret_cast<uint8_t*> (g_vBackBuf1) + (g_width * g_height);
+	g_vBackBuf2 = reinterpret_cast<ubyte*> (g_vBackBuf1) + (g_width * g_height);
 memset (g_vBackBuf1, 0, g_width * g_height * 4);
 g_truecolor = truecolor;
 return 1;
@@ -465,22 +469,22 @@ return 1;
 
 //-----------------------------------------------------------------------
 
-static int32_t display_video_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
+static int display_video_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
 if (g_destX == -1) // center it
 	g_destX = (g_screenWidth - g_width) >> 1;
 if (g_destY == -1) // center it
 	g_destY = (g_screenHeight - g_height) >> 1;
-mve_showframe (reinterpret_cast<uint8_t*> (g_vBackBuf1), g_width, g_height, 0, 0, g_width, g_height, g_destX, g_destY);
+mve_showframe (reinterpret_cast<ubyte*> (g_vBackBuf1), g_width, g_height, 0, 0, g_width, g_height, g_destX, g_destY);
 g_frameUpdated = 1;
 return 1;
 }
 
 //-----------------------------------------------------------------------
 
-static int32_t init_video_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
+static int init_video_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
-	int16_t width, height;
+	short width, height;
 
 if (video_initialized)
 	return 1; /* maybe we actually need to change width/height here? */
@@ -494,10 +498,10 @@ return 1;
 
 //-----------------------------------------------------------------------
 
-static int32_t video_palette_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
+static int video_palette_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
-	int16_t start, count;
-	uint8_t *p;
+	short start, count;
+	ubyte *p;
 
 start = get_short (data);
 count = get_short (data+2);
@@ -508,7 +512,7 @@ return 1;
 
 //-----------------------------------------------------------------------
 
-static int32_t video_codemap_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
+static int video_codemap_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
 g_pCurMap = data;
 g_nMapLength = len;
@@ -517,31 +521,31 @@ return 1;
 
 //-----------------------------------------------------------------------
 
-static int32_t video_data_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
+static int video_data_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
-//int16_t nFrameHot  = get_short (data);
-//int16_t nFrameCold = get_short (data+2);
-//int16_t nXoffset   = get_short (data+4);
-//int16_t nYoffset   = get_short (data+6);
-//int16_t nXsize     = get_short (data+8);
-//int16_t nYsize     = get_short (data+10);
-uint16_t nFlags     = get_ushort (data+12);
+short nFrameHot  = get_short (data);
+short nFrameCold = get_short (data+2);
+short nXoffset   = get_short (data+4);
+short nYoffset   = get_short (data+6);
+short nXsize     = get_short (data+8);
+short nYsize     = get_short (data+10);
+ushort nFlags     = get_ushort (data+12);
 if (nFlags & 1) {
-	uint8_t* temp = reinterpret_cast<uint8_t*> (g_vBackBuf1);
+	ubyte* temp = reinterpret_cast<ubyte*> (g_vBackBuf1);
 	g_vBackBuf1 = g_vBackBuf2;
 	g_vBackBuf2 = temp;
 	}
 /* convert the frame */
 if (g_truecolor)
-	decodeFrame16 (reinterpret_cast<uint8_t*> (g_vBackBuf1), g_pCurMap, g_nMapLength, data+14, len-14);
+	decodeFrame16 (reinterpret_cast<ubyte*> (g_vBackBuf1), g_pCurMap, g_nMapLength, data+14, len-14);
 else
-	decodeFrame8 (reinterpret_cast<uint8_t*> (g_vBackBuf1), g_pCurMap, g_nMapLength, data+14, len-14);
+	decodeFrame8 (reinterpret_cast<ubyte*> (g_vBackBuf1), g_pCurMap, g_nMapLength, data+14, len-14);
 return 1;
 }
 
 //-----------------------------------------------------------------------
 
-static int32_t end_chunk_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
+static int end_chunk_handler (ubyte major, ubyte minor, ubyte *data, int len, void *context)
 {
 g_pCurMap=NULL;
 return 1;
@@ -581,9 +585,9 @@ mve_setpalette = setpalette;
 
 //-----------------------------------------------------------------------
 
-int32_t MVE_rmPrepMovie (void *src, int32_t x, int32_t y, int32_t track, int32_t bLittleEndian)
+int MVE_rmPrepMovie (void *src, int x, int y, int track, int bLittleEndian)
 {
-	uint8_t i;
+	ubyte i;
 
 if (mve) {
 	mve_reset (mve);
@@ -628,10 +632,10 @@ vSpec->truecolor = g_truecolor;
 
 //-----------------------------------------------------------------------
 
-int32_t MVE_rmStepMovie ()
+int MVE_rmStepMovie ()
 {
-	static int32_t initTimer=0;
-	int32_t cont=1;
+	static int initTimer=0;
+	int cont=1;
 
 if (!timer_started)
 	timer_start ();
@@ -651,7 +655,7 @@ return cont ? 0 : MVE_ERR_EOF;
 void MVE_rmEndMovie ()
 {
 #ifdef AUDIO
-	int32_t i;
+	int i;
 #endif
 
 	timer_stop ();
@@ -698,7 +702,7 @@ timer_started = 0;
 
 //-----------------------------------------------------------------------
 
-void MVE_sndInit (int32_t x)
+void MVE_sndInit (int x)
 {
 #ifdef AUDIO
 mve_audio_enabled = (x != -1);

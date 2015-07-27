@@ -61,42 +61,32 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "tracker.h"
 #include "hudmsgs.h"
 
-int32_t ipx_fd;
+int ipx_fd;
 ipx_socket_t ipxSocketData;
-uint8_t bIpxInstalled=0;
-uint16_t ipx_socket = 0;
-uint32_t ipxNetwork = 0;
-CNetworkAddress ipx_MyAddress;
-int32_t nIpxPacket = 0;			/* Sequence number */
-//int32_t     ipx_packettotal=0,ipx_lastspeed=0;
+ubyte bIpxInstalled=0;
+ushort ipx_socket = 0;
+uint ipxNetwork = 0;
+ubyte ipx_MyAddress[10];
+int nIpxPacket = 0;			/* Sequence number */
+//int     ipx_packettotal=0,ipx_lastspeed=0;
 
 /* User defined routing stuff */
 typedef struct user_address {
-	uint8_t network[4];
-	uint8_t node[6];
-	uint8_t address[6];
+	ubyte network[4];
+	ubyte node[6];
+	ubyte address[6];
 } user_address;
 #define MAX_USERS 64
-int32_t nIpxUsers = 0;
+int nIpxUsers = 0;
 user_address ipxUsers[MAX_USERS];
 
 #define MAX_NETWORKS 64
-int32_t nIpxNetworks = 0;
-uint32_t ipxNetworks[MAX_NETWORKS];
-
-typedef union tUintCast {
-	uint8_t	b [4];
-	uint32_t		i;
-} tUintCast;
-
-typedef union tUshortCast {
-	uint8_t	b [2];
-	uint16_t	i;
-} tUshortCast;
+int nIpxNetworks = 0;
+uint ipxNetworks[MAX_NETWORKS];
 
 //------------------------------------------------------------------------------
 
-int32_t IPXGeneralPacketReady (ipx_socket_t *s) 
+int IPXGeneralPacketReady (ipx_socket_t *s) 
 {
 	fd_set set;
 	struct timeval tv;
@@ -111,21 +101,21 @@ return (select (s->fd + 1, &set, NULL, NULL, &tv) > 0) ? 1 : 0;
 
 struct ipx_driver *driver = &ipx_udp;
 
-uint8_t * IpxGetMyServerAddress ()
+ubyte * IpxGetMyServerAddress ()
 {
-return reinterpret_cast<uint8_t*> (&ipxNetwork);
+return reinterpret_cast<ubyte*> (&ipxNetwork);
 }
 
 //------------------------------------------------------------------------------
 
-uint8_t * IpxGetMyLocalAddress ()
+ubyte * IpxGetMyLocalAddress ()
 {
-return ipx_MyAddress.Node ();
+return reinterpret_cast<ubyte*> (ipx_MyAddress + 4);
 }
 
 //------------------------------------------------------------------------------
 
-void ArchIpxSetDriver (int32_t ipx_driver)
+void ArchIpxSetDriver (int ipx_driver)
 {
 switch (ipx_driver) {
 #ifdef NATIVE_IPX
@@ -151,22 +141,20 @@ switch (ipx_driver) {
 
 //------------------------------------------------------------------------------
 
-int32_t IpxInit (int32_t socket_number)
+int IpxInit (int socket_number)
 {
-	int32_t i;
+	int i;
 
 if ((i = FindArg ("-ipxnetwork")) && appConfig [i + 1]) {
-	uint32_t n = strtol (appConfig [i + 1], NULL, 16);
-	uint8_t b [4]; 
+	ulong n = strtol (appConfig [i + 1], NULL, 16);
 	for (i = 3; i >= 0; i--, n >>= 8)
-		b [i] = n &0xFF;
-	ipx_MyAddress.SetServer (b);
+		ipx_MyAddress [i] = n & 0xff; 
 	}
 if (driver->OpenSocket (&ipxSocketData, socket_number)) {
 	return IPX_NOT_INSTALLED;
 	}
 driver->GetMyAddress ();
-memcpy (&ipxNetwork, ipx_MyAddress.Network (), 4);
+memcpy (&ipxNetwork, ipx_MyAddress, 4);
 nIpxNetworks = 0;
 memcpy (ipxNetworks + nIpxNetworks++, &ipxNetwork, 4);
 bIpxInstalled = 1;
@@ -189,10 +177,10 @@ bIpxInstalled = 0;
 
 //IPXRecvData_t networkData.packetSource;
 
-int32_t IpxGetPacketData (uint8_t * data)
+int IpxGetPacketData (ubyte * data)
 {
-	static uint8_t buf [MAX_PACKET_SIZE];
-	int32_t dataSize, dataOffs;
+	static char buf [MAX_PACKET_SIZE];
+	int dataSize, dataOffs;
 
 while (driver->PacketReady (&ipxSocketData)) {
 	dataSize = driver->ReceivePacket (&ipxSocketData, buf, sizeof (buf), &networkData.packetSource);
@@ -200,8 +188,9 @@ while (driver->PacketReady (&ipxSocketData)) {
 		break;
 	if (dataSize < 6)
 		continue;
-	dataOffs = tracker.IsTracker (networkData.packetSource.GetServer (), networkData.packetSource.GetPort (), (char*) buf) ? 0 : 4;
-	if (dataSize > int32_t (MAX_PAYLOAD_SIZE + dataOffs)) {
+	dataOffs = tracker.IsTracker (*((uint*) &networkData.packetSource.src_node [0]),
+                                  *((ushort*) &networkData.packetSource.src_node [4])) ? 0 : 4;
+	if (dataSize > MAX_PAYLOAD_SIZE + dataOffs) {
 		PrintLog (0, "incoming data package too large (%d bytes)\n", dataSize);
 		continue;
 		}
@@ -213,25 +202,24 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void IPXSendPacketData (uint8_t * data, int32_t dataSize, uint8_t *network, uint8_t *source, uint8_t *dest)
+void IPXSendPacketData
+	 (ubyte * data, int dataSize, ubyte *network, ubyte *source, ubyte *dest)
 {
-	static uint8_t buf [MAX_PACKET_SIZE];
+	static u_char buf [MAX_PACKET_SIZE];
 	IPXPacket_t ipxHeader;
 
-if (dataSize > int32_t (MAX_PAYLOAD_SIZE))
+if (dataSize > MAX_PAYLOAD_SIZE)
 	PrintLog (0, "outgoing data package too large (%d bytes)\n", dataSize);
 else {
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, dest, 6);
-	uint16_t s = htons (ipxSocketData.socket);
-	memcpy (&ipxHeader.Destination.Socket [0], &s, sizeof (s));
+	*((u_short*) &ipxHeader.Destination.Socket [0]) = htons (ipxSocketData.socket);
 	ipxHeader.PacketType = 4; /* Packet Exchange */
 	if (gameStates.multi.bTrackerCall)
 		memcpy (buf, data, dataSize);
 	else {
-		memcpy (buf, &nIpxPacket, sizeof (nIpxPacket));
+		*((uint*) &buf [0]) = nIpxPacket++;
 		memcpy (buf + 4, data, dataSize);
-		nIpxPacket++;
 		}
 	driver->SendPacket (&ipxSocketData, &ipxHeader, buf, dataSize + (gameStates.multi.bTrackerCall ? 0 : 4));
 	}
@@ -239,12 +227,12 @@ else {
 
 #else
 
-int32_t IpxGetPacketData (uint8_t * data)
+int IpxGetPacketData (ubyte * data)
 {
 	IPXRecvData_t rd;
-	uint8_t buf[MAX_PACKETSIZE];
-	int32_t size;
-	int32_t best_size = 0;
+	char buf[MAX_PACKETSIZE];
+	int size;
+	int best_size = 0;
 
 while (driver->PacketReady (&ipxSocketData)) {
 	if ((size = driver->ReceivePacket (&ipxSocketData, buf, sizeof (buf), &rd)) > 4) {
@@ -259,20 +247,19 @@ return best_size;
 
 //------------------------------------------------------------------------------
 
-void IPXSendPacketData (uint8_t * data, int32_t dataSize, uint8_t *network, uint8_t *address, uint8_t *immediate_address)
+void IPXSendPacketData (ubyte * data, int dataSize, ubyte *network, ubyte *address, ubyte *immediate_address)
 {
 if (dataSize > MAX_PAYLOAD_SIZE) 
 	PrintLog (0, "IpxSendPacketData: packet too large (%d bytes)\n", dataSize);
 else {
-		uint8_t buf [MAX_PACKET_SIZE];
+		u_char buf [MAX_PACKET_SIZE];
 		IPXPacket_t ipxHeader;
 
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, immediate_address, 6);
 	*reinterpret_cast<u_short*> (ipxHeader.Destination.Socket) = htons (ipxSocketData.socket);
 	ipxHeader.PacketType = 4; /* Packet Exchange */
-	u_int32_t i = INTEL_INT (nIpxPacket);
-	memcpy (buf, i, sizeof (i));
+	*reinterpret_cast<uint*> (buf) = INTEL_INT (nIpxPacket);
 	nIpxPacket++;
 	memcpy (buf + 4, data, dataSize);
 	driver->SendPacket (&ipxSocketData, &ipxHeader, buf, dataSize + 4);
@@ -281,7 +268,7 @@ else {
 
 #endif
 
-void IpxGetLocalTarget (uint8_t * server, uint8_t * node, uint8_t * local_target)
+void IpxGetLocalTarget (ubyte * server, ubyte * node, ubyte * local_target)
 {
 	// let's hope Linux knows how to route it
 	memcpy (local_target, node, 6);
@@ -289,26 +276,26 @@ void IpxGetLocalTarget (uint8_t * server, uint8_t * node, uint8_t * local_target
 
 //------------------------------------------------------------------------------
 
-void IPXSendBroadcastData (uint8_t * data, int32_t dataSize)
+void IPXSendBroadcastData (ubyte * data, int dataSize)
 {
-	int32_t i, j;
-	uint8_t broadcast[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-	uint8_t local_address[6];
+	int i, j;
+	ubyte broadcast[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+	ubyte local_address[6];
 
 	// Set to all networks besides mine
 if (gameStates.multi.nGameType > IPX_GAME)
-	IPXSendPacketData (data, dataSize, reinterpret_cast<uint8_t*> (ipxNetworks), broadcast, broadcast);
+	IPXSendPacketData (data, dataSize, reinterpret_cast<ubyte*> (ipxNetworks), broadcast, broadcast);
 else {
 	for (i = 0; i < nIpxNetworks; i++)	{
 		if (memcmp (ipxNetworks + i, &ipxNetwork, 4))	{
-			IpxGetLocalTarget (reinterpret_cast<uint8_t*> (ipxNetworks + i), broadcast, local_address);
-			IPXSendPacketData (data, dataSize, reinterpret_cast<uint8_t*> (ipxNetworks + i), broadcast, local_address);
+			IpxGetLocalTarget (reinterpret_cast<ubyte*> (ipxNetworks + i), broadcast, local_address);
+			IPXSendPacketData (data, dataSize, reinterpret_cast<ubyte*> (ipxNetworks + i), broadcast, local_address);
 			} 
 		else {
-			IPXSendPacketData (data, dataSize, reinterpret_cast<uint8_t*> (&ipxNetworks[i]), broadcast, broadcast);
+			IPXSendPacketData (data, dataSize, reinterpret_cast<ubyte*> (&ipxNetworks[i]), broadcast, broadcast);
 			}
 		}
-	//OLDipx_send_packet_data (data, dataSize, reinterpret_cast<uint8_t*> (&ipxNetwork), broadcast, broadcast);
+	//OLDipx_send_packet_data (data, dataSize, reinterpret_cast<ubyte*> (&ipxNetwork), broadcast, broadcast);
 	// Send directly to all users not on my network or in the network list.
 	for (i = 0; i < nIpxUsers; i++)	{
 		if (memcmp (ipxUsers [i].network, &ipxNetwork, 4)) {
@@ -325,15 +312,15 @@ else {
 
 //------------------------------------------------------------------------------
 // Sends a non-localized packet... needs 4 byte server, 6 byte address
-void IPXSendInternetPacketData (uint8_t * data, int32_t dataSize, uint8_t * server, uint8_t *address)
+void IPXSendInternetPacketData (ubyte * data, int dataSize, ubyte * server, ubyte *address)
 {
-	uint8_t local_address[6];
+	ubyte local_address[6];
 
 #ifdef WORDS_NEED_ALIGNMENT
-int32_t zero = 0;
+int zero = 0;
 if (memcmp (server, &zero, 4)) {
 #else // WORDS_NEED_ALIGNMENT
-if (*reinterpret_cast<uint32_t*> (server) != 0) {
+if (*reinterpret_cast<uint*> (server) != 0) {
 #endif // WORDS_NEED_ALIGNMENT
 	IpxGetLocalTarget (server, address, local_address);
 	IPXSendPacketData (data, dataSize, server, address, local_address);
@@ -345,7 +332,7 @@ else { // Old method, no server info.
 
 //------------------------------------------------------------------------------
 
-int32_t IpxChangeDefaultSocket (uint16_t socket_number, int32_t bKeepClients)
+int IpxChangeDefaultSocket (ushort socket_number, int bKeepClients)
 {
 if (!bIpxInstalled)
 	return -3;
@@ -364,7 +351,7 @@ void IpxReadUserFile (const char * filename)
 	FILE * fp;
 	user_address tmp;
 	char szTemp[132], *p1;
-	int32_t n, ln=0, x;
+	int n, ln=0, x;
 
 if (!filename) 
 	return;
@@ -400,7 +387,7 @@ while (fgets (szTemp, sizeof (szTemp), fp)) {
 		if (n != 10) continue;
 #endif
 	if (nIpxUsers < MAX_USERS)	{
-		//uint8_t * ipx_real_buffer = reinterpret_cast<uint8_t*> (&tmp);
+		//ubyte * ipx_real_buffer = reinterpret_cast<ubyte*> (&tmp);
 		IpxGetLocalTarget (tmp.network, tmp.node, tmp.address);
 		ipxUsers[nIpxUsers++] = tmp;
 		//printf ("%02X%02X%02X%02X/", ipx_real_buffer[0],ipx_real_buffer[1],ipx_real_buffer[2],ipx_real_buffer[3]);
@@ -422,7 +409,7 @@ void IpxReadNetworkFile (const char * filename)
 	FILE 				*fp;
 	user_address	tmp;
 	char 				szTemp[132], *p1;
-	int32_t 				n, ln=0, x;
+	int 				n, ln=0, x;
 
 if (!filename) 
 	return;
@@ -431,7 +418,7 @@ if (! (fp = fopen (filename, "rt")))
 #if 0
 //printf ("Using Networks:\n");
 for (i=0; i<nIpxNetworks; i++)		{
-	uint8_t * n1 = reinterpret_cast<uint8_t*> (&ipxNetworks[i]);
+	ubyte * n1 = reinterpret_cast<ubyte*> (&ipxNetworks[i]);
 	//printf ("* %02x%02x%02x%02x\n", n1[0], n1[1], n1[2], n1[3]);
 	}
 #endif
@@ -456,7 +443,7 @@ while (fgets (szTemp, sizeof (szTemp), fp)) {
 	if (n != 4) continue;
 #endif
 	if (nIpxNetworks < MAX_NETWORKS)	{
-		int32_t j;
+		int j;
 		for (j=0; j<nIpxNetworks; j++)
 			if (!memcmp (ipxNetworks + j, tmp.network, 4))
 				break;
@@ -476,18 +463,18 @@ fclose (fp);
 
 //------------------------------------------------------------------------------
 // Initalizes the protocol-specific member of the netgame packet.
-void IpxInitNetGameAuxData (uint8_t buf[])
+void IpxInitNetGameAuxData (ubyte buf[])
 {
-if (driver->InitNetGameAuxData)
-	driver->InitNetGameAuxData (&ipxSocketData, buf);
+if (driver->InitNetgameAuxData)
+	driver->InitNetgameAuxData (&ipxSocketData, buf);
 }
 
 //------------------------------------------------------------------------------
 // Handles the protocol-specific member of the netgame packet.
-int32_t IpxHandleNetGameAuxData (const uint8_t buf[])
+int IpxHandleNetGameAuxData (const ubyte buf[])
 {
-if (driver->HandleNetGameAuxData)
-	return driver->HandleNetGameAuxData (&ipxSocketData, buf);
+if (driver->HandleNetgameAuxData)
+	return driver->HandleNetgameAuxData (&ipxSocketData, buf);
 return 0;
 }
 
@@ -500,41 +487,32 @@ void IpxHandleLeaveGame (void)
 }
 
 //------------------------------------------------------------------------------
-// Send a packet to one member of the game.
-
-int32_t IpxSendPlayerPacket (uint8_t nPlayer, uint8_t *data, int32_t dataSize)
-{
-if (gameData.multiplayer.players [nPlayer].IsConnected () && (nPlayer != N_LOCALPLAYER))
-	networkThread.Send (
-		data, dataSize, 
-		netPlayers [0].m_info.players [nPlayer].network.Network (), 
-		netPlayers [0].m_info.players [nPlayer].network.Node (),
-		gameData.multiplayer.players [nPlayer].netAddress);
-return 0;
-}
-
-//------------------------------------------------------------------------------
 // Send a packet to every member of the game.
-int32_t IpxSendGamePacket (uint8_t *data, int32_t dataSize)
+int IpxSendGamePacket (ubyte *data, int dataSize)
 {
 if (driver->SendGamePacket) {
 	if (dataSize > MAX_PACKET_SIZE - 4)
 		PrintLog (0, "IpxSendGamePacket: packet too large (%d bytes)\n", dataSize);
 	else {
-		static uint8_t buf [MAX_PACKET_SIZE];
-		tUintCast uintCast;
-		uintCast.i = (uint32_t) nIpxPacket++;
-		memcpy (buf, uintCast.b, sizeof (uintCast.b));
+		static u_char buf [MAX_PACKET_SIZE];
+		*((uint*) &buf [0]) = nIpxPacket++;
 		memcpy (buf + 4, data, dataSize);
-		*reinterpret_cast<uint32_t*> (data) = nIpxPacket++;
+		*reinterpret_cast<uint*> (data) = nIpxPacket++;
 		return driver->SendGamePacket (&ipxSocketData, buf, dataSize + 4);
 		}
 	}
 else {
 	// Loop through all the players unicasting the packet.
+	int i;
 	//printf ("Sending game packet: gameData.multiplayer.nPlayers = %i\n", gameData.multiplayer.nPlayers);
-	for (uint8_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++)
-		IpxSendPlayerPacket (nPlayer, data, dataSize);
+	for (i=0; i<gameData.multiplayer.nPlayers; i++) {
+		if (gameData.multiplayer.players [i].connected && (i != gameData.multiplayer.nLocalPlayer))
+			IPXSendPacketData (
+				data, dataSize, 
+				netPlayers [0].m_info.players [i].network.Server (),
+				netPlayers [0].m_info.players [i].network.Node (),
+				gameData.multiplayer.players[i].netAddress);
+		}
 	return dataSize;
 	}
 return 0;

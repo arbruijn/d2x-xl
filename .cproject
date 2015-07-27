@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?fileVersion 4.0.0?><cproject>
+<?fileVersion 4.0.0?>
+
+<cproject>
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.config.gnu.exe.debug.2041369907">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.exe.debug.2041369907" moduleId="org.eclipse.cdt.core.settings" name="Debug">
 				<externalSettings/>
 				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -30,10 +32,9 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.1690525078" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/lib/wx/include/gtk2-unicode-release-2.8"/>
-									<listOptionValue builtIn="false" value="/usr/include/SDL"/>
 									<listOptionValue builtIn="false" value="../effects"/>
 									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
-									<listOptionValue builtIn="false" value="/usr/local/include/SDL"/>
+									<listOptionValue builtIn="false" value="/usr/include/SDL"/>
 									<listOptionValue builtIn="false" value="./include"/>
 									<listOptionValue builtIn="false" value="../input/include"/>
 									<listOptionValue builtIn="false" value="../../input/include"/>
@@ -62,7 +63,9 @@
 									<listOptionValue builtIn="false" value="gomp"/>
 									<listOptionValue builtIn="false" value="GLEW"/>
 									<listOptionValue builtIn="false" value="SDL_net"/>
+									<listOptionValue builtIn="false" value="Xm"/>
 									<listOptionValue builtIn="false" value="curl"/>
+									<listOptionValue builtIn="false" value="Xt"/>
 									<listOptionValue builtIn="false" value="X11"/>
 									<listOptionValue builtIn="false" value="SDL_image"/>
 									<listOptionValue builtIn="false" value="GLU"/>
@@ -83,7 +86,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="network/mpstatus.cpp|network/download.cpp|maths/Simplex.cpp|render/shadowmap.cpp|input/win32|iff|ogl/ogl_blur.cpp|weapons/weapon.cpp|render/render.cpp|d2x-trackir|cockpit/gauges.cpp|input/sixense_wrapper.cpp|ogl/glew.cpp|test|texmap|network/linux/ipx_udp.cpp|mem|3d/instance.cpp|audio/win32/hmpfile.cpp|audio/win32/digi.cpp|audio/linux/midi.cpp|audio/linux/alsadigi.cpp|render/gamepal.cpp|ai/d1_aipath.cpp|main/dumpmine.cpp|network/netmisc-old.cpp|network/netmisc-new.cpp|gameio/bmread.cpp|io/win32|libmve/mve_main.cpp|main/editor|main/udp_data.cpp|main/plrship.cpp|input/linux|misc/byteswap.cpp|network/linux/serial.cpp|ogl/fog.cpp|network/win32" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="ogl/glew.cpp|test|texmap|network/linux/ipx_udp.cpp|mem|3d/instance.cpp|audio/win32/hmpfile.cpp|audio/win32/digi.cpp|audio/linux/midi.cpp|audio/linux/alsadigi.cpp|render/gamepal.cpp|ai/d1_aipath.cpp|main/dumpmine.cpp|network/netmisc-old.cpp|network/netmisc-new.cpp|gameio/bmread.cpp|io/win32|libmve/mve_main.cpp|main/editor|main/udp_data.cpp|main/plrship.cpp|input/linux|misc/byteswap.cpp|network/linux/serial.cpp|ogl/fog.cpp|network/win32" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -95,12 +98,12 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.exe.release.1290390794" moduleId="org.eclipse.cdt.core.settings" name="Release">
 				<externalSettings/>
 				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -116,7 +119,6 @@
 								<option id="gnu.cpp.compiler.option.include.paths.1727120160" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value=".."/>
 									<listOptionValue builtIn="false" value="/usr/include/SDL"/>
-									<listOptionValue builtIn="false" value="/usr/local/include/SDL"/>
 									<listOptionValue builtIn="false" value="./include"/>
 									<listOptionValue builtIn="false" value="../include"/>
 									<listOptionValue builtIn="false" value="../../include"/>
@@ -141,12 +143,6 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.473011433" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
 								<option id="gnu.cpp.link.option.libs.1922514675" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="GL"/>
-									<listOptionValue builtIn="false" value="z"/>
-									<listOptionValue builtIn="false" value="gomp"/>
-									<listOptionValue builtIn="false" value="X11"/>
-									<listOptionValue builtIn="false" value="GLEW"/>
-									<listOptionValue builtIn="false" value="SDL_image"/>
-									<listOptionValue builtIn="false" value="SDL_net"/>
 									<listOptionValue builtIn="false" value="curl"/>
 									<listOptionValue builtIn="false" value="GLU"/>
 									<listOptionValue builtIn="false" value="SDL"/>
@@ -163,7 +159,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="network/mpstatus.cpp|network/download.cpp|maths/Simplex.cpp|render/shadowmap.cpp|input/win32|iff|ogl/ogl_blur.cpp|weapons/weapon.cpp|render/render.cpp|d2x-trackir|cockpit/gauges.cpp|input/sixense_wrapper.cpp|ogl/glew.cpp|test|texmap|network/linux/ipx_udp.cpp|mem|3d/instance.cpp|audio/win32/hmpfile.cpp|audio/win32/digi.cpp|audio/linux/midi.cpp|audio/linux/alsadigi.cpp|render/gamepal.cpp|ai/d1_aipath.cpp|main/dumpmine.cpp|network/netmisc-old.cpp|network/netmisc-new.cpp|gameio/bmread.cpp|io/win32|libmve/mve_main.cpp|main/editor|main/udp_data.cpp|main/plrship.cpp|input/linux|misc/byteswap.cpp|network/linux/serial.cpp|ogl/fog.cpp|network/win32" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="ogl/glew.cpp|test|texmap|network/linux/ipx_udp.cpp|mem|3d/instance.cpp|audio/win32/hmpfile.cpp|audio/win32/digi.cpp|audio/linux/midi.cpp|audio/linux/alsadigi.cpp|render/gamepal.cpp|ai/d1_aipath.cpp|main/dumpmine.cpp|network/netmisc-old.cpp|network/netmisc-new.cpp|gameio/bmread.cpp|io/win32|libmve/mve_main.cpp|main/editor|main/udp_data.cpp|main/plrship.cpp|input/linux|misc/byteswap.cpp|network/linux/serial.cpp|ogl/fog.cpp|network/win32" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -673,14 +669,7 @@
 			</profile>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Release">
-			<resource resourceType="PROJECT" workspacePath="/d2x-xl"/>
-		</configuration>
-		<configuration configurationName="Debug">
-			<resource resourceType="PROJECT" workspacePath="/d2x-xl"/>
-		</configuration>
+	<storageModule moduleId="refreshScope" versionNumber="1">
+		<resource resourceType="PROJECT" workspacePath="/d2x-xl"/>
 	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

@@ -8,14 +8,14 @@ CStack<CIpToCountry> ipToCountry;
 
 //------------------------------------------------------------------------------
 
-static inline bool ParseIP (char* buffer, uint32_t& ip)
+static inline bool ParseIP (char* buffer, uint& ip)
 {
 char* token = strtok (buffer, ",") + 1;
 if (!token)
 	return false;
 #if 1 //DBG
 for (ip = 0; isdigit (*token); token++)
-	ip = 10 * ip + uint32_t (*token - '0');
+	ip = 10 * ip + uint (*token - '0');
 #else
 ip = strtoul (token, NULL, 10);
 #endif
@@ -24,7 +24,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-static inline bool Skip (int32_t nFields)
+static inline bool Skip (int nFields)
 {
 while (nFields--)
 	if (!strtok (NULL, ","))
@@ -38,26 +38,26 @@ static bool LoadBinary (time_t t0, time_t t1)
 {
 	CFile		cf;
 
-time_t tBIN = cf.Date ("IpToCountry.bin", gameFolders.var.szCache, 0);
+time_t tBIN = cf.Date ("IpToCountry.bin", gameFolders.szCacheDir, 0);
 if ((tBIN < 0) || ((t1 > 0) && (tBIN < t1)) || ((t0 > 0) && (tBIN < t0)))
 	return false;
 
-if (!cf.Open ("IpToCountry.bin", gameFolders.var.szCache, "rb", 0))
+if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheDir, "rb", 0))
 	return false;
-int32_t h = (int32_t) cf.Size () - sizeof (int32_t);
+int h = (int) cf.Size () - sizeof (int);
 if ((h < 0) || (h / sizeof (CIpToCountry) < 1) || (h % sizeof (CIpToCountry) != 0)) {
 	cf.Close ();
 	return false;
 	}
 
-uint32_t nRecords = (uint32_t) cf.ReadInt ();
+uint nRecords = (uint) cf.ReadInt ();
 
-if (!ipToCountry.Create ((uint32_t) nRecords))
+if (!ipToCountry.Create ((uint) nRecords))
 	return false;
 
 bool bSuccess = (ipToCountry.Read (cf, nRecords) == nRecords);
 if (bSuccess)
-	ipToCountry.Grow ((uint32_t) nRecords);
+	ipToCountry.Grow ((uint) nRecords);
 else
 	ipToCountry.Destroy ();
 
@@ -71,9 +71,9 @@ static bool SaveBinary (void)
 {
 	CFile	cf;
 
-if (!cf.Open ("IpToCountry.bin", gameFolders.var.szCache, "wb", 0))
+if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheDir, "wb", 0))
 	return false;
-cf.WriteInt ((int32_t) ipToCountry.ToS ());
+cf.WriteInt ((int) ipToCountry.ToS ());
 bool bSuccess = (ipToCountry.Write (cf) == ipToCountry.Length ());
 if (cf.Close ())
 	bSuccess = false;
@@ -83,12 +83,13 @@ return bSuccess;
 //------------------------------------------------------------------------------
 
 static CFile cf;
+static int nProgressStep;
 
-int32_t ReadIpToCountryRecord (void)
+int ReadIpToCountryRecord (void)
 {
 char lineBuf [1024];
 char* token;
-uint32_t minIP, maxIP;
+uint minIP, maxIP;
 char country [4];
 
 country [3] = '\0';
@@ -122,11 +123,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-#if 0
-
-static int32_t nProgressStep;
-
-static int32_t LoadIpToCountryPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+static int LoadIpToCountryPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (!ReadIpToCountryRecord ())
 	key = -2;
@@ -138,14 +135,12 @@ else {
 return nCurItem;
 }
 
-#endif
-
 //------------------------------------------------------------------------------
 
-int32_t LoadIpToCountry (void)
+int LoadIpToCountry (void)
 {
-time_t t0 = cf.Date ("IpToCountry-Default.csv", gameFolders.game.szData [1], 0);
-time_t t1 = cf.Date ("IpToCountry.csv", gameFolders.game.szData [1], 0);
+time_t t0 = cf.Date ("IpToCountry-Default.csv", gameFolders.szDataDir [1], 0);
+time_t t1 = cf.Date ("IpToCountry.csv", gameFolders.szDataDir [1], 0);
 
 if (LoadBinary (t0, t1))
 	return ipToCountry.Length ();
@@ -163,20 +158,20 @@ else if (t1 > t0) // user supplied file newer than default file
 else // default file newer than user supplied file
 	pszFile = "IpToCountry-Default.csv";
 
-int32_t nRecords = cf.LineCount (pszFile, gameFolders.game.szData [1], "#");
+int nRecords = cf.LineCount (pszFile, gameFolders.szDataDir [1], "#");
 if (nRecords <= 0)
 	return nRecords;
 
-if (!ipToCountry.Create ((uint32_t) nRecords))
+if (!ipToCountry.Create ((uint) nRecords))
 	return -1;
 
-if (!cf.Open (pszFile, gameFolders.game.szData [1], "rb", 0))
+if (!cf.Open (pszFile, gameFolders.szDataDir [1], "rb", 0))
 	return -1;
 
 #if 0 //slows it down too much
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 	nProgressStep = (nRecords + 99) / 100;
-	ProgressBar (TXT_LOADING_IPTOCOUNTRY, 1, 0, nRecords, LoadIpToCountryPoll); 
+	ProgressBar (TXT_LOADING_IPTOCOUNTRY, 0, nRecords, LoadIpToCountryPoll); 
 	}
 #endif
 else {
@@ -190,14 +185,14 @@ if (ipToCountry.ToS ())
 
 SaveBinary ();
 
-return (int32_t) ipToCountry.ToS ();
+return (int) ipToCountry.ToS ();
 }
 
 //------------------------------------------------------------------------------
 
-const char* CountryFromIP (uint32_t ip)
+char* CountryFromIP (uint ip)
 {
-uint32_t l = 0, r = ipToCountry.ToS () - 1, i;
+uint l = 0, r = ipToCountry.ToS () - 1, i;
 do {
 	i = (l + r) / 2;
 	if (ipToCountry [i] < ip)
@@ -216,11 +211,11 @@ for (; i > 0; i--)
 	if (ipToCountry [i - 1] != ip)
 		break;
 
-int32_t h = i;
-int32_t dMin = ipToCountry [i].Range ();
+int h = i;
+int dMin = ipToCountry [i].Range ();
 // Find smallest IP range containing key
 while (ipToCountry [++i] == ip) {
-	int32_t d = ipToCountry [i].Range ();
+	int d = ipToCountry [i].Range ();
 	if (dMin > d) {
 		dMin = d;
 		h = i;

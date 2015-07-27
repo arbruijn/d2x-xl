@@ -39,14 +39,14 @@ extern CFaceColor tMapColor;
 //------------------------------------------------------------------------------
 
 //walks through all submodels of a polymodel and determines the coordinate extremes
-int32_t GetPolyModelMinMax (void *pModel, tHitbox *phb, int32_t nSubModels)
+int GetPolyModelMinMax (void *modelP, tHitbox *phb, int nSubModels)
 {
-	uint8_t			*p = reinterpret_cast<uint8_t*> (pModel);
-	int32_t			i, n, nVerts;
+	ubyte			*p = reinterpret_cast<ubyte*> (modelP);
+	int			i, n, nVerts;
 	CFixVector	*v, hv;
 	tHitbox		hb = *phb;
 
-G3CheckAndSwap (pModel);
+G3CheckAndSwap (modelP);
 for (;;)
 	switch (WORDVAL (p)) {
 		case OP_EOF:
@@ -160,7 +160,7 @@ CFixVector hitBoxOffsets [8] = {
 	CFixVector::Create(1, 1, 0)
 	};
 
-int32_t hitboxFaceVerts [6][4] = {
+int hitboxFaceVerts [6][4] = {
  {0,1,2,3},
  {0,3,7,4},
  {5,6,2,1},
@@ -169,15 +169,15 @@ int32_t hitboxFaceVerts [6][4] = {
  {6,7,3,2}
 	};
 
-void ComputeHitbox (int32_t nModel, int32_t iHitbox)
+void ComputeHitbox (int nModel, int iHitbox)
 {
-	tHitbox			*phb = gameData.modelData.hitboxes [nModel].hitboxes + iHitbox;
+	tHitbox			*phb = gameData.models.hitboxes [nModel].hitboxes + iHitbox;
 	CFixVector		vMin = phb->vMin;
 	CFixVector		vMax = phb->vMax;
 	CFixVector		vOffset = phb->vOffset;
 	CFixVector		*pv = phb->box.vertices;
 	tQuad				*pf;
-	int32_t				i;
+	int				i;
 
 for (i = 0; i < 8; i++) {
 	pv [i].v.coord.x = (hitBoxOffsets [i].v.coord.x ? vMin.v.coord.x : vMax.v.coord.x) + vOffset.v.coord.x;
@@ -201,12 +201,12 @@ for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
 
 #if G3_HITBOX_TRANSFORM
 
-void TransformHitboxes (CObject *pObj, CFixVector *vPos, tBox *phb)
+void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb)
 {
-	tHitbox		*pmhb = gameData.modelData.hitboxes [pObj->ModelId ()].hitboxes;
+	tHitbox		*pmhb = gameData.models.hitboxes [objP->ModelId ()].hitboxes;
 	tQuad			*pf;
 	CFixVector	rotVerts [8];
-	int32_t		i, j, iModel, nModels;
+	int			i, j, iModel, nModels;
 
 if (CollisionModel () == 1) {
 	iModel =
@@ -214,9 +214,9 @@ if (CollisionModel () == 1) {
 	}
 else {
 	iModel = 1;
-	nModels = gameData.modelData.hitboxes [pObj->ModelId ()].nSubModels;
+	nModels = gameData.models.hitboxes [objP->ModelId ()].nSubModels;
 	}
-transformation.Begin (vPos ? vPos : &pObj->info.position.vPos, &pObj->info.position.mOrient, __FILE__, __LINE__);
+transformation.Begin (vPos ? vPos : &objP->info.position.vPos, &objP->info.position.mOrient);
 for (; iModel <= nModels; iModel++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++)
 		transformation.Transform (rotVerts + i, pmhb->box.vertices + i, 0);
@@ -226,25 +226,25 @@ for (; iModel <= nModels; iModel++, phb++, pmhb++) {
 		VmVecNormal (pf->n + 1, pf->dir, pf->dir + 1, pf->dir + 2);
 		}
 	}
-transformation.End (__FILE__, __LINE__);
+transformation.End ();
 }
 
 #else //G3_HITBOX_TRANSFORM
 
-tHitbox* TransformHitboxes (CObject *pObj, CFixVector *vPos)
+tHitbox* TransformHitboxes (CObject *objP, CFixVector *vPos)
 {
-	int32_t			nId = pObj->ModelId ();
-	tHitbox*		hb = &gameData.modelData.hitboxes [nId].hitboxes [0];
+	int			nId = objP->ModelId ();
+	tHitbox*		hb = &gameData.models.hitboxes [nId].hitboxes [0];
 
 #if !DBG
-if (gameData.modelData.hitboxes [nId].nFrame == gameData.objData.nFrameCount)
+if (gameData.models.hitboxes [nId].nFrame == gameData.objs.nFrameCount)
 	return hb;
-gameData.modelData.hitboxes [nId].nFrame = gameData.objData.nFrameCount;
+gameData.models.hitboxes [nId].nFrame = gameData.objs.nFrameCount;
 #endif
 	tQuad*		pf;
 	CFixVector	rotVerts [8];
-	CFixMatrix*	pView = pObj->View (0);
-	int32_t			i, j, iBox, nBoxes;
+	CFixMatrix*	viewP = objP->View ();
+	int			i, j, iBox, nBoxes;
 
 if (CollisionModel () == 1) {
 	iBox = 0;
@@ -252,13 +252,13 @@ if (CollisionModel () == 1) {
 	}
 else {
 	iBox = 1;
-	nBoxes = gameData.modelData.hitboxes [pObj->ModelId ()].nHitboxes;
+	nBoxes = gameData.models.hitboxes [objP->ModelId ()].nHitboxes;
 	}
 if (!vPos)
-	vPos = &pObj->info.position.vPos;
+	vPos = &objP->info.position.vPos;
 for (; iBox <= nBoxes; iBox++) {
 	for (i = 0; i < 8; i++) {
-		rotVerts [i] = *pView * hb [iBox].box.vertices [i];
+		rotVerts [i] = *viewP * hb [iBox].box.vertices [i];
 		rotVerts [i] += *vPos;
 		}
 	for (i = 0, pf = hb [iBox].box.faces; i < 6; i++, pf++) {

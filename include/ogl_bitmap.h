@@ -10,7 +10,7 @@
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 
-int32_t OglUBitBltCopy (int32_t w,int32_t h,int32_t dx,int32_t dy, int32_t sx, int32_t sy, CBitmap * src, CBitmap * dest);
+int OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, CBitmap * src, CBitmap * dest);
 
 //------------------------------------------------------------------------------
 

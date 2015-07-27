@@ -11,12 +11,12 @@
 
 //------------------------------------------------------------------------------
 
-typedef void tInitTMU (int32_t);
+typedef void tInitTMU (int);
 typedef tInitTMU *pInitTMU;
 
 //------------------------------------------------------------------------------
 
-static inline void InitTMU (int32_t i, int32_t bVertexArrays)
+static inline void InitTMU (int i, int bVertexArrays)
 {
 	static GLuint tmuIds [] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2_ARB};
 
@@ -54,7 +54,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-static inline void InitTMU0 (int32_t bVertexArrays, int32_t bLightmaps = 0)
+static inline void InitTMU0 (int bVertexArrays, int bLightmaps = 0)
 {
 #if !USE_DISPLAY_LISTS
 	ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
@@ -80,7 +80,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-static inline void InitTMU1 (int32_t bVertexArrays, int32_t bLightmaps = 0)
+static inline void InitTMU1 (int bVertexArrays, int bLightmaps = 0)
 {
 #if !USE_DISPLAY_LISTS
 	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
@@ -107,7 +107,7 @@ else
 
 //------------------------------------------------------------------------------
 
-static inline void InitTMU2 (int32_t bVertexArrays, int32_t bLightmaps = 0)
+static inline void InitTMU2 (int bVertexArrays, int bLightmaps = 0)
 {
 #if !USE_DISPLAY_LISTS
 	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
@@ -133,7 +133,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-static inline void InitTMU3 (int32_t bVertexArrays, int32_t bLightmaps = 0)
+static inline void InitTMU3 (int bVertexArrays, int bLightmaps = 0)
 {
 #if !USE_DISPLAY_LISTS
 	ogl.SelectTMU (GL_TEXTURE3, bVertexArrays != 0);
@@ -160,7 +160,7 @@ else
 
 //------------------------------------------------------------------------------
 
-static inline void ExitTMU (int32_t bVertexArrays)
+static inline void ExitTMU (int bVertexArrays)
 {
 #if !USE_DISPLAY_LISTS
 	ogl.SelectTMU (GL_TEXTURE3, bVertexArrays != 0);
@@ -213,11 +213,11 @@ else {
 				(_bmP)->Texture ()->Wrap (GL_REPEAT); \
 				} \
 			else { \
-				ogl.BindTexture ((_lmP)->m_handle); \
+				ogl.BindTexture ((_lmP)->handle); \
 				CTexture::Wrap (GL_CLAMP); \
 				}
 
-#define	INIT_TMU(_initTMU,_tmu,_bmP,_lmP,_bClient, bLightmaps) \
+#define	INIT_TMU(_initTMU,_tmu,_bmP,_lmP,_bClient,bLightmaps) \
 			_initTMU (_bClient, bLightmaps); \
 			G3_BIND (_tmu,_bmP,_lmP,_bClient)
 

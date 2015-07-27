@@ -60,7 +60,7 @@ tTexPolyMultiDrawer	*fpDrawTexPolyMulti = NULL;
 
 //------------------------------------------------------------------------------
 
-inline void SetTexCoord (tUVL *uvlList, int32_t nOrient, int32_t bMulti, tTexCoord2f *texCoord, int32_t bMask)
+inline void SetTexCoord (tUVL *uvlList, int nOrient, int bMulti, tTexCoord2f *texCoord, int bMask)
 {
 	float u1, v1;
 
@@ -97,17 +97,17 @@ else
 
 //------------------------------------------------------------------------------
 
-inline int32_t G3BindTex (CBitmap *pBm, GLint nTexId, GLhandleARB lmProg, char *pszTexId,
-						    pInitTMU initTMU, int32_t bShaderVar, int32_t bVertexArrays)
+inline int G3BindTex (CBitmap *bmP, GLint nTexId, GLhandleARB lmProg, char *pszTexId,
+						    pInitTMU initTMU, int bShaderVar, int bVertexArrays)
 {
-if (pBm || (nTexId >= 0)) {
+if (bmP || (nTexId >= 0)) {
 	initTMU (bVertexArrays);
 	if (nTexId >= 0)
 		ogl.BindTexture (nTexId);
 	else {
-		if (pBm->Bind (1))
+		if (bmP->Bind (1))
 			return 1;
-		pBm->Texture ()->Wrap (GL_REPEAT);
+		bmP->Texture ()->Wrap (GL_REPEAT);
 		}
 	if (bShaderVar)
 		glUniform1i (glGetUniformLocation (lmProg, pszTexId), 0);
@@ -117,7 +117,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t G3DrawLine (CRenderPoint *p0, CRenderPoint *p1)
+int G3DrawLine (CRenderPoint *p0, CRenderPoint *p1)
 {
 if (ogl.SizeVertexBuffer (2)) {
 	ogl.SetTexturing (false);
@@ -133,9 +133,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void OglDrawEllipse (int32_t nSides, int32_t nType, float xScale, float xOffset, float yScale, float yOffset, tSinCosf *pSinCos)
+void OglDrawEllipse (int nSides, int nType, float xScale, float xOffset, float yScale, float yOffset, tSinCosf *sinCosP)
 {
-	int32_t		i;
+	int		i;
 	double	ang;
 
 glPushMatrix ();
@@ -144,22 +144,22 @@ glTranslatef (xOffset, yOffset, 0.0f);
 glScalef (xScale, yScale, 1.0f);
 if (nType == GL_LINES) {	// implies a dashed circle
 	if (ogl.SizeVertexBuffer (nSides * 2)) {
-		if (pSinCos) {
-			for (i = 0; i < nSides; i++, pSinCos++) {
-				ogl.VertexBuffer () [i].v.coord.x = pSinCos->fCos;
-				ogl.VertexBuffer () [i].v.coord.y = pSinCos->fSin;
-				i++, pSinCos++;
-				ogl.VertexBuffer () [i].v.coord.x = pSinCos->fCos;
-				ogl.VertexBuffer () [i].v.coord.y = pSinCos->fSin;
+		if (sinCosP) {
+			for (i = 0; i < nSides; i++, sinCosP++) {
+				ogl.VertexBuffer () [i].v.coord.x = sinCosP->fCos;
+				ogl.VertexBuffer () [i].v.coord.y = sinCosP->fSin;
+				i++, sinCosP++;
+				ogl.VertexBuffer () [i].v.coord.x = sinCosP->fCos;
+				ogl.VertexBuffer () [i].v.coord.y = sinCosP->fSin;
 				}
 			}
 		else {
 			for (i = 0; i < nSides; i++) {
-				ang = 2.0 * PI * i / nSides;
+				ang = 2.0 * Pi * i / nSides;
 				ogl.VertexBuffer () [i].v.coord.x = float (cos (ang));
 				ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
 				i++;
-				ang = 2.0 * PI * i / nSides;
+				ang = 2.0 * Pi * i / nSides;
 				ogl.VertexBuffer () [i].v.coord.x = float (cos (ang));
 				ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
 				}
@@ -168,16 +168,16 @@ if (nType == GL_LINES) {	// implies a dashed circle
 		}
 	}
 else {
-	if (pSinCos) {
+	if (sinCosP) {
 		ogl.EnableClientStates (0, 0, 0, -1);
-		OglVertexPointer (2, GL_FLOAT, 2 * sizeof (float), reinterpret_cast<GLfloat*> (pSinCos));
+		OglVertexPointer (2, GL_FLOAT, 2 * sizeof (float), reinterpret_cast<GLfloat*> (sinCosP));
 		OglDrawArrays (nType, 0, nSides);
 		ogl.DisableClientStates (0, 0, 0, -1);
 		}
 	else {
 		if (ogl.SizeVertexBuffer (nSides)) {
 			for (i = 0; i < nSides; i++) {
-				ang = 2.0 * PI * i / nSides;
+				ang = 2.0 * Pi * i / nSides;
 				ogl.VertexBuffer () [i].v.coord.x = float (cos (ang));
 				ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
 				}
@@ -191,15 +191,16 @@ glPopMatrix ();
 
 //------------------------------------------------------------------------------
 
-void OglDrawCircle (int32_t nSides, int32_t nType)
+void OglDrawCircle (int nSides, int nType)
 {
-	float	s = 2.0f * float (PI) / float (nSides);
+	int		i;
+	double	ang;
 
 if (ogl.SizeVertexBuffer (nSides)) {
-	for (int32_t i = 0; i < nSides; i++) {
-		float a = s * float (i);
-		ogl.VertexBuffer () [i].v.coord.x = float (cos (a));
-		ogl.VertexBuffer () [i].v.coord.y = float (sin (a));
+	for (i = 0; i < nSides; i++) {
+		ang = 2.0 * Pi * i / nSides;
+		ogl.VertexBuffer () [i].v.coord.x = float (cos (ang));
+		ogl.VertexBuffer () [i].v.coord.y = float (sin (ang));
 		}
 	ogl.FlushBuffers (nType, nSides, 2);
 	}
@@ -207,24 +208,7 @@ if (ogl.SizeVertexBuffer (nSides)) {
 
 //------------------------------------------------------------------------------
 
-void OglDrawCircle (CFloatVector vCenter, int32_t nSides, int32_t nType)
-{
-	float	s = 2.0f * float (PI) / float (nSides);
-
-if (ogl.SizeVertexBuffer (nSides)) {
-	for (int32_t i = 0; i < nSides; i++) {
-		float a = s * float (i);
-		ogl.VertexBuffer () [i].v.coord.x = float (cos (a));
-		ogl.VertexBuffer () [i].v.coord.y = float (sin (a));
-		ogl.VertexBuffer () [i].v.coord.z = vCenter.v.coord.z;
-		}
-	ogl.FlushBuffers (nType, nSides, 3);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-int32_t G3DrawSphere (CRenderPoint *pnt, fix rad, int32_t bBigSphere)
+int G3DrawSphere (CRenderPoint *pnt, fix rad, int bBigSphere)
 {
 	double r;
 
@@ -258,11 +242,11 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t G3DrawSphere3D (CRenderPoint *p0, int32_t nSides, int32_t rad)
+int G3DrawSphere3D (CRenderPoint *p0, int nSides, int rad)
 {
 	CCanvasColor	c = CCanvas::Current ()->Color ();
-	CRenderPoint	p = *p0;
-	int32_t			i;
+	CRenderPoint			p = *p0;
+	int				i;
 	CFloatVector	v;
 	float				x, y, z, r;
 	float				ang;
@@ -276,7 +260,7 @@ if (ogl.SizeVertexBuffer (nSides + 1)) {
 	r = X2F (rad);
 	v.v.coord.z = z;
 	for (i = 0; i <= nSides; i++) {
-		ang = 2.0f * float (PI * (i % nSides) / nSides);
+		ang = 2.0f * float (Pi * (i % nSides) / nSides);
 		v.v.coord.x = x + float (cos (ang) * r);
 		v.v.coord.y = y + float (sin (ang) * r);
 		ogl.VertexBuffer () [i] = v;
@@ -290,13 +274,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t G3DrawCircle3D (CRenderPoint *p0, int32_t nSides, int32_t rad)
+int G3DrawCircle3D (CRenderPoint *p0, int nSides, int rad)
 {
-	CRenderPoint		p = *p0;
-	int32_t				i, j;
-	CFloatVector		v;
-	float					x, y, r;
-	float					ang;
+	CRenderPoint			p = *p0;
+	int				i, j;
+	CFloatVector	v;
+	float				x, y, r;
+	float				ang;
 
 if (ogl.SizeVertexBuffer (2 * (nSides + 1))) {
 	ogl.SetTexturing (false);
@@ -307,7 +291,7 @@ if (ogl.SizeVertexBuffer (2 * (nSides + 1))) {
 	r = X2F (rad);
 	for (i = 0; i <= nSides; i++) {
 		for (j = i; j <= i + 1; j++) {
-			ang = 2.0f * (float) PI * (j % nSides) / nSides;
+			ang = 2.0f * (float) Pi * (j % nSides) / nSides;
 			v.v.coord.x = x + (float) cos (ang) * r;
 			v.v.coord.y = y + (float) sin (ang) * r;
 			ogl.VertexBuffer () [i] = v;
@@ -322,9 +306,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t G3DrawWhitePoly (int32_t nVertices, CRenderPoint **pointList)
+int G3DrawWhitePoly (int nVertices, CRenderPoint **pointList)
 {
-	int32_t			i;
+	int			i;
 	CRenderPoint*	p;
 
 if (ogl.SizeVertexBuffer (nVertices)) {
@@ -336,7 +320,7 @@ if (ogl.SizeVertexBuffer (nVertices)) {
 		if (p->Index () < 0)
 			ogl.VertexBuffer () [i].Assign ((*pointList)->ViewPos ());
 		else
-			ogl.VertexBuffer () [i] = gameData.renderData.pVertex [p->Index ()];
+			ogl.VertexBuffer () [i] = gameData.render.vertP [p->Index ()];
 		}
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices);
 	}
@@ -345,9 +329,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t G3DrawPoly (int32_t nVertices, CRenderPoint **pointList)
+int G3DrawPoly (int nVertices, CRenderPoint **pointList)
 {
-	int32_t				i;
+	int				i;
 	CRenderPoint*	p;
 
 if (gameStates.render.nShadowBlurPass == 1) {
@@ -362,7 +346,7 @@ if (ogl.SizeVertexBuffer (nVertices)) {
 		if (p->Index () < 0)
 			ogl.VertexBuffer () [i].Assign ((*pointList)->ViewPos ());
 		else
-			ogl.VertexBuffer () [i] = gameData.renderData.pVertex [p->Index ()];
+			ogl.VertexBuffer () [i] = gameData.render.vertP [p->Index ()];
 		}
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices);
 	if (CCanvas::Current ()->Color ().rgb || (gameStates.render.grAlpha < 1.0f))
@@ -373,7 +357,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t G3DrawPolyAlpha (int32_t nVertices, CRenderPoint **pointList, CFloatVector *color, char bDepthMask, int16_t nSegment)
+int G3DrawPolyAlpha (int nVertices, CRenderPoint **pointList, CFloatVector *color, char bDepthMask, short nSegment)
 {
 if (gameStates.render.nShadowBlurPass == 1) {
 	G3DrawWhitePoly (nVertices, pointList);
@@ -383,15 +367,15 @@ if (color->Alpha () < 0)
 	color->Alpha () = gameStates.render.grAlpha;
 CFloatVector	vertices [8];
 
-for (int32_t i = 0; i < nVertices; i++)
-	vertices [i] = gameData.renderData.pVertex [pointList [i]->Index ()];
+for (int i = 0; i < nVertices; i++)
+	vertices [i] = gameData.render.vertP [pointList [i]->Index ()];
 transparencyRenderer.AddPoly (NULL, NULL, NULL, vertices, nVertices, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-void gr_upoly_tmap (int32_t nverts, int32_t *vert )
+void gr_upoly_tmap (int nverts, int *vert )
 {
 #if TRACE
 console.printf (CON_DBG, "gr_upoly_tmap: unhandled\n");//should never get called
@@ -400,7 +384,7 @@ console.printf (CON_DBG, "gr_upoly_tmap: unhandled\n");//should never get called
 
 //------------------------------------------------------------------------------
 
-void DrawTexPolyFlat (CBitmap *pBm, int32_t nVertices, CRenderPoint **vertlist)
+void DrawTexPolyFlat (CBitmap *bmP, int nVertices, CRenderPoint **vertlist)
 {
 #if TRACE
 console.printf (CON_DBG, "DrawTexPolyFlat: unhandled\n");//should never get called
@@ -409,8 +393,8 @@ console.printf (CON_DBG, "DrawTexPolyFlat: unhandled\n");//should never get call
 
 //------------------------------------------------------------------------------
 
-int32_t G3DrawTexPolyFlat (
-	int32_t			nVertices,
+int G3DrawTexPolyFlat (
+	int			nVertices,
 	CRenderPoint**	pointList,
 	tUVL*			uvlList,
 	tUVL*			uvlLMap,
@@ -418,12 +402,12 @@ int32_t G3DrawTexPolyFlat (
 	CBitmap*		bmTop,
 	tLightmap*	lightmap,
 	CFixVector*	vNormalP,
-	int32_t			orient,
-	int32_t			bBlend,
-	int32_t			bAdditive,
-	int16_t			nSegment)
+	int			orient,
+	int			bBlend,
+	int			bAdditive,
+	short			nSegment)
 {
-	int32_t			i;
+	int			i;
 	CRenderPoint*	p;
 
 if (ogl.SizeVertexBuffer (nVertices)) {
@@ -447,7 +431,7 @@ if (ogl.SizeVertexBuffer (nVertices)) {
 		if (p->Index () < 0)
 			ogl.VertexBuffer () [i].Assign ((*pointList)->ViewPos ());
 		else
-			ogl.VertexBuffer () [i] = gameData.renderData.pVertex [p->Index ()];
+			ogl.VertexBuffer () [i] = gameData.render.vertP [p->Index ()];
 		}
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices);
 	}
@@ -460,18 +444,18 @@ return 0;
 			if ((_src)->Index () < 0) \
 				(_dest).Assign ((_src)->ViewPos ()); \
 			else \
-				_dest = gameData.renderData.pVertex [(_src)->Index ()];
+				_dest = gameData.render.vertP [(_src)->Index ()];
 
 #define	G3VERTPOS3(_dest,_src) \
 			if ((_src)->Index () < 0) \
 				(_dest).Assign ((_src)->ViewPos ()); \
 			else \
-				_dest = gameData.renderData.pVertex [(_src)->Index ()];
+				_dest = gameData.render.vertP [(_src)->Index ()];
 
 //------------------------------------------------------------------------------
 
-int32_t G3DrawTexPolyMulti (
-	int32_t			nVertices,
+int G3DrawTexPolyMulti (
+	int			nVertices,
 	CRenderPoint**	pointList,
 	tUVL*			uvlList,
 	tUVL*			uvlLMap,
@@ -479,21 +463,21 @@ int32_t G3DrawTexPolyMulti (
 	CBitmap*		bmTop,
 	tLightmap*	lightmap,
 	CFixVector*	vNormalP,
-	int32_t			orient,
-	int32_t			bBlend,
-	int32_t			bAdditive,
-	int16_t			nSegment)
+	int			orient,
+	int			bBlend,
+	int			bAdditive,
+	short			nSegment)
 {
-	int32_t				i, nShader, nFrame;
-	int32_t				bShaderMerge = 0,
+	int				i, nShader, nFrame;
+	int				bShaderMerge = 0,
 						bSuperTransp = 0;
-	int32_t				bLight = 1,
+	int				bLight = 1,
 						bDynLight = gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE),
 						bDepthSort,
 						bOverlay = 0;
-	CFaceColor*		pColor;
-	CBitmap*			pBm = NULL, *mask = NULL;
-	CRenderPoint*	pPoint, **pPointP;
+	CFaceColor*		colorP;
+	CBitmap*			bmP = NULL, *mask = NULL;
+	CRenderPoint*	pointP, **pointPP;
 #if USE_VERTNORMS
 	CFloatVector	vNormal, vVertPos;
 #endif
@@ -528,8 +512,8 @@ bDepthSort = (!bmTop &&
 				   (bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT | BM_FLAG_TGA)));
 
 if (bmTop && (bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
-	nFrame = (int32_t) (bmTop->CurFrame () - bmTop->Frames ());
-	pBm = bmTop;
+	nFrame = (int) (bmTop->CurFrame () - bmTop->Frames ());
+	bmP = bmTop;
 	bmTop = bmTop->CurFrame ();
 	}
 else
@@ -539,7 +523,7 @@ if (bmTop) {
 	if (nFrame < 0)
       bSuperTransp = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	else
-		bSuperTransp = (pBm->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bSuperTransp = (bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	bShaderMerge = bSuperTransp && gameOpts->ogl.bGlTexMerge;
 	bOverlay = !bShaderMerge;
 	}
@@ -552,7 +536,7 @@ retry:
 if (bShaderMerge) {
 	mask = gameStates.render.textures.bHaveMaskShader ? bmTop->Mask () : NULL;
 	nShader = bSuperTransp ? mask ? 2 : 1 : 0;
-	activeShaderProg = GLhandleARB (abs (int32_t (shaderManager.Deploy (tmShaderProgs [nShader]))));
+	activeShaderProg = GLhandleARB (abs (int (shaderManager.Deploy (tmShaderProgs [nShader]))));
 	INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapManager.Buffer (), 1, 0);
 	glUniform1i (glGetUniformLocation (activeShaderProg, "btmTex"), 0);
 	INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightmapManager.Buffer (), 1, 0);
@@ -569,7 +553,7 @@ if (bShaderMerge) {
 	glUniform1f (glGetUniformLocation (activeShaderProg, "grAlpha"), gameStates.render.grAlpha);
 	}
 else if (!bDepthSort) {
-	if (bmBot == gameData.endLevelData.satellite.pBm) {
+	if (bmBot == gameData.endLevel.satellite.bmP) {
 		ogl.SelectTMU (GL_TEXTURE0, true);
 		ogl.SetTexturing (true);
 		}
@@ -612,23 +596,23 @@ if (bDepthSort) {
 		CFloatVector	vertices [8];
 		CFaceColor		vertColors [8];
 		tTexCoord2f		texCoord [2][8];
-		int32_t				vertIndex [8];
-		//int32_t				colorIndex [8];
+		int				vertIndex [8];
+		//int				colorIndex [8];
 
-	for (i = 0, pPointP = pointList; i < nVertices; i++, pPointP++) {
-		pPoint = *pPointP;
-		vertIndex [i] = pPoint->Index ();
+	for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
+		pointP = *pointPP;
+		vertIndex [i] = pointP->Index ();
 		//colorIndex [i] = i;
-		if (pPoint->Index () < 0)
-			vertices[i].Assign (pPoint->ViewPos ());
+		if (pointP->Index () < 0)
+			vertices[i].Assign (pointP->ViewPos ());
 		else
-			vertices [i] = gameData.renderData.pVertex [pPoint->Index ()];
+			vertices [i] = gameData.render.vertP [pointP->Index ()];
 		texCoord [0][i].v.u = X2F (uvlList [i].u);
 		texCoord [0][i].v.v = X2F (uvlList [i].v);
 		SetTexCoord (uvlList + i, orient, 1, texCoord [1] + i, 0);
-		G3VERTPOS (vVertPos, pPoint);
+		G3VERTPOS (vVertPos, pointP);
 		if (bDynLight)
-			GetVertexColor (-1, -1, vertIndex [i], pPoint->GetNormal ()->XYZ (), vVertPos.XYZ (), vertColors + i, NULL,
+			GetVertexColor (-1, -1, vertIndex [i], pointP->GetNormal ()->XYZ (), vVertPos.XYZ (), vertColors + i, NULL,
 								gameStates.render.nState ? X2F (uvlList [i].l) : 1, -1, 0);
 		else if (bLight)
 			SetTMapColor (uvlList + i, i, bmBot, !bOverlay, &vertColors [i]);
@@ -646,10 +630,10 @@ CFaceColor	faceColor;
 
 if (bDynLight) {
 	if (bShaderMerge) {
-		for (i = 0, pPointP = pointList; i < nVertices; i++, pPointP++) {
-			pPoint = *pPointP;
-			G3VERTPOS (vVertPos, pPoint);
-			GetVertexColor (-1, -1, pPoint->Index (), pPoint->GetNormal ()->XYZ (), vVertPos.XYZ (), &faceColor, NULL, 1, 0, 0);
+		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
+			pointP = *pointPP;
+			G3VERTPOS (vVertPos, pointP);
+			GetVertexColor (-1, -1, pointP->Index (), pointP->GetNormal ()->XYZ (), vVertPos.XYZ (), &faceColor, NULL, 1, 0, 0);
 			ogl.ColorBuffer () [i].Assign (faceColor);
 			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
 			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
@@ -658,10 +642,10 @@ if (bDynLight) {
 			}
 		}
 	else {
-		for (i = 0, pPointP = pointList; i < nVertices; i++, pPointP++) {
-			pPoint = *pPointP;
-			G3VERTPOS (vVertPos, pPoint);
-			GetVertexColor (-1, -1, pPoint->Index (), pPoint->GetNormal ()->XYZ (), vVertPos.XYZ (), &faceColor, NULL,
+		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
+			pointP = *pointPP;
+			G3VERTPOS (vVertPos, pointP);
+			GetVertexColor (-1, -1, pointP->Index (), pointP->GetNormal ()->XYZ (), vVertPos.XYZ (), &faceColor, NULL,
 								gameStates.render.nState ? X2F (uvlList [i].l) : 1, 0, 0);
 			ogl.ColorBuffer () [i].Assign (faceColor);
 			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
@@ -672,47 +656,47 @@ if (bDynLight) {
 	}
 else if (bLight) {
 	if (bShaderMerge) {
-		for (i = 0, pPointP = pointList; i < nVertices; i++, pPointP++) {
+		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
 			if (gameStates.render.nState)
 				SetTMapColor (uvlList + i, i, bmBot, 1, ogl.ColorBuffer () + i);
 			else {
-				pColor = gameData.renderData.color.vertices + (*pPointP)->Index ();
-				ogl.ColorBuffer () [i].Assign (*pColor);
+				colorP = gameData.render.color.vertices + (*pointPP)->Index ();
+				ogl.ColorBuffer () [i].Assign (*colorP);
 				}
 			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
 			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
 			SetTexCoord (uvlList + i, orient, 1, ogl.TexCoordBuffer (1) + i, mask != NULL);
-			OglVertex3f (*pPointP, ogl.VertexBuffer () + i);
+			OglVertex3f (*pointPP, ogl.VertexBuffer () + i);
 			}
 		}
 	else {
-		for (i = 0, pPointP = pointList; i < nVertices; i++, pPointP++) {
+		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
 			if (gameStates.render.nState || gameStates.app.bEndLevelSequence)
 				SetTMapColor (uvlList + i, i, bmBot, 1, ogl.ColorBuffer () + i);
 			else {
-				pColor = gameData.renderData.color.vertices + (*pPointP)->Index ();
-				glColor3fv (reinterpret_cast<GLfloat*> (pColor));
+				colorP = gameData.render.color.vertices + (*pointPP)->Index ();
+				glColor3fv (reinterpret_cast<GLfloat*> (colorP));
 				}
 			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
 			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
-			OglVertex3f (*pPointP, ogl.VertexBuffer () + i);
+			OglVertex3f (*pointPP, ogl.VertexBuffer () + i);
 			}
 		}
 	}
 else {
 	if (bShaderMerge) {
-		for (i = 0, pPointP = pointList; i < nVertices; i++, pPointP++) {
+		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
 			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
 			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
 			SetTexCoord (uvlList + i, orient, 1, ogl.TexCoordBuffer (1) + i, mask != NULL);
-			OglVertex3f (*pPointP, ogl.VertexBuffer () + i);
+			OglVertex3f (*pointPP, ogl.VertexBuffer () + i);
 			}
 		}
 	else {
-		for (i = 0, pPointP = pointList; i < nVertices; i++, pPointP++) {
+		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
 			ogl.TexCoordBuffer (1) [i].v.u = X2F (uvlList [i].u);
 			ogl.TexCoordBuffer (1) [i].v.v = X2F (uvlList [i].v);
-			OglVertex3f (*pPointP, ogl.VertexBuffer () + i);
+			OglVertex3f (*pointPP, ogl.VertexBuffer () + i);
 			}
 		}
 	}
@@ -734,26 +718,26 @@ if (bOverlay) {
 	bmTop->Texture ()->Wrap (GL_REPEAT);
 
 	if (bDynLight) {
-		for (i = 0, pPointP = pointList; i < nVertices; i++, pPointP++) {
-			CRenderPoint* pPoint = *pPointP;
-			vVertPos.Assign (pPoint->ViewPos ());
-			GetVertexColor (-1, -1, pPoint->Index (), pPoint->GetNormal ()->XYZ (), vVertPos.XYZ (), &faceColor, NULL, 1, 0, 0);
+		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
+			CRenderPoint* pointP = *pointPP;
+			vVertPos.Assign (pointP->ViewPos ());
+			GetVertexColor (-1, -1, pointP->Index (), pointP->GetNormal ()->XYZ (), vVertPos.XYZ (), &faceColor, NULL, 1, 0, 0);
 			ogl.ColorBuffer () [i].Assign (faceColor);
 			SetTexCoord (uvlList + i, orient, 0, ogl.TexCoordBuffer () + i, mask != NULL);
-			OglVertex3f (*pPointP, ogl.VertexBuffer () + i);
+			OglVertex3f (*pointPP, ogl.VertexBuffer () + i);
 			}
 		}
 	else if (bLight) {
-		for (i = 0, pPointP = pointList; i < nVertices; i++, pPointP++) {
+		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
 			SetTMapColor (uvlList + i, i, bmTop, 1, ogl.ColorBuffer () + i);
 			SetTexCoord (uvlList + i, orient, 0, ogl.TexCoordBuffer () + i, mask != NULL);
-			OglVertex3f (*pPointP, ogl.VertexBuffer () + i);
+			OglVertex3f (*pointPP, ogl.VertexBuffer () + i);
 			}
 		}
 	else {
-		for (i = 0, pPointP = pointList; i < nVertices; i++, pPointP++) {
+		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
 			SetTexCoord (uvlList + i, orient, 0, ogl.TexCoordBuffer () + i, mask != NULL);
-			OglVertex3f (*pPointP, ogl.VertexBuffer () + i);
+			OglVertex3f (*pointPP, ogl.VertexBuffer () + i);
 			}
 		}
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 3, 1, bDynLight || bLight);
@@ -785,8 +769,8 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t G3DrawTexPolyLightmap (
-	int32_t			nVertices,
+int G3DrawTexPolyLightmap (
+	int			nVertices,
 	CRenderPoint**	pointList,
 	tUVL*			uvlList,
 	tUVL*			uvlLMap,
@@ -794,12 +778,12 @@ int32_t G3DrawTexPolyLightmap (
 	CBitmap*		bmTop,
 	tLightmap*	lightmap,
 	CFixVector*	vNormalP,
-	int32_t			orient,
-	int32_t			bBlend,
-	int16_t			nSegment)
+	int			orient,
+	int			bBlend,
+	short			nSegment)
 {
-	int32_t				i, bShaderMerge;
-	CRenderPoint**	pPointP;
+	int				i, bShaderMerge;
+	CRenderPoint**	pointPP;
 
 if (gameStates.render.nShadowBlurPass == 1) {
 	G3DrawWhitePoly (nVertices, pointList);
@@ -855,10 +839,10 @@ if (ogl.SizeBuffers (nVertices)) {
 	//ogl.BindTexture (lightmap->handle);
 	if (bShaderMerge)
 		glUniform1i (glGetUniformLocation (lmProg, "lMapTex"), 2);
-	pPointP = pointList;
+	pointPP = pointList;
 	if (gameStates.render.bFullBright)
 		glColor3d (1,1,1);
-	for (i = 0; i < nVertices; i++, pPointP++) {
+	for (i = 0; i < nVertices; i++, pointPP++) {
 		if (!gameStates.render.bFullBright)
 			SetTMapColor (uvlList + i, i, bmBot, 1, ogl.ColorBuffer () + i);
 		ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
@@ -866,7 +850,7 @@ if (ogl.SizeBuffers (nVertices)) {
 		if (bmTop)
 			SetTexCoord (uvlList + i, orient, 1, ogl.TexCoordBuffer (1) + i, 0);
 		glMultiTexCoord2f (GL_TEXTURE2, X2F (uvlLMap [i].u), X2F (uvlLMap [i].v));
-		OglVertex3f (*pPointP, ogl.VertexBuffer () + i);
+		OglVertex3f (*pointPP, ogl.VertexBuffer () + i);
 		}
 	ogl.EnableClientStates (1, 1, 0, 1);
 	OglColorPointer (4, GL_FLOAT, 0, &ogl.ColorBuffer ());
@@ -886,18 +870,18 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t G3DrawTexPolySimple (
-	int32_t				nVertices,
+int G3DrawTexPolySimple (
+	int				nVertices,
 	CRenderPoint**	pointList,
 	tUVL*				uvlList,
-	CBitmap*			pBm,
+	CBitmap*			bmP,
 	CFixVector*		vNormalP,
-	int32_t				bBlend)
+	int				bBlend)
 {
-	int32_t				i;
-	int32_t				bLight = 1,
+	int				i;
+	int				bLight = 1,
 						bDynLight = gameStates.render.bApplyDynLight && !gameStates.app.bEndLevelSequence;
-	CRenderPoint*	pPoint, ** pPointP;
+	CRenderPoint*	pointP, ** pointPP;
 #if USE_VERTNORMS
 	CFloatVector	vNormal, vVertPos;
 #endif
@@ -924,19 +908,19 @@ else {
 		}
 	}
 ogl.SetDepthMode (GL_LEQUAL);
-pBm = pBm->Override (-1);
-if (pBm == gameData.endLevelData.satellite.pBm) {
+bmP = bmP->Override (-1);
+if (bmP == gameData.endLevel.satellite.bmP) {
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
 	}
 else
 	InitTMU0 (1);
-if (pBm->Bind (1))
+if (bmP->Bind (1))
 	return 1;
-if (pBm == deadzone.Bitmap ())
-	pBm->Texture ()->Wrap (GL_CLAMP);
+if (bmP == deadzone.Bitmap ())
+	bmP->Texture ()->Wrap (GL_CLAMP);
 else
-	pBm->Texture ()->Wrap (GL_REPEAT);
+	bmP->Texture ()->Wrap (GL_REPEAT);
 
 if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
@@ -963,10 +947,10 @@ ogl.m_states.fAlpha = gameStates.render.grAlpha;
 if (ogl.SizeBuffers (nVertices)) {
 	if (bDynLight) {
 		CFaceColor	faceColor;
-		for (i = 0, pPointP = pointList; i < nVertices; i++, pPointP++) {
-			pPoint = *pPointP;
-			G3VERTPOS (vVertPos, pPoint);
-			GetVertexColor (-1, -1, pPoint->Index (), pPoint->GetNormal ()->XYZ (), vVertPos.XYZ (), NULL, &faceColor, 1, 0, 0);
+		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
+			pointP = *pointPP;
+			G3VERTPOS (vVertPos, pointP);
+			GetVertexColor (-1, -1, pointP->Index (), pointP->GetNormal ()->XYZ (), vVertPos.XYZ (), NULL, &faceColor, 1, 0, 0);
 			ogl.ColorBuffer () [i].Assign (faceColor);
 			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
 			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
@@ -974,18 +958,18 @@ if (ogl.SizeBuffers (nVertices)) {
 			}
 		}
 	else if (bLight) {
-		for (i = 0, pPointP = pointList; i < nVertices; i++, pPointP++) {
-			SetTMapColor (uvlList + i, i, pBm, 1, ogl.ColorBuffer () + i);
+		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
+			SetTMapColor (uvlList + i, i, bmP, 1, ogl.ColorBuffer () + i);
 			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
 			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
-			OglVertex3f (*pPointP, ogl.VertexBuffer () + i);
+			OglVertex3f (*pointPP, ogl.VertexBuffer () + i);
 			}
 		}
 	else {
-		for (i = 0, pPointP = pointList; i < nVertices; i++, pPointP++) {
+		for (i = 0, pointPP = pointList; i < nVertices; i++, pointPP++) {
 			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
 			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
-			OglVertex3f (*pPointP, ogl.VertexBuffer () + i);
+			OglVertex3f (*pointPP, ogl.VertexBuffer () + i);
 			}
 		}
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 3, 1, bLight || bDynLight);
@@ -1000,18 +984,18 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t COGL::BindBitmap (CBitmap* pBm, int32_t nFrame, int32_t nWrap, int32_t bTextured)
+int COGL::BindBitmap (CBitmap* bmP, int nFrame, int nWrap, int bTextured)
 {
-if (pBm) {
+if (bmP) {
 	SelectTMU (GL_TEXTURE0);
 	SetTexturing (true);
-	if (!pBm->IsBound ()) {
-		if (pBm->Bind (1))
+	if (!bmP->IsBound ()) {
+		if (bmP->Bind (1))
 			return 0;
-		pBm = pBm->Override (-1);
-		if (pBm->Frames ())
-			pBm = pBm->Frames () + nFrame;
-		pBm->Texture ()->Wrap (nWrap);
+		bmP = bmP->Override (-1);
+		if (bmP->Frames ())
+			bmP = bmP->Frames () + nFrame;
+		bmP->Texture ()->Wrap (nWrap);
 		}
 	}
 else if (!(bTextured || (ogl.DrawBuffer () && ogl.DrawBuffer ()->IsBound ())))
@@ -1021,23 +1005,23 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t COGL::BindBuffers (CFloatVector *pVertex, int32_t nVertices, int32_t nDimensions,
-							  tTexCoord2f *pTexCoord, 
-							  CFloatVector *pColor, int32_t nColors,
-							  CBitmap *pBm,
-							  int32_t nTMU)
+int COGL::BindBuffers (CFloatVector *vertexP, int nVertices, int nDimensions,
+							  tTexCoord2f *texCoordP, 
+							  CFloatVector *colorP, int nColors,
+							  CBitmap *bmP,
+							  int nTMU)
 {
-if (!ogl.EnableClientStates (m_data.bClientTexCoord = pTexCoord != NULL, m_data.bClientColor = ((pColor != NULL) && (nColors == nVertices)), 0, nTMU))
+if (!ogl.EnableClientStates (m_data.bClientTexCoord = texCoordP != NULL, m_data.bClientColor = ((colorP != NULL) && (nColors == nVertices)), 0, nTMU))
 	return 0;
-if (pTexCoord)
-	OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), pTexCoord);
-if (pColor) {
+if (texCoordP)
+	OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoordP);
+if (colorP) {
 	if (nColors == nVertices)
-		OglColorPointer (4, GL_FLOAT, sizeof (CFloatVector), pColor);
+		OglColorPointer (4, GL_FLOAT, sizeof (CFloatVector), colorP);
 	else
-		glColor4fv (reinterpret_cast<GLfloat*> (pColor));
+		glColor4fv (reinterpret_cast<GLfloat*> (colorP));
 	}
-OglVertexPointer (nDimensions, GL_FLOAT, sizeof (CFloatVector), pVertex);
+OglVertexPointer (nDimensions, GL_FLOAT, sizeof (CFloatVector), vertexP);
 return 1;
 }
 
@@ -1050,15 +1034,15 @@ ogl.DisableClientStates (m_data.bClientTexCoord, m_data.bClientColor, 0);
 
 //------------------------------------------------------------------------------
 
-int32_t COGL::RenderArrays (int32_t nPrimitive, 
-							   CFloatVector *pVertex, int32_t nVertices, int32_t nDimensions,
-							   tTexCoord2f *pTexCoord, 
-							   CFloatVector *pColor, int32_t nColors, 
-							   CBitmap *pBm, int32_t nFrame, int32_t nWrap)
+int COGL::RenderArrays (int nPrimitive, 
+							   CFloatVector *vertexP, int nVertices, int nDimensions,
+							   tTexCoord2f *texCoordP, 
+							   CFloatVector *colorP, int nColors, 
+							   CBitmap *bmP, int nFrame, int nWrap)
 {
-if (!BindBitmap (pBm, nFrame, nWrap, pTexCoord != NULL))
+if (!BindBitmap (bmP, nFrame, nWrap, texCoordP != NULL))
 	return 0;
-if (!BindBuffers (pVertex, nVertices, nDimensions, pTexCoord, pColor, nColors, pBm))
+if (!BindBuffers (vertexP, nVertices, nDimensions, texCoordP, colorP, nColors, bmP))
 	return 0;
 OglDrawArrays (nPrimitive, 0, nVertices);
 ogl.ReleaseBuffers ();
@@ -1067,34 +1051,28 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t COGL::RenderQuad (CBitmap* pBm, CFloatVector* pVertex, int32_t nDimensions, tTexCoord2f* pTexCoord, CFloatVector* pColor, int32_t nColors, int32_t nWrap)
+int COGL::RenderQuad (CBitmap* bmP, CFloatVector* vertexP, int nDimensions, tTexCoord2f* texCoordP, CFloatVector* colorP, int nColors, int nWrap)
 {
-if (!pBm)
-	RenderArrays (GL_QUADS, pVertex, 4, nDimensions, pTexCoord, pColor, nColors, pBm, 0, GL_CLAMP);
-else if (pTexCoord)
-	RenderArrays (GL_QUADS, pVertex, 4, nDimensions, pTexCoord, pColor, nColors, pBm, 0, nWrap);
+if (!bmP)
+	RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoordP, colorP, nColors, bmP, 0, GL_CLAMP);
+else if (texCoordP)
+	RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoordP, colorP, nColors, bmP, 0, nWrap);
 else {
-	if (!(pBm->Texture () || BindBitmap (pBm, 0, nWrap, true)))
+	if (!(bmP->Texture () || BindBitmap (bmP, 0, nWrap, true)))
 		return 0;
-	pBm = pBm->Override (-1);
-#if DBG
-	if (!pBm->Texture ()) {
-		BindBitmap (pBm, 0, nWrap, true);
-		return 0;
-		}
-#endif
-	GLfloat			u = pBm->Texture ()->U ();
-	GLfloat			v = pBm->Texture ()->V ();
+
+	GLfloat			u = bmP->Texture ()->U ();
+	GLfloat			v = bmP->Texture ()->V ();
 	tTexCoord2f		texCoords [4] = {{{0,0}},{{u,0}},{{u,v}},{{0,v}}};
 
-	RenderArrays (GL_QUADS, pVertex, 4, nDimensions, texCoords, pColor, nColors, pBm, 0, nWrap);
+	RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoords, colorP, nColors, bmP, 0, nWrap);
 	}
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t COGL::RenderQuad (CBitmap* pBm, CFloatVector& vPosf, float width, float height, int32_t nDimensions, int32_t nWrap)
+int COGL::RenderQuad (CBitmap* bmP, CFloatVector& vPosf, float width, float height, int nDimensions, int nWrap)
 {
 CFloatVector verts [4];
 verts [0].v.coord.x =
@@ -1110,17 +1088,17 @@ if (nDimensions == 3)
 	verts [1].v.coord.z =
 	verts [2].v.coord.z =
 	verts [3].v.coord.z = vPosf.v.coord.z;
-int32_t nColors = 0;
-CFloatVector* pColor = pBm ? pBm->GetColor (&nColors) : NULL;
-return RenderQuad (pBm, verts, nDimensions, pBm ?  pBm->GetTexCoord () : NULL, pColor, nColors, nWrap);
+int nColors = 0;
+CFloatVector* colorP = bmP ? bmP->GetColor (&nColors) : NULL;
+return RenderQuad (bmP, verts, nDimensions, bmP ?  bmP->GetTexCoord () : NULL, colorP, nColors, nWrap);
 }
 
 //------------------------------------------------------------------------------
 
-int32_t COGL::RenderBitmap (CBitmap* pBm, const CFixVector& vPos, fix xWidth, fix xHeight, CFloatVector* pColor, float alpha, int32_t bAdditive)
+int COGL::RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, CFloatVector* colorP, float alpha, int bAdditive)
 {
 	CFloatVector	vPosf;
-	CFloatVector	color = {{{1, 1, 1, alpha}}};
+	CFloatVector		color = {1, 1, 1, alpha};
 
 SelectTMU (GL_TEXTURE0);
 SetBlendMode (bAdditive);
@@ -1129,8 +1107,8 @@ transformation.Transform (vPosf, vPosf, 0);
 if (gameStates.render.nShadowBlurPass == 1)
 	RenderQuad (NULL, vPosf, X2F (xWidth), X2F (xHeight), 2);
 else {
-	pBm->SetColor (pColor ? pColor : &color);
-	RenderQuad (pBm, vPosf, X2F (xWidth), X2F (xHeight));
+	bmP->SetColor (colorP ? colorP : &color);
+	RenderQuad (bmP, vPosf, X2F (xWidth), X2F (xHeight));
 	}
 SetBlendMode (OGL_BLEND_ALPHA);
 return 0;
@@ -1138,25 +1116,25 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t COGL::RenderSprite (CBitmap* pBm, const CFixVector& vPos,
+int COGL::RenderSprite (CBitmap* bmP, const CFixVector& vPos,
 								fix xWidth,	fix xHeight,
 								float alpha,
-								int32_t bAdditive, 
+								int bAdditive, 
 								float fSoftRad)
 {
 	CFixVector		pv, v1;
-	CFloatVector*	pColor = pBm->GetColor ();
+	CFloatVector*	colorP = bmP->GetColor ();
 
 if (alpha < 1.0f) {
 	CFloatVector	color;
-	if (!pColor) {
+	if (!colorP) {
 		color.Red () =
 		color.Green () =
 		color.Blue () = 1;
 		color.Alpha () = alpha;
-		pColor = &color;
+		colorP = &color;
 		}
-	transparencyRenderer.AddSprite (pBm, vPos, pColor, xWidth, xHeight, 0, bAdditive, fSoftRad);
+	transparencyRenderer.AddSprite (bmP, vPos, colorP, xWidth, xHeight, 0, bAdditive, fSoftRad);
 	}
 else {
 	ogl.SelectTMU (GL_TEXTURE0, true);
@@ -1169,11 +1147,11 @@ else {
 		ogl.RenderQuad (NULL, vPosf, X2F (xWidth), X2F (xHeight), 3);
 		}
 	else {
-		if (!pColor)
+		if (!colorP)
 			glColor4f (1, 1, 1, alpha);
 		SetBlendMode (abs (bAdditive));
 		ogl.SetDepthWrite (false);
-		ogl.RenderQuad (pBm, vPosf, X2F (xWidth), X2F (xHeight), 3);
+		ogl.RenderQuad (bmP, vPosf, X2F (xWidth), X2F (xHeight), 3);
 		ogl.SetDepthWrite (true);
 		SetBlendMode (OGL_BLEND_ALPHA);
 		}
@@ -1188,7 +1166,7 @@ void COGL::RenderScreenQuad (GLuint nTexture)
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
-EnableClientStates (int32_t (nTexture != 0), 0, 0, GL_TEXTURE0);
+EnableClientStates (int (nTexture != 0), 0, 0, GL_TEXTURE0);
 BindTexture (nTexture);
 if (nTexture)
 	OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
@@ -1198,40 +1176,40 @@ OglDrawArrays (GL_QUADS, 0, 4);
 
 //------------------------------------------------------------------------------
 
-bool COglBuffers::SizeVertices (int32_t nVerts)
+bool COglBuffers::SizeVertices (int nVerts)
 {
-if (int32_t (vertices.Length ()) >= nVerts)
+if (int (vertices.Length ()) >= nVerts)
 	return true;
 vertices.Destroy ();
 return vertices.Create (nVerts) != NULL;
 }
 
-bool COglBuffers::SizeColor (int32_t nVerts)
+bool COglBuffers::SizeColor (int nVerts)
 {
-if (int32_t (color.Length ()) >= nVerts)
+if (int (color.Length ()) >= nVerts)
 	return true;
 color.Destroy ();
 return color.Create (nVerts) != NULL;
 }
 
-bool COglBuffers::SizeTexCoord (int32_t nVerts)
+bool COglBuffers::SizeTexCoord (int nVerts)
 {
-if ((int32_t (texCoord [0].Length ()) >= nVerts) && (int32_t (texCoord [1].Length ()) >= nVerts))
+if ((int (texCoord [0].Length ()) >= nVerts) && (int (texCoord [1].Length ()) >= nVerts))
 	return true;
 texCoord [0].Destroy ();
 texCoord [1].Destroy ();
 return ((texCoord [0].Create (nVerts) != NULL) && (texCoord [1].Create (nVerts) != NULL));
 }
 
-bool COglBuffers::SizeIndex (int32_t nVerts)
+bool COglBuffers::SizeIndex (int nVerts)
 {
-if (int32_t (indices.Length ()) >= nVerts)
+if (int (indices.Length ()) >= nVerts)
 	return true;
 indices.Destroy ();
 return indices.Create (nVerts) != NULL;
 }
 
-bool COglBuffers::SizeBuffers (int32_t nVerts)
+bool COglBuffers::SizeBuffers (int nVerts)
 {
 return SizeVertices (nVerts) && SizeColor (nVerts) && SizeTexCoord (nVerts) && SizeIndex (nVerts);
 }
@@ -1239,7 +1217,7 @@ return SizeVertices (nVerts) && SizeColor (nVerts) && SizeTexCoord (nVerts) && S
 
 //------------------------------------------------------------------------------
 
-void COglBuffers::Flush (GLenum nPrimitive, int32_t nVerts, int32_t nDimensions, int32_t bTextured, int32_t bColored)
+void COglBuffers::Flush (GLenum nPrimitive, int nVerts, int nDimensions, int bTextured, int bColored)
 {
 if (nVerts > 0)
 	m_nVertices = nVerts;

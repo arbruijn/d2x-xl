@@ -70,25 +70,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 // Function Prototypes added after LINTING
-int32_t ExecMainMenuOption (CMenu& m, int32_t nChoice);
-int32_t ExecMultiMenuOption (CMenu& m, int32_t nChoice);
-int32_t GetDate (int32_t& day, int32_t& month, int32_t& year);
+int ExecMainMenuOption (CMenu& m, int nChoice);
+int ExecMultiMenuOption (CMenu& m, int nChoice);
 
 //returns the number of demo files on the disk
-int32_t NDCountDemos (void);
+int NDCountDemos (void);
 
 #if defined(_WIN32) || defined(__unix__)
-int32_t CheckForUpdate (void);
+int CheckForUpdate (void);
 #endif
 
 // ------------------------------------------------------------------------
 
-int32_t AutoDemoCallback (CMenu& m, int32_t& nLastKey, int32_t nCurItem, int32_t nState)
+int AutoDemoMenuCheck (CMenu& m, int& nLastKey, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
 
-	int32_t curtime;
+	int curtime;
 
 PrintVersionInfo ();
 // Don't allow them to hit ESC in the main menu.
@@ -101,9 +100,9 @@ if (gameStates.app.bAutoDemos) {
 		&& !gameData.speedtest.bOn
 #endif	
 		) {
-		int32_t nDemos = NDCountDemos ();
+		int nDemos = NDCountDemos ();
 		for (;;) {
-			if (Rand (nDemos + 1) == 0) {
+			if ((RandShort () % (nDemos+1)) == 0) {
 				gameStates.video.nScreenMode = -1;
 				movieManager.PlayIntro ();
 				songManager.Play (SONG_TITLE, 1);
@@ -114,7 +113,7 @@ if (gameStates.app.bAutoDemos) {
 			else {
 				gameStates.input.keys.xLastPressTime = curtime;                  // Reset timer so that disk won't thrash if no demos.
 				NDStartPlayback (NULL);           // Randomly pick a file
-				if (gameData.demoData.nState == ND_STATE_PLAYBACK) {
+				if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 					SetFunctionMode (FMODE_GAME);
 					nLastKey = -3; //exit menu to get into game mode. -3 tells menu system not to restore
 					break;
@@ -128,7 +127,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 //      Create the main menu.
-int32_t SetupMainMenu (CMenu& m)
+int SetupMainMenu (CMenu& m)
 {
 m.Destroy ();
 m.Create (25);
@@ -152,15 +151,8 @@ m.AddMenu ("play movies", TXT_PLAY_MOVIES, KEY_V, HTX_MAIN_MOVIES);
 if (!gameStates.app.bNostalgia)
 	m.AddMenu ("play songs", TXT_PLAY_SONGS, KEY_S, HTX_MAIN_SONGS);
 m.AddMenu ("view credits", TXT_CREDITS, KEY_C, HTX_MAIN_CREDITS);
-if (!gameStates.app.bNostalgia)
-	m.AddMenu ("precalc lightmaps", TXT_PRECALC_LIGHTMAPS, KEY_A, HTX_PRECALC_LIGHTMAPS);
 #if defined(_WIN32) || defined(__unix__)
 m.AddMenu ("check update", TXT_CHECK_FOR_UPDATE, KEY_U, HTX_CHECK_FOR_UPDATE);
-#endif
-#if 1
-int32_t day, month, year, t = GetDate (day, month, year);
-if ((t > 0) && (year == 2015) && (month == 4) && (day <= 10))
-	m.AddMenu ("descent underground", TXT_KS_DU_MENU, KEY_G, "");
 #endif
 m.AddMenu ("quit", TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
 return m.ToS ();
@@ -168,10 +160,10 @@ return m.ToS ();
 
 //------------------------------------------------------------------------------
 //returns number of item chosen
-int32_t MainMenu (void) 
+int MainMenu (void) 
 {
 	CMenu	m;
-	int32_t	i, nChoice = 0;
+	int	i, nChoice = 0;
 
 IpxClose ();
 //paletteManager.Load (MENU_PALETTE, NULL, 0, 1, 0);		//get correct palette
@@ -186,7 +178,7 @@ if (gameData.multiplayer.autoNG.bValid > 0) {
 	return 0;
 	}
 
-PrintLog (0, "launching main menu\n");
+PrintLog (1, "launching main menu\n");
 do {
 	SetupMainMenu (m); // may have to change, eg, maybe selected pilot and no save games.
 	gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds ();                // .. 20 seconds from now!
@@ -194,7 +186,7 @@ do {
 		nChoice = 0;
 	gameStates.menus.bDrawCopyright = 1;
 	gameStates.menus.nInMenu = 0;
-	i = m.Menu ("", NULL, AutoDemoCallback, &nChoice, BG_TOPMENU, BG_STANDARD);
+	i = m.Menu ("", NULL, AutoDemoMenuCheck, &nChoice, BackgroundName (BG_MENU));
 	if (gameStates.app.bNostalgia)
 		gameOpts->app.nVersionFilter = 3;
 	if (i > -1) {
@@ -213,7 +205,7 @@ return nChoice;
 
 static void PlayMenuMovie (void)
 {
-	int32_t				h, i, j;
+	int				h, i, j;
 	CStack<char*>	m;
 	char*				ps;
 	CListBox			lb;
@@ -250,7 +242,7 @@ songManager.PlayCurrent (1);
 
 static void PlayMenuSong (void)
 {
-	int32_t				h, i;
+	int				h, i;
 	CStack<char*>	m (MAX_NUM_SONGS + 2);
 	CFile				cf;
 	char				szSongTitles [2][14] = {"- Descent 2 -", "- Descent 1 -"};
@@ -258,7 +250,7 @@ static void PlayMenuSong (void)
 
 m.Push (szSongTitles [0]);
 for (i = 0; i < songManager.TotalCount (); i++) {
-	if (cf.Open (reinterpret_cast<char*> (songManager.SongData (i).filename), gameFolders.game.szData [0], "rb", i >= songManager.Count (0))) {
+	if (cf.Open (reinterpret_cast<char*> (songManager.SongData (i).filename), gameFolders.szDataDir [0], "rb", i >= songManager.Count (0))) {
 		cf.Close ();
 		if (i == songManager.Count (0))
 			m.Push (szSongTitles [1]);
@@ -282,11 +274,9 @@ for (;;) {
 //------------------------------------------------------------------------------
 
 void ShowOrderForm (void);      // John didn't want this in inferno[HA] so I just externed it.
-void PrecomputeMissionLightmaps (void);
-void DUKickstarterNotification (void);
 
 //returns flag, true means quit menu
-int32_t ExecMainMenuOption (CMenu& m, int32_t nChoice) 
+int ExecMainMenuOption (CMenu& m, int nChoice) 
 {
 	CFileSelector	fs;
 
@@ -306,7 +296,7 @@ else if (nChoice == m.IndexOf ("load game")) {
 else if (nChoice == m.IndexOf ("load direct")) {
 	CMenu	m (1);
 	char	szLevel [10] = "";
-	int32_t	nLevel;
+	int	nLevel;
 
 	m.AddInput ("level number", szLevel, sizeof (szLevel), NULL);
 	m.Menu (NULL, "Enter level to load", NULL, NULL);
@@ -318,7 +308,7 @@ else if (nChoice == m.IndexOf ("load direct")) {
 	}
 #endif
 else if (nChoice == m.IndexOf ("multiplayer game"))
-	MultiplayerMenu ();
+		MultiplayerMenu ();
 else if (nChoice == m.IndexOf ("program settings")) 
 	ConfigMenu ();
 else if (nChoice == m.IndexOf ("choose pilot"))
@@ -326,25 +316,22 @@ else if (nChoice == m.IndexOf ("choose pilot"))
 else if (nChoice == m.IndexOf ("view demo")) {
 	char demoPath [FILENAME_LEN], demoFile [FILENAME_LEN];
 
-	sprintf (demoPath, "%s*.dem", gameFolders.user.szDemos); 
+	sprintf (demoPath, "%s%s*.dem", gameFolders.szDemoDir, *gameFolders.szDemoDir ? "/" : ""); 
 	if (fs.FileSelector (TXT_SELECT_DEMO, demoPath, demoFile, 1))
 		NDStartPlayback (demoFile);
 	}
 else if (nChoice == m.IndexOf ("view highscores")) {
 	paletteManager.DisableEffect ();
-	scoreManager.Show (-1);
+	ScoresView (-1);
 	}
-else if (!gameStates.app.bNostalgia && (nChoice == m.IndexOf ("play movies")))
+else if (nChoice == m.IndexOf ("play movies"))
 	PlayMenuMovie ();
 else if (nChoice == m.IndexOf ("play songs"))
 	PlayMenuSong ();
 else if (nChoice == m.IndexOf ("view credits")) {
 	paletteManager.DisableEffect ();
 	songManager.StopAll ();
-	creditsRenderer.Show (NULL); 
-	}
-else if (!gameStates.app.bNostalgia && (nChoice == m.IndexOf ("precalc lightmaps"))) {
-	PrecomputeMissionLightmaps ();
+	creditsManager.Show (NULL); 
 	}
 //else if (nChoice == m.IndexOf ("show help")) 
 //	ShowHelp ();
@@ -354,8 +341,6 @@ else if (!gameStates.app.bNostalgia && (nChoice == m.IndexOf ("precalc lightmaps
 else if (nChoice == m.IndexOf ("check update"))
 	CheckForUpdate ();
 #endif
-else if (nChoice == m.IndexOf ("descent underground"))
-	DUKickstarterNotification ();
 else if (nChoice == m.IndexOf ("quit")) {
 	paletteManager.DisableEffect ();
 	SetFunctionMode (FMODE_EXIT);
@@ -367,12 +352,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t QuitSaveLoadMenu (void)
+int QuitSaveLoadMenu (void)
 {
 	CMenu m (5);
-	int32_t	i;
+	int	i;
 
-	int32_t choice = 0;
+	int choice = 0;
 
 m.AddMenu ("quit", TXT_QUIT_GAME, KEY_Q, HTX_QUIT_GAME);
 m.AddMenu ("settings", TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);

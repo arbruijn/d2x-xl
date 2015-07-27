@@ -33,25 +33,25 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //elements for the distace behind each CSide, or zero if not behind
 //only gets centerMask, and assumes zero rad
 
-uint8_t CSegment::GetSideDists (const CFixVector& pRef, fix* xSideDists, int32_t bBehind)
+ubyte CSegment::GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehind)
 {
-	uint8_t		mask = 0;
+	ubyte		mask = 0;
 
-for (int32_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
+for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
 	if (m_sides [nSide].FaceCount ())
-		mask |= m_sides [nSide].Dist (pRef, xSideDists [nSide], bBehind, 1 << nSide);
+		mask |= m_sides [nSide].Dist (refP, xSideDists [nSide], bBehind, 1 << nSide);
 return mask;
 }
 
 // -------------------------------------------------------------------------------
 
-uint8_t CSegment::GetSideDistsf (const CFloatVector& pRef, float* fSideDists, int32_t bBehind)
+ubyte CSegment::GetSideDistsf (const CFloatVector& refP, float* fSideDists, int bBehind)
 {
-	uint8_t		mask = 0;
+	ubyte		mask = 0;
 
-for (int32_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
+for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
 	if (m_sides [nSide].FaceCount ())
-		mask |= m_sides [nSide].Distf (pRef, fSideDists [nSide], bBehind, 1 << nSide);
+		mask |= m_sides [nSide].Distf (refP, fSideDists [nSide], bBehind, 1 << nSide);
 return mask;
 }
 
@@ -60,28 +60,28 @@ return mask;
 //figure out what seg the given point is in, tracing through segments
 //returns CSegment number, or -1 if can't find segment
 
-static int32_t TraceSegs (const CFixVector& vPos, int32_t nCurSeg, int32_t nTraceDepth, uint16_t* bVisited, uint16_t bFlag, fix xTolerance = 0)
+static int TraceSegs (const CFixVector& vPos, int nCurSeg, int nTraceDepth, ushort* bVisited, ushort bFlag, fix xTolerance = 0)
 {
-	CSegment*	pSeg;
+	CSegment*	segP;
 	fix			xSideDists [6], xMaxDist;
-	int32_t			centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
+	int			centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
 
-if (nTraceDepth >= gameData.segData.nSegments) //gameData.segData.nSegments)
+if (nTraceDepth >= gameData.segs.nSegments) //gameData.segs.nSegments)
 	return -1;
 if (bVisited [nCurSeg] == bFlag)
 	return -1;
 bVisited [nCurSeg] = bFlag;
-pSeg = SEGMENT (nCurSeg);
-if (!(centerMask = pSeg->GetSideDists (vPos, xSideDists, 1)))		//we're in the old segment
+segP = SEGMENTS + nCurSeg;
+if (!(centerMask = segP->GetSideDists (vPos, xSideDists, 1)))		//we're in the old segment
 	return nCurSeg;		
 for (;;) {
 	nMaxSide = -1;
 	xMaxDist = 0; // find only sides we're behind as seen from inside the current segment
 	for (nSide = 0, bit = 1; nSide < SEGMENT_SIDE_COUNT; nSide++, bit <<= 1)
-		if (pSeg->Side (nSide)->FaceCount () && (centerMask & bit) && (xTolerance || (pSeg->m_children [nSide] > -1)) && (xSideDists [nSide] < xMaxDist)) {
-			if (xTolerance && (xTolerance >= -xSideDists [nSide]) && (xTolerance >= pSeg->Side (nSide)->DistToPoint (vPos))) 
+		if (segP->Side (nSide)->FaceCount () && (centerMask & bit) && (xTolerance || (segP->m_children [nSide] > -1)) && (xSideDists [nSide] < xMaxDist)) {
+			if (xTolerance && (xTolerance >= -xSideDists [nSide]) && (xTolerance >= segP->Side (nSide)->DistToPoint (vPos))) 
 				return nCurSeg;
-			if (pSeg->m_children [nSide] >= 0) {
+			if (segP->m_children [nSide] >= 0) {
 				xMaxDist = xSideDists [nSide];
 				nMaxSide = nSide;
 				}
@@ -89,7 +89,7 @@ for (;;) {
 	if (nMaxSide == -1)
 		break;
 	xSideDists [nMaxSide] = 0;
-	if (0 <= (nMatchSeg = TraceSegs (vPos, pSeg->m_children [nMaxSide], nTraceDepth + 1, bVisited, bFlag, xTolerance)))	//trace into adjacent CSegment
+	if (0 <= (nMatchSeg = TraceSegs (vPos, segP->m_children [nMaxSide], nTraceDepth + 1, bVisited, bFlag, xTolerance)))	//trace into adjacent CSegment
 		break;
 	}
 return nMatchSeg;		//we haven't found a CSegment
@@ -97,32 +97,32 @@ return nMatchSeg;		//we haven't found a CSegment
 
 // -------------------------------------------------------------------------------
 
-static int32_t TraceSegsf (const CFloatVector& vPos, int32_t nCurSeg, int32_t nTraceDepth, uint16_t* bVisited, uint16_t bFlag, float fTolerance)
+static int TraceSegsf (const CFloatVector& vPos, int nCurSeg, int nTraceDepth, ushort* bVisited, ushort bFlag, float fTolerance)
 {
-	CSegment*		pSeg;
+	CSegment*		segP;
 	float				fSideDists [6], fMaxDist;
-	int32_t				centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
+	int				centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
 
-if (nTraceDepth >= gameData.segData.nSegments)
+if (nTraceDepth >= gameData.segs.nSegments)
 	return -1;
 if (bVisited [nCurSeg] == bFlag)
 	return -1;
 bVisited [nCurSeg] = bFlag;
-pSeg = SEGMENT (nCurSeg);
-if (!(centerMask = pSeg->GetSideDistsf (vPos, fSideDists, 1)))		//we're in the old CSegment
+segP = SEGMENTS + nCurSeg;
+if (!(centerMask = segP->GetSideDistsf (vPos, fSideDists, 1)))		//we're in the old CSegment
 	return nCurSeg;		
 for (;;) {
 	nMaxSide = -1;
 	fMaxDist = 0; // find only sides we're behind as seen from inside the current segment
 	for (nSide = 0, bit = 1; nSide < SEGMENT_SIDE_COUNT; nSide++, bit <<= 1)
-		if (pSeg->Side (nSide)->FaceCount () && (centerMask & bit) && (fSideDists [nSide] < fMaxDist)) {
-			if ((fTolerance >= -fSideDists [nSide])  && (fTolerance >= pSeg->Side (nSide)->DistToPointf (vPos))) {
+		if (segP->Side (nSide)->FaceCount () && (centerMask & bit) && (fSideDists [nSide] < fMaxDist)) {
+			if ((fTolerance >= -fSideDists [nSide])  && (fTolerance >= segP->Side (nSide)->DistToPointf (vPos))) {
 #if DBG
-				SEGMENT (nCurSeg)->GetSideDistsf (vPos, fSideDists, 1);
+				SEGMENTS [nCurSeg].GetSideDistsf (vPos, fSideDists, 1);
 #endif
 				return nCurSeg;
 				}
-			if (pSeg->m_children [nSide] >= 0) {
+			if (segP->m_children [nSide] >= 0) {
 				fMaxDist = fSideDists [nSide];
 				nMaxSide = nSide;
 				}
@@ -130,7 +130,7 @@ for (;;) {
 	if (nMaxSide == -1)
 		break;
 	fSideDists [nMaxSide] = 0;
-	if (0 <= (nMatchSeg = TraceSegsf (vPos, pSeg->m_children [nMaxSide], nTraceDepth + 1, bVisited, bFlag, fTolerance)))	//trace into adjacent CSegment
+	if (0 <= (nMatchSeg = TraceSegsf (vPos, segP->m_children [nMaxSide], nTraceDepth + 1, bVisited, bFlag, fTolerance)))	//trace into adjacent CSegment
 		break;
 	}
 return nMatchSeg;		//we haven't found a segment
@@ -138,51 +138,51 @@ return nMatchSeg;		//we haven't found a segment
 
 // -------------------------------------------------------------------------------
 
-int32_t PointInSeg (CSegment* pSeg, CFixVector vPos)
+int PointInSeg (CSegment* segP, CFixVector vPos)
 {
-if (!pSeg->m_nShape) {
-	fix d = CFixVector::Dist (vPos, pSeg->Center ());
-	if (d <= pSeg->m_rads [0])
+if (!segP->m_nShape) {
+	fix d = CFixVector::Dist (vPos, segP->Center ());
+	if (d <= segP->m_rads [0])
 		return 1;
-	if (d > pSeg->m_rads [1])
+	if (d > segP->m_rads [1])
 		return 0;
 	}
-return (pSeg->Masks (vPos, 0).m_center == 0);
+return (segP->Masks (vPos, 0).m_center == 0);
 }
 
 // -------------------------------------------------------------------------------
 
-int32_t FindSegByPosExhaustive (const CFixVector& vPos, int32_t bSkyBox, int32_t nStartSeg)
+int FindSegByPosExhaustive (const CFixVector& vPos, int bSkyBox, int nStartSeg)
 {
-if ((nStartSeg >= 0) && (PointInSeg (SEGMENT (nStartSeg), vPos)))
+if ((nStartSeg >= 0) && (PointInSeg (SEGMENTS + nStartSeg, vPos)))
 	return nStartSeg;
 
-	int32_t			i;
-	int16_t*		pSegList = NULL;
-	CSegment*	pSeg;
+	int			i;
+	short*		segListP = NULL;
+	CSegment*	segP;
 
-if (gameData.segData.HaveSegmentGrid (bSkyBox)) {
-	for (i = gameData.segData.GetSegList (vPos, pSegList, bSkyBox); i; i--, pSegList++) {
+if (gameData.segs.HaveGrid (bSkyBox)) {
+	for (i = gameData.segs.GetSegList (vPos, segListP, bSkyBox); i; i--, segListP++) {
 #if DBG
-		if ((*pSegList < 0) || (*pSegList >= gameData.segData.nSegments))
+		if ((*segListP < 0) || (*segListP >= gameData.segs.nSegments))
 			continue;
 #endif
-		if (PointInSeg (SEGMENT (*pSegList), vPos))
-			return *pSegList;
+		if (PointInSeg (SEGMENTS + *segListP, vPos))
+			return *segListP;
 		}
 	}
 else if (bSkyBox) {
-	for (i = gameData.segData.skybox.GetSegList (pSegList); i; i--, pSegList++) {
-		pSeg = SEGMENT (*pSegList);
-		if ((pSeg->m_function == SEGMENT_FUNC_SKYBOX) && PointInSeg (pSeg, vPos))
-			return *pSegList;
+	for (i = gameData.segs.skybox.GetSegList (segListP); i; i--, segListP++) {
+		segP = SEGMENTS + *segListP;
+		if ((segP->m_function == SEGMENT_FUNC_SKYBOX) && PointInSeg (segP, vPos))
+			return *segListP;
 		}
 	}
 else {
-	pSeg = SEGMENTS.Buffer ();
-	for (i = 0; i <= gameData.segData.nLastSegment; i++) {
-		pSeg = SEGMENT (i);
-		if ((pSeg->m_function != SEGMENT_FUNC_SKYBOX) && PointInSeg (pSeg, vPos))
+	segP = SEGMENTS.Buffer ();
+	for (i = 0; i <= gameData.segs.nLastSegment; i++) {
+		segP = SEGMENTS + i;
+		if ((segP->m_function != SEGMENT_FUNC_SKYBOX) && PointInSeg (segP, vPos))
 			return i;
 		}
 	}
@@ -192,18 +192,18 @@ return -1;
 // -------------------------------------------------------------------------------
 //Find segment containing point vPos.
 
-int32_t FindSegByPos (const CFixVector& vPos, int32_t nStartSeg, int32_t bExhaustive, int32_t bSkyBox, fix xTolerance, int32_t nThread)
+int FindSegByPos (const CFixVector& vPos, int nStartSeg, int bExhaustive, int bSkyBox, fix xTolerance, int nThread)
 {
-	static uint16_t bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
-	static uint16_t bFlags [MAX_THREADS] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
-	int32_t nSegment = -1;
+	static ushort bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
+	static ushort bFlags [MAX_THREADS] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
+	int nSegment = -1;
 
 if (nStartSeg >= 0) {
-	if (PointInSeg (SEGMENT (nStartSeg), vPos))
+	if (PointInSeg (SEGMENTS + nStartSeg, vPos))
 		return nStartSeg;
-	if (!xTolerance && bExhaustive && gameData.segData.HaveSegmentGrid (bSkyBox)) 
-		return FindSegByPosExhaustive (vPos, SEGMENT (nStartSeg)->m_function == SEGMENT_FUNC_SKYBOX, nStartSeg);
-	if (SEGMENT (nStartSeg)->m_function == SEGMENT_FUNC_SKYBOX) {
+	if (!xTolerance && bExhaustive && gameData.segs.HaveGrid (bSkyBox)) 
+		return FindSegByPosExhaustive (vPos, SEGMENTS [nStartSeg].m_function == SEGMENT_FUNC_SKYBOX, nStartSeg);
+	if (SEGMENTS [nStartSeg].m_function == SEGMENT_FUNC_SKYBOX) {
 		if (0 <= (nSegment = TraceSegs (vPos, nStartSeg, 1, bVisited [nThread], bFlags [nThread], xTolerance))) 
 			return nSegment;
 		}
@@ -229,14 +229,14 @@ return FindSegByPosExhaustive (vPos, bSkyBox);
 
 // -------------------------------------------------------------------------------
 
-int16_t FindClosestSeg (CFixVector& vPos)
+short FindClosestSeg (CFixVector& vPos)
 {
-	CSegment*	pSeg = SEGMENT (0);
-	int16_t			nSegment, nClosestSeg = -1;
+	CSegment*	segP = SEGMENTS + 0;
+	short			nSegment, nClosestSeg = -1;
 	fix			nDist, nMinDist = 0x7fffffff;
 
-for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, pSeg++) {
-	nDist = CFixVector::Dist (vPos, pSeg->Center ()) - pSeg->MinRad ();
+for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
+	nDist = CFixVector::Dist (vPos, segP->Center ()) - segP->MinRad ();
 	if (nDist < nMinDist) {
 		nMinDist = nDist;
 		nClosestSeg = nSegment;
@@ -252,17 +252,17 @@ return nClosestSeg;
 
 #define	AMBIENT_SEGMENT_DEPTH 5
 
-void AmbientMarkBfs (int16_t nSegment, int8_t* markedSegs, int32_t nDepth)
+void AmbientMarkBfs (short nSegment, sbyte* markedSegs, int nDepth)
 {
-	int16_t	i, child;
+	short	i, child;
 
 if (nDepth < 0)
 	return;
 markedSegs [nSegment] = 1;
-CSegment* pSeg = SEGMENT (nSegment);
+CSegment* segP = SEGMENTS + nSegment;
 for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-	child = pSeg->m_children [i];
-	if (IS_CHILD (child) && (pSeg->IsPassable (i, NULL) & WID_TRANSPARENT_FLAG) && !markedSegs [child])
+	child = segP->m_children [i];
+	if (IS_CHILD (child) && (segP->IsDoorWay (i, NULL) & WID_TRANSPARENT_FLAG) && !markedSegs [child])
 		AmbientMarkBfs (child, markedSegs, nDepth - 1);
 	}
 }
@@ -270,45 +270,45 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 //	-----------------------------------------------------------------------------
 //	Indicate all segments which are within audible range of falling water or lava,
 //	and so should hear ambient gurgles.
-void SetAmbientSoundFlagsCommon (int32_t tmi_bit, int32_t s2f_bit)
+void SetAmbientSoundFlagsCommon (int tmi_bit, int s2f_bit)
 {
-	int16_t		i, j;
+	short		i, j;
 
-	static int8_t	markedSegs [MAX_SEGMENTS_D2X];
+	static sbyte	markedSegs [MAX_SEGMENTS_D2X];
 
 	//	Now, all segments containing ambient lava or water sound makers are flagged.
 	//	Additionally flag all segments which are within range of them.
 memset (markedSegs, 0, sizeof (markedSegs));
-for (i = 0; i <= gameData.segData.nLastSegment; i++) {
-	SEGMENT (i)->m_flags &= ~s2f_bit;
+for (i = 0; i <= gameData.segs.nLastSegment; i++) {
+	SEGMENTS [i].m_flags &= ~s2f_bit;
 	}
 
 //	Mark all segments which are sources of the sound.
-CSegment	*pSeg = SEGMENTS.Buffer ();
-for (i = 0; i <= gameData.segData.nLastSegment; i++, pSeg++) {
-	CSide	*pSide = pSeg->m_sides;
-	for (j = 0; j < SEGMENT_SIDE_COUNT; j++, pSide++) {
-		if (!pSide->FaceCount ())
+CSegment	*segP = SEGMENTS.Buffer ();
+for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
+	CSide	*sideP = segP->m_sides;
+	for (j = 0; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
+		if (!sideP->FaceCount ())
 			continue;
-		if ((gameData.pigData.tex.pTexMapInfo [pSide->m_nBaseTex].flags & tmi_bit) ||
-			 (gameData.pigData.tex.pTexMapInfo [pSide->m_nOvlTex].flags & tmi_bit)) {
-			if (!IS_CHILD (pSeg->m_children [j]) || IS_WALL (pSide->m_nWall)) {
-				pSeg->m_flags |= s2f_bit;
+		if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & tmi_bit) ||
+			 (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & tmi_bit)) {
+			if (!IS_CHILD (segP->m_children [j]) || IS_WALL (sideP->m_nWall)) {
+				segP->m_flags |= s2f_bit;
 				markedSegs [i] = 1;		//	Say it's itself that it is close enough to to hear something.
 				}
 			}
 		}
 	}
 //	Next mark all segments within N segments of a source.
-pSeg = SEGMENTS.Buffer ();
-for (i = 0; i <= gameData.segData.nLastSegment; i++, pSeg++) {
-	if (pSeg->m_flags & s2f_bit)
+segP = SEGMENTS.Buffer ();
+for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
+	if (segP->m_flags & s2f_bit)
 		AmbientMarkBfs (i, markedSegs, AMBIENT_SEGMENT_DEPTH);
 	}
 //	Now, flip bits in all segments which can hear the ambient sound.
-for (i = 0; i <= gameData.segData.nLastSegment; i++)
+for (i = 0; i <= gameData.segs.nLastSegment; i++)
 	if (markedSegs [i])
-		SEGMENT (i)->m_flags |= s2f_bit;
+		SEGMENTS [i].m_flags |= s2f_bit;
 }
 
 //	-----------------------------------------------------------------------------

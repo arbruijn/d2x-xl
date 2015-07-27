@@ -29,6 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "u_mem.h"
 #include "strutil.h"
+#include "d_io.h"
 #include "error.h"
 #include "cfile.h"
 #include "hogfile.h"
@@ -50,114 +51,39 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SORT_HOGFILES 1
 
-int32_t nCFileError = 0;
+int nCFileError = 0;
 
 tGameFolders gameFolders;
 
 // ----------------------------------------------------------------------------
 
-size_t ffilelength (FILE *file)
-{
-long pos = ftell (file);
-if (pos < 0)
-	return -1;
-if (fseek (file, 0, SEEK_END) == -1)
-	return -1;
-size_t size = ftell (file);
-if (size < 0)
-	return -1;
-if (fseek (file, pos, SEEK_SET) == -1)
-	return -1;
-return size;
-}
-
-// ----------------------------------------------------------------------------
-// GetAppFolder verifies that szMainFolder/szSubFolder is a valid game folder by
-// scanning it for files with the name szFilter (e.g. "c:/games/descent/data/*.hog"). 
-// If it finds such a file, it will print szMainFolder/szSubFolder to szDestFolder
-// and return 0 (zero). Otherwise, it will print szMainFolder to szSubFolder and 
-// return a value != 0.
-
-int32_t GetAppFolder (const char *szMainFolder, char *szDestFolder, const char *szSubFolder, const char *szFilter)
+int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, const char *szFilter)
 {
 	FFS	ffs;
-	char	szFolder [FILENAME_LEN];
-	int32_t	i, l;
+	char	szDir [FILENAME_LEN];
 
-if (!((szSubFolder && *szSubFolder) || (szFilter && *szFilter))) {
-	if (!(szMainFolder && *szMainFolder))
-		return 1;
-	i = FFF (szMainFolder, &ffs, 1);
-	PrintLog (0, "GetAppFolder (%s) %s\n", szMainFolder, i ? "failed" : "succeeded");
-	return i;
+if (!(szName && *szName))
+	return 1;
+int i = (int) strlen (szRootDir);
+int bAddSlash = i && (szRootDir [i-1] != '\\') && (szRootDir [i-1] != '/');
+PrintLog (0, "GetAppFolder ('%s', '%s', '%s', '%s')\n", szRootDir, szFolder, szName, szFilter);
+sprintf (szDir, "%s%s%s%s%s", szRootDir, bAddSlash ? "/" : "", szName, *szFilter ? "/" : "", szFilter);
+if (!(i = FFF (szDir, &ffs, *szFilter == '\0'))) {
+	if (szFolder != szName)
+		sprintf (szFolder, "%s%s%s", szRootDir, bAddSlash ? "/" : "", szName);
 	}
-
-strcpy (szFolder, szMainFolder);
-if (*szFolder)
-	AppendSlash (szFolder);
-strcat (szFolder, szSubFolder);
-if ((l = (int32_t) strlen (szFolder))) {
-	if (szFilter && *szFilter) {
-		AppendSlash (szFolder);
-		strcat (szFolder, szFilter);
-		}
-	else {
-		if ((szFolder [l-1] == '\\') || (szFolder [l-1] == '/'))
-			szFolder [l-1] = '\0';
-		}
-	}
-if (!(i = FFF (szFolder, &ffs, *szFilter == '\0'))) {
-	if (szDestFolder != szSubFolder) {
-		memcpy (szDestFolder, szFolder, l);
-		szDestFolder [l] = '\0';
-		}
-	}
-else if (*szMainFolder)
-	strcpy (szDestFolder, szMainFolder);
-AppendSlash (szDestFolder);
-
-PrintLog (0, "GetAppFolder (%s) = '%s' (%d)\n", szSubFolder, szDestFolder, i);
+else if (*szRootDir)
+	strcpy (szFolder, szRootDir);
+PrintLog (0, "GetAppFolder (%s) = '%s' (%d)\n", szName, szFolder, i);
 FFC (&ffs);
 return i;
 }
 
 // ----------------------------------------------------------------------------
 
-char* FlipBackslash (char* pszFile)
-{
-for (char* psz = pszFile; *psz; psz++)
-	if (*psz == '\\')
-		*psz = '/';
-return pszFile;
-}
-
-// ----------------------------------------------------------------------------
-
-char* FlipSlash (char* pszFile)
-{
-for (char* psz = pszFile; *psz; psz++)
-	if (*psz == '/')
-		*psz = '\\';
-return pszFile;
-}
-
-// ----------------------------------------------------------------------------
-
-char* AppendSlash (char* pszFile)
-{
-int32_t l = (int32_t) strlen (pszFile);
-if (l && (pszFile [l - 1] != '\\') && (pszFile [l - 1] != '/')) {
-	pszFile [l] = '/';
-	pszFile [l + 1] = '\0';
-	}
-return pszFile;
-}
-
-// ----------------------------------------------------------------------------
-
 void SplitPath (const char *szFullPath, char *szFolder, char *szFile, char *szExt)
 {
-	int32_t	h = 0, i, j, l = (int32_t) strlen (szFullPath) - 1;
+	int	h = 0, i, j, l = (int) strlen (szFullPath) - 1;
 
 i = l;
 #ifdef _WIN32
@@ -191,12 +117,12 @@ if (szExt) {
 
 void CFile::ChangeFilenameExtension (char *dest, const char *src, const char *newExt)
 {
-	int32_t i;
+	int i;
 
 strcpy (dest, src);
 if (newExt [0] == '.')
 	newExt++;
-for (i = 1; i < (int32_t) strlen (dest); i++)
+for (i = 1; i < (int) strlen (dest); i++)
 	if ((dest [i] == '.') || (dest [i] == ' ') || (dest [i] == 0))
 		break;
 if (i < FILENAME_LEN - 5) {
@@ -210,7 +136,7 @@ if (i < FILENAME_LEN - 5) {
 
 //------------------------------------------------------------------------------
 
-char *GameDataFilename (char *pszFilename, const char *pszExt, int32_t nLevel, int32_t nType)
+char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType)
 {
 	char	szFilename [FILENAME_LEN];
 
@@ -236,7 +162,7 @@ return pszFilename;
 
 FILE *CFile::GetFileHandle (const char *filename, const char *folder, const char *mode) 
 {
-	FILE	*fp = NULL;
+	FILE	*fp;
 	char	fn [FILENAME_LEN];
 	const char *pfn;
 
@@ -244,36 +170,22 @@ if (!*filename || (strlen (filename) + (folder ? strlen (folder) : 0) >= FILENAM
 	return NULL;
 	}
 if ((*filename != '/') && (strstr (filename, "./") != filename) && folder && *folder) {
-	sprintf (fn, "%s%s", folder, filename);
+	sprintf (fn, "%s/%s", folder, filename);
    pfn = fn;
 	}
  else
  	pfn = filename;
  
-fp = fopen (pfn, mode);
-if (fp && ferror (fp)) {
-	fclose (fp);
-	fp = NULL;
-	}
-
-if (!fp && (*gameFolders.missions.szDownloads)) {
-	sprintf (fn, "%s%s", gameFolders.missions.szDownloads, filename);
-	pfn = fn;
-   fp = fopen (pfn, mode);
-	if (fp && ferror (fp)) {
+if ((fp = fopen (pfn, mode))) {
+	if (ferror (fp)) {
 		fclose (fp);
 		fp = NULL;
 		}
 	}
-
-if (!fp && (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.game.szAltHogs))) {
-   sprintf (fn, "%s%s", gameFolders.game.szAltHogs, filename);
+else if (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogDir)) {
+   sprintf (fn, "%s/%s", gameFolders.szAltHogDir, filename);
    pfn = fn;
    fp = fopen (pfn, mode);
-	if (fp && ferror (fp)) {
-		fclose (fp);
-		fp = NULL;
-		}
 	}
 //if (!fp) PrintLog (0, "CFGetFileHandle (): error opening %s\n", pfn);
 return fp;
@@ -281,13 +193,31 @@ return fp;
 
 // ----------------------------------------------------------------------------
 
-size_t CFile::Size (const char *hogname, const char *folder, int32_t bUseD1Hog)
+size_t CFile::Size (const char *hogname, const char *folder, int bUseD1Hog)
 {
-if (!Open (hogname, gameFolders.game.szData [0], "rb", bUseD1Hog))
+#if ! (defined (_WIN32_WCE) || defined (_WIN32))
+	struct stat statbuf;
+
+//	sprintf (fn, "%s/%s", folder, hogname);
+if (!Open (hogname, gameFolders.szDataDir [0], "rb", bUseD1Hog))
 	return -1;
-size_t size = m_info.size;
+#ifdef _WIN32
+fstat (_fileno (m_info.file), &statbuf);
+#else
+fstat (fileno (m_info.file), &statbuf);
+#endif
+Close ();
+return statbuf.st_size;
+#else
+	size_t size;
+
+//sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", hogname);
+if (!Open (hogname, gameFolders.szDataDir [0], "rb", bUseD1Hog))
+	return -1;
+size = m_info.size;
 Close ();
 return size;
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -297,18 +227,18 @@ return size;
 // past the end of the file. It returns 0 if the current position is not end of file.
 // There is no error return.
 
-int32_t CFile::EoF (void)
+int CFile::EoF (void)
 {
 #if DBG
 if (!m_info.file)
 	return 1;
 #endif
-return (m_info.rawPosition >= m_info.size) && (m_info.pBufferos >= m_info.bufLen);
+return (m_info.rawPosition >= m_info.size) && (m_info.bufPos >= m_info.bufLen);
 }
 
 // ----------------------------------------------------------------------------
 
-int32_t CFile::Error (void)
+int CFile::Error (void)
 {
 if ((nCFileError = ferror (m_info.file)))
 	PrintLog (0, "error %d during file operation\n", nCFileError);
@@ -317,9 +247,9 @@ return nCFileError;
 
 // ----------------------------------------------------------------------------
 
-int32_t CFile::Exist (const char *filename, const char *folder, int32_t bUseD1Hog) 
+int CFile::Exist (const char *filename, const char *folder, int bUseD1Hog) 
 {
-	int32_t	length, bNoHOG = 0;
+	int	length, bNoHOG = 0;
 	FILE	*fp;
 	char	*pfn = const_cast<char*> (filename);
 
@@ -343,11 +273,11 @@ return 0;		// Couldn't find it.
 
 // ----------------------------------------------------------------------------
 // Deletes a file.
-int32_t CFile::Delete (const char *filename, const char* folder)
+int CFile::Delete (const char *filename, const char* folder)
 {
 	char	fn [FILENAME_LEN];
 
-sprintf (fn, "%s%s", folder, filename);
+sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", filename);
 #ifndef _WIN32_WCE
 	return remove (fn);
 #else
@@ -357,51 +287,46 @@ sprintf (fn, "%s%s", folder, filename);
 
 // ----------------------------------------------------------------------------
 // Rename a file.
-int32_t CFile::Rename (const char *oldname, const char *newname, const char *folder)
+int CFile::Rename (const char *oldname, const char *newname, const char *folder)
 {
 	char	fno [FILENAME_LEN], fnn [FILENAME_LEN];
 
-if (folder && *folder) {
-	sprintf (fno, "%s%s", folder, oldname);
-	sprintf (fnn, "%s%s", folder, newname);
-	}
+sprintf (fno, "%s%s%s", folder, *folder ? "/" : "", oldname);
+sprintf (fnn, "%s%s%s", folder, *folder ? "/" : "", newname);
 #ifndef _WIN32_WCE
 	return rename (fno, fnn);
 #else
-	return !MoveFile (oldname, newname);
+	return !MoveFile (fno, fnn);
 #endif
 }
 
 // ----------------------------------------------------------------------------
 // Make a directory.
-int32_t CFile::MkDir (const char *pathname)
+int CFile::MkDir (const char *pathname)
 {
 #if defined (_WIN32_WCE) || defined (_WIN32)
-return CreateDirectory (pathname, NULL) ? 0 : -1;
+return !CreateDirectory (pathname, NULL);
 #else
-int32_t nMask = umask (0);
-int32_t nResult = mkdir (pathname, S_IRWXU | S_IRWXG | S_IRWXO); // rw-rw-rw-
-umask (nMask);
-return nResult;
+return mkdir (pathname, 0755);
 #endif
 }
 
 // ----------------------------------------------------------------------------
 
-int32_t CFile::Open (const char *filename, const char *folder, const char *mode, int32_t nHogType) 
+int CFile::Open (const char *filename, const char *folder, const char *mode, int nHogType) 
 {
 if (!(filename && *filename))
 	return 0;
 if ((*mode == 'w') && gameStates.app.bReadOnly)
 	return 0;
 
-	int32_t	length = -1;
+	int	length = -1;
 	FILE	*fp = NULL;
 	const char	*pszHogExt, *pszFileExt;
 
 m_info.file = NULL;
 if (*filename != '\x01') {
-	fp = GetFileHandle (filename, folder, mode);		// Check for non-hog file first...
+	fp = GetFileHandle (filename, folder, mode);		// Check for non-hogP file first...
 	if (!fp && 
 		 ((pszFileExt = strstr (filename, ".rdl")) || (pszFileExt = strstr (filename, ".rl2"))) &&
 		 (pszHogExt = strchr (hogFileManager.AltHogFile (), '.')) &&
@@ -426,8 +351,8 @@ m_info.rawPosition = 0;
 m_info.size = (length < 0) ? ffilelength (fp) : length;
 m_info.libOffset = (length < 0) ? 0 : ftell (fp);
 m_info.filename = const_cast<char*> (filename);
-m_info.pBufferos = m_info.bufLen = 0;
-return length;
+m_info.bufPos = m_info.bufLen = 0;
+return 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -451,7 +376,7 @@ return m_info.size;
 // returns:   number of full elements actually written
 //
 //
-size_t CFile::Write (const void *buf, int32_t nElemSize, int32_t nElemCount, int32_t bCompressed)
+size_t CFile::Write (const void *buf, int nElemSize, int nElemCount, int bCompressed)
 {
 if (!m_info.file)
 	return 0;
@@ -459,13 +384,13 @@ if (!(nElemSize * nElemCount))
 	return 0;
 
 if (bCompressed > 0) {
-	size_t i = WriteCompressed (buf, (uint32_t) (nElemSize * nElemCount));
+	size_t i = WriteCompressed (buf, (uint) (nElemSize * nElemCount));
 	return (i < 0)? i : i / nElemSize;
 	}
 
 //if (bCompressed < 0)
-//	PrintLog (0, "Write: %d bytes @ %d\n", nElemSize * nElemCount, (int32_t) m_info.rawPosition);
-int32_t nWritten = (int32_t) fwrite (buf, nElemSize, nElemCount, m_info.file);
+//	PrintLog (0, "Write: %d bytes @ %d\n", nElemSize * nElemCount, (int) m_info.rawPosition);
+int nWritten = (int) fwrite (buf, nElemSize, nElemCount, m_info.file);
 m_info.rawPosition = ftell (m_info.file);
 if (Error ()) {
 	PrintLog (0, "file write error!\n");
@@ -480,9 +405,9 @@ return nWritten;
 // returns:   success ==> returns character written
 //            error   ==> EOF
 //
-int32_t CFile::PutC (int32_t c)
+int CFile::PutC (int c)
 {
-	int32_t char_written;
+	int char_written;
 
 char_written = fputc (c, m_info.file);
 m_info.rawPosition = ftell (m_info.file);
@@ -494,28 +419,28 @@ return char_written;
 #ifdef _WIN32
 inline 
 #endif
-int32_t CFile::FillBuffer (void)
+int CFile::FillBuffer (void)
 {
-if (m_info.pBufferos >= m_info.bufLen) {
+if (m_info.bufPos >= m_info.bufLen) {
 	if (m_info.rawPosition >= m_info.size) 
 		return EOF;
 	size_t h = m_info.size - m_info.rawPosition;
 	if (h > sizeof (m_info.buffer))
 		h = sizeof (m_info.buffer);
-	m_info.pBufferos = 0;
-	m_info.bufLen = int32_t (Read (m_info.buffer, 1, h));
+	m_info.bufPos = 0;
+	m_info.bufLen = int (Read (m_info.buffer, 1, h));
 	m_info.rawPosition = ftell (m_info.file) - m_info.libOffset;
-	if (m_info.bufLen < (int32_t) h)
+	if (m_info.bufLen < (int) h)
 		m_info.size = m_info.rawPosition;
 	}
-return m_info.pBufferos;
+return m_info.bufPos;
 }
 
 // ----------------------------------------------------------------------------
 
-//int32_t CFile::GetC (void) 
+//int CFile::GetC (void) 
 //{
-//return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.pBufferos++];
+//return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.bufPos++];
 //}
 
 // ----------------------------------------------------------------------------
@@ -524,9 +449,9 @@ return m_info.pBufferos;
 // returns:   success ==> non-negative value
 //            error   ==> EOF
 //
-int32_t CFile::PutS (const char *str)
+int CFile::PutS (const char *str)
 {
-	int32_t ret;
+	int ret;
 
 ret = fputs (str, m_info.file);
 m_info.rawPosition = ftell (m_info.file);
@@ -538,7 +463,7 @@ return ret;
 char * CFile::GetS (char * buf, size_t n) 
 {
 	size_t	i = 0;
-	int32_t		c;
+	int		c;
 
 --n;
 while (i < n) {
@@ -560,7 +485,7 @@ return buf;
 
 // ----------------------------------------------------------------------------
 
-size_t CFile::Read (void *buf, size_t elSize, size_t nElems, int32_t bCompressed)
+size_t CFile::Read (void *buf, size_t elSize, size_t nElems, int bCompressed) 
 {
 size_t i, size = elSize * nElems;
 
@@ -568,12 +493,12 @@ if (!m_info.file || (m_info.size < 1) || !size)
 	return 0;
 
 if (bCompressed > 0) {
-	i = ReadCompressed (buf, (uint32_t) size);
+	i = ReadCompressed (buf, (uint) size);
 	return (i < 0) ? i : i / elSize;
 	}
 
 //if (bCompressed < 0)
-//	PrintLog (0, "Read: %d bytes @ %d\n", (int32_t) size, (int32_t) m_info.rawPosition);
+//	PrintLog (0, "Read: %d bytes @ %d\n", (int) size, (int) m_info.rawPosition);
 i = fread (buf, 1, size, m_info.file);
 m_info.rawPosition += i;
 return i / elSize;
@@ -581,11 +506,10 @@ return i / elSize;
 
 // ----------------------------------------------------------------------------
 
-size_t CFile::ReadCompressed (const void* buf, uint32_t bufLen) 
+size_t CFile::ReadCompressed (const void* buf, uint bufLen) 
 {
-//PrintLog (0, "ReadCompressed: %d bytes @ %d\n", bufLen, (int32_t) m_info.rawPosition);
-uint32_t nSize;
-uLongf nCompressedSize;
+//PrintLog (0, "ReadCompressed: %d bytes @ %d\n", bufLen, (int) m_info.rawPosition);
+uLongf nSize, nCompressedSize;
 size_t h = Read (&nSize, 1, sizeof (nSize), -1);
 h += Read (&nCompressedSize, 1, sizeof (nCompressedSize), -1);
 if (h != sizeof (nSize) + sizeof (nCompressedSize)) {
@@ -601,30 +525,29 @@ if (!compressedBuffer.Create (nCompressedSize)) {
 	// PrintLog (0, "ReadCompressed: couldn't create decompression buffer\n");
 	return -1;
 	}
-if (Read (compressedBuffer.Buffer (), sizeof (uint8_t), nCompressedSize, -1) != nCompressedSize) {
+if (Read (compressedBuffer.Buffer (), sizeof (ubyte), nCompressedSize, -1) != nCompressedSize) {
 	// PrintLog (0, "ReadCompressed: error reading data\n");
 	return -1;
 	}
-int32_t i;
-uLongf nUncompressedSize = (uLongf) nSize;
-if ((i = uncompress ((uint8_t*) buf, &nUncompressedSize, compressedBuffer.Buffer (), nCompressedSize)) != Z_OK) {
+int i;
+if ((i = uncompress ((ubyte*) buf, &nSize, compressedBuffer.Buffer (), nCompressedSize)) != Z_OK) {
 	// PrintLog (0, "ReadCompressed: decompression error #%d\n", i);
 	return -1;
 	}
-return (size_t) nUncompressedSize;
+return (size_t) nSize;
 }
 
 // ----------------------------------------------------------------------------
 
-size_t CFile::WriteCompressed (const void* buf, uint32_t bufLen) 
+size_t CFile::WriteCompressed (const void* buf, uint bufLen) 
 {
-//PrintLog (0, "WriteCompressed: %d bytes @ %d\n", bufLen, (int32_t) m_info.rawPosition);
+//PrintLog (0, "WriteCompressed: %d bytes @ %d\n", bufLen, (int) m_info.rawPosition);
 uLongf nCompressedSize = compressBound (bufLen);
 CByteArray compressedBuffer;
-if (compressedBuffer.Create (nCompressedSize) && (compress (compressedBuffer.Buffer (), &nCompressedSize, (uint8_t*) buf, bufLen) == Z_OK)) {
+if (compressedBuffer.Create (nCompressedSize) && (compress (compressedBuffer.Buffer (), &nCompressedSize, (ubyte*) buf, bufLen) == Z_OK)) {
 	size_t h = Write (&bufLen, 1, sizeof (bufLen), -1);
 	h += Write (&nCompressedSize, 1, sizeof (nCompressedSize), -1);
-	h += Write (compressedBuffer.Buffer (), sizeof (uint8_t), nCompressedSize, -1);
+	h += Write (compressedBuffer.Buffer (), sizeof (ubyte), nCompressedSize, -1);
 	return (h == sizeof (bufLen) + sizeof (nCompressedSize) + nCompressedSize) ? bufLen : -1;
 	}
 return -1;
@@ -639,7 +562,7 @@ return m_info.rawPosition;
 
 // ----------------------------------------------------------------------------
 
-size_t CFile::Seek (long offset, int32_t whence) 
+size_t CFile::Seek (long offset, int whence) 
 {
 if (!m_info.size)
 	return -1;
@@ -666,9 +589,9 @@ return c;
 
 // ----------------------------------------------------------------------------
 
-int32_t CFile::Close (void)
+int CFile::Close (void)
 {
-	int32_t result;
+	int result;
 
 if (!m_info.file)
 	return 0;
@@ -683,53 +606,53 @@ return result;
 // routines to read basic data types from CFile::ILE's.  Put here to
 // simplify mac/pc reading from cfiles.
 
-int32_t CFile::ReadInt (void)
+int CFile::ReadInt (void)
 {
 	int32_t i;
 
 Read (&i, sizeof (i), 1);
-//Error ("Error reading int32_t in CFile::ReadInt ()");
+//Error ("Error reading int in CFile::ReadInt ()");
 return INTEL_INT (i);
 }
 
 // ----------------------------------------------------------------------------
 
-uint32_t CFile::ReadUInt (void)
+uint CFile::ReadUInt (void)
 {
 	uint32_t i;
 
 Read (&i, sizeof (i), 1);
-//Error ("Error reading int32_t in CFile::ReadInt ()");
+//Error ("Error reading int in CFile::ReadInt ()");
 return INTEL_INT (i);
 }
 
 // ----------------------------------------------------------------------------
 
-int16_t CFile::ReadShort (void)
+short CFile::ReadShort (void)
 {
 	int16_t s;
 
 Read (&s, sizeof (s), 1);
-//Error ("Error reading int16_t in CFile::ReadShort ()");
+//Error ("Error reading short in CFile::ReadShort ()");
 return INTEL_SHORT (s);
 }
 
 // ----------------------------------------------------------------------------
 
-uint16_t CFile::ReadUShort (void)
+ushort CFile::ReadUShort (void)
 {
 	uint16_t s;
 
 Read (&s, sizeof (s), 1);
-//Error ("Error reading int16_t in CFile::ReadShort ()");
+//Error ("Error reading short in CFile::ReadShort ()");
 return INTEL_SHORT (s);
 }
 
 // ----------------------------------------------------------------------------
 
-int8_t CFile::ReadByte (void)
+sbyte CFile::ReadByte (void)
 {
-	int8_t b;
+	sbyte b;
 
 if (Read (&b, sizeof (b), 1) != 1)
 	return nCFileError;
@@ -739,9 +662,9 @@ return b;
 
 // ----------------------------------------------------------------------------
 
-uint8_t CFile::ReadUByte (void)
+ubyte CFile::ReadUByte (void)
 {
-	uint8_t b;
+	ubyte b;
 
 if (Read (&b, sizeof (b), 1) != 1)
 	return nCFileError;
@@ -779,7 +702,7 @@ fix CFile::ReadFix (void)
 
 Read (&f, sizeof (f), 1) ;
 //Error ("Error reading fix in CFile::ReadFix ()");
-return (fix) INTEL_INT ((int32_t) f);
+return (fix) INTEL_INT ((int) f);
 return f;
 }
 
@@ -791,7 +714,7 @@ fixang CFile::ReadFixAng (void)
 
 Read (&f, 2, 1);
 //Error ("Error reading fixang in CFile::ReadFixAng ()");
-return (fixang) INTEL_SHORT ((int32_t) f);
+return (fixang) INTEL_SHORT ((int) f);
 }
 
 // ----------------------------------------------------------------------------
@@ -833,7 +756,7 @@ ReadVector (m.m.dir.f);
 
 // ----------------------------------------------------------------------------
 
-void CFile::ReadString (char *buf, int32_t n)
+void CFile::ReadString (char *buf, int n)
 {
 	char c;
 
@@ -849,58 +772,58 @@ do {
 // ----------------------------------------------------------------------------
 // equivalent write functions of above read functions follow
 
-int32_t CFile::WriteInt (int32_t i)
+int CFile::WriteInt (int i)
 {
 i = INTEL_INT (i);
-return (int32_t) Write (&i, sizeof (i), 1);
+return (int) Write (&i, sizeof (i), 1);
 }
 
 // ----------------------------------------------------------------------------
 
-int32_t CFile::WriteShort (int16_t s)
+int CFile::WriteShort (short s)
 {
 s = INTEL_SHORT (s);
-return (int32_t) Write (&s, sizeof (s), 1);
+return (int) Write (&s, sizeof (s), 1);
 }
 
 // ----------------------------------------------------------------------------
 
-int32_t CFile::WriteByte (int8_t b)
+int CFile::WriteByte (sbyte b)
 {
-return (int32_t) Write (&b, sizeof (b), 1);
+return (int) Write (&b, sizeof (b), 1);
 }
 
 // ----------------------------------------------------------------------------
 
-int32_t CFile::WriteFloat (float f)
+int CFile::WriteFloat (float f)
 {
 f = INTEL_FLOAT (f);
-return (int32_t) Write (&f, sizeof (f), 1);
+return (int) Write (&f, sizeof (f), 1);
 }
 
 // ----------------------------------------------------------------------------
 //Read and return a double (64 bits)
 //Throws an exception of nType (nCFileError *) if the OS returns an error on read
-int32_t CFile::WriteDouble (double d)
+int CFile::WriteDouble (double d)
 {
 d = INTEL_DOUBLE (d);
-return (int32_t) Write (&d, sizeof (d), 1);
+return (int) Write (&d, sizeof (d), 1);
 }
 
 // ----------------------------------------------------------------------------
 
-int32_t CFile::WriteFix (fix x)
+int CFile::WriteFix (fix x)
 {
 x = INTEL_INT (x);
-return (int32_t) Write (&x, sizeof (x), 1);
+return (int) Write (&x, sizeof (x), 1);
 }
 
 // ----------------------------------------------------------------------------
 
-int32_t CFile::WriteFixAng (fixang a)
+int CFile::WriteFixAng (fixang a)
 {
 a = INTEL_SHORT (a);
-return (int32_t) Write (&a, sizeof (a), 1);
+return (int) Write (&a, sizeof (a), 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -942,16 +865,16 @@ WriteVector (m.m.dir.f);
 
 // ----------------------------------------------------------------------------
 
-int32_t CFile::WriteString (const char *buf)
+int CFile::WriteString (const char *buf)
 {
-if (buf && *buf && Write (buf, (int32_t) strlen (buf), 1))
-	return (int32_t) WriteByte (0);   // write out NULL termination
+if (buf && *buf && Write (buf, (int) strlen (buf), 1))
+	return (int) WriteByte (0);   // write out NULL termination
 return 0;
 }
 
 // ----------------------------------------------------------------------------
 
-int32_t CFile::Extract (const char *filename, const char *folder, int32_t bUseD1Hog, const char *szDestName)
+int CFile::Extract (const char *filename, const char *folder, int bUseD1Hog, const char *szDestName)
 {
 	FILE		*fp;
 	char		szDest [FILENAME_LEN], fn [FILENAME_LEN];
@@ -972,7 +895,7 @@ if (*szDestName) {
 	else
 		strcpy (fn, szDestName);
 	}
-sprintf (szDest, "%s%s", gameFolders.var.szCache, fn);
+sprintf (szDest, "%s%s%s", gameFolders.szCacheDir, *gameFolders.szCacheDir ? "/" : "", fn);
 if (! (fp = fopen (szDest, "wb"))) {
 	Close ();
 	return 0;
@@ -993,17 +916,17 @@ return 1;
 
 #define COPY_BUF_SIZE 65536
 
-int32_t CFile::Copy (const char *pszSrc, const char *pszDest)
+int CFile::Copy (const char *pszSrc, const char *pszDest)
 {
-	int8_t	buf [COPY_BUF_SIZE];
+	sbyte	buf [COPY_BUF_SIZE];
 	CFile	cf;
 
-if (!cf.Open (pszDest, NULL, "wb", 0))
+if (!cf.Open (pszDest, gameFolders.szSaveDir, "wb", 0))
 	return -1;
-if (!Open (pszSrc, NULL, "rb", 0))
+if (!Open (pszSrc, gameFolders.szSaveDir, "rb", 0))
 	return -2;
 while (!EoF ()) {
-	int32_t bytes_read = (int32_t) Read (buf, 1, COPY_BUF_SIZE);
+	int bytes_read = (int) Read (buf, 1, COPY_BUF_SIZE);
 	if (Error ())
 		::Error (TXT_FILEREAD_ERROR, pszSrc, strerror (errno));
 	Assert (bytes_read == COPY_BUF_SIZE || EoF ());
@@ -1022,7 +945,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-char *CFile::ReadData (const char *filename, const char *folder, int32_t bUseD1Hog)
+char *CFile::ReadData (const char *filename, const char *folder, int bUseD1Hog)
 {
 	char		*pData = NULL;
 	size_t	nSize;
@@ -1044,7 +967,7 @@ return pData;
 
 void CFile::SplitPath (const char *szFullPath, char *szFolder, char *szFile, char *szExt)
 {
-	int32_t	h = 0, i, j, l = (int32_t) strlen (szFullPath) - 1;
+	int	h = 0, i, j, l = (int) strlen (szFullPath) - 1;
 
 i = l;
 #ifdef _WIN32
@@ -1079,10 +1002,11 @@ if (szFile) {
 
 // ----------------------------------------------------------------------------
 
-time_t CFile::Date (const char *filename, const char *folder, int32_t bUseD1Hog)
+time_t CFile::Date (const char *filename, const char *folder, int bUseD1Hog)
 {
 	struct stat statbuf;
 
+//	sprintf (fn, "%s/%s", folder, hogname);
 if (!Open (filename, folder, "rb", bUseD1Hog))
 	return -1;
 #ifdef _WIN32
@@ -1096,7 +1020,7 @@ return statbuf.st_mtime;
 
 // ----------------------------------------------------------------------------
 
-int32_t CFile::LineCount (const char* filename, const char* folder, const char* delims)
+int CFile::LineCount (const char* filename, const char* folder, char* delims)
 {
 if (!Open (filename, folder, "rb", 0))
 	return -1;
@@ -1104,7 +1028,7 @@ if (!Open (filename, folder, "rb", 0))
 bool bNewl = true;
 char buf [16384];
 size_t h = m_info.size - m_info.rawPosition, i = h + 1;
-int32_t lineC = 0;
+int lineC = 0;
 
 while (!EoF () || (i < h)) {
 	if (i >= h) {
@@ -1120,49 +1044,6 @@ while (!EoF () || (i < h)) {
 	}
 Close ();
 return lineC;
-}
-
-// ----------------------------------------------------------------------------
-
-#ifndef _WIN32
-#	include <sys/statvfs.h>
-#endif
-
-int64_t FreeDiskSpace (const char* pszFolder)
-{
-#ifdef _WIN32
-
-	char szFolder [FILENAME_LEN];
-
-if (!pszFolder)
-	*szFolder = '\0';
-else {
-	size_t i;
-	for (i = strlen (pszFolder); i > 0; i--)
-		if (pszFolder [i - 1] == ':')
-			break;
-	strncpy (szFolder, pszFolder, i);
-	szFolder [i] = '\0';
-	}
-
-DWORD nSectorsPerCluster, nBytesPerSector, nNumberOfFreeClusters, nTotalNumberOfClusters;
-
-return GetDiskFreeSpace (szFolder, &nSectorsPerCluster, &nBytesPerSector, &nNumberOfFreeClusters, &nTotalNumberOfClusters)
-		 ? (int64_t) nNumberOfFreeClusters * (int64_t) nSectorsPerCluster * (int64_t) nBytesPerSector
-		 : 0x7FFFFFFF;
-
-#else
-
-struct statvfs diskStats;
-
-if (0 > statvfs (pszFolder, &diskStats))
-	return 0x7FFFFFFF;
-
-return int64_t (diskStats.f_bsize) * int64_t (diskStats.f_bfree)
-		 ? int64_t (diskStats.f_bsize) * int64_t (diskStats.f_bfree)
-		 : 0x7FFFFFFF;
-
-#endif
 }
 
 // ----------------------------------------------------------------------------

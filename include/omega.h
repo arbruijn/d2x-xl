@@ -26,16 +26,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	MAX_OMEGA_BLOBS		16				//	No matter how far away the obstruction, this is the maximum number of blobs.
 #define	MAX_OMEGA_DIST			(MAX_OMEGA_BLOBS * DESIRED_OMEGA_DIST)		//	Maximum extent of lightning blobs.
 
-//	Additionally, several constants which apply to homing gameData.objData.objects in general control the behavior of the Omega Cannon.
+//	Additionally, several constants which apply to homing gameData.objs.objects in general control the behavior of the Omega Cannon.
 //	They are defined in fireweapon.h.  They are copied here for reference.  These values are valid on 1/10/96:
 //	If you want the Omega Cannon view cone to be different than the Homing Missile viewcone, contact MK to make the change.
 //	 (Unless you are a programmer, in which case, do it yourself!)
 
-void DoOmegaStuff (CObject *pParentObj, CFixVector *vFiringPos, CObject *pWeaponObj);
-int32_t UpdateOmegaLightnings (CObject *pParentObj, CObject *pTargetObj);
-void DestroyOmegaLightnings (int16_t nObject);
+void DoOmegaStuff (CObject *parentObjP, CFixVector *vFiringPos, CObject *weaponObjP);
+int UpdateOmegaLightnings (CObject *parentObjP, CObject *targetObjP);
+void DestroyOmegaLightnings (short nObject);
 void SetMaxOmegaCharge (void);
 
-#define MAX_OMEGA_CHARGE (gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? gameData.omegaData.xMaxCharge : DEFAULT_MAX_OMEGA_CHARGE)
+#define MAX_OMEGA_CHARGE (gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? gameData.omega.xMaxCharge : DEFAULT_MAX_OMEGA_CHARGE)
 
 #endif /* _OMEGA_H */

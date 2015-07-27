@@ -32,21 +32,17 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-void DrawPixel (int32_t x, int32_t y)
+void DrawPixel (int x, int y)
 {
-#if 1
-OglDrawPixel (x, y);
-#else
 if (MODE == BM_OGL)
 	OglDrawPixel (x, y);
 else if (MODE == BM_LINEAR)
-	DATA [ROWSIZE * y + x] = (uint8_t) COLOR.index;
-#endif
+	DATA [ROWSIZE * y + x] = (ubyte) COLOR.index;
 }
 
 //------------------------------------------------------------------------------
 
-void DrawPixelClipped (int32_t x, int32_t y)
+void DrawPixelClipped (int x, int y)
 {
 if (!CCanvas::Current ()->Clip (x, y))
 	DrawPixel (x, y);
@@ -54,7 +50,7 @@ if (!CCanvas::Current ()->Clip (x, y))
 
 //------------------------------------------------------------------------------
 
-void CBitmap::DrawPixel (int32_t x, int32_t y, uint8_t color)
+void CBitmap::DrawPixel (int x, int y, ubyte color)
 {
 if (!Buffer () || Clip (x, y))
 	return;
@@ -70,7 +66,7 @@ else if (Mode () == BM_LINEAR)
 
 //------------------------------------------------------------------------------
 
-uint8_t CBitmap::GetPixel (int32_t x, int32_t y)
+ubyte CBitmap::GetPixel (int x, int y)
 {
 if (!Buffer () || Clip (x, y))
 	return 0;

@@ -45,9 +45,9 @@
 
 //-------------------------------------------------------------------------
 
-int32_t hParticleShader [4] = {-1, -1, -1, -1};
+int hParticleShader [4] = {-1, -1, -1, -1};
 
-bool CParticleManager::LoadShader (int32_t nShader, vec3& dMax)
+bool CParticleManager::LoadShader (int nShader, vec3& dMax)
 {
 ogl.ClearError (0);
 if (!gameOpts->render.bUseShaders)
@@ -117,7 +117,6 @@ const char *particleFS [4] = {
 	"else {\r\n" \
 	"   int nType = int (floor (gl_TexCoord [0].z + 0.5));\r\n" \
 	"   vec4 texColor = ((nType == 0) ? texture2D (sparkTex, gl_TexCoord [0].xy) : (nType == 1) ? texture2D (particleTex, gl_TexCoord [0].xy) : texture2D (bubbleTex, gl_TexCoord [0].xy));\r\n" \
-	"   if (nType == 0) texColor.rgb *= texColor.a;\r\n" \
 	"   texColor *= gl_Color;\r\n" \
 	"   if (gl_Color.a == 0.0) //additive\r\n" \
 	"      gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
@@ -137,7 +136,6 @@ const char *particleFS [4] = {
 	"   gl_FragColor = texture2D (sourceTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"else {\r\n" \
 	"   vec4 texColor = texture2DArray (particleTex, gl_TexCoord [0].xyz) * gl_Color;\r\n" \
-	"   if (nType == 0) texColor.rgb *= texColor.a;\r\n" \
 	"   if (gl_Color.a == 0.0) //additive\r\n" \
 	"      gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
 	"   else // alpha\r\n" \
@@ -174,14 +172,11 @@ const char *particleFS [4] = {
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
 	"   dz = (dm - dz) / dm;\r\n" \
 	"   vec4 texColor = ((nType == 0) ? texture2D (sparkTex, gl_TexCoord [0].xy) : (nType == 1) ? texture2D (particleTex, gl_TexCoord [0].xy) : texture2D (bubbleTex, gl_TexCoord [0].xy));\r\n" \
-	"   if (nType == 0) texColor.rgb *= texColor.a;\r\n" \
 	"   texColor *= gl_Color * dz;\r\n" \
-	"   if (gl_Color.a == 0.0) {//additive\r\n" \
+	"   if (gl_Color.a == 0.0) //additive\r\n" \
 	"      gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
-	"      }\r\n" \
-	"   else { // alpha\r\n" \
+	"   else // alpha\r\n" \
 	"      gl_FragColor = vec4 (texColor.rgb * texColor.a, 1.0 - texColor.a);\r\n" \
-	"      }\r\n" \
 	"   }\r\n" \
 	"}\r\n"
 
@@ -214,7 +209,6 @@ const char *particleFS [4] = {
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
 	"   dz = (dm - dz) / dm;\r\n" \
 	"   vec4 texColor = texture2DArray (particleTex, gl_TexCoord [0].xyz);\r\n" \
-	"   if (nType == 0) texColor.rgb *= texColor.a;\r\n" \
 	"   texColor *= gl_Color * dz;\r\n" \
 	"   if (gl_Color.a == 0.0) //additive\r\n" \
 	"      gl_FragColor = vec4 (texColor.rgb, 1.0);\r\n" \
@@ -238,7 +232,7 @@ void CParticleManager::InitShader (void)
 if (ogl.m_features.bRenderToTexture.Available () && ogl.m_features.bShaders) {
 	PrintLog (0, "building particle blending shader programs\n");
 	m_shaderProg = 0;
-	int32_t i, j = (ogl.m_features.bDepthBlending > -1) ? 4 : 2;
+	int i, j = (ogl.m_features.bDepthBlending > -1) ? 4 : 2;
 	for (i = 0; i < j; i++)
 		if (((i & 1) == 0) && !shaderManager.Build (hParticleShader [i], particleFS [i], particleVS)) // skip the texture array shaders
 			break;

@@ -19,9 +19,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "multi.h"
 #include "menu.h"
 #include "loadgame.h"
-#include "network_thread.h"
 
-#define EGI_DATA_VERSION				9
+#define EGI_DATA_VERSION				6
 
 #define NETWORK_OEM						0x10
 
@@ -50,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PID_PLAYERSINFO					45 // 0x2D here's my name & personal data
 #define PID_REQUEST						46 // 0x2E may i join, plz send sync
 #define PID_SYNC							47 // 0x2F master says: enter mine now!
-#define PID_PLAYER_DATA					48 // 0x30
+#define PID_PDATA							48 // 0x30
 #define PID_ADDPLAYER					49
 
 #define PID_DUMP							51 // 0x33 you can't join this game
@@ -64,74 +63,41 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PID_PING_RETURN					59
 #define PID_GAME_UPDATE					60 // inform about new player/team change
 #define PID_ENDLEVEL_SHORT				61
-#define PID_MINE_DATA					62
+#define PID_NAKED_PDATA					62
 #define PID_GAME_PLAYERS				63
 #define PID_NAMES_RETURN				64 // 0x40
 
 #define PID_EXTRA_GAMEINFO				65
 #define PID_DOWNLOAD						66
 #define PID_UPLOAD						67
-
-#define PID_RESEND_MESSAGE				68
-#define PID_CONFIRM_MESSAGE			69
-
+#define PID_SEND_EXTRA_GAMEINFO		68
+#define PID_MISSING_OBJ_FRAMES		69
 #define PID_XML_GAMEINFO				70	// 'F'
 
 #define PID_TRACKER_ADD_SERVER		'S'
 #define PID_TRACKER_GET_SERVERLIST	'R'
 
-#define FIRST_PID							PID_LITE_INFO
-#define LAST_PID							PID_TRACKER_GET_SERVERLIST
-
-#define TIMEOUT_MSG_RESEND_COOP		300
-#define TIMEOUT_MSG_RESEND_STD		150
-#define TIMEOUT_MSG_RESEND_COMP		70
-
-#define TIMEOUT_MSG_RESEND_COUNT		8
-
-#define TIMEOUT_MSG_KEEP(TIMEOUT_MSG_RESEND)	TIMEOUT_MSG_RESEND * TIMEOUT_MSG_RESEND_COUNT + 10
-
-#define TIMEOUT_MSG_KEEP_COOP			TIMEOUT_MSG_KEEP(TIMEOUT_MSG_RESEND_COOP)
-#define TIMEOUT_MSG_KEEP_STD			TIMEOUT_MSG_KEEP(TIMEOUT_MSG_RESEND_STD)
-#define TIMEOUT_MSG_KEEP_COMP			TIMEOUT_MSG_KEEP(TIMEOUT_MSG_RESEND_COMP)
-
-
-#if DBG
-#	define TIMEOUT_DISCONNECT			30000
-#	define TIMEOUT_KICK					180000
-#	define TIMEOUT_KEEP_MSG				3000
-#	define TIMEOUT_RESEND_MSG			300
-#else
-#	define TIMEOUT_DISCONNECT			3000
-#	define TIMEOUT_KICK					30000
-#	define TIMEOUT_KEEP_MSG				1500
-#	define TIMEOUT_RESEND_MSG			150
-#endif
-
-
 #if DBG
 #	define UDP_SAFEMODE	0
 #else
 #	define UDP_SAFEMODE	0
 #endif
-
-#define NET_XDATA_SIZE					454
 
 // defines and other things for appletalk/ipx games on mac
 #if 0
-extern int32_t nNetworkGameType;
-extern int32_t nNetworkGameSubType;
+extern int nNetworkGameType;
+extern int nNetworkGameSubType;
 #endif
 
-typedef struct tPlayerSyncData {
-	uint8_t           nType;
-	int32_t           nSecurity;
-	uint16_t				nObjFramesToSkip;
-	uint8_t           pad1;
-	tNetPlayerInfo		player;
-	uint8_t           pad2 [3];
-} __pack__ tPlayerSyncData;
+typedef struct tSequencePacket {
+	ubyte           nType;
+	int             nSecurity;
+	ubyte           pad1 [3];
+	tNetPlayerInfo  player;
+	ubyte           pad2 [3];
+} __pack__ tSequencePacket;
 
+#define NET_XDATA_SIZE 454
 
 
 // frame info is aligned -- 01/18/96 -- MWA
@@ -141,59 +107,67 @@ typedef struct tPlayerSyncData {
 //      shorts on even byte boundaries
 //      ints on even byte boundaries
 
-typedef struct tFrameInfoHeader {
-	uint8_t				nType;        
-	uint8_t				pad [3];       
-	int32_t				nPackets;
-} __pack__ tFrameInfoHeader;
-
-typedef struct tFrameInfoData {
-	uint16_t				dataSize;          // Size of data appended to the net packet
-	uint8_t				nPlayer;
-	uint8_t				nRenderType;
-	uint8_t				nLevel;
-	uint8_t				msgData [UDP_PAYLOAD_SIZE];   // extra data to be tacked on the end
-} __pack__ tFrameInfoData;
-
 typedef struct tFrameInfoLong {
-	tFrameInfoHeader	header;
-	tLongPos				objData;
-	tFrameInfoData		data;
+	ubyte       nType;                   // What nType of packet
+	ubyte       pad[3];                 // Pad out length of tFrameInfoLong packet
+	int         nPackets;
+	CFixVector	objPos;
+	CFixMatrix	objOrient;
+	CFixVector	physVelocity;
+	CFixVector	physRotVel;
+	short       nObjSeg;
+	ushort      dataSize;          // Size of data appended to the net packet
+	ubyte       nPlayer;
+	ubyte       objRenderType;
+	ubyte       nLevel;
+	ubyte       data [NET_XDATA_SIZE];   // extra data to be tacked on the end
 } __pack__ tFrameInfoLong;
 
 // tFrameInfoShort is not aligned -- 01/18/96 -- MWA
-// won't align because of tShortPos. Shortpos needs to stay in current form.
+// won't align because of tShortPos.  Shortpos needs
+// to stay in current form.
 
 typedef struct tFrameInfoShort {
-	tFrameInfoHeader	header;
-	tShortPos			objData;
-	tFrameInfoData		data;
+	ubyte       nType;                   // What nType of packet
+	ubyte       pad[3];                 // Pad out length of tFrameInfoLong packet
+	int         nPackets;
+	tShortPos   objPos;
+	ushort      dataSize;          // Size of data appended to the net packet
+	ubyte       nPlayer;
+	ubyte       objRenderType;
+	ubyte       nLevel;
+	ubyte       data [NET_XDATA_SIZE];   // extra data to be tacked on the end
 } __pack__ tFrameInfoShort;
 
+typedef union tFrameInfo {
+	tFrameInfoLong		l;
+	tFrameInfoShort	s;
+} tFrameInfo;
+
 typedef struct tEntropyGameInfo {
-	uint16_t				nEnergyFillRate;
-	uint16_t				nShieldFillRate;
-	uint16_t				nShieldDamageRate;
-	uint16_t				nMaxVirusCapacity; 
-	char					nBumpVirusCapacity;
-	char					nBashVirusCapacity; 
-	char					nVirusGenTime; 
-	char					nVirusLifespan; 
-	char					nVirusStability;
-	char					nCaptureVirusThreshold; 
-	char					nCaptureTimeThreshold; 
-	char					bRevertRooms;
-	char					bDoCaptureWarning;
-	char					nOverrideTextures;
-	char					bBrightenRooms;
-	char					bPlayerHandicap;
+	ushort	nEnergyFillRate;
+	ushort	nShieldFillRate;
+	ushort	nShieldDamageRate;
+	ushort	nMaxVirusCapacity; 
+	char		nBumpVirusCapacity;
+	char		nBashVirusCapacity; 
+	char		nVirusGenTime; 
+	char		nVirusLifespan; 
+	char		nVirusStability;
+	char		nCaptureVirusThreshold; 
+	char		nCaptureTimeThreshold; 
+	char		bRevertRooms;
+	char		bDoCaptureWarning;
+	char		nOverrideTextures;
+	char		bBrightenRooms;
+	char		bPlayerHandicap;
 } __pack__ tEntropyGameInfo;
 
 #define MAX_MONSTERBALL_FORCES	25
 
 typedef struct tMonsterballForce {
-	uint8_t		nWeaponId;
-	int16_t		nForce;
+	ubyte		nWeaponId;
+	short		nForce;
 } __pack__ tMonsterballForce;
 
 typedef struct tMonsterballInfo {
@@ -208,151 +182,139 @@ typedef struct tHeadlightInfo {
 }  tHeadlightInfo;
 
 typedef struct tLoadoutInfo {
-	uint32_t					nGuns;
-	uint32_t					nDevice;
-	uint8_t					nMissiles [10];
+	uint					nGuns;
+	uint					nDevice;
+	ubyte					nMissiles [10];
 } __pack__ tLoadoutInfo;
 
-typedef struct tTimeoutInfo {
-	int32_t					nDisconnectPlayer;
-	int32_t					nKickPlayer;
-	uint16_t					nKeepMessage;
-	uint16_t					nResendMessage;
-} __pack__ tTimeoutInfo;
-
 typedef struct tExtraGameInfo {
-	uint8_t   			nType;
-	int32_t				nVersion;
+	ubyte   	nType;
+	int		nVersion;
 
 	char					szGameName [NETGAME_NAME_LEN + 1];
 	tEntropyGameInfo	entropy;
 	tMonsterballInfo	monsterball;
 	tHeadlightInfo		headlight;
 	tLoadoutInfo		loadout;
-	tTimeoutInfo		timeout;
 
-	uint8_t				bFriendlyFire;
-	uint8_t				bInhibitSuicide;
-	uint8_t				bFixedRespawns;
-	uint8_t				bEnhancedCTF;
-	uint8_t				bRadarEnabled;
-	uint8_t				bPowerupsOnRadar;
-	uint8_t				nZoomMode;
-	uint8_t				bRobotsHitRobots;
-	uint8_t				bAutoDownload;
-	uint8_t				bAutoBalanceTeams;
-	uint8_t				bDualMissileLaunch;
-	uint8_t				bRobotsOnRadar;
-	uint8_t				grWallTransparency;
-	uint8_t				nSpeedBoost;
-	uint8_t				bDropAllMissiles;
-	uint8_t				bImmortalPowerups;
-	uint8_t				bUseCameras;
-	uint8_t				nFusionRamp;
-	uint8_t				nOmegaRamp;
-	uint8_t				bUnnerfD1Weapons;
-	uint8_t				bWiggle;
-	uint8_t				bMultiBosses;
-	uint8_t				nBossCount [2];
-	uint8_t				bSmartWeaponSwitch;
-	uint8_t				bFluidPhysics;
-	uint8_t				nWeaponDropMode;
-	uint8_t				bRotateLevels;
-	uint8_t				bDisableReactor;
-	uint8_t				bMouseLook;
-	uint8_t				nWeaponIcons;
-	uint8_t				bSafeUDP;
-	uint8_t				bFastPitch;
-	uint8_t				bUseParticles;
-	uint8_t				bUseLightning;
-	uint8_t				bDamageExplosions;
-	uint8_t				bThrusterFlames;
-	uint8_t				bShadows;
-	uint8_t				nShieldEffect;
-	uint8_t				bTeleporterCams;
-	uint8_t				bDarkness;
-	uint8_t				bPowerupLights;
-	uint8_t				bBrightObjects;
-	uint8_t				bTeamDoors;
-	uint8_t				bEnableCheats;
-	uint8_t				bTargetIndicators;
-	uint8_t				bDamageIndicators;
-	uint8_t				bFriendlyIndicators;
-	uint8_t				bCloakedIndicators;
-	uint8_t				bMslLockIndicators;
-	uint8_t				bHideIndicators;
-	uint8_t				bTagOnlyHitObjs;
-	uint8_t				bTowFlags;
-	uint8_t				bUseHitAngles;
-	uint8_t				bLightTrails;
-	uint8_t				bGatlingTrails;
-	uint8_t				bTracers;
-	uint8_t				bShockwaves;
-	uint8_t				bCompetition;
-	uint8_t				bFlickerLights;
-	uint8_t				bCheckUDPPort;
-	uint8_t				bSmokeGrenades;
-	uint8_t				nMaxSmokeGrenades;
-	uint8_t				nWeaponTurnSpeed;
-	uint8_t				nMslStartSpeed;
-	uint8_t				nCoopPenalty;
-	uint8_t				bKillMissiles;
-	uint8_t				bTripleFusion;
-	uint8_t				bEnhancedShakers;
-	uint8_t				bShowWeapons;
-	uint8_t				bGatlingSpeedUp;
-	uint8_t				bRotateMarkers;
-	uint8_t				bAllowCustomWeapons;
-	uint8_t				bRechargeEnergy;
-	uint8_t				nRechargeDelay;
-	uint8_t				nRechargeSpeed;
-	uint8_t				nHitboxes;
-	uint8_t				nDamageModel;
-	uint8_t				nRadar;
-	uint8_t				nDrag;
-	uint8_t				nSpotSize;
-	uint8_t				nSpotStrength;
+	char		bFriendlyFire;
+	char		bInhibitSuicide;
+	char		bFixedRespawns;
+	char		bEnhancedCTF;
+	char		bRadarEnabled;
+	char		bPowerupsOnRadar;
+	char		nZoomMode;
+	char		bRobotsHitRobots;
+	char		bAutoDownload;
+	char		bAutoBalanceTeams;
+	char		bDualMissileLaunch;
+	char		bRobotsOnRadar;
+	char		grWallTransparency;
+	char		nSpeedBoost;
+	char		bDropAllMissiles;
+	char		bImmortalPowerups;
+	char		bUseCameras;
+	char		nFusionRamp;
+	char		nOmegaRamp;
+	char		bWiggle;
+	char		bMultiBosses;
+	char		nBossCount [2];
+	char		bSmartWeaponSwitch;
+	char		bFluidPhysics;
+	char		nWeaponDropMode;
+	char		bRotateLevels;
+	char		bDisableReactor;
+	char		bMouseLook;
+	char		nWeaponIcons;
+	char		bSafeUDP;
+	char		bFastPitch;
+	char		bUseParticles;
+	char		bUseLightning;
+	char		bDamageExplosions;
+	char		bThrusterFlames;
+	char		bShadows;
+	char		bPlayerShield;
+	char		bTeleporterCams;
+	char		bDarkness;
+	char		bPowerupLights;
+	char		bBrightObjects;
+	char		bTeamDoors;
+	char		bEnableCheats;
+	char		bTargetIndicators;
+	char		bDamageIndicators;
+	char		bFriendlyIndicators;
+	char		bCloakedIndicators;
+	char		bMslLockIndicators;
+	char		bHideIndicators;
+	char		bTagOnlyHitObjs;
+	char		bTowFlags;
+	char		bUseHitAngles;
+	char		bLightTrails;
+	char		bGatlingTrails;
+	char		bTracers;
+	char		bShockwaves;
+	char		bCompetition;
+	char		bFlickerLights;
+	char		bCheckUDPPort;
+	char		bSmokeGrenades;
+	char		nMaxSmokeGrenades;
+	char		nMslTurnSpeed;
+	char		nMslStartSpeed;
+	char		nCoopPenalty;
+	char		bKillMissiles;
+	char		bTripleFusion;
+	char		bEnhancedShakers;
+	char		bShowWeapons;
+	char		bGatlingSpeedUp;
+	char		bRotateMarkers;
+	char		bAllowCustomWeapons;
+	char		nHitboxes;
+	char		nDamageModel;
+	char		nRadar;
+	char		nDrag;
+	char		nSpotSize;
+	char		nSpotStrength;
 
-	int32_t				nSpawnDelay;
-	int32_t				nLightRange;
-	int32_t				nSpeedScale;
-	int32_t				nSecurity;
-	int32_t				shipsAllowed [MAX_SHIP_TYPES];
+	int		nSpawnDelay;
+	int		nLightRange;
+	int		nSpeedScale;
+	int		nSecurity;
+	int		shipsAllowed [MAX_SHIP_TYPES];
 } __pack__ tExtraGameInfo;
 
 typedef struct tMpParams {
-	char					szGameName [NETGAME_NAME_LEN + 1];
-	char					szServerIpAddr [22];
-	int32_t				udpPorts [2];
-	uint8_t				nLevel;
-	uint8_t				nGameType;
-	uint8_t				nGameMode;
-	uint8_t				nGameAccess;
-	uint8_t				bShowPlayersOnAutomap;
-	uint8_t				nDifficulty;
-	int32_t				nWeaponFilter;
-	int32_t				nReactorLife;
-	uint8_t				nMaxTime;
-	uint8_t				nScoreGoal;
-	uint8_t				bInvul;
-	uint8_t				bMarkerView;
-	uint8_t				bIndestructibleLights;
-	uint8_t				bBrightPlayers;
-	uint8_t				bDarkness;
-	uint8_t				bTeamDoors;
-	uint8_t				bEnableCheats;
-	uint8_t				bShowAllNames;
-	uint8_t				bShortPackets;
-	uint8_t				nMinPPS;
-	tMsnListEntry		mission;
+	char	szGameName [NETGAME_NAME_LEN + 1];
+	char	szServerIpAddr [22];
+	int	udpPorts [2];
+	ubyte	nLevel;
+	ubyte	nGameType;
+	ubyte	nGameMode;
+	ubyte	nGameAccess;
+	char	bShowPlayersOnAutomap;
+	char	nDifficulty;
+	int	nWeaponFilter;
+	int	nReactorLife;
+	ubyte	nMaxTime;
+	ubyte	nScoreGoal;
+	ubyte	bInvul;
+	ubyte	bMarkerView;
+	ubyte	bIndestructibleLights;
+	ubyte	bBrightPlayers;
+	ubyte bDarkness;
+	ubyte bTeamDoors;
+	ubyte bEnableCheats;
+	ubyte	bShowAllNames;
+	ubyte	bShortPackets;
+	ubyte	nPPS;
+	tMsnListEntry	mission;
 } __pack__ tMpParams;
 
 extern tMpParams mpParams;
 
 typedef struct tNetworkObjInfo {
-	int16_t				nObject;
-	uint8_t				nType;
-	uint8_t				nId;
+	short	nObject;
+	ubyte	nType;
+	ubyte	nId;
 } __pack__ tNetworkObjInfo;
 
 extern tExtraGameInfo extraGameInfo [3];
@@ -361,7 +323,7 @@ extern tExtraGameInfo extraGameInfo [3];
 
 #if 1
 
-static inline int32_t EGIFlag (char bLocalFlag, char bMultiFlag, char bDefault, int32_t bAllowLocalFlagOn, int32_t bAllowLocalFlagOff)
+static inline int EGIFlag (char bLocalFlag, char bMultiFlag, char bDefault, int bAllowLocalFlagOn, int bAllowLocalFlagOff)
 {
 if (!IsMultiGame || IsCoopGame)
 	return bLocalFlag;
@@ -400,7 +362,7 @@ return bMultiFlag;
 
 //	-----------------------------------------------------------------------------
 
-static inline bool IsBuiltinWeapon (int32_t nWeapon)
+static inline bool IsBuiltinWeapon (int nWeapon)
 {
 return (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [IsMultiGame]) && 
 		 (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (nWeapon));
@@ -411,43 +373,42 @@ return (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [IsMultiGame]) &&
 #define COLLISION_MODEL_SPHERES	0
 #define COLLISION_MODEL_BOXES		2
 
-static inline int32_t CollisionModel (int32_t nCollisionModel = -1)
+static inline int CollisionModel (void)
 {
-return (nCollisionModel < 0) ? missionConfig.m_nCollisionModel ? COLLISION_MODEL_BOXES : EGI_FLAG (nHitboxes, 0, 0, extraGameInfo [0].nHitboxes) : nCollisionModel;
+return missionConfig.m_nCollisionModel ? COLLISION_MODEL_BOXES : EGI_FLAG (nHitboxes, 0, 0, extraGameInfo [0].nHitboxes);
 }
 
 //	-----------------------------------------------------------------------------
 
-int32_t NetworkStartGame (void);
+int NetworkStartGame (void);
 void NetworkRejoinGame (void);
-void NetworkLeaveGame (bool bDisconnect = true);
-int32_t NetworkEndLevel (int32_t *secret);
-int32_t NetworkEndLevelPoll2 (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState);
+void NetworkLeaveGame (void);
+int NetworkEndLevel (int *secret);
+int NetworkEndLevelPoll2 (CMenu& menu, int& key, int nCurItem, int nState);
 
-int32_t NetworkListen (void);
-int32_t NetworkLevelSync (void);
-void NetworkSendLifeSign (void);
+int NetworkListen (void);
+int NetworkLevelSync (void);
 void NetworkSendEndLevelPacket (void);
 
-int32_t network_delete_extraObjects (void);
-int32_t network_find_max_net_players (void);
-char * NetworkGetPlayerName (int32_t nObject);
-void NetworkSendEndLevelSub (int32_t player_num);
-void NetworkDisconnectPlayer (int32_t playernum);
+int network_delete_extraObjects (void);
+int network_find_max_net_players (void);
+char * NetworkGetPlayerName (int nObject);
+void NetworkSendEndLevelSub (int player_num);
+void NetworkDisconnectPlayer (int playernum);
 
-extern void NetworkDumpPlayer (uint8_t * server, uint8_t *node, int32_t why);
+extern void NetworkDumpPlayer (ubyte * server, ubyte *node, int why);
 extern void NetworkSendNetGameUpdate (void);
 
-extern int32_t GetMyNetRanking (void);
+extern int GetMyNetRanking (void);
 
-extern int32_t NetGameType;
-extern int32_t Network_sendObjects;
-extern int32_t Network_send_objnum;
-extern int32_t PacketUrgent;
-extern int32_t Network_rejoined;
+extern int NetGameType;
+extern int Network_sendObjects;
+extern int Network_send_objnum;
+extern int PacketUrgent;
+extern int Network_rejoined;
 
-extern int32_t Network_new_game;
-extern int32_t Network_status;
+extern int Network_new_game;
+extern int Network_status;
 
 extern fix LastPacketTime [MAX_PLAYERS];
 
@@ -457,34 +418,31 @@ extern fix LastPacketTime [MAX_PLAYERS];
 // get your message.
 
 // Call once at the beginning of a frame
-void NetworkDoFrame (int bFlush = 0);
-void NetworkFlushData (void);
+void NetworkDoFrame (int force, int listen);
 
 // Tacks data of length 'len' onto the end of the next
 // packet that we're transmitting.
-void NetworkSendData (uint8_t * ptr, int32_t len, int32_t urgent);
+void NetworkSendData (ubyte * ptr, int len, int urgent);
 
 // returns 1 if hoard.ham available
-extern int32_t HoardEquipped (void);
+extern int HoardEquipped (void);
 
 typedef struct tPingStats {
 	fix	launchTime;
-	int32_t	ping;
-	int32_t	totalPing;
-	int32_t	averagePing;
-	int32_t	sent;
-	int32_t	received;
+	int	ping;
+	int	sent;
+	int	received;
 } __pack__ tPingStats;
 
 extern tPingStats pingStats [MAX_PLAYERS];
 extern fix xPingReturnTime;
-extern int32_t bShowPingStats, tLastPingStat;
+extern int bShowPingStats, tLastPingStat;
 extern const char *pszRankStrings[];
 
 void ResetPingStats (void);
 void InitExtraGameInfo (void);
 void InitNetworkData (void);
-int32_t InitAutoNetGame (void);
+int InitAutoNetGame (void);
 
 #define NETGAME_ANARCHY				0
 #define NETGAME_TEAM_ANARCHY		1
@@ -511,22 +469,22 @@ int32_t InitAutoNetGame (void);
 // me for info.
 
 typedef struct tEndLevelInfoShort {
-	uint8_t                               nType;
-	uint8_t                               nPlayer;
-	int8_t                               connected;
-	uint8_t                               secondsLeft;
+	ubyte                               nType;
+	ubyte                               nPlayer;
+	sbyte                               connected;
+	ubyte                               secondsLeft;
 } __pack__ tEndLevelInfoShort;
 
 typedef struct tEndLevelInfoD2 : public tEndLevelInfoShort {
-	int16_t											scoreMatrix [MAX_PLAYERS_D2][MAX_PLAYERS_D2];
-	int16_t                               kills;
-	int16_t                               killed;
+	short											scoreMatrix [MAX_PLAYERS_D2][MAX_PLAYERS_D2];
+	short                               kills;
+	short                               killed;
 } __pack__ tEndLevelInfoD2;
 
 typedef struct tEndLevelInfoD2X : public tEndLevelInfoShort  {
-	int16_t											scoreMatrix [MAX_PLAYERS_D2X][MAX_PLAYERS_D2X];
-	int16_t                               kills;
-	int16_t                               killed;
+	short											scoreMatrix [MAX_PLAYERS_D2X][MAX_PLAYERS_D2X];
+	short                               kills;
+	short                               killed;
 } __pack__ tEndLevelInfoD2X;
 
 typedef union tEndLevelInfo {
@@ -553,19 +511,13 @@ class CEndLevelInfo {
 			return m_info;
 			}
 
-		inline uint8_t* Type (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.nType : &m_info.d2.nType; }
-		inline uint8_t* Player (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.nPlayer : &m_info.d2.nPlayer; }
-		inline int8_t Connected (void) { return gameStates.app.bD2XLevel ? m_info.d2x.connected : m_info.d2.connected; }
-		inline void SetConnected (int8_t nStatus) { 
-			if (gameStates.app.bD2XLevel)
-				m_info.d2x.connected = nStatus;
-			else
-				m_info.d2.connected = nStatus; 
-			}
-		inline uint8_t* SecondsLeft (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.secondsLeft : &m_info.d2.secondsLeft; }
-		inline int16_t* ScoreMatrix (int32_t i = 0, int32_t j = 0) { return gameStates.app.bD2XLevel ? m_info.d2x.scoreMatrix [i] + j : m_info.d2.scoreMatrix [i] + j; }
-		inline int16_t* Kills (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.kills : &m_info.d2.kills; }
-		inline int16_t* Killed (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.killed : &m_info.d2.killed; }
+		inline ubyte* Type (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.nType : &m_info.d2.nType; }
+		inline ubyte* Player (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.nPlayer : &m_info.d2.nPlayer; }
+		inline sbyte* Connected (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.connected : &m_info.d2.connected; }
+		inline ubyte* SecondsLeft (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.secondsLeft : &m_info.d2.secondsLeft; }
+		inline short* ScoreMatrix (int i = 0, int j = 0) { return gameStates.app.bD2XLevel ? m_info.d2x.scoreMatrix [i] + j : m_info.d2.scoreMatrix [i] + j; }
+		inline short* Kills (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.kills : &m_info.d2.kills; }
+		inline short* Killed (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.killed : &m_info.d2.killed; }
 };
 
 // WARNING!!! This is the top part of tNetGameInfo...if that struct changes,
@@ -576,38 +528,38 @@ class CEndLevelInfo {
 // code for macintosh in netmisc.c
 
 
-#define NETGAME_INFO_SIZE       int32_t (netGameInfo.Size ())
-#define ALLNETPLAYERSINFO_SIZE  int32_t (netPlayers [0].Size ())
+#define NETGAME_INFO_SIZE       int (netGameInfo.Size ())
+#define ALLNETPLAYERSINFO_SIZE  int (netPlayers [0].Size ())
 #define LITE_INFO_SIZE          sizeof (tNetGameInfoLite)
-#define SEQUENCE_PACKET_SIZE    sizeof (tPlayerSyncData)
+#define SEQUENCE_PACKET_SIZE    sizeof (tSequencePacket)
 #define FRAME_INFO_SIZE         sizeof (tFrameInfoLong)
 #define IPX_SHORT_INFO_SIZE     sizeof (tFrameInfoShort)
 #define ENTROPY_INFO_SIZE       sizeof (tExtraGameInfo)
 
 #define MAX_ACTIVE_NETGAMES     80
 
-int32_t  NetworkSendRequest (void);
-int32_t  NetworkChooseConnect (void);
-int32_t  NetworkSendGameListRequest (int32_t bAutoLaunch = 0);
-void NetworkSetTimeoutValues (void);
-void NetworkAddPlayer (tPlayerSyncData *p);
-void NetworkSendGameInfo (tPlayerSyncData *their);
+int  NetworkSendRequest (void);
+int  NetworkChooseConnect (void);
+int  NetworkSendGameListRequest (int bAutoLaunch = 0);
+void NetworkAddPlayer (tSequencePacket *p);
+void NetworkSendGameInfo (tSequencePacket *their);
 void ClipRank (char *rank);
-void NetworkCheckForOldVersion (uint8_t nPlayer);
+void NetworkCheckForOldVersion (char pnum);
 void NetworkInit (void);
 void NetworkFlush (void);
-int32_t  NetworkWaitForAllInfo (int32_t choice);
-void NetworkSetGameMode (int32_t gameMode);
-int32_t CanJoinNetGame (CNetGameInfo *game, CAllNetPlayersInfo *people);
+int  NetworkWaitForAllInfo (int choice);
+void NetworkSetGameMode (int gameMode);
+void NetworkAdjustMaxDataSize (void);
+int CanJoinNetGame (CNetGameInfo *game, CAllNetPlayersInfo *people);
 void RestartNetSearching (CMenu& menu);
 void DeleteTimedOutNetGames (void);
-void InitMonsterballSettings (tMonsterballInfo *pMonsterBall);
-void InitEntropySettings (int32_t i);
-void NetworkSendExtraGameInfo (tPlayerSyncData *their);
+void InitMonsterballSettings (tMonsterballInfo *monsterballP);
+void InitEntropySettings (int i);
+void NetworkSendExtraGameInfo (tSequencePacket *their);
 void NetworkSendXMLGameInfo (void);
 void NetworkResetSyncStates (void);
-void NetworkResetObjSync (int16_t nObject);
-void DeleteSyncData (int16_t nConnection);
+void NetworkResetObjSync (short nObject);
+void DeleteSyncData (short nConnection);
 char *iptos (char *pszIP, char *addr);
 
 #define DUMP_CLOSED     0 // no new players allowed after game started
@@ -621,27 +573,22 @@ char *iptos (char *pszIP, char *addr);
 
 extern CNetGameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
 extern CAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
-extern CAllNetPlayersInfo* pPlayerInfo, netPlayers [2];
-extern int32_t nCoopPenalties [10];
+extern CAllNetPlayersInfo* playerInfoP, netPlayers [2];
+extern int nCoopPenalties [10];
 
-#define COMPETITION			(IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)
-#define COMPETITION_LEVEL	(IsMultiGame ? extraGameInfo [1].bCompetition ? 2 : IsCoopGame ? 0 : 1 : 0)
+#define COMPETITION	 (IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)
 
 #define MAX_PAYLOAD_SIZE ((gameStates.multi.nGameType == UDP_GAME) ? UDP_PAYLOAD_SIZE : IPX_PAYLOAD_SIZE)
 
 //------------------------------------------------------------------------------
 
-#define MIN_PPS		5
-#define MAX_PPS		100
-#define DEFAULT_PPS	20
-
-static inline int16_t MinPPS (void)
+static inline short PacketsPerSec (void)
 {
-	int32_t	nMinPPS = netGameInfo.GetMinPPS ();
+	int	i = netGame.GetPacketsPerSec ();
 
-if ((nMinPPS < MIN_PPS) || (nMinPPS > MAX_PPS))
-	netGameInfo.SetMinPPS (DEFAULT_PPS);
-return netGameInfo.GetMinPPS ();
+if ((i < 1) || (i > 20))
+	netGame.SetPacketsPerSec (10);
+return netGame.GetPacketsPerSec ();
 }
 
 //------------------------------------------------------------------------------

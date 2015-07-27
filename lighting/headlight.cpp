@@ -50,7 +50,7 @@ if (PlayerHasHeadlight (-1)) {
 	LOCALPLAYER.flags ^= PLAYER_FLAGS_HEADLIGHT_ON;
 	audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_HEADLIGHT));
 	if (IsMultiGame)
-		MultiSendFlags (N_LOCALPLAYER);
+		MultiSendFlags ((char) N_LOCALPLAYER);
 	}
 }
 
@@ -59,22 +59,22 @@ if (PlayerHasHeadlight (-1)) {
 //	Flag array of OBJECTS lit last frame.  Guaranteed to process this frame if lit last frame.
 fix	xBeamBrightness = (I2X (1)/2);	//global saying how bright the light beam is
 
-fix CHeadlightManager::ComputeLightOnObject (CObject *pObj)
+fix CHeadlightManager::ComputeLightOnObject (CObject *objP)
 {
 	//	Let's just illuminate players and robots for speed reasons, ok?
-if ((pObj->info.nType != OBJ_ROBOT) && (pObj->info.nType	!= OBJ_PLAYER))
+if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType	!= OBJ_PLAYER))
 	return 0;
 
 	fix			dot, dist, light = 0;
 	CFixVector	vecToObj;
-	CObject*		pLightObj;
+	CObject*		lightObjP;
 
-for (int32_t nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
-	if ((pLightObj = objects [nPlayer])) {
-		vecToObj = pObj->info.position.vPos - pLightObj->info.position.vPos;
+for (int nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
+	if ((lightObjP = objects [nPlayer])) {
+		vecToObj = objP->info.position.vPos - lightObjP->info.position.vPos;
 		dist = CFixVector::Normalize (vecToObj);
 		if (dist > 0) {
-			dot = CFixVector::Dot (pLightObj->info.position.mOrient.m.dir.f, vecToObj);
+			dot = CFixVector::Dot (lightObjP->info.position.mOrient.m.dir.f, vecToObj);
 			if (dot < I2X (1)/2)
 				light += FixDiv (HEADLIGHT_SCALE, FixMul (HEADLIGHT_SCALE, dist));	//	Do the Normal thing, but darken around headlight.
 			else
@@ -92,24 +92,24 @@ return light;
 
 void CHeadlightManager::Transform (void)
 {
-if (automap.Active ())
+if (automap.Display ())
 	return;
 
-	CDynLight*	pLight;
+	CDynLight*	lightP;
 	bool			bHWHeadlight = (gameStates.render.bPerPixelLighting == 2) || (ogl.m_states.bHeadlight && gameOpts->ogl.bHeadlight);
 
-for (int32_t i = 0; i < MAX_PLAYERS; i++) {
+for (int i = 0; i < MAX_PLAYERS; i++) {
 	if (lightIds [i] >= 0) {
-		pLight = lightManager.Lights () + lightIds [i];
-		pLight->info.bSpot = 1;
-		pLight->info.vDirf.Assign (pLight->vDir);
+		lightP = lightManager.Lights () + lightIds [i];
+		lightP->info.bSpot = 1;
+		lightP->info.vDirf.Assign (lightP->vDir);
 		if (bHWHeadlight) {
-			pos [i] = pLight->render.vPosf [0];
-			dir [i] = *pLight->info.vDirf.XYZ ();
+			pos [i] = lightP->render.vPosf [0];
+			dir [i] = *lightP->info.vDirf.XYZ ();
 			brightness [i] = 100.0f;
 			}
-		else if (pLight->bTransform && !ogl.UseTransform ())
-			transformation.Rotate (pLight->info.vDirf, pLight->info.vDirf, 0);
+		else if (lightP->bTransform && !ogl.UseTransform ())
+			transformation.Rotate (lightP->info.vDirf, lightP->info.vDirf, 0);
 
 		}
 	}
@@ -123,37 +123,37 @@ for (int32_t i = 0; i < MAX_PLAYERS; i++) {
 void CHeadlightManager::Prepare (void)
 {
 nLights = 0;
-for (int32_t i = 0; i < MAX_PLAYERS; i++)
+for (int i = 0; i < MAX_PLAYERS; i++)
 	if (lightIds [i] >= 0)
 		lights [nLights++] = lightManager.Lights () + lightIds [i];
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CHeadlightManager::Add (CObject *pObj)
+int CHeadlightManager::Add (CObject *objP)
 {
 #if 0
 	static float spotExps [] = {12.0f, 5.0f, 0.0f};
 	static float spotAngles [] = {0.9f, 0.5f, 0.5f};
 #endif
 
-objects [pObj->info.nId] = pObj;
+objects [objP->info.nId] = objP;
 if (gameStates.render.nLightingMethod) {
-	if (lightIds [pObj->info.nId] < 0) {
+	if (lightIds [objP->info.nId] < 0) {
 			static CFloatVector c = {{{1.0f, 1.0f, 1.0f, 1.0f}}};
-			int32_t nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
+			int nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
 
 		if (0 <= nLight) {
-			CDynLight* pLight = lightManager.Lights () + nLight;
-			pLight->info.nPlayer = (pObj->info.nType == OBJ_PLAYER) ? pObj->info.nId : 1;
-			pLight->info.fRad = 0;
-			pLight->info.bSpot = 1;
-			pLight->info.fSpotAngle = 0.9f; //spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
-			pLight->info.fSpotExponent = 12.0f; //spotExps [extraGameInfo [IsMultiGame].nSpotStrength];
-			pLight->bTransform = 0;
-			lightIds [pObj->info.nId] = nLight;
+			CDynLight* lightP = lightManager.Lights () + nLight;
+			lightP->info.nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : 1;
+			lightP->info.fRad = 0;
+			lightP->info.bSpot = 1;
+			lightP->info.fSpotAngle = 0.9f; //spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
+			lightP->info.fSpotExponent = 12.0f; //spotExps [extraGameInfo [IsMultiGame].nSpotStrength];
+			lightP->bTransform = 0;
+			lightIds [objP->info.nId] = nLight;
 			}
-		return lightIds [pObj->info.nId];
+		return lightIds [objP->info.nId];
 		}
 	}
 return -1;
@@ -161,12 +161,12 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-void CHeadlightManager::Remove (CObject *pObj)
+void CHeadlightManager::Remove (CObject *objP)
 {
-objects [pObj->info.nId] = NULL;
-if (gameStates.render.nLightingMethod && (lightIds [pObj->info.nId] >= 0)) {
-	lightManager.Delete (lightIds [pObj->info.nId]);
-	lightIds [pObj->info.nId] = -1;
+objects [objP->info.nId] = NULL;
+if (gameStates.render.nLightingMethod && (lightIds [objP->info.nId] >= 0)) {
+	lightManager.Delete (lightIds [objP->info.nId]);
+	lightIds [objP->info.nId] = -1;
 	nLights--;
 	}
 }
@@ -175,17 +175,17 @@ if (gameStates.render.nLightingMethod && (lightIds [pObj->info.nId] >= 0)) {
 
 void CHeadlightManager::Update (void)
 {
-	CDynLight*	pLight;
-	CObject*		pObj;
-	int16_t			nPlayer;
+	CDynLight*	lightP;
+	CObject*		objP;
+	short			nPlayer;
 
 for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	if (lightIds [nPlayer] >= 0) {
-		pLight = lightManager.Lights () + lightIds [nPlayer];
-		pObj = OBJECT (PLAYER (nPlayer).nObject);
-		pLight->info.vPos = OBJPOS (pObj)->vPos;
-		pLight->vDir = OBJPOS (pObj)->mOrient.m.dir.f;
-		pLight->info.vPos += pLight->vDir * (pObj->info.xSize / 4);
+		lightP = lightManager.Lights () + lightIds [nPlayer];
+		objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
+		lightP->info.vPos = OBJPOS (objP)->vPos;
+		lightP->vDir = OBJPOS (objP)->mOrient.m.dir.f;
+		lightP->info.vPos += lightP->vDir * (objP->info.xSize / 4);
 		}
 	}
 }
@@ -298,7 +298,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"varying vec3 vertPos, normal;\r\n" \
 	"void main (void) {\r\n" \
 	"float spotBrightness = 0.0;\r\n" \
-	"int32_t i;\r\n" \
+	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
@@ -323,7 +323,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"float spotBrightness = 0.0, normLen = length (normal);\r\n" \
-	"int32_t i;\r\n" \
+	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
@@ -351,7 +351,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"float spotBrightness = 0.0;\r\n" \
-	"int32_t i;\r\n" \
+	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
@@ -383,7 +383,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"   vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"   texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	 float spotBrightness = 0.0;\r\n" \
-	"	 int32_t i;\r\n" \
+	"	 int i;\r\n" \
 	"	 for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	    vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	    float lightDist = length (lightVec);\r\n" \
@@ -499,7 +499,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"varying vec3 vertPos, normal;\r\n" \
 	"void main (void) {\r\n" \
 	"float spotBrightness = 0.0;\r\n" \
-	"int32_t i;\r\n" \
+	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
@@ -524,7 +524,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"float spotBrightness = 0.0, normLen = length (normal);\r\n" \
-	"int32_t i;\r\n" \
+	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
@@ -551,7 +551,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"float spotBrightness = 0.0;\r\n" \
-	"int32_t i;\r\n" \
+	"int i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
@@ -582,7 +582,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"   vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"   texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	 float spotBrightness = 0.0;\r\n" \
-	"	 int32_t i;\r\n" \
+	"	 int i;\r\n" \
 	"	 for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	    vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	    float lightDist = length (lightVec);\r\n" \
@@ -759,14 +759,14 @@ const char *headlightVS [2][HEADLIGHT_SHADER_COUNT] = {
 
 //-------------------------------------------------------------------------
 
-int32_t headlightShaderProgs [2][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1}};
+int headlightShaderProgs [2][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1}};
 
 //-------------------------------------------------------------------------
 
 void DeleteHeadlightShader (void)
 {
-for (int32_t i = 0; i < 2; i++) {
-	for (int32_t j = 0; j < HEADLIGHT_SHADER_COUNT / 2; j++) {
+for (int i = 0; i < 2; i++) {
+	for (int j = 0; j < HEADLIGHT_SHADER_COUNT / 2; j++) {
 		if (headlightShaderProgs [i][j] > 0) {
 			shaderManager.Delete (headlightShaderProgs [i][j]);
 			headlightShaderProgs [i][j] = -1;
@@ -777,9 +777,9 @@ for (int32_t i = 0; i < 2; i++) {
 
 //-------------------------------------------------------------------------
 
-void InitHeadlightShaders (int32_t nLights)
+void InitHeadlightShaders (int nLights)
 {
-	int32_t	h, i, j, bOk;
+	int	h, i, j, bOk;
 	char	*pszFS;
 
 if (nLights < 0) {
@@ -818,9 +818,9 @@ ogl.m_data.nHeadlights = nLights;
 
 //------------------------------------------------------------------------------
 
-int32_t CHeadlightManager::SetupShader (int32_t nType, int32_t bLightmaps, CFloatVector *pColor)
+int CHeadlightManager::SetupShader (int nType, int bLightmaps, CFloatVector *colorP)
 {
-	int32_t			h, i, bTransform;
+	int			h, i, bTransform;
 	CFloatVector	color;
 
 //headlights
@@ -840,7 +840,7 @@ if (nType) {
 			glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 2 + bLightmaps);
 		}
 	}
-//glUniform1f (glGetUniformLocation (shaderProg, "aspect"), (float) gameData.renderData.screen.Width () / (float) gameData.renderData.screen.Height ());
+//glUniform1f (glGetUniformLocation (shaderProg, "aspect"), (float) screen.Width () / (float) screen.Height ());
 //glUniform1f (glGetUniformLocation (shaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
 if ((bTransform = !ogl.m_states.nTransformCalls))
 	ogl.SetupTransform (1);
@@ -854,12 +854,12 @@ for (h = i = 0; i < MAX_PLAYERS; i++) {
 	}
 if (bTransform)
 	ogl.ResetTransform (1);
-if (pColor) {
-	float fScale = pColor->Alpha () * 1.05f;
-	color.Red () = pColor->Red () * fScale;
-	color.Green () = pColor->Green () * fScale;
-	color.Blue () = pColor->Blue () * fScale;
-	color.Alpha () = pColor->Alpha ();
+if (colorP) {
+	float fScale = colorP->Alpha () * 1.05f;
+	color.Red () = colorP->Red () * fScale;
+	color.Green () = colorP->Green () * fScale;
+	color.Blue () = colorP->Blue () * fScale;
+	color.Alpha () = colorP->Alpha ();
 	}
 else {
 	color.Red () = color.Green () = color.Blue () = 2.0f;
@@ -872,58 +872,58 @@ return headlightShaderProgs [bLightmaps][nType];
 
 //-----------------------------------------------------------------------------
 
-int32_t PlayerHasHeadlight (int32_t nPlayer)
+int PlayerHasHeadlight (int nPlayer)
 {
 return EGI_FLAG (headlight.bAvailable, 0, 0, 0) && 
 		 ((extraGameInfo [IsMultiGame].loadout.nDevice & PLAYER_FLAGS_HEADLIGHT) ||
-		 ((PLAYER ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer).flags & PLAYER_FLAGS_HEADLIGHT) != 0));
+		 ((gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT) != 0));
 }
 
 //-----------------------------------------------------------------------------
 
-int32_t HeadlightIsOn (int32_t nPlayer)
+int HeadlightIsOn (int nPlayer)
 {
 #if DBG
 if (!PlayerHasHeadlight (nPlayer))
 	return 0;
-if (!(PLAYER ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer).flags & PLAYER_FLAGS_HEADLIGHT_ON))
+if (!(gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON))
 	return 0;
 return 1;
 #else
-return PlayerHasHeadlight (nPlayer) && ((PLAYER ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer).flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0);
+return PlayerHasHeadlight (nPlayer) && ((gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0);
 #endif
 }
 
 //-----------------------------------------------------------------------------
 
-void SetPlayerHeadlight (int32_t nPlayer, int32_t bOn)
+void SetPlayerHeadlight (int nPlayer, int bOn)
 {
 if (bOn)
-	PLAYER ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer).flags |= PLAYER_FLAGS_HEADLIGHT_ON;
+	gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer].flags |= PLAYER_FLAGS_HEADLIGHT_ON;
 else
-	PLAYER ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer).flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+	gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_HEADLIGHT));
 }
 
 //-----------------------------------------------------------------------------
 
-void DrainHeadLightPower (void)
+void DrainHeadlightPower (void)
 {
-	static int32_t bTurnedOff = 0;
+	static int bTurnedOff = 0;
 
 if (!EGI_FLAG (headlight.bDrainPower, 0, 0, 1))
 	return;
 if (!HeadlightIsOn (-1))
 	return;
 
-LOCALPLAYER.UpdateEnergy (-gameData.timeData.xFrame * 3 / 8);
+LOCALPLAYER.UpdateEnergy (-gameData.time.xFrame * 3 / 8);
 if (LOCALPLAYER.Energy () < I2X (10)) {
 	if (!bTurnedOff) {
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 		audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_HEADLIGHT));
 		bTurnedOff = 1;
 		if (IsMultiGame)
-			MultiSendFlags (N_LOCALPLAYER);
+			MultiSendFlags ((char) N_LOCALPLAYER);
 		}
 	}
 else
@@ -931,7 +931,7 @@ else
 if (LOCALPLAYER.Energy () <= 0) {
 	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 	if (IsMultiGame)
-		MultiSendFlags (N_LOCALPLAYER);
+		MultiSendFlags ((char) N_LOCALPLAYER);
 	}
 }
 

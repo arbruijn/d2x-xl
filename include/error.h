@@ -26,38 +26,34 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define __format
 #endif
 
-int32_t _CDECL_ error_init(void (*func)(const char *), const char *fmt,...);    //init error system, set default message, returns 0=ok
+int _CDECL_ error_init(void (*func)(const char *), const char *fmt,...);    //init error system, set default message, returns 0=ok
 void _CDECL_ set_exit_message(const char *fmt,...);	//specify message to print at exit
 void _CDECL_ Warning(const char *fmt,...);				//print out warning message to user
 void SetWarnFunc(void (*f)(const char *s));//specifies the function to call with warning messages
 void ClearWarnFunc(void (*f)(const char *s));//say this function no longer valid
-void _Assert(int32_t expr, const char *expr_text, const char *filename, int32_t linenum);
+void _Assert(int expr, const char *expr_text, const char *filename, int linenum);
 #if DBG
 void _CDECL_ Error(const char *fmt,...);				//exit with error code=1, print message
 #else
 void _CDECL_ Error(const char *fmt,...) __noreturn __format;				//exit with error code=1, print message
 #endif
-void Assert(int32_t expr);
+void Assert(int expr);
 void OpenLogFile (void);
-void _CDECL_ PrintLog (const int32_t nIndent, const char *fmt = NULL, ...);
-void TraceCallStack (const int32_t nDirection, const int32_t nLevel, const char *pszFunction, const int32_t nThread, const char *pszFile, const int32_t nLine);
-void PrintCallStack (void);
+void _CDECL_ PrintLog (const int nIndent, const char *fmt = NULL, ...);
 void Int3();
 
 #if 1//DBG
 
-extern int16_t nDbgSeg, nDbgSide, nDbgFace, nDbgObj, nDbgObjType, nDbgObjId, nDbgModel, nDbgSound, nDbgChannel;
-extern int32_t nDbgVertex, nDbgBaseTex, nDbgOvlTex, nDbgTexture, nDbgLight;
+extern short nDbgSeg, nDbgSide, nDbgFace, nDbgObj, nDbgObjType, nDbgObjId, nDbgModel, nDbgSound, nDbgChannel;
+extern int nDbgVertex, nDbgBaseTex, nDbgOvlTex, nDbgTexture, nDbgLight;
 
 #endif
 
-#define TrapSeg (int16_t nSegment)
-#define TrapSegSide (int16_t nSegment, int16_t nSide)
-#define TrapVert (int32_t nVertex)
-#define TrapTex (int32_t nBaseTex, int32_t nOvlTex)
-#define TrapBmp (CBitmap *pBm, char *pszName)
-
-//	-----------------------------------------------------------------------------------------------------------
+#define TrapSeg (short nSegment)
+#define TrapSegSide (short nSegment, short nSide)
+#define TrapVert (int nVertex)
+#define TrapTex (int nBaseTex, int nOvlTex)
+#define TrapBmp (CBitmap *bmP, char *pszName)
 
 #if DBG		//macros for debugging
 
@@ -73,36 +69,14 @@ extern int32_t nDbgVertex, nDbgBaseTex, nDbgOvlTex, nDbgTexture, nDbgLight;
 
 extern FILE *fLog;
 
-void Breakpoint (void);
-
-#if DBG
-#	define BRP	Breakpoint ()
-#else
-#	define BRP
-#endif
-
-//	-----------------------------------------------------------------------------------------------------------
-
-#if !DBG
-
 #ifdef _WIN32
-#	define	__FUNC__	__FUNCSIG__
+#	if DBG
+#		define	CBP(_cond)	if (_cond) _asm int 3;
+#	else
+#		define	CBP(_cond)
+#	endif
 #else
-#	define	__FUNC__	__PRETTY_FUNCTION__
+#	define	CBP(_cond)
 #endif
-
-#	define ENTER(_nLevel,_thread)		const int32_t __THREAD__ = (_thread); const int32_t __LEVEL__ = (_nLevel); if (__LEVEL__ < gameStates.app.nTraceLevel) TraceCallStack (1, __LEVEL__, __FUNC__, __THREAD__, __FILE__, __LINE__)
-#	define RETURN							{ if (__LEVEL__ < gameStates.app.nTraceLevel) TraceCallStack (-1, __LEVEL__, __FUNC__, __THREAD__, __FILE__, __LINE__); return; }
-#	define RETVAL(_retVal)				{ if (__LEVEL__ < gameStates.app.nTraceLevel) TraceCallStack (-1, __LEVEL__, __FUNC__, __THREAD__, __FILE__, __LINE__); return (_retVal); }
-
-#else
-
-#	define ENTER(_nLevel,_thread)				
-#	define RETURN							return;	
-#	define RETVAL(_retVal)				return (_retVal);
-
-#endif
-
-//	-----------------------------------------------------------------------------------------------------------
 
 #endif /* _ERROR_H */

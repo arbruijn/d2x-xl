@@ -31,37 +31,41 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TMI_PRODUCER     64  //this is used to remap the goals
 
 typedef struct {
-	uint8_t		flags;     //values defined above
-	uint8_t		pad[3];    //keep alignment
-	fix			lighting;  //how much light this casts
-	fix			damage;    //how much damage being against this does (for lava)
-	int16_t		nEffectClip; //the tEffectInfo that changes this, or -1
-	int16_t		destroyed; //bitmap to show when destroyed, or -1
-	int16_t		slide_u,slide_v;    //slide rates of texture, stored in 8:8 fix
+	ubyte   flags;     //values defined above
+	ubyte   pad[3];    //keep alignment
+	fix     lighting;  //how much light this casts
+	fix     damage;    //how much damage being against this does (for lava)
+	short   nEffectClip; //the tEffectClip that changes this, or -1
+	short   destroyed; //bitmap to show when destroyed, or -1
+	short   slide_u,slide_v;    //slide rates of texture, stored in 8:8 fix
+	#ifdef EDITOR
+	char    filename[13];       //used by editor to remap textures
+	char    pad2[3];
+	#endif
 } __pack__ tTexMapInfo;
 
 typedef struct {
 	char			filename[13];
-	uint8_t		flags;
+	ubyte			flags;
 	fix			lighting;		// 0 to 1
 	fix			damage;			//how much damage being against this does
-	int32_t		nEffectClip;		//if not -1, the tEffectInfo that changes this   
-} __pack__ tTexMapInfoD1;
+	int			nEffectClip;		//if not -1, the tEffectClip that changes this   
+} D1_tmap_info;
 
-extern int32_t Num_tmaps;
+extern int Num_tmaps;
 #ifdef EDITOR
-extern int32_t TmapList[MAX_TEXTURES];
+extern int TmapList[MAX_TEXTURES];
 #endif
 
 //for each model, a model number for dying & dead variants, or -1 if none
-extern int32_t Dying_modelnums[];
-extern int32_t Dead_modelnums[];
+extern int Dying_modelnums[];
+extern int Dead_modelnums[];
 
 //the model number of the marker CObject
-extern int32_t Marker_model_num;
+extern int Marker_model_num;
 
 // Initializes the palette, bitmap system...
-int32_t BMInit();
+int BMInit();
 void BMClose();
 
 // Initializes the Texture[] array of bmd_bitmap structures.
@@ -82,23 +86,21 @@ void InitTextures();
 #define D1_MAX_OBJ_BITMAPS  210
 
 // Initializes all bitmaps from BITMAPS.TBL file.
-int32_t bm_init_use_tbl(void);
+int bm_init_use_tbl(void);
 
 void BMReadAll (CFile& cf, bool bDefault = true);
 void BMReadWeaponInfoD1 (CFile& cf);
 void BMReadGameDataD1 (CFile&  cf);
 void RestoreDefaultModels (void);
-int32_t ComputeAvgPixel (CBitmap *pBm);
+int ComputeAvgPixel (CBitmap *bmP);
 
-void LoadTextureBrightness (const char *pszLevel, int32_t *brightnessP);
-int32_t LoadExitModels (void);
-int32_t LoadRobotExtensions (const char *fname, char *folder, int32_t nType);
+void LoadTextureBrightness (const char *pszLevel, int *brightnessP);
+int LoadExitModels (void);
+int LoadRobotExtensions (const char *fname, char *folder, int nType);
 void FreeModelExtensions (void);
-int32_t LoadRobotReplacements (const char *pszLevel, const char* pszFolder, int32_t bAddBots, int32_t bOnlyModels, bool bCustom = false, bool bUseHog = true);
-int32_t ReadHamFile (int32_t nVersion = 0); // nVersion = 0: default, 1: from mission, 2: from mod
-int32_t LoadD2Sounds (bool bCustom = false);
-bool LoadD1Sounds (bool bCustom);
-void UnloadSounds (int32_t bD1);
+int LoadRobotReplacements (const char *pszLevel, const char* pszFolder, int bAddBots, int bOnlyModels, bool bCustom = false, bool bUseHog = true);
+int ReadHamFile (bool bDefault = true);
+int LoadD2Sounds (bool bCustom = false);
 void _CDECL_ FreeObjExtensionBitmaps (void);
 
 void InitDefaultShipProps (void);

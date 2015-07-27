@@ -34,7 +34,7 @@ void DoPhysicsSim(CObject *obj);
 // returns fate, fills in hit time.  If fate==HIT_NONE, hitTime undefined
 // Stuff hit_info with fvi data as set by FindHitpoint.
 // for fviFlags, refer to fvi[HA] for the fvi query flags
-int32_t physics_lookahead(CObject *obj, fix t, int32_t fviFlags, fix *hitTime, CHitResult *hit_info);
+int physics_lookahead(CObject *obj, fix t, int fviFlags, fix *hitTime, CHitResult *hit_info);
 
 // this routine will set the thrust for an CObject to a value that will
 // (hopefully) maintain the CObject's current velocity

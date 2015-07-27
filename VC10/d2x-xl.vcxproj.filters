@@ -8,6 +8,9 @@
     <Filter Include="Source Files\3d">
       <UniqueIdentifier>{0c653aea-4fe4-4bc8-9f9b-97976388b0ef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\3d\Header Files">
+      <UniqueIdentifier>{4a9fae9a-af15-4803-ace5-f387784aefc0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\3d\Source Files">
       <UniqueIdentifier>{064bb3a9-8920-48ff-8308-d79a7484a03b}</UniqueIdentifier>
     </Filter>
@@ -29,6 +32,15 @@
     </Filter>
     <Filter Include="Source Files\main\Source Files">
       <UniqueIdentifier>{827c310e-b053-4cb9-a82c-3e48ac180819}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ai">
+      <UniqueIdentifier>{3a878324-145e-438f-914b-ef3c30c01608}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ai\Source Files">
+      <UniqueIdentifier>{eb8ec6d9-8ace-4e52-a3e4-5add2e21f196}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ai\Header Files">
+      <UniqueIdentifier>{18c2da63-f456-48e0-b3c4-a9c2b4d5362e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\network">
       <UniqueIdentifier>{20ecb3b5-1da7-4428-b7ab-3bf1840aa145}</UniqueIdentifier>
@@ -93,6 +105,15 @@
     <Filter Include="Source Files\gamemodes\Header Files">
       <UniqueIdentifier>{c90bfd4b-7d4b-4c21-9d8e-c2058b83c18a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\audio">
+      <UniqueIdentifier>{f9a1d089-ed52-4542-9859-6268069b9822}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\Source Files">
+      <UniqueIdentifier>{76d1491c-3523-4180-9549-76f9cc773a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\Header Files">
+      <UniqueIdentifier>{161c4733-62e7-43a6-a3a8-e8a152db870c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\weapons">
       <UniqueIdentifier>{e51a9baf-f123-4dbd-ac0b-ebc30c060353}</UniqueIdentifier>
     </Filter>
@@ -101,6 +122,15 @@
     </Filter>
     <Filter Include="Source Files\weapons\Header Files">
       <UniqueIdentifier>{92bb4f23-b084-438f-813c-4eb1a5e1914b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\input">
+      <UniqueIdentifier>{dc29749a-7e4c-4701-8cae-4f49dc9af809}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\input\Source Files">
+      <UniqueIdentifier>{37992a09-03a9-452c-80ab-5895e80b754f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\input\Header Files">
+      <UniqueIdentifier>{09df1528-ab19-4589-8966-9a8556ae217c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\ogl">
       <UniqueIdentifier>{071e0a77-18d7-4980-a033-2bedb42fc1e7}</UniqueIdentifier>
@@ -129,6 +159,15 @@
     <Filter Include="Source Files\objects\Source Files">
       <UniqueIdentifier>{2e15aeda-596d-425a-b22d-1e2b4b9b3724}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\cockpit">
+      <UniqueIdentifier>{811d8e26-0222-4f1d-9e23-723ddc738f0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cockpit\Source Files">
+      <UniqueIdentifier>{9f503d93-30bc-4d0d-a718-faa64a937556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cockpit\Header Files">
+      <UniqueIdentifier>{36480db8-b6f1-449d-957e-564c121366db}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\physics">
       <UniqueIdentifier>{77519140-e518-4559-b0b7-74b323194c2e}</UniqueIdentifier>
     </Filter>
@@ -156,6 +195,15 @@
     <Filter Include="Source Files\menus\Source Files">
       <UniqueIdentifier>{a1e7e80d-7ee8-4f46-9e58-8cf356a7ad4c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\io">
+      <UniqueIdentifier>{de91d29e-4a27-426d-8237-61f6694c8288}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\io\Source Files">
+      <UniqueIdentifier>{53e00ab4-bcd7-4beb-80f7-95616ccc3283}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\io\Header Files">
+      <UniqueIdentifier>{a4618a0d-052a-4734-8ea0-f2d959f127ee}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\libmve">
       <UniqueIdentifier>{c7b5a5e5-a04e-4f66-ae7d-ac73544685c8}</UniqueIdentifier>
     </Filter>
@@ -175,67 +223,36 @@
     <Filter Include="Documents">
       <UniqueIdentifier>{af366f51-f7c7-472a-9ce2-f20649b8a05b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{4a9fae9a-af15-4803-ace5-f387784aefc0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\3d\Header Files">
-      <UniqueIdentifier>{f3582809-c77b-4c42-a49c-b5b73a21cc76}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\io">
-      <UniqueIdentifier>{de91d29e-4a27-426d-8237-61f6694c8288}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\io\Source Files">
-      <UniqueIdentifier>{53e00ab4-bcd7-4beb-80f7-95616ccc3283}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\io\Header Files">
-      <UniqueIdentifier>{a4618a0d-052a-4734-8ea0-f2d959f127ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\input">
-      <UniqueIdentifier>{dc29749a-7e4c-4701-8cae-4f49dc9af809}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\input\Source Files">
-      <UniqueIdentifier>{37992a09-03a9-452c-80ab-5895e80b754f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\input\Header Files">
-      <UniqueIdentifier>{09df1528-ab19-4589-8966-9a8556ae217c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\audio">
-      <UniqueIdentifier>{f9a1d089-ed52-4542-9859-6268069b9822}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\audio\Source Files">
-      <UniqueIdentifier>{76d1491c-3523-4180-9549-76f9cc773a30}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\audio\Header Files">
-      <UniqueIdentifier>{161c4733-62e7-43a6-a3a8-e8a152db870c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\cockpit">
-      <UniqueIdentifier>{811d8e26-0222-4f1d-9e23-723ddc738f0d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\cockpit\Source Files">
-      <UniqueIdentifier>{9f503d93-30bc-4d0d-a718-faa64a937556}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\cockpit\Header Files">
-      <UniqueIdentifier>{36480db8-b6f1-449d-957e-564c121366db}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ai">
-      <UniqueIdentifier>{3a878324-145e-438f-914b-ef3c30c01608}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ai\Source Files">
-      <UniqueIdentifier>{eb8ec6d9-8ace-4e52-a3e4-5add2e21f196}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ai\Header Files">
-      <UniqueIdentifier>{18c2da63-f456-48e0-b3c4-a9c2b4d5362e}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="..\d2x-xl.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\3d.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3d\buildmodel.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\3d\globvars.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hitbox.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\interp.h">
+      <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\rendermodel.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\shadows.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\transformation.h">
+      <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\console.h">
       <Filter>Source Files\misc\Header Files</Filter>
@@ -295,6 +312,9 @@
       <Filter>Source Files\main\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\flightpath.h">
+      <Filter>Source Files\main\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\fuelcen.h">
       <Filter>Source Files\main\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\game.h">
@@ -798,122 +818,95 @@
     <ClInclude Include="..\libmve\mvelib.h">
       <Filter>Source Files\libmve\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\byteswap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\carray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cdatapool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\checker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\compbit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cstack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\desc_id.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\desw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\gamestat.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\hash.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\ibitblt.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\libmve.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\makesig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\modex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\nocfile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\ogl_hudstuff.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\pa_enabl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\pstypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\reorder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\screens.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\segpoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\texmap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\textures.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\timeout.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\u_dpmi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\ui.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\vers_id.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\vesa.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\producers.h">
-      <Filter>Source Files\main\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\wglext.h">
-      <Filter>Source Files\ogl\Header Files</Filter>
+      <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\3d.h">
+    <ClInclude Include="..\include\byteswap.h">
       <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\3d\buildmodel.h">
+    <ClInclude Include="..\include\carray.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cdatapool.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\checker.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\compbit.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cstack.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\desc_id.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\desw.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gamestat.h">
       <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\globvars.h">
       <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\transformation.h">
+    <ClInclude Include="..\include\hash.h">
       <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\shadows.h">
+    <ClInclude Include="..\include\ibitblt.h">
       <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\interp.h">
+    <ClInclude Include="..\include\libmve.h">
       <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\rectangle.h">
-      <Filter>Source Files\main\Header Files</Filter>
+    <ClInclude Include="..\include\makesig.h">
+      <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\input\include\sixense_wrapper.h">
-      <Filter>Source Files\input\Header Files</Filter>
+    <ClInclude Include="..\include\modex.h">
+      <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\network_thread.h">
-      <Filter>Source Files\network\Header Files</Filter>
+    <ClInclude Include="..\include\nocfile.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ogl_hudstuff.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\pa_enabl.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\pstypes.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\reorder.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\screens.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\segpoint.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\texmap.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\textures.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\timeout.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\u_dpmi.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ui.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vers_id.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vesa.h">
+      <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1020,6 +1013,9 @@
       <Filter>Source Files\main\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\main\flightpath.cpp">
+      <Filter>Source Files\main\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\main\fuelcen.cpp">
       <Filter>Source Files\main\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\main\game.cpp">
@@ -1826,6 +1822,9 @@
     <ClCompile Include="..\io\cfile.cpp">
       <Filter>Source Files\io\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\io\d_io.cpp">
+      <Filter>Source Files\io\Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\io\win32\findfile.cpp">
       <Filter>Source Files\io\Source Files</Filter>
     </ClCompile>
@@ -1847,77 +1846,16 @@
     <ClCompile Include="..\libmve\mveplay.cpp">
       <Filter>Source Files\libmve\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\main\producers.cpp">
-      <Filter>Source Files\main\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\cockpit\crosshairs.cpp">
-      <Filter>Source Files\cockpit\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\cockpit\utilities.cpp">
-      <Filter>Source Files\cockpit\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\cockpit\genericdrawers.cpp">
-      <Filter>Source Files\cockpit\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\input\sixense_wrapper.cpp">
-      <Filter>Source Files\input\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\network\network_thread.cpp">
-      <Filter>Source Files\network\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\network\network_handshake.cpp">
-      <Filter>Source Files\network\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ogl\ogl_cartoonize.cpp">
-      <Filter>Source Files\ogl\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\gameio\facegrid.cpp">
-      <Filter>Source Files\gameio\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\main\meshedge.cpp">
-      <Filter>Source Files\main\Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\d2x-xl.ico">
+      <Filter>Resource Files</Filter>
+    </None>
     <None Include="..\..\..\Websites\Descent\d2x-faq.html">
       <Filter>Documents</Filter>
     </None>
-    <None Include="..\resources\d2x-w32.ico">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\resources\d2x-xl.ico">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\resources\d2x-xl-2.ico">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\resources\d2x-xl-banner.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\resources\d2x-xl-banner.jpg">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\resources\d2x-xl-ico-32x32.gif">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\resources\d2x-xl-ico-64x64.gif">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\resources\d2x-xl-icon-64x64.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\resources\d2x-xl-icon-64x64.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\resources\d2x-xl-icon-64x64x4.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\resources\descent.ico">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\resources\icon5.ico">
-      <Filter>Resource Files</Filter>
-    </None>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="..\d2x-xl-icon-64x64.png" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="..\main\dialheap.h">
@@ -1942,6 +1880,9 @@
       <Filter>Documents</Filter>
     </CustomBuildStep>
     <CustomBuildStep Include="..\..\..\Websites\Descent\d2x.html">
+      <Filter>Documents</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="..\..\..\..\programs\d2\config\d2x.ini">
       <Filter>Documents</Filter>
     </CustomBuildStep>
     <CustomBuildStep Include="..\..\..\..\programs\d2\config\d2xdebug.ini">
@@ -1974,13 +1915,5 @@
     <CustomBuildStep Include="..\..\..\Websites\Descent\scripts\worklog-data.js">
       <Filter>Documents</Filter>
     </CustomBuildStep>
-    <CustomBuildStep Include="..\..\..\..\programs\d2\config\d2x.ini">
-      <Filter>Documents</Filter>
-    </CustomBuildStep>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\resources\d2x-xl.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
   </ItemGroup>
 </Project>

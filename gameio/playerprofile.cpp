@@ -72,8 +72,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 CPlayerProfile profile;
 CDisplayModeInfo customDisplayMode;
 
-void DefaultAllSettings (bool bSetup);
-int32_t FindDisplayMode (int16_t w, int16_t h);
+void DefaultAllSettings (void);
+int FindDisplayMode (short w, short h);
 
 //------------------------------------------------------------------------------
 
@@ -85,14 +85,14 @@ int32_t FindDisplayMode (int16_t w, int16_t h);
 # define strerror(x) "Unknown Error"
 #endif
 
-int32_t GetLifetimeChecksum (int32_t a,int32_t b);
+int GetLifetimeChecksum (int a,int b);
 
 typedef struct hli {
 	char	shortname [9];
-	uint8_t	nLevel;
+	ubyte	nLevel;
 } hli;
 
-int16_t nHighestLevels;
+short nHighestLevels;
 
 hli highestLevels [MAX_MISSIONS];
 
@@ -127,24 +127,24 @@ void InitWeaponOrdering();
 
 //------------------------------------------------------------------------------
 
-int32_t CParam::Set (const char *pszIdent, const char *pszValue)
+int CParam::Set (const char *pszIdent, const char *pszValue)
 {
-int32_t nVal = atoi (pszValue);
+int nVal = atoi (pszValue);
 switch (nSize) {
 	case 1:
 		if (!(::isdigit (*pszValue) || issign (*pszValue)) || (nVal < SCHAR_MIN) || (nVal > SCHAR_MAX))
 			return 0;
-		*reinterpret_cast<int8_t*> (valP) = (int8_t) nVal;
+		*reinterpret_cast<sbyte*> (valP) = (sbyte) nVal;
 		break;
 	case 2:
 		if (!(::isdigit (*pszValue) || issign (*pszValue))  || (nVal < SHRT_MIN) || (nVal > SHRT_MAX))
 			return 0;
-		*reinterpret_cast<int16_t*> (valP) = (int16_t) nVal;
+		*reinterpret_cast<short*> (valP) = (short) nVal;
 		break;
 	case 4:
 		if (!(::isdigit (*pszValue) || issign (*pszValue)))
 			return 0;
-		*reinterpret_cast<int32_t*> (valP) = (int32_t) nVal;
+		*reinterpret_cast<int*> (valP) = (int) nVal;
 		break;
 	default:
 		strncpy (reinterpret_cast<char*> (valP), pszValue, nSize);
@@ -155,26 +155,26 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CParam::Save (CFile& cf)
+int CParam::Save (CFile& cf)
 {
 	char	szVal [200];
 
 switch (nSize) {
 	case 1:
-		sprintf (szVal, "=%d\n", *reinterpret_cast<int8_t*> (valP));
+		sprintf (szVal, "=%d\n", *reinterpret_cast<sbyte*> (valP));
 		break;
 	case 2:
-		sprintf (szVal, "=%d\n", *reinterpret_cast<int16_t*> (valP));
+		sprintf (szVal, "=%d\n", *reinterpret_cast<short*> (valP));
 		break;
 	case 4:
-		sprintf (szVal, "=%d\n", *reinterpret_cast<int32_t*> (valP));
+		sprintf (szVal, "=%d\n", *reinterpret_cast<int*> (valP));
 		break;
 	default:
 		sprintf (szVal, "=%s\n", valP);
 		break;
 	}
-cf.Write (szTag, 1, (int32_t) strlen (szTag));
-cf.Write (szVal, 1, (int32_t) strlen (szVal));
+cf.Write (szTag, 1, (int) strlen (szTag));
+cf.Write (szVal, 1, (int) strlen (szVal));
 fflush (cf.File ());
 return 1;
 }
@@ -206,18 +206,18 @@ while (paramList) {
 
 //------------------------------------------------------------------------------
 
-char* CPlayerProfile::MakeTag (char *pszTag, const char *pszIdent, int32_t i, int32_t j)
+char* CPlayerProfile::MakeTag (char *pszTag, const char *pszIdent, int i, int j)
 {
 	char	*pi;
 	const char *ph;
-	int32_t	h = 0, l;
+	int	h = 0, l;
 
 for (pi = pszTag; *pszIdent; h++) {
 	if (!((ph = strstr (pszIdent, " [")) || (ph = strchr (pszIdent, '[')))) {
 		strcpy (pi, pszIdent);
 		break;
 		}
-	memcpy (pi, pszIdent, l = (int32_t) (ph - pszIdent));
+	memcpy (pi, pszIdent, l = (int) (ph - pszIdent));
 	sprintf (pi + l, "[%d]", h ? j : i);
 	pi = pszTag + strlen (pszTag);
 	strcat (pszTag, pszIdent = strchr (ph + 1, ']') + 1);
@@ -227,18 +227,15 @@ return pszTag;
 
 //------------------------------------------------------------------------------
 
-int32_t CPlayerProfile::Register (void *valP, const char *pszIdent, int32_t i, int32_t j, uint8_t nSize)
+int CPlayerProfile::Register (void *valP, const char *pszIdent, int i, int j, ubyte nSize)
 {
 	char		szTag [200];
-	int32_t	l;
+	int		l;
 	CParam	*pp;
 
-l = (int32_t) strlen (MakeTag (szTag, pszIdent, i, j));
-pp = new CParam;
+l = (int) strlen (MakeTag (szTag, pszIdent, i, j));
+pp = reinterpret_cast<CParam*> (new ubyte [sizeof (CParam) + l]);
 if (!pp)
-	return 0;
-pp->szTag = new char [l + 1];
-if (!pp->szTag)
 	return 0;
 memcpy (pp->szTag, szTag, l + 1);
 pp->valP = reinterpret_cast<char*> (valP);
@@ -258,9 +255,9 @@ return 1;
 //------------------------------------------------------------------------------
 // returns number of config items with identical ids before the current one
 
-int32_t CPlayerProfile::FindInConfig (kcItem *cfgP, int32_t nItems, int32_t iItem, const char *pszText)
+int CPlayerProfile::FindInConfig (kcItem *cfgP, int nItems, int iItem, const char *pszText)
 {
-	int32_t	h, i;
+	int	h, i;
 
 for (h = i = 0; i < nItems; i++) {
 	if (!strcmp (pszText, cfgP [i].text)) {
@@ -275,10 +272,10 @@ return h ? h : -1;
 
 //------------------------------------------------------------------------------
 
-void CPlayerProfile::RegisterConfig (kcItem *cfgP, int32_t nItems, const char *pszId)
+void CPlayerProfile::RegisterConfig (kcItem *cfgP, int nItems, const char *pszId)
 {
 	char	szTag [200], *p;
-	int32_t	i, j = 0;
+	int	i, j = 0;
 
 strcpy (szTag, pszId);
 p = szTag + strlen (szTag);
@@ -304,7 +301,7 @@ for (i = 0; i < nItems; i++) {
 
 void CPlayerProfile::Create (void)
 {
-	uint32_t	i, j;
+	uint	i, j;
 
 if (bRegistered)
 	return;
@@ -314,8 +311,8 @@ for (i = 0; i < 2; i++) {
 	if (i) {	// i == 1: nostalgia/pure D2 mode
 		}
 	else {
-		RP (gameData.renderData.screen.m_w, 0, 0);
-		RP (gameData.renderData.screen.m_h, 0, 0);
+		RP (gameData.render.window.w, 0, 0);
+		RP (gameData.render.window.h, 0, 0);
 		RP (gameStates.app.iDownloadTimeout, 0, 0);
 		RP (gameStates.render.bShowFrameRate, 0, 0);
 		RP (gameStates.render.bShowTime, 0, 1);
@@ -323,10 +320,10 @@ for (i = 0; i < 2; i++) {
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (networkData.nNetLifeKills, 0, 0);
 		RP (networkData.nNetLifeKilled, 0, 0);
-		RP (gameData.appData.nLifetimeChecksum, 0, 0);
+		RP (gameData.app.nLifetimeChecksum, 0, 0);
 		for (j = 0; j < rtTaskCount; j++)
-			RP (gameData.appData.bUseMultiThreading [j], j, 0);
-		RP (gameData.escortData.szName, 0, 0);
+			RP (gameData.app.bUseMultiThreading [j], j, 0);
+		RP (gameData.escort.szName, 0, 0);
 		for (j = 0; j < 4; j++)
 			RP (gameData.multigame.msg.szMacro [j], j, 0);
 
@@ -338,7 +335,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameStates.multi.nConnection, 0, 0);
 		RP (tracker.m_bUse, 0, 0);
 
-		RP (gameData.menuData.alpha, 0, 0);
+		RP (gameData.menu.alpha, 0, 0);
 
 		RP (mpParams.nLevel, 0, 0);
 		RP (mpParams.nGameType, 0, 0);
@@ -356,7 +353,7 @@ for (i = 0; i < 2; i++) {
 		RP (mpParams.bBrightPlayers, 0, 0);
 		RP (mpParams.bShowAllNames, 0, 0);
 		RP (mpParams.bShortPackets, 0, 0);
-		RP (mpParams.nMinPPS, 0, 0);
+		RP (mpParams.nPPS, 0, 0);
 		RP (mpParams.udpPorts [0], 0, 0);
 		RP (mpParams.udpPorts [1], 1, 0);
 		RP (mpParams.szServerIpAddr, 0, 0);
@@ -376,7 +373,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bLightTrails, 0, 0);
 		RP (extraGameInfo [i].bMultiBosses, 0, 0);
 		RP (extraGameInfo [i].bPowerupsOnRadar, 0, 0);
-		//RP (extraGameInfo [i].nShieldEffect, 0, 0);
+		RP (extraGameInfo [i].bPlayerShield, 0, 0);
 		RP (extraGameInfo [i].bRobotsHitRobots, 0, 0);
 		RP (extraGameInfo [i].bRobotsOnRadar, 0, 0);
 		RP (extraGameInfo [i].bRotateLevels, 0, 0);
@@ -395,7 +392,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bGatlingSpeedUp, i, 0);
 		RP (extraGameInfo [i].nLightRange, 0, 0);
 		RP (extraGameInfo [i].nMaxSmokeGrenades, 0, 0);
-		RP (extraGameInfo [i].nWeaponTurnSpeed, 0, 0);
+		RP (extraGameInfo [i].nMslTurnSpeed, 0, 0);
 		RP (extraGameInfo [i].nMslStartSpeed, 0, 0);
 		RP (extraGameInfo [i].nRadar, 0, 0);
 		RP (extraGameInfo [i].nDrag, 0, 0);
@@ -405,7 +402,6 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bShowWeapons, 0, 0);
 		RP (extraGameInfo [i].bAllowCustomWeapons, 0, 0);
 		RP (extraGameInfo [i].nFusionRamp, 0, 0);
-		RP (extraGameInfo [i].bUnnerfD1Weapons, 0, 0);
 		RP (extraGameInfo [i].nSpeedScale, 0, 0);
 		for (j = 0; j < MAX_SHIP_TYPES; j++)
 			RP (extraGameInfo [i].shipsAllowed [j], i, j);
@@ -441,7 +437,6 @@ for (i = 0; i < 2; i++) {
 			RP (extraGameInfo [i].monsterball.forces [j].nWeaponId, 0, j);
 			RP (extraGameInfo [i].monsterball.forces [j].nForce, 0, j);
 			}
-
 		for (j = 0; j < 3; j++) {
 			RP (gameOptions [i].input.keyboard.bRamp [j], i, j);
 			RP (gameOptions [i].input.mouse.sensitivity [j], 0, j);
@@ -461,7 +456,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].input.mouse.nDeadzone, i, 0);
 		RP (gameOptions [i].input.joystick.bLinearSens, i, 0);
 		RP (gameOptions [i].input.joystick.bSyncAxis, i, 0);
-		RP (gameOptions [i].input.oculusRift.nDeadzone, i, 0);
 		RP (gameOptions [i].input.trackIR.nMode, i, 0);
 		RP (gameOptions [i].input.trackIR.nDeadzone, i, 0);
 		RP (gameOptions [i].input.keyboard.nType, i, 0);
@@ -470,19 +464,13 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.nLightingMethod, i, 0);
 
 		RP (gameOptions [i].render.nQuality, i, 0);
-		RP (gameOptions [i].render.bCartoonize, i, 0);
-		RP (gameOptions [i].render.bPowerupSpinType, i, 1);
 		RP (gameOptions [i].render.effects.bEnabled, i, 0);
 		RP (gameOptions [i].render.effects.bGlow, i, 0);
-		RP (gameOptions [i].render.effects.bFog, i, 0);
 		RP (gameOptions [i].render.effects.bSoftParticles, i, 0);
-		RP (gameOptions [i].render.effects.bWarpAppearance, i, 0);
-		RP (gameOptions [i].render.effects.nDebris, i, 0);
 		RP (gameOptions [i].render.effects.nShrapnels, i, 0);
-		RP (gameOptions [i].render.effects.bShields, i, 1);
 		RP (gameOptions [i].render.coronas.bUse, i, 0);
 		RP (gameOptions [i].render.coronas.nStyle, i, 0);
-		RP (gameOptions [i].render.effects.bEnergySparks, i, 1);
+		RP (gameOptions [i].render.effects.bEnergySparks, i, 0);
 		RP (gameOptions [i].render.effects.nShockwaves, i, 0);
 		RP (gameOptions [i].render.automap.bTextured, i, 0);
 		RP (gameOptions [i].render.automap.bBright, i, 0);
@@ -492,11 +480,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.cockpit.bMouseIndicator, i, 0);
 		RP (gameOptions [i].render.cockpit.bObjectTally, i, 0);
 		RP (gameOptions [i].render.cockpit.bPlayerStats, i, 0);
-		RP (gameOptions [i].render.cockpit.nShipStateLayout, i, 0);
-		RP (gameOptions [i].render.cockpit.bSeparators, i, 0);
-		RP (gameOptions [i].render.cockpit.nColorScheme, i, 0);
-		RP (gameOptions [i].render.cockpit.nCompactWidth, i, 0);
-		RP (gameOptions [i].render.cockpit.nCompactHeight, i, 0);
 		RP (gameOptions [i].render.cockpit.bTextGauges, i, 0);
 		RP (gameOptions [i].render.cockpit.nWindowPos, i, 0);
 		RP (gameOptions [i].render.cockpit.nWindowSize, i, 0);
@@ -519,20 +502,13 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.stereo.nGlasses, i, 0);
 		RP (gameOptions [i].render.stereo.nMethod, i, 0);
 		RP (gameOptions [i].render.stereo.nScreenDist, i, 0);
-		RP (gameOptions [i].render.stereo.xSeparation [0], i, 0);
-		RP (gameOptions [i].render.stereo.xSeparation [1], i, 1);
-#if DBG
-		RP (gameOptions [i].render.stereo.nRiftFOV, i, 0);
-#endif
+		RP (gameOptions [i].render.stereo.xSeparation, i, 0);
 		RP (gameOptions [i].render.stereo.bEnhance, i, 0);
 		RP (gameOptions [i].render.stereo.bColorGain, i, 0);
 		RP (gameOptions [i].render.stereo.bDeghost, i, 0);
 		RP (gameOptions [i].render.stereo.bBrighten, i, 0);
-		RP (gameOptions [i].render.stereo.bChromAbCorr, i, 0);
 		RP (gameOptions [i].render.cameras.bHires, i, 0);
 		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
-		RP (gameOptions [i].render.color.nAmbientLight, i, 0);
-		RP (gameOptions [i].render.color.nSpecularLight, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
 		RP (gameOptions [i].app.bEpilepticFriendly, i, 0);
 		RP (gameOptions [i].app.bColorblindFriendly, i, 0);
@@ -543,15 +519,12 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].app.bColorblindFriendly, i, 0);
 		RP (gameOptions [i].app.bNotebookFriendly, i, 0);
 		RP (gameOptions [i].sound.bFadeMusic, i, 1);
-		RP (gameOptions [i].sound.bShuffleMusic, i, 0);
 		RP (gameOptions [i].sound.bLinkVolumes, i, 1);
 		RP (gameOptions [i].sound.bGatling, i, 0);
-		RP (gameOptions [i].sound.bScrape, i, 0);
 		RP (gameOptions [i].sound.bMissiles, i, 0);
 		RP (gameOptions [i].sound.bShip, i, 0);
 		RP (gameOptions [i].gameplay.bInventory, i, 0);
 		RP (gameOptions [i].gameplay.bNoThief, i, 0);
-		RP (gameOptions [i].gameplay.bObserve, i, 0);
 		RP (gameOptions [i].gameplay.nShip [0], i, 0);
 		RP (gameOptions [i].gameplay.bShieldWarning, i, 0);
 		RP (gameOptions [i].gameplay.nAIAwareness, i, 0);
@@ -576,7 +549,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.particles.bMissiles, i, 0);
 		RP (gameOptions [i].render.particles.bPlayers, i, 0);
 		RP (gameOptions [i].render.particles.bRobots, i, 0);
-		RP (gameOptions [i].render.weaponIcons.nSort, i, 0);
 #if 0
 		RP (gameOpts->render.cockpit.bWideDisplays, 0, 1);
 		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
@@ -606,6 +578,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.coronas.nObjIntensity, i, 0);
 		RP (gameOptions [i].render.coronas.bAdditive, i, 0);
 		RP (gameOptions [i].render.coronas.bAdditiveObjs, i, 0);
+		RP (gameOptions [i].render.effects.bRobotShields, i, 0);
 		RP (gameOptions [i].render.effects.bOnlyShieldHits, 0, 0);
 		RP (gameOptions [i].render.effects.bTransparent, i, 0);
 		RP (gameOptions [i].render.lightning.bAuxViews, i, 0);
@@ -655,6 +628,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.weaponIcons.bShowAmmo, i, 0);
 		RP (gameOptions [i].render.weaponIcons.bSmall, i, 0);
 		RP (gameOptions [i].render.weaponIcons.bBoldHighlight, i, 0);
+		RP (gameOptions [i].render.weaponIcons.nSort, i, 0);
 		RP (gameOptions [i].render.weaponIcons.nHiliteColor, i, 0);
 		RP (gameOptions [i].app.nVersionFilter, i, 0);
 		RP (gameOptions [i].sound.xCustomSoundVolume, i, 0);
@@ -685,10 +659,6 @@ for (i = 0; i < 2; i++) {
 	RP (extraGameInfo [i].nCoopPenalty, i, 0);
 	RP (extraGameInfo [i].nHitboxes, i, 0);
 	RP (extraGameInfo [i].nDamageModel, i, 0);
-	RP (extraGameInfo [i].bRechargeEnergy, i, 0);
-	RP (extraGameInfo [i].nRechargeDelay, i, 0);
-	RP (extraGameInfo [i].nRechargeSpeed, i, 0);
-
 	RP (gameOptions [i].input.joystick.bUse, i, 0);
 	RP (gameOptions [i].input.mouse.bUse, i, 0);
 	RP (gameOptions [i].input.trackIR.bUse, i, 0);
@@ -716,6 +686,7 @@ for (i = 0; i < 2; i++) {
 	RP (gameOptions [i].menus.bShowLevelVersion, i, 0);
 	RP (gameOptions [i].menus.bSmartFileSearch, i, 0);
 	RP (gameOptions [i].multi.bUseMacros, i, 0);
+	RP (gameOptions [i].ogl.bSetGammaRamp, i, 0);
 	RP (gameOptions [i].render.cockpit.bWideDisplays, i, 0);
 #endif
 	}
@@ -726,39 +697,9 @@ RegisterConfig (kcSuperJoy, KcSuperJoySize (), "superjoy.");
 RegisterConfig (kcHotkeys, KcHotkeySize (), "hotkeys.");
 }
 
-typedef struct tParamHistory {
-	const char *pszNewTag, *pszOldTag;
-} tParamHistory;
-
-tParamHistory paramHistory [] = {
-	{"gameData.appData.nLifetimeChecksum", "gameData.app.nLifetimeChecksum"},
-	{"gameOptions [0].render.cockpit.nCompactWidth", "gameOptions [0].render.cockpit.nMinimalistWidth"},
-	{"gameOptions [0].render.cockpit.nCompactHeight", "gameOptions [0].render.cockpit.nMinimalistHeight"},
-	{NULL, NULL}
-};
-
-//------------------------------------------------------------------------------
-// Find the newest parameter name for some obsolete parameter name.
-
-const char *FindCurrentTag (const char *pszTag)
-{
-for (;;) {
-	bool bFound = false;
-	for (tParamHistory *pHistory = paramHistory; pHistory->pszNewTag; pHistory++) {
-		if (!strcmp (pszTag, pHistory->pszOldTag)) {
-			pszTag = pHistory->pszNewTag;
-			bFound = true;
-			break;
-			}
-		}
-	if (!bFound)
-		return pszTag;
-	}
-}
-
 //------------------------------------------------------------------------------
 
-int32_t CPlayerProfile::Save (void)
+int CPlayerProfile::Save (void)
 {
 if (Busy ())
 	return 1;
@@ -769,7 +710,7 @@ if (Busy ())
 gameStates.sound.audio.nMaxChannels = audio.MaxChannels ();
 gameStates.app.iDownloadTimeout = downloadManager.GetTimeoutIndex ();
 sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
-if (!m_cf.Open (fn, gameFolders.user.szProfiles, "wt", 0))
+if (!m_cf.Open (fn, gameFolders.szProfDir, "wt", 0))
 	return 0;
 for (pp = paramList; pp; pp = pp->next)
 	pp->Save (m_cf);
@@ -780,8 +721,9 @@ return !m_cf.Close ();
 
 CParam* CPlayerProfile::Find (const char *pszTag)
 {
-pszTag = FindCurrentTag (pszTag);
-for (CParam *pp = paramList; pp; pp = pp->next)
+	CParam	*pp;
+
+for (pp = paramList; pp; pp = pp->next)
 	if (!stricmp (pszTag, pp->szTag))
 		return pp;
 return NULL;
@@ -789,7 +731,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int32_t CPlayerProfile::Set (const char *pszIdent, const char *pszValue)
+int CPlayerProfile::Set (const char *pszIdent, const char *pszValue)
 {
 	CParam*	pp;
 
@@ -805,16 +747,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CPlayerProfile::LoadParam (void)
+int CPlayerProfile::LoadParam (void)
 {
 	char		szParam	[200], *pszValue;
 
 m_cf.GetS (szParam, sizeof (szParam));
 szParam [sizeof (szParam) - 1] = '\0';
-#if DBG
-if (strstr (szParam, "nLifetimeChecksum"))
-	BRP;
-#endif
 if ((pszValue = strchr (szParam, '\n')))
 	*pszValue = '\0';
 if (!(pszValue = strchr (szParam, '=')))
@@ -825,16 +763,16 @@ return Set (szParam, pszValue);
 
 //------------------------------------------------------------------------------
 
-int32_t CPlayerProfile::Load (bool bOnlyWindowSizes)
+int CPlayerProfile::Load (bool bOnlyWindowSizes)
 {
 if (Busy ())
 	return 1;
 
 	char	fn [FILENAME_LEN];
-	int32_t	nParams = 0;
+	int	nParams = 0;
 
 sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
-if (!m_cf.Open (fn, gameFolders.user.szProfiles, "rb", 0))
+if (!m_cf.Open (fn, gameFolders.szProfDir, "rb", 0))
 	return 0;
 while (!m_cf.EoF ()) {
 	LoadParam ();
@@ -845,7 +783,7 @@ while (!m_cf.EoF ()) {
 audio.SetMaxChannels (NMCLAMP (gameStates.sound.audio.nMaxChannels, MIN_SOUND_CHANNELS, MAX_SOUND_CHANNELS));
 cockpit->Activate (gameStates.render.cockpit.nType);	
 downloadManager.SetTimeoutIndex (gameStates.app.iDownloadTimeout);
-for (int32_t i = 0; i < 2; i++) {
+for (int i = 0; i < 2; i++) {
 	if (gameStates.render.cockpit.n3DView [i] < CV_NONE)
 		gameStates.render.cockpit.n3DView [i] = CV_NONE;
 	else if (gameStates.render.cockpit.n3DView [i] >= CV_FUNC_COUNT)
@@ -862,8 +800,8 @@ typedef struct tParamValue {
 	} tParamValue;
 
 tParamValue defaultParams [] = {
-	 {"gameData.renderData.screen.CBitmap::m_info.props.w", "640"},
-	 {"gameData.renderData.screen.CBitmap::m_info.props.h", "480"},
+	 {"gameData.render.window.w", "640"},
+	 {"gameData.render.window.h", "480"},
 	 {"gameStates.app.iDownloadTimeout", "5"},
 	 {"gameStates.render.cockpit.nType", "3"},
 	 {"gameStates.render.bShowFrameRate", "0"},
@@ -873,8 +811,8 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.cockpit.bGuidedInMainView", "1"},
 	 {"networkData.nNetLifeKills", "0"},
 	 {"networkData.nNetLifeKilled", "0"},
-	 {"gameData.appData.nLifetimeChecksum", "0"},
-	 {"gameData.escortData.szName", "GUIDE-BOT"},
+	 {"gameData.app.nLifetimeChecksum", "0"},
+	 {"gameData.escort.szName", "GUIDE-BOT"},
 	 {"gameData.multigame.msg.szMacro[0]", "Why can't we all just get along?"},
 	 {"gameData.multigame.msg.szMacro[1]", "Hey, I got a present for ya"},
 	 {"gameData.multigame.msg.szMacro[2]", "I got a hankerin' for a spankerin'"},
@@ -885,7 +823,7 @@ tParamValue defaultParams [] = {
 	 {"ogl.m_states.nContrast", "8"},
 	 {"gameStates.multi.nConnection", "1"},
 	 {"tracker.m_bUse", "0"},
-	 {"gameData.menuData.Alpha ()", "79"},
+	 {"gameData.menu.Alpha ()", "79"},
 	 {"mpParams.nLevel", "1"},
 	 {"mpParams.nGameType", "3"},
 	 {"mpParams.nGameMode", "3"},
@@ -902,7 +840,7 @@ tParamValue defaultParams [] = {
 	 {"mpParams.bBrightPlayers", "0"},
 	 {"mpParams.bShowAllNames", "0"},
 	 {"mpParams.bShortPackets", "0"},
-	 {"mpParams.nMinPPS", "20"},
+	 {"mpParams.nPPS", "10"},
 	 {"mpParams.udpPorts[0]", "28342"},
 	 {"mpParams.udpPorts[1]", "28342"},
 	 {"mpParams.szServerIpAddr", "127.0.0.1"},
@@ -936,9 +874,6 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].nWeaponDropMode", "1"},
 	 {"extraGameInfo[0].nWeaponIcons", "3"},
 	 {"extraGameInfo[0].nZoomMode", "1"},
-	 {"extraGameInfo[0].bRechargeEnergy", "0"},
-	 {"extraGameInfo[0].nRechargeDelay", "5"},
-	 {"extraGameInfo[0].nRechargeSpeed ", "1"},
 	 {"extraGameInfo[0].entropy.nCaptureVirusThreshold", "1"},
 	 {"extraGameInfo[0].entropy.nCaptureTimeThreshold", "1"},
 	 {"extraGameInfo[0].entropy.nMaxVirusCapacity", "0"},
@@ -1026,7 +961,6 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo [0].bAllowCustomWeapons", "1"},
 	 {"extraGameInfo [0].bBrightObjects", "0"},
 	 {"extraGameInfo[0].nFusionRamp", "2"},
-	 {"extraGameInfo[0].bUnnerfD1Weapons", "0"},
 	 {"extraGameInfo[0].nSpeedScale", "0"},
 	 {"extraGameInfo[0].shipsAllowed[0]", "1"},
 	 {"extraGameInfo[0].shipsAllowed[1]", "1"},
@@ -1044,25 +978,24 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.particles.bStatic", "1"},
 	 {"gameOptions[0].input.joystick.deadzones[0]", "1"},
 	 {"gameOptions[0].input.joystick.sensitivity[0]", "7"},
-	 {"gameOptions[0].input.trackIR.bMove[0]", "1"},
+	 {"gameOptions[0].input.trackIR.bMove [0]", "1"},
 	 {"gameOptions[0].input.joystick.deadzones[1]", "1"},
 	 {"gameOptions[0].input.joystick.sensitivity[1]", "7"},
-	 {"gameOptions[0].input.trackIR.bMove[1]", "1"},
+	 {"gameOptions[0].input.trackIR.bMove [1]", "1"},
 	 {"gameOptions[0].input.joystick.deadzones[2]", "1"},
 	 {"gameOptions[0].input.joystick.sensitivity[2]", "7"},
-	 {"gameOptions[0].input.trackIR.bMove[2]", "1"},
+	 {"gameOptions[0].input.trackIR.bMove [2]", "1"},
 	 {"gameOptions[0].input.joystick.deadzones[3]", "1"},
 	 {"gameOptions[0].input.joystick.sensitivity[3]", "7"},
-	 {"gameOptions[0].input.trackIR.bMove[3]", "0"},
+	 {"gameOptions[0].input.trackIR.bMove [3]", "0"},
 	 {"gameOptions[0].input.joystick.deadzones[4]", "1"},
 	 {"gameOptions[0].input.joystick.sensitivity[4]", "7"},
-	 {"gameOptions[0].input.trackIR.bMove[4]", "1"},
+	 {"gameOptions[0].input.trackIR.bMove [4]", "1"},
 	 {"gameOptions[0].input.mouse.bJoystick", "0"},
 	 {"gameOptions[0].input.mouse.bSyncAxis", "1"},
 	 {"gameOptions[0].input.mouse.nDeadzone", "2"},
 	 {"gameOptions[0].input.joystick.bLinearSens", "0"},
 	 {"gameOptions[0].input.joystick.bSyncAxis", "1"},
-	 {"gameOptions[0].input.oculusRift.nDeadzone", "2"},
 	 {"gameOptions[0].input.trackIR.nMode", "0"},
 	 {"gameOptions[0].input.trackIR.nDeadzone", "4"},
 	 {"gameOptions[0].input.keyboard.nType", "0"},
@@ -1070,26 +1003,17 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].ogl.nMaxLightsPerPass", "8"},
 	 {"gameOptions[0].render.nLightingMethod", "0"},
 	 {"gameOptions[0].render.nQuality", "2"},
-	 {"gameOptions[0].render.bCartoonize", "0"},
-	 {"gameOptions[0].render.bPowerupSpinType", "1"},
 	 {"gameOptions[0].render.stereo.nGlasses", "0"},
 	 {"gameOptions[0].render.stereo.nMethod", "0"},
 	 {"gameOptions[0].render.stereo.nScreenDist", "3"},
-	 {"gameOptions[0].render.stereo.xSeparation[0]", "65536"},
-	 {"gameOptions[0].render.stereo.xSeparation[1]", "65536"},
-#if DBG
-	 {"gameOptions[0].render.stereo.nRiftFOV", "4"},
-#endif
+	 {"gameOptions[0].render.stereo.xSeparation", "32768"},
 	 {"gameOptions[0].render.stereo.bEnhance", "0"},
 	 {"gameOptions[0].render.stereo.bColorGain", "0"},
 	 {"gameOptions[0].render.stereo.bDeghost", "0"},
 	 {"gameOptions[0].render.stereo.bBrighten", "1"},
-	 {"gameOptions[0].render.stereo.bChromAbCorr", "1"},
 	 {"gameOptions[0].render.effects.bEnabled", "1"},
 	 {"gameOptions[0].render.effects.bGlow", "0"},
-	 {"gameOptions[0].render.effects.bFog", "0"},
 	 {"gameOptions[0].render.effects.bSoftParticles", "0"},
-	 {"gameOptions[0].render.effects.bWarpAppearance", "0"},
 	 {"gameOptions[0].render.effects.bEnergySparks", "1"},
 	 {"gameOptions[0].render.effects.nShockwaves", "1"},
 	 {"gameOptions[0].render.automap.bTextured", "1"},
@@ -1097,10 +1021,6 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.cockpit.bMouseIndicator", "1"},
 	 {"gameOptions[0].render.cockpit.bObjectTally", "1"},
 	 {"gameOptions[0].render.cockpit.bPlayerStats", "0"},
-	 {"gameOptions[0].render.cockpit.nShipStateLayout", "0"},
-	 {"gameOptions[0].render.cockpit.nColorScheme", "1"},
-	 {"gameOptions[0].render.cockpit.nCompactWidth", "0"},
-	 {"gameOptions[0].render.cockpit.nCompactHeight", "0"},
 	 {"gameOptions[0].render.cockpit.bTextGauges", "0"},
 	 {"gameOptions[0].render.cockpit.nWindowPos", "1"},
 	 {"gameOptions[0].render.cockpit.nWindowSize", "0"},
@@ -1117,15 +1037,11 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.shadows.nClip", "1"},
 	 {"gameOptions[0].render.shadows.nReach", "2"},
 	 {"gameOptions[0].render.nMaxFPS", "60"},
-	 {"gameOptions[0].render.nAmbientLight", "30"},
-	 {"gameOptions[0].render.nSpecularLight", "20"},
 	 {"gameOptions[0].render.nImageQuality", "3"},
 	 {"gameOptions[0].render.cockpit.bFlashGauges", "1"},
 	 {"gameOptions[0].sound.bFadeMusic", "1"},
-	 {"gameOptions[0].sound.bShuffleMusic", "0"},
 	 {"gameOptions[0].sound.bLinkVolumes", "1"},
 	 {"gameOptions[0].sound.bGatling", "0"},
-	 {"gameOptions[0].sound.bScrape", "0"},
 	 {"gameOptions[0].sound.bMissiles", "0"},
 	 {"gameOptions[0].sound.bShip", "0"},
 	 {"gameOptions[0].sound.xCustomVolume", "5"},
@@ -1133,7 +1049,6 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].demo.bOldFormat", "0"},
 	 {"gameOptions[0].gameplay.bInventory", "1"},
 	 {"gameOptions[0].gameplay.bNoThief", "0"},
-	 {"gameOptions[0].gameplay.bObserve", "0"},
 	 {"gameOptions[0].gameplay.nShip[0]", "0"},
 	 {"gameOptions[0].gameplay.nAIAwareness", "0"},
 	 {"gameOptions[0].gameplay.nAIAggressivity", "0"},
@@ -1437,8 +1352,6 @@ tParamValue defaultParams [] = {
 	 {"hotkeys.Weapon 9[1].value", "-1"},
 	 {"hotkeys.Weapon 10[0].value", "11"},
 	 {"hotkeys.Weapon 10[1].value", "-1"},
-	 {"gameOptions[0].render.effects.nDebris", "1"},
-	 {"gameOptions[0].render.effects.nShrapnels", "0"},
 	 {"gameOptions[0].render.particles.nDens [0]", "1"},
 	 {"gameOptions[0].render.particles.nSize [0]", "1"},
 	 {"gameOptions[0].render.particles.nLife [0]", "1"},
@@ -1470,18 +1383,17 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.particles.bMissiles", "1"},
 	 {"gameOptions[0].render.particles.bPlayers", "1"},
 	 {"gameOptions[0].render.particles.bRobots", "1"},
-	 {"gameOptions[0].render.particles.bBubbles", "1"},
-	 {"gameOptions[0].render.weaponIcons.nSort", "1"},
+	 {"gameOptions[0].render.particles.bBubbles", "1"}
 
 #if 0
-	 {"gameData.appData.bUseMultiThreading[0]", "1"},
-	 {"gameData.appData.bUseMultiThreading[1]", "1"},
-	 {"gameData.appData.bUseMultiThreading[2]", "1"},
-	 {"gameData.appData.bUseMultiThreading[3]", "1"},
-	 {"gameData.appData.bUseMultiThreading[4]", "1"},
-	 {"gameData.appData.bUseMultiThreading[5]", "1"},
-	 {"gameData.appData.bUseMultiThreading[6]", "1"},
-	 {"gameData.appData.bUseMultiThreading[7]", "1"},
+	 {"gameData.app.bUseMultiThreading[0]", "1"},
+	 {"gameData.app.bUseMultiThreading[1]", "1"},
+	 {"gameData.app.bUseMultiThreading[2]", "1"},
+	 {"gameData.app.bUseMultiThreading[3]", "1"},
+	 {"gameData.app.bUseMultiThreading[4]", "1"},
+	 {"gameData.app.bUseMultiThreading[5]", "1"},
+	 {"gameData.app.bUseMultiThreading[6]", "1"},
+	 {"gameData.app.bUseMultiThreading[7]", "1"},
 	 {"extraGameInfo[1].bMouseLook", "0"},
 	 {"extraGameInfo[1].bPowerupLights", "0"},
 	 {"extraGameInfo[1].bKillMissiles", "0"},
@@ -1489,17 +1401,16 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].bFluidPhysics", "1"},
 	 {"extraGameInfo[0].bImmortalPowerups", "0"},
 	 {"extraGameInfo[0].bMultiBosses", "1"},
-	 {"extraGameInfo[0].nShieldEffect", "1"},
+	 {"extraGameInfo[0].bPlayerShield", "0"},
 	 {"extraGameInfo[0].bRobotsHitRobots", "1"},
 	 {"extraGameInfo[0].bTeleporterCams", "0"},
 	 {"extraGameInfo[0].bRotateMarkers", "0"},
 	 {"extraGameInfo[0].bWiggle", "1"},
 	 {"extraGameInfo[0].grWallTransparency", "19"},
 	 {"extraGameInfo[0].nOmegaRamp", "4"},
-	 {"extraGameInfo[0].nWeaponTurnSpeed", "0"},
+	 {"extraGameInfo[0].nMslTurnSpeed", "1"},
 	 {"extraGameInfo[0].nMslStartSpeed", "0"},
 	 {"extraGameInfo[0].nSpeedBoost", "10"},
-	 {"extraGameInfo[0].nShieldEffect", "1"},
 	 {"extraGameInfo[0].headlight.bAvailable", "1"},
 	 {"gameOptions[0].render.particles.bWiggleBubbles", "1"},
 	 {"gameOptions[0].render.particles.bWobbleBubbles", "1"},
@@ -1515,6 +1426,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.nDebrisLife", "0"},
 	 {"gameOptions[0].render.effects.bAutoTransparency", "1"},
 	 {"gameOptions[0].render.effects.bMovingSparks", "0"},
+	 {"gameOptions[0].render.effects.nShrapnels", "1"},
 	 {"gameOptions[0].render.coronas.bUse", "1"},
 	 {"gameOptions[0].render.coronas.nStyle", "1"},
 	 {"gameOptions[0].render.coronas.bShots", "1"},
@@ -1523,6 +1435,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.coronas.nIntensity", "1"},
 	 {"gameOptions[0].render.coronas.nObjIntensity", "1"},
 	 {"gameOptions[0].render.coronas.bAdditive", "1"},
+	 {"gameOptions[0].render.effects.bRobotShields", "1"},
 	 {"gameOptions[0].render.effects.bOnlyShieldHits", "1"},
 	 {"gameOptions[0].render.effects.bTransparent", "1"},
 	 {"gameOptions[0].render.cameras.bFitToWall", "0"},
@@ -1571,6 +1484,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.weaponIcons.bShowAmmo", "1"},
 	 {"gameOptions[0].render.weaponIcons.bSmall", "1"},
 	 {"gameOptions[0].render.weaponIcons.bBoldHighlight", "0"},
+	 {"gameOptions[0].render.weaponIcons.nSort", "1"},
 	 {"gameOptions[0].render.weaponIcons.nHiliteColor", "0"},
 	 {"gameOptions[0].gameplay.bIdleAnims", "1"},
 	 {"gameOptions[0].gameplay.bShieldWarning", "1"},
@@ -1592,11 +1506,13 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].menus.bShowLevelVersion", "1"},
 	 {"gameOptions[0].menus.bSmartFileSearch", "1"},
 	 {"gameOptions[0].multi.bUseMacros", "1"},
+	 {"gameOptions[0].ogl.bSetGammaRamp", "0"},
 	 {"gameOptions[0].render.cockpit.bWideDisplays", "1"},
 	 {"gameOptions[1].movies.nQuality", "0"},
 	 {"gameOptions[1].menus.bShowLevelVersion", "0"},
 	 {"gameOptions[1].menus.bSmartFileSearch", "1"},
 	 {"gameOptions[1].multi.bUseMacros", "0"},
+	 {"gameOptions[1].ogl.bSetGammaRamp", "0"},
 #endif
 
 	};
@@ -1606,7 +1522,7 @@ tParamValue defaultParams [] = {
 void CPlayerProfile::Setup (void)
 {
 	tParamValue	*pv;
-	int32_t		i;
+	int			i;
 
 for (i = sizeofa (defaultParams), pv = defaultParams; i; i--, pv++) {
 	Set (pv->pszIdent, pv->pszValue);
@@ -1615,13 +1531,13 @@ for (i = sizeofa (defaultParams), pv = defaultParams; i; i--, pv++) {
 
 //------------------------------------------------------------------------------
 
-int32_t NewPlayerConfig (void)
+int NewPlayerConfig (void)
 {
-	int32_t	i, j;
+	int	i, j;
 	CMenu	m (8);
-   int32_t	mct = CONTROL_MAX_TYPES;
+   int	mct = CONTROL_MAX_TYPES;
 
-	static int32_t choice = 0;
+	static int choice = 0;
 
 mct--;
 InitWeaponOrdering ();		//setup default weapon priorities
@@ -1649,7 +1565,7 @@ for(i = 0; i < MAX_HOTKEY_CONTROLS; i++)
 KCSetControls (0);
 gameConfig.nControlType = choice;
 if (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS) {
-	i = InfoBox (TXT_IMPORTANT_NOTE, (pMenuCallback) NULL, BG_STANDARD, 2, "Choose another", TXT_OK, TXT_FCS);
+	i = MsgBox (TXT_IMPORTANT_NOTE, NULL, 2, "Choose another", TXT_OK, TXT_FCS);
 	if (i == 0)
 		goto RetrySelection;
 	}
@@ -1678,7 +1594,7 @@ strcpy(gameData.multigame.msg.szMacro[2], TXT_HANKERING);
 strcpy(gameData.multigame.msg.szMacro[3], TXT_URANUS);
 networkData.nNetLifeKills = 0;
 networkData.nNetLifeKilled = 0;
-gameData.appData.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
+gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 profile.Setup ();
 return 1;
 }
@@ -1688,30 +1604,30 @@ return 1;
 //this length must match the value in escort.c
 #define GUIDEBOT_NAME_LEN 9
 
-uint8_t dosControlType,winControlType;
+ubyte dosControlType,winControlType;
 
 //read in the player's saved games.  returns errno (0 == no error)
-int32_t LoadPlayerProfile (int32_t nStage)
+int LoadPlayerProfile (int nStage)
 {
 if (profile.Busy ())
 	return 1;
 
 	CFile		cf;
-	int32_t		funcRes = EZERO;
-	int32_t		bRewriteIt = 0;
-	uint32_t		i;
+	int		funcRes = EZERO;
+	int		bRewriteIt = 0;
+	uint		i;
 
-	int16_t gameWindowW = gameData.renderData.screen.Width ();
-	int16_t	gameWindowH = gameData.renderData.screen.Height ();
-	uint8_t nDisplayMode = gameStates.video.nDefaultDisplayMode;
+	short gameWindowW = gameData.render.window.w;
+	short	gameWindowH = gameData.render.window.h;
+	ubyte nDisplayMode = gameStates.video.nDefaultDisplayMode;
 
 	char		filename [FILENAME_LEN];
-	int32_t		id;
+	int		id;
 
 memset (highestLevels, 0, sizeof (highestLevels));
 nHighestLevels = 0;
 sprintf (filename, "%.8s.plr", LOCALPLAYER.callsign);
-if (!cf.Open (filename, gameFolders.user.szProfiles, "rb", 0)) {
+if (!cf.Open (filename, gameFolders.szProfDir, "rb", 0)) {
 	PrintLog (0, "couldn't read player file '%s'\n", filename);
 	}
 else {
@@ -1747,56 +1663,51 @@ if (!nHighestLevels)
 if (nStage < 1)
 	return funcRes;
 
-DefaultAllSettings (true);
-
 if (!profile.Load (nStage < 2))
 	funcRes = errno;
 
 if (gameStates.gfx.bOverride) {
 	gameStates.video.nDefaultDisplayMode = nDisplayMode;
-	gameData.renderData.screen.SetWidth (gameWindowW);
-	gameData.renderData.screen.SetHeight (gameWindowH);
+	gameData.render.window.w = gameWindowW;
+	gameData.render.window.h = gameWindowH;
 	}
 else if (gameStates.video.nDefaultDisplayMode < 0) {
 	gameStates.video.nDefaultDisplayMode = CUSTOM_DISPLAY_MODE;
 	}
 else 
-	gameStates.video.nDefaultDisplayMode = FindDisplayMode (gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
-SetCustomDisplayMode (customDisplayMode.w, customDisplayMode.h, 1);
-SetSideBySideDisplayMode ();
+	gameStates.video.nDefaultDisplayMode = FindDisplayMode (gameData.render.window.w, gameData.render.window.h);
+SetCustomDisplayMode (customDisplayMode.w, customDisplayMode.h);
 
 if (nStage < 2)
 	return funcRes;
 
+DefaultAllSettings ();
+
 if (funcRes != EZERO) {
-	InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_READING_PLR, strerror (funcRes));
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_READING_PLR, strerror (funcRes));
 	return funcRes;
 	}
 
 KCSetControls (1);
 //post processing of parameters
 if (gameStates.input.nPlrFileVersion >= 23) {
-	if (gameData.appData.nLifetimeChecksum != GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled)) {
- 		TextBox (NULL, BG_STANDARD, 1, TXT_PROFILE_DAMAGED, TXT_WARNING);
-#if DBG
-		GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
-#else
+	if (gameData.app.nLifetimeChecksum != GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled)) {
 		networkData.nNetLifeKills =
 		networkData.nNetLifeKilled = 0;
-		gameData.appData.nLifetimeChecksum = 0;
+		gameData.app.nLifetimeChecksum = 0;
+ 		MsgBox (NULL, NULL, 1, TXT_PROFILE_DAMAGED, TXT_WARNING);
 		bRewriteIt = 1;
-#endif
 		}
 	}
-for (i = 0; i < sizeof (gameData.escortData.szName); i++) {
-	if (!gameData.escortData.szName [i])
+for (i = 0; i < sizeof (gameData.escort.szName); i++) {
+	if (!gameData.escort.szName [i])
 		break;
-	if (!isprint (gameData.escortData.szName [i])) {
-		strcpy (gameData.escortData.szName, "GUIDE-BOT");
+	if (!isprint (gameData.escort.szName [i])) {
+		strcpy (gameData.escort.szName, "GUIDE-BOT");
 		break;
 		}
 	}
-strcpy (gameData.escortData.szRealName, gameData.escortData.szName);
+strcpy (gameData.escort.szRealName, gameData.escort.szName);
 mpParams.bDarkness = extraGameInfo [1].bDarkness;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
 mpParams.bEnableCheats = extraGameInfo [1].bEnableCheats;
@@ -1810,7 +1721,6 @@ SetMaxOmegaCharge ();
 if (bRewriteIt)
 	SavePlayerProfile ();
 
-gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
 gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
 if ((gameOpts->render.nLightingMethod > 1) && !ogl.m_features.bShaders)
 	gameOpts->render.nLightingMethod = 1;
@@ -1824,32 +1734,17 @@ gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
 gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
 gameStates.render.bAmbientColor = /*gameStates.render.bPerPixelLighting ||*/ (gameOpts->render.color.nLevel == 2);
-gameOpts->render.effects.bGlow = ::Clamp (gameOpts->render.effects.bGlow, 0, 2);
-gameOpts->sound.xCustomSoundVolume = (I2X (1) / 8) * gameConfig.nAudioVolume [0];
-#if DBG
-if ((gameOpts->render.stereo.nRiftFOV < RIFT_MIN_FOV) || (gameOpts->render.stereo.nRiftFOV > RIFT_MAX_FOV))
-	gameOpts->render.stereo.nRiftFOV = RIFT_DEFAULT_FOV;
-#endif
-gameOptions [0].render.textures.nQuality = gameOptions [0].render.nQuality;
-if ((gameOpts->render.stereo.xSeparation [1] < MM2X (RIFT_MIN_IPD)) || (gameOpts->render.stereo.xSeparation [1] > MM2X (RIFT_MAX_IPD)))
-	gameOpts->render.stereo.xSeparation [1] = MM2X (RIFT_DEFAULT_IPD);
+gameOpts->sound.xCustomSoundVolume = fix (float (gameConfig.nAudioVolume [0]) * 10.0f / 8.0f + 0.5f);
 extraGameInfo [0].bFlickerLights = gameOpts->app.bEpilepticFriendly;
 if ((extraGameInfo [0].bFastPitch < 1) || (extraGameInfo [0].bFastPitch > 2))
 	extraGameInfo [0].bFastPitch = 2;
 extraGameInfo [1].bFastPitch = 2;
 for (i = 0; i < UNIQUE_JOY_AXES; i++)
 	JoySetDeadzone (gameOpts->input.joystick.deadzones [i], i);
-DefaultAllSettings (false);
+DefaultAllSettings ();
 #if _WIN32
 if (gameStates.render.bVSyncOk)
 	wglSwapIntervalEXT (gameOpts->render.nMaxFPS < 0);
-#endif
-#if CONFIGURE_LIGHT_COMPONENTS
-#	if !USE_SPECULAR_LIGHT
-gameOpts->render.color.nSpecularLight = 0;
-#	endif
-gameData.SetAmbientLight (gameOpts->render.color.nAmbientLight);
-gameData.SetSpecularLight (gameOpts->render.color.nSpecularLight);
 #endif
 return funcRes;
 }
@@ -1858,9 +1753,9 @@ return funcRes;
 
 //finds entry for this level in table.  if not found, returns ptr to
 //empty entry.  If no empty entries, takes over last one
-int32_t FindHLIEntry (void)
+int FindHLIEntry (void)
 {
-	int32_t i;
+	int i;
 
 for (i = 0; i < nHighestLevels; i++) {
 	if (!stricmp (highestLevels [i].shortname, missionManager [missionManager.nCurrentMission].filename))
@@ -1879,11 +1774,11 @@ return i;
 
 //------------------------------------------------------------------------------
 //set a new highest level for player for this mission
-void SetHighestLevel (uint8_t nLevel)
+void SetHighestLevel (ubyte nLevel)
 {
-int32_t ret = LoadPlayerProfile (0);
+int ret = LoadPlayerProfile (0);
 if ((ret == EZERO) || (ret == ENOENT))	{	//if file doesn't exist, that's ok
-	int32_t i = FindHLIEntry ();
+	int i = FindHLIEntry ();
 	if (nLevel > highestLevels [i].nLevel)
 		highestLevels [i].nLevel = nLevel;
 	SavePlayerProfile ();
@@ -1892,10 +1787,10 @@ if ((ret == EZERO) || (ret == ENOENT))	{	//if file doesn't exist, that's ok
 
 //------------------------------------------------------------------------------
 //gets the player's highest level from the file for this mission
-int32_t GetHighestLevel(void)
+int GetHighestLevel(void)
 {
-	int32_t i;
-	int32_t nHighestSaturnLevel = 0;
+	int i;
+	int nHighestSaturnLevel = 0;
 
 LoadPlayerProfile (0);
 #ifndef SATURN
@@ -1916,7 +1811,7 @@ return i;
 //------------------------------------------------------------------------------
 
 //write out player's saved games.  returns errno (0 == no error)
-int32_t SavePlayerProfile (void)
+int SavePlayerProfile (void)
 {
 if (gameStates.app.bReadOnly)
 	return EZERO;
@@ -1925,11 +1820,11 @@ if (profile.Busy ())
 
 	CFile	cf;
 	char	filename [FILENAME_LEN];		// because of ":gameData.multiplayer.players:" path
-	int32_t	funcRes = EZERO;
+	int	funcRes = EZERO;
 
 funcRes = WriteConfigFile ();
 sprintf (filename, "%s.plr", LOCALPLAYER.callsign);
-cf.Open (filename, gameFolders.user.szProfiles, "wb", 0);
+cf.Open (filename, gameFolders.szProfDir, "wb", 0);
 if (cf.File ()) {
 	cf.WriteInt (SAVE_FILE_ID);
 	cf.WriteShort (PLAYER_FILE_VERSION);
@@ -1942,10 +1837,10 @@ if (cf.File ()) {
 if (gameStates.video.nDefaultDisplayMode >= CUSTOM_DISPLAY_MODE)
 	gameStates.video.nDefaultDisplayMode = -1;
 customDisplayMode = displayModeInfo [CUSTOM_DISPLAY_MODE];
-gameData.appData.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
+gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 if (!profile.Save ()) {
 	funcRes = errno;
-	InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_WRITING_PLR, strerror (funcRes));
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_WRITING_PLR, strerror (funcRes));
 	}
 if (gameStates.video.nDefaultDisplayMode < 0)
 	gameStates.video.nDefaultDisplayMode = CUSTOM_DISPLAY_MODE;
@@ -1954,9 +1849,9 @@ return funcRes;
 
 //------------------------------------------------------------------------------
 //update the player's highest level.  returns errno (0 == no error)
-int32_t UpdatePlayerFile (void)
+int UpdatePlayerFile (void)
 {
-	int32_t ret = LoadPlayerProfile (2);
+	int ret = LoadPlayerProfile (2);
 
 if ((ret != EZERO) && (ret != ENOENT))		//if file doesn't exist, that's ok
 	return ret;
@@ -1965,10 +1860,10 @@ return SavePlayerProfile ();
 
 //------------------------------------------------------------------------------
 
-int32_t GetLifetimeChecksum (int32_t a, int32_t b)
+int GetLifetimeChecksum (int a, int b)
 {
 // confusing enough to beat amateur disassemblers? Lets hope so
-int32_t num = (a << 8 ^ b);
+int num = (a << 8 ^ b);
 num ^= (a | b);
 num *= num >> 2;
 return num;
@@ -1982,11 +1877,11 @@ return num;
 //pairs of chars describing ranges
 char playername_allowed_chars [] = "azAZ09__--";
 
-int32_t MakeNewPlayerFile (int32_t bAllowAbort)
+int MakeNewPlayerFile (int bAllowAbort)
 {
 	CMenu	m;
 	CFile cf;
-	int32_t	x;
+	int	x;
 	char	filename [FILENAME_LEN];
 	char	text [CALLSIGN_LEN + 1] = "";
 
@@ -2008,8 +1903,8 @@ for (;;) {
 	if (text [0] == 0)	//null string
 		continue;
 	sprintf (filename, "%s.plr", text);
-	if (cf.Exist (filename,gameFolders.user.szProfiles, 0)) {
-		TextBox (NULL, BG_STANDARD, 1, TXT_OK, "%s '%s' %s", TXT_PLAYER, text, TXT_ALREADY_EXISTS);
+	if (cf.Exist (filename,gameFolders.szProfDir, 0)) {
+		MsgBox (NULL, NULL, 1, TXT_OK, "%s '%s' %s", TXT_PLAYER, text, TXT_ALREADY_EXISTS);
 		continue;
 		}
 	if (!NewPlayerConfig ())
@@ -2017,7 +1912,7 @@ for (;;) {
 	break;
 	}
 strncpy (LOCALPLAYER.callsign, text, CALLSIGN_LEN);
-DefaultAllSettings (false);
+DefaultAllSettings ();
 SavePlayerProfile ();
 return 1;
 }
@@ -2025,13 +1920,13 @@ return 1;
 //------------------------------------------------------------------------------
 
 //Inputs the player's name, without putting up the background screen
-int32_t SelectPlayer (void)
+int SelectPlayer (void)
 {
-	static int32_t bStartup = 1;
-	int32_t 	i,j, bAutoPlr;
+	static int bStartup = 1;
+	int 	i,j, bAutoPlr;
 	char 	filename [FILENAME_LEN];
 	char	filespec [FILENAME_LEN];
-	int32_t 	bAllowAbort = !bStartup;
+	int 	bAllowAbort = !bStartup;
 
 	CFileSelector	fs;
 
@@ -2076,7 +1971,7 @@ if (bAutoPlr) {
 callMenu:
 
 bStartup = 0;
-sprintf (filespec, "%s*.plr", gameFolders.user.szProfiles);
+sprintf (filespec, "%s%s*.plr", gameFolders.szProfDir, *gameFolders.szProfDir ? "/" : "");
 if (!fs.FileSelector (TXT_SELECT_PILOT, filespec, filename, bAllowAbort)) {
 	if (bAllowAbort) {
 		return 0;

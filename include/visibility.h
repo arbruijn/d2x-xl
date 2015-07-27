@@ -14,15 +14,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _VISIBILITY_H
 #define _VISIBILITY_H
 
-int32_t PixelTranspType (int16_t nTexture, int16_t nOrient, int16_t nFrame, fix u, fix v);	//-1: supertransp., 0: opaque, 1: transparent
+int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v);	//-1: supertransp., 0: opaque, 1: transparent
 
-int32_t CanSeePoint (CObject *pObj, CFixVector *vSource, CFixVector *vDest, int16_t nSegment, fix xRad = 0, float fov = -2.0f, int32_t nThread = MAX_THREADS);
+int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment, fix xRad = 0);
 
-int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs, int32_t nThread = MAX_THREADS);
+int CanSeeObject (int nObject, int bCheckObjs);
 
-int32_t ObjectToObjectVisibility (CObject *pObj1, CObject *pObj2, int32_t transType, float fov = -2.0f, int32_t nThread = MAX_THREADS);
+int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType);
 
-int32_t TargetInLineOfFire (void);
+int TargetInLineOfFire (void);
 
 
 #endif //_VISIBILITY_H

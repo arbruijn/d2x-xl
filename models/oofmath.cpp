@@ -29,11 +29,11 @@ return x * x;
 
 //------------------------------------------------------------------------------
 
-float OOF_Centroid (CFloatVector *pvCentroid, CFloatVector *pvSrc, int32_t nv)
+float OOF_Centroid (CFloatVector *pvCentroid, CFloatVector *pvSrc, int nv)
 {
 	CFloatVector	vNormal, vCenter;
 	float			fArea, fTotalArea;
-	int32_t			i;
+	int			i;
 
 pvCentroid->SetZero ();
 

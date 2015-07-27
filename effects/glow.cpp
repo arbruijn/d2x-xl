@@ -6,32 +6,29 @@
 #include "automap.h"
 #include "glow.h"
 #include "cockpit.h"
-#include "addon_bitmaps.h"
 
 CGlowRenderer glowRenderer;
 
-#define USE_VIEWPORT	2
-#define BLUR			2
-#define BLUR_RADIUS	((m_bViewport > 0) ? 3.0f : 0.0f)
+#define USE_VIEWPORT 1
+#define BLUR 2
+#define START_RAD (m_bViewport ? 2.0f : 0.0f)
+#define RAD_INCR (m_bViewport ? 2.0f : 0.0f)
 
 //------------------------------------------------------------------------------
 
 #if 1
 
-int32_t hBlurShader = -1;
+int hBlurShader = -1;
 
-#define DISCRETE_SAMPLING 1
-
-#	if DISCRETE_SAMPLING
+#	if 1
 
 // linear sampling
 const char *blurFS = 
 	"uniform sampler2D glowSource;\r\n" \
 	"uniform float direction;\r\n" \
 	"uniform float scale; // render target width/height\r\n" \
-	"uniform float brightness;\r\n" \
-	"//vec2 offset = vec2 (1.3846153846, 3.2307692308);\r\n" \
-	"vec2 offset = vec2 (1.0, 2.0);\r\n" \
+	"uniform float brightness; // render target width/height\r\n" \
+	"vec2 offset = vec2 (1.3846153846, 3.2307692308);\r\n" \
 	"vec3 weight = vec3 (0.2270270270, 0.3162162162, 0.0702702703);\r\n" \
 	"void main() {\r\n" \
 	"float xScale = (1.0 - direction) * scale, yScale = direction * scale;\r\n" \
@@ -77,7 +74,7 @@ const char *blurFS =
 	
 #else
 
-int32_t hBlurShader [2] = {-1, -1};
+int hBlurShader [2] = {-1, -1};
 
 const char *blurFS [2] = { 
 	"uniform sampler2D glowSource;\r\n" \
@@ -138,15 +135,15 @@ const char *blurVS =
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::LoadShader (int32_t const direction, float const radius)
+bool CGlowRenderer::LoadShader (int const direction, float const radius)
 {
-	float fScale [2] = {ogl.m_data.windowScale.dim.x, ogl.m_data.windowScale.dim.y};
+	float fScale [2] = {ogl.m_data.windowScale.dim.y * radius, ogl.m_data.windowScale.dim.x * radius};
 
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hBlurShader /*[direction]*/));
 if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg))
-	/*nothing*/;
+	;
 shaderManager.Set ("glowSource", 0);
 shaderManager.Set ("direction", float (direction));
 shaderManager.Set ("scale", fScale [direction]);
@@ -170,7 +167,7 @@ if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders) {
 		ogl.m_states.bGlowRendering = 0;
 		}
 #else
-	for (int32_t i = 0; i < 2; i++) {
+	for (int i = 0; i < 2; i++) {
 		if (!shaderManager.Build (hBlurShader [i], blurFS [i], blurVS)) {
 			ogl.ClearError (0);
 			ogl.m_states.bGlowRendering = 0;
@@ -188,7 +185,7 @@ bool CGlowRenderer::ShaderActive (void)
 if ((hBlurShader >= 0) && (shaderManager.Current () == hBlurShader))
 	return true;
 #else
-for (int32_t i = 0; i < 2; i++)
+for (int i = 0; i < 2; i++)
 	if ((hBlurShader [i] >= 0) && (shaderManager.Current () == hBlurShader [i]))
 		return true;
 #endif
@@ -197,98 +194,21 @@ return false;
 
 //------------------------------------------------------------------------------
 
-static void ClearDrawBuffer (int32_t nType)
+int CGlowRenderer::Activate (void)
 {
-#if 0 //DBG
-if (gameStates.render.cameras.bActive) {
-	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-	glClear (GL_COLOR_BUFFER_BIT);
-	float vertices [4][4][2] = {
-		{{0.0, 0.0}, {0.0, 0.5}, {0.5, 0.5}, {0.5, 0.0}},
-		{{0.5, 0.0}, {0.5, 0.5}, {1.0, 0.5}, {1.0, 0.0}},
-		{{0.0, 0.5}, {0.0, 1.0}, {0.5, 1.0}, {0.5, 0.5}},
-		{{0.5, 0.5}, {0.5, 1.0}, {1.0, 1.0}, {1.0, 0.5}},
-		};
-	float colors [4][4] = {
-		{1.0, 0.5, 0.0, 0.5},
-		{0.0, 0.5, 1.0, 0.5},
-		{1.0, 0.0, 0.5, 0.5},
-		{0.0, 1.0, 0.5, 0.5}
-	};
-
-	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
-	ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
-
-	glMatrixMode (GL_MODELVIEW);
-	glPushMatrix ();
-	glLoadIdentity ();//clear matrix
-	glMatrixMode (GL_PROJECTION);
-	glPushMatrix ();
-	glLoadIdentity ();//clear matrix
-	glOrtho (0.0, 1.0, 1.0, 0.0, -1.0, 1.0);
-
-	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	ogl.SetTexturing (false);
-	ogl.SetBlendMode (OGL_BLEND_REPLACE);
-	ogl.SetDepthMode (GL_ALWAYS);
-	for (int32_t i = 0; i < 4; i++) {
-		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-		ogl.SetTexturing (false);
-		glColor3fv (colors [i]);
-		OglVertexPointer (2, GL_FLOAT, 0, vertices [i]);
-		OglDrawArrays (GL_QUADS, 0, 4);
-		}
-	glMatrixMode (GL_PROJECTION);
-	glPopMatrix ();
-	glMatrixMode (GL_MODELVIEW);
-	glPopMatrix ();
-	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
-	ogl.SetDepthMode (nDepthMode);
-	return;
-	}
-#endif
-if (nType == BLUR_SHADOW) 
-	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
-else if (nType == BLUR_OUTLINE) 
-#if 0 //DBG
-#	if 0
-	if (gameStates.render.nWindow [0])
-		glClearColor (0.0f, 0.1f, 0.2f, 1.0f);
-	else
-#	endif
-		glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-#else
-	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
-#endif
-else 
-#if 0 && DBG
-	glClearColor (1.0f, 0.5f, 0.0f, 0.25f);
-#else
-	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-#endif
-glClear (GL_COLOR_BUFFER_BIT);
-}
-
-//------------------------------------------------------------------------------
-
-int32_t CGlowRenderer::Activate (void)
-{
-if (!ogl.SelectGlowBuffer ()) {
-#if DBG
-	ogl.SelectGlowBuffer ();
-#endif
+if (!ogl.SelectGlowBuffer ())
 	return 0;
-	}
-//gameData.renderData.frame.Activate ("StartFrame (frame)");
-//gameData.renderData.frame.Deactivate ();
-CCanvas::Current ()->SetViewport ();
-ClearDrawBuffer (m_nType);
+if (m_nType == BLUR_SHADOW)
+	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
+else
+	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+glClear (GL_COLOR_BUFFER_BIT);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::Reset (int32_t bGlow, int32_t bOgl)
+bool CGlowRenderer::Reset (int bGlow, int bOgl)
 {
 m_nType = -1;
 m_nStrength = -1;
@@ -298,38 +218,39 @@ if (bOgl) {
 	glPopMatrix ();
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
+	ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	}
-CCanvas::Current ()->SetViewport ();
 return 0 != (gameOpts->render.effects.bGlow = bGlow);
 }
 
 //------------------------------------------------------------------------------
 
-inline int32_t ScreenScale (void)
+inline int ScreenScale (void)
 {
 return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? 1 : 2;
 }
 
-#if 0
+#if 1
 
-inline int32_t ScreenWidth (void)
+
+inline int ScreenWidth (void)
 {
-return gameData.renderData.screen.Width ();
+return screen.Width () /*/ ScreenScale ()*/;
 }
 
-inline int32_t ScreenHeight (void)
+inline int ScreenHeight (void)
 {
-return gameData.renderData.screen.Height ();
+return screen.Height () /*/ ScreenScale ()*/;
 }
 
 #else
 
-inline int32_t ScreenWidth (void)
+inline int ScreenWidth (void)
 {
 return CCanvas::Current ()->Width (); 
 }
 
-inline int32_t ScreenHeight (void)
+inline int ScreenHeight (void)
 {
 return CCanvas::Current ()->Height ();
 }
@@ -338,45 +259,39 @@ return CCanvas::Current ()->Height ();
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::SetItemExtent (CFloatVector3 v, bool bTransformed)
+void CGlowRenderer::SetExtent (CFloatVector3 v, bool bTransformed)
 {
 #if USE_VIEWPORT
-#if	USE_VIEWPORT < 2
 if (gameOpts->render.effects.bGlow != 1)
 	return;
-#	endif
 if (!bTransformed)
 	transformation.Transform (v, v);
 tScreenPos s;
+#if 1
 ProjectPoint (v, s);
-#pragma omp critical (GlowRendererSetItemExtent)
-{
-if (m_itemMin.x > s.x)
-	m_itemMin.x = s.x;
-if (m_itemMin.y > s.y)
-	m_itemMin.y = s.y;
-if (m_itemMax.x < s.x)
-	m_itemMax.x = s.x;
-if (m_itemMax.y < s.y)
-	m_itemMax.y = s.y;
-}
+#else
+v = transformation.m_info.projection * v;
+float z = -v.v.coord.z;
+float w = (float) ScreenWidth () / 2.0f;
+float h = (float) ScreenHeight () / 2.0f;
+s.x = fix (w - float (v.v.coord.x) * w / v.v.coord.z);
+s.y = fix (h - float (v.v.coord.y) * h / v.v.coord.z);
+#endif
+if (gameStates.render.cockpit.nType == CM_LETTERBOX)
+	s.y += (screen.Height () - CCanvas::Current ()->Height ()) / 2;
+else if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
+	s.y += screen.Height () - CCanvas::Current ()->Height ();
+#pragma omp critical
+if (m_screenMin.x > s.x)
+	m_screenMin.x = s.x;
+if (m_screenMin.y > s.y)
+	m_screenMin.y = s.y;
+if (m_screenMax.x < s.x)
+	m_screenMax.x = s.x;
+if (m_screenMax.y < s.y)
+	m_screenMax.y = s.y;
+#endif
 m_bViewport = 1;
-#else
-m_bViewport = 0;
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-bool CGlowRenderer::UseViewport (void)
-{
-#if USE_VIEWPORT == 1
-return !ogl.IsSideBySideDevice () && (gameOpts->render.effects.bGlow == 1);
-#elif USE_VIEWPORT == 2
-return /*!gameStates.render.nWindow [0] &&*/ !ogl.IsSideBySideDevice ();
-#else
-return 0;
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -384,136 +299,133 @@ return 0;
 bool CGlowRenderer::Visible (void)
 {
 #if USE_VIEWPORT
-if (!UseViewport ())
+if (gameOpts->render.effects.bGlow != 1)
 	return true;
+#if 0
+if (m_bViewport != 1)
+	return false;
+#else
 if (m_bViewport == 0)
 	return false;
-if (m_bViewport == -1) // no extent set
+if (m_bViewport == -1) {
+	m_screenMin.x = m_screenMin.y = 0;
+	m_screenMax.x = ScreenWidth ();
+	m_screenMax.y = ScreenHeight ();
 	return true;
-
-if ((m_itemMax.x < 0) || (m_itemMin.x >= ScreenWidth ()) ||
-	 (m_itemMax.y < 0) || (m_itemMin.y >= ScreenHeight ()))
-	 return false;
-if (m_renderMin.x > m_itemMin.x)
-	m_renderMin.x = m_itemMin.x;
-if (m_renderMax.x < m_itemMax.x)
-	m_renderMax.x = m_itemMax.x;
-if (m_renderMin.y > m_itemMin.y)
-	m_renderMin.y = m_itemMin.y;
-if (m_renderMax.y < m_itemMax.y)
-	m_renderMax.y = m_itemMax.y;
+	}
 #endif
+if (m_screenMin.x > m_screenMax.x)
+	Swap (m_screenMin.x, m_screenMax.x);
+if (m_screenMin.y > m_screenMax.y)
+	Swap (m_screenMin.y, m_screenMax.y);
+
+return (m_screenMax.x > 0) && (m_screenMin.x < ScreenWidth () - 1) &&
+		 (m_screenMax.y > 0) && (m_screenMin.y < ScreenHeight () - 1) &&
+		 (m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y);
+#else
 return true;
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CGlowRenderer::InitViewport (void)
 {
-m_itemMin.x = m_itemMin.y = 0x7FFF;
-m_itemMax.x = m_itemMax.y = -0x7FFF;
-if (!UseViewport ()) {
-	m_renderMin.x = CCanvas::Current ()->Left ();
-	m_renderMin.y = CCanvas::Current ()->Top ();
-	m_renderMax.x = CCanvas::Current ()->Right ();
-	m_renderMax.y = CCanvas::Current ()->Bottom ();
+if (gameOpts->render.effects.bGlow != 1) {
+	m_screenMin.x = m_screenMin.y = 0;
+	m_screenMax.x = ScreenWidth ();
+	m_screenMax.y = ScreenHeight ();
 	}	
 else if (!m_bViewport) {
-	m_renderMin.x = CCanvas::Current ()->Right ();
-	m_renderMin.y = CCanvas::Current ()->Bottom ();
-	m_renderMax.x = CCanvas::Current ()->Left ();
-	m_renderMax.y = CCanvas::Current ()->Top ();
 	m_bViewport = -1;
+	m_screenMin.x = m_screenMin.y = 0x7FFF;
+	m_screenMax.x = m_screenMax.y = -0x7FFF;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CGlowRenderer::SetViewport (int32_t const nType, CFloatVector3* pVertex, int32_t nVerts)
+bool CGlowRenderer::SetViewport (int const nType, CFloatVector3* vertexP, int nVerts)
 {
 if (!Available (nType))
-	return 1;
+	return true;
 if ((GLOW_FLAGS & nType) == 0)
-	return 0;
+	return false;
 #if USE_VIEWPORT
-#	if USE_VIEWPORT < 2
+//if (gameStates.render.cameras.bActive)
+//	return true;
 if (gameOpts->render.effects.bGlow != 1)
-	return 1;
-#	endif
+	return true;
 //#pragma omp parallel for
-m_itemMin.x = m_itemMin.y = 0x7FFF;
-m_itemMax.x = m_itemMax.y = -0x7FFF;
-for (int32_t i = 0; i < nVerts; i++)
-	SetItemExtent (pVertex [i]);
+for (int i = 0; i < nVerts; i++)
+	SetExtent (vertexP [i]);
 #endif
 return Visible ();
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CGlowRenderer::SetViewport (int32_t const nType, CFloatVector* pVertex, int32_t nVerts)
+bool CGlowRenderer::SetViewport (int const nType, CFloatVector* vertexP, int nVerts)
 {
 if (!Available (nType))
-	return 1;
+	return true;
 if ((GLOW_FLAGS & nType) == 0)
-	return 0;
+	return false;
 #if USE_VIEWPORT
-if (!UseViewport ())
-	return 1;
-if (!pVertex || !nVerts)
-	return 1;
+if (gameOpts->render.effects.bGlow != 1)
+	return true;
 //#pragma omp parallel for
-for (int32_t i = 0; i < nVerts; i++) 
-	SetItemExtent (*(pVertex [i].XYZ ()));
+for (int i = 0; i < nVerts; i++) 
+	SetExtent (*(vertexP [i].XYZ ()));
 #endif
 return Visible ();
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CGlowRenderer::SetViewport (int32_t const nType, CFloatVector3 v, float width, float height, bool bTransformed)
+bool CGlowRenderer::SetViewport (int const nType, CFloatVector3 v, float width, float height, bool bTransformed)
 {
 if (!Available (nType))
-	return 1;
+	return true;
 if ((GLOW_FLAGS & nType) == 0)
-	return 0;
+	return false;
 #if USE_VIEWPORT
-if (!UseViewport ())
-	return 1;
-
-CFloatVector3 o;
-o.Set (width, height, 0.0f);
-
+//if (gameStates.render.cameras.bActive)
+//	return true;
+if (gameOpts->render.effects.bGlow != 1)
+	return true;
 if (!bTransformed)
 	transformation.Transform (v, v);
-SetItemExtent (v - o, 1);
-SetItemExtent (v + o, 1);
+CFloatVector3 r;
+r.Set (width, height, 0.0f);
+SetExtent (v - r, true);
+SetExtent (v + r, true);
 #endif
-return Visible () ? 1 : -1;
+return Visible ();
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CGlowRenderer::SetViewport (int32_t const nType, CFixVector pos, float radius)
+bool CGlowRenderer::SetViewport (int const nType, CFixVector pos, float radius)
 {
 if (!Available (nType))
-	return 1;
+	return true;
 if ((GLOW_FLAGS & nType) == 0)
-	return 0;
+	return false;
 #if USE_VIEWPORT
-if (!UseViewport ())
-	return 1;
+//if (gameStates.render.cameras.bActive)
+//	return true;
+if (gameOpts->render.effects.bGlow != 1)
+	return true;
 CFloatVector3 v;
 v.Assign (pos);
 return SetViewport (nType, v, radius, radius);
-#else
-return 1;
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::Available (int32_t const nType, bool bForce)
+bool CGlowRenderer::Available (int const nType, bool bForce)
 {
 #if 0 //DBG
 if (nType == GLOW_SHIELDS)
@@ -544,35 +456,19 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::Compatible (int32_t const nType, int32_t const nStrength, bool const bReplace, float const brightness)
-{
-if ((m_bReplace != bReplace) || (m_nStrength != nStrength) || (m_brightness != brightness))
-	return false;
-if ((nType == GLOW_LIGHTNING) || (nType == BLUR_OUTLINE) || (nType == BLUR_SHADOW))
-	return m_nType == nType;
-if ((m_nType == GLOW_LIGHTNING) || (m_nType == BLUR_OUTLINE) || (m_nType == BLUR_SHADOW))
-	return m_nType == nType;
-return true;
-}
-
-//------------------------------------------------------------------------------
-
-bool CGlowRenderer::Begin (int32_t const nType, int32_t const nStrength, bool const bReplace, float const brightness)
+bool CGlowRenderer::Begin (int const nType, int const nStrength, bool const bReplace, float const brightness)
 {
 if (!Available (nType))
 	return false;
-if ((gameOptions [0].render.nQuality < 3) && automap.Active ())
+if ((gameOptions [0].render.nQuality < 3) && automap.Display ())
 	return false;
-#if DBG
-if (nType == BLUR_SHADOW)
-	BRP;
-#endif
-if (Compatible (nType, nStrength, bReplace, brightness)) {
-	if (ogl.SelectGlowBuffer () < 0)
-		gameOpts->render.effects.bGlow = 0;
-	CCanvas::Current ()->SetViewport ();
-	}
+#if 0
+if (nType != m_nType) {
+#else
+if ((m_bReplace == bReplace) && (m_nStrength == nStrength) && (m_brightness == brightness) && ((nType == GLOW_LIGHTNING) == (m_nType == GLOW_LIGHTNING))) 
+	gameOpts->render.effects.bGlow = ogl.SelectGlowBuffer ();
 else {
+#endif
 	End ();
 	m_nType = nType;
 	m_bReplace = bReplace;
@@ -580,8 +476,7 @@ else {
 	m_brightness = brightness;
 	m_bViewport = 0;
 	InitViewport ();
-	if (!Activate ())
-		gameOpts->render.effects.bGlow = 0;
+	gameOpts->render.effects.bGlow = Activate ();
 	}
 if (gameOpts->render.effects.bGlow)
 	return true;
@@ -603,107 +498,81 @@ return c;
 
 //------------------------------------------------------------------------------
 
-void RenderTestImage (void);
-
-void CGlowRenderer::Render (int32_t const source, int32_t const direction, float const radius, bool const bClear)
+void CGlowRenderer::Render (int const source, int const direction, float const radius, float const scale)
 {
-float verts [2][4][2] = {
-	{{0,0},{0,1},{1,1},{1,0}},
-	{{0,0},{0,1},{1,1},{1,0}},
+#if USE_VIEWPORT //DBG
+
+float r = radius * 4.0f; // scale with a bit more than the max. offset from the blur shader
+float w = (float) ScreenWidth ();
+float h = (float) ScreenHeight ();
+float verts [4][2] = {
+	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
+	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
+	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) h) * scale},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) w) * scale,
+	 ScreenCoord ((float) m_screenMax.y + r, (float) h) * scale},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) w) * scale,
+	 ScreenCoord ((float) m_screenMin.y - r, (float) h)}
 	};
-
-float w, h, l, r, b, t;
-
-int32_t bHaveViewport = UseViewport () && (m_bViewport > 0);
-
-if (bHaveViewport) {
-	w = (float) gameData.renderData.scene.Width ();
-	h = (float) gameData.renderData.scene.Height ();
-
-	m_renderMin.x = Clamp (m_renderMin.x, 0, CCanvas::Current ()->Width ());
-	m_renderMax.x = Clamp (m_renderMax.x, 0, CCanvas::Current ()->Width ());
-	m_renderMin.y = Clamp (m_renderMin.y, 0, CCanvas::Current ()->Height ());
-	m_renderMax.y = Clamp (m_renderMax.y, 0, CCanvas::Current ()->Height ());
-
-	l = (float) m_renderMin.x - radius;
-	r = (float) m_renderMax.x + radius;
-	b = (float) m_renderMin.y - radius;
-	b = (float) CCanvas::Current ()->Height () - b;
-	t = (float) m_renderMax.y + radius;
-	t = (float) CCanvas::Current ()->Height () - t;
-
-	if (bClear) {
-		ogl.SaveViewport ();
-		glViewport ((GLint) (l + CCanvas::Current ()->Width ()), (GLint) (t + CCanvas::Current ()->Top ()), (GLsizei) (r - l), (GLsizei) (b - t));
-		ClearDrawBuffer (m_nType);
-		ogl.RestoreViewport ();
-		}
-
-	verts [1][0][0] = ScreenCoord (l, w);
-	verts [1][0][1] = ScreenCoord (t, h);
-	verts [1][1][0] = ScreenCoord (l, w);
-	verts [1][1][1] = ScreenCoord (b, h);
-	verts [1][2][0] = ScreenCoord (r, w);
-	verts [1][2][1] = ScreenCoord (b, h);
-	verts [1][3][0] = ScreenCoord (r, w);
-	verts [1][3][1] = ScreenCoord (t, h);
-
-	w = (float) gameData.renderData.screen.Width ();
-	h = (float) gameData.renderData.screen.Height ();
-
-	l += (float) CCanvas::Current ()->Left ();
-	r += (float) CCanvas::Current ()->Left ();
-	t += (float) CCanvas::Current ()->Top ();
-	b += (float) CCanvas::Current ()->Top ();
-	t = h - t;
-	b = h - b;
-	if (b > t)
-		Swap (b, t);
-	}
-else {
-	w = (float) gameData.renderData.screen.Width ();
-	h = (float) gameData.renderData.screen.Height ();
-	l = (float) CCanvas::Current ()->Left ();
-	r = (float) CCanvas::Current ()->Right ();
-	t = h - (float) CCanvas::Current ()->Top ();
-	b = t - (float) CCanvas::Current ()->Height ();
-	}
-
+r += 4.0f;
 float texCoord [4][2] = {
-	{ScreenCoord (l, w), ScreenCoord (t, h)},
-	{ScreenCoord (l, w), ScreenCoord (b, h)},
-	{ScreenCoord (r, w), ScreenCoord (b, h)},
-	{ScreenCoord (r, w), ScreenCoord (t, h)}
+	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
+	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
+	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) h)},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) w),
+	 ScreenCoord ((float) m_screenMax.y + r, (float) h)},
+	{ScreenCoord ((float) m_screenMax.x + r, (float) w),
+	 ScreenCoord ((float) m_screenMin.y - r, (float) h)}
 	};
 
-
-#if 1 //!DBG
-if (direction >= 0) {
-#if 0 //DBG
-	RenderTestImage ();
-	return;
-#endif
-	LoadShader (direction, radius);
-	}
-else
-#endif 
-	{
-	shaderManager.Deploy (-1);
-	}
-#if 0 && DBG
-ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
-ogl.SetDepthTest (false);
-ogl.SetTexturing (false);
-glColor4f (0.0f, 0.5f, 1.0f, 0.25f);
 #else
-ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+
+float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+
+#endif
+
+//ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+#if 1 //!DBG
+if (direction >= 0)
+	LoadShader (direction, radius);
+else
+#endif
+	shaderManager.Deploy (-1);
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer (source < 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
-//glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
-#endif
-OglVertexPointer (2, GL_FLOAT, 0, verts [bHaveViewport]);
+OglVertexPointer (2, GL_FLOAT, 0, verts);
+glColor3f (1,1,1);
 OglDrawArrays (GL_QUADS, 0, 4);
 ogl.BindTexture (0);
+}
+
+//------------------------------------------------------------------------------
+
+void CGlowRenderer::ClearViewport (float const radius)
+{
+#if 1
+ogl.SaveViewport ();
+if (radius < 0) 
+	glViewport (0, 0, ScreenWidth () - 1, ScreenHeight () - 1);
+else {
+	float r = radius * 4.0f * m_nStrength; // scale with a bit more than the max. offset from the blur shader
+	glViewport ((GLsizei) max (m_screenMin.x - r, 0), 
+					(GLsizei) max (m_screenMin.y - r, 0), 
+					(GLint) min (m_screenMax.x - m_screenMin.x + 1 + 2 * r, ScreenWidth ()), 
+					(GLint) min (m_screenMax.y - m_screenMin.y + 1 + 2 * r, ScreenHeight ()));
+	}
+if (m_nType == BLUR_SHADOW)
+	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
+else
+	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+glClear (GL_COLOR_BUFFER_BIT);
+ogl.RestoreViewport ();
+#else
+glClear (GL_COLOR_BUFFER_BIT);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -715,27 +584,21 @@ ogl.ChooseDrawBuffer ();
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Done (const int32_t nType)
+void CGlowRenderer::Done (const int nType)
 {
-#if 0
-End ();
-#else
 if (Available (nType)) {
 #if 1
 	ogl.DrawBuffer ()->SelectColorBuffers (0);
 #else
 	ogl.ChooseDrawBuffer ();
 #endif
-	CCanvas::Current ()->SetViewport ();
+	ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	}	
-#endif
 }
 
 //------------------------------------------------------------------------------
 
-static int32_t bNoEdgeBlurInWindows = 0;
-
-bool CGlowRenderer::End (float fAlpha)
+bool CGlowRenderer::End (void)
 {
 if (m_nStrength < 0)
 	return false;
@@ -746,80 +609,45 @@ if (!Visible ())
 else
 #endif
 	{
-#if 0 //DBG
-	if (m_nType == BLUR_SHADOW)
-		BRP;
-	if (m_nType == BLUR_OUTLINE) {
-		if (bNoEdgeBlurInWindows == (gameStates.render.nWindow [0] != 0)) {
-			ogl.ChooseDrawBuffer ();
-			m_nStrength = -1;
-			return false;
-			}
-		}
-	if (m_nType != BLUR_OUTLINE) {
-		ogl.ChooseDrawBuffer ();
-		m_nStrength = -1;
-		return false;
-		}
-
-#endif
-#if 1
-	if (gameStates.render.nWindow [0])
-		gameData.renderData.window.Activate ("CGlowRenderer::End");
-	else
-#endif
-		gameData.renderData.scene.Activate ("CGlowRenderer::End");
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
 	glMatrixMode (GL_PROJECTION);
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
-
-	glOrtho (0.0, 1.0, 1.0, 0.0, -1.0, 1.0);
+	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+	ogl.Viewport (0, 0, ScreenWidth (), ScreenHeight ());
 
 	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
 	bool bDepthWrite = ogl.GetDepthWrite ();
-	bool bFaceCulling = ogl.GetFaceCulling ();
 	ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
 
 	ogl.SetDepthWrite (false);
 	ogl.SetAlphaTest (false);
-	ogl.SetFaceCulling (false);
-	ogl.ResetClientStates (0);
+	ogl.ResetClientStates (1);
+	//glClearColor (0.0, 0.375, 0.75, 0.5);
+	//glClear (GL_COLOR_BUFFER_BIT);
 
-	if (m_bViewport < 0) {
-		m_renderMin.x = CCanvas::Current ()->Left ();
-		m_renderMin.y = CCanvas::Current ()->Top ();
-		m_renderMax.x = CCanvas::Current ()->Right ();
-		m_renderMax.y = CCanvas::Current ()->Bottom ();
-		}
-
-	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
-
-	float radius = BLUR_RADIUS;
+	float radius = 0.0f;
 #if BLUR
 	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 
+	radius += RAD_INCR;
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	if (!ogl.SelectBlurBuffer (0))
 		return Reset (0, 1);
-	ClearDrawBuffer (m_nType);
-	Render (-1, 0, radius, true); // Glow -> Blur 0
+	ClearViewport (radius);
+	Render (-1, 0, radius); // Glow -> Blur 0
 	if (!ogl.SelectBlurBuffer (1))
 		return Reset (0, 1);
-	ClearDrawBuffer (m_nType);
-	Render (0, 1, radius, true); // Blur 0 -> Blur 1
-#	if BLUR > 1
-#		if 0
-	m_nStrength = (m_nStrength << 1) | 1;
-#		endif
-#		if 1
-	if (m_nType < BLUR_OUTLINE)
+	ClearViewport (radius);
+	Render (0, 1, radius); // Blur 0 -> Blur 1
+	if (m_nType != BLUR_SHADOW)
 		ogl.SetBlendMode (OGL_BLEND_ADD);
-#		endif
-	for (int32_t i = 1; i < m_nStrength; i++) {
-		radius += BLUR_RADIUS;
+#	if BLUR > 1
+	for (int i = 1; i < m_nStrength; i++) {
+		radius += RAD_INCR;
 		if (!ogl.SelectBlurBuffer (0))
 			return Reset (0, 1);
 		Render (1, 0, radius); // Blur 1 -> Blur 0
@@ -833,38 +661,33 @@ else
 
 	ogl.ChooseDrawBuffer ();
 	ogl.SetDepthMode (GL_ALWAYS);
-	ogl.SetBlending (true);
-
+	//ogl.SetBlendMode (OGL_BLEND_ADD_WEAK);
+	if (m_nType != BLUR_SHADOW)
+		ogl.SetBlendMode (OGL_BLEND_ADD);
+	else {
+		ogl.SetBlendMode (OGL_BLEND_MULTIPLY);
+		//ogl.SetStencilTest (true);
+		}
+	float scale = (float) ScreenScale ();
 #if BLUR
-	ogl.SetBlendMode ((m_nType >= BLUR_OUTLINE) ? OGL_BLEND_MULTIPLY : (fAlpha < 1.0f) ? OGL_BLEND_ALPHA : OGL_BLEND_ADD);
-	glColor4f (1.0f, 1.0f, 1.0f, fAlpha);
-	Render (1, -1, radius); // Glow -> back buffer
-#	if 1
+	Render (1, -1, radius, (scale == 1.0f) ? 1.0f : 8.0f); // Glow -> back buffer
 	if (!m_bReplace)
-		Render (-1, -1, radius); // render the unblurred stuff on top of the blur
-#	endif
-#else
-	ogl.SetBlendMode ((m_nType > BLUR_OUTLINE) ? OGL_BLEND_MULTIPLY : (fAlpha < 1.0f) ? OGL_BLEND_ALPHA : OGL_BLEND_ADD);
-	glColor4f (1.0f, 1.0f, 1.0f, fAlpha);
-	Render (-1, -1, radius); // render the unblurred stuff on top of the blur
 #endif
-
+		Render (-1, -1, radius, scale); // render the unblurred stuff on top of the blur
 	ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 	glMatrixMode (GL_PROJECTION);
 	glPopMatrix ();
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
+	ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
 	ogl.SetDepthWrite (bDepthWrite);
 	ogl.SetAlphaTest (true);
 	ogl.SetDepthMode (nDepthMode);
 	ogl.SetStencilTest (false);
-	ogl.SetFaceCulling (bFaceCulling);
-	CCanvas::Current ()->Deactivate ();
 	}
 return Reset (gameOpts->render.effects.bGlow);
 }
 
 //------------------------------------------------------------------------------
-
 

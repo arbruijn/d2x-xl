@@ -90,7 +90,6 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -130,26 +129,26 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">\programs\d2\debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">d:\programs\d2\bin\win32-std\debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">\programs\d2\x64\debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Configuration)\$(Platform)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">\programs\d2\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(Platform)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LinkIncremental>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</EmbedManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Configuration)\$(Platform)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</LinkIncremental>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</EmbedManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">\programs\d2\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">$(Configuration)\$(Platform)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">true</LinkIncremental>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">true</EmbedManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">\programs\d2\x64\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">$(Configuration)\$(Platform)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">false</LinkIncremental>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">true</EmbedManifest>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-Intel|Win32'">$(Configuration)\$(Platform)\</OutDir>
@@ -184,9 +183,8 @@
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">$(ProjectName)</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">$(ProjectName)-omp</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">d2x-xl-x64</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">d2x-xl-dbg</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -204,7 +202,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>..\..\..\libraries\rift\LibOVR\include;..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;c:\programme\visual leak detector\include;..\..\..\libraries\glew-1.5.3\Win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;c:\programme\visual leak detector\include;..\..\..\libraries\glew-1.5.3\Win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_OPENMP=2;DBG=1;_DEBUG;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;GLEW_STATIC;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -223,7 +221,6 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CallingConvention>Cdecl</CallingConvention>
       <CompileAs>Default</CompileAs>
-      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -231,10 +228,10 @@
       <ShowProgress>true</ShowProgress>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>setupapi.lib;Rift.lib;zlib.lib;SDL_image.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>zlib.lib;SDL_net.lib;SDL_image.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>d:\programs\d2\bin\win32-std\debug\d2x-xl-dbg.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\Libraries\Rift\VC10\Win32\Debug\;..\..\..\libraries\zlib-1.2.5\VC10\Win32\DLL Debug;..\..\..\libraries\SDL_image-1.2.7\VC10\Win32\Debug;..\..\..\libraries\SDL_net-1.2.7\VC10\Win32\Debug;..\..\..\libraries\glew-1.5.3\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>"\projects\libraries\zlib-1.2.5\VC10\dll debug\win32";\projects\libraries\SDL_image-1.2.7\VC10\Debug\Win32;\projects\libraries\SDL_net-1.2.7\VC10\Debug;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -259,30 +256,29 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\..\libraries\sixense\include;..\..\..\libraries\rift\LibOVR\include;..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;DBG=1;USE_OPENMP=2;CONSOLE;GLEW_STATIC;ZLIB_DLL;_CRT_SECURE_NO_WARNINGS=1;_CRT_SECURE_NO_DEPRECATE=1;DESCENT_EXECUTABLE_VERSION="64 bit multithreaded debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.8;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;c:\programme\visual leak detector\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DBG=1;_DEBUG;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <StructMemberAlignment>1Byte</StructMemberAlignment>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CallingConvention>Cdecl</CallingConvention>
       <CompileAs>Default</CompileAs>
-      <OpenMPSupport>true</OpenMPSupport>
-      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -290,10 +286,10 @@
       <ShowProgress>true</ShowProgress>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>sixensed_x64.lib;setupapi.lib;Rift.lib;SDL.lib;SDL_image.lib;zlib.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>\programs\d2\bin\x64-omp\debug\d2x-xl-x64-dbg.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\Libraries\Sixense\lib\x64\debug_dll\;..\..\..\Libraries\Rift\VC10\x64\Debug\;"..\..\..\libraries\zlib-1.2.5\VC10\x64\DLL Debug";..\..\..\libraries\SDL-1.2.14\VC10\SDL\x64\Debug;..\..\..\libraries\SDL_image-1.2.7\VC10\x64\Debug;..\..\..\libraries\SDL_net-1.2.7\VC10\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>\projects\OpenAL 1.1 SDK\libs\Win32;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug;\projects\sdl-1.2.13\debug;\projects\SDL_mixer-1.2.8\VC10\Debug\Win32;\projects\irrlicht-1.4\lib\win32-visualstudio;c:\programme\visual leak detector\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -324,8 +320,8 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\..\libraries\rift\LibOVR\include;..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\..\..\libraries\glew-1.5.3\Win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DBG=0;USE_OPENMP=0;_WINNT_WIN32=0x0700;NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;DESCENT_EXECUTABLE_VERSION="32 bit singlethreaded";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\..\..\libraries\glew-1.5.3\Win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DBG=0;USE_OPENMP=0;_WINNT_WIN32=0x0700;NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -348,10 +344,10 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>setupapi.lib;Rift.lib;zlib.lib;SDL_image.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>zlib.lib;SDL_net.lib;SDL_image.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>\programs\d2\d2x-xl.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\Libraries\Rift\VC10\Win32\Release\;..\..\..\libraries\zlib-1.2.5\VC10\\Win32\DLL Release;..\..\..\libraries\SDL_image-1.2.7\VC10\Win32\Release;..\..\..\libraries\SDL_net-1.2.7\VC10\Win32\Release;..\..\..\libraries\glew-1.5.3\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>\projects\libraries\zlib-1.2.5\VC10\DLL Release\Win32;\projects\libraries\SDL_image-1.2.7\VC10\Release\Win32;\projects\libraries\SDL_net-1.2.7\VC10\Release\Win32;..\..\..\libraries\glew-1.5.3\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
@@ -436,8 +432,8 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\..\libraries\sixense\include;..\..\..\libraries\rift\LibOVR\include;..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_OPENMP=2;_WINNT_WIN32=0x0700;OPENMP;DBG=0;NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;ZLIB_DLL;DESCENT_EXECUTABLE_VERSION="32 bit multithreaded";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_OPENMP=2;_WINNT_WIN32=0x0700;OPENMP;DBG=0;NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -460,10 +456,10 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>setupapi.lib;Rift.lib;SDL_image.lib;zlib.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>SDL_net.lib;SDL_image.lib;zlib.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>\programs\d2\d2x-xl-omp.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\Libraries\Rift\VC10\Win32\Release\;..\..\..\libraries\zlib-1.2.5\VC10\Win32\DLL Release;..\..\..\libraries\SDL_image-1.2.7\VC10\Win32\Release;..\..\..\libraries\SDL_net-1.2.7\VC10\Win32\Release;..\..\..\libraries\glew-1.5.3\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>\projects\libraries\zlib-1.2.5\VC10\DLL Release\Win32;\projects\libraries\SDL_image-1.2.7\VC10\Release\Win32;\projects\libraries\SDL_net-1.2.7\VC10\Release\Win32;..\..\..\libraries\glew-1.5.3\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
@@ -494,15 +490,15 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\..\libraries\sixense\include;..\..\..\libraries\rift\LibOVR\include;..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_OPENMP=2;DBG=0;_WINNT_WIN32=0x0700;OPENMP;NDEBUG;RELEASE;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS=1;GLEW_STATIC;DESCENT_EXECUTABLE_VERSION="64 bit multithreaded";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_OPENMP=2;DBG=0;_WINNT_WIN32=0x0700;OPENMP;NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <StructMemberAlignment>1Byte</StructMemberAlignment>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <OpenMPSupport>true</OpenMPSupport>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -518,10 +514,10 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>setupapi.lib;Rift.lib;zlib.lib;SDL_image.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>zlib.lib;SDL_net.lib;SDL_image.lib;odbc32.lib;odbccp32.lib;wsock32.lib;ws2_32.lib;opengl32.lib;glu32.lib;winmm.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>\programs\d2\bin\x64-omp\d2x-xl-x64.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\..\..\Libraries\Rift\VC10\x64\Release\;"..\..\..\libraries\zlib-1.2.5\VC10\x64\DLL Release";..\..\..\libraries\SDL_image-1.2.7\VC10\x64\Release;..\..\..\libraries\SDL_net-1.2.7\VC10\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>"\projects\libraries\zlib-1.2.5\VC10\DLL Release\x64";\projects\libraries\SDL_image-1.2.7\VC10\Release-OMP\X64;\projects\libraries\SDL_net-1.2.7\VC10\release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
@@ -643,14 +639,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ResourceCompile Include="..\d2x-xl.rc" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="..\include\3d.h" />
     <ClInclude Include="..\3d\buildmodel.h" />
     <ClInclude Include="..\3d\globvars.h" />
     <ClInclude Include="..\include\hitbox.h" />
     <ClInclude Include="..\include\interp.h" />
-    <ClInclude Include="..\include\network_thread.h" />
-    <ClInclude Include="..\include\producers.h" />
-    <ClInclude Include="..\include\rectangle.h" />
     <ClInclude Include="..\include\rendermodel.h" />
     <ClInclude Include="..\include\shadows.h" />
     <ClInclude Include="..\include\transformation.h" />
@@ -677,8 +673,8 @@
     <ClInclude Include="..\include\endlevel.h" />
     <ClInclude Include="..\include\findpath.h" />
     <ClInclude Include="..\include\flightpath.h" />
+    <ClInclude Include="..\include\fuelcen.h" />
     <ClInclude Include="..\include\game.h" />
-    <ClInclude Include="..\input\include\sixense_wrapper.h" />
     <ClInclude Include="..\main\gameargs.h" />
     <ClInclude Include="..\include\gamecntl.h" />
     <ClInclude Include="..\include\gamefont.h" />
@@ -1018,17 +1014,8 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\3d\transformation.cpp" />
-    <ClCompile Include="..\cockpit\crosshairs.cpp" />
-    <ClCompile Include="..\cockpit\genericdrawers.cpp" />
-    <ClCompile Include="..\cockpit\utilities.cpp" />
     <ClCompile Include="..\console\console.cpp" />
-    <ClCompile Include="..\gameio\facegrid.cpp" />
     <ClCompile Include="..\include\cquicksort.cpp" />
-    <ClCompile Include="..\input\sixense_wrapper.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\main\crypt.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
@@ -1040,8 +1027,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\console\cvar.cpp" />
-    <ClCompile Include="..\main\meshedge.cpp" />
-    <ClCompile Include="..\main\producers.cpp" />
     <ClCompile Include="..\misc\error.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
@@ -1157,6 +1142,16 @@
     <ClCompile Include="..\main\findpath.cpp" />
     <ClCompile Include="..\main\findsegment.cpp" />
     <ClCompile Include="..\main\flightpath.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Intel|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Intel|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\main\fuelcen.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Intel|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
@@ -1471,8 +1466,6 @@
     </ClCompile>
     <ClCompile Include="..\network\autodl.cpp" />
     <ClCompile Include="..\network\banlist.cpp" />
-    <ClCompile Include="..\network\network_handshake.cpp" />
-    <ClCompile Include="..\network\network_thread.cpp" />
     <ClCompile Include="..\network\win32\ipx_mcast4.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
@@ -1626,7 +1619,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\ogl\ogl_cartoonize.cpp" />
     <ClCompile Include="..\render\automap.cpp" />
     <ClCompile Include="..\render\cameras.cpp" />
     <ClCompile Include="..\render\fastrender.cpp" />
@@ -2204,6 +2196,7 @@
     <ClCompile Include="..\menus\soundmenu.cpp" />
     <ClCompile Include="..\io\args.cpp" />
     <ClCompile Include="..\io\cfile.cpp" />
+    <ClCompile Include="..\io\d_io.cpp" />
     <ClCompile Include="..\io\win32\findfile.cpp" />
     <ClCompile Include="..\io\hogfile.cpp" />
     <ClCompile Include="..\libmve\decoder16.cpp" />
@@ -2213,6 +2206,7 @@
     <ClCompile Include="..\libmve\mveplay.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\d2x-xl.ico" />
     <CustomBuildStep Include="..\configure.ac">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -2350,18 +2344,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </CustomBuildStep>
-    <None Include="..\resources\d2x-w32.ico" />
-    <None Include="..\resources\d2x-xl-2.ico" />
-    <None Include="..\resources\d2x-xl-banner.bmp" />
-    <None Include="..\resources\d2x-xl-banner.jpg" />
-    <None Include="..\resources\d2x-xl-ico-32x32.gif" />
-    <None Include="..\resources\d2x-xl-ico-64x64.gif" />
-    <None Include="..\resources\d2x-xl-icon-64x64.bmp" />
-    <None Include="..\resources\d2x-xl-icon-64x64.png" />
-    <None Include="..\resources\d2x-xl-icon-64x64x4.bmp" />
-    <None Include="..\resources\d2x-xl.ico" />
-    <None Include="..\resources\descent.ico" />
-    <None Include="..\resources\icon5.ico" />
+    <None Include="ClassDiagram1.cd" />
+    <None Include="..\d2x-xl-icon-64x64.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\SDL-1.2.14\VC10\SDLmain\SDLmain.vcxproj">
@@ -2380,9 +2364,6 @@
       <Project>{8ab3504f-5e58-4910-afe8-7a1e595ac3f4}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\resources\d2x-xl.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

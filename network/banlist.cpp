@@ -28,9 +28,9 @@ return Push (e = szPlayer);
 
 //-----------------------------------------------------------------------------
 
-int32_t CBanList::Find (const char* szPlayer)
+int CBanList::Find (const char* szPlayer)
 {
-	uint32_t	i;
+	uint	i;
 
 for (i = 0; i < ToS (); i++)
 	if ((*this) [i] == szPlayer)
@@ -40,13 +40,13 @@ return 0;
 
 //-----------------------------------------------------------------------------
 
-int32_t CBanList::Load (void)
+int CBanList::Load (void)
 {
 	CFile	cf;
 	tBanListEntry	szPlayer;
-	uint32_t i;
+	uint i;
 
-if (!cf.Open ("banlist.txt", gameFolders.game.szData [0], "rb", 0))
+if (!cf.Open ("banlist.txt", gameFolders.szDataDir [0], "rb", 0))
 	return 0;
 while (!feof (cf.File ())) {
 	fgets (reinterpret_cast<char*> (szPlayer), sizeof (szPlayer), cf.File ());
@@ -63,13 +63,13 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int32_t CBanList::Save (void)
+int CBanList::Save (void)
 {
 if (Buffer () && ToS ()) {
 	CFile	cf;
-	uint32_t i;
+	uint i;
 
-	if (!cf.Open ("banlist.txt", gameFolders.game.szData [0], "wt", 0))
+	if (!cf.Open ("banlist.txt", gameFolders.szDataDir [0], "wt", 0))
 		return 0;
 	for (i = 0; i < ToS (); i++)
 		fputs (const_cast<char*> (m_data.buffer [i].m_entry), cf.File ());

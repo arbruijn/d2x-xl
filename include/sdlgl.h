@@ -2,12 +2,12 @@
 #define _SDLGL_H
 
 void InitGammaRamp (void);
-int32_t SdlGlSetBrightnessInternal (void);
-int32_t SdlGlVideoModeOK (int32_t w, int32_t h);
+int SdlGlSetBrightnessInternal (void);
+int SdlGlVideoModeOK (int w, int h);
 void SdlGlInitAttributes (void);
-int32_t SdlGlInitWindow (int32_t w, int32_t h, int32_t bForce);
+int SdlGlInitWindow (int w, int h, int bForce);
 void SdlGlDestroyWindow (void);
-void SdlGlDoFullScreenInternal (int32_t bForce);
+void SdlGlDoFullScreenInternal (int bForce);
 void SdlGlSwapBuffersInternal (void);
 void SdlGlClose (void);
 

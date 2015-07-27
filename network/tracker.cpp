@@ -34,7 +34,7 @@
 #endif
 
 #if DBG
-static int32_t bTestTracker = 0;
+static int bTestTracker = 0;
 #else
 #	define bTestTracker	0
 #endif
@@ -76,11 +76,11 @@ Init ();
 
 //------------------------------------------------------------------------------
 
-int32_t CTracker::Find (tUdpAddress *addr)
+int CTracker::Find (tUdpAddress *addr)
 {
-	int32_t	i;
-	uint32_t	a = UDP_ADDR (addr);
-	int16_t	p = (int16_t) ntohs (UDP_PORT (addr));
+	int				i;
+	unsigned	int	a = UDP_ADDR (addr);
+	short				p = (short) ntohs (UDP_PORT (addr));
 
 for (i = 0; i < trackerList.nServers; i++)
 	if ((a == UDP_ADDR (trackerList.servers + i)) && 
@@ -91,24 +91,26 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-void CTracker::Call (int32_t i, uint8_t *pData, int32_t nDataLen)
+void CTracker::Call (int i, ubyte *pData, int nDataLen)
 {
-	uint32_t	network = 0;
+	uint	network = 0;
 	tUdpAddress		tracker;
 
 UDP_ADDR (&tracker) = UDP_ADDR (trackerList.servers + i);
 UDP_PORT (&tracker) = htons (UDP_PORT (trackerList.servers + i));
-networkThread.Send (pData, nDataLen, reinterpret_cast<uint8_t*> (&network), NULL, reinterpret_cast<uint8_t*> (&tracker), 1);
+gameStates.multi.bTrackerCall = 1;
+IPXSendInternetPacketData (pData, nDataLen, reinterpret_cast<ubyte*> (&network), reinterpret_cast<ubyte*> (&tracker));
+gameStates.multi.bTrackerCall = 0;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CTracker::AddServer (void)
+int CTracker::AddServer (void)
 {
 if ((IAmGameHost () || bTestTracker) && tracker.m_bUse) {
-		int32_t					i, t;
-		static int32_t			nTimeout = 0;
-		uint8_t					id = 'S';
+		int					i, t;
+		static int			nTimeout = 0;
+		ubyte					id = 'S';
 
 	if ((t = SDL_GetTicks ()) - nTimeout < S_TIMEOUT)
 		return 0;
@@ -122,11 +124,11 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t CTracker::RequestServerList (void)
+int CTracker::RequestServerList (void)
 {
-	int32_t				i, t;
-	static int32_t		nTimeout = 0;
-	uint8_t				id = 'R';
+	int				i, t;
+	static int		nTimeout = 0;
+	ubyte				id = 'R';
 
 if (!tracker.m_bUse)
 	return 0;
@@ -144,10 +146,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CTracker::ReceiveServerList (uint8_t *data)
+int CTracker::ReceiveServerList (ubyte *data)
 {
 	tServerListTable	*pslt;
-	int32_t				i = Find (reinterpret_cast<tUdpAddress*> (networkData.packetSource.Node ()));
+	int					i = Find (reinterpret_cast<tUdpAddress*> (&networkData.packetSource.src_node));
 
 if (i < 0)
 	return 0;
@@ -157,7 +159,7 @@ for (pslt = serverListTable; pslt; pslt = pslt->nextList)
 
 		memcpy (&pslt->serverList, data, sizeof (tServerList));
 		for (i = pslt->serverList.nServers; i; i--, ps++)
-			UDP_PORT (ps) = (uint16_t) ntohs (UDP_PORT (ps));
+			UDP_PORT (ps) = (ushort) ntohs (UDP_PORT (ps));
 		pslt->lastActive = SDL_GetTicks ();
 		return 1;
 		}
@@ -166,16 +168,16 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CTracker::SetServerFromList (tServerList *psl, int32_t i, uint8_t* serverAddress)
+void CTracker::SetServerFromList (tServerList *psl, int i, ubyte* serverAddress)
 {
 memcpy (serverAddress + 4, psl->servers + i, 4);
-*reinterpret_cast<uint16_t*> (serverAddress + 8) = (uint16_t) htons (UDP_PORT (psl->servers + i));
+*reinterpret_cast<ushort*> (serverAddress + 8) = (ushort) htons (UDP_PORT (psl->servers + i));
 //udpBasePort = psl->servers [i].port;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CTracker::GetServerFromList (int32_t i, uint8_t* serverAddress)
+int CTracker::GetServerFromList (int i, ubyte* serverAddress)
 {
 if (!m_bUse)
 	return 0;
@@ -195,7 +197,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t CTracker::IsTracker (uint32_t addr, uint16_t port, const char* msg)
+int CTracker::IsTracker (uint addr, ushort port, char* msg)
 {
 if (msg) { 
 	if (!strcmp (msg, "FDescent Game Info Request"))
@@ -207,10 +209,10 @@ if (msg) {
 if (!m_bUse)
 	return 0;
 
-	int32_t	i;
+	int	i;
 #if DBG
-	uint32_t a;
-	uint16_t p;
+	uint a;
+	ushort p;
 #endif
 
 port = ntohs (port);
@@ -228,9 +230,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t CTracker::Add (tUdpAddress *addr)
+int CTracker::Add (tUdpAddress *addr)
 {
-	int32_t					i;
+	int					i;
 	tServerListTable	*pslt;
 
 if (trackerList.nServers >= MAX_TRACKER_SERVERS)
@@ -251,11 +253,11 @@ return trackerList.nServers++;
 
 //------------------------------------------------------------------------------
 
-int32_t CTracker::CountActive (void)
+int CTracker::CountActive (void)
 {
 	tServerListTable	*pslt;
 	time_t t = SDL_GetTicks ();
-	int32_t i = 0;
+	int i = 0;
 
 for (pslt = serverListTable; pslt; pslt = pslt->nextList)
 	if (pslt->lastActive && (t - pslt->lastActive < 30000))
@@ -267,7 +269,7 @@ return i;
 
 static time_t	nQueryTimeout;
 
-int32_t TrackerPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+int TrackerPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
@@ -281,7 +283,7 @@ else if (key == KEY_ESC)
 else if ((t = (SDL_GetTicks () - nQueryTimeout)) > 60000)
 	key = -4;
 else {
-	int32_t v = (int32_t) (t / 60);
+	int v = (int) (t / 60);
 	if (menu [0].Value () != v) {
 		menu [0].Value () = v;
 		menu [0].Rebuild ();
@@ -294,10 +296,10 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int32_t CTracker::Query (void)
+int CTracker::Query (void)
 {
 	CMenu	menu (3);
-	int32_t	i;
+	int	i;
 
 NetworkInit ();
 if (!RequestServerList ())
@@ -315,7 +317,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int32_t CTracker::ActiveCount (int32_t bQueryTrackers)
+int CTracker::ActiveCount (int bQueryTrackers)
 {
 if (bQueryTrackers)
 	return Query ();
@@ -324,12 +326,12 @@ return CountActive ();
 
 //------------------------------------------------------------------------------
 
-//int32_t stoip (char *szServerIpAddr, uint8_t *ipAddrP, int32_t* portP = NULL);
-//int32_t stoport (char *szPort, int32_t *pPort, int32_t *pSign);
+//int stoip (char *szServerIpAddr, ubyte *ipAddrP, int* portP = NULL);
+//int stoport (char *szPort, int *pPort, int *pSign);
 
-int32_t CTracker::ParseIpAndPort (char *pszAddr, tUdpAddress *addr)
+int CTracker::ParseIpAndPort (char *pszAddr, tUdpAddress *addr)
 {
-	int32_t	port;
+	int	port;
 	char	szAddr [22], *pszPort;
 
 strncpy (szAddr, pszAddr, sizeof (szAddr));
@@ -337,7 +339,7 @@ szAddr [21] = '\0';
 if (!(pszPort = strchr (szAddr, ':')))
 	return 0;
 *pszPort++ = '\0';
-if (!stoip (szAddr, reinterpret_cast<uint8_t*> (addr)))
+if (!stoip (szAddr, reinterpret_cast<ubyte*> (addr)))
 	return 0;
 if (!stoport (pszPort, &port, NULL))
 	return 0;
@@ -351,7 +353,7 @@ return 1;
 
 void CTracker::AddFromCmdLine (void)
 {
-	uint32_t	i, j, t;
+	uint	i, j, t;
 	char			szKwd [20];
 	tUdpAddress	tracker;
 
@@ -387,7 +389,7 @@ memset (&trackerList, 0, sizeof (trackerList));
 
 void CTracker::CreateList (void)
 {
-	int32_t	a;
+	int	a;
 
 ResetList ();
 if (!(a = FindArg ("-internal_tracker")) || atoi (appConfig [a + 1])) {

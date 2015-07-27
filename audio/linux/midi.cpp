@@ -26,11 +26,11 @@ Mix_Music *mixMusic = NULL;
 
 hmp_file *hmp = NULL;
 
-int32_t midiVolume = 255;
+int midiVolume = 255;
 
 //------------------------------------------------------------------------------
 
-int32_t CMidi::SetVolume (int32_t nVolume)
+int CMidi::SetVolume (int nVolume)
 {
 if (nVolume < 0)
 	midiVolume = 0;
@@ -48,7 +48,7 @@ if (gameOpts->sound.bUseSDLMixer)
 else 
 #	endif
 if (hmp) {
-	int32_t mmVolume;
+	int mmVolume;
 
 	// scale up from 0-127 to 0-0xffff
 	mmVolume = (midiVolume << 1) | (midiVolume & 1);
@@ -56,14 +56,13 @@ if (hmp) {
 	nVolume = midiOutSetVolume((HMIDIOUT)hmp->hmidi, mmVolume | (mmVolume << 16));
 	}
 #endif
-return midiVolume;
 }
 
 //------------------------------------------------------------------------------
 
 void DigiStopCurrentSong ()
 {
-	int32_t h;
+	int h;
 
 if (songManager.Playing ()) {
 	DigiFadeoutMusic ();
@@ -88,9 +87,9 @@ if (!gameOpts->sound.bUseSDLMixer)
 
 //------------------------------------------------------------------------------
 
-int32_t DigiPlayMidiSong (const char *pszSong, char *melodic_bank, char *drum_bank, int32_t loop, int32_t bD1Song)
+int DigiPlayMidiSong (char *pszSong, char *melodic_bank, char *drum_bank, int loop, int bD1Song)
 {
-	int32_t	bCustom;
+	int	bCustom;
 #if 0
 if (!gameStates.sound.digi.bInitialized)
 	return 0;
@@ -101,7 +100,7 @@ if (!(pszSong && *pszSong))
 	return 0;
 if (midiVolume < 1)
 	return 0;
-bCustom = ((strstr (pszSong, ".ogg") != NULL) || strstr (pszSong, ".flac"));
+bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL));
 if (!(bCustom || (hmp = hmp_open (pszSong, bD1Song))))
 	return 0;
 #if USE_SDL_MIXER
@@ -146,7 +145,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t sound_paused = 0;
+int sound_paused = 0;
 
 void DigiPauseMidi()
 {

@@ -61,7 +61,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "grdef.h"
 #include "gamepal.h"
-#include "hiresmodels.h"
 #include "pcx.h"
 
 //#define NO_DUMP_SOUNDS        1   //if set, dump bitmaps but not sounds
@@ -125,7 +124,7 @@ const char *szAddonTextures [MAX_ADDON_BITMAP_FILES] = {
 	"targ03b#4-red"
 	};
 
-static int16_t d2OpaqueDoors [] = {
+static short d2OpaqueDoors [] = {
 	440, 451, 463, 477, /*483,*/ 488,
 	500, 508, 523, 550, 556, 564, 572, 579, 585, 593, 536,
 	600, 608, 615, 628, 635, 6
@@ -138,9 +137,9 @@ static int16_t d2OpaqueDoors [] = {
 #define RLE_REMAP_MAX_INCREASE 132 /* is enough for d1 pc registered */
 
 #if DBG
-#	define PIGGY_BUFFER_SIZE ((uint32_t) (512*1024*1024))
+#	define PIGGY_BUFFER_SIZE ((uint) (512*1024*1024))
 #else
-#	define PIGGY_BUFFER_SIZE ((uint32_t) 0x7fffffff)
+#	define PIGGY_BUFFER_SIZE ((uint) 0x7fffffff)
 #endif
 #define PIGGY_SMALL_BUFFER_SIZE (16*1024*1024)
 
@@ -149,40 +148,40 @@ static int16_t d2OpaqueDoors [] = {
 
 #define BM_FLAGS_TO_COPY (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_NO_LIGHTING | BM_FLAG_RLE | BM_FLAG_RLE_BIG)
 
-extern uint8_t bBigPig;
+extern ubyte bBigPig;
 
 //------------------------------------------------------------------------------
 
 #if DBG
 typedef struct tTrackedBitmaps {
-	CBitmap*	pBm;
-	int32_t		nSize;
+	CBitmap*	bmP;
+	int		nSize;
 } tTrackedBitmaps;
 
 tTrackedBitmaps	trackedBitmaps [100000];
-int32_t					nTrackedBitmaps = 0;
+int					nTrackedBitmaps = 0;
 #endif
 
-void UseBitmapCache (CBitmap *pBm, int32_t nSize)
+void UseBitmapCache (CBitmap *bmP, int nSize)
 {
-if ((nSize > 0) || (uint32_t (-nSize) < bitmapCacheUsed))
+if ((nSize > 0) || (uint (-nSize) < bitmapCacheUsed))
 	bitmapCacheUsed += nSize;
 else
 	bitmapCacheUsed = 0;
 #if DBG
 if (nSize < 0) {
-	for (int32_t i = 0; i < nTrackedBitmaps; i++)
-		if (trackedBitmaps [i].pBm == pBm) {
+	for (int i = 0; i < nTrackedBitmaps; i++)
+		if (trackedBitmaps [i].bmP == bmP) {
 			//CBP (trackedBitmaps [i].nSize != -nSize);
 			if (i < --nTrackedBitmaps)
 				trackedBitmaps [i] = trackedBitmaps [nTrackedBitmaps];
-			trackedBitmaps [nTrackedBitmaps].pBm = NULL;
+			trackedBitmaps [nTrackedBitmaps].bmP = NULL;
 			trackedBitmaps [nTrackedBitmaps].nSize = 0;
 			break;
 			}
 	}
 else {
-	trackedBitmaps [nTrackedBitmaps].pBm = pBm;
+	trackedBitmaps [nTrackedBitmaps].bmP = bmP;
 	trackedBitmaps [nTrackedBitmaps++].nSize = nSize;
 	}
 #endif
@@ -190,13 +189,13 @@ else {
 
 //------------------------------------------------------------------------------
 
-int32_t IsOpaqueDoor (int32_t i)
+int IsOpaqueDoor (int i)
 {
-	int16_t	*p;
+	short	*p;
 
 if (i >= 0)
 	for (p = d2OpaqueDoors; *p >= 0; p++)
-		if (i == gameData.pigData.tex.pBmIndex [*p].index)
+		if (i == gameData.pig.tex.bmIndexP [*p].index)
 			return 1;
 return 0;
 }
@@ -205,7 +204,7 @@ return 0;
 
 #if TEXTURE_COMPRESSION
 
-int32_t CBitmap::SaveS3TC (const char *pszFolder, const char *pszFile)
+int CBitmap::SaveS3TC (const char *pszFolder, const char *pszFile)
 {
 	CFile		cf;
 	char		szFilename [FILENAME_LEN], szFolder [FILENAME_LEN];
@@ -214,7 +213,7 @@ if (!m_info.compressed.bCompressed)
 	return 0;
 
 if (!pszFolder)
-	pszFolder = gameFolders.game.szData [0];
+	pszFolder = gameFolders.szDataDir [0];
 CFile::SplitPath (pszFile, NULL, szFilename, NULL);
 sprintf (szFolder, "%s/dxt/", pszFolder);
 strcat (szFilename, ".dxt");
@@ -237,7 +236,7 @@ return !cf.Close ();
 
 //------------------------------------------------------------------------------
 
-int32_t CBitmap::ReadS3TC (const char *pszFolder, const char *pszFile)
+int CBitmap::ReadS3TC (const char *pszFolder, const char *pszFile)
 {
 	CFile		cf;
 	char		szFilename [FILENAME_LEN], szFolder [FILENAME_LEN];
@@ -248,7 +247,7 @@ if (!m_info.compressed.bCompressed)
 	return 0;
 
 if (!pszFolder)
-	pszFolder = gameFolders.game.szData [0];
+	pszFolder = gameFolders.szDataDir [0];
 CFile::SplitPath (pszFile, NULL, szFilename, NULL);
 sprintf (szFolder, "%s/dxt/", pszFolder);
 strcat (szFilename, ".dxt");
@@ -281,12 +280,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t FindTextureByIndex (int32_t nIndex)
+int FindTextureByIndex (int nIndex)
 {
-	int32_t	i, j = gameData.pigData.tex.nBitmaps [gameStates.app.bD1Mission];
+	int	i, j = gameData.pig.tex.nBitmaps [gameStates.app.bD1Mission];
 
 for (i = 0; i < j; i++)
-	if (gameData.pigData.tex.pBmIndex [i].index == nIndex)
+	if (gameData.pig.tex.bmIndexP [i].index == nIndex)
 		return i;
 return -1;
 }
@@ -294,30 +293,30 @@ return -1;
 //------------------------------------------------------------------------------
 
 #define	CHANGING_TEXTURE(_eP)	\
-			(((_eP)->changing.nWallTexture >= 0) ? \
-			 (_eP)->changing.nWallTexture : \
-			 (_eP)->changing.nObjectTexture)
+			(((_eP)->changingWallTexture >= 0) ? \
+			 (_eP)->changingWallTexture : \
+			 (_eP)->changingObjectTexture)
 
-tEffectInfo *FindEffect (tEffectInfo *pEffectInfo, int32_t nTexture)
+tEffectClip *FindEffect (tEffectClip *ecP, int tNum)
 {
-	int32_t			h, i, j;
-	tBitmapIndex*	pFrame;
+	int				h, i, j;
+	tBitmapIndex	*frameP;
 
-if (pEffectInfo)
-	i = (int32_t) (++pEffectInfo - gameData.effectData.pEffect);
+if (ecP)
+	i = (int) (++ecP - gameData.effects.effectP);
 else {
-	pEffectInfo = gameData.effectData.pEffect.Buffer ();
+	ecP = gameData.effects.effectP.Buffer ();
 	i = 0;
 	}
-for (h = gameData.effectData.nEffects [gameStates.app.bD1Data]; i < h; i++, pEffectInfo++) {
-	for (j = pEffectInfo->animationInfo.nFrameCount, pFrame = pEffectInfo->animationInfo.frames; j > 0; j--, pFrame++)
-		if (pFrame->index == nTexture) {
+for (h = gameData.effects.nEffects [gameStates.app.bD1Data]; i < h; i++, ecP++) {
+	for (j = ecP->vClipInfo.nFrameCount, frameP = ecP->vClipInfo.frames; j > 0; j--, frameP++)
+		if (frameP->index == tNum) {
 #if 0
-			int32_t t = FindTextureByIndex (nTexture);
+			int t = FindTextureByIndex (tNum);
 			if (t >= 0)
-				pEffectInfo->changing.nWallTexture = t;
+				ecP->changingWallTexture = t;
 #endif
-			return pEffectInfo;
+			return ecP;
 			}
 	}
 return NULL;
@@ -325,15 +324,15 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-tAnimationInfo *FindAnimation (int32_t nTexture)
+tVideoClip *FindVClip (int tNum)
 {
-	int32_t	h, i, j;
-	tAnimationInfo *pAnimInfo = gameData.effectData.animations [0].Buffer ();
+	int	h, i, j;
+	tVideoClip *vcP = gameData.effects.vClips [0].Buffer ();
 
-for (i = gameData.effectData.nClips [0]; i; i--, pAnimInfo++) {
-	for (h = pAnimInfo->nFrameCount, j = 0; j < h; j++)
-		if (pAnimInfo->frames [j].index == nTexture) {
-			return pAnimInfo;
+for (i = gameData.effects.nClips [0]; i; i--, vcP++) {
+	for (h = vcP->nFrameCount, j = 0; j < h; j++)
+		if (vcP->frames [j].index == tNum) {
+			return vcP;
 			}
 	}
 return NULL;
@@ -341,15 +340,15 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-tWallEffect *FindWallEffect (int32_t nTexture)
+tWallClip *FindWallAnim (int tNum)
 {
-	int32_t	h, i, j;
-	tWallEffect *pWallEffect = gameData.wallData.pAnim.Buffer ();
+	int	h, i, j;
+	tWallClip *wcP = gameData.walls.animP.Buffer ();
 
-for (i = gameData.wallData.nAnims [gameStates.app.bD1Data]; i; i--, pWallEffect++)
-	for (h = pWallEffect->nFrameCount, j = 0; j < h; j++)
-		if (gameData.pigData.tex.pBmIndex [pWallEffect->frames [j]].index == nTexture)
-			return pWallEffect;
+for (i = gameData.walls.nAnims [gameStates.app.bD1Data]; i; i--, wcP++)
+	for (h = wcP->nFrameCount, j = 0; j < h; j++)
+		if (gameData.pig.tex.bmIndexP [wcP->frames [j]].index == tNum)
+			return wcP;
 return NULL;
 }
 
@@ -357,10 +356,10 @@ return NULL;
 
 void UnloadHiresAnimations (void)
 {
-for (int32_t bD1 = 0; bD1 < 2; bD1++) {
-	CBitmap*	pBm = gameData.pigData.tex.bitmaps [bD1].Buffer ();
-	for (int32_t i = gameData.pigData.tex.nBitmaps [bD1]; i; i--, pBm++) {
-		pBm->FreeHiresAnimation (bD1);
+for (int bD1 = 0; bD1 < 2; bD1++) {
+	CBitmap*	bmP = gameData.pig.tex.bitmaps [bD1].Buffer ();
+	for (int i = gameData.pig.tex.nBitmaps [bD1]; i; i--, bmP++) {
+		bmP->FreeHiresAnimation (bD1);
 		}
 	}
 }
@@ -369,54 +368,54 @@ for (int32_t bD1 = 0; bD1 < 2; bD1++) {
 
 void UnloadTextures (void)
 {
-	int32_t		i, bD1;
-	CBitmap	*pBm;
+	int		i, bD1;
+	CBitmap	*bmP;
 
 #if TRACE
 console.printf (CON_VERBOSE, "Unloading textures\n");
 #endif
-gameData.pigData.tex.bPageFlushed++;
+gameData.pig.tex.bPageFlushed++;
 TexMergeClose ();
 RLECacheFlush ();
 for (bD1 = 0; bD1 < 2; bD1++) {
 	bitmapCacheNext [bD1] = 0;
-	for (i = 0, pBm = gameData.pigData.tex.bitmaps [bD1].Buffer ();
-		  i < gameData.pigData.tex.nBitmaps [bD1];
-		  i++, pBm++) {
+	for (i = 0, bmP = gameData.pig.tex.bitmaps [bD1].Buffer ();
+		  i < gameData.pig.tex.nBitmaps [bD1];
+		  i++, bmP++) {
 #if DBG
 		if (i == nDbgTexture)
-			BRP;
+			nDbgTexture = nDbgTexture;
 #endif
 		if (bitmapOffsets [bD1][i] > 0) { // only page out bitmaps read from disk
-			pBm->AddFlags (BM_FLAG_PAGED_OUT);
-			gameData.pigData.tex.bitmaps [bD1][i].Unload (i, bD1);
+			bmP->AddFlags (BM_FLAG_PAGED_OUT);
+			gameData.pig.tex.bitmaps [bD1][i].Unload (i, bD1);
 			}
 		}
 	}
 for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
-	gameData.pigData.tex.addonBitmaps [i].Unload (i, 0);
+	gameData.pig.tex.addonBitmaps [i].Unload (i, 0);
 }
 
 //------------------------------------------------------------------------------
 
 void ResetTextureFlags (void)
 {
-	int32_t		i, bD1;
+	int		i, bD1;
 
 #if TRACE
 console.printf (CON_VERBOSE, "Resetting texture flags\n");
 #endif
 for (bD1 = 0; bD1 < 2; bD1++)
-	for (i = 0; i < gameData.pigData.tex.nBitmaps [bD1]; i++)
-		gameData.pigData.tex.bitmapFlags [bD1][i] &= ~BM_FLAG_TGA;
+	for (i = 0; i < gameData.pig.tex.nBitmaps [bD1]; i++)
+		gameData.pig.tex.bitmapFlags [bD1][i] &= ~BM_FLAG_TGA;
 }
 
 //------------------------------------------------------------------------------
 
-void GetFlagData (const char *bmName, int32_t nIndex)
+void GetFlagData (const char *bmName, int nIndex)
 {
-	int32_t		i;
-	tFlagData*	pf;
+	int			i;
+	tFlagData	*pf;
 
 if (strstr (bmName, "flag01#0") == bmName)
 	i = 0;
@@ -424,41 +423,41 @@ else if (strstr (bmName, "flag02#0") == bmName)
 	i = 1;
 else
 	return;
-pf = gameData.pigData.flags + i;
+pf = gameData.pig.flags + i;
 pf->bmi.index = nIndex;
-pf->pAnimInfo = FindAnimation (nIndex);
-pf->animState.nClipIndex = gameData.objData.pwrUp.info [46 + i].nClipIndex;	//46 is the blue flag powerup
-pf->animState.xFrameTime = gameData.effectData.animations [0][pf->animState.nClipIndex].xFrameTime;
-pf->animState.nCurFrame = 0;
+pf->vcP = FindVClip (nIndex);
+pf->vci.nClipIndex = gameData.objs.pwrUp.info [46 + i].nClipIndex;	//46 is the blue flag powerup
+pf->vci.xFrameTime = gameData.effects.vClips [0][pf->vci.nClipIndex].xFrameTime;
+pf->vci.nCurFrame = 0;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t IsAnimatedTexture (int16_t nTexture)
+int IsAnimatedTexture (short nTexture)
 {
-return (nTexture > 0) && (strchr (gameData.pigData.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pigData.tex.pBmIndex [nTexture].index].name, '#') != NULL);
+return (nTexture > 0) && (strchr (gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.bmIndexP [nTexture].index].name, '#') != NULL);
 }
 
 //------------------------------------------------------------------------------
 
-static int32_t BestShrinkFactor (CBitmap *pBm, int32_t nShrinkFactor)
+static int BestShrinkFactor (CBitmap *bmP, int nShrinkFactor)
 {
-	int32_t	nBaseSize, nTargetSize, nBaseFactor;
+	int	nBaseSize, nTargetSize, nBaseFactor;
 
-if ((pBm->Width () != Pow2ize (pBm->Width (), 65536)) || ((pBm->Height () != Pow2ize (pBm->Height (), 65536)) && (pBm->Height () % pBm->Width () != 0)))
+if ((bmP->Width () != Pow2ize (bmP->Width ())) || (bmP->Height () != Pow2ize (bmP->Height ())))
 	return 1;
 #if 0
-if (pBm->Width () >= 2 * pBm->Width ()) {
+if (bmP->Width () >= 2 * bmP->Width ()) {
 #endif
-	nBaseSize = pBm->Width ();
+	nBaseSize = bmP->Width ();
 	nTargetSize = 512 / nShrinkFactor;
 	nBaseFactor = (3 * nBaseSize / 2) / nTargetSize;
 #if 0
 	}
 else {
-	nBaseSize = pBm->Width () * pBm->Width ();
+	nBaseSize = bmP->Width () * bmP->Width ();
 	nTargetSize = (512 * 512) / (nShrinkFactor * nShrinkFactor);
-	nBaseFactor = (int32_t) sqrt ((double) (3 * nBaseSize / 2) / nTargetSize);
+	nBaseFactor = (int) sqrt ((double) (3 * nBaseSize / 2) / nTargetSize);
 	}
 #endif
 if (!nBaseFactor)
@@ -472,65 +471,72 @@ return nShrinkFactor / 2;
 
 //------------------------------------------------------------------------------
 
-int32_t ReadBitmap (CFile* pFile, CBitmap* pBm, int32_t nSize, bool bD1)
+static int ReadBitmap (CBitmap* bmP, int nSize, CFile* cfP, bool bD1)
 {
 nDescentCriticalError = 0;
-if (pBm->Flags () & BM_FLAG_RLE) {
-	int32_t nSize = pFile->ReadInt () - 4;
+if (bmP->Flags () & BM_FLAG_RLE) {
+	int zSize = cfP->ReadInt ();
 	if (nDescentCriticalError) {
 		PiggyCriticalError ();
 		return -1;
 		}
-
-#if DBG
-	if (nSize > int32_t (pBm->Size ()))
-		pBm->Resize (nSize);
-#endif
-	if (pBm->Read (*pFile, nSize, 0) != uint32_t (nSize))
+	#if DBG
+	if (zSize > int (bmP->Size ()))
+		bmP->Resize (zSize);
+	#endif
+	#if 1
+	if (bmP->Read (*cfP, zSize - 4, 4) != uint (zSize - 4))
 		return -2;
-	nSize = pBm->RLEExpand (NULL, IsMacDataFile (pFile, bD1));
+	zSize = bmP->RLEExpand (NULL, 0);
+	#endif
 	}
 else {
-	if (pBm->Read (*pFile, pBm->FrameSize ()) != (size_t) pBm->FrameSize ())
+	if (bmP->Read (*cfP, nSize) != (size_t) nSize)
 		return -2;
-	if (IsMacDataFile (pFile, bD1))
-		pBm->SwapTransparencyColor ();
 	}
-
-
+#ifndef MACDATA
+if (IsMacDataFile (cfP, bD1))
+	bmP->Swap_0_255 ();
+#endif
 if (bD1)
-	pBm->SetPalette (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
+	bmP->SetPalette (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 else
-	pBm->SetPalette (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
-pBm->SetTranspType ((pBm->Flags () | (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
+	bmP->SetPalette (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
+bmP->SetTranspType ((bmP->Flags () | (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-static int32_t ReadLoresBitmap (CBitmap* pBm, int32_t nIndex, int32_t bD1)
+static int ReadLoresBitmap (CBitmap* bmP, int nIndex, int bD1)
 {
 nDescentCriticalError = 0;
 
 if (gameStates.app.nLogLevel > 1)
-	PrintLog (0, "loading lores texture '%s'\n", pBm->Name ());
-#if DBG
-if (strstr (pBm->Name (), "ship"))
-	BRP;
-#endif
-CFile* pFile = cfPiggy + bD1;
-if (!pFile->File ())
+	PrintLog (0, "loading lores texture '%s'\n", bmP->Name ());
+CFile* cfP = cfPiggy + bD1;
+if (!cfP->File ())
 	PiggyInitPigFile (NULL);
-int32_t nOffset = bitmapOffsets [bD1][nIndex];
-if (pFile->Seek (nOffset, SEEK_SET))
+int nOffset = bitmapOffsets [bD1][nIndex];
+if (cfP->Seek (nOffset, SEEK_SET))
 	throw (EX_IO_ERROR);
-pBm->CreateBuffer ();
-if (!pBm->Buffer () || (bitmapCacheUsed > bitmapCacheSize))
+bmP->CreateBuffer ();
+if (!bmP->Buffer () || (bitmapCacheUsed > bitmapCacheSize))
 	throw (EX_OUT_OF_MEMORY);
-pBm->SetFlags (gameData.pigData.tex.bitmapFlags [bD1][nIndex]);
-if (0 > ReadBitmap (pFile, pBm, pBm->FrameSize (), bD1 != 0)) 
+bmP->SetFlags (gameData.pig.tex.bitmapFlags [bD1][nIndex]);
+if (0 > ReadBitmap (bmP, bmP->FrameSize (), cfP, bD1 != 0)) 
 	throw (EX_IO_ERROR);
-UseBitmapCache (pBm, int32_t (pBm->FrameSize ()));
+UseBitmapCache (bmP, int (bmP->FrameSize ()));
+
+#ifndef MACDATA
+if (IsMacDataFile (cfP, bD1))
+	bmP->Swap_0_255 ();
+#endif
+if (bD1)
+	bmP->SetPalette (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
+else
+	bmP->SetPalette (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
+bmP->SetTranspType ((bmP->Flags () | (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
 return 1;
 }
 
@@ -553,7 +559,7 @@ static bool IsPowerup (const char* bmName)
 
 if (!strstr (bmName, "#0"))
 	return false;
-for (int32_t i = 0, j = sizeofa (szNames); i < j; i++)
+for (int i = 0, j = sizeofa (szNames); i < j; i++)
 	if (strstr (bmName, szNames [i]) == bmName)
 		return true;
 return false;
@@ -570,9 +576,7 @@ static bool IsWeapon (const char* bmName)
 		"cmissil",
 		"erthshkr",
 		"hmissil",
-		"key01",
-		"key02",
-		"key03",
+		"key",
 		"merc",
 		"mmissil",
 		"scmiss",
@@ -581,20 +585,17 @@ static bool IsWeapon (const char* bmName)
 		"hostage"
 		};
 
-	static const int nModels [] = { -1, -1, -1, -1, -1, BLUEKEY_MODEL, GOLDKEY_MODEL, REDKEY_MODEL, -1, -1, -1, -1, -1, HOSTAGE_MODEL};
-		
-
-if (!strchr (bmName, '#'))
+if (!strstr (bmName, "#0"))
 	return false;
-for (int32_t i = 0, j = sizeofa (szNames); i < j; i++)
-	if ((strstr (bmName, szNames [i]) == bmName) && ((nModels [i] < 0) || HaveReplacementModel (nModels [i])))
+for (int i = 0, j = sizeofa (szNames); i < j; i++)
+	if (strstr (bmName, szNames [i]) == bmName)
 		return true;
 return false;
 }
 
 //------------------------------------------------------------------------------
 
-static void MakeBitmapFilenames (const char* bmName, char* rootFolder, char* cacheFolder, char* fn, char* fnShrunk, int32_t nShrinkFactor)
+static void MakeBitmapFilenames (const char* bmName, char* rootFolder, char* cacheFolder, char* fn, char* fnShrunk, int nShrinkFactor)
 {
 if (!*rootFolder)
 	*fn = *fnShrunk = '\0';
@@ -602,12 +603,12 @@ else {
 	CFile		cf;
 	time_t	tBase, tShrunk;
 
-	sprintf (fn, "%s%s.tga", rootFolder, bmName);
+	sprintf (fn, "%s%s%s.tga", rootFolder, *rootFolder ? "/" : "", bmName);
 	tBase = cf.Date (fn, "", 0);
 	if (tBase < 0)
 		*fn = *fnShrunk = '\0';
 	else if (*cacheFolder && gameStates.app.bCacheTextures && (nShrinkFactor > 1)) {
-		sprintf (fnShrunk, "%s%d/%s.tga", cacheFolder, 512 / nShrinkFactor, bmName);
+		sprintf (fnShrunk, "%s%s%d/%s.tga", cacheFolder, *cacheFolder ? "/" : "", 512 / nShrinkFactor, bmName);
 		tShrunk = cf.Date (fnShrunk, "", 0);
 		if (tShrunk < tBase)
 			*fnShrunk = '\0';
@@ -619,25 +620,23 @@ else {
 
 //------------------------------------------------------------------------------
 
-static int32_t SearchHiresBitmap (char fn [6][FILENAME_LEN])
+static int SearchHiresBitmap (char fn [6][FILENAME_LEN])
 {
 	CFile	cf;
 
-for (int32_t i = 0; i < 6; i++) {
-	//PrintLog (0, "   Looking for '%s'\n", fn [i]);
+for (int i = 0; i < 6; i++)
 	if (*fn [i] && cf.Open (fn [i], "", "rb", 0)) {
 		cf.Close ();
 		return i;
 		}
-	}
 return -1;
 }
 
 //------------------------------------------------------------------------------
 
-static int32_t ShrinkFactor (const char* bmName)
+static int ShrinkFactor (const char* bmName)
 {
-int32_t nShrinkFactor = 8 >> Min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
+int nShrinkFactor = 8 >> min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
 if (nShrinkFactor < 4) {
 	if (nShrinkFactor == 1)
 		nShrinkFactor = 2;	// cap texture quality at 256x256 (x frame#)
@@ -649,62 +648,48 @@ return nShrinkFactor;
 
 //------------------------------------------------------------------------------
 
-static char* FindHiresBitmap (const char* bmName, int32_t& nFile, int32_t bD1, int32_t bShrink = 1)
+static char* FindHiresBitmap (const char* bmName, int& nFile, int bD1, int bShrink = 1)
 {
-// Low res animations are realized by several textures bearing the frame number after a '#' sign in the filename.
-// Since hires animations contain all frames in a single texture, the hires animation only needs to be loaded
-// for the first low res animation frame texture ("name#0"). So skip all textures that have a '#' sign in their 
-// name that is not followed by a single '0' character.
-//const char* p = strchr (bmName, '#');
-//if (p &&  ((p [1] != '0') || (p [2] != '\0')))
-//	return NULL;
-
 	static char	fn [6][FILENAME_LEN];
-	char	baseName [FILENAME_LEN];
 
-strcpy (baseName, bmName);
-for (int32_t i = 0; i < 2; i++) {
-#if 1
-	if (i) {
-		char* p = strchr (baseName, '#');
-		if (p)
-			strcpy (p + 1, "0");
-		}
-#endif
-	if (*gameFolders.mods.szTextures [0]) {
-		sprintf (gameFolders.mods.szTextures [1], "%s%s", gameFolders.mods.szTextures [0], LevelFolder (missionManager.nCurrentLevel));
-		sprintf (gameFolders.var.szTextures [4], "%s%s", gameFolders.var.szTextures [3], gameFolders.mods.szLevel); // e.g. /var/cache/d2x-xl/mods/mymod/textures/level01
-		}
+if (*gameFolders.szTextureDir [2]) {
+	char szLevelFolder [FILENAME_LEN];
+	if (missionManager.nCurrentLevel < 0)
+		sprintf (szLevelFolder, "slevel%02d", -missionManager.nCurrentLevel);
 	else
-		*gameFolders.mods.szTextures [1] =
-		*gameFolders.var.szTextures [4] = '\0';
-
-	int32_t nShrinkFactor = bShrink ? ShrinkFactor (baseName) : 1;
-
-	MakeBitmapFilenames (baseName, gameFolders.mods.szTextures [1], gameFolders.var.szTextures [4], fn [1], fn [0], nShrinkFactor);
-	MakeBitmapFilenames (baseName, gameFolders.mods.szTextures [0], gameFolders.var.szTextures [3], fn [3], fn [2], nShrinkFactor);
-	MakeBitmapFilenames (baseName, gameFolders.game.szTextures [bD1 + 1], gameFolders.var.szTextures [bD1 + 1], fn [5], fn [4], nShrinkFactor);
-
-	if (0 < (nFile = SearchHiresBitmap (fn)))
-		return fn [nFile];
+		sprintf (szLevelFolder, "level%02d", missionManager.nCurrentLevel);
+	sprintf (gameFolders.szTextureDir [3], "%s/%s", gameFolders.szTextureDir [2], szLevelFolder);
+	sprintf (gameFolders.szTextureCacheDir [3], "%s/%s", gameFolders.szTextureCacheDir [2], szLevelFolder);
 	}
-return NULL;
+else
+	*gameFolders.szTextureDir [3] =
+	*gameFolders.szTextureCacheDir [3] = '\0';
+
+int nShrinkFactor = bShrink ? ShrinkFactor (bmName) : 1;
+
+MakeBitmapFilenames (bmName, gameFolders.szTextureDir [3], gameFolders.szTextureCacheDir [3], fn [1], fn [0], nShrinkFactor);
+MakeBitmapFilenames (bmName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
+MakeBitmapFilenames (bmName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [5], fn [4], nShrinkFactor);
+
+nFile = SearchHiresBitmap (fn);
+
+return (nFile < 0) ? NULL : fn [nFile];
 }
 
 //------------------------------------------------------------------------------
 
-static int32_t HaveHiresAnimation (const char* bmName, int32_t bD1)
+static int HaveHiresAnimation (const char* bmName, int bD1)
 {
 	char			szAnim [FILENAME_LEN];
 	const char*	ps = strchr (bmName, '#');
 
 if (!ps)
 	return -1;
-int32_t l = int32_t (ps - bmName + 1);
+int l = int (ps - bmName + 1);
 strncpy (szAnim, bmName, l);
 szAnim [l] = '0';
 szAnim [l + 1] = '\0';
-int32_t nFile;
+int nFile;
 if (FindHiresBitmap (szAnim, nFile, bD1))
 	return 1;
 if (szAnim [l - 2] == 'b')
@@ -715,14 +700,14 @@ return FindHiresBitmap (szAnim, nFile, bD1) != NULL;
 
 //------------------------------------------------------------------------------
 
-static bool HaveHiresBitmap (const char* bmName, int32_t bD1)
+static bool HaveHiresBitmap (const char* bmName, int bD1)
 {
 if (gameStates.app.bNostalgia)
 	return 0;
 if (!gameOpts->render.textures.bUseHires [0])
 	return 0;
 
-	int32_t i = HaveHiresAnimation (bmName, bD1);
+	int i = HaveHiresAnimation (bmName, bD1);
 
 if (i >= 0)
 	return i > 0;
@@ -738,7 +723,7 @@ else {
 	strcpy (szFile, bmName);
 	strcat (szFile, "b");
 	}
-int32_t nFile;
+int nFile;
 return FindHiresBitmap (szFile, nFile, bD1) != NULL;
 }
 
@@ -747,7 +732,7 @@ return FindHiresBitmap (szFile, nFile, bD1) != NULL;
 static bool HaveHiresModel (const char* bmName)
 {
 if (gameStates.app.bStandalone) {
-	for (int32_t i = 0; i < (int32_t) sizeofa (szPowerupTextures); i++)
+	for (int i = 0; i < (int) sizeofa (szPowerupTextures); i++)
 		if (strstr (bmName, szPowerupTextures [i]))
 			return true;
 	}
@@ -756,45 +741,33 @@ return false;
 
 //------------------------------------------------------------------------------
 
-int32_t ReadHiresBitmap (CBitmap* pBm, const char* bmName, int32_t nIndex, int32_t bD1)
+int ReadHiresBitmap (CBitmap* bmP, const char* bmName, int nIndex, int bD1)
 {
-#if DBG
-if (strstr (bmName, "door05#0"))
-	BRP;
-#endif
 
 if (gameOpts->Use3DPowerups () && IsWeapon (bmName) && !gameStates.app.bHaveMod)
 	return -1;
 
-int32_t	nFile;
+int	nFile;
 char* pszFile = FindHiresBitmap (bmName, nFile, bD1, nIndex != 0x7FFFFFFF);
 
 if (!pszFile)
 	return (nIndex < 0) ? -1 : 0;
 
-#if DBG
-if (!strcmp (bmName, "hostage#0"))
-	BRP;
-const char* s = strchr (bmName, '#');
-if (s && (s [1] != '0'))
-	BRP;
-#endif
-
 if (nFile < 2)	//was level specific mod folder
-	MakeTexSubFolders (gameFolders.var.szTextures [4]);
+	MakeTexSubFolders (gameFolders.szTextureCacheDir [3]);
 
-CBitmap*	pAltBm;
+CBitmap*	altBmP;
 if (nIndex < 0) 
-	pAltBm = &gameData.pigData.tex.addonBitmaps [-nIndex - 1];
+	altBmP = &gameData.pig.tex.addonBitmaps [-nIndex - 1];
 else if (nIndex == 0x7FFFFFFF)
-	pAltBm = pBm;
+	altBmP = bmP;
 else
-	pAltBm = &gameData.pigData.tex.altBitmaps [bD1][nIndex];
+	altBmP = &gameData.pig.tex.altBitmaps [bD1][nIndex];
 
-CTGA tga (pAltBm);
+CTGA tga (altBmP);
 
 #if DBG
-if (strstr (pszFile, "metl086"))
+if (strstr (pszFile, "door35"))
 	pszFile = pszFile;
 #endif
 if (!tga.Read (pszFile, ""))
@@ -804,37 +777,37 @@ if (strstr (pszFile, "omegblob#") && strstr (pszFile, "/mods/") && !strstr (pszF
 	gameStates.render.bOmegaModded = 1;
 else if (strstr (pszFile, "plasblob#") && strstr (pszFile, "/mods/") && !strstr (pszFile, "/mods/descent2"))
 	gameStates.render.bPlasmaModded = 1;
-pAltBm->SetType (BM_TYPE_ALT);
-pAltBm->SetName (bmName);
-pAltBm->SetKey (nIndex);
+altBmP->SetType (BM_TYPE_ALT);
+altBmP->SetName (bmName);
+altBmP->SetKey (nIndex);
 if (nIndex != 0x7FFFFFFF) {
-	pBm->SetOverride (pAltBm);
-	pBm = pAltBm;
+	bmP->SetOverride (altBmP);
+	bmP = altBmP;
 	}
-pBm->DelFlags (BM_FLAG_RLE);
+bmP->DelFlags (BM_FLAG_RLE);
 
-int32_t nSize = int32_t (pBm->Size ());
-int32_t nFrames = (pBm->Height () % pBm->Width ()) ? 1 : pBm->Height () / pBm->Width ();
-pBm->SetFrameCount (uint8_t (nFrames));
+int nSize = int (bmP->Size ());
+int nFrames = (bmP->Height () % bmP->Width ()) ? 1 : bmP->Height () / bmP->Width ();
+bmP->SetFrameCount (ubyte (nFrames));
 
 if ((nIndex >= 0) && (nIndex < 0x7FFFFFFF)) {	// replacement texture for a lores game texture
-	if (pBm->Height () > pBm->Width ()) {
-		tEffectInfo	*pEffectInfo = NULL;
-		tWallEffect *pWallEffect;
-		tAnimationInfo *pAnimInfo;
-		while ((pEffectInfo = FindEffect (pEffectInfo, nIndex))) {
+	if (bmP->Height () > bmP->Width ()) {
+		tEffectClip	*ecP = NULL;
+		tWallClip *wcP;
+		tVideoClip *vcP;
+		while ((ecP = FindEffect (ecP, nIndex))) {
 			//e->vc.nFrameCount = nFrames;
-			pEffectInfo->flags |= EF_ALTFMT;
-			//pEffectInfo->animationInfo.flags |= WCF_ALTFMT;
+			ecP->flags |= EF_ALTFMT;
+			//ecP->vClipInfo.flags |= WCF_ALTFMT;
 			}
-		if (!pEffectInfo) {
-			if ((pWallEffect = FindWallEffect (nIndex))) {
+		if (!ecP) {
+			if ((wcP = FindWallAnim (nIndex))) {
 			//w->nFrameCount = nFrames;
-				pWallEffect->flags |= WCF_ALTFMT;
+				wcP->flags |= WCF_ALTFMT;
 				}
-			else if ((pAnimInfo = FindAnimation (nIndex))) {
+			else if ((vcP = FindVClip (nIndex))) {
 				//v->nFrameCount = nFrames;
-				pAnimInfo->flags |= WCF_ALTFMT;
+				vcP->flags |= WCF_ALTFMT;
 				}
 			else {
 				PrintLog (0, "couldn't find animation for '%s'\n", bmName);
@@ -844,44 +817,39 @@ if ((nIndex >= 0) && (nIndex < 0x7FFFFFFF)) {	// replacement texture for a lores
 	}
 
 #if TEXTURE_COMPRESSION
-if (pBm->Compressed ())
-	UseBitmapCache (pBm, pBm->CompressedSize ());
+if (bmP->Compressed ())
+	UseBitmapCache (bmP, bmP->CompressedSize ());
 else
 #endif
 	{
-	UseBitmapCache (pBm, nSize);
-	pBm->SetType (BM_TYPE_ALT);
-	pBm->SetTranspType (-1);
+	UseBitmapCache (bmP, nSize);
+	bmP->SetType (BM_TYPE_ALT);
+	bmP->SetTranspType (-1);
 	if (IsOpaqueDoor (nIndex)) {
-		pBm->DelFlags (BM_FLAG_TRANSPARENT);
-		pBm->TransparentFrames () [0] &= ~1;
+		bmP->DelFlags (BM_FLAG_TRANSPARENT);
+		bmP->TransparentFrames () [0] &= ~1;
 		}
 #if TEXTURE_COMPRESSION
-	if (CompressTGA (pBm))
-		pBm->SaveS3TC (gameFolders.var.szTextures [(nFile < 2) ? 4 : (nFile < 4) ? 3 : bD1 + 1], bmName);
+	if (CompressTGA (bmP))
+		bmP->SaveS3TC (gameFolders.szTextureCacheDir [(nFile < 2) ? 3 : (nFile < 4) ? 2 : bD1], bmName);
 	else {
 #endif
-#if DBG
-		if (strstr (bmName, "door05#0"))
-			BRP;
-#endif
-		int32_t nBestShrinkFactor = BestShrinkFactor (pBm, ShrinkFactor (bmName));
-		CTGA tga (pBm);
-		//PrintLog (0, "shrinking '%s' by factor %d (%d)\n", bmName, nBestShrinkFactor, pBm->Width () >> (nBestShrinkFactor - 1));
+		int nBestShrinkFactor = BestShrinkFactor (bmP, ShrinkFactor (bmName));
+		CTGA tga (bmP);
 		if ((nBestShrinkFactor > 1) && tga.Shrink (nBestShrinkFactor, nBestShrinkFactor, 1)) {
 			nSize /= (nBestShrinkFactor * nBestShrinkFactor);
 			if (gameStates.app.bCacheTextures) {
 				tTGAHeader&	h = tga.Header ();
 
 				memset (&h, 0, sizeof (h));
-				h.bits = pBm->BPP () * 8;
-				h.width = pBm->Width ();
-				h.height = pBm->Height ();
+				h.bits = bmP->BPP () * 8;
+				h.width = bmP->Width ();
+				h.height = bmP->Height ();
 				h.imageType = 2;
 				// nFile < 2: mod level texture folder
 				// nFile < 4: mod texture folder
 				// otherwise standard D1 or D2 texture folder
-				tga.Save (bmName, gameFolders.var.szTextures [(nFile < 2) ? 4 : (nFile < 4) ? 3 : bD1 + 1]);
+				tga.Save (bmName, gameFolders.szTextureCacheDir [(nFile < 2) ? 3 : (nFile < 4) ? 2 : bD1]);
 				}
 			}
 		}
@@ -894,23 +862,21 @@ return 1;
 //------------------------------------------------------------------------------
 
 #if DBG
-int32_t nPrevIndex = -1;
+int nPrevIndex = -1;
 char szPrevBm [FILENAME_LEN] = "";
 #endif
 
-int32_t PageInBitmap (CBitmap* pBm, const char* bmName, int32_t nIndex, int32_t bD1, bool bHires)
+int PageInBitmap (CBitmap* bmP, const char* bmName, int nIndex, int bD1, bool bHires)
 {
-	int32_t		bHaveTGA;
+	int		bHaveTGA;
 
 #if DBG
-if ((nDbgTexture > 0) && (nIndex == nDbgTexture))
-	BRP;
 if (!(bmName && *bmName))
 	return 0;
 if ((nDbgTexture > 0) && (nIndex == nDbgTexture))
-	BRP;
+	nDbgTexture = nDbgTexture;
 #endif
-if (pBm->Buffer ())
+if (bmP->Buffer ())
 	return 1;
 
 StopTime ();
@@ -919,81 +885,83 @@ if (nIndex >= 0)
 #if DBG
 if (nIndex == 262)
 	nIndex = nIndex;
+if (strstr (bmName, "plasblob"))
+	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)
 	gameOpts->render.textures.bUseHires [0] = 0;
 
-if (pBm->Texture ())
-	pBm->Texture ()->Release ();
-pBm->SetBPP (1);
-pBm->SetName (bmName);
-pBm->SetKey (nIndex);
+if (bmP->Texture ())
+	bmP->Texture ()->Release ();
+bmP->SetBPP (1);
+bmP->SetName (bmName);
+bmP->SetKey (nIndex);
 
 #if DBG
 if ((nIndex >= 0) && (nIndex == nDbgTexture))
-	BRP;
+	nDbgTexture = nDbgTexture;
 #endif
 
 if ((nIndex >= 0) && !(IsCockpit (bmName) || bHires || gameOpts->render.textures.bUseHires [0]))
 	bHaveTGA = 0;
 else {
-	bHaveTGA = ReadHiresBitmap (pBm, bmName, nIndex, bD1);
+	bHaveTGA = ReadHiresBitmap (bmP, bmName, nIndex, bD1);
 	if (bHaveTGA < 0) {
 		StartTime (0);
 		return 0;	// addon textures are only available as hires texture
 		}
 	}
 
-if (/*gameStates.render.bBriefing ||*/ !(bHaveTGA || HaveHiresBitmap (bmName, bD1) || HaveHiresModel (bmName)))	// hires addon texture not loaded
-	ReadLoresBitmap (pBm, nIndex, bD1);
+if (!(bHaveTGA || HaveHiresBitmap (bmName, bD1) || HaveHiresModel (bmName)))	// hires addon texture not loaded
+	ReadLoresBitmap (bmP, nIndex, bD1);
 #if DBG
 nPrevIndex = nIndex;
 strcpy (szPrevBm, bmName);
 #endif
 CFloatVector3 color;
-if (0 <= (pBm->AvgColor (&color)))
-	pBm->SetAvgColorIndex (uint8_t (pBm->Palette ()->ClosestColor (&color)));
+if (0 <= (bmP->AvgColor (&color)))
+	bmP->SetAvgColorIndex (ubyte (bmP->Palette ()->ClosestColor (&color)));
 StartTime (0);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t PiggyBitmapPageIn (int32_t bmi, int32_t bD1, bool bHires)
+int PiggyBitmapPageIn (int bmi, int bD1, bool bHires)
 {
-	CBitmap*	pBm, * pBmo;
-	int32_t		i;
+	CBitmap*	bmP, * bmoP;
+	int		i;
 
 if (bmi < 1)
 	return 0;
 if (bmi >= MAX_BITMAP_FILES)
 	return 0;
-if (bmi >= gameData.pigData.tex.nBitmaps [bD1])
+if (bmi >= gameData.pig.tex.nBitmaps [bD1])
 	return 0;
 if (bitmapOffsets [bD1][bmi] == 0)
 	return 0;		// A read-from-disk bmi!!!
 
 #if DBG
 if (bmi == nDbgTexture)
-	BRP;
+	nDbgTexture = nDbgTexture;
 #endif
-pBm = &gameData.pigData.tex.bitmaps [bD1][bmi];
-if ((pBmo = pBm->Override ()))
-	pBm = pBmo;
-while (0 > (i = PageInBitmap (pBm, gameData.pigData.tex.bitmapFiles [bD1][bmi].name, bmi, bD1, bHires)))
+bmP = &gameData.pig.tex.bitmaps [bD1][bmi];
+if ((bmoP = bmP->Override ()))
+	bmP = bmoP;
+while (0 > (i = PageInBitmap (bmP, gameData.pig.tex.bitmapFiles [bD1][bmi].name, bmi, bD1, bHires)))
 	G3_SLEEP (0);
 if (!i)
 	return 0;
-gameData.pigData.tex.bitmaps [bD1][bmi].DelFlags (BM_FLAG_PAGED_OUT);
+gameData.pig.tex.bitmaps [bD1][bmi].DelFlags (BM_FLAG_PAGED_OUT);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t PiggyBitmapExistsSlow (char * name)
+int PiggyBitmapExistsSlow (char * name)
 {
-for (int32_t i = 0, j = gameData.pigData.tex.nBitmaps [gameStates.app.bD1Data]; i < j; i++)
-	if (!strcmp (gameData.pigData.tex.pBitmapFile [i].name, name))
+for (int i = 0, j = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]; i < j; i++)
+	if (!strcmp (gameData.pig.tex.bitmapFileP[i].name, name))
 		return 1;
 return 0;
 }
@@ -1004,16 +972,16 @@ void LoadReplacementBitmaps (const char *pszLevelName)
 {
 	char		szFilename [FILENAME_LEN];
 	CFile		cf;
-	int32_t		i, j;
+	int		i, j;
 	CBitmap	bm;
 
 //first, free up data allocated for old bitmaps
 PrintLog (1, "loading replacement textures\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".pog");
-if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
-	int32_t				id, version, nBitmapNum, bHaveTGA;
-	int32_t				bmDataOffset, bmOffset;
-	uint16_t				*indices;
+if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
+	int					id, version, nBitmapNum, bHaveTGA;
+	int					bmDataOffset, bmOffset;
+	ushort				*indices;
 	tPIGBitmapHeader	*bmh;
 
 	id = cf.ReadInt ();
@@ -1024,10 +992,10 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 		return;
 		}
 	nBitmapNum = cf.ReadInt ();
-	indices = new uint16_t [nBitmapNum];
+	indices = new ushort [nBitmapNum];
 	bmh = new tPIGBitmapHeader [nBitmapNum];
 #if 0
-	cf.Read (indices, nBitmapNum * sizeof (uint16_t), 1);
+	cf.Read (indices, nBitmapNum * sizeof (ushort), 1);
 	cf.Read (bmh, nBitmapNum * sizeof (tPIGBitmapHeader), 1);
 #else
 	for (i = 0; i < nBitmapNum; i++)
@@ -1035,19 +1003,18 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 	for (i = 0; i < nBitmapNum; i++)
 		PIGBitmapHeaderRead (bmh + i, cf);
 #endif
-	bmDataOffset = (int32_t) cf.Tell ();
+	bmDataOffset = (int) cf.Tell ();
 
 	for (i = 0; i < nBitmapNum; i++) {
 		bmOffset = bmh [i].offset;
 		memset (&bm, 0, sizeof (CBitmap));
-		//bm.Init ();
 		bm.AddFlags (bmh [i].flags & (BM_FLAGS_TO_COPY | BM_FLAG_TGA));
-		bm.SetWidth (bmh [i].width + ((int16_t) (bmh [i].wh_extra & 0x0f) << 8));
+		bm.SetWidth (bmh [i].width + ((short) (bmh [i].wh_extra & 0x0f) << 8));
 		bm.SetRowSize (bm.Width ());
 		if ((bHaveTGA = (bm.Flags () & BM_FLAG_TGA)) && (bm.Width () > 256))
 			bm.SetHeight (bm.Width () * bmh [i].height);
 		else
-			bm.SetHeight (bmh [i].height + ((int16_t) (bmh [i].wh_extra & 0xf0) << 4));
+			bm.SetHeight (bmh [i].height + ((short) (bmh [i].wh_extra & 0xf0) << 4));
 		bm.SetBPP (bHaveTGA ? 4 : 1);
 		if (!(bm.Width () * bm.Width ()))
 			continue;
@@ -1058,12 +1025,12 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 		cf.Seek (bmDataOffset + bmOffset, SEEK_SET);
 #if DBG
 		if (indices [i] == nDbgTexture)
-			BRP;
+			nDbgTexture = nDbgTexture;
 #endif
 		if (bHaveTGA) {
 			CTGA			tga (&bm);
 			tTGAHeader&	h = tga.Header ();
-			int32_t			nFrames = bm.Height () / bm.Width ();
+			int			nFrames = bm.Height () / bm.Width ();
 
 			h.width = 
 			h.height = bm.Width ();
@@ -1072,23 +1039,23 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 				bm.DestroyBuffer ();
 				break;
 				}
-			bm.SetFrameCount ((uint8_t) nFrames);
+			bm.SetFrameCount ((ubyte) nFrames);
 			if (nFrames > 1) {
-				tEffectInfo	*pEffectInfo = NULL;
-				tWallEffect *pWallEffect;
-				tAnimationInfo *pAnimInfo;
-				while ((pEffectInfo = FindEffect (pEffectInfo, indices [i]))) {
+				tEffectClip	*ecP = NULL;
+				tWallClip *wcP;
+				tVideoClip *vcP;
+				while ((ecP = FindEffect (ecP, indices [i]))) {
 					//e->vc.nFrameCount = nFrames;
-					pEffectInfo->flags |= EF_ALTFMT | EF_FROMPOG;
+					ecP->flags |= EF_ALTFMT | EF_FROMPOG;
 					}
-				if (!pEffectInfo) {
-					if ((pWallEffect = FindWallEffect (indices [i]))) {
+				if (!ecP) {
+					if ((wcP = FindWallAnim (indices [i]))) {
 						//w->nFrameCount = nFrames;
-						pWallEffect->flags |= WCF_ALTFMT | WCF_FROMPOG;
+						wcP->flags |= WCF_ALTFMT | WCF_FROMPOG;
 						}
-					else if ((pAnimInfo = FindAnimation (i))) {
+					else if ((vcP = FindVClip (i))) {
 						//v->nFrameCount = nFrames;
-						pAnimInfo->flags |= WCF_ALTFMT | WCF_FROMPOG;
+						vcP->flags |= WCF_ALTFMT | WCF_FROMPOG;
 						}
 					}
 				}
@@ -1096,38 +1063,38 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 			bm.SetKey (j);
 			}
 		else {
-			ReadBitmap (&cf, &bm, int32_t (bm.Width ()) * int32_t (bm.Height ()), false);
+			ReadBitmap (&bm, int (bm.Width ()) * int (bm.Height ()), &cf, false);
 			j = indices [i];
 #if DBG
 			if (j == nDbgTexture)
-				BRP;
+				nDbgTexture = nDbgTexture;
 #endif
 			bm.SetKey (j);
 			bm.RLEExpand (NULL, 0);
-			*bm.Props () = *gameData.pigData.tex.pBitmap [j].Props ();
+			*bm.Props () = *gameData.pig.tex.bitmapP [j].Props ();
 			bm.SetPalette (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			}
 #if DBG
 		if (j == nDbgTexture)
-			BRP;
+			nDbgTexture = nDbgTexture;
 #endif
-		gameData.pigData.tex.pBitmap [j].Unload (j, 0);
+		gameData.pig.tex.bitmapP [j].Unload (j, 0);
 		bm.SetFromPog (1);
 		char szName [20];
-		if (*gameData.pigData.tex.pBitmap [j].Name ())
-			sprintf (szName, "[%s]", gameData.pigData.tex.pBitmap [j].Name ());
+		if (*gameData.pig.tex.bitmapP [j].Name ())
+			sprintf (szName, "[%s]", gameData.pig.tex.bitmapP [j].Name ());
 		else
 			sprintf (szName, "POG#%04d", j);
 		bm.SetName (szName);
-		gameData.pigData.tex.pAltBitmap [j] = bm;
-		gameData.pigData.tex.pAltBitmap [j].SetBuffer (bm.Buffer (), 0, bm.Length ());
+		gameData.pig.tex.altBitmapP [j] = bm;
+		gameData.pig.tex.altBitmapP [j].SetBuffer (bm.Buffer (), 0, bm.Length ());
 		bm.SetBuffer (NULL);
-		gameData.pigData.tex.pBitmap [j].SetOverride (gameData.pigData.tex.pAltBitmap + j);
-		CBitmap* pBm = gameData.pigData.tex.pAltBitmap + j;
+		gameData.pig.tex.bitmapP [j].SetOverride (gameData.pig.tex.altBitmapP + j);
+		CBitmap* bmP = gameData.pig.tex.altBitmapP + j;
 		CFloatVector3 color;
-		if (0 <= pBm->AvgColor (&color))
-			pBm->SetAvgColorIndex (pBm->Palette ()->ClosestColor (&color));
-		UseBitmapCache (gameData.pigData.tex.pAltBitmap + j, (int32_t) bm.Width () * (int32_t) bm.RowSize ());
+		if (0 <= bmP->AvgColor (&color))
+			bmP->SetAvgColorIndex (bmP->Palette ()->ClosestColor (&color));
+		UseBitmapCache (gameData.pig.tex.altBitmapP + j, (int) bm.Width () * (int) bm.RowSize ());
 		}
 	delete[] indices;
 	delete[] bmh;
@@ -1140,21 +1107,21 @@ PrintLog (-1);
 
 //------------------------------------------------------------------------------
 
-void LoadTextureColors (const char *pszLevelName, CFaceColor *pColor)
+void LoadTextureColors (const char *pszLevelName, CFaceColor *colorP)
 {
 	char			szFilename [FILENAME_LEN];
 	CFile			cf;
-	int32_t			i;
+	int			i;
 
 //first, free up data allocated for old bitmaps
 PrintLog (1, "loading texture colors\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".clr");
-if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
-	if (!pColor)
-		pColor = gameData.renderData.color.textures.Buffer ();
-	for (i = MAX_WALL_TEXTURES; i; i--, pColor++) {
-		ReadColor (cf, pColor, 0, 0);
-		pColor->index = 0;
+if (cf.Open (szFilename, gameFolders.szDataDir [0], "rb", 0)) {
+	if (!colorP)
+		colorP = gameData.render.color.textures.Buffer ();
+	for (i = MAX_WALL_TEXTURES; i; i--, colorP++) {
+		ReadColor (cf, colorP, 0, 0);
+		colorP->index = 0;
 		}
 	cf.Close ();
 	}
@@ -1163,36 +1130,29 @@ PrintLog (-1);
 
 //------------------------------------------------------------------------------
 
-bool BitmapLoaded (int32_t bmi, int32_t nFrame, int32_t bD1)
+bool BitmapLoaded (int bmi, int bD1)
 {
-	CBitmap*		pBmo, * pBm = gameData.pigData.tex.bitmaps [bD1] + bmi;
-	CTexture*	pTexture;
+	CBitmap*		bmoP, * bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
+	CTexture*	texP;
 
-if (!pBm)
+if (!bmP)
 	return false;
-#if 1
-if (nFrame && gameData.pigData.tex.bitmaps [bD1][bmi - nFrame].Override ()) {
-	pBm->DelFlags (BM_FLAG_PAGED_OUT);
-	pBm->SetOverride (gameData.pigData.tex.bitmaps [bD1][bmi - nFrame].Override ());
-	return true;
-	}
-#endif
-if (pBm->Flags () & BM_FLAG_PAGED_OUT)
+if (bmP->Flags () & BM_FLAG_PAGED_OUT)
 	return false;
-if ((pBmo = pBm->Override (-1)))
-	pBm = pBmo;
-return ((pTexture = pBm->Texture ()) && (pTexture->Handle ())) || (pBm->Buffer () != 0);
+if ((bmoP = bmP->Override (-1)))
+	bmP = bmoP;
+return ((texP = bmP->Texture ()) && (texP->Handle ())) || (bmP->Buffer () != 0);
 }
 
 //------------------------------------------------------------------------------
 
-void LoadTexture (int32_t bmi, int32_t nFrame, int32_t bD1, bool bHires)
+void LoadTexture (int bmi, int bD1, bool bHires)
 {
 #if DBG
 if ((nDbgTexture >= 0) && (bmi == nDbgTexture))
-	BRP;
+	nDbgTexture = nDbgTexture;
 #endif
-if (!BitmapLoaded (bmi, nFrame, bD1))
+if (!BitmapLoaded (bmi, bD1))
 	PiggyBitmapPageIn (bmi, bD1, bHires);
 }
 
@@ -1204,7 +1164,7 @@ extern CBitmap bmBackground;
 
 void LoadGameBackground (void)
 {
-	int32_t pcxError;
+	int pcxError;
 	
 	static char szBackground [2][13] = {"statback.pcx", "johnhead.pcx"};
 

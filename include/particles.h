@@ -78,7 +78,7 @@
 
 //------------------------------------------------------------------------------
 
-extern int32_t nPartSeg [MAX_THREADS];
+extern int nPartSeg [MAX_THREADS];
 extern CFloatVector defaultParticleColor;
 
 //------------------------------------------------------------------------------
@@ -131,67 +131,66 @@ typedef struct tParticle {
 #if !EXTRA_VERTEX_ARRAYS
 	tPartPos		m_glPos;
 #endif
-	CFixMatrix		m_mOrient;
-	CFixVector		m_vPos;				//position
-	CFloatVector	m_vPosf;
-	CFixVector		m_vStartPos;		//initial position
-	CFixVector		m_vTransPos;		//transformed position
-	CFixVector		m_vDir;				//movement direction
-	CFixVector		m_vDrift;
-	int32_t			m_nTTL;				//time to live
-	int32_t			m_nLife;				//remaining life time
-	int32_t			m_nFadeTime;
-	float				m_decay;
-	int32_t			m_nDelay;			//time between creation and appearance
-	int32_t			m_nUpdated;
-	int32_t			m_nMoved;			//time last moved
-	float				m_nWidth;
-	float				m_nHeight;
-	float				m_nRad;
-	int16_t			m_nSegment;
-	tTexCoord2f		m_texCoord;
-	float				m_deltaUV;
+	CFixMatrix	m_mOrient;
+	CFixVector	m_vPos;				//position
+	CFloatVector m_vPosf;
+	CFixVector	m_vStartPos;		//initial position
+	CFixVector	m_vTransPos;		//transformed position
+	CFixVector	m_vDir;				//movement direction
+	CFixVector	m_vDrift;
+	int			m_nTTL;				//time to live
+	int			m_nLife;				//remaining life time
+	int			m_nFadeTime;
+	float			m_decay;
+	int			m_nDelay;			//time between creation and appearance
+	int			m_nUpdated;
+	int			m_nMoved;			//time last moved
+	float			m_nWidth;
+	float			m_nHeight;
+	float			m_nRad;
+	short			m_nSegment;
+	tTexCoord2f	m_texCoord;
+	float			m_deltaUV;
 	CFloatVector	m_color [2];		//well ... the color, ya know =)
 	CFloatVector	m_renderColor;
-	char				m_nType;				//black or white
-	char				m_nRenderType;
-	char				m_nBounce;
-	char				m_bHaveDir;
-	char				m_bBlowUp;
-	char				m_bBright;
-	char				m_bEmissive;
-	char				m_bReversed;
-	char				m_nFadeType;
-	char				m_nClass;
-	char				m_iFrame;
-	char				m_nFrames;
-	char				m_nRotFrame;
-	char				m_nOrient;
-	char				m_bChecked;
-	char				m_bSkybox;
-	char				m_bAnimate;
-	char				m_bRotate;
-	char				m_nDelayPosUpdate;
-} tParticle;	
+	char			m_nType;				//black or white
+	char			m_nRenderType;
+	char			m_nBounce;
+	char			m_bHaveDir;
+	char			m_bBlowUp;
+	char			m_bBright;
+	char			m_bEmissive;
+	char			m_bReversed;
+	char			m_nFadeType;
+	char			m_nClass;
+	char			m_iFrame;
+	char			m_nFrames;
+	char			m_nRotFrame;
+	char			m_nOrient;
+	char			m_bChecked;
+	char			m_bSkybox;
+	char			m_bAnimate;
+	char			m_bRotate;
+	char			m_nDelayPosUpdate;
+} tParticle;
 
 class CParticle : public tParticle {
 	public:
 		static CFloatVector vRot [PARTICLE_POSITIONS];
 		static CFixMatrix mRot [2][PARTICLE_POSITIONS];
-		static CFixMatrix mSparkOrient;
 
 		static void InitRotation (void);
 		static void SetupRotation (void);
 
 	public:
-		int32_t Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
-					   int16_t nSegment, int32_t nLife, int32_t nSpeed, char nParticleSystemType, char nClass,
-				      float fScale, CFloatVector *pColor, int32_t nCurTime, int32_t bBlowUp, char nFadeType,
+		int Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
+					   short nSegment, int nLife, int nSpeed, char nParticleSystemType, char nClass,
+				      float fScale, CFloatVector *colorP, int nCurTime, int bBlowUp, char nFadeType,
 					   float fBrightness, CFixVector *vEmittingFace);
-		int32_t Render (float brightness);
-		void Setup (bool alphaControl, float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int32_t nThread);
-		int32_t Update (int32_t nCurTime, float brightness, int32_t nThread);
-		bool IsVisible (int32_t nThread);
+		int Render (float brightness);
+		void Setup (bool alphaControl, float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread);
+		int Update (int nCurTime, float brightness, int nThread);
+		bool IsVisible (int nThread);
 		inline fix Transform (bool bUnscaled) {
 			transformation.Transform (m_vTransPos, m_vPos, bUnscaled);
 			return m_vTransPos.v.coord.z;
@@ -205,28 +204,28 @@ class CParticle : public tParticle {
 			m_vPosf.Assign (m_vPos);
 			return m_vPosf;
 			}
-		int32_t RenderType (void);
+		int RenderType (void);
 
 	private:
-		inline int32_t ChangeDir (int32_t d);
-		int32_t CollideWithWall (int32_t nThread);
+		inline int ChangeDir (int d);
+		int CollideWithWall (int nThread);
 		void UpdateDecay (void);
-		int32_t UpdateDrift (int32_t t, int32_t nThread);
+		int UpdateDrift (int t, int nThread);
 		void UpdateTexCoord (void);
-		void UpdateColor (float brightness, int32_t nThread);
-		int32_t SetupColor (float brightness);
+		void UpdateColor (float brightness, int nThread);
+		int SetupColor (float brightness);
 		fix Drag (void);
-		int32_t Bounce (int32_t nThread);
+		int Bounce (int nThread);
 #ifdef _WIN32
-		inline void InitColor (CFloatVector* pColor, float fBrightness, char nParticleSystemType);
-		inline int32_t InitDrift (CFixVector* vDir, int32_t nSpeed);
-		inline bool InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient, bool bPointSource);
+		inline void InitColor (CFloatVector* colorP, float fBrightness, char nParticleSystemType);
+		inline int InitDrift (CFixVector* vDir, int nSpeed);
+		inline bool InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient);
 		inline void InitSize (float nScale, CFixMatrix *mOrient);
 		inline void InitAnimation (void);
 #else
-		void InitColor (CFloatVector* pColor, float fBrightness, char nParticleSystemType);
-		int32_t InitDrift (CFixVector* vDir, int32_t nSpeed);
-		bool InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient, bool bPointSource);
+		void InitColor (CFloatVector* colorP, float fBrightness, char nParticleSystemType);
+		int InitDrift (CFixVector* vDir, int nSpeed);
+		bool InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient);
 		void InitSize (float nScale, CFixMatrix *mOrient);
 		void InitAnimation (void);
 #endif
@@ -237,34 +236,34 @@ class CParticle : public tParticle {
 typedef struct tParticleEmitter {
 	char					m_nType;				//smoke/light trail (corona)
 	char					m_nClass;
-	int32_t				m_nLife;				//max. particle life time
-	int32_t				m_nBirth;			//time of creation
-	int32_t				m_nSpeed;			//initial particle speed
-	int32_t				m_nParts;			//curent no. of particles
-	int32_t				m_nFirstPart;
-	int32_t				m_nMaxParts;		//max. no. of particles
-	//int32_t					m_nDensity;			//density (opaqueness) of particle emitter
+	int					m_nLife;				//max. particle life time
+	int					m_nBirth;			//time of creation
+	int					m_nSpeed;			//initial particle speed
+	int					m_nParts;			//curent no. of particles
+	int					m_nFirstPart;
+	int					m_nMaxParts;		//max. no. of particles
+	//int					m_nDensity;			//density (opaqueness) of particle emitter
 	float					m_fPartsPerTick;
-	int32_t				m_nTicks;
-	int32_t				m_nPartsPerPos;	//particles per interpolated position mutiplier of moving objects
-	int32_t				m_nPartLimit;		//highest max. part. no ever set for this emitter
+	int					m_nTicks;
+	int					m_nPartsPerPos;	//particles per interpolated position mutiplier of moving objects
+	int					m_nPartLimit;		//highest max. part. no ever set for this emitter
 	float					m_fScale;
-	int32_t				m_nDefBrightness;
+	int					m_nDefBrightness;
 	float					m_fBrightness;
-	int32_t				m_nMoved;			//time last moved
-	int16_t				m_nSegment;
-	int32_t				m_nObject;
-	int16_t				m_nObjType;
-	int16_t				m_nObjId;
+	int					m_nMoved;			//time last moved
+	short					m_nSegment;
+	int					m_nObject;
+	short					m_nObjType;
+	short					m_nObjId;
 	CFixMatrix			m_mOrient;
 	CFixVector			m_vDir;
 	CFixVector			m_vPos;				//initial particle position
 	CFixVector			m_vPrevPos;			//initial particle position
 	CFixVector			m_vEmittingFace [4];
-	uint8_t				m_bHaveDir;			//movement direction given?
-	uint8_t				m_bHavePrevPos;	//valid previous position set?
+	ubyte					m_bHaveDir;			//movement direction given?
+	ubyte					m_bHavePrevPos;	//valid previous position set?
 	CArray<CParticle>	m_particles;		//list of active particles
-	CFloatVector		m_color;
+	CFloatVector			m_color;
 	char					m_bHaveColor;
 	char					m_bBlowUpParts;	//blow particles up at their "birth"
 	char					m_bEmittingFace;
@@ -275,48 +274,48 @@ class CParticleEmitter : public tParticleEmitter {
 	public:
 		CParticleEmitter () { m_particles = NULL; };
 		~CParticleEmitter () { Destroy (); };
-		int32_t Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
-						int16_t nSegment, int32_t nObject, int32_t nMaxParts, float fScale,
-						/*int32_t nDensity, int32_t nPartsPerPos,*/ int32_t nLife, int32_t nSpeed, char nType,
-						CFloatVector *pColor, int32_t nCurTime, int32_t bBlowUpParts, CFixVector *vEmittingFace);
-		int32_t Destroy (void);
-		int32_t Update (int32_t nCurTime, int32_t nThread);
-		int32_t Render (int32_t nThread);
-		void SetPos (CFixVector *vPos, CFixMatrix *mOrient, int16_t nSegment);
+		int Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
+						short nSegment, int nObject, int nMaxParts, float fScale,
+						/*int nDensity, int nPartsPerPos,*/ int nLife, int nSpeed, char nType,
+						CFloatVector *colorP, int nCurTime, int bBlowUpParts, CFixVector *vEmittingFace);
+		int Destroy (void);
+		int Update (int nCurTime, int nThread);
+		int Render (int nThread);
+		void SetPos (CFixVector *vPos, CFixMatrix *mOrient, short nSegment);
 		void SetDir (CFixVector *vDir);
-		void SetLife (int32_t nLife);
-		void SetBlowUp (int32_t bBlowUpParts);
-		void SetBrightness (int32_t nBrightness);
-		void SetFadeType (int32_t nFadeType);
-		void SetSpeed (int32_t nSpeed);
-		void SetType (int32_t nType);
-		int32_t SetDensity (int32_t nMaxParts/*, int32_t nDensity*/);
+		void SetLife (int nLife);
+		void SetBlowUp (int bBlowUpParts);
+		void SetBrightness (int nBrightness);
+		void SetFadeType (int nFadeType);
+		void SetSpeed (int nSpeed);
+		void SetType (int nType);
+		int SetDensity (int nMaxParts/*, int nDensity*/);
 		void SetScale (float fScale);
-		inline bool IsAlive (int32_t nCurTime)
+		inline bool IsAlive (int nCurTime)
 		 { return (m_nLife < 0) || (m_nBirth + m_nLife > nCurTime); }
-		inline bool IsDead (int32_t nCurTime)
+		inline bool IsDead (int nCurTime)
 		 { return !(IsAlive (nCurTime) || m_nParts); }
 
 	private:
-		char ObjectClass (int32_t nObject);
+		char ObjectClass (int nObject);
 		float Brightness (void);
-		inline int32_t MayBeVisible (int32_t nThread);
+		inline int MayBeVisible (int nThread);
 };
 
 //------------------------------------------------------------------------------
 
 typedef struct tParticleSystem {
 	CArray<CParticleEmitter>	m_emitters;		//list of active emitters
-	int32_t							m_nId;
-	int32_t							m_nSignature;
-	int32_t							m_nBirth;			//time of creation
-	int32_t							m_nLife;				//max. particle life time
-	int32_t							m_nSpeed;			//initial particle speed
-	int32_t							m_nEmitters;		//number of separate particle emitters
-	int32_t							m_nMaxEmitters;	//max. no. of emitters
-	int32_t							m_nObject;
-	int16_t							m_nObjType;
-	int16_t							m_nObjId;
+	int								m_nId;
+	int								m_nSignature;
+	int								m_nBirth;			//time of creation
+	int								m_nLife;				//max. particle life time
+	int								m_nSpeed;			//initial particle speed
+	int								m_nEmitters;		//number of separate particle emitters
+	int								m_nMaxEmitters;	//max. no. of emitters
+	int								m_nObject;
+	short								m_nObjType;
+	short								m_nObjId;
 	bool								m_bDestroy;
 	char								m_bValid;
 	char								m_nType;				//black or white
@@ -327,33 +326,33 @@ class CParticleSystem : public tParticleSystem {
 	public:
 		CParticleSystem () { m_bValid = m_bDestroy = false; }
 		~CParticleSystem () { Destroy (); };
-		void Init (int32_t nId);
-		int32_t Create (CFixVector *pPos, CFixVector *pDir, CFixMatrix *pOrient,
-					   int16_t nSegment, int32_t nMaxEmitters, int32_t nMaxParts,
-						float fScale, /*int32_t nDensity, int32_t nPartsPerPos,*/
-						int32_t nLife, int32_t nSpeed, char nType, int32_t nObject,
-						CFloatVector *pColor, int32_t bBlowUpParts, char nFace);
+		void Init (int nId);
+		int Create (CFixVector *pPos, CFixVector *pDir, CFixMatrix *pOrient,
+					   short nSegment, int nMaxEmitters, int nMaxParts,
+						float fScale, /*int nDensity, int nPartsPerPos,*/
+						int nLife, int nSpeed, char nType, int nObject,
+						CFloatVector *pColor, int bBlowUpParts, char nFace);
 		void Destroy (void);
-		int32_t Render (int32_t nThread);
-		int32_t Update (int32_t nThread);
-		int32_t RemoveEmitter (int32_t i);
-		void SetDensity (int32_t nMaxParts/*, int32_t nDensity*/);
+		int Render (int nThread);
+		int Update (int nThread);
+		int RemoveEmitter (int i);
+		void SetDensity (int nMaxParts/*, int nDensity*/);
 		void SetPartScale (float fScale);
-		void SetPos (CFixVector *vPos, CFixMatrix *mOrient, int16_t nSegment);
+		void SetPos (CFixVector *vPos, CFixMatrix *mOrient, short nSegment);
 		void SetDir (CFixVector *vDir);
-		void SetBlowUp (int32_t bBlowUp);
-		void SetLife (int32_t nLife);
+		void SetBlowUp (int bBlowUp);
+		void SetLife (int nLife);
 		void SetScale (float fScale);
-		void SetType (int32_t nType);
-		void SetSpeed (int32_t nSpeed);
-		void SetBrightness (int32_t nBrightness);
-		void SetFadeType (int32_t nFadeType);
+		void SetType (int nType);
+		void SetSpeed (int nSpeed);
+		void SetBrightness (int nBrightness);
+		void SetFadeType (int nFadeType);
 
 		inline bool HasEmitters (void) { return m_emitters.Buffer () != NULL; }
-		inline CParticleEmitter* GetEmitter (int32_t i)
+		inline CParticleEmitter* GetEmitter (int i)
 		 { return m_emitters + i; }
-		inline int32_t GetType (void) { return m_nType; }
-		inline int32_t Id (void) { return m_nId; }
+		inline int GetType (void) { return m_nType; }
+		inline int Id (void) { return m_nId; }
 };
 
 //------------------------------------------------------------------------------
@@ -375,33 +374,33 @@ class CParticleBuffer : public CEffectArea {
 		tRenderParticle m_particles [PART_BUF_SIZE];
 		tParticleVertex m_vertices [PART_BUF_SIZE * 4];
 #endif
-		int32_t m_iBuffer;
-		int32_t m_nType;
+		int m_iBuffer;
+		int m_nType;
 		char m_bEmissive;
 		float m_dMax; // max. distance from viewer
 
-		inline int32_t GetType (void) { return m_nType; }
-		inline void SetType (int32_t nType) { m_nType = nType; }
+		inline int GetType (void) { return m_nType; }
+		inline void SetType (int nType) { m_nType = nType; }
 		inline void Clear (void) {
 			m_iBuffer = 0;
 			m_nType = -1;
 			m_bEmissive = 0;
 			}
 		void Setup (void);
-		void Setup (int32_t nThread);
+		void Setup (int nThread);
 		bool Flush (float brightness, bool bForce = false);
-		bool Add (CParticle* pParticle, float brightness, CFloatVector& pos, float rad);
+		bool Add (CParticle* particleP, float brightness, CFloatVector& pos, float rad);
 		void Reset (void);
 		bool AlphaControl (void);
-		bool Compatible (CParticle* pParticle);
+		bool Compatible (CParticle* particleP);
 
 		CParticleBuffer () : CEffectArea (), m_iBuffer (0), m_nType (-1), m_bEmissive (false), m_dMax (0.0f) {}
 
 	private:
-		static int32_t bCompatible [2 * PARTICLE_TYPES];
+		static int bCompatible [2 * PARTICLE_TYPES];
 
-		int32_t Init (void);
-		int32_t UseParticleShader (void);
+		int Init (void);
+		int UseParticleShader (void);
 	};
 
 //------------------------------------------------------------------------------
@@ -410,11 +409,11 @@ class CParticleManager {
 	private:
 		CDataPool<CParticleSystem>	m_systems;
 		CArray<CParticleSystem*>	m_systemList;
-		CArray<int16_t>				m_objectSystems [2];
+		CArray<short>					m_objectSystems;
 		CArray<time_t>					m_objExplTime;
-		int32_t							m_bAnimate;
-		int32_t							m_bStencil;
-		int32_t							m_iRenderBuffer;
+		int								m_bAnimate;
+		int								m_bStencil;
+		int								m_iRenderBuffer;
 		GLhandleARB						m_shaderProg;
 
 	public:
@@ -425,129 +424,128 @@ class CParticleManager {
 		~CParticleManager ();
 		void Init (void);
 		inline void InitObjects (void) {
-			m_objectSystems [0].Clear (0xff);
-			m_objectSystems [1].Clear (0xff);
+			m_objectSystems.Clear (0xff);
 			m_objExplTime.Clear (0xff);
 			}
-		int32_t Update (void);
+		int Update (void);
 		void Render (void);
-		int32_t Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
-						int16_t nSegment, int32_t nMaxEmitters, int32_t nMaxParts,
-						float fScale, /*int32_t nDensity, int32_t nPartsPerPos,*/ int32_t nLife, int32_t nSpeed, char nType,
-						int32_t nObject, CFloatVector *pColor, int32_t bBlowUpParts, char nSide);
-		int32_t Destroy (int32_t iParticleSystem);
+		int Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
+						short nSegment, int nMaxEmitters, int nMaxParts,
+						float fScale, /*int nDensity, int nPartsPerPos,*/ int nLife, int nSpeed, char nType,
+						int nObject, CFloatVector *colorP, int bBlowUpParts, char nSide);
+		int Destroy (int iParticleSystem);
 		void Cleanup (void);
-		int32_t Shutdown (void);
-		int32_t AllocPartList (void);
+		int Shutdown (void);
+		int AllocPartList (void);
 		void FreePartList (void);
 
-		int32_t BeginRender (int32_t nType, float fScale);
-		int32_t EndRender (void);
-		int32_t InitBuffer (void);
-		int32_t CloseBuffer (void);
-		void SetupParticles (int32_t nThread);
+		int BeginRender (int nType, float fScale);
+		int EndRender (void);
+		int InitBuffer (void);
+		int CloseBuffer (void);
+		void SetupParticles (int nThread);
 
-		void AdjustBrightness (CBitmap *pBm);
+		void AdjustBrightness (CBitmap *bmP);
 
-		inline time_t* ObjExplTime (int32_t i = 0) { return m_objExplTime + i; }
-		inline int32_t Animate (void) { return m_bAnimate; }
-		inline void SetAnimate (int32_t bAnimate) { m_bAnimate = bAnimate; }
-		inline int32_t Stencil (void) { return m_bStencil; }
-		inline void SetStencil (int32_t bStencil) { m_bStencil = bStencil; }
-		inline CParticleSystem& GetSystem (int32_t i) { return m_systems [i]; }
-		inline CParticleSystem* GetFirst (int32_t& nCurrent) { return m_systems.GetFirst (nCurrent); }
-		inline CParticleSystem* GetNext (int32_t& nCurrent) { return m_systems.GetNext (nCurrent); }
-		inline int16_t GetObjectSystem (int16_t nObject, int32_t i = 0) { return  m_objectSystems [i].Buffer () ? m_objectSystems [i][nObject] : -1; }
+		inline time_t* ObjExplTime (int i = 0) { return m_objExplTime + i; }
+		inline int Animate (void) { return m_bAnimate; }
+		inline void SetAnimate (int bAnimate) { m_bAnimate = bAnimate; }
+		inline int Stencil (void) { return m_bStencil; }
+		inline void SetStencil (int bStencil) { m_bStencil = bStencil; }
+		inline CParticleSystem& GetSystem (int i) { return m_systems [i]; }
+		inline CParticleSystem* GetFirst (int& nCurrent) { return m_systems.GetFirst (nCurrent); }
+		inline CParticleSystem* GetNext (int& nCurrent) { return m_systems.GetNext (nCurrent); }
+		inline short GetObjectSystem (short nObject) { return m_objectSystems [nObject]; }
 
-		inline CParticleEmitter* GetEmitter (int32_t i, int32_t j)
+		inline CParticleEmitter* GetEmitter (int i, int j)
 		 { return GetSystem (i).GetEmitter (j); }
 
-		inline void SetPos (int32_t i, CFixVector *vPos, CFixMatrix *mOrient, int16_t nSegment) {
+		inline void SetPos (int i, CFixVector *vPos, CFixMatrix *mOrient, short nSegment) {
 			GetSystem (i).SetPos (vPos, mOrient, nSegment);
 			}
 
-		inline void SetDensity (int32_t i, int32_t nMaxParts, int32_t nType = -1/*, int32_t nDensity*/) {
+		inline void SetDensity (int i, int nMaxParts, int nType = -1/*, int nDensity*/) {
 			nMaxParts = MaxParticles (nMaxParts, gameOpts->render.particles.nDens [(nType < 0) ? 0 : nType]);
 			GetSystem (i).SetDensity (nMaxParts/*, nDensity*/);
 			}
 
-		inline void SetScale (int32_t i, float fScale) {
+		inline void SetScale (int i, float fScale) {
 			GetSystem (i).SetScale (fScale);
 			}
 
-		inline void SetLife (int32_t i, int32_t nLife) {
+		inline void SetLife (int i, int nLife) {
 			GetSystem (i).SetLife (nLife);
 			}
 
-		inline void SetBlowUp (int32_t i, int32_t bBlowUpParts) {
+		inline void SetBlowUp (int i, int bBlowUpParts) {
 			GetSystem (i).SetBlowUp (bBlowUpParts);
 			}
 
-		inline void SetBrightness (int32_t i, int32_t nBrightness) {
+		inline void SetBrightness (int i, int nBrightness) {
 			GetSystem (i).SetBrightness (nBrightness);
 			}
 
-		inline void SetFadeType (int32_t i, int32_t nFadeType) {
+		inline void SetFadeType (int i, int nFadeType) {
 			GetSystem (i).SetFadeType (nFadeType);
 			}
 
-		inline void SetType (int32_t i, int32_t nType) {
+		inline void SetType (int i, int nType) {
 			GetSystem (i).SetType (nType);
 			}
 
-		inline void SetSpeed (int32_t i, int32_t nSpeed) {
+		inline void SetSpeed (int i, int nSpeed) {
 			GetSystem (i).SetSpeed (nSpeed);
 			}
 
-		inline void SetDir (int32_t i, CFixVector *vDir) {
+		inline void SetDir (int i, CFixVector *vDir) {
 			GetSystem (i).SetDir (vDir);
 			}
 
-		inline int32_t SetObjectSystem (int32_t nObject, int32_t nSystem, int32_t i = 0) {
+		inline int SetObjectSystem (int nObject, int i) {
 			if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
 				return -1;
-			return m_objectSystems [i][nObject] = nSystem;
+			return m_objectSystems [nObject] = i;
 			}
 
-		inline int32_t GetType (int32_t i) {
+		inline int GetType (int i) {
 			return GetSystem (i).GetType ();
 			}
 
-		inline int32_t MaxParticles (int32_t nParts, int32_t nDens) {
-			nParts = ((nParts < 0) ? -nParts : nParts * (nDens + 1)) >> int32_t (!gameOpts->render.particles.bDisperse); //(int32_t) (nParts * pow (1.2, nDens));
+		inline int MaxParticles (int nParts, int nDens) {
+			nParts = ((nParts < 0) ? -nParts : nParts * (nDens + 1)); //(int) (nParts * pow (1.2, nDens));
 			return (nParts < 100000) ? nParts : 100000;
 			}
 
-		inline float ParticleSize (int32_t nSize, float fScale, int32_t bBlowUp = 1) {
+		inline float ParticleSize (int nSize, float fScale, int bBlowUp = 1) {
 			return (bBlowUp && gameOpts->render.particles.bDisperse)
-					 ? FRound (float (PARTICLE_RAD * (nSize + 1)) / fScale)
-					 : FRound (float (PARTICLE_RAD * (nSize + 1) * (nSize + 2) / 2) / fScale);
+					 ? float (PARTICLE_RAD * (nSize + 1)) / fScale + 0.5f
+					 : float (PARTICLE_RAD * (nSize + 1) * (nSize + 2) / 2) / fScale + 0.5f;
 			}
 
-		inline int32_t RemoveEmitter (int32_t i, int32_t j)
+		inline int RemoveEmitter (int i, int j)
 		 { return GetSystem (i).RemoveEmitter (j); }
 
-		inline int32_t RenderBufPtr (void)
+		inline int RenderBufPtr (void)
 			{ return m_iRenderBuffer; }
 
-		inline void IncRenderBufPtr (int32_t i = 1)
+		inline void IncRenderBufPtr (int i = 1)
 			{ m_iRenderBuffer += i; }
 
-		inline int32_t LastType (void) { 
-			for (int32_t i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+		inline int LastType (void) { 
+			for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 				if (particleBuffer [i].GetType () >= 0)
 					return particleBuffer [i].GetType (); 
 				}
 			return -1;
 			}
 
-		inline void SetLastType (int32_t nType) { 
+		inline void SetLastType (int nType) { 
 			particleBuffer [0].SetType (nType); 
 			particleBuffer [1].SetType (nType); 
 			}
 
 		inline bool Overlap (CEffectArea& area) { 
-			for (int32_t i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+			for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 				if (particleBuffer [i] && area) 
 					return true;
 				}
@@ -555,23 +553,23 @@ class CParticleManager {
 			}
 
 		inline bool Overlap (CFloatVector& pos, float rad) { 
-			for (int32_t i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+			for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 				if (particleBuffer [i].Overlap (pos, rad)) 
 					return true;
 				}
 			return false;
 			}
 
-		bool Add (CParticle* pParticle, float brightness);
+		bool Add (CParticle* particleP, float brightness);
 
 		bool Flush (float brightness, bool bForce = false);
 
 		inline void ClearBuffers (void) {
-			for (int32_t i = 0; i < MAX_PARTICLE_BUFFERS; i++)
+			for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++)
 				particleBuffer [i].Clear ();
 			}	
 
-		bool LoadShader (int32_t nShader, vec3& dMax);
+		bool LoadShader (int nShader, vec3& dMax);
 
 		void UnloadShader (void);
 
@@ -580,7 +578,7 @@ class CParticleManager {
 	private:
 		void RebuildSystemList (void);
 
-		int16_t Add (CParticle* pParticle, float brightness, int32_t nBuffer, bool& bFlushed);
+		short Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed);
 };
 
 extern CParticleManager particleManager;
@@ -588,12 +586,12 @@ extern CParticleManager particleManager;
 //------------------------------------------------------------------------------
 
 typedef struct tParticleImageInfo {
-	CBitmap*		pBm;
+	CBitmap*		bmP;
 	const char*	szName;
-	int32_t		nFrames;
-	int32_t		iFrame;
-	int32_t		bHave;
-	int32_t		bAnimate;
+	int			nFrames;
+	int			iFrame;
+	int			bHave;
+	int			bAnimate;
 	float			xBorder;
 	float			yBorder;
 } tParticleImageInfo;
@@ -605,14 +603,14 @@ class CParticleImageManager {
 	public:
 		CParticleImageManager () : m_textureArray (0) {};
 		~CParticleImageManager () {};
-		int32_t Load (int32_t nType, int32_t bForce = 0);
-		int32_t LoadAll (void);
+		int Load (int nType, int bForce = 0);
+		int LoadAll (void);
 		void FreeAll (void);
 		bool SetupMultipleTextures (CBitmap* bmP1, CBitmap* bmP2, CBitmap* bmP3);
-		bool LoadMultipleTextures (int32_t nTMU);
-		void Animate (int32_t nType);
-		void AdjustBrightness (CBitmap *pBm);
-		int32_t GetType (int32_t nType);
+		bool LoadMultipleTextures (int nTMU);
+		void Animate (int nType);
+		void AdjustBrightness (CBitmap *bmP);
+		int GetType (int nType);
 };
 
 extern CParticleImageManager particleImageManager;
@@ -620,7 +618,7 @@ extern tParticleImageInfo particleImageInfo [MAX_PARTICLE_QUALITY + 1][PARTICLE_
 
 //------------------------------------------------------------------------------
 
-inline tParticleImageInfo& ParticleImageInfo (int32_t nType)
+inline tParticleImageInfo& ParticleImageInfo (int nType)
 {
 return particleImageInfo [gameOpts->render.particles.nQuality][nType];
 }

@@ -23,17 +23,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _LOADOBJECTS_H
 
 typedef struct {
-	uint16_t  fileinfoSignature;
-	uint16_t  fileinfoVersion;
-	int32_t     fileinfo_sizeof;
+	ushort  fileinfo_signature;
+	ushort  fileinfoVersion;
+	int     fileinfo_sizeof;
 } game_top_fileinfo;    // Should be same as first two fields below...
 
 void LoadGame(void);
 void SaveGame(void);
 void getLevel_name(void);
 
-int32_t LoadLevelData(char *filename, int32_t nLevel);
-int32_t SaveLevel(char *filename);
+int LoadLevelData(char *filename, int nLevel);
+int SaveLevel(char *filename);
 
 // called in place of load_game() to only load the .min data
 extern void load_mine_only(char * filename);
@@ -46,7 +46,7 @@ extern void write_game_text_file(char *filename);
 extern tGameFileInfo	gameFileInfo;
 extern game_top_fileinfo gameTopFileInfo;
 
-extern int32_t Errors_in_mine;
+extern int Errors_in_mine;
 
 void BuildObjTriggerRef (void);
 

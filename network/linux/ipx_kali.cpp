@@ -14,21 +14,22 @@
 #include <arpa/inet.h>
 #include <netinet/in.h> /* for htons & co. */
 #include "pstypes.h"
-#include "ipx.h"
 #include "ipx_drv.h"
 #include "ukali.h"
 
-extern CNetworkAddress ipx_MyAddress;
+extern ubyte ipx_MyAddress[10];
 
-static int32_t open_sockets = 0;
-static int32_t dynamic_socket = 0x401;
-static int32_t last_socket = 0;
+static int open_sockets = 0;
+static int dynamic_socket = 0x401;
+static int last_socket = 0;
 
-int32_t have_empty_address() {
-	return ipx_MyAddress.IsEmpty ();
+int have_empty_address() {
+	int i;
+	for (i = 0; i < 10 && !ipx_MyAddress[i]; i++) ;
+	return i == 10;
 }
 
-int32_t ipx_kali_GetMyAddress(void)
+int ipx_kali_GetMyAddress(void)
 {
 
 	kaliaddr_ipx mKaliAddr;
@@ -39,13 +40,13 @@ int32_t ipx_kali_GetMyAddress(void)
 	if (KaliGetNodeNum(&mKaliAddr) < 0)
 		return -1;
 
-	ipx_MyAddress.SetServer ((uint32_t) 0);
-	ipx_MyAddress.SetNode ((uint8_t*) mKaliAddr.sa_nodenum);
+	memset(ipx_MyAddress, 0, 4);
+	memcpy(ipx_MyAddress + 4, mKaliAddr.sa_nodenum, sizeof(mKaliAddr.sa_nodenum));
 
 	return 0;
 }
 
-int32_t ipx_kali_OpenSocket(ipx_socket_t *sk, int32_t port)
+int ipx_kali_OpenSocket(ipx_socket_t *sk, int port)
 {
 	//printf("IPX_kali: OpenSocket on port(%d)\n", port);
 
@@ -85,10 +86,11 @@ void ipx_kali_CloseSocket(ipx_socket_t *mysock)
 	}
 }
 
-int32_t ipx_kali_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader, uint8_t *data, int32_t dataLen)
+int ipx_kali_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
+ u_char *data, int dataLen)
 {
 	kaliaddr_ipx toaddr;
-	int32_t i;
+	int i;
 
 	memcpy(toaddr.sa_nodenum, IPXHeader->Destination.Node, sizeof(toaddr.sa_nodenum));
 	memcpy(&toaddr.sa_socket, IPXHeader->Destination.Socket, sizeof(toaddr.sa_socket));
@@ -99,18 +101,20 @@ int32_t ipx_kali_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader, uint8_
 	return i;
 }
 
-int32_t ipx_kali_ReceivePacket(ipx_socket_t *s, uint8_t *outbuf, int32_t outbufsize, CPacketAddress *rd)
+int ipx_kali_ReceivePacket(ipx_socket_t *s, char *outbuf, int outbufsize,
+ IPXRecvData_t *rd)
 {
-	int32_t size;
+	int size;
 	kaliaddr_ipx fromaddr;
 
-	if ((size = KaliReceivePacket(s->fd, reinterpret_cast<char*> (outbuf), outbufsize, &fromaddr)) < 0)
+	if ((size = KaliReceivePacket(s->fd, outbuf, outbufsize, &fromaddr)) < 0)
 		return -1;
 
-	rd->SetSockets (ntohs(fromaddr.sa_socket), s->socket);
-	rd->SetNode ((uint8_t*) fromaddr.sa_nodenum);
-	rd->SetNetwork ((uint32_t) 0);
-	rd->SetType (0);
+	rd->dst_socket = s->socket;
+	rd->src_socket = ntohs(fromaddr.sa_socket);
+	memcpy(rd->src_node, fromaddr.sa_nodenum, sizeof(fromaddr.sa_nodenum));
+	memset(rd->src_network, 0, 4);
+	rd->pktType = 0;
 
 	return size;
 }

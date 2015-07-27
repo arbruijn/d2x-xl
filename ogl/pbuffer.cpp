@@ -66,13 +66,13 @@ memset (&m_info, 0, sizeof (m_info));
 
 //------------------------------------------------------------------------------
 
-int32_t CPBO::Create (int32_t nWidth, int32_t nHeight)
+int CPBO::Create (int nWidth, int nHeight)
 {
 #ifdef _WIN32
-	int32_t	pf;
+	int	pf;
 	UINT	nPf;
 
-	static int32_t pfAttribs [] = {
+	static int pfAttribs [] = {
 		WGL_SUPPORT_OPENGL_ARB, TRUE,
 		WGL_DRAW_TO_PBUFFER_ARB, TRUE,
 		WGL_BIND_TO_TEXTURE_RGBA_ARB, TRUE,
@@ -85,7 +85,7 @@ int32_t CPBO::Create (int32_t nWidth, int32_t nHeight)
 		WGL_DOUBLE_BUFFER_ARB, FALSE,
 		0};
 
-	static int32_t pbAttribs [] = {
+	static int pbAttribs [] = {
 		WGL_TEXTURE_FORMAT_ARB,
 		WGL_TEXTURE_RGBA_ARB,
 		WGL_TEXTURE_TARGET_ARB,
@@ -101,7 +101,7 @@ if (nWidth > 0)
 	m_info.nWidth = nWidth;
 if (nHeight > 0)
 	m_info.nHeight = nHeight;
-wglChoosePixelFormatARB (hGlDC, reinterpret_cast<const int32_t*> (pfAttribs), NULL, 1, &pf, &nPf);
+wglChoosePixelFormatARB (hGlDC, reinterpret_cast<const int*> (pfAttribs), NULL, 1, &pf, &nPf);
 if (!nPf)
 	return 0;
 if (!(m_info.hBuf = wglCreatePbufferARB (hGlDC, pf, m_info.nWidth, m_info.nHeight, pbAttribs)))
@@ -122,9 +122,9 @@ wglShareLists (hGlRC, m_info.hRC);
 #else //!_WIN32
 	XVisualInfo *vi;
 	GLXFBConfig *pfd;	// pixel format descriptor
-	int32_t			nScreen, nFd;
+	int			nScreen, nFd;
 
-	static int32_t pfAttribs [] = {
+	static int pfAttribs [] = {
 		GLX_DOUBLEBUFFER, 0,
 		GLX_RED_SIZE, 8,
 		GLX_GREEN_SIZE, 8,
@@ -135,7 +135,7 @@ wglShareLists (hGlRC, m_info.hRC);
 		0
 		};
 
-    int32_t pbAttribs [] = {
+    int pbAttribs [] = {
         GLX_PBUFFER_WIDTH, 0,
         GLX_PBUFFER_HEIGHT, 0,
         GLX_LARGEST_PBUFFER, 0,
@@ -208,10 +208,10 @@ if (m_info.hBuf) {
 
 //------------------------------------------------------------------------------
 
-int32_t CPBO::Available (void)
+int CPBO::Available (void)
 {
 #ifdef _WIN32
-	int32_t	bLost;
+	int	bLost;
 
 if (!wglQueryPbufferARB)
 	return 0;	// pixel buffer extension not available
@@ -226,7 +226,7 @@ return (m_info.hBuf && m_info.hRC);
 
 //------------------------------------------------------------------------------
 
-int32_t CPBO::Enable (void)
+int CPBO::Enable (void)
 {
 if (Available () < 1)
 	return 0;
@@ -243,7 +243,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CPBO::Disable (void)
+int CPBO::Disable (void)
 {
 if (Available () < 1)
 	return 0;

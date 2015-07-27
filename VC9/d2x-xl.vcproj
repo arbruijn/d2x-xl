@@ -91,7 +91,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib  urlmon.lib"
-				OutputFile="d:\programs\d2\debug\d2x-xl-1.16.27.exe"
+				OutputFile="d:\programs\d2\debug\d2x-xl-dbg.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projects\sdl-1.2.14\debug&quot;;&quot;\projects\SDL_mixer-1.2.11\VisualC\Debug&quot;;&quot;c:\programme\visual leak detector\lib&quot;"
@@ -130,7 +130,7 @@
 		<Configuration
 			Name="Debug|x64"
 			OutputDirectory="\programs\d2\x64\debug\"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\"
+			IntermediateDirectory="$(ConfigurationName)\$(PlatformName)\"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
@@ -167,7 +167,7 @@
 				OmitFramePointers="false"
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="..\..\..\libraries\Rift\LibOVR\Include;&quot;..\..\..\libraries\zlib-1.2.5&quot;;&quot;..\..\..\libraries\SDL_net-1.2.7&quot;;&quot;..\..\..\libraries\SDL-1.2.14\include&quot;;&quot;..\..\..\libraries\SDL_mixer-1.2.11&quot;;&quot;..\..\..\libraries\SDL_image-1.2.7&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects"
+				AdditionalIncludeDirectories="&quot;..\..\..\libraries\zlib-1.2.5&quot;;&quot;..\..\..\libraries\SDL_net-1.2.7&quot;;&quot;..\..\..\libraries\SDL-1.2.14\include&quot;;&quot;..\..\..\libraries\SDL_mixer-1.2.11&quot;;&quot;..\..\..\libraries\SDL_image-1.2.7&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects"
 				PreprocessorDefinitions="_DEBUG;USE_OPENMP=2;DBG=1;ZLIB_DLL;_WINNT_WIN32=0x0700;OPENMP;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC"
 				StringPooling="true"
 				MinimalRebuild="true"
@@ -200,11 +200,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="rift.lib setupapi.lib odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib  urlmon.lib"
-				OutputFile="$(OutDir)$(ProjectName).exe"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib  urlmon.lib"
+				OutputFile="\programs\d2\x64\debug\d2x-xl-x64-dbg.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\..\..\libraries\rift\vc9\x64\debug"
+				AdditionalLibraryDirectories="&quot;\projects\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projects\sdl-1.2.13\debug&quot;;&quot;\projects\SDL_mixer-1.2.8\VisualC\Debug&quot;;&quot;\projects\irrlicht-1.4\lib\win32-visualstudio&quot;;&quot;c:\programme\visual leak detector\lib&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
@@ -900,6 +900,10 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
+			<File
+				RelativePath=".\d2x-xl.rc"
+				>
+			</File>
 			<Filter
 				Name="3d"
 				>
@@ -10403,6 +10407,35 @@
 			</Filter>
 		</Filter>
 		<Filter
+			Name="Resource Files"
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+			>
+			<File
+				RelativePath="..\d2x-w32.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\d2x-xl-2.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\d2x-xl.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\descent.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\icon5.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\include\wglext.h"
+				>
+			</File>
+		</Filter>
+		<Filter
 			Name="Configure"
 			>
 			<File
@@ -11357,72 +11390,15 @@
 				RelativePath="..\include\vesa.h"
 				>
 			</File>
-			<File
-				RelativePath="..\include\wglext.h"
-				>
-			</File>
 		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+		<File
+			RelativePath=".\ClassDiagram1.cd"
 			>
-			<File
-				RelativePath="..\resources\d2x-w32.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\resources\d2x-xl-2.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\resources\d2x-xl-banner.bmp"
-				>
-			</File>
-			<File
-				RelativePath="..\resources\d2x-xl-banner.jpg"
-				>
-			</File>
-			<File
-				RelativePath="..\resources\d2x-xl-ico-32x32.gif"
-				>
-			</File>
-			<File
-				RelativePath="..\resources\d2x-xl-ico-64x64.gif"
-				>
-			</File>
-			<File
-				RelativePath="..\resources\d2x-xl-icon-64x64.bmp"
-				>
-			</File>
-			<File
-				RelativePath="..\resources\d2x-xl-icon-64x64.png"
-				>
-			</File>
-			<File
-				RelativePath="..\resources\d2x-xl-icon-64x64x4.bmp"
-				>
-			</File>
-			<File
-				RelativePath="..\resources\d2x-xl.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\resources\d2x-xl.rc"
-				>
-			</File>
-			<File
-				RelativePath="..\resources\descent.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\resources\icon5.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\resources\resource.h"
-				>
-			</File>
-		</Filter>
+		</File>
+		<File
+			RelativePath="..\d2x-xl-icon-64x64.png"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

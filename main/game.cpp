@@ -89,11 +89,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menubackground.h"
 #include "findpath.h"
 #include "waypoint.h"
-#include "network_lib.h"
 
-#define PHYSICS_IN_BACKGROUND 0
-
-uint32_t nCurrentVGAMode;
+u_int32_t nCurrentVGAMode;
 
 #ifdef MWPROFILER
 #include <profiler.h>
@@ -107,7 +104,7 @@ uint32_t nCurrentVGAMode;
 
 #if DBG                          //these only exist if debugging
 
-int32_t bGameDoubleBuffer = 1;     //double buffer by default
+int bGameDoubleBuffer = 1;     //double buffer by default
 fix xFixedFrameTime = 0;          //if non-zero, set frametime to this
 
 #endif
@@ -119,6 +116,8 @@ CBitmap bmBackground;
 #define cv_w  Bitmap ().Width ()
 #define cv_h  Bitmap ().Height ()
 
+void NDRecordCockpitChange (int);
+
 void FireGun (void);
 void SlideTextures (void);
 void PowerupGrabCheatAll (void);
@@ -127,6 +126,7 @@ void PowerupGrabCheatAll (void);
 void MultiCheckForScoreGoalWinner (bool bForce);
 void MultiCheckForEntropyWinner (void);
 void MultiSendSoundFunction (char, char);
+void DefaultAllSettings (void);
 void ProcessSmartMinesFrame (void);
 void DoSeismicStuff (void);
 void ReadControls (void);		// located in gamecntl.c
@@ -137,6 +137,10 @@ void MultiRemoveGhostShips (void);
 void GameRenderFrame (void);
 void OmegaChargeFrame (void);
 void FlickerLights (void);
+
+#if DBG
+void DrawFrameRate (void);
+#endif
 
 void DoLunacyOn (void);
 void DoLunacyOff (void);
@@ -160,9 +164,18 @@ tDetailData	detailData = {
 
 //------------------------------------------------------------------------------
 
+void VRResetParams (void)
+{
+gameStates.render.vr.xEyeWidth = VR_SEPARATION;
+gameStates.render.vr.xStereoSeparation = VR_PIXEL_SHIFT;
+gameStates.render.vr.bEyeOffsetChanged = 2;
+}
+
+//------------------------------------------------------------------------------
+
 void GameFlushInputs (void)
 {
-	int32_t dx, dy;
+	int dx, dy;
 
 #if 1
 controls.FlushInput ();
@@ -180,27 +193,26 @@ controls.Reset ();
 
 //------------------------------------------------------------------------------
 
-void MovePlayerToSegment (CSegment* pSeg, int32_t nSide)
+void MovePlayerToSegment (CSegment* segP, int nSide)
 {
 	CFixVector vp;
 
-gameData.objData.pConsole->info.position.vPos = pSeg->Center ();
-vp = pSeg->SideCenter (nSide) - gameData.objData.pConsole->info.position.vPos;
+gameData.objs.consoleP->info.position.vPos = segP->Center ();
+vp = segP->SideCenter (nSide) - gameData.objs.consoleP->info.position.vPos;
 /*
-gameData.objData.pConsole->info.position.mOrient = CFixMatrix::Create(vp, NULL, NULL);
+gameData.objs.consoleP->info.position.mOrient = CFixMatrix::Create(vp, NULL, NULL);
 */
-gameData.objData.pConsole->info.position.mOrient = CFixMatrix::CreateF (vp);
-gameData.objData.pConsole->RelinkToSeg (pSeg->Index ());
+gameData.objs.consoleP->info.position.mOrient = CFixMatrix::CreateF (vp);
+gameData.objs.consoleP->RelinkToSeg (segP->Index ());
 }
 
 //------------------------------------------------------------------------------
 //this is called once per game
 
-bool InitGame (int32_t nSegments, int32_t nVertices)
+bool InitGame (int nSegments, int nVertices)
 {
-ENTER (0, 0);
 if (!gameData.Create (nSegments, nVertices))
-	RETVAL (false)
+	return false;
 /*---*/PrintLog (1, "Initializing game data\n");
 PrintLog (1, "Objects ...\n");
 InitObjects ();
@@ -227,37 +239,82 @@ PrintLog (-1);
 InitDefaultShipProps ();
 PrintLog (-1);
 nClearWindow = 2;		//	do portal only window clear.
+/*---*/PrintLog (1, "Default settings...\n");
+DefaultAllSettings ();
 PrintLog (-1);
 /*---*/PrintLog (1, "Detail levels (%d)...\n", gameStates.app.nDetailLevel);
 gameStates.app.nDetailLevel = InitDetailLevels (gameStates.app.nDetailLevel);
-importantMessages [0].Destroy ();
-importantMessages [1].Destroy ();
 PrintLog (-1);
 PrintLog (-1);
 fpDrawTexPolyMulti = G3DrawTexPolyMulti;
-RETVAL (true)
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+void GameInitRenderSubBuffers (int x, int y, int w, int h)
+{
+if (!bScanlineDouble) {
+	gameStates.render.vr.buffers.render [0].SetupPane (&gameStates.render.vr.buffers.subRender [0], x, y, w, h);
+	gameStates.render.vr.buffers.render [1].SetupPane (&gameStates.render.vr.buffers.subRender [1], x, y, w, h);
+	}
 }
 
 //------------------------------------------------------------------------------
 
 // Sets up the canvases we will be rendering to (NORMAL VERSION)
-void GameInitRenderBuffers (int32_t nScreenSize, int32_t render_w, int32_t render_h, int32_t render_method, int32_t flags)
+void GameInitRenderBuffers (int nScreenSize, int render_w, int render_h, int render_method, int flags)
 {
-gameData.renderData.screen.Set (nScreenSize);
-SetupCanvasses ();
+//	if (vga_check_mode (nScreenSize) != 0)
+//		Error ("Cannot set requested video mode");
+
+gameStates.render.vr.nScreenSize = nScreenSize;
+gameStates.render.vr.nScreenFlags = flags;
+//NEWVR
+VRResetParams ();
+gameStates.render.vr.nRenderMode = render_method;
+gameData.render.window.w = render_w;
+gameData.render.window.h = render_h;
+if (gameStates.render.vr.buffers.offscreen) {
+	gameStates.render.vr.buffers.offscreen->Destroy ();
+	}
+
+if ((gameStates.render.vr.nRenderMode == VR_AREA_DET) || (gameStates.render.vr.nRenderMode==VR_INTERLACED)) {
+	if (render_h*2 < 200) {
+		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, 200);
+		}
+	else {
+		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, render_h*2);
+		}
+	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[0], 0, 0, render_w, render_h);
+	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[1], 0, render_h, render_w, render_h);
+	}
+else {
+	if (render_h < 200) {
+		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, 200);
+		}
+	else {
+		gameStates.render.vr.buffers.offscreen = CCanvas::Create (render_w, render_h);
+      }
+	gameStates.render.vr.buffers.offscreen->SetMode (BM_OGL);
+	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[0], 0, 0, render_w, render_h);
+	gameStates.render.vr.buffers.offscreen->SetupPane (&gameStates.render.vr.buffers.render[1], 0, 0, render_w, render_h);
+	}
+GameInitRenderSubBuffers (0, 0, render_w, render_h);
 }
 
 //------------------------------------------------------------------------------
 
 //initialize flying
-void FlyInit (CObject *pObj)
+void FlyInit (CObject *objP)
 {
-pObj->info.controlType = CT_FLYING;
-pObj->info.movementType = MT_PHYSICS;
-pObj->mType.physInfo.velocity.SetZero ();
-pObj->mType.physInfo.thrust.SetZero ();
-pObj->mType.physInfo.rotVel.SetZero ();
-pObj->mType.physInfo.rotThrust.SetZero ();
+	objP->info.controlType = CT_FLYING;
+	objP->info.movementType = MT_PHYSICS;
+
+	objP->mType.physInfo.velocity.SetZero ();
+	objP->mType.physInfo.thrust.SetZero ();
+	objP->mType.physInfo.rotVel.SetZero ();
+	objP->mType.physInfo.rotThrust.SetZero ();
 }
 
 //void morph_test (), morph_step ();
@@ -267,10 +324,9 @@ pObj->mType.physInfo.rotThrust.SetZero ();
 
 void DoCloakStuff (void)
 {
-ENTER (0, 0);
-for (int32_t i = 0; i < N_PLAYERS; i++) {
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players[i].flags & PLAYER_FLAGS_CLOAKED) {
-		if (gameData.timeData.xGame - PLAYER (i).cloakTime > CLOAK_TIME_MAX) {
+		if (gameData.time.xGame - gameData.multiplayer.players [i].cloakTime > CLOAK_TIME_MAX) {
 			gameData.multiplayer.players[i].flags &= ~PLAYER_FLAGS_CLOAKED;
 			if (i == N_LOCALPLAYER) {
 				audio.PlaySound (SOUND_CLOAK_OFF);
@@ -282,19 +338,17 @@ for (int32_t i = 0; i < N_PLAYERS; i++) {
 			}
 		}
 	}
-RETURN
 }
 
 //	------------------------------------------------------------------------------------
 
-int32_t bFakingInvul = 0;
+int bFakingInvul = 0;
 
 void DoInvulnerableStuff (void)
 {
-ENTER (0, 0);
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	 (LOCALPLAYER.invulnerableTime != 0x7fffffff)) {
-	if (gameData.timeData.xGame - LOCALPLAYER.invulnerableTime > INVULNERABLE_TIME_MAX) {
+	if (gameData.time.xGame - LOCALPLAYER.invulnerableTime > INVULNERABLE_TIME_MAX) {
 		LOCALPLAYER.flags ^= PLAYER_FLAGS_INVULNERABLE;
 		if (!bFakingInvul) {
 			audio.PlaySound (SOUND_INVULNERABILITY_OFF);
@@ -306,19 +360,18 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 		bFakingInvul = 0;
 		}
 	}
-RETURN
 }
 
 //@@//	------------------------------------------------------------------------------------
 //@@void afterburner_shake (void)
 //@@{
-//@@	int32_t	rx, rz;
+//@@	int	rx, rz;
 //@@
-//@@	rx = (abScale * FixMul (SRandShort (), I2X (1)/8 + (((gameData.timeData.xGame + 0x4000)*4) & 0x3fff)))/16;
-//@@	rz = (abScale * FixMul (SRandShort (), I2X (1)/2 + ((gameData.timeData.xGame*4) & 0xffff)))/16;
+//@@	rx = (abScale * FixMul (SRandShort (), I2X (1)/8 + (((gameData.time.xGame + 0x4000)*4) & 0x3fff)))/16;
+//@@	rz = (abScale * FixMul (SRandShort (), I2X (1)/2 + ((gameData.time.xGame*4) & 0xffff)))/16;
 //@@
-//@@	gameData.objData.pConsole->mType.physInfo.rotVel.x += rx;
-//@@	gameData.objData.pConsole->mType.physInfo.rotVel.z += rz;
+//@@	gameData.objs.consoleP->mType.physInfo.rotVel.x += rx;
+//@@	gameData.objs.consoleP->mType.physInfo.rotVel.z += rz;
 //@@
 //@@}
 
@@ -327,46 +380,41 @@ RETURN
 #define AFTERBURNER_LOOP_START	 ((gameOpts->sound.audioSampleRate==SAMPLE_RATE_22K)?32027: (32027/2))		//20098
 #define AFTERBURNER_LOOP_END		 ((gameOpts->sound.audioSampleRate==SAMPLE_RATE_22K)?48452: (48452/2))		//25776
 
-//static int32_t abScale = 4;
+//static int abScale = 4;
 
 void DoAfterburnerStuff (void)
 {
-ENTER (0, 0);
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
-	gameData.physicsData.xAfterburnerCharge = 0;
+	gameData.physics.xAfterburnerCharge = 0;
 if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
 	if (audio.DestroyObjectSound (LOCALPLAYER.nObject))
 		MultiSendSoundFunction (0,0);
 	}
 else /*if ((gameStates.gameplay.xLastAfterburnerCharge && (controls [0].afterburnerState != gameStates.gameplay.bLastAfterburnerState)) || 
-	 		(gameStates.gameplay.bLastAfterburnerState && (gameStates.gameplay.xLastAfterburnerCharge && !gameData.physicsData.xAfterburnerCharge)))*/ {
-	int32_t nSoundObj = audio.FindObjectSound (LOCALPLAYER.nObject, SOUND_AFTERBURNER_IGNITE);
-	if (gameData.physicsData.xAfterburnerCharge && controls [0].afterburnerState && (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
+	 		(gameStates.gameplay.bLastAfterburnerState && (gameStates.gameplay.xLastAfterburnerCharge && !gameData.physics.xAfterburnerCharge)))*/ {
+	int nSoundObj = audio.FindObjectSound (LOCALPLAYER.nObject, SOUND_AFTERBURNER_IGNITE);
+	if (gameData.physics.xAfterburnerCharge && controls [0].afterburnerState && (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
 		if (nSoundObj < 0) {
-			audio.CreateObjectSound ((int16_t) SOUND_AFTERBURNER_IGNITE, SOUNDCLASS_PLAYER, (int16_t) LOCALPLAYER.nObject, 
+			audio.CreateObjectSound ((short) SOUND_AFTERBURNER_IGNITE, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject, 
 											 1, I2X (1), I2X (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
 			if (IsMultiGame)
 				MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_IGNITE);
 			}
 		}
-	else {
-		audio.FindObjectSound (LOCALPLAYER.nObject, SOUND_AFTERBURNER_IGNITE);
-		if (nSoundObj >= 0) { //gameStates.gameplay.xLastAfterburnerCharge || gameStates.gameplay.bLastAfterburnerState) {
+	else if (nSoundObj >= 0) { //gameStates.gameplay.xLastAfterburnerCharge || gameStates.gameplay.bLastAfterburnerState) {
 #if 1
-			audio.DeleteSoundObject (nSoundObj);
-			audio.CreateObjectSound ((int16_t) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (int16_t) LOCALPLAYER.nObject);
-			if (IsMultiGame) {
-				if (gameStates.multi.nGameType == UDP_GAME)
-			 		MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_PLAY);
-		 		MultiSendSoundFunction (0, 0);
-				}
+		audio.DeleteSoundObject (nSoundObj);
+		audio.CreateObjectSound ((short) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject);
+		if (IsMultiGame) {
+			if (gameStates.multi.nGameType == UDP_GAME)
+			 	MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_PLAY);
+		 	MultiSendSoundFunction (0, 0);
 			}
 #endif
 		}
 	}
 gameStates.gameplay.bLastAfterburnerState = controls [0].afterburnerState;
-gameStates.gameplay.xLastAfterburnerCharge = gameData.physicsData.xAfterburnerCharge;
-RETURN
+gameStates.gameplay.xLastAfterburnerCharge = gameData.physics.xAfterburnerCharge;
 }
 
 //------------------------------------------------------------------------------
@@ -440,11 +488,11 @@ m.TinyMenu (NULL, TXT_KEYS);
 //turns off active cheats
 void TurnCheatsOff (void)
 {
-	int32_t i;
+	int i;
 
 if (gameStates.app.cheats.bHomingWeapons)
 	for (i = 0; i < 20; i++)
-		WI_SetHomingFlag (i, OldHomingState [i]);
+		WI_set_homingFlag (i, OldHomingState [i]);
 
 if (gameStates.app.cheats.bAcid) {
 	gameStates.app.cheats.bAcid = 0;
@@ -472,18 +520,70 @@ gameStates.app.cheats.bEnabled = 0;
 // ----------------------------------------------------------------------------
 //	GameSetup ()
 
+void GameSetup (void)
+{
+DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
+DoLunacyOff ();		//	Restore true insane mode.
+gameStates.app.bGameAborted = 0;
+gameStates.app.bEndLevelSequence = 0;
+paletteManager.ResetEffect ();
+SetScreenMode (SCREEN_GAME);
+SetWarnFunc (ShowInGameWarning);
+#if TRACE
+//console.printf (CON_DBG, "   cockpit->Init () d:\temp\dm_test.\n");
+#endif
+cockpit->Init ();
+#if TRACE
+//console.printf (CON_DBG, "   InitGauges d:\temp\dm_test.\n");
+#endif
+//DigiInitSounds ();
+//gameStates.input.keys.bRepeat = 0;                // Don't allow repeat in game
+gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
+gameData.objs.viewerP = gameData.objs.consoleP;
+#if TRACE
+//console.printf (CON_DBG, "   FlyInit d:\temp\dm_test.\n");
+#endif
+FlyInit (gameData.objs.consoleP);
+if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
+	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
+ResetTime ();
+gameData.time.SetTime (0);			//make first frame zero
+#if TRACE
+//console.printf (CON_DBG, "   FixObjectSegs d:\temp\dm_test.\n");
+#endif
+GameFlushInputs ();
+lightManager.SetMethod ();
+gameStates.app.nSDLTicks [0] = 
+gameStates.app.nSDLTicks [1] = 
+gameData.time.xGameStart = SDL_GetTicks ();
+gameData.physics.fLastTick = float (gameData.time.xGameStart);
+ogl.m_features.bShaders.Available (gameOpts->render.bUseShaders);
+}
+
+//------------------------------------------------------------------------------
+
+void SetFunctionMode (int newFuncMode)
+{
+if (gameStates.app.nFunctionMode != newFuncMode) {
+	gameStates.app.nLastFuncMode = gameStates.app.nFunctionMode;
+	if ((gameStates.app.nFunctionMode = newFuncMode) == FMODE_GAME)
+		gameStates.app.bEnterGame = 2;
+#if DBG
+	else if (newFuncMode == FMODE_MENU)
+		gameStates.app.bEnterGame = 0;
+#endif
+	}
+}
+
+//	------------------------------------------------------------------------------------
+
 void CleanupAfterGame (bool bHaveLevel)
 {
-ENTER (0, 0);
 #ifdef MWPROFILE
 ProfilerSetStatus (0);
 #endif
 DestroyEffectsThread ();
-networkThread.Stop ();
-importantMessages [0].Destroy ();
-importantMessages [1].Destroy ();
-songManager.DestroyPlaylists ();
-gameData.timeData.xGameTotal = (SDL_GetTicks () - gameData.timeData.xGameStart) / 1000;
+gameData.time.xGameTotal = (SDL_GetTicks () - gameData.time.xGameStart) / 1000;
 gameStates.render.bRenderIndirect = 0;
 G3EndFrame (transformation, 0);
 audio.StopAll ();
@@ -492,13 +592,12 @@ if (gameStates.sound.bD1Sound) {
 	//audio.Shutdown ();
 	//audio.Setup ();
 	}
-if ((gameData.demoData.nState == ND_STATE_RECORDING) || (gameData.demoData.nState == ND_STATE_PAUSED))
+if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
 if (bHaveLevel)
 	MultiLeaveGame ();
-if (gameData.demoData.nState == ND_STATE_PLAYBACK)
+if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	NDStopPlayback ();
-gameData.Destroy ();
 postProcessManager.Destroy ();
 transparencyRenderer.ResetBuffers ();
 CGenericCockpit::Rewind (false);
@@ -512,41 +611,53 @@ SetFunctionMode (FMODE_EXIT);		// get out of game in Apple OEM version
 if (pfnTIRStop)
 	pfnTIRStop ();
 shaderManager.Destroy (true);
-ogl.InitEnhanced3DShader (); // always need the stereo rendering shaders 
 meshBuilder.DestroyVBOs ();
 UnloadLevelData ();
+gameData.Destroy ();
 missionConfig.Init ();
 PiggyCloseFile ();
 SavePlayerProfile ();
 ResetModFolders ();
-gameStates.app.bGameRunning = 0;
 backgroundManager.Rebuild ();
 SetFunctionMode (FMODE_MENU);	
-RETURN
+}
+
+//	-----------------------------------------------------------------------------
+
+void DoRenderFrame (void)
+{
+gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
+if (gameStates.render.cockpit.bRedraw) {
+	cockpit->Init ();
+	gameStates.render.cockpit.bRedraw = 0;
+	}
+GameRenderFrame ();
+gameStates.app.bUsingConverter = 0;
+AutoScreenshot ();
 }
 
 //	-----------------------------------------------------------------------------
 
 #if PHYSICS_FPS >= 0
 
-int32_t GameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t fps)
+int GameFrame (int bRenderFrame, int bReadControls, int fps)
 {
 if (bRenderFrame)
 	DoRenderFrame ();
 
-	fix		xFrameTime = gameData.timeData.xFrame; 
+	fix		xFrameTime = gameData.time.xFrame; 
 	float		physicsFrameTime = 1000.0f / float (PHYSICS_FPS);
-	float		t = float (SDL_GetTicks ()), dt = t - gameData.physicsData.fLastTick;
-	int32_t		h = 1, i = 0;
+	float		t = float (SDL_GetTicks ()), dt = t - gameData.physics.fLastTick;
+	int		h = 1, i = 0;
 
 while (dt >= physicsFrameTime) {
 	dt -= physicsFrameTime;
 	i++;
 	}
 if (i) {
-	gameData.physicsData.fLastTick = t - dt;
-	gameData.timeData.SetTime (I2X (1) / PHYSICS_FPS);
-	gameData.physicsData.xTime = gameData.timeData.xFrame; 
+	gameData.physics.fLastTick = t - dt;
+	gameData.time.SetTime (I2X (1) / PHYSICS_FPS);
+	gameData.physics.xTime = gameData.time.xFrame; 
 	gameStates.app.nSDLTicks [0] = gameStates.app.nSDLTicks [1];
 	if (bReadControls > 0)
 		ReadControls ();
@@ -555,7 +666,7 @@ if (i) {
 	gameStates.app.tick40fps.bTick = 1;
 	while (i--) {
 		HUDMessage (0, "physics tick %d", i);
-		gameData.objData.nFrameCount++;
+		gameData.objs.nFrameCount++;
 		h = DoGameFrame (0, 0, 0);
 		controls.ResetTriggers ();
 		gameStates.app.tick40fps.bTick = 0;
@@ -579,22 +690,149 @@ return h;
 #endif
 
 //	------------------------------------------------------------------------------------
-//	------------------------------------------------------------------------------------
-//	------------------------------------------------------------------------------------
 //this function is the game.  called when game mode selected.  runs until
 //editor mode or exit selected
+void RunGame (void)
+{
+	int i, c;
 
-extern bool bRegisterBitmaps;
+GameSetup ();								// Replaces what was here earlier.
+#ifdef MWPROFILE
+ProfilerSetStatus (1);
+#endif
+
+if (pfnTIRStart)
+	pfnTIRStart ();
+
+if (!setjmp (gameExitPoint)) {
+	for (;;) {
+		PROF_START
+		int playerShield;
+			// GAME LOOP!
+#if DBG
+		if (automap.Display ())
+#endif
+		automap.m_bDisplay = 0;
+		gameStates.app.bConfigMenu = 0;
+		if (gameData.objs.consoleP != OBJECTS + LOCALPLAYER.nObject) {
+#if TRACE
+			 //console.printf (CON_DBG,"N_LOCALPLAYER=%d nObject=%d",N_LOCALPLAYER,LOCALPLAYER.nObject);
+#endif
+			 //Assert (gameData.objs.consoleP == &OBJECTS[LOCALPLAYER.nObject]);
+			}
+		playerShield = LOCALPLAYER.Shield ();
+		gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
+
+		try {
+			i = GameFrame (1, 1);
+			}
+		catch (int e) {
+			ClearWarnFunc (ShowInGameWarning);
+			if (e == EX_OUT_OF_MEMORY) {
+				Warning ("Out of memory.");
+				break;
+				}
+			else if (e == EX_IO_ERROR) {
+				Warning ("Couldn't load game data.");
+				break;
+				}
+			else {
+				Warning ("Well ... something went wrong.");
+				break;
+				}
+			}
+		catch (...) {
+			ClearWarnFunc (ShowInGameWarning);
+			Warning ("Well ... something went really wrong.");
+			break;
+			}
+
+		PROF_END (ptFrame);
+		if (i < 0)
+			break;
+		if (i == 0)
+			continue;
+
+		if (gameStates.app.bSingleStep) {
+			while (!(c = KeyInKey ()))
+				;
+			if (c == KEY_ALTED + KEY_CTRLED + KEY_ESC)
+				gameStates.app.bSingleStep = 0;
+			}
+		//if the player is taking damage, give up guided missile control
+		if (LOCALPLAYER.Shield () != playerShield)
+			ReleaseGuidedMissile (N_LOCALPLAYER);
+		//see if redbook song needs to be restarted
+		redbook.CheckRepeat ();	// Handle RedBook Audio Repeating.
+		if (gameStates.app.bConfigMenu) {
+			//paletteManager.SuspendEffect (!IsMultiGame);
+			ConfigMenu ();
+			//paletteManager.ResumeEffect (!IsMultiGame);
+			}
+		if (automap.Display ()) {
+			int	save_w = gameData.render.window.w,
+					save_h = gameData.render.window.h;
+			automap.DoFrame (0, 0);
+			gameStates.app.bEnterGame = 1;
+			//	FlushInput ();
+			//	StopPlayerMovement ();
+			gameStates.video.nScreenMode = -1;
+			SetScreenMode (SCREEN_GAME);
+			gameData.render.window.w = save_w;
+			gameData.render.window.h = save_h;
+			cockpit->Init ();
+			}
+		if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
+			 gameData.demo.bAuto && !gameOpts->demo.bRevertFormat &&
+			 (gameData.demo.nState != ND_STATE_NORMAL)) {
+			int choice, fmode;
+			fmode = gameStates.app.nFunctionMode;
+			SetFunctionMode (FMODE_GAME);
+			//paletteManager.SuspendEffect ();
+			choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
+			//paletteManager.ResumeEffect ();
+			SetFunctionMode (fmode);
+			if (choice)
+				SetFunctionMode (FMODE_GAME);
+			else {
+				gameData.demo.bAuto = 0;
+				NDStopPlayback ();
+				SetFunctionMode (FMODE_MENU);
+				}
+			}
+		if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
+			 (gameData.demo.nState != ND_STATE_PLAYBACK) &&
+			 (gameStates.app.nFunctionMode != FMODE_EDITOR) &&
+			 !gameStates.multi.bIWasKicked) {
+			if (QuitSaveLoadMenu ())
+				SetFunctionMode (FMODE_GAME);
+			}
+		gameStates.multi.bIWasKicked = 0;
+		PROF_END(ptFrame);
+#if PROFILING
+		if (gameData.app.nFrameCount % 10000 == 0)
+			memset (&gameData.profiler, 0, sizeof (gameData.profiler));
+#endif
+		if (gameStates.app.nFunctionMode != FMODE_GAME)
+			break; //longjmp (gameExitPoint, 0);
+		}
+	}
+try {
+	CleanupAfterGame ();
+	}
+catch (...) {
+	Warning ("Internal error when cleaning up.");
+	}
+}
 
 //-----------------------------------------------------------------------------
 //called at the end of the program
 
 void _CDECL_ CloseGame (void)
 {
-ENTER (0, 0);
-	static	int32_t bGameClosed = 0;
+	static	int bGameClosed = 0;
 #if MULTI_THREADED
-	int32_t		i;
+	int		i;
 #endif
 if (bGameClosed)
 	return;
@@ -614,13 +852,13 @@ FreeObjExtensionBitmaps ();
 FreeModelExtensions ();
 PrintLog (1, "unloading render buffers\n");
 transparencyRenderer.FreeBuffers ();
-PrintLog (-1);	
+PrintLog (-1);
 PrintLog (1, "unloading string pool\n");
 FreeStringPool ();
 PrintLog (-1);
 PrintLog (1, "unloading level messages\n");
 FreeTextData (gameData.messages);
-FreeTextData (&gameData.soundData);
+FreeTextData (&gameData.sounds);
 PrintLog (-1);
 PrintLog (1, "unloading hires animations\n");
 UnloadHiresAnimations ();
@@ -630,7 +868,7 @@ PrintLog (1, "freeing sound buffers\n");
 FreeSoundReplacements ();
 PrintLog (-1);
 PrintLog (1, "unloading auxiliary poly model data\n");
-gameData.modelData.Destroy ();
+gameData.models.Destroy ();
 PrintLog (-1);
 PrintLog (1, "unloading hires models\n");
 FreeHiresModels (0);
@@ -645,16 +883,8 @@ PrintLog (1, "unloading particle data\n");
 particleManager.Shutdown ();
 PrintLog (-1);
 PrintLog (1, "unloading shield sphere data\n");
-if (gameData.renderData.shield) {
-	gameData.renderData.shield->Destroy ();
-	delete gameData.renderData.shield;
-	gameData.renderData.shield = NULL;
-	}
-if (gameData.renderData.monsterball) {
-	gameData.renderData.monsterball->Destroy ();
-	delete gameData.renderData.monsterball;
-	gameData.renderData.monsterball = NULL;
-	}	
+gameData.render.shield.Destroy ();
+gameData.render.monsterball.Destroy ();
 PrintLog (-1);
 PrintLog (1, "unloading HUD icons\n");
 hudIcons.Destroy ();
@@ -663,11 +893,15 @@ PrintLog (1, "unloading extra texture data\n");
 UnloadAddonImages ();
 PrintLog (-1);
 PrintLog (1, "unloading palettes\n");
-gameData.segData.skybox.Destroy ();
+gameData.segs.skybox.Destroy ();
 PrintLog (-1);
 #if GPGPU_VERTEX_LIGHTING
 gpgpuLighting.End ();
 #endif
+if (gameStates.render.vr.buffers.offscreen) {
+	gameStates.render.vr.buffers.offscreen->Destroy ();
+	gameStates.render.vr.buffers.offscreen = NULL;
+}
 PrintLog (1, "restoring effect bitmaps\n");
 RestoreEffectBitmapIcons ();
 PrintLog (-1);
@@ -695,14 +929,13 @@ if (fLog) {
 	fLog = NULL;
 	}
 #endif
-RETURN
 }
 
 //-----------------------------------------------------------------------------
 
 CCanvas* CurrentGameScreen (void)
 {
-return &gameData.renderData.scene;
+return gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage;
 }
 
 //-----------------------------------------------------------------------------
@@ -710,11 +943,12 @@ return &gameData.renderData.scene;
 
 CObject *FindEscort ()
 {
-	CObject	*pObj = OBJECTS.Buffer ();
+//	int 		i;
+	CObject	*objP = OBJECTS.Buffer ();
 
-FORALL_ROBOT_OBJS (pObj)
-	if (pObj->IsGuideBot ())
-		return pObj;
+FORALL_ROBOT_OBJS (objP, i)
+	if (IS_GUIDEBOT (objP))
+		return objP;
 return NULL;
 }
 
@@ -722,17 +956,14 @@ return NULL;
 //if water or fire level, make occasional sound
 void DoAmbientSounds (void)
 {
-ENTER (0, 0);
 if (gameStates.app.bPlayerIsDead)
-	RETURN
+	return;
 
-CSegment* pSeg = SEGMENT (gameData.objData.pConsole->info.nSegment);
-if (!pSeg)
-	RETURN
+	int	bLava, bWater;
+	short nSound;
 
-	int32_t bLava = (pSeg->m_flags & S2F_AMBIENT_LAVA);
-	int32_t bWater = (pSeg->m_flags & S2F_AMBIENT_WATER);
-	int16_t nSound;
+	bLava = (SEGMENTS [gameData.objs.consoleP->info.nSegment].m_flags & S2F_AMBIENT_LAVA);
+	bWater = (SEGMENTS [gameData.objs.consoleP->info.nSegment].m_flags & S2F_AMBIENT_WATER);
 
 if (bLava) {							//has lava
 	nSound = SOUND_AMBIENT_LAVA;
@@ -742,27 +973,23 @@ if (bLava) {							//has lava
 else if (bWater)						//just water
 	nSound = SOUND_AMBIENT_WATER;
 else
-	RETURN
-if (((RandShort () << 3) < gameData.timeData.xFrame))	//play the nSound
+	return;
+if (((RandShort () << 3) < gameData.time.xFrame))	//play the nSound
 	audio.PlaySound (nSound, SOUNDCLASS_GENERIC, (fix) (RandShort () + I2X (1) / 2));
-RETURN
 }
 
 //-----------------------------------------------------------------------------
 
 void DoEffectsFrame (void)
 {
-ENTER (0, 0);
 gameStates.render.bUpdateEffects = true;
 UpdateEffects ();
-RETURN
 }
 
 //-----------------------------------------------------------------------------
 
 void UpdateEffects (void) 
 {
-ENTER (0, 0);
 if (gameStates.render.bUpdateEffects) {
 	gameStates.render.bUpdateEffects = 0;
 	wayPointManager.Update ();
@@ -771,195 +998,20 @@ if (gameStates.render.bUpdateEffects) {
 	DoParticleFrame ();
 	particleManager.Cleanup ();
 	}
-RETURN
-}
-
-//------------------------------------------------------------------------------
-
-void SetFunctionMode (int32_t newFuncMode)
-{
-if (gameStates.app.nFunctionMode != newFuncMode) {
-	gameStates.app.nLastFuncMode = gameStates.app.nFunctionMode;
-	if ((gameStates.app.nFunctionMode = newFuncMode) == FMODE_GAME)
-		gameStates.app.bEnterGame = 2;
-#if DBG
-	else if (newFuncMode == FMODE_MENU)
-		gameStates.app.bEnterGame = 0;
-#endif
-	}
-}
-
-//	------------------------------------------------------------------------------------
-//	------------------------------------------------------------------------------------
-//	------------------------------------------------------------------------------------
-
-#if DBG
-static int32_t nRenderCalls = 0;
-static int32_t nStateCalls = 0;
-static int32_t tStateLoop = 0;
-static int32_t tRenderLoop = 0;
-#endif
-
-class CGameLoop {
-	private:
-		SDL_Thread*	m_thread;
-		SDL_sem*		m_lock;
-		bool			m_bRunning;
-		int32_t		m_bRender;
-		int32_t		m_bControls;
-		int32_t		m_fps;
-		int32_t		m_nResult;
-
-	public:
-		CGameLoop () : m_thread (NULL), m_lock (NULL), m_bRunning (false), m_bRender (0), m_bControls (0), m_fps (0), m_nResult (0) {}
-		void Start (void);
-		void Stop (void);
-		void Run (void);
-		void StateLoop (void);
-		void Setup (void);
-		void Cleanup (void);
-		int32_t Step (int32_t bRenderFrame = 1, int32_t bReadControls = 1, int32_t fps = 0);
-
-	private:
-		int32_t Preprocess (void);
-		int32_t Postprocess (void);
-		void Render (void);
-		void HandleQuit (void);
-		void HandleAutomap (void);
-		void HandleControls (int32_t bControls);
-		inline int32_t SetResult (int32_t nResult) { return m_nResult = nResult; }
-
-		void Lock (void) { 
-			if (m_lock)
-				SDL_SemWait (m_lock); 
-			}
-		void Unlock (void) { 
-			if (m_lock)
-				SDL_SemPost (m_lock); 
-			}
-};
-
-CGameLoop gameLoop;
-
-//	-----------------------------------------------------------------------------
-
-int32_t _CDECL_ GameThreadHandler (void* pnThread)
-{
-gameLoop.StateLoop ();
-return 0;
 }
 
 //-----------------------------------------------------------------------------
+// -- extern void lightning_frame (void);
 
-void CGameLoop::StateLoop (void)
+#if PHYSICS_FPS >= 0
+int DoGameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
+#else
+int GameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
+#endif
 {
-ENTER (0, 0);
-m_bRunning = true;
-while (m_bRunning) {
-#if DBG
-	++nStateCalls;
-#endif
-	int32_t playerShield = LOCALPLAYER.Shield ();
-
-	CalcFrameTime (120);
-
-	Lock ();
-#if DBG
-	int32_t t = SDL_GetTicks ();
-#endif
-	m_nResult = Preprocess ();
-#if DBG
-	tStateLoop += SDL_GetTicks () - t;
-#endif
-	Unlock ();
-	if (1 > m_nResult)
-		break;
-	Lock ();
-#if DBG
-	t = SDL_GetTicks ();
-#endif
-	m_nResult = Postprocess ();
-#if DBG
-	tStateLoop += SDL_GetTicks () - t;
-#endif
-	Unlock ();
-	if (1 > m_nResult)
-		break;
-
-	if (LOCALPLAYER.Shield () != playerShield)
-		ReleaseGuidedMissile (N_LOCALPLAYER);
-#if DBG
-	tStateLoop += SDL_GetTicks () - t;
-#endif
-	}
-m_bRunning = false;
-RETURN
-}
-
-//-----------------------------------------------------------------------------
-
-void CGameLoop::Render (void)
-{
-ENTER (0, 0);
-Lock ();
-#if DBG
-++nRenderCalls;
-#endif
-gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-
-if (gameStates.render.cockpit.bRedraw) {
-	cockpit->Init ();
-	gameStates.render.cockpit.bRedraw = 0;
-	}
-GameRenderFrame ();
-gameStates.app.bUsingConverter = 0;
-AutoScreenshot ();
-
-Unlock ();
-RETURN
-}
-
-//-----------------------------------------------------------------------------
-
-void CGameLoop::Setup (void)
-{
-ENTER (0, 0);
-DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
-DoLunacyOff ();	//	Restore true insane mode.
-gameStates.app.bGameAborted = 0;
-gameStates.app.bEndLevelSequence = 0;
-paletteManager.ResetEffect ();
-SetScreenMode (SCREEN_GAME);
-SetWarnFunc (ShowInGameWarning);
-cockpit->Init ();
-gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
-gameData.SetViewer (gameData.objData.pConsole);
-FlyInit (gameData.objData.pConsole);
-if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
-	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
-ResetTime ();
-gameData.timeData.SetTime (0);			//make first frame zero
-GameFlushInputs ();
-lightManager.SetMethod ();
-gameStates.app.nSDLTicks [0] = 
-gameStates.app.nSDLTicks [1] = 
-gameData.timeData.xGameStart = SDL_GetTicks ();
-gameData.physicsData.fLastTick = float (gameData.timeData.xGameStart);
-ogl.m_features.bShaders.Available (gameOpts->render.bUseShaders);
-gameData.renderData.rift.SetCenter ();
-if (pfnTIRStart)
-	pfnTIRStart ();
-RETURN
-}
-
-//	------------------------------------------------------------------------------------
-
-int32_t CGameLoop::Preprocess (void)
-{
-ENTER (0, 0);
-PROF_START
+gameStates.app.bGameRunning = 1;
 //gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-gameData.objData.nLastObject [1] = gameData.objData.nLastObject [0];
+gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
 
 if (gameStates.gameplay.bMineMineCheat) {
 	DoWowieCheat (0, 0);
@@ -975,480 +1027,221 @@ DoInvulnerableStuff ();
 RemoveObsoleteStuckObjects ();
 InitAIFrame ();
 DoFinalBossFrame ();
-DrainHeadLightPower ();
-PROF_END(ptGameStates)
+DrainHeadlightPower ();
 
 if (IsMultiGame) {
 	if (!MultiProtectGame ()) {
 		SetFunctionMode (FMODE_MENU);
-		RETVAL (-1)
+		return -1;
 		}
-	PROF_CONT
 	AutoBalanceTeams ();
 	MultiSendTyping ();
+	MultiSendWeapons (0);
 	MultiSyncKills ();
 	MultiAdjustPowerups ();
 	tracker.AddServer ();
 	MultiDoFrame ();
 	CheckMonsterballScore ();
-	MultiCheckForScoreGoalWinner (netGameInfo.GetPlayTimeAllowed () && (gameStates.app.xThisLevelTime >= I2X ((netGameInfo.GetPlayTimeAllowed () * 5 * 60))));
+	MultiCheckForScoreGoalWinner (netGame.GetPlayTimeAllowed () && (gameStates.app.xThisLevelTime >= I2X ((netGame.GetPlayTimeAllowed () * 5 * 60))));
 	MultiCheckForEntropyWinner ();
 	MultiRemoveGhostShips ();
-	PROF_END (ptGameStates)
 	}
 
 #if PHYSICS_FPS < 0
-PROF_CONT
 DoEffectsFrame ();
-UpdatePlayerEffects ();
-PROF_END(ptGameStates)
 #endif
-
-RETVAL (1)
-}
-
-//-----------------------------------------------------------------------------
-
-int32_t CGameLoop::Postprocess (void)
-{
-ENTER (0, 0);
-PROF_START
+if (bRenderFrame)
+	DoRenderFrame ();
+if (bFrameTime)
+	CalcFrameTime ();
+if (bReadControls > 0)
+	ReadControls ();
+else if (bReadControls < 0)
+	controls.Reset ();
 
 DeadPlayerFrame ();
-ObserverFrame ();
-LOCALPLAYER.Recharge ();
-if (gameData.demoData.nState != ND_STATE_PLAYBACK) 
+if (gameData.demo.nState != ND_STATE_PLAYBACK) 
 	DoReactorDeadFrame ();
 ProcessSmartMinesFrame ();
 DoSeismicStuff ();
 DoAmbientSounds ();
 DropPowerups ();
-gameData.timeData.xGame += gameData.timeData.xFrame;
-if ((gameData.timeData.xGame < 0) || (gameData.timeData.xGame > I2X (0x7fff - 600))) 
-	gameData.timeData.xGame = gameData.timeData.xFrame;	//wrap when goes negative, or gets within 10 minutes
-if (IsMultiGame && netGameInfo.GetPlayTimeAllowed ())
-	gameStates.app.xThisLevelTime += gameData.timeData.xFrame;
+gameData.time.xGame += gameData.time.xFrame;
+if ((gameData.time.xGame < 0) || (gameData.time.xGame > I2X (0x7fff - 600))) 
+	gameData.time.xGame = gameData.time.xFrame;	//wrap when goes negative, or gets within 10 minutes
+if (IsMultiGame && netGame.GetPlayTimeAllowed ())
+	gameStates.app.xThisLevelTime += gameData.time.xFrame;
 audio.SyncSounds ();
-PROF_END (ptGameStates)
-
 if (gameStates.app.bEndLevelSequence) {
 	DoEndLevelFrame ();
 	PowerupGrabCheatAll ();
 	DoSpecialEffects ();
-	RETVAL (1)	//skip everything else
+	return 1;					//skip everything else
 	}
-
-PROF_CONT
-if (gameData.demoData.nState != ND_STATE_PLAYBACK) 
+if (gameData.demo.nState != ND_STATE_PLAYBACK) 
 	DoExplodingWallFrame ();
-if ((gameData.demoData.nState != ND_STATE_PLAYBACK) || (gameData.demoData.nVcrState != ND_STATE_PAUSED)) {
+if ((gameData.demo.nState != ND_STATE_PLAYBACK) || (gameData.demo.nVcrState != ND_STATE_PAUSED)) {
 	DoSpecialEffects ();
 	WallFrameProcess ();
 	TriggersFrameProcess ();
 	}
-if (gameData.reactorData.bDestroyed && (gameData.demoData.nState == ND_STATE_RECORDING)) 
+if (gameData.reactor.bDestroyed && (gameData.demo.nState == ND_STATE_RECORDING)) 
 	NDRecordControlCenterDestroyed ();
 UpdateFlagClips ();
 MultiSetFlagPos ();
-UpdatePlayerPaths ();
+SetPlayerPaths ();
 FlashFrame ();
-PROF_END (ptGameStates)
-
-if (gameData.demoData.nState == ND_STATE_PLAYBACK) {
+if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	NDPlayBackOneFrame ();
-	if (gameData.demoData.nState != ND_STATE_PLAYBACK)
+	if (gameData.demo.nState != ND_STATE_PLAYBACK)
 		longjmp (gameExitPoint, 0);		// Go back to menu
 	}
 else { // Note the link to above!
-	PROF_CONT
 	LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  CObject::UpdateWeapon modifies this.
 	if (!UpdateAllObjects ())
-		RETVAL (0)
+		return 0;
 	PowerupGrabCheatAll ();
 	if (gameStates.app.bEndLevelSequence)	//might have been started during move
-		RETVAL (1)
+		return 1;
 	UpdateAllProducers ();
 	DoAIFrameAll ();
 	if (AllowedToFireGun ()) 
 		FireGun ();				// Fire Laser!
 	if (!FusionBump ())
-		RETVAL (1)
-	if (gameData.laserData.nGlobalFiringCount)
-		gameData.laserData.nGlobalFiringCount -= LocalPlayerFireGun ();	
-	if (gameData.laserData.nGlobalFiringCount < 0)
-		gameData.laserData.nGlobalFiringCount = 0;
-	PROF_END (ptGameStates)
+		return 1;
+	if (gameData.laser.nGlobalFiringCount)
+		gameData.laser.nGlobalFiringCount -= LocalPlayerFireGun ();	
+	if (gameData.laser.nGlobalFiringCount < 0)
+		gameData.laser.nGlobalFiringCount = 0;
 	}
-
-PROF_CONT
 if (gameStates.render.bDoAppearanceEffect) {
-	gameData.objData.pConsole->CreateAppearanceEffect ();
+	gameData.objs.consoleP->CreateAppearanceEffect ();
 	gameStates.render.bDoAppearanceEffect = 0;
-	if (IsMultiGame && netGameInfo.m_info.invul) {
+	if (IsMultiGame && netGame.m_info.invul) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-		LOCALPLAYER.invulnerableTime = gameData.timeData.xGame - I2X (27);
+		LOCALPLAYER.invulnerableTime = gameData.time.xGame - I2X (27);
 		bFakingInvul = 1;
-		gameData.multiplayer.spherePulse [N_LOCALPLAYER].Setup (0.02f, 0.5f);
+		SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
 		}
 	}
-
 DoSlowMotionFrame ();
 CheckInventory ();
 OmegaChargeFrame ();
 SlideTextures ();
 FlickerLights ();
-PROF_END (ptGameStates)
-RETVAL (1)
+return 1;
 }
 
-//-----------------------------------------------------------------------------
 
-void CGameLoop::HandleControls (int32_t bControls)
-{
-ENTER (0, 0);
-if (bControls < 0)
-	controls.Reset ();
-else if (bControls)
-	ReadControls ();
-RETURN
-}
-
-//-----------------------------------------------------------------------------
-
-extern int32_t MaxFPS (void);
-
-int32_t CGameLoop::Step (int32_t bRender, int32_t bControls, int32_t fps)
-{
-ENTER (0, 0);
-gameStates.app.bGameRunning = 1;
-
-if (m_bRunning) { // game states are updated in separate thread
-	int32_t t = fps ? SDL_GetTicks () : 0;
-	HandleControls (bControls);
-	if (!bRender)
-		RETVAL (0)
-	Render ();
-#if DBG
-	tRenderLoop += SDL_GetTicks () - t;
-#endif
-	if (fps) {
-		t += 1000 / fps - SDL_GetTicks ();
-		if (t > 0)
-			G3_SLEEP (t);
-		}	
-	}
-else {
-	CalcFrameTime (fps);
-	HandleControls (bControls);
-	gameStates.render.EnableCartoonStyle (1, 1, 1);
-	m_nResult = Preprocess ();
-	gameStates.render.DisableCartoonStyle ();
-	if (0 > m_nResult)
-		RETVAL (m_nResult)
-	if (bRender)
-		Render ();
-	gameStates.render.EnableCartoonStyle (1, 1, 1);
-	m_nResult = Postprocess ();
-	gameStates.render.DisableCartoonStyle ();
-	if (0 > m_nResult)
-		RETVAL (m_nResult)
-	}
-
-RETVAL (m_nResult)
-}
-
-//------------------------------------------------------------------------------
-
-void CGameLoop::HandleQuit (void)
-{
-if (gameStates.app.bConfigMenu)
-	ConfigMenu ();
-
-if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
-		gameData.demoData.bAuto && !gameOpts->demo.bRevertFormat &&
-		(gameData.demoData.nState != ND_STATE_NORMAL)) {
-	int32_t choice, fmode;
-	fmode = gameStates.app.nFunctionMode;
-	SetFunctionMode (FMODE_GAME);
-	choice = InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
-	SetFunctionMode (fmode);
-	if (choice)
-		SetFunctionMode (FMODE_GAME);
-	else {
-		gameData.demoData.bAuto = 0;
-		NDStopPlayback ();
-		SetFunctionMode (FMODE_MENU);
-		}
-	}
-
-if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
-		(gameData.demoData.nState != ND_STATE_PLAYBACK) &&
-		(gameStates.app.nFunctionMode != FMODE_EDITOR) &&
-		!gameStates.multi.bIWasKicked) {
-	if (QuitSaveLoadMenu ())
-		SetFunctionMode (FMODE_GAME);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void CGameLoop::Start (void)
-{
-#if PHYSICS_IN_BACKGROUND
-m_bRunning = false;
-m_lock = SDL_CreateSemaphore (1);
-m_thread = SDL_CreateThread (GameThreadHandler, NULL);
-while (!m_bRunning)
-	G3_SLEEP (0);
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-void CGameLoop::Stop (void)
-{
-m_bRunning = false;
-if (m_thread) {
-	SDL_WaitThread (m_thread, &m_nResult);
-	m_thread = NULL;
-	}
-if (m_lock) {
-	SDL_DestroySemaphore (m_lock);
-	m_lock = NULL;
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void CGameLoop::HandleAutomap (void)
-{
-ENTER (0, 0);
-if (automap.Active ()) {
-	int32_t	save_w = gameData.renderData.frame.Width (),
-				save_h = gameData.renderData.frame.Height ();
-	automap.DoFrame (0, 0);
-	gameStates.app.bEnterGame = 1;
-	gameStates.video.nScreenMode = -1;
-	SetScreenMode (SCREEN_GAME);
-	gameData.renderData.frame.SetWidth (save_w);
-	gameData.renderData.frame.SetHeight (save_h);
-	cockpit->Init ();
-	}
-RETURN
-}
-
-//------------------------------------------------------------------------------
-
-void CGameLoop::Run (void)
-{
-ENTER (0, 0);
-Setup ();								// Replaces what was here earlier.
-
-for (;;) {
-	PROF_TOGGLE
-	PROF_START
-	// GAME LOOP!
-#if DBG
-	if (automap.Active ())
-#endif
-	automap.SetActive (0);
-	gameStates.app.bConfigMenu = 0;
-	gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
-
-	try {
-		Step (1, 1, MaxFPS ());
-		}
-	catch (int32_t e) {
-		ClearWarnFunc (ShowInGameWarning);
-		if (e == EX_OUT_OF_MEMORY) {
-			Warning ("Out of memory.");
-			break;
-			}
-		else if (e == EX_IO_ERROR) {
-			Warning ("Couldn't load game data.");
-			break;
-			}
-		else {
-			Warning ("Well ... something went wrong.");
-			break;
-			}
-		}
-	catch (...) {
-		ClearWarnFunc (ShowInGameWarning);
-		Warning ("Well ... something went really wrong.");
-		break;
-		}
-
-	PROF_END (ptFrame);
-	if (m_nResult < 0)
-		break;
-	if (m_nResult == 0)
-		continue;
-
-	PROF_CONT
-	if (gameStates.app.bSingleStep) {
-		char c;
-		while (!(c = KeyInKey ()))
-			;
-		if (c == KEY_ALTED + KEY_CTRLED + KEY_ESC)
-			gameStates.app.bSingleStep = 0;
-		}
-
-	redbook.CheckRepeat ();	// Handle RedBook Audio Repeating.
-	HandleAutomap ();
-	HandleQuit ();
-	gameStates.multi.bIWasKicked = 0;
-	PROF_END(ptFrame);
-	if (gameStates.app.nFunctionMode != FMODE_GAME)
-		break; 
-	}
-
-Stop ();
-
-try {
-	CleanupAfterGame ();
-	}
-catch (...) {
-	Warning ("Internal error when cleaning up.");
-	}
-bRegisterBitmaps = false;
-RETURN
-}
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
-void RunGame (void)
-{
-ENTER (0, 0);
-gameLoop.Setup ();
-gameLoop.Start ();
-if (!setjmp (gameExitPoint))
-	gameLoop.Run ();
-gameLoop.Stop ();
-RETURN
-}
-
-//------------------------------------------------------------------------------
-
-int32_t GameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t fps)
-{
-ENTER (0, 0);
-RETVAL (gameLoop.Step (bRenderFrame, bReadControls, fps))
-}
-
-//------------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 
 void ComputeSlideSegs (void)
 {
-	int32_t		nSegment, nSide, bIsSlideSeg, nTexture;
-	CSegment*	pSeg = SEGMENTS.Buffer ();
+	int			nSegment, nSide, bIsSlideSeg, nTexture;
+	CSegment*	segP = SEGMENTS.Buffer ();
 
-gameData.segData.nSlideSegs = 0;
-for (nSegment = 0; nSegment <= gameData.segData.nLastSegment; nSegment++, pSeg++) {
+gameData.segs.nSlideSegs = 0;
+for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++, segP++) {
 	bIsSlideSeg = 0;
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
-		if (!pSeg->Side (nSide)->FaceCount ())
+		if (!segP->Side (nSide)->FaceCount ())
 			continue;
-		nTexture = pSeg->m_sides [nSide].m_nBaseTex;
-		if (gameData.pigData.tex.pTexMapInfo [nTexture].slide_u  || gameData.pigData.tex.pTexMapInfo [nTexture].slide_v) {
+		nTexture = segP->m_sides [nSide].m_nBaseTex;
+		if (gameData.pig.tex.tMapInfoP [nTexture].slide_u  || gameData.pig.tex.tMapInfoP [nTexture].slide_v) {
 			if (!bIsSlideSeg) {
 				bIsSlideSeg = 1;
-				gameData.segData.slideSegs [gameData.segData.nSlideSegs].nSegment = nSegment;
-				gameData.segData.slideSegs [gameData.segData.nSlideSegs].nSides = 0;
+				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSegment = nSegment;
+				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSides = 0;
 				}
-			gameData.segData.slideSegs [gameData.segData.nSlideSegs].nSides |= (1 << nSide);
+			gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSides |= (1 << nSide);
 			}
 		}
 	if (bIsSlideSeg)
-		gameData.segData.nSlideSegs++;
+		gameData.segs.nSlideSegs++;
 	}
-gameData.segData.bHaveSlideSegs = 1;
+gameData.segs.bHaveSlideSegs = 1;
 }
 
 //	-----------------------------------------------------------------------------
 
 void SlideTextures (void)
 {
-ENTER (1, 0);
-	int32_t		nSegment, nSide, h, i, j, tmn;
-	uint8_t		sides;
-	CSegment*	pSeg;
-	CSide*		pSide;
-	tUVL*			pUVL;
+	int			nSegment, nSide, h, i, j, tmn;
+	ubyte			sides;
+	CSegment*	segP;
+	CSide*		sideP;
+	tUVL*			uvlP;
 	fix			slideU, slideV, xDelta;
 
-if (!gameData.segData.bHaveSlideSegs)
+if (!gameData.segs.bHaveSlideSegs)
 	ComputeSlideSegs ();
-for (h = 0; h < gameData.segData.nSlideSegs; h++) {
-	nSegment = gameData.segData.slideSegs [h].nSegment;
-	pSeg = SEGMENT (nSegment);
-	sides = gameData.segData.slideSegs [h].nSides;
-	for (nSide = 0, pSide = pSeg->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, pSide++) {
-		if (!(pSeg->Side (nSide)->FaceCount () && (sides & (1 << nSide))))
+for (h = 0; h < gameData.segs.nSlideSegs; h++) {
+	nSegment = gameData.segs.slideSegs [h].nSegment;
+	segP = SEGMENTS + nSegment;
+	sides = gameData.segs.slideSegs [h].nSides;
+	for (nSide = 0, sideP = segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
+		if (!(segP->Side (nSide)->FaceCount () && (sides & (1 << nSide))))
 			continue;
-		tmn = pSide->m_nBaseTex;
-		slideU = (fix) gameData.pigData.tex.pTexMapInfo [tmn].slide_u;
-		slideV = (fix) gameData.pigData.tex.pTexMapInfo [tmn].slide_v;
+		tmn = sideP->m_nBaseTex;
+		slideU = (fix) gameData.pig.tex.tMapInfoP [tmn].slide_u;
+		slideV = (fix) gameData.pig.tex.tMapInfoP [tmn].slide_v;
 		if (!(slideU || slideV))
 			continue;
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-				BRP;
+				nSegment = nSegment;
 #endif
-		i = (pSeg->m_function == SEGMENT_FUNC_SKYBOX) ? 3 : 8;
-		slideU = FixMul (gameData.timeData.xFrame, slideU << i);
-		slideV = FixMul (gameData.timeData.xFrame, slideV << i);
-		for (i = 0, pUVL = pSide->m_uvls; i < 4; i++) {
-			pUVL [i].u += slideU;
-			if (pUVL [i].u > I2X (2)) {
-				xDelta = I2X (pUVL [i].u / I2X (1) - 1);
+		i = (segP->m_function == SEGMENT_FUNC_SKYBOX) ? 3 : 8;
+		slideU = FixMul (gameData.time.xFrame, slideU << i);
+		slideV = FixMul (gameData.time.xFrame, slideV << i);
+		for (i = 0, uvlP = sideP->m_uvls; i < 4; i++) {
+			uvlP [i].u += slideU;
+			if (uvlP [i].u > I2X (2)) {
+				xDelta = I2X (uvlP [i].u / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
-					pUVL [j].u -= xDelta;
+					uvlP [j].u -= xDelta;
 				}
-			else if (pUVL [i].u < -I2X (2)) {
-				xDelta = I2X (-pUVL [i].u / I2X (1) - 1);
+			else if (uvlP [i].u < -I2X (2)) {
+				xDelta = I2X (-uvlP [i].u / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
-					pUVL [j].u += xDelta;
+					uvlP [j].u += xDelta;
 				}
-			pUVL [i].v += slideV;
-			if (pUVL [i].v > I2X (2)) {
-				xDelta = I2X (pUVL [i].v / I2X (1) - 1);
+			uvlP [i].v += slideV;
+			if (uvlP [i].v > I2X (2)) {
+				xDelta = I2X (uvlP [i].v / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
-					pUVL [j].v -= xDelta;
+					uvlP [j].v -= xDelta;
 				}
-			else if (pUVL [i].v < -I2X (2)) {
-				xDelta = I2X (-pUVL [i].v / I2X (1) - 1);
+			else if (uvlP [i].v < -I2X (2)) {
+				xDelta = I2X (-uvlP [i].v / I2X (1) - 1);
 				for (j = 0; j < 4; j++)
-					pUVL [j].v += xDelta;
+					uvlP [j].v += xDelta;
 				}
 			}
 		}
 	}
-RETURN
 }
 
 //	-------------------------------------------------------------------------------------------------------
 //	If player is close enough to nObject, which ought to be a powerup, pick it up!
 //	This could easily be made difficulty level dependent.
-void PowerupGrabCheat (CObject *pPlayer, int32_t nObject)
+void PowerupGrabCheat (CObject *playerP, int nObject)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return;
 
-	CObject*					pPowerup = OBJECT (nObject);
-	tObjTransformation*	pPos = OBJPOS (pPlayer);
+	CObject*					powerupP = OBJECTS + nObject;
+	tObjTransformation*	posP = OBJPOS (playerP);
 	CFixVector				vCollision;
 
-Assert (pPowerup->info.nType == OBJ_POWERUP);
-if (pPowerup->info.nFlags & OF_SHOULD_BE_DEAD)
+Assert (powerupP->info.nType == OBJ_POWERUP);
+if (powerupP->info.nFlags & OF_SHOULD_BE_DEAD)
 	return;
-if (CFixVector::Dist (pPowerup->info.position.vPos, pPos->vPos) >=
-	 2 * (pPlayer->info.xSize + pPowerup->info.xSize) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
+if (CFixVector::Dist (powerupP->info.position.vPos, posP->vPos) >=
+	 2 * (playerP->info.xSize + powerupP->info.xSize) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
 	return;
-vCollision = CFixVector::Avg (pPowerup->info.position.vPos, pPos->vPos);
-pPlayer->CollidePlayerAndPowerup (pPowerup, vCollision);
+vCollision = CFixVector::Avg (powerupP->info.position.vPos, posP->vPos);
+playerP->CollidePlayerAndPowerup (powerupP, vCollision);
 }
 
 //	-------------------------------------------------------------------------------------------------------
@@ -1459,12 +1252,12 @@ pPlayer->CollidePlayerAndPowerup (pPowerup, vCollision);
 //	way before the player gets there.
 void PowerupGrabCheatAll (void)
 {
-if (gameStates.app.tick40fps.bTick && (gameData.objData.pConsole->info.nSegment != -1)) {
-	int16_t nObject = SEGMENT (gameData.objData.pConsole->info.nSegment)->m_objects;
+if (gameStates.app.tick40fps.bTick) {
+	short nObject = SEGMENTS [gameData.objs.consoleP->info.nSegment].m_objects;
 	while (nObject != -1) {
-		if (OBJECT (nObject)->info.nType == OBJ_POWERUP)
-			PowerupGrabCheat (gameData.objData.pConsole, nObject);
-		nObject = OBJECT (nObject)->info.nNextInSeg;
+		if (OBJECTS [nObject].info.nType == OBJ_POWERUP)
+			PowerupGrabCheat (gameData.objs.consoleP, nObject);
+		nObject = OBJECTS [nObject].info.nNextInSeg;
 		}
 	}
 }
@@ -1473,27 +1266,27 @@ if (gameStates.app.tick40fps.bTick && (gameData.objData.pConsole->info.nSegment 
 //	Create path for CPlayerData from current CSegment to goal CSegment.
 //	Return true if path created, else return false.
 
-int32_t nLastLevelPathCreated = -1;
+int nLastLevelPathCreated = -1;
 
-int32_t MarkPlayerPathToSegment (int32_t nSegment)
+int MarkPlayerPathToSegment (int nSegment)
 {
-	int32_t		i;
-	CObject		* pObj = gameData.objData.pConsole;
-	int16_t		playerPathLength = 0;
-	int32_t		playerHideIndex = -1;
+	int		i;
+	CObject* objP = gameData.objs.consoleP;
+	short		playerPathLength = 0;
+	int		playerHideIndex = -1;
 
 if (nLastLevelPathCreated == missionManager.nCurrentLevel)
 	return 0;
 nLastLevelPathCreated = missionManager.nCurrentLevel;
-if (CreatePathPoints (pObj, pObj->info.nSegment, nSegment, gameData.aiData.freePointSegs, &playerPathLength, 100, 0, 0, -1) == -1) {
+if (CreatePathPoints (objP, objP->info.nSegment, nSegment, gameData.ai.freePointSegs, &playerPathLength, 100, 0, 0, -1) == -1) {
 #if TRACE
 	//console.printf (CON_DBG, "Unable to form path of length %i for myself\n", 100);
 #endif
 	return 0;
 	}
-playerHideIndex = int32_t (gameData.aiData.routeSegs.Index (gameData.aiData.freePointSegs));
-gameData.aiData.freePointSegs += playerPathLength;
-if (int32_t (gameData.aiData.routeSegs.Index (gameData.aiData.freePointSegs)) + MAX_PATH_LENGTH * 2 > MAX_POINT_SEGS) {
+playerHideIndex = int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs));
+gameData.ai.freePointSegs += playerPathLength;
+if (int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)) + MAX_PATH_LENGTH * 2 > MAX_POINT_SEGS) {
 #if TRACE
 	//console.printf (1, "Can't create path.  Not enough tPointSegs.\n");
 #endif
@@ -1501,37 +1294,37 @@ if (int32_t (gameData.aiData.routeSegs.Index (gameData.aiData.freePointSegs)) + 
 	return 0;
 	}
 for (i = 1; i < playerPathLength; i++) {
-	int16_t			nSegment, nObject;
+	short			nSegment, nObject;
 	CFixVector	vSegCenter;
-	CObject		*pObj;
+	CObject		*objP;
 
-	nSegment = gameData.aiData.routeSegs [playerHideIndex + i].nSegment;
+	nSegment = gameData.ai.routeSegs [playerHideIndex + i].nSegment;
 #if TRACE
 	//console.printf (CON_DBG, "%3i ", nSegment);
 #endif
-	vSegCenter = gameData.aiData.routeSegs[playerHideIndex+i].point;
+	vSegCenter = gameData.ai.routeSegs[playerHideIndex+i].point;
 	nObject = CreatePowerup (POW_ENERGY, -1, nSegment, vSegCenter, 1);
 	if (nObject == -1) {
 		Int3 ();		//	Unable to drop energy powerup for path
 		return 1;
 		}
-	pObj = OBJECT (nObject);
-	pObj->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [pObj->info.nId].nClipIndex;
-	pObj->rType.animationInfo.xFrameTime = gameData.effectData.animations [0][pObj->rType.animationInfo.nClipIndex].xFrameTime;
-	pObj->rType.animationInfo.nCurFrame = 0;
-	pObj->SetLife (I2X (100) + RandShort () * 4);
-	pObj->Ignore (1, 1);
+	objP = OBJECTS + nObject;
+	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+	objP->rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
+	objP->rType.vClipInfo.nCurFrame = 0;
+	objP->SetLife (I2X (100) + RandShort () * 4);
+	objP->Ignore (1, 1);
 	}
 return 1;
 }
 
 //-----------------------------------------------------------------------------
 //	Return true if it happened, else return false.
-int32_t MarkPathToExit (void)
+int MarkPathToExit (void)
 {
-for (int32_t i = 0; i <= gameData.segData.nLastSegment; i++) {
-	for (int32_t j = 0, h = SEGMENT_SIDE_COUNT; j < h; j++)
-		if (SEGMENT (i)->m_children [j] == -2)
+for (int i = 0; i <= gameData.segs.nLastSegment; i++) {
+	for (int j = 0, h = SEGMENT_SIDE_COUNT; j < h; j++)
+		if (SEGMENTS [i].m_children [j] == -2)
 			return MarkPlayerPathToSegment (i);
 	}
 return 0;
@@ -1542,7 +1335,7 @@ return 0;
 
 void ShowInGameWarning (const char *s)
 {
-if (gameData.renderData.screen.Width () && gameData.renderData.screen.Height ()) {
+if (screen.Width () && screen.Height ()) {
 	const char	*hs, *ps = strstr (s, "Error");
 
 	if (ps > s) {	//skip trailing non alphanum chars
@@ -1553,22 +1346,20 @@ if (gameData.renderData.screen.Width () && gameData.renderData.screen.Height ())
 		}
 	if (!(IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME)))
 		StopTime ();
-	gameData.menuData.warnColor = RED_RGBA;
-	gameData.menuData.colorOverride = gameData.menuData.warnColor;
+	gameData.menu.warnColor = RED_RGBA;
+	gameData.menu.colorOverride = gameData.menu.warnColor;
 	if (!ps)
-		InfoBox (TXT_WARNING, (pMenuCallback) NULL, BG_STANDARD, -3, s, " ", TXT_OK, "");
+		MsgBox (TXT_WARNING, NULL, -3, s, " ", TXT_OK);
 	else {
 		for (ps += 5; *ps && !isalnum (*ps); ps++)
 			;
-		InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, -3, ps, " ", TXT_OK, "");
+		MsgBox (TXT_ERROR, NULL, -3, ps, " ", TXT_OK);
 		}
-	gameData.menuData.colorOverride = 0;
+	gameData.menu.colorOverride = 0;
 	if (!(IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME)))
 		StartTime (0);
 	}
 }
 
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 //eof

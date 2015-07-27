@@ -15,7 +15,7 @@ typedef void (*xcommand_t)(void);
 
 /* Warning: these commands are NOT REENTRANT. Do not attempt to thread them! */
 void cmd_tokenize(char *string);
-int32_t cmd_argc(void);
-char *cmd_argv(int32_t w);
+int cmd_argc(void);
+char *cmd_argv(int w);
 
 #endif /* _CMD_H_ */

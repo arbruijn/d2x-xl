@@ -91,7 +91,7 @@ fix check = labs (v.coord.x) | labs(v.coord.y) | labs(v.coord.z);
 if (check == 0)
 	return;
 
-int32_t cnt = 0;
+int cnt = 0;
 
 if (check & 0xfffc0000) {		//too big
 	while (check & 0xfff00000) {
@@ -145,7 +145,7 @@ else if (z < double (-0x7fffffff))
 
 dest.Set (fix (x), fix (y), fix (z));
 #else
-int64_t x, y, z;
+QLONG x, y, z;
 
 x = mul64 (v0.v.coord.y, v1.v.coord.z);
 x += mul64 (-v0.v.coord.z, v1.v.coord.y);
@@ -160,7 +160,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fix FixQuadAdjust (int64_t q)
+fix FixQuadAdjust (QLONG q)
 {
 return fix ((q >> 32) <<16) + fix ((q & 0xffffffff) >>16);
 }
@@ -187,7 +187,7 @@ else if (z < double (-0x7fffffff))
 
 return Create (fix (x), fix (y), fix (z));
 #else
-int64_t x, y, z;
+QLONG x, y, z;
 
 x = mul64 (v0.v.coord.y, v1.v.coord.z);
 x += mul64 (-v0.v.coord.z, v1.v.coord.y);
@@ -357,7 +357,6 @@ void CFloatMatrix::Flip (void)
 Swap (m.vec [1], m.vec [4]);
 Swap (m.vec [2], m.vec [8]);
 Swap (m.vec [3], m.vec [12]);
-Swap (m.vec [6], m.vec [9]);
 Swap (m.vec [7], m.vec [13]);
 Swap (m.vec [11], m.vec [14]);
 }
@@ -433,24 +432,24 @@ const CFixMatrix CFixMatrix::CreateF (const CFixVector& fVec)
 {
 	CFixMatrix m;
 
-m.m.dir.f = fVec;
-CFixVector::Normalize (m.m.dir.f);
-assert (m.m.dir.f.Mag () != 0);
+	m.m.dir.f = fVec;
+	CFixVector::Normalize (m.m.dir.f);
+	assert (m.m.dir.f.Mag () != 0);
 
-//just forward vec
-if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
-	m.m.dir.r.v.coord.x = I2X (1);
-	m.m.dir.u.v.coord.z = (m.m.dir.f.v.coord.z < 0) ? I2X (1) : -I2X (1);
-	m.m.dir.r.v.coord.y = m.m.dir.r.v.coord.z = m.m.dir.u.v.coord.x = m.m.dir.u.v.coord.y = 0;
+	//just forward vec
+	if ((m.m.dir.f.v.coord.x == 0) && (m.m.dir.f.v.coord.z == 0)) {		//forward vec is straight up or down
+		m.m.dir.r.v.coord.x = I2X (1);
+		m.m.dir.u.v.coord.z = (m.m.dir.f.v.coord.z < 0) ? I2X (1) : -I2X (1);
+		m.m.dir.r.v.coord.y = m.m.dir.r.v.coord.z = m.m.dir.u.v.coord.x = m.m.dir.u.v.coord.y = 0;
 	}
 	else { 		//not straight up or down
-	m.m.dir.r.v.coord.x = m.m.dir.f.v.coord.z;
-	m.m.dir.r.v.coord.y = 0;
-	m.m.dir.r.v.coord.z = -m.m.dir.f.v.coord.x;
-	CFixVector::Normalize (m.m.dir.r);
-	m.m.dir.u = CFixVector::Cross (m.m.dir.f, m.m.dir.r);
+		m.m.dir.r.v.coord.x = m.m.dir.f.v.coord.z;
+		m.m.dir.r.v.coord.y = 0;
+		m.m.dir.r.v.coord.z = -m.m.dir.f.v.coord.x;
+		CFixVector::Normalize (m.m.dir.r);
+		m.m.dir.u = CFixVector::Cross (m.m.dir.f, m.m.dir.r);
 	}
-return m;
+	return m;
 }
 
 //	-----------------------------------------------------------------------------
@@ -508,8 +507,7 @@ return m;
 //	-----------------------------------------------------------------------------
 //computes a matrix from the forward and the right vector.
 //returns matrix.
-const CFixMatrix CFixMatrix::CreateFR (const CFixVector& fVec, const CFixVector& rVec) 
-{
+const CFixMatrix CFixMatrix::CreateFR (const CFixVector& fVec, const CFixVector& rVec) {
 	CFixMatrix m;
 
 m.m.dir.f = fVec;
@@ -655,49 +653,42 @@ return m;
 
 //	-----------------------------------------------------------------------------
 //extract angles from a m.matrix
-const CFloatVector CFloatMatrix::ComputeAngles (void) const 
+const CAngleVector CFixMatrix::ExtractAnglesVec (void) const 
 {
-	CFloatVector	a;
+	CAngleVector a;
+	fix sinh, cosh, cosp;
 
-a.v.coord.z = ((m.dir.f.v.coord.x == 0.0f) && (m.dir.f.v.coord.z == 0.0f)) ? 0.0f : atan2 (m.dir.f.v.coord.z, m.dir.f.v.coord.x);
-float sinh = sin (a.v.coord.z);
-float cosh = cos (a.v.coord.z);
-float cosp = (fabs (sinh) > fabs (cosh))	? m.dir.f.v.coord.x / sinh : m.dir.f.v.coord.z / cosh;
-a.v.coord.x = ((cosp == 0.0f) && (m.dir.f.v.coord.y == 0.0f)) ? 0.0f : atan2 (cosp, -m.dir.f.v.coord.y);
-if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no bank
-	a.v.coord.y = 0.0f;
-else {
-	float sinb = m.dir.r.v.coord.y / cosp;
-	float cosb = m.dir.u.v.coord.y / cosp;
-	a.v.coord.y = ((sinb == 0.0f) && (cosb == 0.0f)) ? 0.0f : atan2 (cosb, sinb);
-	}
-return a;
-}
-
-//	-----------------------------------------------------------------------------
-//extract angles from a m.matrix
-const CAngleVector CFixMatrix::ComputeAngles (void) const 
-{
-	CAngleVector	a;
-	fix				sinh, cosh, cosp;
-
-a.v.coord.h = (m.dir.f.v.coord.x | m.dir.f.v.coord.z) ? FixAtan2 (m.dir.f.v.coord.z, m.dir.f.v.coord.x) : 0;
+if ((m.dir.f.v.coord.x == 0) && (m.dir.f.v.coord.z == 0))		//zero head
+	a.v.coord.h = 0;
+else
+	a.v.coord.h = FixAtan2 (m.dir.f.v.coord.z, m.dir.f.v.coord.x);
 FixSinCos (a.v.coord.h, &sinh, &cosh);
-cosp = (abs (sinh) > abs (cosh)) ? FixDiv (m.dir.f.v.coord.x, sinh) : FixDiv (m.dir.f.v.coord.z, cosh);
-a.v.coord.p = (cosp | m.dir.f.v.coord.y) ? FixAtan2 (cosp, -m.dir.f.v.coord.y) : 0;
+if (abs (sinh) > abs (cosh))				//sine is larger, so use it
+	cosp = FixDiv (m.dir.f.v.coord.x, sinh);
+else											//cosine is larger, so use it
+	cosp = FixDiv (m.dir.f.v.coord.z, cosh);
+if (cosp==0 && m.dir.f.v.coord.y==0)
+	a.v.coord.p = 0;
+else
+	a.v.coord.p = FixAtan2 (cosp, -m.dir.f.v.coord.y);
 if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no bank
 	a.v.coord.b = 0;
 else {
-	fix sinb = FixDiv (m.dir.r.v.coord.y, cosp);
-	fix cosb = FixDiv (m.dir.u.v.coord.y, cosp);
-	a.v.coord.b = (sinb | cosb) ? FixAtan2 (cosb, sinb) : 0;
+	fix sinb, cosb;
+
+	sinb = FixDiv (m.dir.r.v.coord.y, cosp);
+	cosb = FixDiv (m.dir.u.v.coord.y, cosp);
+	if (sinb==0 && cosb==0)
+		a.v.coord.b = 0;
+	else
+		a.v.coord.b = FixAtan2 (cosb, sinb);
 	}
 return a;
 }
 
 //	-----------------------------------------------------------------------------
 
-inline int32_t VmBehindPlane (const CFixVector& n, const CFixVector& p1, const CFixVector& p2, const CFixVector& i) {
+inline int VmBehindPlane (const CFixVector& n, const CFixVector& p1, const CFixVector& p2, const CFixVector& i) {
 	CFixVector	t;
 #if DBG
 	fix			d;
@@ -717,7 +708,7 @@ return CFixVector::Dot (i, t) - CFixVector::Dot (p1, t) < 0;
 // If intersection is not between p1 and p2 and vPos is given, return
 // further away point of p1 and p2 to vPos. Otherwise return intersection.
 // returns 1 if intersection outside of p1,p2, otherwise 0.
-const int32_t FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int32_t bClamp)
+const int FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int bClamp)
 {
 CFixVector d21 = p2 - p1;
 double m = fabs (double (d21.v.coord.x) * double (d21.v.coord.x) + double (d21.v.coord.y) * double (d21.v.coord.y) + double (d21.v.coord.z) * double (d21.v.coord.z));
@@ -729,7 +720,7 @@ CFixVector d31 = p3 - p1;
 double u = double (d31.v.coord.x) * double (d21.v.coord.x) + double (d31.v.coord.y) * double (d21.v.coord.y) + double (d31.v.coord.z) * double (d21.v.coord.z);
 u /= m;
 
-int32_t bClamped = 0;
+int bClamped = 0;
 if (u < 0.0)
 	bClamped = bClamp ? 2 : 1;
 else if (u > 1.0)
@@ -751,11 +742,12 @@ return bClamped;
 // ------------------------------------------------------------------------
 
 // Version with vPos
-const int32_t FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, const CFloatVector& vPos, int32_t bClamp) 
+const int FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, 
+											    const CFloatVector& vPos, int bClamp) 
 {
 	CFloatVector	d31, d21;
 	float		m, u;
-	int32_t		bClamped = 0;
+	int		bClamped = 0;
 
 d21 = p2 - p1;
 m = (float) fabs (d21.SqrMag ());
@@ -784,11 +776,11 @@ return bClamped;
 
 
 // Version without vPos
-const int32_t FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, int32_t bClamp) 
+const int FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, int bClamp) 
 {
 	CFloatVector	d31, d21;
 	float		m, u;
-	int32_t		bClamped = 0;
+	int		bClamped = 0;
 
 d21 = p2 - p1;
 m = (float) fabs (d21.SqrMag ());	// Dot (d21, d21)
@@ -815,11 +807,11 @@ return bClamped;
 
 // ------------------------------------------------------------------------
 
-const int32_t FindPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1, const CFloatVector3& p2, const CFloatVector3& p3, CFloatVector3 *vPos, int32_t bClamp) 
+const int FindPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1, const CFloatVector3& p2, const CFloatVector3& p3, CFloatVector3 *vPos, int bClamp) 
 {
 	CFloatVector3	d31, d21;
 	float		m, u;
-	int32_t		bClamped = 0;
+	int		bClamped = 0;
 
 d21 = p2 - p1;
 m = (float) fabs (d21.SqrMag ());
@@ -860,7 +852,7 @@ return CFixVector::Dist (h, p);
 
 // ------------------------------------------------------------------------
 
-const float VmLinePointDist (const CFloatVector& a, const CFloatVector& b, const CFloatVector& p, int32_t bClamp)
+const float VmLinePointDist (const CFloatVector& a, const CFloatVector& b, const CFloatVector& p, int bClamp)
 {
 	CFloatVector	h;
 
@@ -870,7 +862,7 @@ return CFloatVector::Dist (h, p);
 
 // ------------------------------------------------------------------------
 
-const float VmLinePointDist (const CFloatVector3& a, const CFloatVector3& b, const CFloatVector3& p, int32_t bClamp)
+const float VmLinePointDist (const CFloatVector3& a, const CFloatVector3& b, const CFloatVector3& p, int bClamp)
 {
 	CFloatVector3	h;
 
@@ -1019,7 +1011,7 @@ else
 const CFixVector CFixVector::Random (void) 
 {
 	CFixVector v;
-	int32_t i = Rand (3);
+	int i = RandShort () % 3;
 
 if (i == 2) {
 	v.v.coord.x = (SRandShort ()) | 1;	// make sure we don't create null vector

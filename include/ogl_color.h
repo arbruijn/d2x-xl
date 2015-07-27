@@ -31,17 +31,17 @@ extern float fLightRanges [5];
 
 //------------------------------------------------------------------------------
 
-void OglPalColor (uint8_t *palette, int32_t c, CFloatVector* pColor = NULL);
-CFloatVector GetPalColor (CPalette *palette, int32_t c);
-void OglCanvasColor (CCanvasColor* pCanvColor, CFloatVector* pColor = NULL);
-CFloatVector GetCanvasColor (CCanvasColor* pColor);
+void OglPalColor (ubyte *palette, int c, CFloatVector* colorP = NULL);
+CFloatVector GetPalColor (CPalette *palette, int c);
+void OglCanvasColor (CCanvasColor* canvColorP, CFloatVector* colorP = NULL);
+CFloatVector GetCanvasColor (CCanvasColor* colorP);
 void OglColor4sf (float r, float g, float b, float s);
-void SetTMapColor (tUVL *uvlList, int32_t i, CBitmap *pBm, int32_t bResetColor, CFloatVector *pColor = NULL);
-int32_t ComputeVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex, CFloatVector3 *pColorSum, CVertColorData *vcdP, int32_t nThread);
-void GetVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex, 
+void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, CFloatVector *colorP = NULL);
+int ComputeVertexColor (int nSegment, int nSide, int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcdP, int nThread);
+void GetVertexColor (int nSegment, int nSide, int nVertex, 
 						  CFloatVector3 *pvVertNorm, CFloatVector3 *pVertPos, 
 						  CFaceColor *pVertColor, CFaceColor *pBaseColor, 
-						  float fScale, int32_t bSetColor, int32_t nThread);
+						  float fScale, int bSetColor, int nThread);
 void InitVertColorData (CVertColorData& vcd);
 
 //------------------------------------------------------------------------------

@@ -55,13 +55,13 @@
 
 //------------------------------------------------------------------------------
 
-static const char *pszMslTurnSpeeds [4];
+static const char *pszMslTurnSpeeds [3];
 static const char *pszMslStartSpeeds [4];
 static const char *pszAutoLevel [4];
 static const char *pszStdAdv [2];
 static const char *pszDrag [4];
 
-static int32_t nDrag, nFusionRamp;
+static int nDrag, nFusionRamp;
 
 //------------------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ static const char *OmegaRampStr (void)
 
 if (extraGameInfo [0].nOmegaRamp == 0)
 	return "1 sec";
-sprintf (szRamp, "%d secs", nOmegaDuration [(int32_t) extraGameInfo [0].nOmegaRamp]);
+sprintf (szRamp, "%d secs", nOmegaDuration [(int) extraGameInfo [0].nOmegaRamp]);
 return szRamp;
 }
 
@@ -81,13 +81,13 @@ return szRamp;
 
 //------------------------------------------------------------------------------
 
-int32_t PhysicsOptionsCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+int PhysicsOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem*	m;
-	int32_t			v;
+	int			v;
 
 if ((m = menu ["fusion ramp"])) {
 	v = m->Value () + 1;
@@ -117,15 +117,6 @@ if ((m = menu ["hit detection"])) {
 		}
 	}
 #endif
-if ((m = menu ["unnerf D1 weapons"])) {
-	v = m->Value ();
-	if (extraGameInfo [0].bUnnerfD1Weapons != v) {
-		extraGameInfo [0].bUnnerfD1Weapons = v;
-		m->m_bRebuild = 1;
-		key = -2;
-		}
-	}
-
 if ((m = menu ["collision handling"])) {
 	v = m->Value ();
 	if (extraGameInfo [0].bUseHitAngles != v) {
@@ -166,8 +157,8 @@ if ((m = menu ["drag"])) {
 if (gameOpts->app.bExpertMode == SUPERUSER) {
 	if ((m = menu ["msl turn speed"])) {
 		v = m->Value ();
-		if (extraGameInfo [0].nWeaponTurnSpeed != v) {
-			extraGameInfo [0].nWeaponTurnSpeed = v;
+		if (extraGameInfo [0].nMslTurnSpeed != v) {
+			extraGameInfo [0].nMslTurnSpeed = v;
 			sprintf (m->m_text, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [v]);
 			m->m_bRebuild = 1;
 			}
@@ -205,10 +196,9 @@ if (bInitialized)
 	return;
 bInitialized = true;
 
-pszMslTurnSpeeds [0] = TXT_LOW;
+pszMslTurnSpeeds [0] = TXT_SLOW;
 pszMslTurnSpeeds [1] = TXT_MEDIUM;
-pszMslTurnSpeeds [2] = TXT_HIGH;
-pszMslTurnSpeeds [3] = TXT_DODGE_THIS;
+pszMslTurnSpeeds [2] = TXT_STANDARD;
 
 pszMslStartSpeeds [0] = TXT_VERY_SLOW;
 pszMslStartSpeeds [1] = TXT_SLOW;
@@ -231,15 +221,15 @@ pszDrag [3] = TXT_STANDARD;
 
 //------------------------------------------------------------------------------
 
-void DefaultPhysicsSettings (bool bSetup = false);
+void DefaultPhysicsSettings (void);
 
 void PhysicsOptionsMenu (void)
 {
 	static char nDragTable [] = {0, 3, 6, 10};
-	static int32_t choice = 0;
+	static int choice = 0;
 
 	CMenu	m;
-	int32_t	i;
+	int	i;
 	char	szSlider [50];
 
 InitStrings ();
@@ -255,15 +245,11 @@ nFusionRamp = (extraGameInfo [0].nFusionRamp > 2) ? 1 : 2;
 do {
 	m.Destroy ();
 	m.Create (30);
-	if (!gameStates.app.bGameRunning)
-		m.AddCheck ("unnerf D1 weapons", TXT_UNNERF_D1_WEAPONS, extraGameInfo [0].bUnnerfD1Weapons, KEY_U, HTX_UNNERF_D1_WEAPONS);
-	if (!extraGameInfo [0].bUnnerfD1Weapons) {
-		sprintf (szSlider + 1, TXT_FUSION_RAMP, nFusionRamp);
-		*szSlider = *(TXT_FUSION_RAMP - 1);
-		m.AddSlider ("fusion ramp", szSlider + 1, nFusionRamp - 1, 0, 1, KEY_F, HTX_FUSION_RAMP);
-		}
+	sprintf (szSlider + 1, TXT_FUSION_RAMP, nFusionRamp);
+	*szSlider = *(TXT_FUSION_RAMP - 1);
+	m.AddSlider ("fusion ramp", szSlider + 1, nFusionRamp - 1, 0, 1, KEY_F, HTX_FUSION_RAMP);
 	if (!(IsMultiGame && gameStates.app.bGameRunning)) {
-		int32_t v = 100 + extraGameInfo [0].nSpeedScale * 25;
+		int v = 100 + extraGameInfo [0].nSpeedScale * 25;
 		sprintf (szSlider + 1, TXT_GAME_SPEED, v / 100, v % 100);
 		*szSlider = *(TXT_GAME_SPEED - 1);
 		m.AddSlider ("speed", szSlider + 1, extraGameInfo [0].nSpeedScale, 0, 4, KEY_S, HTX_GAME_SPEED);
@@ -272,10 +258,10 @@ do {
 	*szSlider = *(TXT_PLAYER_DRAG - 1);
 	m.AddSlider ("drag", szSlider + 1, nDrag, 0, 3, KEY_P, HTX_PLAYER_DRAG);
 	if (gameOpts->app.bExpertMode == SUPERUSER) {
-		sprintf (szSlider + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [int32_t (extraGameInfo [0].nWeaponTurnSpeed)]);
+		sprintf (szSlider + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [int (extraGameInfo [0].nMslTurnSpeed)]);
 		*szSlider = *(TXT_MSL_TURNSPEED - 1);
-		m.AddSlider ("msl turn speed", szSlider + 1, extraGameInfo [0].nWeaponTurnSpeed, 0, 3, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
-		sprintf (szSlider + 1, TXT_MSL_STARTSPEED, pszMslStartSpeeds [int32_t (3) - extraGameInfo [0].nMslStartSpeed]);
+		m.AddSlider ("msl turn speed", szSlider + 1, extraGameInfo [0].nMslTurnSpeed, 0, 2, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
+		sprintf (szSlider + 1, TXT_MSL_STARTSPEED, pszMslStartSpeeds [int (3) - extraGameInfo [0].nMslStartSpeed]);
 		*szSlider = *(TXT_MSL_STARTSPEED - 1);
 		m.AddSlider ("msl start speed", szSlider + 1, 3 - extraGameInfo [0].nMslStartSpeed, 0, 3, KEY_S, HTX_MSL_STARTSPEED);
 		sprintf (szSlider + 1, TXT_SLOWMOTION_SPEEDUP, float (gameOpts->gameplay.nSlowMotionSpeedup) / 2);
@@ -296,10 +282,10 @@ do {
 	*szSlider = *(TXT_HIT_DETECTION - 1);
 	mat.AddSlider ("hit detection", szSlider + 1, extraGameInfo [0].nHitboxes, 0, 1, KEY_H, HTX_GPLAY_HITBOXES);
 #endif
-	sprintf (szSlider + 1, TXT_COLLISION_HANDLING, pszStdAdv [int32_t (extraGameInfo [0].bUseHitAngles)]);
+	sprintf (szSlider + 1, TXT_COLLISION_HANDLING, pszStdAdv [int (extraGameInfo [0].bUseHitAngles)]);
 	*szSlider = *(TXT_COLLISION_HANDLING - 1);
 	m.AddSlider ("collision handling", szSlider + 1, extraGameInfo [0].bUseHitAngles, 0, 1, KEY_C, HTX_GPLAY_COLLHANDLING);
-	sprintf (szSlider + 1, TXT_DAMAGE_MODEL, pszStdAdv [int32_t (extraGameInfo [0].nDamageModel)]);
+	sprintf (szSlider + 1, TXT_DAMAGE_MODEL, pszStdAdv [int (extraGameInfo [0].nDamageModel)]);
 	*szSlider = *(TXT_DAMAGE_MODEL - 1);
 	m.AddSlider ("damage model", szSlider + 1, extraGameInfo [0].nDamageModel, 0, 1, KEY_D, HTX_DAMAGE_MODEL);
 	do {
@@ -317,7 +303,7 @@ if (gameOpts->app.bExpertMode == SUPERUSER) {
 	if (m.Available ("wiggle"))
 		extraGameInfo [0].bWiggle = m.Value ("wiggle");
 	}
-DefaultPhysicsSettings (false);
+DefaultPhysicsSettings ();
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
 }

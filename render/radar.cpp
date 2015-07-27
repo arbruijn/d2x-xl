@@ -51,15 +51,15 @@ CRadar radar;
 
 // -----------------------------------------------------------------------------------
 
-int32_t				CRadar::radarRanges [5] = {0, 100, 250, 500, 2000};
-float					CRadar::radarSizes [3] = {2.0f, 3.0f, 4.0f};
-float					CRadar::sizeOffsets [2][3] = {{4.0f, 2.0f, 0.0f}, {4.0f, 2.0f, 0.0f}};
+int				CRadar::radarRanges [5] = {0, 100, 250, 500, 2000};
+float				CRadar::radarSizes [3] = {2.0f, 3.0f, 4.0f};
+float				CRadar::sizeOffsets [2][3] = {{4.0f, 2.0f, 0.0f}, {4.0f, 2.0f, 0.0f}};
 
-CAngleVector		CRadar::aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
-float					CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, -18.0f, -20.5f, -19.0f}, {16.0f, 19.5f, 17.0f, 19.5f, 18.0f}};
+CAngleVector	CRadar::aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
+float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, 18.0f, -20.5f, -19.0f}, {16.0f, 19.5f, 17.0f, 19.5f, 18.0f}};
 
-tSinCosf				CRadar::sinCosRadar [RADAR_SLICES];
-tSinCosf				CRadar::sinCosBlip [BLIP_SLICES];
+tSinCosf			CRadar::sinCosRadar [RADAR_SLICES];
+tSinCosf			CRadar::sinCosBlip [BLIP_SLICES];
 
 CFloatVector3		CRadar::shipColors [8];
 CFloatVector3		CRadar::guidebotColor = {{{0, 0.75f / 4, 0.25f}}};
@@ -77,7 +77,7 @@ CRadar::CRadar ()
 ComputeSinCosTable (sizeofa (sinCosRadar), sinCosRadar);
 ComputeSinCosTable (sizeofa (sinCosBlip), sinCosBlip);
 
-int32_t i;
+int i;
 
 for (i = 0; i < 8; i++) {
 	shipColors [i].Set (playerColors [i].r, playerColors [i].g, playerColors [i].b);
@@ -85,7 +85,7 @@ for (i = 0; i < 8; i++) {
 	}
 
 for (i = 0; i < RADAR_SLICES; i++) {
-	double a = 2.0 * PI * float (i) / float (RADAR_SLICES);
+	double a = 2.0 * Pi * float (i) / float (RADAR_SLICES);
 	m_vertices [i].Set (float (cos (a)), float (sin (a)), 0.0f);
 	}
 
@@ -96,21 +96,15 @@ for (i = 0; i < RADAR_SLICES; i++) {
 void CRadar::ComputeCenter (void)
 {
 	CFloatVector vf, vu, vr;
-	CFixMatrix	mView = gameData.objData.pViewer->info.position.mOrient;
 
-if (transformation.m_info.bUsePlayerHeadAngles) {
-	CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
-	mView = gameData.objData.pViewer->info.position.mOrient * mHead;
-	}
-
-vf.Assign (mView.m.dir.f);
+vf.Assign (gameData.objs.viewerP->Orientation ().m.dir.f);
 vf *= m_offset.v.coord.z;
-vu.Assign (mView.m.dir.u);
+vu.Assign (gameData.objs.viewerP->Orientation ().m.dir.u);
 vu *= m_offset.v.coord.y;
-vr.Assign (mView.m.dir.r);
+vr.Assign (gameData.objs.viewerP->Orientation ().m.dir.r);
 vr *= m_offset.v.coord.x;
 m_vCenter.Assign (vf + vu + vr);
-m_vCenter += gameData.objData.pViewer->Position ();
+m_vCenter += gameData.objs.viewerP->Position ();
 m_vCenterf.Assign (m_vCenter);
 }
 
@@ -122,8 +116,8 @@ void CRadar::RenderSetup (void)
 memcpy (ogl.VertexBuffer ().Buffer (), m_vertices, sizeof (m_vertices));
 #else
 CFloatVector* pv = &ogl.VertexBuffer () [0];
-for (int32_t i = 0; i < RADAR_SLICES; i++, pv++) {
-	double ang = 2.0 * PI * i / RADAR_SLICES;
+for (int i = 0; i < RADAR_SLICES; i++, pv++) {
+	double ang = 2.0 * Pi * i / RADAR_SLICES;
 	pv->v.coord.x = float (cos (ang));
 	pv->v.coord.y = float (sin (ang));
 	pv->v.coord.z = 0.0f;
@@ -138,8 +132,8 @@ void CRadar::RenderBackground (void)
 // glPushMatrix ();
 RenderSetup ();
 ogl.SetTransform (1);
-CFixMatrix mOrient = gameData.objData.pViewer->Orientation ();
-transformation.Begin (m_vCenter, mOrient, __FILE__, __LINE__);
+CFixMatrix mOrient = gameData.objs.viewerP->Orientation ();
+transformation.Begin (m_vCenter, mOrient);
 glScalef (m_radius * 1.2f, m_radius * 1.2f, m_radius * 1.2f);
 glColor4f (0.0f, 0.0f, 0.0f, 0.5f);
 ogl.FlushBuffers (GL_POLYGON, RADAR_SLICES, 3);
@@ -147,7 +141,7 @@ ogl.FlushBuffers (GL_POLYGON, RADAR_SLICES, 3);
 glColor4f (0.125f, 0.125f, 0.125f, 0.5f);
 ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
 #endif
-transformation.End (__FILE__, __LINE__);
+transformation.End ();
 ogl.SetTransform (0);
 // glPopMatrix ();
 }
@@ -158,7 +152,7 @@ void CRadar::RenderDevice (void)
 {
 	CFloatVector* pv;
 	CFixMatrix mOrient;
-	int32_t i;
+	int i;
 
 RenderSetup ();
 ogl.SetTransform (1);
@@ -167,7 +161,7 @@ ogl.SetTexturing (false);
 // render the three dashed, moving rings
 // glPushMatrix ();
 mOrient = CFixMatrix::IDENTITY;
-transformation.Begin (m_vCenter, mOrient, __FILE__, __LINE__);
+transformation.Begin (m_vCenter, mOrient);
 glScalef (m_radius, m_radius, m_radius);
 glLineWidth (m_lineWidth);
 
@@ -195,13 +189,13 @@ if (gameOpts->render.cockpit.nRadarStyle)
 	glColor4fv ((GLfloat*) &lineColors [2]);
 ogl.FlushBuffers (GL_LINES, RADAR_SLICES, 3);
 
-transformation.End (__FILE__, __LINE__);
+transformation.End ();
 // glPopMatrix ();
 
 // render the radar plane
 // glPushMatrix ();
-mOrient = gameData.objData.pViewer->Orientation ();
-transformation.Begin (m_vCenter, mOrient, __FILE__, __LINE__);
+mOrient = gameData.objs.viewerP->Orientation ();
+transformation.Begin (m_vCenter, mOrient);
 
 // render the transparent green dish
 glColor4fv ((GLfloat*) &planeColors [gameOpts->render.cockpit.nRadarColor]);
@@ -224,7 +218,7 @@ ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
 #if 0
 CFloatVector	vAxis [8], vOffset;
 
-// render 4 int16_t lines pointing from the outer ring of the radar dish to its center
+// render 4 short lines pointing from the outer ring of the radar dish to its center
 // disabled as it makes the radar look too cluttered
 pv = &ogl.VertexBuffer () [0];
 
@@ -249,12 +243,12 @@ glColor4f (0.0f, 0.6f, 0.0f, 0.5f);
 ogl.FlushBuffers (GL_LINES, 8, 3);
 #endif
 
-transformation.End (__FILE__, __LINE__);
+transformation.End ();
 // glPopMatrix ();
 
 // glPushMatrix ();
 mOrient = CFixMatrix::IDENTITY;
-transformation.Begin (m_vCenter, mOrient, __FILE__, __LINE__);
+transformation.Begin (m_vCenter, mOrient);
 glScalef (m_radius, m_radius, m_radius);
 
 // render the 6 lines pointing inwards from where the dashed rings touch
@@ -275,7 +269,7 @@ pv [11].Set (0.0f, 0.0f, 0.5f);
 glColor4f (0.0f, 0.333f, 0.0f, 0.5f);
 glLineWidth (m_lineWidth);
 ogl.FlushBuffers (GL_LINES, 12, 3);
-transformation.End (__FILE__, __LINE__);
+transformation.End ();
 // glPopMatrix ();
 
 ogl.SetTransform (0);
@@ -284,14 +278,14 @@ glLineWidth (2);
 
 // -----------------------------------------------------------------------------------
 
-void CRadar::RenderBlip (CObject *pObj, float r, float g, float b, float a, int32_t bAbove)
+void CRadar::RenderBlip (CObject *objP, float r, float g, float b, float a, int bAbove)
 {
 	CFloatVector	v [2];
 	float				m, h, s;
 
-v [0].Assign (pObj->info.position.vPos);
+v [0].Assign (objP->info.position.vPos);
 transformation.Transform (v [0], v [0], 0);
-if ((v [0].v.coord.y < X2F (gameData.objData.pViewer->Position ().v.coord.y)) != bAbove)
+if ((v [0].v.coord.y < X2F (gameData.objs.viewerP->Position ().v.coord.y)) != bAbove)
 	return;
 if ((m = v [0].Mag ()) > RADAR_RANGE)
 	return;
@@ -323,34 +317,34 @@ ogl.FlushBuffers (GL_LINES, 2);
 
 // -----------------------------------------------------------------------------------
 
-void CRadar::RenderObjects (int32_t bAbove)
+void CRadar::RenderObjects (int bAbove)
 {
-	CObject*			pObj;
-	CFloatVector3*	pColor = radarColor + gameOpts->render.automap.nColor;
+	CObject*			objP;
+	CFloatVector3*	colorP = radarColor + gameOpts->render.automap.nColor;
 
 // glPushMatrix ();
 glLineWidth (GLfloat (2 + gameOpts->render.cockpit.nRadarSize));
-FORALL_OBJS (pObj) {
-	if ((pObj->info.nType == OBJ_PLAYER) && (pObj != gameData.objData.pConsole)) {
-		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (pObj->info.nId)) {
-			pColor = shipColors + (IsTeamGame ? GetTeam (pObj->info.nId) : pObj->info.nId);
-			RenderBlip (pObj, pColor->Red (), pColor->Green (), pColor->Blue (), 0.9f / 4, bAbove);
+FORALL_OBJS (objP, i) {
+	if ((objP->info.nType == OBJ_PLAYER) && (objP != gameData.objs.consoleP)) {
+		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)) {
+			colorP = shipColors + (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId);
+			RenderBlip (objP, colorP->Red (), colorP->Green (), colorP->Blue (), 0.9f / 4, bAbove);
 			}
 		}
-	else if (pObj->info.nType == OBJ_ROBOT) {
+	else if (objP->info.nType == OBJ_ROBOT) {
 		if (AM_SHOW_ROBOTS) {
-			if (pObj->IsGuideBot ())
-				RenderBlip (pObj, guidebotColor.Red (), guidebotColor.Green (), guidebotColor.Blue (), 0.9f * 0.25f, bAbove);
+			if (ROBOTINFO (objP->info.nId).companion)
+				RenderBlip (objP, guidebotColor.Red (), guidebotColor.Green (), guidebotColor.Blue (), 0.9f * 0.25f, bAbove);
 			else
-				RenderBlip (pObj, robotColor.Red (), robotColor.Green (), robotColor.Blue (), 0.9f * 0.25f, bAbove);
+				RenderBlip (objP, robotColor.Red (), robotColor.Green (), robotColor.Blue (), 0.9f * 0.25f, bAbove);
 			}
 		}
-	else if (pObj->info.nType == OBJ_POWERUP) {
+	else if (objP->info.nType == OBJ_POWERUP) {
 		if (AM_SHOW_POWERUPS (2))
-			RenderBlip (pObj, powerupColor.Red (), powerupColor.Green (), powerupColor.Blue (), 0.9f * 0.25f, bAbove);
+			RenderBlip (objP, powerupColor.Red (), powerupColor.Green (), powerupColor.Blue (), 0.9f * 0.25f, bAbove);
 		}
 	}
-//transformation.End (__FILE__, __LINE__);
+//transformation.End ();
 //ogl.SetTransform (0);
 // glPopMatrix ();
 }
@@ -363,11 +357,7 @@ if (gameStates.app.bNostalgia)
 	return;
 if (cockpit->Hide ())
 	return;
-if ((gameOpts->render.cockpit.bHUD < 2) && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN))
-	return;
-if (transformation.HaveHeadAngles ())
-	return;
-if (automap.Active ())
+if (automap.Display ())
 	return;
 if (gameStates.render.bChaseCam)
 	return;
@@ -381,13 +371,11 @@ if (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor)
 if (!ogl.SizeVertexBuffer (RADAR_SLICES))
 	return;
 
-int32_t bStencil = ogl.StencilOff ();
+int bStencil = ogl.StencilOff ();
 
 m_offset.v.coord.x = 0.0f;
 m_offset.v.coord.y = yOffs [gameOpts->render.cockpit.nRadarPos][gameStates.render.cockpit.nType];
 m_offset.v.coord.y += sizeOffsets [gameOpts->render.cockpit.nRadarPos][gameOpts->render.cockpit.nRadarSize] * (m_offset.v.coord.y / fabs (m_offset.v.coord.y));
-if (ogl.IsOculusRift ())
-	m_offset.v.coord.y *= 1.5f;
 if (EGI_FLAG (nWeaponIcons, 1, 1, 0) && (gameOpts->render.cockpit.bHUD || cockpit->ShowAlways ())) {
 	if ((extraGameInfo [0].nWeaponIcons < 3) || ((extraGameInfo [0].nWeaponIcons & 1) == !gameOpts->render.cockpit.nRadarPos))
 		m_offset.v.coord.y += (m_offset.v.coord.y > 0) ? -3.75f : 3.25f;
@@ -428,7 +416,7 @@ if (ogl.m_features.bRenderToTexture.Available ()) {
 	// glPushMatrix ();
 	glLoadIdentity ();//clear matrix
 	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-	ogl.SetViewport (0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height ());
+	ogl.Viewport (0, 0, screen.Width (), screen.Height ());
 
 	ogl.ChooseDrawBuffer ();
 #if 0

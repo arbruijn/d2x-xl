@@ -8,7 +8,7 @@
 #endif
 
 void OglCleanTextureCache (void);
-void OglCachePolyModelTextures (int32_t nModel);
-int32_t OglCacheLevelTextures (void);
+void OglCachePolyModelTextures (int nModel);
+int OglCacheLevelTextures (void);
 
 #endif

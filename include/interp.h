@@ -26,7 +26,7 @@
 
 #define MAX_POINTS_PER_POLY 25
 
-#define WORDPTR(_p)	(reinterpret_cast<uint16_t *> (_p))
+#define WORDPTR(_p)	(reinterpret_cast<ushort *> (_p))
 #define WORDVAL(_p)	(*WORDPTR (_p))
 #define FIXPTR(_p)	((fix *) (_p))
 #define VECPTR(_p)	((CFixVector *) (_p))
@@ -40,34 +40,34 @@ void G3SetModelPoints (CRenderPoint *pointlist);
 
 //calls the CObject interpreter to render an CObject.  The CObject renderer
 //is really a seperate pipeline. returns true if drew
-int32_t G3DrawPolyModel (CObject *pObj, void *modelDataP, CArray<CBitmap*>& modelBitmaps, CAngleVector *animAngles, CFixVector *vOffset,
-							fix light, fix *glowValues, CFloatVector *obj_colors, POF::CModel *pModel, int32_t nModel);
+int G3DrawPolyModel (CObject *objP, void *modelDataP, CArray<CBitmap*>& modelBitmaps, CAngleVector *animAngles, CFixVector *vOffset,
+							fix light, fix *glowValues, CFloatVector *obj_colors, POF::CModel *modelP, int nModel);
 
-int32_t G3DrawPolyModelShadow (CObject *pObj, void *modelDataP, CAngleVector *pAnimAngles, int32_t nModel);
+int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *pAnimAngles, int nModel);
 
-int32_t G3FreePolyModelItems (POF::CModel *pModel);
+int G3FreePolyModelItems (POF::CModel *modelP);
 
 //init code for bitmap models
-void G3InitPolyModel (CPolyModel* pModel, int32_t nModel);
+void G3InitPolyModel (CPolyModel* modelP, int nModel);
 
 //un-initialize, i.e., convert color entries back to RGB15
 void g3_uninit_polygon_model(void *model_ptr);
 
 //alternate interpreter for morphing CObject
-int32_t G3DrawMorphingModel(void *model_ptr, CArray<CBitmap*>& modelBitmaps,CAngleVector *animAngles, CFixVector *vOffset,
-								 fix light, CFixVector *new_points, int32_t nModel);
+int G3DrawMorphingModel(void *model_ptr, CArray<CBitmap*>& modelBitmaps,CAngleVector *animAngles, CFixVector *vOffset,
+								 fix light, CFixVector *new_points, int nModel);
 
 //this remaps the 15bpp colors for the models into a new palette.  It should
 //be called whenever the palette changes
 void g3_remap_interp_colors(void);
 
-int32_t G3CheckAndSwap (void *pModel);
+int G3CheckAndSwap (void *modelP);
 
 void G3FreeAllPolyModelItems (void);
 
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 // routine to convert little to big endian in polygon model data
-void swap_polygon_model_data(uint8_t *data);
+void swap_polygon_model_data(ubyte *data);
 //routines to convert little to big endian in vectors
 #endif
 
@@ -81,41 +81,41 @@ void swap_polygon_model_data(uint8_t *data);
  * relative to start of modelData) to it.
  */
 typedef struct chunk {
-	uint8_t *old_base; // where the offset sets off from (relative to beginning of modelData)
-	uint8_t *new_base; // where the base is in the aligned structure
-	int16_t offset; // how much to add to base to get the address of the offset
-	int16_t correction; // how much the value of the offset must be shifted for alignment
+	ubyte *old_base; // where the offset sets off from (relative to beginning of modelData)
+	ubyte *new_base; // where the base is in the aligned structure
+	short offset; // how much to add to base to get the address of the offset
+	short correction; // how much the value of the offset must be shifted for alignment
 } chunk;
 #define MAX_CHUNKS 100 // increase if insufficent
 /*
  * finds what chunks the data points to, adds them to the chunk_list,
  * and returns the length of the current chunk
  */
-int32_t get_chunks(uint8_t *data, uint8_t *new_data, chunk *list, int32_t *no);
+int get_chunks(ubyte *data, ubyte *new_data, chunk *list, int *no);
 #endif //def WORDS_NEED_ALIGNMENT
 
-void G3SwapPolyModelData (uint8_t *data);
+void G3SwapPolyModelData (ubyte *data);
 
-int32_t G3RenderModel (CObject *pObj, int16_t nModel, int16_t nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
+int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
 						 CAngleVector *pAnimAngles, CFixVector *pOffs, fix xModelLight, fix *xGlowValues, CFloatVector *pObjColor);
 
-void G3DynLightModel (CObject *pObj, RenderModel::CModel* pModel, int16_t iVerts, int16_t nVerts, int16_t iFaceVerts, int16_t nFaceVerts);
+void G3DynLightModel (CObject *objP, RenderModel::CModel* modelP, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts);
 
-int32_t G3ModelMinMax (int32_t nModel, tHitbox *phb);
+int G3ModelMinMax (int nModel, tHitbox *phb);
 
 //------------------------------------------------------------------------------
 
 extern CRenderPoint *pointList [MAX_POINTS_PER_POLY];
-extern int32_t hitboxFaceVerts [6][4];
+extern int hitboxFaceVerts [6][4];
 extern CFixVector hitBoxOffsets [8];
 //extern CAngleVector CAngleVector::ZERO;
 //extern CFixVector vZero;
 //extern CFixMatrix mIdentity;
-extern int16_t nGlow;
+extern short nGlow;
 
 //------------------------------------------------------------------------------
 
-static inline void RotatePointListToVec (CFixVector *dest, CFixVector *src, int32_t n) {
+static inline void RotatePointListToVec (CFixVector *dest, CFixVector *src, int n) {
 	while(n--) {
 		transformation.Transform(*dest, *src, 0);
 		dest++; src++;
@@ -124,11 +124,11 @@ static inline void RotatePointListToVec (CFixVector *dest, CFixVector *src, int3
 
 //------------------------------------------------------------------------------
 
-static inline int32_t G3HaveModel (int32_t nModel)
+static inline int G3HaveModel (int nModel)
 {
-if (gameData.modelData.renderModels [0][nModel].m_bValid)
+if (gameData.models.renderModels [0][nModel].m_bValid)
 	return 1;
-if (gameData.modelData.renderModels [1][nModel].m_bValid)
+if (gameData.models.renderModels [1][nModel].m_bValid)
 	return 2;
 return 0;
 }
@@ -137,14 +137,14 @@ return 0;
 
 #include "byteswap.h"
 
-static inline void ShortSwap (int16_t *s)
+static inline void ShortSwap (short *s)
 {
 *s = SWAPSHORT (*s);
 }
 
 //------------------------------------------------------------------------------
 
-static inline void UShortSwap (uint16_t *s)
+static inline void UShortSwap (ushort *s)
 {
 *s = SWAPUSHORT (*s);
 }
@@ -153,7 +153,7 @@ static inline void UShortSwap (uint16_t *s)
 
 static inline void FixSwap (fix *f)
 {
-*f = (fix)SWAPINT ((int32_t)*f);
+*f = (fix)SWAPINT ((int)*f);
 }
 
 //------------------------------------------------------------------------------
@@ -169,7 +169,7 @@ FixSwap (FIXPTR (&v.v.coord.z));
 
 static inline void FixAngSwap (fixang *f)
 {
-*f = (fixang) SWAPSHORT ((int16_t)*f);
+*f = (fixang) SWAPSHORT ((short)*f);
 }
 
 //------------------------------------------------------------------------------

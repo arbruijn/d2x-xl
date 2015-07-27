@@ -39,11 +39,11 @@ tUVL rodUvlList [4] = {
 
 //------------------------------------------------------------------------------
 //compute the corners of a rod.  fills in vertbuf.
-int32_t CalcRodCorners (CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth)
+int CalcRodCorners (CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth)
 {
 	CFixVector	vDelta, vTop, vTemp, vRodNorm;
-	uint8_t			andCodes;
-	int32_t			i;
+	ubyte			andCodes;
+	int			i;
 
 //compute vector from one point to other, do cross product with vector
 //from eye to get perpendicular
@@ -93,7 +93,7 @@ return 0;
 //------------------------------------------------------------------------------
 //draw a polygon that is always facing you
 //returns 1 if off screen, 0 if drew
-int32_t G3DrawRodPoly (CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth)
+int G3DrawRodPoly (CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth)
 {
 if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;
@@ -103,7 +103,7 @@ return G3DrawPoly (4, rodPointList);
 //------------------------------------------------------------------------------
 //draw a bitmap CObject that is always facing you
 //returns 1 if off screen, 0 if drew
-int32_t G3DrawRodTexPoly (CBitmap *pBm, CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList, int32_t bAdditive)
+int G3DrawRodTexPoly (CBitmap *bmP, CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList, int bAdditive)
 {
 if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;
@@ -113,66 +113,49 @@ uvlList [0].l =
 uvlList [1].l =
 uvlList [2].l =
 uvlList [3].l = light;
-return G3DrawTexPoly (4, rodPointList, uvlList, pBm, NULL, 1, bAdditive, -1);
+return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1, bAdditive, -1);
 }
 
 //------------------------------------------------------------------------------
 //draw an CObject that is a texture-mapped rod
-
-#define ADJUST_HIRES_HOSTAGE	0
-
-void DrawObjectRodTexPoly (CObject *pObj, tBitmapIndex bmi, int32_t bLit, int32_t iFrame)
+void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int bLit, int iFrame)
 {
-	CBitmap*			pBm = gameData.pigData.tex.bitmaps [0] + bmi.index;
-	fix				xSize = pObj->info.xSize;
+	CBitmap*			bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 	CRenderPoint	pTop, pBottom;
-#if ADJUST_HIRES_HOSTAGE
-	CFixVector		vOffset;
-	
-vOffset.SetZero ();
-#endif
-LoadTexture (bmi.index, 0, gameStates.app.bD1Mission);
-if ((pBm->Type () == BM_TYPE_STD) && pBm->Override ()) {
-	pBm->SetupTexture (1, 0);
-	pBm = pBm->Override (iFrame);
-#if ADJUST_HIRES_HOSTAGE
-	if (pObj->Type () == OBJ_HOSTAGE)
-		xSize = 7 * xSize / 6;
-	vOffset = pObj->info.position.mOrient.m.dir.u * (xSize / 12);
-#endif
+
+LoadTexture (bmi.index, 0);
+if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
+	bmP->SetupTexture (1, 0);
+	bmP = bmP->Override (iFrame);
 	}
-CFixVector delta = pObj->info.position.mOrient.m.dir.u * xSize;
-CFixVector vTop = pObj->info.position.vPos + delta;
-CFixVector vBottom = pObj->info.position.vPos - delta;
-#if ADJUST_HIRES_HOSTAGE
-vTop += vOffset;
-vBottom += vOffset;
-#endif
+CFixVector delta = objP->info.position.mOrient.m.dir.u * objP->info.xSize;
+CFixVector vTop = objP->info.position.vPos + delta;
+CFixVector vBottom = objP->info.position.vPos - delta;
 pTop.TransformAndEncode (vTop);
 pBottom.TransformAndEncode (vBottom);
-fix light = bLit ? ComputeObjectLight (pObj, &pTop.ViewPos ()) : I2X (1);
+fix light = bLit ? ComputeObjectLight (objP, &pTop.ViewPos ()) : I2X (1);
 if (!gameStates.render.bPerPixelLighting)
-	G3DrawRodTexPoly (pBm, &pBottom, xSize, &pTop, xSize, light, NULL, pObj->info.nType == OBJ_FIREBALL);
+	G3DrawRodTexPoly (bmP, &pBottom, objP->info.xSize, &pTop, objP->info.xSize, light, NULL, objP->info.nType == OBJ_FIREBALL);
 else {
-	if (CalcRodCorners (&pBottom, xSize, &pTop, xSize))
+	if (CalcRodCorners (&pBottom, objP->info.xSize, &pTop, objP->info.xSize))
 		return;
 
 	CFloatVector	vertices [4];
 	tTexCoord2f		texCoords [4]; // = {{0,0},{u,0},{u,v},{0,v}};
 
-	for (int32_t i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) {
 		vertices [i].Assign (rodPoints [i].ViewPos ());
 		texCoords [i].v.u = X2F (rodUvlList [i].u);
 		texCoords [i].v.v = X2F (rodUvlList [i].v);
 		}
-	if (pObj->info.nType == OBJ_FIREBALL)
-		transparencyRenderer.AddPoly (NULL, NULL, pBm, vertices, 4, texCoords, NULL, &gameData.objData.color, 1, 1, GL_TRIANGLE_FAN, GL_REPEAT, 1, -1);
+	if (objP->info.nType == OBJ_FIREBALL)
+		transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoords, NULL, &gameData.objs.color, 1, 1, GL_TRIANGLE_FAN, GL_REPEAT, 1, -1);
 	else {
-		pBm = pBm->Override (-1);
-		pBm->SetupTexture (1, 0);
-		pBm->SetTexCoord (texCoords);
-		pBm->SetColor (&gameData.objData.color);
-		ogl.RenderQuad (pBm, vertices, 3);
+		bmP = bmP->Override (-1);
+		bmP->SetupTexture (1, 0);
+		bmP->SetTexCoord (texCoords);
+		bmP->SetColor (&gameData.objs.color);
+		ogl.RenderQuad (bmP, vertices, 3);
 		}
 	}
 }

@@ -19,172 +19,155 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef struct tBriefingScreen {
 	char    szName [14];                //  filename, eg merc01.  Assumes .lbm suffix.
-	int8_t   nLevel;
-	int8_t   nMessage;
-	int16_t   textLeft, textTop;         //  upper left x, y of text window
-	int16_t   textWidth, textHeight;    //  width and height of text window
+	sbyte   nLevel;
+	sbyte   nMessage;
+	short   textLeft, textTop;         //  upper left x, y of text window
+	short   textWidth, textHeight;    //  width and height of text window
 } tBriefingScreen;
 
 
 class CBriefingInfo {
 	public:
 		char*					message;
-		int32_t				nScreen;
-		int32_t				nLevel;
+		int					nScreen;
+		int					nLevel;
 		tBriefingScreen	curScreen;
-		tBriefingScreen*	pScreen;
+		tBriefingScreen*	bsP;
 		char*					pi;
 		char*					pj;
-		int32_t				ch;
-		int32_t				prevCh;
-		int32_t				bPageDone;
-		int32_t				bRedraw;
-		int32_t				bKeyCheck;
-		int32_t				bFlashingCursor;
-		int32_t				bNewPage;
-		int32_t				bHaveScreen;
-		int32_t				bDumbAdjust;
-		int32_t				bChattering;
-		int32_t				bGotZ;
-		int32_t				bOnlyRobots;
-		int32_t				bExtraSounds;
-		int32_t				nHumChannel;
-		int32_t				nPrintingChannel;
-		int32_t				nBotChannel;
-		int32_t				nLineAdjustment;
-		int32_t				nDelayCount;
-		int32_t				nRobot;
-		int32_t				bInitRobot;
-		int32_t				bRobotPlaying;
-		int32_t				nBotSig;
-		int32_t				nDoorDir;
-		int32_t				nDoorDivCount; 
-		int32_t				nAnimatingBitmapType;
-		int32_t				tAnimate;
-		int32_t				bInitAnimate;
-		int32_t				x;
-		int32_t				y;
-		int32_t				briefingTextX;
-		int32_t				briefingTextY;
-		int32_t				nCurrentColor;
-		uint32_t				nEraseColor;
+		int					ch;
+		int					prevCh;
+		int					bPageDone;
+		int					bRedraw;
+		int					bKeyCheck;
+		int					bFlashingCursor;
+		int					bNewPage;
+		int					bHaveScreen;
+		int					bDumbAdjust;
+		int					bChattering;
+		int					bGotZ;
+		int					bOnlyRobots;
+		int					bExtraSounds;
+		int					nHumChannel;
+		int					nPrintingChannel;
+		int					nBotChannel;
+		int					nLineAdjustment;
+		int					nDelayCount;
+		int					nRobot;
+		int					bInitRobot;
+		int					bRobotPlaying;
+		int					nBotSig;
+		int					nDoorDir;
+		int					nDoorDivCount; 
+		int					nAnimatingBitmapType;
+		int					tAnimate;
+		int					bInitAnimate;
+		int					x;
+		int					y;
+		int					briefingTextX;
+		int					briefingTextY;
+		int					nCurrentColor;
+		uint					nEraseColor;
 		char					szSpinningRobot [8];
 		char					szBriefScreen [15];
 		char					szBriefScreenB [15];
 		char					szCurImage [15];
 		char					szBitmapName [32];
 		CCharArray			briefingText;
-		int32_t				nBriefingTextLen;
-		int32_t				nTabStop;
-		CCanvas				animCanv;
+		int					nBriefingTextLen;
+		int					nTabStop;
+		CCanvas*				robotCanvP;
 		CAngleVector		vRobotAngles;
 		time_t				t0;
-		int32_t				nFuncRes;
+		int					nFuncRes;
 
 	public:
 		void Init (void);
-		void Setup (char* message, int32_t nLevel, int32_t nScreen);
+		void Setup (char* message, int nLevel, int nScreen);
 };
 
 //-----------------------------------------------------------------------------
 
 typedef struct tD1ExtraBotSound {
-	const char		*pszName;
-	int16_t			nLevel;
-	int16_t			nBotSig;
+	const char*	pszName;
+	short			nLevel;
+	short			nBotSig;
 } tD1ExtraBotSound;
 
 
 class CBriefing {
 	private:
 		CBriefingInfo	m_info;
-		CBitmap			m_background;
-		CBitmap*			m_bitmap;
-		char				m_szBackground [FILENAME_LEN + 1];
-		char				m_message [2];
-		int32_t			m_pcxError;
-		int32_t			m_bAudioPlaying;
 
 	public:
 		CBriefing () { Init (); }
 		void Init (void);
-		void Run (const char* filename, int32_t nLevel);
+		void Run (const char* filename, int nLevel);
 
-		int32_t HandleA (void);
-		int32_t HandleB (void);
-		int32_t HandleC (void);
-		int32_t HandleD (void);
-		int32_t HandleF (void);
-		int32_t HandleN (void);
-		int32_t HandleO (void);
-		int32_t HandleP (void);
-		int32_t HandleR (void);
-		int32_t HandleS (void);
-		int32_t HandleT (void);
-		int32_t HandleU (void);
-		int32_t HandleZ (void);
-		int32_t HandleTAB (void);
-		int32_t HandleBS (void);
-		int32_t HandleNEWL (void);
-		int32_t HandleSEMI (void);
-		int32_t HandleANY (void);
+		int HandleA (void);
+		int HandleB (void);
+		int HandleC (void);
+		int HandleD (void);
+		int HandleF (void);
+		int HandleN (void);
+		int HandleO (void);
+		int HandleP (void);
+		int HandleR (void);
+		int HandleS (void);
+		int HandleT (void);
+		int HandleU (void);
+		int HandleZ (void);
+		int HandleTAB (void);
+		int HandleBS (void);
+		int HandleNEWL (void);
+		int HandleSEMI (void);
+		int HandleANY (void);
 
 	private:
-		int32_t StartSound (int32_t nChannel, int16_t nSound, fix nVolume, const char* pszWAV);
-		void StopSound (int32_t& nChannel);
-		int32_t StartHum (int32_t nLevel, int32_t nScreen, int32_t bExtraSounds);
-		tD1ExtraBotSound* FindExtraBotSound (int16_t nLevel, int16_t nBotSig);
-		int32_t StartExtraBotSound (int32_t nChannel, int16_t nLevel, int16_t nBotSig);
+		int StartSound (int nChannel, short nSound, fix nVolume, const char* pszWAV);
+		void StopSound (int& nChannel);
+		int StartHum (int nChannel, int nLevel, int nScreen, int bExtraSounds);
+		tD1ExtraBotSound* FindExtraBotSound (short nLevel, short nBotSig);
+		int StartExtraBotSound (int nChannel, short nLevel, short nBotSig);
 
-		int32_t RenderImage (char* pszImg);
-		void RenderBitmapFrame (int32_t bRedraw);
+		int RenderImage (char* pszImg);
+		void RenderBitmapFrame (int bRedraw);
 		void RenderBitmap (CBitmap* bmp);
 		void RenderRobotFrame (void);
 		void RenderRobotMovie (void);
 		void InitSpinningRobot (void); 
 		void Animate (void);
 
-		int32_t LoadImage (char* szBriefScreen);
-		int32_t LoadImage (int32_t nScreen);
-		int32_t ParseMessageInt (char*& pszMsg, bool bSkip = false);
+		int LoadImage (char* szBriefScreen);
+		int LoadImage (int nScreen);
+		int ParseMessageInt (char*& pszMsg, bool bSkip = false);
 		void ParseMessageText (char* pszName);
 		const char* NextPage (const char* message);
-		int32_t PageHasRobot (const char* message);
+		int PageHasRobot (const char* message);
 
-		void InitCharPos (tBriefingScreen* bsP, int32_t bRescale);
-		int32_t PrintCharDelayed (int32_t delay);
-		void FlashCursor (int32_t bCursor);
+		void InitCharPos (tBriefingScreen* bsP, int bRescale);
+		int PrintCharDelayed (int delay);
+		void FlashCursor (int bCursor);
 
-		int32_t InKey (void);
-		int32_t WaitForKeyPress (void);
+		int InKey (void);
+		int WaitForKeyPress (void);
 
-		int32_t DefineBox (void);
+		int DefineBox (void);
 
-		int32_t HandleInput (void);
-		int32_t HandleNewPage (void);
+		int HandleInput (void);
+		int HandleNewPage (void);
 
-		int32_t ShowMessage (int32_t nScreen, char* message, int32_t nLevel);
-		char* GetMessage (int32_t nScreen);
-		int32_t LoadImageText (char* filename, CCharArray& buf);
-		int32_t ShowText (int32_t nScreen, int16_t nLevel);
-		int32_t LoadLevelScreen (int32_t nScreen, int16_t nLevel);
+		int ShowMessage (int nScreen, char* message, int nLevel);
+		char* GetMessage (int nScreen);
+		int LoadImageText (char* filename, CCharArray& buf);
+		int ShowText (int nScreen, short nLevel);
+		int LoadLevelScreen (int nScreen, short nLevel);
 		void SetColors (void);
 
 		char* SkipPage (void); 
 
-		void SetupAnimationCanvas (CCanvas* baseCanv);
-
-		CCanvas& AnimCanv (void) { return m_info.animCanv; }
-
-		void RenderElement (int32_t nElement);
-
-		float GetScale (void);
-		inline int32_t Scaled (int32_t v) { return int32_t (FRound (v * GetScale ())); }
-		inline int32_t AdjustX (int32_t x) { return x * CCanvas::Current ()->Width (false) / 320; }
-		inline int32_t AdjustY (int32_t y) { return y * CCanvas::Current ()->Height (false) / 200; }
-		inline int32_t RescaleX (int32_t x) { return Scaled (AdjustX (x)); }
-		inline int32_t RescaleY (int32_t y) { return Scaled (AdjustY (y)); }
-
+		inline int RescaleX (int x) { return x*  CCanvas::Current ()->Width () / 320; }
+		inline int RescaleY (int y) { return y*  CCanvas::Current ()->Height () / 200; }
 	};
 
 extern CBriefing briefing;

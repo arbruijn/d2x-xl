@@ -60,13 +60,13 @@
 #include "glare.h"
 #include "menu.h"
 
-extern int32_t screenShotIntervals [];
+extern int screenShotIntervals [];
 
 //------------------------------------------------------------------------------
 
 //writes out an uncompressed RGB .tga file
 //if we got really spiffy, we could optionally link in libpng or something, and use that.
-void WriteScreenShot (char *szSaveName, int32_t w, int32_t h, uint8_t *buf, int32_t nFormat)
+void WriteScreenShot (char *szSaveName, int w, int h, ubyte *buf, int nFormat)
 {
 	FILE *f = fopen (szSaveName, "wb");
 if (!f) {
@@ -76,9 +76,9 @@ if (!f) {
 	}
 else {
 	static tBGR* outBuf = NULL;
-	static int32_t outBufSize = 0;
+	static int outBufSize = 0;
 
-	int32_t imgSize = w * h * sizeof (tBGR);
+	int imgSize = w * h * sizeof (tBGR);
 
 	if (outBufSize < imgSize) {
 		outBufSize = imgSize;
@@ -98,19 +98,19 @@ else {
 		fwrite (&hdr, sizeof (hdr), 1, f);
 #else	// if only I knew how to control struct member packing with gcc or XCode ... ^_^
 		*(reinterpret_cast<char*> (&hdr) + 2) = 2;
-		*reinterpret_cast<int16_t*> (reinterpret_cast<char*> (&hdr) + 12) = w;
-		*reinterpret_cast<int16_t*> (reinterpret_cast<char*> (&hdr) + 14) = h;
+		*reinterpret_cast<short*> (reinterpret_cast<char*> (&hdr) + 12) = w;
+		*reinterpret_cast<short*> (reinterpret_cast<char*> (&hdr) + 14) = h;
 		*(reinterpret_cast<char*> (&hdr) + 16) = 24;
 		//write .TGA header.
 		fwrite (&hdr, 18, 1, f);
 #endif
-		tRGB* pRGB = ((tRGB *) buf);// + w * (h - 1);
-		tBGR* pBGR = outBuf;
-		for (int32_t i = h; i; i--) {
-			for (int32_t j = w; j; j--, pRGB++, pBGR++) {
-				pBGR->r = pRGB->r;
-				pBGR->g = pRGB->g;
-				pBGR->b = pRGB->b;
+		tRGB* rgbP = ((tRGB *) buf);// + w * (h - 1);
+		tBGR* bgrP = outBuf;
+		for (int i = h; i; i--) {
+			for (int j = w; j; j--, rgbP++, bgrP++) {
+				bgrP->r = rgbP->r;
+				bgrP->g = rgbP->g;
+				bgrP->b = rgbP->b;
 				}
 			}
 		fwrite (outBuf, imgSize, 1, f);
@@ -127,12 +127,12 @@ else {
 
 extern char *pszSystemNames [];
 
-void SaveScreenShot (uint8_t *buf, int32_t bAutomap)
+void SaveScreenShot (ubyte *buf, int bAutomap)
 {
 	char				szMessage [1000];
 	char				szSaveName [FILENAME_LEN], szLevelName [FILENAME_LEN];
-	int32_t				i, j, bTmpBuf;
-	static int32_t		nSaveNum = 0;
+	int				i, j, bTmpBuf;
+	static int		nSaveNum = 0;
 	GLenum			glErrCode;
 
 if (!gameStates.app.bSaveScreenShot)
@@ -153,30 +153,28 @@ if (j) {
 else
 	strcpy (szLevelName, "scrn");
 StopTime();
-if (*gameFolders.user.szScreenshots)
-	sprintf (szSaveName, "%s", gameFolders.user.szScreenshots);
+if (*gameFolders.szScrShotDir)
+	sprintf (szSaveName, "%s", gameFolders.szScrShotDir);
 else
 	*szSaveName = '\0';
-i = (int32_t) strlen (szSaveName);
+i = (int) strlen (szSaveName);
 do {
 	sprintf (szSaveName + i, "/%s%04d.tga", szLevelName, nSaveNum++);
 	nSaveNum %= 9999;
 	} while (!access (szSaveName, 0));
 
 if ((bTmpBuf = (buf == NULL))) {
-	buf = new uint8_t [gameData.renderData.screen.Width () * gameData.renderData.screen.Height () * 3];
+	buf = new ubyte [screen.Width () * screen.Height () * 3];
 	ogl.SetTexturing (false);
 	ogl.SetReadBuffer (GL_FRONT, 0);
-	gameData.renderData.screen.Activate ("SaveScreenShot (screen)");
-	glReadPixels (0, 0, gameData.renderData.screen.Width (), gameData.renderData.screen.Height (), GL_RGB, GL_UNSIGNED_BYTE, buf);
-	gameData.renderData.screen.Deactivate ();
+	glReadPixels (0, 0, screen.Width (), screen.Height (), GL_RGB, GL_UNSIGNED_BYTE, buf);
 	glErrCode = glGetError ();
 	glErrCode = GL_NO_ERROR;
 	}
 else
 	glErrCode = GL_NO_ERROR;
 if (glErrCode == GL_NO_ERROR) {
-	WriteScreenShot (szSaveName, gameData.renderData.screen.Width (), gameData.renderData.screen.Height (), buf, 0);
+	WriteScreenShot (szSaveName, screen.Width (), screen.Height (), buf, 0);
 	if (!(bAutomap || screenShotIntervals [gameOpts->app.nScreenShotInterval])) {
 		sprintf (szMessage, "%s '%s'", TXT_DUMPING_SCREEN, szSaveName);
 		HUDMessage (MSGC_GAME_FEEDBACK, szMessage);
@@ -190,15 +188,15 @@ StartTime (0);
 
 //-----------------------------------------------------------------------------
 
-int32_t screenShotIntervals [] = {0, 1, 3, 5, 10, 15, 30, MAX_FRAMERATE};
+int screenShotIntervals [] = {0, 1, 3, 5, 10, 15, 30, MAX_FRAMERATE};
 
 void AutoScreenshot (void)
 {
-	int32_t	h;
+	int	h;
 
 	static	time_t	t0 = 0;
 
-if (gameData.appData.bGamePaused || gameStates.menus.nInMenu)
+if (gameData.app.bGamePaused || gameStates.menus.nInMenu)
 	return;
 if (!(h = screenShotIntervals [gameOpts->app.nScreenShotInterval]))
 	return;
@@ -215,15 +213,15 @@ gameStates.app.bSaveScreenShot = 1;
 // save a PICT to a file
 #ifdef MACINTOSH
 
-void SavePictScreen (int32_t multiplayer)
+void SavePictScreen (int multiplayer)
 {
 	OSErr err;
-	int32_t parid, i, count;
+	int parid, i, count;
 	char *pfilename, filename [50], buf[512], cwd[FILENAME_MAX];
-	int16_t fd;
+	short fd;
 	FSSpec spec;
 	PicHandle pict_handle;
-	static int32_t multiCount = 0;
+	static int multiCount = 0;
 	StandardFileReply sf_reply;
 
 // dump the contents of the GameWindow into a picture using copybits

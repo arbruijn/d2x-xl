@@ -14,13 +14,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _TEXMERGE_H
 #define _TEXMERGE_H
 
-int32_t TexMergeInit (int32_t num_cached_textures);
-CBitmap *TexMergeGetCachedBitmap (int32_t nBaseTex, int32_t nOvlTex, int32_t nOrient);
+int TexMergeInit (int num_cached_textures);
+CBitmap *TexMergeGetCachedBitmap (int nBaseTex, int nOvlTex, int nOrient);
 void _CDECL_ TexMergeClose (void);
 void TexMergeFlush ();
 void InitTexMergeShaders ();
-int32_t SetupTexMergeShader (int32_t bColorKey, int32_t bColored, int32_t nType);
+int SetupTexMergeShader (int bColorKey, int bColored, int nType);
 
-extern int32_t tmShaderProgs [3]; 
+extern int tmShaderProgs [3]; 
 
 #endif /* _TEXMERGE_H */

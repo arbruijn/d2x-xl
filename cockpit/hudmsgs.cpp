@@ -31,42 +31,39 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "args.h"
 #include "ogl_render.h"
 
-void CopyBackgroundRect (int32_t left,int32_t top,int32_t right,int32_t bot);
+void CopyBackgroundRect (int left,int top,int right,int bot);
 char szDisplayedBackgroundMsg [2][HUD_MESSAGE_LENGTH] = {"",""};
 
-int32_t nLastMsgYCrd = -1;
-int32_t nLastMsgHeight = 6;
-int32_t bMSGPlayerMsgs = 0;
-int32_t bNoMsgRedundancy = 0;
-int32_t nModexHUDMsgs;
+int nLastMsgYCrd = -1;
+int nLastMsgHeight = 6;
+int bMSGPlayerMsgs = 0;
+int bNoMsgRedundancy = 0;
+int nModexHUDMsgs;
 
 // ----------------------------------------------------------------------------
 
 void ClearBackgroundMessages (void)
 {
-#if 0 
-	// Obsolete. You cannot shrink the game's output area below the screen or window size anymore in D2X-XL. 
-	// That feature has been removed because today's hardware is powerful enough to render Descent,
-	// and since you can run the program in windowed and fullscreen mode at lower than native screen resolution.
 if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && 
-	  (nLastMsgYCrd != -1) && (gameData.renderData.scene.Top () >= 6)) {
-	gameData.renderData.frame.Activate ("ClearBackgroundMessages (frame)");
+	  (nLastMsgYCrd != -1) && (gameStates.render.vr.buffers.subRender [0].Top () >= 6)) {
+	CCanvas::Push ();
+
+	CCanvas::SetCurrent (CurrentGameScreen ());
 	CopyBackgroundRect (0, nLastMsgYCrd, CCanvas::Current ()->Width (), nLastMsgYCrd + nLastMsgHeight - 1);
-	gameData.renderData.frame.Deactivate ();
+	CCanvas::Pop ();
 	nLastMsgYCrd = -1;
 	}
-#endif
-szDisplayedBackgroundMsg [0][0] = 0;
+szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage][0] = 0;
 }
 
 //	-----------------------------------------------------------------------------
 
 void HUDClearMessages (void)
 {
-	int32_t i, j;
+	int i, j;
 	CHUDMessage	*pMsgs;
 
-for (j = 2, pMsgs = gameData.hudData.msgs; j; j--, pMsgs++) {
+for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
 	pMsgs->nMessages = 0;
 	pMsgs->nFirst = 
 	pMsgs->nLast = 0;
@@ -84,23 +81,24 @@ for (j = 2, pMsgs = gameData.hudData.msgs; j; j--, pMsgs++) {
 
 // ----------------------------------------------------------------------------
 
-void HUDRenderMessages (uint8_t nType)
+void HUDRenderMessages (ubyte nType)
 {
 if (gameStates.app.bSaveScreenShot)
 	return;
 
-	int32_t		h, i, n, w, y, aw, yStart;
-	CHUDMessage *pMsgs = gameData.hudData.msgs + nType;
+	int			h, i, n, w, y, aw, yStart, nMsg;
+	char			*pszMsg;
+	CHUDMessage *pMsgs = gameData.hud.msgs + nType;
 
 if ((pMsgs->nMessages < 0) || (pMsgs->nMessages > HUD_MAX_MSGS))
 	return; // Get Rob!
 if ((pMsgs->nMessages < 1) && (nModexHUDMsgs == 0))
 	return;
-pMsgs->xTimer -= gameData.timeData.xFrame;
+pMsgs->xTimer -= gameData.time.xFrame;
 if (pMsgs->xTimer < 0) {
 	// Timer expired... get rid of oldest pszMsg...
 	if (pMsgs->nLast != pMsgs->nFirst) {
-		int32_t	temp;
+		int	temp;
 
 		//&pMsgs->szMsgs.szMsg [pMsgs->nFirst][0] is deing deleted...;
 		pMsgs->nFirst = (pMsgs->nFirst + 1) % HUD_MAX_MSGS;
@@ -115,46 +113,52 @@ if (pMsgs->xTimer < 0) {
 }
 
 if (pMsgs->nMessages > 0) {
-	if (pMsgs->nColor == (uint32_t) -1)
+	if (pMsgs->nColor == (uint) -1)
 		pMsgs->nColor = GREEN_RGBA;
 
-#if 0 
-	// Obsolete. You cannot shrink the game's output area below the screen or window size anymore in D2X-XL. 
-	// That feature has been removed because today's hardware is powerful enough to render Descent,
-	// and since you can run the program in windowed and fullscreen mode at lower than native screen resolution.
-	if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && (gameData.renderData.scene.Top () >= (gameData.renderData.screen.Height () / 8))) {
+	if ((gameStates.render.vr.nRenderMode == VR_NONE) && ((gameStates.render.cockpit.nType == CM_STATUS_BAR) || 
+		 (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && (gameStates.render.vr.buffers.subRender [0].Top () >= (gameData.render.window.hMax/8))) {
 		// Only display the most recent pszMsg in this mode
-		int32_t nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
-		char* pszMsg = pMsgs->szMsgs [nMsg];
+		nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
+		pszMsg = pMsgs->szMsgs [nMsg];
 
-		if (strcmp (szDisplayedBackgroundMsg [0], pszMsg)) {
-			int32_t ycrd = /*CCanvas::Current ()->Top () -*/ (SMALL_FONT->Height () + 2);
+		if (strcmp (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg)) {
+			CCanvas::Push ();
+			int ycrd = CCanvas::Current ()->Top () - (SMALL_FONT->Height ()+2);
 			if (ycrd < 0)
 				ycrd = 0;
+			CCanvas::SetCurrent (CurrentGameScreen ());
 			fontManager.SetCurrent (SMALL_FONT);
 			fontManager.Current ()->StringSize (pszMsg, w, h, aw);
 			ClearBackgroundMessages ();
-			if (pMsgs->nColor == (uint32_t) -1)
+			if (pMsgs->nColor == (uint) -1)
 				pMsgs->nColor = GREEN_RGBA;
 			fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
 			pMsgs->nMsgIds [nMsg] = GrPrintF (pMsgs->nMsgIds + nMsg, (CCanvas::Current ()->Width ()-w) / 2, ycrd, pszMsg);
-			strcpy (szDisplayedBackgroundMsg [0], pszMsg);
+			strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
+			CCanvas::Pop ();
 			nLastMsgYCrd = ycrd;
 			nLastMsgHeight = h;
 			}
 		} 
-	else 
-#endif // obsolete
-		{
+	else {
 		fontManager.SetCurrent (SMALL_FONT);
 		if ((gameStates.render.cockpit.nType == CM_FULL_SCREEN) || 
 			 (gameStates.render.cockpit.nType == CM_LETTERBOX)) {
-			yStart = SMALL_FONT->Height () / 2;
+			if (gameData.render.window.w == gameData.render.window.wMax)
+				yStart = SMALL_FONT->Height () / 2;
+			else
+				yStart= SMALL_FONT->Height () * 2;
 			}
 		else
 			yStart = SMALL_FONT->Height () / 2;
 		if (gameOpts->render.cockpit.bGuidedInMainView) {
-			if (gameData.objData.HasGuidedMissile (N_LOCALPLAYER))
+			tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + N_LOCALPLAYER;
+			CObject *gmObjP = gmiP->objP;
+			if (gmObjP && 
+				 (gmObjP->info.nType == OBJ_WEAPON) && 
+				 (gmObjP->info.nId == GUIDEDMSL_ID) &&
+			    (gmObjP->info.nSignature == gmiP->nSignature))
 				yStart += SMALL_FONT->Height () + 3;
 			}
 
@@ -170,7 +174,7 @@ if (pMsgs->nMessages > 0) {
 			if (nType)
 				y += ((2 * HUD_MAX_MSGS - 1) * (h + 1)) / 2;
 #if 1
-			GrString ((CCanvas::Current ()->Width ()-w)/2, y, pMsgs->szMsgs [n]);
+			GrString ((CCanvas::Current ()->Width ()-w)/2, y, pMsgs->szMsgs [n], NULL);
 #else
 			pMsgs->nMsgIds [n] = GrString ((CCanvas::Current ()->Width ()-w)/2, y, pMsgs->szMsgs [n], pMsgs->nMsgIds + n);
 #endif
@@ -179,16 +183,14 @@ if (pMsgs->nMessages > 0) {
 			}
 		}
 	}
-#if 0
 else if (CurrentGameScreen ()->Mode () == BM_MODEX) {
 	if (nModexHUDMsgs) {
-		int32_t temp = nLastMsgYCrd;
+		int temp = nLastMsgYCrd;
 		nModexHUDMsgs--;
 		ClearBackgroundMessages ();			//	If in status bar mode and no messages, then erase.
 		nLastMsgYCrd = temp;
 		}
 	}
-#endif
 fontManager.SetCurrent (GAME_FONT);
 }
 
@@ -204,10 +206,10 @@ if (gameOpts->render.cockpit.bSplitHUDMsgs)
 //------------------------------------------------------------------------------
 // Call to flash a message on the HUD.  Returns true if message drawn.
 // (pszMsg might not be drawn if previous pszMsg was same)
-int32_t HUDInitMessageVA (uint8_t nType, const char * format, va_list args)
+int HUDInitMessageVA (ubyte nType, const char * format, va_list args)
 {
-	CHUDMessage *pMsgs = gameData.hudData.msgs + (gameOpts->render.cockpit.bSplitHUDMsgs ? nType : 0);
-	int32_t		temp;
+	CHUDMessage *pMsgs = gameData.hud.msgs + (gameOpts->render.cockpit.bSplitHUDMsgs ? nType : 0);
+	int			temp;
 	char			*pszMsg = NULL, 
 					*pszLastMsg = NULL;
 	char			con_message [HUD_MESSAGE_LENGTH + 3];
@@ -229,7 +231,7 @@ if (strlen (pszMsg) >= HUD_MESSAGE_LENGTH) {
 	}
 // Produce a colorised version and send it to the console
 con_message [0] = CC_COLOR;
-if (pMsgs->nColor != (uint32_t) -1) {
+if (pMsgs->nColor != (uint) -1) {
 	con_message [1] = (char) RGBA_RED (pMsgs->nColor) / 2 + 128;
 	con_message [2] = (char) RGBA_GREEN (pMsgs->nColor) / 2 + 128;
 	con_message [3] = (char) RGBA_BLUE (pMsgs->nColor) / 2 + 128;
@@ -253,7 +255,7 @@ console.printf (CON_NORMAL, "%s\n", con_message);
 if (IsMultiGame) {
 	if (gameOpts->multi.bNoRedundancy && !strnicmp ("You already", pszMsg, 11))
 		return 0;
-	if (!gameData.hudData.bPlayerMessage && FindArg ("-PlayerMessages"))
+	if (!gameData.hud.bPlayerMessage && FindArg ("-PlayerMessages"))
 		return 0;
 	}
 if (pMsgs->nMessages > 1) {
@@ -276,7 +278,7 @@ if (pszLastMsg && (!strcmp (pszLastMsg, pszMsg))) {
 	}
 pMsgs->nLast = temp;
 // Check if memory has been overwritten at this point.
-if (gameData.demoData.nState == ND_STATE_RECORDING)
+if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordHUDMessage (pszMsg);
 pMsgs->xTimer = I2X (3);		// 1 second per 5 characters
 pMsgs->nMessages++;
@@ -285,9 +287,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t _CDECL_ HUDInitMessage (const char *format, ...)
+int _CDECL_ HUDInitMessage (const char *format, ...)
 {
-	int32_t ret = 0;
+	int ret = 0;
 
 if (gameOpts->render.cockpit.bHUDMsgs) {
 	va_list args;
@@ -303,11 +305,11 @@ return ret;
 
 void PlayerDeadMessage (void)
 {
-if (gameOpts->render.cockpit.bHUDMsgs && LOCALPLAYER.m_bExploded) {
-	CHUDMessage	*pMsgs = gameData.hudData.msgs;
+if (gameOpts->render.cockpit.bHUDMsgs && gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded) {
+	CHUDMessage	*pMsgs = gameData.hud.msgs;
 
    if (LOCALPLAYER.lives < 2) {
-      int32_t x, y, w, h, aw;
+      int x, y, w, h, aw;
       fontManager.SetCurrent (HUGE_FONT);
       fontManager.Current ()->StringSize (TXT_GAME_OVER, w, h, aw);
       w += 20;
@@ -318,21 +320,21 @@ if (gameOpts->render.cockpit.bHUDMsgs && LOCALPLAYER.m_bExploded) {
       CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
       OglDrawFilledRect (x, y, x + w, y + h);
       gameStates.render.grAlpha = 1.0f;
-      GrString (0x8000, (CCanvas::Current ()->Height () - CCanvas::Current ()->Font ()->Height ()) / 2 + h / 8, TXT_GAME_OVER);
+      GrString (0x8000, (CCanvas::Current ()->Height () - CCanvas::Current ()->Font ()->Height ()) / 2 + h / 8, TXT_GAME_OVER, NULL);
 #if 0
       // Automatically exit death after 10 secs
-      if (gameData.timeData.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (10)) {
+      if (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (10)) {
                SetFunctionMode (FMODE_MENU);
-               gameData.appData.SetGameMode (GM_GAME_OVER);
-               __asm int32_t 3; longjmp (gameExitPoint, 1);        // Exit out of game loop
+               gameData.app.SetGameMode (GM_GAME_OVER);
+               __asm int 3; longjmp (gameExitPoint, 1);        // Exit out of game loop
 	      }
 #endif
 	   }
    fontManager.SetCurrent (GAME_FONT);
-   if (pMsgs->nColor == (uint32_t) -1)
+   if (pMsgs->nColor == (uint) -1)
       pMsgs->nColor = RGBA_PAL2 (0, 28, 0);
 	fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
-   GrString (0x8000, CCanvas::Current ()->Height ()- (CCanvas::Current ()->Font ()->Height () + 3), TXT_PRESS_ANY_KEY);
+   GrString (0x8000, CCanvas::Current ()->Height ()- (CCanvas::Current ()->Font ()->Height () + 3), TXT_PRESS_ANY_KEY, NULL);
 	}
 }
 
@@ -345,7 +347,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && LOCALPLAYER.m_bExploded) {
 // 		InitHUDMessage ("Afterburner disengaged.");
 // }
 
-void _CDECL_ HUDMessage (int32_t nClass, const char *format, ...)
+void _CDECL_ HUDMessage (int nClass, const char *format, ...)
 {
 if (gameOpts->render.cockpit.bHUDMsgs && 
 #if !DBG

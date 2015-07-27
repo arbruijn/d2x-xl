@@ -60,18 +60,18 @@
 void MultiThreadingOptionsMenu (void)
 {
 	CMenu	m (10);
-	int32_t	h, i, bSound = gameData.appData.bUseMultiThreading [rtSound], choice = 0;
+	int	h, i, bSound = gameData.app.bUseMultiThreading [rtSound], choice = 0;
 
-	static int32_t	menuToTask [rtTaskCount] = {0, 1, 1, 2, 2, 3, 4, 5};	//map menu entries to tasks
-	static int32_t	taskToMenu [6] = {0, 1, 3, 5, 6, 7};	//map tasks to menu entries
+	static int	menuToTask [rtTaskCount] = {0, 1, 1, 2, 2, 3, 4, 5};	//map menu entries to tasks
+	static int	taskToMenu [6] = {0, 1, 3, 5, 6, 7};	//map tasks to menu entries
 
 h = gameStates.app.bMultiThreaded ? 6 : 1;
 for (i = 0; i < h; i++)
-	m.AddCheck (GT (1060 + i), gameData.appData.bUseMultiThreading [taskToMenu [i]], -1, HT (359 + i));
+	m.AddCheck (GT (1060 + i), gameData.app.bUseMultiThreading [taskToMenu [i]], -1, HT (359 + i));
 i = m.Menu (NULL, TXT_MT_MENU_TITLE, NULL, &choice);
 h = gameStates.app.bMultiThreaded ? rtTaskCount : rtSound + 1;
 for (i = rtSound; i < h; i++)
-	gameData.appData.bUseMultiThreading [i] = (m [menuToTask [i]].m_value != 0);
+	gameData.app.bUseMultiThreading [i] = (m [menuToTask [i]].m_value != 0);
 if (gameStates.app.bGameRunning) {
 	ControlRenderThreads ();
 	ControlSoundThread ();
@@ -83,14 +83,14 @@ if (gameStates.app.bGameRunning) {
 
 //------------------------------------------------------------------------------
 
-int32_t ConfigMenuCallback (CMenu& menu, int32_t& nLastKey, int32_t nCurItem, int32_t nState)
+int ConfigMenuCallback (CMenu& menu, int& nLastKey, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
 
 if (gameStates.app.bNostalgia) {
 	CMenuItem* m = menu ["brightness"];
-	int32_t v = m->Value ();
+	int v = m->Value ();
 	if ((nCurItem == menu.IndexOf ("brightness")) && (v != paletteManager.GetGamma ())) {
 		paletteManager.SetGamma (v);
 		sprintf (m->m_text, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
@@ -104,10 +104,10 @@ return nCurItem;
 
 void ConfigMenu (void)
 {
-	static int32_t choice = 0;
+	static int choice = 0;
 
 	CMenu	m;
-	int32_t	i;
+	int	i;
 	char	szSlider [50];
 
 
@@ -126,8 +126,7 @@ do {
 
 	if (gameStates.app.bNostalgia)
 		m.AddMenu ("performance options", TXT_DETAIL_LEVELS, KEY_D, HTX_OPTIONS_DETAIL);
-	if (!ogl.IsSideBySideDevice ())
-		m.AddMenu ("screen res options", TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
+	m.AddMenu ("screen res options", TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
 	m.AddText ("", "");
 	if (gameStates.app.bNostalgia) {
 		m.AddMenu ("reorder guns", TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
@@ -138,11 +137,11 @@ do {
 		m.AddMenu ("cockpit options", TXT_COCKPIT_OPTS2, KEY_C, HTX_OPTIONS_COCKPIT);
 		m.AddMenu ("render options", TXT_RENDER_OPTS2, KEY_R, HTX_OPTIONS_RENDER);
 		m.AddMenu ("effect options", TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
-		m.AddMenu ("gameplay options", TXT_GAMEPLAY_OPTS2, KEY_G, HTX_OPTIONS_GAMEPLAY);
-#if DBG == 0
+#ifndef DBG
 		if (!(gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame))
 #endif
 			{
+			m.AddMenu ("gameplay options", TXT_GAMEPLAY_OPTS2, KEY_G, HTX_OPTIONS_GAMEPLAY);
 			m.AddMenu ("physics options", TXT_PHYSICS_MENUCALL, KEY_P, HTX_OPTIONS_PHYSICS);
 			}
 #if 0

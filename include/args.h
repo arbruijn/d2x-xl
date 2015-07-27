@@ -17,7 +17,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "cstack.h"
 
-extern int32_t Inferno_verbose;
+extern int Inferno_verbose;
 
 class CConfigManager {
 	private:
@@ -26,29 +26,28 @@ class CConfigManager {
 		char				m_filename [FILENAME_LEN];
 		char				m_null [1];
 
-		inline int32_t Count (void) { return (m_properties.Buffer () == NULL) ? 0 : int32_t (m_properties.ToS ()); }
+		inline int Count (void) { return (m_properties.Buffer () == NULL) ? NULL : int (m_properties.ToS ()); }
 
 	public:
 		CConfigManager () { Init (); }
 		~CConfigManager () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		char* Filename (int32_t bDebug = 0);
-		void Load (int32_t argC, char** argV);
+		char* Filename (int bDebug = 0);
+		void Load (int argC, char** argV);
 		void Load (char* filename);
-		int32_t Parse (CFile* pFile = NULL);
+		int Parse (CFile* cfP = NULL);
 		void PrintLog (void);
-		int32_t Find (const char* s);
-		int32_t Int (int32_t t, int32_t nDefault);
-		int32_t Int (const char* szArg, int32_t nDefault);
-		const char* Text (const char* szArg, const char* pszDefault = "");
-		inline char* Property (int32_t i) { return (--i < Count ()) ? m_properties [i] : m_null; }
-		inline char* operator[] (int32_t i) { return Property (i); }
+		int Find (const char* s);
+		int Value (int t, int nDefault);
+		int Value (const char* szArg, int nDefault);
+		inline char* Property (int i) { return (--i < Count ()) ? m_properties [i] : m_null; }
+		inline char* operator[] (int i) { return Property (i); }
 };
 
 extern CConfigManager appConfig;
 
-static inline int32_t FindArg (const char * s) { return appConfig.Find (s); }
-static inline int32_t NumArg (int32_t t, int32_t nDefault) { return appConfig.Int (t, nDefault); }
+static inline int FindArg (const char * s) { return appConfig.Find (s); }
+static inline int NumArg (int t, int nDefault) { return appConfig.Value (t, nDefault); }
 
 #endif //_ARGS_H

@@ -19,9 +19,9 @@ class CBanList : public CStack<CBanListEntry> {
 	public:
 		CBanList () { Create (); }
 		bool Add (const char* szPlayer);
-		int32_t Find (const char* szPlayer);
-		int32_t Load (void);
-		int32_t Save (void);
+		int Find (const char* szPlayer);
+		int Load (void);
+		int Save (void);
 		bool Create (void);
 	};
 

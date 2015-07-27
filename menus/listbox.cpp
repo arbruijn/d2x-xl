@@ -79,34 +79,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------ 
 
-void CListBox::Render (void)
+void CListBox::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
-if (m_bDone)
+	static	int t0 = 0;
+
+if (!MenuRenderTimeout (t0, -1))
 	return;
-gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
-backgroundManager.Activate (m_background);
-gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+
+backgroundManager.Redraw ();
 FadeIn ();
-
-fontManager.PushScale ();
-fontManager.SetScale (fontManager.Scale (false) * GetScale ());
 fontManager.SetCurrent (NORMAL_FONT);
-GrString (0x8000, m_nTitleHeight, m_props.pszTitle);
-
-CCanvas textArea;
-textArea.Setup (&gameData.renderData.frame, m_nOffset, m_nOffset + m_nTitleHeight, m_nWidth, m_nHeight, true);
-textArea.Activate ("CListbox::Render (textArea)", &m_background);
-
+GrString (0x8000, m_yOffset - m_nTitleHeight, pszTitle, NULL);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-for (int32_t i = Max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
-	int32_t w, h, aw, x, y;
-
-	x = 0;
-	y = (i - m_nFirstItem) * (CCanvas::Current ()->Font ()->Height () + 2);
-
-	if (i >= int32_t (m_items->ToS ())) {
+for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
+	int w, h, aw, y;
+	y = (i - m_nFirstItem) * (CCanvas::Current ()->Font ()->Height () + 2) + m_yOffset;
+	if (i >= int (m_items->ToS ())) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		OglDrawFilledRect (x, y - 1, x + m_nWidth - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
+		OglDrawFilledRect (m_xOffset, y - 1, m_xOffset + m_nWidth - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
 		}
 	else {
 		if (i == m_nChoice)
@@ -114,28 +104,28 @@ for (int32_t i = Max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++)
 		else
 			fontManager.SetCurrent (NORMAL_FONT);
 		fontManager.Current ()->StringSize ((*m_items) [i], w, h, aw);
-		OglDrawFilledRect (x, y - 1, x + m_nWidth - 1, y + h + 1);
-		GrString (5, y, (*m_items) [i]);
+		OglDrawFilledRect (m_xOffset, y - 1, m_xOffset + m_nWidth - 1, y + h + 1);
+		GrString (m_xOffset + 5, y, (*m_items) [i], NULL);
 		}
 	}	
-textArea.Deactivate ();
-m_background.Deactivate ();
 gameStates.render.grAlpha = 1.0f;
-fontManager.PopScale ();
 SDL_ShowCursor (1);
+GrUpdate (0);
 }
 
 //------------------------------------------------------------------------------ 
 
-int32_t CListBox::ListBox (const char* pszTitle, CStack<char*>& items, int32_t nDefaultItem, int32_t bAllowAbort, pListBoxCallback callback)
+int CListBox::ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem, int bAllowAbort, pListBoxCallback callback)
 {
-	int32_t	i;
-	int32_t	bKeyRepeat = gameStates.input.keys.bRepeat;
-	int32_t	x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
-	int32_t	xClose, yClose, bWheelUp, bWheelDown;
+	int	i;
+	int	done;
+	int	bKeyRepeat = gameStates.input.keys.bRepeat;
+	int	nOffsetSize;
+	int	mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
+	int	xClose, yClose, bWheelUp, bWheelDown;
 	char	szPattern [40];
-	int32_t	nPatternLen = 0;
-	int32_t	w, h, aw;
+	int	nPatternLen = 0;
+	int	w, h, aw;
 	char*	pszFn;
 
 m_tEnter = -1;
@@ -144,52 +134,56 @@ m_callback = NULL;
 
 gameStates.input.keys.bRepeat = 1;
 SetPopupScreenMode ();
-gameData.renderData.frame.Activate ("CListBox::ListBox (frame)");
+CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (SUBTITLE_FONT);
 
 m_nWidth = 0;
-for (i = 0; i < int32_t (items.ToS ()); i++) {
-//	int32_t w, h, aw;
+for (i = 0; i < int (items.ToS ()); i++) {
+//	int w, h, aw;
 	fontManager.Current ()->StringSize (items [i], w, h, aw);	
 	if (w > m_nWidth)
 		m_nWidth = w;
 	}
 m_nVisibleItems = LB_ITEMS_ON_SCREEN * CCanvas::Current ()->Height () / 480;
-m_nHeight = int32_t (float ((CCanvas::Current ()->Font ()->Height () + 2) * m_nVisibleItems) * GetScale ());
+m_nHeight = (CCanvas::Current ()->Font ()->Height () + 2) * m_nVisibleItems;
 
 fontManager.Current ()->StringSize (pszTitle, w, h, aw);	
 if (w > m_nWidth)
 	m_nWidth = w;
-m_nTitleHeight = int32_t ((h + 5) * GetScale ());
+m_nTitleHeight = h + 5;
 
-m_nOffset = int32_t (CCanvas::Current ()->Font ()->Width () * GetScale ());
+nOffsetSize = CCanvas::Current ()->Font ()->Width ();
+
 m_nWidth += (CCanvas::Current ()->Font ()->Width ());
+if (m_nWidth > CCanvas::Current ()->Width () - (CCanvas::Current ()->Font ()->Width () * 3))
+	m_nWidth = CCanvas::Current ()->Width () - (CCanvas::Current ()->Font ()->Width () * 3);
 
-int32_t nMargin = CCanvas::Current ()->Font ()->Width () * 3;
-if (ogl.IsSideBySideDevice ())
-	nMargin += 4 * labs (gameData.StereoOffset2D ());
-if (m_nWidth > CCanvas::Current ()->Width () - nMargin)
-	m_nWidth = CCanvas::Current ()->Width () - nMargin;
-m_nWidth = int32_t (m_nWidth * GetScale ());
+m_xOffset = (CCanvas::Current ()->Width () - m_nWidth) / 2;
+m_yOffset = (CCanvas::Current ()->Height () - (m_nHeight + m_nTitleHeight)) / 2 + m_nTitleHeight;
+if (m_yOffset < m_nTitleHeight)
+	m_yOffset = m_nTitleHeight;
 
-backgroundManager.Setup (m_background, m_nWidth + m_nOffset * 2, m_nHeight + m_nTitleHeight + m_nOffset * 2);
-m_bDone = 0;
+CCanvas::Push ();
+backgroundManager.Setup (NULL, m_xOffset - nOffsetSize, m_yOffset - m_nTitleHeight - nOffsetSize, 
+								 m_nWidth + nOffsetSize * 2, m_nHeight + m_nTitleHeight + nOffsetSize * 2);
+CCanvas::Pop ();
+done = 0;
 m_nChoice = nDefaultItem;
 if (m_nChoice < 0) 
 	m_nChoice = 0;
-if (m_nChoice >= int32_t (items.ToS ())) 
+if (m_nChoice >= int (items.ToS ())) 
 	m_nChoice = 0;
 
 m_nFirstItem = -1;
 
 nMouseState = nOldMouseState = 0;	//bDblClick = 0;
-xClose = m_nOffset;
-yClose = m_nTitleHeight - m_nOffset;
-CMenu::DrawCloseBox (/*xClose, yClose*/0, 0);
+xClose = m_xOffset - nOffsetSize;
+yClose = m_yOffset - m_nTitleHeight - nOffsetSize;
+CMenu::DrawCloseBox (xClose, yClose);
 SDL_ShowCursor (1);
 
 SDL_EnableKeyRepeat(60, 30);
-while (!m_bDone) {
+while (!done) {
 	nOldMouseState = nMouseState;
 	nMouseState = MouseButtonState (0);
 	bWheelUp = MouseButtonState (3);
@@ -209,21 +203,16 @@ while (!m_bDone) {
 	if (m_nKey < -1) {
 		m_nChoice = m_nKey;
 		m_nKey = -1;
-		m_bDone = 1;
+		done = 1;
 		}
 
 	switch (m_nKey) {
-		case 0:
-			break;
-
 		case KEY_CTRLED + KEY_F1:
 			SwitchDisplayMode (-1);
 			break;
-
 		case KEY_CTRLED + KEY_F2:
 			SwitchDisplayMode (1);
 			break;
-
 		case KEY_CTRLED + KEY_S:
 			if (gameStates.app.bNostalgia)
 				gameOpts->menus.bSmartFileSearch = 0;
@@ -235,47 +224,39 @@ while (!m_bDone) {
 		case KEY_PRINT_SCREEN: 	
 			SaveScreenShot (NULL, 0); 
 			break;
-
 		case KEY_HOME:
 		case KEY_PAD7:
 			m_nChoice = 0;
 			break;
-
 		case KEY_END:
 		case KEY_PAD1:
-			m_nChoice = int32_t (items.ToS ()) - 1;
+			m_nChoice = int (items.ToS ()) - 1;
 			break;
-
 		case KEY_UP:
 		case KEY_PAD8:
 			m_nChoice--;		
 			break;
-
 		case KEY_DOWN:
 		case KEY_PAD2:
 			m_nChoice++;		
 			break;
-
  		case KEY_PAGEDOWN:
 		case KEY_PAD3:
 			m_nChoice += m_nVisibleItems;
 			break;
-
 		case KEY_PAGEUP:
 		case KEY_PAD9:
 			m_nChoice -= m_nVisibleItems;
 			break;
-
 		case KEY_ESC:
 			if (bAllowAbort) {
 				m_nChoice = -1;
-				m_bDone = 1;
-				}
+				done = 1;
+			}
 			break;
-
 		case KEY_ENTER:
 		case KEY_PADENTER:
-			m_bDone = 1;
+			done = 1;
 			break;
 
 		case KEY_BACKSPACE:
@@ -285,17 +266,17 @@ while (!m_bDone) {
 				szPattern [--nPatternLen] = '\0';
 				
 		default:
-			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int32_t) sizeof (szPattern) - 1)) {
-				int32_t	nStart,
-							ascii = KeyToASCII (m_nKey);
+			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int) sizeof (szPattern) - 1)) {
+				int nStart,
+					 ascii = KeyToASCII (m_nKey);
 				if ((m_nKey == KEY_BACKSPACE) || (ascii < 255)) {
-					int32_t cc, bFound = 0;
+					int cc, bFound = 0;
 					if (!gameOpts->menus.bSmartFileSearch) {
 						nStart = m_nChoice;
 						cc = m_nChoice + 1;
 						if (cc < 0) 
 							cc = 0;
-						else if (cc >= int32_t (items.ToS ())) 
+						else if (cc >= int (items.ToS ())) 
 							cc = 0;
 						}
 					else {
@@ -308,14 +289,12 @@ while (!m_bDone) {
 						}
 					do {
 						pszFn = items [cc];
-						const char* versionIds [] = {"(D1)", "(D2)", "(XL)"};
-						for (int32_t i = 0; i < 3; i++)
-							if (strstr (pszFn, versionIds [i]) == pszFn) {
-								pszFn += 5;
-								break;
+						if (items [cc][0] == '[') {
+							if (((items [cc][1] == '1') || (items [cc][1] == '2')) && (items [cc][2] == ']'))
+								pszFn += 4;
+							else
+								pszFn++;
 							}
-						if (pszFn [0] == '[')
-							pszFn++;
 						strlwr (pszFn);
 						if (gameOpts->menus.bSmartFileSearch ? strstr (pszFn, szPattern) == pszFn : *pszFn == tolower (ascii)) {
 							m_nChoice = cc;
@@ -323,50 +302,49 @@ while (!m_bDone) {
 							break;
 							}
 						cc++;
-						cc %= int32_t (items.ToS ());
+						cc %= int (items.ToS ());
 					} while (cc != nStart);
 				if (gameOpts->menus.bSmartFileSearch && !bFound && (nPatternLen > 0))
 					szPattern [--nPatternLen] = '\0';
 				}
 			}
 		}
-		if (m_bDone) break;
+		if (done) break;
 
 		if (m_nChoice < 0)
-			m_nChoice = int32_t (items.ToS ()) - 1;
-		else if (m_nChoice >= int32_t (items.ToS ()))
+			m_nChoice = int (items.ToS ()) - 1;
+		else if (m_nChoice >= int (items.ToS ()))
 			m_nChoice = 0;
 		if (m_nChoice < m_nFirstItem)
 			m_nFirstItem = m_nChoice;
 		else if (m_nChoice >= (m_nFirstItem + m_nVisibleItems))
 			m_nFirstItem = m_nChoice - m_nVisibleItems + 1;
-		if (int32_t (items.ToS ()) <= m_nVisibleItems)
+		if (int (items.ToS ()) <= m_nVisibleItems)
 			 m_nFirstItem = 0;
-		if (m_nFirstItem > int32_t (items.ToS ()) - m_nVisibleItems)
-			m_nFirstItem = int32_t (items.ToS ()) - m_nVisibleItems;
+		if (m_nFirstItem > int (items.ToS ()) - m_nVisibleItems)
+			m_nFirstItem = int (items.ToS ()) - m_nVisibleItems;
 		if (m_nFirstItem < 0) 
 			m_nFirstItem = 0;
 
 		if (nMouseState) {
-			int32_t w, h, aw;
+			int w, h, aw;
 
-			GetMousePos ();
-			m_yMouse -= m_nOffset + m_nTitleHeight;
+			MouseGetPos (&mx, &my);
 			for (i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
-				if (i >= int32_t (items.ToS ()))
+				if (i >= int (items.ToS ()))
 					break;
 				fontManager.Current ()->StringSize (items [i], w, h, aw);
-				x1 = 0;
-				x2 = m_nWidth;
-				y1 = (i - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2);
+				x1 = m_xOffset;
+				x2 = m_xOffset + m_nWidth;
+				y1 = (i - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + m_yOffset;
 				y2 = y1 + h + 1;
-				if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
+				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 					//if (i == m_nChoice) {
 					//	break;
 					//}
 					//bDblClick = 0;
 					m_nChoice = i;
-					m_bDone = 1;
+					done = 1;
 					break;
 				}
 			}
@@ -374,33 +352,32 @@ while (!m_bDone) {
 
 		//check for close box clicked
 		if (!nMouseState && nOldMouseState) {
-			MouseGetPos (&m_xMouse, &m_yMouse);
+			MouseGetPos (&mx, &my);
 			x1 = xClose + MENU_CLOSE_X + 2;
 			x2 = x1 + MENU_CLOSE_SIZE - 2;
 			y1 = yClose + MENU_CLOSE_Y + 2;
 			y2 = y1 + MENU_CLOSE_SIZE - 2;
-			if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
+			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				m_nChoice = -1;
-				m_bDone = 1;
+				done = 1;
 			}
 		}
-	CMenu::Render (pszTitle, NULL);
+	Render (pszTitle);
 	}
 FadeOut ();
 gameStates.input.keys.bRepeat = bKeyRepeat;
-backgroundManager.Draw ();
-gameData.renderData.frame.Deactivate ();
+backgroundManager.Remove ();
 SDL_EnableKeyRepeat(0, 0);
 return m_nChoice;
 }
 
 //------------------------------------------------------------------------------ 
 
-int32_t FileList (char* pszTitle, char* filespec, char* filename)
+int FileList (char* pszTitle, char* filespec, char* filename)
 {
 	static char filenameList [MENU_MAX_FILES][FILENAME_LEN + 1];
 
-	int32_t				i, nFiles;
+	int				i, nFiles;
 	CStack<char*>	filenames;// [MENU_MAX_FILES];
 	FFS				ffs;
 	CListBox			lb;

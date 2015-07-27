@@ -24,9 +24,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // if used_forLevel is set, load pig, etc.
 // if no_change_screen is set, the current screen does not get
 // remapped, and the hardware palette does not get changed
-uint8_t *LoadPalette (const char *pszPaletteName, const char *pszLevelName, int nUsedForLevel, int bNoScreenChange, int bForce);
+ubyte *LoadPalette (const char *pszPaletteName, const char *pszLevelName, int nUsedForLevel, 
+						  int bNoScreenChange, int bForce);
 
 // remap color font & menu background into the current palette
-extern uint8_t *gamePalette;
+extern ubyte *gamePalette;
 
 #endif /* _GAMEPAL_H */

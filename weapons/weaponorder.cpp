@@ -26,9 +26,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
-int32_t POrderList (int32_t nWeapon)
+int POrderList (int nWeapon)
 {
-	int32_t i;
+	int i;
 
 for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++)
 	if (primaryOrder [i] == nWeapon)
@@ -39,9 +39,9 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-int32_t SOrderList (int32_t nWeapon)
+int SOrderList (int nWeapon)
 {
-	int32_t i;
+	int i;
 
 for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++)
 	if (secondaryOrder [i] == nWeapon)
@@ -53,10 +53,10 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-void ValidatePrios (uint8_t *order, uint8_t *defaultOrder, int32_t n)
+void ValidatePrios (ubyte *order, ubyte *defaultOrder, int n)
 {
-	uint8_t		f [MAX_PRIMSEC_WEAPONS + 1];
-	int32_t		i, s = (n + 1) * sizeof (uint8_t);
+	ubyte		f [MAX_PRIMSEC_WEAPONS + 1];
+	int		i, s = (n + 1) * sizeof (ubyte);
 
 //check for validity
 memset (f, 0, s);
@@ -79,7 +79,7 @@ char szSeparator [] = "\x88\x88\x88\x88\x88\x88\x88 Never autoselect \x88\x88\x8
 void ReorderPrimary (void)
 {
 	CMenu	m (MAX_PRIMARY_WEAPONS + 2);
-	int32_t	i;
+	int	i;
 
 ValidatePrios (primaryOrder, defaultPrimaryOrder, MAX_PRIMARY_WEAPONS);
 for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++) {
@@ -101,7 +101,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++)
 void ReorderSecondary (void)
 {
 	CMenu	m (MAX_SECONDARY_WEAPONS + 2);
-	int32_t	i;
+	int	i;
 
 ValidatePrios (secondaryOrder, defaultSecondaryOrder, MAX_SECONDARY_WEAPONS);
 for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++) {
@@ -120,17 +120,17 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++)
 
 //	-----------------------------------------------------------------------------
 
-int32_t CheckToUsePrimary (int32_t nWeaponIndex)
+int CheckToUsePrimary (int nWeaponIndex)
 {
-	uint16_t oldFlags = LOCALPLAYER.primaryWeaponFlags;
-	uint16_t flag = 1 << nWeaponIndex;
-	int32_t cutpoint;
+	ushort oldFlags = LOCALPLAYER.primaryWeaponFlags;
+	ushort flag = 1 << nWeaponIndex;
+	int cutpoint;
 
 cutpoint = POrderList (255);
 if (!(oldFlags & flag) && 
 	 (gameOpts->gameplay.nAutoSelectWeapon == 2) &&
 	 (POrderList (nWeaponIndex) < cutpoint) && 
-	 (POrderList (nWeaponIndex) < POrderList (gameData.weaponData.nPrimary))) {
+	 (POrderList (nWeaponIndex) < POrderList (gameData.weapons.nPrimary))) {
 	if (nWeaponIndex==SUPER_LASER_INDEX)
 		SelectWeapon (LASER_INDEX, 0, 0, 1);
 	else

@@ -22,7 +22,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_lib.h"
 #include "oof.h"
 
-void ScaleTransformation (CTransformation& transformation, int32_t bOglScale);
+void ScaleTransformation (CTransformation& transformation, int bOglScale);
 
 //------------------------------------------------------------------------------
 //set view from x,y,z & p,b,h, xZoom.  Must call one of g3_setView_*()
@@ -41,15 +41,14 @@ ScaleTransformation (transformation, 1);
 
 #define ZSCREEN 10.0
 
-void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int32_t bOglScale, fix xStereoSeparation, bool bSetupRenderer)
+void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation, bool bSetupRenderer)
 {
-transformation.m_info.zoom = (ogl.IsOculusRift () && !(gameStates.render.nWindow [0] || gameStates.render.bBriefing)) ? F2X (X2F (xZoom) / X2F (DEFAULT_ZOOM) * float (RIFT_DEFAULT_ZOOM)) : xZoom;
+transformation.m_info.zoom = xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
-transformation.m_info.viewer = vPos;
 transformation.m_info.pos = vPos;
-if (ogl.IsOculusRift ())
-	transformation.m_info.view [0] = mOrient;
-else if (ogl.StereoDevice () && (gameOpts->render.stereo.nMethod == STEREO_TOE_IN)) {
+transformation.m_info.posf [0].Assign (transformation.m_info.pos);
+transformation.m_info.posf [1].Assign (transformation.m_info.pos);
+if (xStereoSeparation && (gameOpts->render.stereo.nMethod == STEREO_TOE_IN)) {
 	fix zScreen = F2X (ogl.ZScreen () * 10.0);
 	CFixVector o = CFixVector::Create (fix (xStereoSeparation / 2), 0, 0);
 	CFixVector h = CFixVector::Create (fix (xStereoSeparation / 2), 0, zScreen);
@@ -63,8 +62,6 @@ else if (ogl.StereoDevice () && (gameOpts->render.stereo.nMethod == STEREO_TOE_I
 else
 	transformation.m_info.view [0] = mOrient;
 transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
-transformation.m_info.posf [0].Assign (transformation.m_info.pos);
-transformation.m_info.posf [1].Assign (transformation.m_info.pos);
 ScaleTransformation (transformation, bOglScale);
 CFixMatrix::Transpose (transformation.m_info.viewf [2], transformation.m_info.view [0]);
 if (bSetupRenderer)
@@ -73,15 +70,15 @@ if (bSetupRenderer)
 
 //------------------------------------------------------------------------------
 //performs aspect scaling on global view matrix
-void ScaleTransformation (CTransformation& transformation, int32_t bOglScale)
+void ScaleTransformation (CTransformation& transformation, int bOglScale)
 {
 	transformation.m_info.view [1] = transformation.m_info.view [0];		//so we can use unscaled if we want
 	transformation.m_info.viewf [1] = transformation.m_info.viewf [0];		//so we can use unscaled if we want
 
 transformation.m_info.scale = transformation.m_info.aspect;
-if (transformation.m_info.zoom < I2X (1)) 		//xZoom in by scaling z
+if (transformation.m_info.zoom <= I2X (1)) 		//xZoom in by scaling z
 	transformation.m_info.scale.v.coord.z = FixMul (transformation.m_info.scale.v.coord.z, transformation.m_info.zoom);
-else if (transformation.m_info.zoom > I2X (1)) {			//zoom out by scaling x&y
+else {			//xZoom out by scaling x&y
 	fix s = FixDiv (I2X (1), transformation.m_info.zoom);
 
 	transformation.m_info.scale.v.coord.x = FixMul (transformation.m_info.scale.v.coord.x, s);

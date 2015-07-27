@@ -28,7 +28,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "oof.h"
 #include "dynlight.h"
 
-#define MAX_INSTANCE_DEPTH	20
+#define MAX_INSTANCE_DEPTH	10
 
 //------------------------------------------------------------------------------
 
@@ -66,18 +66,10 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool CTransformation::Pop (const char *pszFile, const int32_t nLine)
+bool CTransformation::Pop (void)
 {
-if (m_save.ToS () <= 0) {
-#if DBG
-	PrintLog (0, "transformation underflow (%s.%d)!\n", pszFile, nLine);
-#endif
+if (m_save.ToS () <= 0)
 	return false;
-	}
-#if 0 //DBG
-if (pszFile && *pszFile)
-	PrintLog (0, "%02d end transformation (%s.%d)\n", m_save.ToS (), pszFile, nLine);
-#endif
 m_info = m_save.Pop ();
 glMatrixMode (GL_MODELVIEW);
 glPopMatrix ();
@@ -87,24 +79,14 @@ return true;
 //------------------------------------------------------------------------------
 //instance at specified point with specified orientation
 //if matrix==NULL, don't modify matrix.  This will be like doing an offset
-void CTransformation::Begin (const CFixVector& vPos, CFixMatrix& mOrient, const char *pszFile, const int32_t nLine)
+void CTransformation::Begin (const CFixVector& vPos, CFixMatrix& mOrient)
 {
 	CFixVector	vOffs;
 	CFixMatrix	mTrans, mRot;
 
 //Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
-if (!Push ()) {
-#if DBG
-	PrintLog (0, "transformation overflow (%s.%d)!\n", pszFile, nLine);
-#endif
+if (!Push ())
 	return;
-	}
-
-#if 0 //DBG
-if (pszFile && *pszFile)
-	PrintLog (0, "%02d begin transformation (%s.%d)\n", m_save.ToS (), pszFile, nLine);
-#endif
-
 if (ogl.m_states.bUseTransform) {
 	CFixVector	h;
 
@@ -125,9 +107,9 @@ if (ogl.m_states.bUseTransform) {
 		h = m_info.pos - vPos;
 		Move (h);
 		Rotate (mOrient);
-		if (!gameData.modelData.vScale.IsZero ()) {
+		if (!gameData.models.vScale.IsZero ()) {
 			CFloatVector fScale;
-			fScale.Assign (gameData.modelData.vScale);
+			fScale.Assign (gameData.models.vScale);
 			glScalef (fScale.v.coord.x, fScale.v.coord.y, fScale.v.coord.z);
 			}
 		}
@@ -139,7 +121,7 @@ vOffs = m_info.pos - vPos;
 m_info.pos = mOrient * vOffs;
 //step 3: rotate CObject matrix through view_matrix (vm = ob * vm)
 mTrans = mOrient.Transpose ();
-for (int32_t i = 0; i < 2; i++) {
+for (int i = 0; i < 2; i++) {
 	mRot = mTrans * m_info.view [i];
 	m_info.view [i] = mRot;
 	m_info.viewf [i].Assign (m_info.view [i]);
@@ -190,9 +172,9 @@ return dest;
 
 //------------------------------------------------------------------------------
 //compute aspect ratio for this canvas
-void CTransformation::ComputeAspect (int32_t nWidth, int32_t nHeight)
+void CTransformation::ComputeAspect (int nWidth, int nHeight)
 {
-fix s = FixMulDiv (gameData.renderData.screen.Aspect (), (nWidth > 0) ? nWidth : CCanvas::Current ()->Height (), (nHeight > 0) ? nHeight : CCanvas::Current ()->Width ());
+fix s = FixMulDiv (screen.Aspect (), (nWidth > 0) ? nWidth : CCanvas::Current ()->Height (), (nHeight > 0) ? nHeight : CCanvas::Current ()->Width ());
 if (s <= I2X (1)) {	   //scale x
 	m_info.aspect.v.coord.x = s;
 	m_info.aspect.v.coord.y = I2X (1);
@@ -208,37 +190,17 @@ m_info.aspect.v.coord.z = I2X (1);		//always 1
 
 void CTransformation::SetupProjection (float aspectRatio)
 {
-
-m_info.oglProjection [0].Get (GL_PROJECTION_MATRIX);
-if (ogl.IsOculusRift () && gameData.renderData.rift.Available ()) {
-	//double riftXlatProj [16] = { 1.0, 0.0, 0.0, (ogl.StereoSeparation () < 0) ? -gameData.renderData.rift.m_projectionCenterOffset : gameData.renderData.rift.m_projectionCenterOffset,
-	//									  0.0, 1.0, 0.0, 0.0, 
-	//									  0.0, 0.0, 1.0, 0.0, 
-	//									  0.0, 0.0, 0.0, 1.0 };
-
-	double riftXlatProj [16] = { 1.0, 0.0, 0.0, 0.0,
-										  0.0, 1.0, 0.0, 0.0, 
-										  0.0, 0.0, 1.0, 0.0, 
-										  (ogl.StereoSeparation () < 0) ? gameData.renderData.rift.m_projectionCenterOffset : -gameData.renderData.rift.m_projectionCenterOffset, 0.0, 0.0, 1.0 };
-
-	glMatrixMode (GL_PROJECTION);
-	glLoadMatrixd ((GLdouble*) riftXlatProj);
-	m_info.oglProjection [0].Mul ();
-	//glMultMatrixd ((GLdouble*) riftXlatProj);
-	}
-m_info.oglProjection [0].Get (GL_PROJECTION_MATRIX);
-m_info.oglProjection [1].Get (GL_PROJECTION_MATRIX, true);
+m_info.oglProjection.Get (GL_PROJECTION_MATRIX);
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
 glLoadIdentity ();
 m_info.oglModelview.Get (GL_MODELVIEW_MATRIX);
 glPopMatrix ();
-CCanvas::Current ()->Reactivate ();
 glGetIntegerv (GL_VIEWPORT, m_info.oglViewport);
 #if 1
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.m.vec);
 #else
-memcpy (m_info.projection.m.vec, &m_info.oglProjection [0][0], sizeof (m_info.projection.m.vec));
+memcpy (m_info.projection.m.vec, &m_info.oglProjection [0], sizeof (m_info.projection.m.vec));
 #endif
 m_info.projection.Flip ();
 m_info.aspectRatio = aspectRatio;
@@ -246,19 +208,19 @@ m_info.aspectRatio = aspectRatio;
 
 //------------------------------------------------------------------------------
 
-uint8_t CTransformation::Codes (CFixVector& v)
+ubyte CTransformation::Codes (CFixVector& v)
 {
-	uint8_t codes = (v.v.coord.z < 0) ? CC_BEHIND : 0;
+	ubyte codes = (v.v.coord.z < 0) ? CC_BEHIND : 0;
 #if 1
 	tScreenPos s;
 	ProjectPoint (v, s);
 	if (s.x < 0)
 		codes |= CC_OFF_LEFT;
-	else if (s.x > gameData.renderData.screen.Width ())
+	else if (s.x > screen.Width ())
 		codes |= CC_OFF_RIGHT;
 	if (s.y < 0)
 		codes |= CC_OFF_BOT;
-	else if (s.y > gameData.renderData.screen.Height ())
+	else if (s.y > screen.Height ())
 		codes |= CC_OFF_TOP;
 #else
 	fix z = v.v.coord.z;
@@ -283,24 +245,24 @@ uint8_t CTransformation::Codes (CFixVector& v)
 
 #define COMPUTE_TYPE 0
 
-static int32_t planeVerts [6][4] = {
+static int planeVerts [6][4] = {
 	{0,1,2,3},{0,1,5,4},{1,2,6,5},{2,3,7,6},{0,3,7,4},{4,5,6,7}
 	};
 
-//static int32_t oppSides [6] = {5, 3, 4, 1, 2, 0};
+//static int oppSides [6] = {5, 3, 4, 1, 2, 0};
 
-static int32_t normRefs [6][2] = {{1,5},{4,7},{5,4},{7,4},{4,5},{5,1}};
+static int normRefs [6][2] = {{1,5},{4,7},{5,4},{7,4},{4,5},{5,1}};
 
 void CFrustum::Compute (void)
 {
-	int32_t i;
+	int i;
 
 #if COMPUTE_TYPE == 1
 
 // Note: WNEARHALF = ZNEAR * tan(LIGHTFOV * (PI / 180.0) / 2.0);
 //       WFARHALF = ZFAR * tan(LIGHTFOV * (PI / 180.0) / 2.0);
 
-float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * PI / 360.0));
+float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * Pi / 360.0));
 float wNearHalf = float (ZNEAR) * h;
 float wFarHalf = float (ZFAR) * h;
 
@@ -357,7 +319,7 @@ m_corners [7].Assign (fbr);
 
 // compute the frustum. ZNEAR is 0.0 here!
 
-float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * PI / 360.0));
+float h = float (tan (gameStates.render.glFOV * X2D (transformation.m_info.zoom) * Pi / 360.0));
 float w = float (h * CCanvas::Current ()->AspectRatio ());
 float n = float (ZNEAR);
 float f = float (ZFAR);
@@ -402,11 +364,11 @@ for (i = 0; i < 6; i++)
 m_centers [0].SetZero ();
 m_normals [0].Set (0, 0, I2X (1));
 for (i = 1; i < 6; i++) {
-	m_normals [i].Assign (CFloatVector::Normal (corners [planeVerts [i][1]], corners [planeVerts [i][2]], corners [planeVerts [i][3]]));
+	m_normals [i] = CFixVector::Normal (m_corners [planeVerts [i][1]], m_corners [planeVerts [i][2]], m_corners [planeVerts [i][3]]);
 	m_centers [i].Assign (centers [i]);
 #if COMPUTE_TYPE == 1
 #else
-	for (int32_t j = 0; j < 4; j++)
+	for (int j = 0; j < 4; j++)
 		m_centers [i] += m_corners [planeVerts [i][j]];
 	m_centers [i] /= I2X (4);
 #endif
@@ -420,31 +382,31 @@ for (i = 1; i < 6; i++) {
 }
 
 //------------------------------------------------------------------------------
-// Check whether the frustum intersects with a face defined by side *pSide.
+// Check whether the frustum intersects with a face defined by side *sideP.
 
-bool CFrustum::Contains (CSide* pSide)
+bool CFrustum::Contains (CSide* sideP)
 {
-	static int32_t lineVerts [12][2] = {
+	static int lineVerts [12][2] = {
 		{0,1}, {1,2}, {2,3}, {3,0}, 
 		{4,5}, {5,6}, {6,7}, {7,4},
 		{0,4}, {1,5}, {2,6}, {3,7}
 	};
 
-	int32_t i, j, nInside = 0, nOutside [4] = {0, 0, 0, 0};
+	int i, j, nInside = 0, nOutside [4] = {0, 0, 0, 0};
 	CRenderPoint* points [4];
 	CFixVector intersection;
 
 for (j = 0; j < 4; j++) {
-	points [j] = &RENDERPOINTS [pSide->m_corners [j]];
+	points [j] = &RENDERPOINTS [sideP->m_corners [j]];
 	if (!(points [j]->Projected ()))
-		points [j]->Transform (pSide->m_corners [j]);
+		points [j]->Transform (sideP->m_corners [j]);
 	}
 
 // check whether all vertices of the face are at the back side of at least one frustum plane,
 // or if at least one is at at least on one frustum plane's front sides
 for (i = 0; i < 6; i++) {
-	int32_t nPtInside = 4;
-	int32_t bPtInside = 1;
+	int nPtInside = 4;
+	int bPtInside = 1;
 	CFixVector& c = m_centers [i];
 	CFixVector& n = m_normals [i];
 	for (j = 0; j < 4; j++) {
@@ -466,10 +428,10 @@ for (j = 0; j < 4; j++)
 	if (!nOutside [j])
 		return true; // some vertex inside frustum
 
-if (pSide->m_nFaces == 2) {
-	points [1] = &RENDERPOINTS [pSide->m_vertices [3]];
+if (sideP->m_nFaces == 2) {
+	points [1] = &RENDERPOINTS [sideP->m_vertices [3]];
 	if (!points [1]->Projected ())
-		points [1]->Transform (pSide->m_vertices [3]);
+		points [1]->Transform (sideP->m_vertices [3]);
 	}
 
 // check whether the frustum intersects with the face
@@ -477,14 +439,14 @@ if (pSide->m_nFaces == 2) {
 // if an edge intersects, check whether the intersection is inside the face
 // since the near plane is at 0.0, only 8 edges of 5 planes need to be checked
 gameStates.render.bRendering = 1; // make sure CSide::PointToFaceRelation uses the transformed vertices
-for (j = 0; j < pSide->m_nFaces; j++) 
-	transformation.Rotate (pSide->m_rotNorms [j], pSide->m_normals [j], 0);
+for (j = 0; j < sideP->m_nFaces; j++) 
+	transformation.Rotate (sideP->m_rotNorms [j], sideP->m_normals [j], 0);
 for (i = 11; i >= 4; i--) {
-	for (j = 0; j < pSide->m_nFaces; j++) {
-		if (!FindPlaneLineIntersection (intersection, &points [j]->ViewPos (), &pSide->m_rotNorms [j],
-												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0))
+	for (j = 0; j < sideP->m_nFaces; j++) {
+		if (!FindPlaneLineIntersection (intersection, &points [j]->ViewPos (), &sideP->m_rotNorms [j],
+												  &m_corners [lineVerts [i][0]], &m_corners [lineVerts [i][1]], 0, false))
 			continue;
-		if (!pSide->PointToFaceRelation (intersection, j, pSide->m_rotNorms [j])) {
+		if (!sideP->PointToFaceRelation (intersection, j, sideP->m_rotNorms [j])) {
 			gameStates.render.bRendering = 0;
 			return true;
 			}

@@ -42,15 +42,15 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 extern CFaceColor tMapColor;
 
 #if DBG_SHADOWS
-extern int32_t bShadowTest;
-extern int32_t bFrontCap;
-extern int32_t bRearCap;
-extern int32_t bShadowVolume;
-extern int32_t bFrontFaces;
-extern int32_t bBackFaces;
-extern int32_t bSWCulling;
+extern int bShadowTest;
+extern int bFrontCap;
+extern int bRearCap;
+extern int bShadowVolume;
+extern int bFrontFaces;
+extern int bBackFaces;
+extern int bSWCulling;
 #endif
-extern int32_t bZPass;
+extern int bZPass;
 
 #define G3_DRAW_ARRAYS	1
 #define G3_USE_VBOS		0
@@ -62,27 +62,27 @@ extern int32_t bZPass;
 //2: Compute hit point of vector from current light through each lit submodel vertex (slow)
 //3: Compute hit point of vector from current light through each lit model face (fastest, flawed)
 
-int32_t bPrintLine = 0;
+int bPrintLine = 0;
 
-int16_t nHighestTexture;
-int32_t g3d_interp_outline;
+short nHighestTexture;
+int g3d_interp_outline;
 
 CRenderPoint	*modelPointList = NULL;
 
 #define MAX_INTERP_COLORS 100
 
 //this is a table of mappings from RGB15 to palette colors
-typedef struct {int16_t pal_entry, rgb15;} tInterpColor;
+typedef struct {short pal_entry, rgb15;} tInterpColor;
 
 tInterpColor interpColorTable [MAX_INTERP_COLORS];
 
-//static int32_t bIntrinsicFacing = 0;
-//static int32_t bFlatPolys = 1;
-//static int32_t bTexPolys = 1;
+//static int bIntrinsicFacing = 0;
+//static int bFlatPolys = 1;
+//static int bTexPolys = 1;
 
 CRenderPoint *pointList [MAX_POINTS_PER_POLY];
 
-int16_t nGlow = -1;
+short nGlow = -1;
 
 //------------------------------------------------------------------------------
 //gives the interpreter an array of points to use
@@ -93,22 +93,21 @@ modelPointList = pointlist;
 
 //------------------------------------------------------------------------------
 
-void RotatePointList (CRenderPoint *dest, CFixVector *src, CRenderNormal *norms, int32_t n, int32_t o)
+void RotatePointList (CRenderPoint *dest, CFixVector *src, CRenderNormal *norms, int n, int o)
 {
-ENTER (0, 0);
 PROF_START
-	CFloatVector	*pfv = gameData.modelData.fPolyModelVerts + o;
+	CFloatVector	*pfv = gameData.models.fPolyModelVerts + o;
 	CFloatVector	fScale;
 	bool				bScale;
 
-if ((bScale = !gameData.modelData.vScale.IsZero ()))
-	fScale.Assign (gameData.modelData.vScale);
+if ((bScale = !gameData.models.vScale.IsZero ()))
+	fScale.Assign (gameData.models.vScale);
 
 dest += o;
 if (norms)
 	norms += o;
 while (n--) {
-	dest->SetKey ((int16_t) o);
+	dest->SetKey ((short) o);
 #if 1
 	if (norms) {
 		if (norms->nFaces > 1) {
@@ -129,9 +128,9 @@ while (n--) {
 			pfv->Scale (fScale);
 		}
 	else {
-		if (!gameData.modelData.vScale.IsZero ()) {
+		if (!gameData.models.vScale.IsZero ()) {
 			CFixVector v = *src;
-			v *= gameData.modelData.vScale;
+			v *= gameData.models.vScale;
 #if 1
 			transformation.Transform (dest->ViewPos (), v, 0);
 #else
@@ -153,111 +152,108 @@ while (n--) {
 	pfv++;
 	}
 PROF_END(ptTransform)
-RETURN
 }
 
 //------------------------------------------------------------------------------
 
-void G3SwapPolyModelData (uint8_t *pData)
+void G3SwapPolyModelData (ubyte *dataP)
 {
-ENTER (0, 0);
-	int32_t	i;
-	int16_t	n;
-	tUVL		* uvl_val;
+	int	i;
+	short n;
+	tUVL*	uvl_val;
 
 for (;;) {
-	UShortSwap (WORDPTR (pData));
-	switch (WORDVAL (pData)) {
+	UShortSwap (WORDPTR (dataP));
+	switch (WORDVAL (dataP)) {
 		case OP_EOF:
-			RETURN
+			return;
 
 		case OP_DEFPOINTS:
-			UShortSwap (WORDPTR (pData + 2));
-			n = WORDVAL (pData + 2);
+			UShortSwap (WORDPTR (dataP + 2));
+			n = WORDVAL (dataP + 2);
 			for (i = 0; i < n; i++)
-				VmsVectorSwap (*VECPTR ((pData + 4) + (i * sizeof (CFixVector))));
-			pData += n * sizeof (CFixVector) + 4;
+				VmsVectorSwap (*VECPTR ((dataP + 4) + (i * sizeof (CFixVector))));
+			dataP += n * sizeof (CFixVector) + 4;
 			break;
 
 		case OP_DEFP_START:
-			UShortSwap (WORDPTR (pData + 2));
-			UShortSwap (WORDPTR (pData + 4));
-			n = WORDVAL (pData + 2);
+			UShortSwap (WORDPTR (dataP + 2));
+			UShortSwap (WORDPTR (dataP + 4));
+			n = WORDVAL (dataP + 2);
 			for (i = 0; i < n; i++)
-				VmsVectorSwap (*VECPTR ((pData + 8) + (i * sizeof (CFixVector))));
-			pData += n * sizeof (CFixVector) + 8;
+				VmsVectorSwap (*VECPTR ((dataP + 8) + (i * sizeof (CFixVector))));
+			dataP += n * sizeof (CFixVector) + 8;
 			break;
 
 		case OP_FLATPOLY:
-			UShortSwap (WORDPTR (pData + 2));
-			n = WORDVAL (pData + 2);
-			VmsVectorSwap (*VECPTR (pData + 4));
-			VmsVectorSwap (*VECPTR (pData + 16));
-			UShortSwap (WORDPTR (pData + 28));
+			UShortSwap (WORDPTR (dataP + 2));
+			n = WORDVAL (dataP + 2);
+			VmsVectorSwap (*VECPTR (dataP + 4));
+			VmsVectorSwap (*VECPTR (dataP + 16));
+			UShortSwap (WORDPTR (dataP + 28));
 			for (i=0; i < n; i++)
-				UShortSwap (WORDPTR (pData + 30 + (i * 2)));
-			pData += 30 + ((n & ~1) + 1) * 2;
+				UShortSwap (WORDPTR (dataP + 30 + (i * 2)));
+			dataP += 30 + ((n & ~1) + 1) * 2;
 			break;
 
 		case OP_TMAPPOLY:
-			UShortSwap (WORDPTR (pData + 2));
-			n = WORDVAL (pData + 2);
-			VmsVectorSwap (*VECPTR (pData + 4));
-			VmsVectorSwap (*VECPTR (pData + 16));
+			UShortSwap (WORDPTR (dataP + 2));
+			n = WORDVAL (dataP + 2);
+			VmsVectorSwap (*VECPTR (dataP + 4));
+			VmsVectorSwap (*VECPTR (dataP + 16));
 			for (i = 0; i < n; i++) {
-				uvl_val = reinterpret_cast<tUVL*> (((pData + 30 + (n | 1) * 2))) + i;
+				uvl_val = reinterpret_cast<tUVL*> (((dataP + 30 + (n | 1) * 2))) + i;
 				FixSwap (&uvl_val->u);
 				FixSwap (&uvl_val->v);
 			}
-			UShortSwap (WORDPTR (pData + 28));
+			UShortSwap (WORDPTR (dataP + 28));
 			for (i = 0; i < n; i++)
-				UShortSwap (WORDPTR (pData + 30 + (i * 2)));
-			pData += 30 + (n | 1) * 2 + n * 12;
+				UShortSwap (WORDPTR (dataP + 30 + (i * 2)));
+			dataP += 30 + (n | 1) * 2 + n * 12;
 			break;
 
 		case OP_SORTNORM:
-			VmsVectorSwap (*VECPTR (pData + 4));
-			VmsVectorSwap (*VECPTR (pData + 16));
-			UShortSwap (WORDPTR (pData + 28));
-			UShortSwap (WORDPTR (pData + 30));
-			G3SwapPolyModelData (pData + WORDVAL (pData + 28));
-			G3SwapPolyModelData (pData + WORDVAL (pData + 30));
-			pData += 32;
+			VmsVectorSwap (*VECPTR (dataP + 4));
+			VmsVectorSwap (*VECPTR (dataP + 16));
+			UShortSwap (WORDPTR (dataP + 28));
+			UShortSwap (WORDPTR (dataP + 30));
+			G3SwapPolyModelData (dataP + WORDVAL (dataP + 28));
+			G3SwapPolyModelData (dataP + WORDVAL (dataP + 30));
+			dataP += 32;
 			break;
 
 		case OP_RODBM:
-			VmsVectorSwap (*VECPTR (pData + 20));
-			VmsVectorSwap (*VECPTR (pData + 4));
-			UShortSwap (WORDPTR (pData + 2));
-			FixSwap (FIXPTR (pData + 16));
-			FixSwap (FIXPTR (pData + 32));
-			pData += 36;
+			VmsVectorSwap (*VECPTR (dataP + 20));
+			VmsVectorSwap (*VECPTR (dataP + 4));
+			UShortSwap (WORDPTR (dataP + 2));
+			FixSwap (FIXPTR (dataP + 16));
+			FixSwap (FIXPTR (dataP + 32));
+			dataP += 36;
 			break;
 
 		case OP_SUBCALL:
-			UShortSwap (WORDPTR (pData + 2));
-			VmsVectorSwap (*VECPTR (pData + 4));
-			UShortSwap (WORDPTR (pData + 16));
-			G3SwapPolyModelData (pData + WORDVAL (pData + 16));
-			pData += 20;
+			UShortSwap (WORDPTR (dataP + 2));
+			VmsVectorSwap (*VECPTR (dataP + 4));
+			UShortSwap (WORDPTR (dataP + 16));
+			G3SwapPolyModelData (dataP + WORDVAL (dataP + 16));
+			dataP += 20;
 			break;
 
 		case OP_GLOW:
-			UShortSwap (WORDPTR (pData + 2));
-			pData += 4;
+			UShortSwap (WORDPTR (dataP + 2));
+			dataP += 4;
 			break;
 
 		default:
 			Error ("invalid polygon model\n"); //Int3 ();
 		}
 	}
-RETURN
 }
 
 //------------------------------------------------------------------------------
 
 #ifdef WORDS_NEED_ALIGNMENT
-void G3AddPolyModelChunk (uint8_t *old_base, uint8_t *new_base, int32_t offset, chunk *chunk_list, int32_t *no_chunks)
+void G3AddPolyModelChunk (ubyte *old_base, ubyte *new_base, int offset, chunk *chunk_list, int *no_chunks)
 {
 Assert (*no_chunks + 1 < MAX_CHUNKS); //increase MAX_CHUNKS if you get this
 chunk_list [*no_chunks].old_base = old_base;
@@ -270,93 +266,89 @@ chunk_list [*no_chunks].correction = 0;
 
 //------------------------------------------------------------------------------
 
-void G3PolyModelVerify (uint8_t *pData)
+void G3PolyModelVerify (ubyte *dataP)
 {
-ENTER (0, 0);
-	int16_t n;
+	short n;
 
 for (;;) {
-	switch (WORDVAL (pData)) {
+	switch (WORDVAL (dataP)) {
 		case OP_EOF:
 			return;
 		case OP_DEFPOINTS:
-			n = (WORDVAL (pData + 2));
-			pData += n * sizeof (CFixVector) + 4;
+			n = (WORDVAL (dataP + 2));
+			dataP += n * sizeof (CFixVector) + 4;
 			break;
 		case OP_DEFP_START:
-			n = (WORDVAL (pData + 2));
-			pData += n * sizeof (CFixVector) + 8;
+			n = (WORDVAL (dataP + 2));
+			dataP += n * sizeof (CFixVector) + 8;
 			break;
 		case OP_FLATPOLY:
-			n = (WORDVAL (pData + 2));
-			pData += 30 + (n | 1) * 2;
+			n = (WORDVAL (dataP + 2));
+			dataP += 30 + (n | 1) * 2;
 			break;
 		case OP_TMAPPOLY:
-			n = (WORDVAL (pData + 2));
-			pData += 30 + (n | 1) * 2 + n * 12;
+			n = (WORDVAL (dataP + 2));
+			dataP += 30 + (n | 1) * 2 + n * 12;
 			break;
 		case OP_SORTNORM:
-			G3PolyModelVerify (pData + WORDVAL (pData + 28));
-			G3PolyModelVerify (pData + WORDVAL (pData + 30));
-			pData += 32;
+			G3PolyModelVerify (dataP + WORDVAL (dataP + 28));
+			G3PolyModelVerify (dataP + WORDVAL (dataP + 30));
+			dataP += 32;
 			break;
 		case OP_RODBM:
-			pData += 36;
+			dataP += 36;
 			break;
 		case OP_SUBCALL:
-			G3PolyModelVerify (pData + WORDVAL (pData + 16));
-			pData += 20;
+			G3PolyModelVerify (dataP + WORDVAL (dataP + 16));
+			dataP += 20;
 			break;
 		case OP_GLOW:
-			pData += 4;
+			dataP += 4;
 			break;
 		default:
 			Error ("invalid polygon model\n");
 		}
 	}
-RETURN
 }
 
 //------------------------------------------------------------------------------
 
-int32_t G3CheckAndSwap (void *pData)
+int G3CheckAndSwap (void *dataP)
 {
-ENTER (0, 0);
-	int16_t	h = WORDVAL (pData);
+	short	h = WORDVAL (dataP);
 
 if ((h >= 0) && (h <= OP_GLOW))
-	RETVAL (1)
+	return 1;
 ShortSwap (&h);
 if ((h < 0) || (h > OP_GLOW))
-	RETVAL (0)
-G3SwapPolyModelData (reinterpret_cast<uint8_t*> (pData));
-RETVAL (1)
+	return 0;
+G3SwapPolyModelData (reinterpret_cast<ubyte*> (dataP));
+return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void GetThrusterPos (int32_t nModel, CFixVector *vNormal, CFixVector *vOffset, CBitmap *pBm, int32_t nPoints)
+void GetThrusterPos (int nModel, CFixVector *vNormal, CFixVector *vOffset, CBitmap *bmP, int nPoints)
 {
-ENTER (0, 0);
-	int32_t				h, i, nSize;
+	int					h, i, nSize;
 	CFixVector			v, vForward = CFixVector::Create(0,0,I2X (1));
-	CModelThrusters	*pThruster = gameData.modelData.thrusters + nModel;
+	CModelThrusters	*mtP = gameData.models.thrusters + nModel;
 
-if (pThruster->nCount >= 2)
-	RETURN
-if (pBm) {
-	if (!gameData.pigData.tex.bitmaps [0].IsElement (pBm))
-		RETURN
-	i = (int32_t) (pBm - gameData.pigData.tex.bitmaps [0]);
+if (mtP->nCount >= 2)
+	return;
+if (bmP) {
+	if (!gameData.pig.tex.bitmaps [0].IsElement (bmP))
+		return;
+	i = (int) (bmP - gameData.pig.tex.bitmaps [0]);
 	if ((i != 24) && ((i < 1741) || (i > 1745)))
-		RETURN
+		return;
 	}
 #if 1
 if (CFixVector::Dot (*vNormal, vForward) > -I2X (1) / 3)
 #else
 if (vNormal->p.x || vNormal->p.y || (vNormal->p.z != -I2X (1)))
 #endif
-	RETURN
+	return;
 for (i = 1, v = pointList [0]->WorldPos (); i < nPoints; i++)
 	v += pointList [i]->WorldPos ();
 v.v.coord.x /= nPoints;
@@ -365,66 +357,64 @@ v.v.coord.z /= nPoints;
 v.v.coord.z -= I2X (1) / 8;
 if (vOffset)
 	v += *vOffset;
-if (pThruster->nCount && (v.v.coord.x == pThruster->vPos [0].v.coord.x) && (v.v.coord.y == pThruster->vPos [0].v.coord.y) && (v.v.coord.z == pThruster->vPos [0].v.coord.z))
-	RETURN
-pThruster->vPos [pThruster->nCount] = v;
+if (mtP->nCount && (v.v.coord.x == mtP->vPos [0].v.coord.x) && (v.v.coord.y == mtP->vPos [0].v.coord.y) && (v.v.coord.z == mtP->vPos [0].v.coord.z))
+	return;
+mtP->vPos [mtP->nCount] = v;
 if (vOffset)
 	v -= *vOffset;
-pThruster->vDir [pThruster->nCount] = *vNormal;
-pThruster->vDir [pThruster->nCount] = -pThruster->vDir [pThruster->nCount];
-if (!pThruster->nCount++) {
+mtP->vDir [mtP->nCount] = *vNormal;
+mtP->vDir [mtP->nCount] = -mtP->vDir [mtP->nCount];
+if (!mtP->nCount++) {
 	for (i = 0, nSize = 0x7fffffff; i < nPoints; i++)
 		if (nSize > (h = CFixVector::Dist(v, pointList [i]->WorldPos ())))
 			nSize = h;
-	pThruster->fSize [i] = X2F (nSize);// * 1.25f;
+	mtP->fSize [i] = X2F (nSize);// * 1.25f;
 	}
-RETURN
 }
 
 //------------------------------------------------------------------------------
 
 #define CHECK_NORMAL_FACING	0
 
-int32_t G3DrawPolyModel (
-	CObject*				pObj,
+int G3DrawPolyModel (
+	CObject*				objP,
 	void*					modelDataP,
 	CArray<CBitmap*>&	modelBitmaps,
 	CAngleVector*		pAnimAngles,
 	CFixVector*			vOffset,
 	fix					xModelLight,
 	fix*					xGlowValues,
-	CFloatVector*		pColor,
+	CFloatVector*		colorP,
 	POF::CModel*		po,
-	int32_t				nModel)
+	int					nModel)
 {
-ENTER (0, 0);
-	uint8_t *p = reinterpret_cast<uint8_t*> (modelDataP);
-	int16_t	nTag;
-	int16_t bGetThrusterPos, bLightning;
+	ubyte *p = reinterpret_cast<ubyte*> (modelDataP);
+	short	nTag;
+	short bGetThrusterPos, bLightning;
 
-	static int32_t nDepth = -1;
+	static int nDepth = -1;
 
 if (gameStates.app.bNostalgia)
 	bGetThrusterPos = 
 	bLightning = 0;
 else {
-	bGetThrusterPos = !pObj || (pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_ROBOT) || (pObj->IsProjectile ());
-	bLightning = SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage && pObj && (pObj->Damage () < 0.5f);
+	bGetThrusterPos = !objP || (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->IsWeapon () && !objP->IsMissile ());
+	bLightning = SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage && objP && (objP->Damage () < 0.5f);
 	}
 #if DBG_SHADOWS
 if (bShadowTest)
-	RETVAL (1)
+	return 1;
 #endif
 #if CONTOUR_OUTLINE
 //if (extraGameInfo [0].bShadows && (gameStates.render.nShadowPass < 3))
-	RETVAL (1)
+	return 1;
 #endif
 nDepth++;
 G3CheckAndSwap (modelDataP);
 if (SHOW_DYN_LIGHT &&
-	!nDepth && !po && pObj && ((pObj->info.nType == OBJ_ROBOT) || (pObj->info.nType == OBJ_PLAYER))) {
-	po = gameData.modelData.pofData [gameStates.app.bD1Mission][0] + nModel;
-	POFGatherPolyModelItems (pObj, modelDataP, pAnimAngles, po, 0);
+	!nDepth && !po && objP && ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_PLAYER))) {
+	po = gameData.models.pofData [gameStates.app.bD1Mission][0] + nModel;
+	POFGatherPolyModelItems (objP, modelDataP, pAnimAngles, po, 0);
 	}
 nGlow = -1;		//glow off by default
 ogl.SetFaceCulling (true);
@@ -434,35 +424,35 @@ for (;;) {
 	if (nTag == OP_EOF)
 		break;
 	else if (nTag == OP_DEFPOINTS) {
-		int32_t n = WORDVAL (p+2);
+		int n = WORDVAL (p+2);
 		RotatePointList (modelPointList, VECPTR (p+4), po ? po->m_vertNorms.Buffer () : NULL, n, 0);
 		p += n * sizeof (CFixVector) + 4;
 		break;
 		}
 	else if (nTag == OP_DEFP_START) {
-		int32_t n = WORDVAL (p+2);
-		int32_t s = WORDVAL (p+4);
+		int n = WORDVAL (p+2);
+		int s = WORDVAL (p+4);
 
 		RotatePointList (modelPointList, VECPTR (p+8), po ? po->m_vertNorms.Buffer () : NULL, n, s);
 		p += n * sizeof (CFixVector) + 8;
 		}
 	else if (nTag == OP_FLATPOLY) {
-		int32_t nVerts = WORDVAL (p+2);
+		int nVerts = WORDVAL (p+2);
 		Assert (nVerts < MAX_POINTS_PER_POLY);
 #if CHECK_NORMAL_FACING
 		if (G3CheckNormalFacing (*VECPTR (p+4), *VECPTR (p+16)) > 0)
 #endif
 		 {
 			//fix l = X2I (32 * xModelLight);
-			CCanvas::Current ()->SetColorRGB15bpp (WORDVAL (p+28), (uint8_t) (255 * gameStates.render.grAlpha));
+			CCanvas::Current ()->SetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * gameStates.render.grAlpha));
 			CCanvas::Current ()->FadeColorRGB (1.0);
-			if (pColor) {
-				pColor->Red () = (float) CCanvas::Current ()->Color ().Red () / 255.0f;
-				pColor->Green () = (float) CCanvas::Current ()->Color ().Green () / 255.0f;
-				pColor->Blue () = (float) CCanvas::Current ()->Color ().Blue () / 255.0f;
+			if (colorP) {
+				colorP->Red () = (float) CCanvas::Current ()->Color ().Red () / 255.0f;
+				colorP->Green () = (float) CCanvas::Current ()->Color ().Green () / 255.0f;
+				colorP->Blue () = (float) CCanvas::Current ()->Color ().Blue () / 255.0f;
 				}
 			p += 30;
-			for (int32_t i = 0; i < nVerts; i++)
+			for (int i = 0; i < nVerts; i++)
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 			G3DrawPoly (nVerts, pointList);
 			}
@@ -473,14 +463,14 @@ for (;;) {
 		p += (nVerts | 1) * 2;
 		}
 	else if (nTag == OP_TMAPPOLY) {
-		int32_t nVerts = WORDVAL (p+2);
+		int nVerts = WORDVAL (p+2);
 		Assert ( nVerts < MAX_POINTS_PER_POLY );
 #if CHECK_NORMAL_FACING
 		if (G3CheckNormalFacing (*VECPTR (p+4), *VECPTR (p+16)) > 0)
 #endif
 		 {
 			tUVL *uvlList;
-			int32_t i;
+			int i;
 			fix l;
 			CFixVector *pvn = VECPTR (p+16);
 
@@ -495,22 +485,22 @@ for (;;) {
 				nGlow = -1;
 				}
 			//now poke light into l values
-			if (pColor)
-				paletteManager.Game ()->ToRgbaf (modelBitmaps [WORDVAL (p+28)]->AvgColor (), *pColor);
+			if (colorP)
+				paletteManager.Game ()->ToRgbaf (modelBitmaps [WORDVAL (p+28)]->AvgColor (), *colorP);
 			p += 30;
 			uvlList = reinterpret_cast<tUVL*> (p + (nVerts | 1) * 2);
 			for (i = 0; i < nVerts; i++) {
 				uvlList [i].l = l;
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 				}
-			tMapColor = gameData.objData.color;
+			tMapColor = gameData.objs.color;
 			if (gameStates.render.bCloaked)
 				G3DrawTexPolyFlat (nVerts, pointList, uvlList, NULL, modelBitmaps [WORDVAL (p-2)], NULL, NULL, VECPTR (p+16), 0, 1, 0, -1);
 			else
 				G3DrawTexPolySimple (nVerts, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
 			if (!gameStates.render.bBriefing) {
 				if (bLightning)
-					lightningManager.RenderForDamage (pObj, pointList, NULL, nVerts);
+					lightningManager.RenderForDamage (objP, pointList, NULL, nVerts);
 				if (bGetThrusterPos)
 					GetThrusterPos (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nVerts);
 				}
@@ -527,15 +517,15 @@ for (;;) {
 #endif
 		 {		//facing
 			//draw back then front
-			if (!(G3DrawPolyModel (pObj, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel) &&
-					G3DrawPolyModel (pObj, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel)))
-				RETVAL (0)
+			if (!(G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel) &&
+					G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel)))
+				return 0;
 			}
 #if CHECK_NORMAL_FACING
 		else {			//not facing.  draw front then back
-			if (!(G3DrawPolyModel (pObj, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel) &&
-					G3DrawPolyModel (pObj, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pColor, po, nModel)))
-				RETVAL (0)
+			if (!(G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel) &&
+					G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel)))
+				return 0;
 			}
 #endif
 		p += 32;
@@ -553,16 +543,16 @@ for (;;) {
 
 		va = pAnimAngles ? pAnimAngles [WORDVAL (p+2)] : CAngleVector::ZERO;
 		vo = *VECPTR (p+4);
-		if (!gameData.modelData.vScale.IsZero ())
-			vo *= gameData.modelData.vScale;
-		transformation.Begin (vo, va, __FILE__, __LINE__);
+		if (!gameData.models.vScale.IsZero ())
+			vo *= gameData.models.vScale;
+		transformation.Begin (vo, va);
 		if (vOffset)
 			vo += *vOffset;
-		if (!G3DrawPolyModel (pObj, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, pColor, po, nModel)) {
-			transformation.End (__FILE__, __LINE__);
-			RETVAL (0)
+		if (!G3DrawPolyModel (objP, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, colorP, po, nModel)) {
+			transformation.End ();
+			return 0;
 			}
-		transformation.End (__FILE__, __LINE__);
+		transformation.End ();
 		p += 20;
 		}
 	else if (nTag == OP_GLOW) {
@@ -574,22 +564,22 @@ for (;;) {
 #if DBG
 		PrintLog (0, "invalid polygon model\n");
 #endif
-		RETVAL (0)
+		return 0;
 		}
 	}
 nDepth--;
-RETVAL (1)
+return 1;
 }
 
 //------------------------------------------------------------------------------
 //alternate interpreter for morphing CObject
-int32_t G3DrawMorphingModel (void *pModel, CArray<CBitmap*>& modelBitmaps, CAngleVector *pAnimAngles, CFixVector *vOffset,
-								  fix xModelLight, CFixVector *new_points, int32_t nModel)
+int G3DrawMorphingModel (void *modelP, CArray<CBitmap*>& modelBitmaps, CAngleVector *pAnimAngles, CFixVector *vOffset,
+								  fix xModelLight, CFixVector *new_points, int nModel)
 {
-	uint8_t *p = reinterpret_cast<uint8_t*> (pModel);
+	ubyte *p = reinterpret_cast<ubyte*> (modelP);
 	fix *xGlowValues = NULL;
 
-G3CheckAndSwap (pModel);
+G3CheckAndSwap (modelP);
 nGlow = -1;		//glow off by default
 for (;;) {
 	switch (WORDVAL (p)) {
@@ -597,23 +587,23 @@ for (;;) {
 			return 1;
 
 		case OP_DEFPOINTS: {
-			int32_t n = WORDVAL (p+2);
+			int n = WORDVAL (p+2);
 			RotatePointList (modelPointList, new_points, NULL, n, 0);
 			p += n * sizeof (CFixVector) + 4;
 			break;
 			}
 
 		case OP_DEFP_START: {
-			int32_t n = WORDVAL (p+2);
-			int32_t s = WORDVAL (p+4);
+			int n = WORDVAL (p+2);
+			int s = WORDVAL (p+4);
 			RotatePointList (modelPointList, new_points, NULL, n, s);
 			p += n * sizeof (CFixVector) + 8;
 			break;
 			}
 
 		case OP_FLATPOLY: {
-			int32_t nVerts = WORDVAL (p+2);
-			int32_t i, nTris;
+			int nVerts = WORDVAL (p+2);
+			int i, nTris;
 			CCanvas::Current ()->SetColor (WORDVAL (p+28));
 			for (i = 0; i < 2; i++)
 				pointList [i] = modelPointList + WORDPTR (p+30) [i];
@@ -627,10 +617,10 @@ for (;;) {
 			}
 
 		case OP_TMAPPOLY: {
-			int32_t nVerts = WORDVAL (p+2);
+			int nVerts = WORDVAL (p+2);
 			tUVL *uvlList;
 			tUVL morph_uvls [3];
-			int32_t i, nTris;
+			int i, nTris;
 			fix light;
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow
@@ -691,13 +681,13 @@ for (;;) {
 		case OP_SUBCALL: {
 			const CAngleVector	*va = pAnimAngles ? &pAnimAngles [WORDVAL (p+2)] : &CAngleVector::ZERO;
 			CFixVector	vo = *VECPTR (p+4);
-			if (!gameData.modelData.vScale.IsZero ())
-				vo *= gameData.modelData.vScale;
-			transformation.Begin (vo, *va, __FILE__, __LINE__);
+			if (!gameData.models.vScale.IsZero ())
+				vo *= gameData.models.vScale;
+			transformation.Begin (vo, *va);
 			if (vOffset)
 				vo += *vOffset;
 			G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, NULL, NULL, nModel);
-			transformation.End (__FILE__, __LINE__);
+			transformation.End ();
 			p += 20;
 			break;
 			}

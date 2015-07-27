@@ -110,7 +110,7 @@ class __pack__ CFixVector {
 
 		bool IsZero (void) const;
 		void SetZero (void);
-		const int32_t Sign (void) const;
+		const int Sign (void) const;
 
 		fix SqrMag (void) const;
 		float Sqr (float f) const;
@@ -120,10 +120,6 @@ class __pack__ CFixVector {
 		const CFixVector operator- (void) const;
 		const bool operator== (const CFixVector& other);
 		const bool operator!= (const CFixVector& other);
-		const bool operator< (const CFixVector& other);
-		const bool operator<= (const CFixVector& other);
-		const bool operator> (const CFixVector& other);
-		const bool operator>= (const CFixVector& other);
 		const CFixVector& operator+= (const CFixVector& other);
 		const CFixVector& operator+= (const CFloatVector& other);
 		const CFixVector& operator-= (const CFloatVector& other);
@@ -212,10 +208,6 @@ class CFloatVector {
 		static const float Dot (const CFloatVector& v0, const CFloatVector& v1);
 		static const float Dot (const float x, const float y, const float z, const CFloatVector& v);
 		static const float Normalize (CFloatVector& vec);
-		static const CFloatVector Min (CFloatVector& v, const float l);
-		static const CFloatVector Max (CFloatVector& v, const float l);
-		static const CFloatVector Min (CFloatVector& v, const CFloatVector l);
-		static const CFloatVector Max (CFloatVector& v, const CFloatVector l);
 		static const CFloatVector Perp (const CFloatVector& p0, const CFloatVector& p1, const CFloatVector& p2);
 		static CFloatVector& Perp (CFloatVector& dest, const CFloatVector& p0, const CFloatVector& p1, const CFloatVector& p2);
 		static const CFloatVector Normal (const CFloatVector& p0, const CFloatVector& p1, const CFloatVector& p2);
@@ -242,10 +234,6 @@ class CFloatVector {
 		const CFloatVector operator- (void) const;
 		const bool operator== (const CFloatVector& other);
 		const bool operator!= (const CFloatVector& other);
-		const bool operator< (const CFloatVector& other);
-		const bool operator<= (const CFloatVector& other);
-		const bool operator> (const CFloatVector& other);
-		const bool operator>= (const CFloatVector& other);
 		const CFloatVector& operator+= (const CFloatVector& other);
 		const CFloatVector& operator+= (const CFixVector& other);
 		const CFloatVector& operator-= (const CFixVector& other);
@@ -274,9 +262,7 @@ class CFloatVector {
 		inline float& Alpha (void) { return v.color.a; }
 		inline float Max (void) { return (v.coord.x > v.coord.y) ? (v.coord.x > v.coord.z) ? v.coord.x : v.coord.z : (v.coord.y > v.coord.z) ? v.coord.y : v.coord.z; }
 		inline float Sum (void) { return v.coord.x + v.coord.y + v.coord.z; }
-
-		inline float& operator[] (size_t i) { return v.vec [i]; }
-		};
+};
 
 //const float operator* (const CFloatVector& v0, const CFloatVector& v1);
 //const CFloatVector operator* (const CFloatVector& v, const float s);
@@ -383,7 +369,7 @@ class __pack__ CAngleVector {
 	public:
 		union {
 			struct {
-				fixang p, b, h; // pitch, roll, yaw
+				fixang p, b, h;
 			} coord;
 			fixang vec [3];
 		} v;
@@ -404,87 +390,9 @@ public:
 	// read-only access op
 	const fixang operator[] (size_t i) const { return vec.vec [i]; }
 #endif
-	bool IsZero (void) const { return !(v.coord.p || v.coord.h || v.coord.b); }
+	bool IsZero (void) const { return ! (v.coord.p || v.coord.h || v.coord.b); }
 	void SetZero (void) { memset (&v, 0, sizeof (v)); }
-	void Set (const fixang p, const fixang b, const fixang h) { v.coord.p = p; v.coord.b = b; v.coord.h = h; }
-	void Set (const CAngleVector& other) { v.coord.p = other.v.coord.p; v.coord.b = other.v.coord.b; v.coord.h = other.v.coord.h; }
-#if 0
-	inline CAngleVector& operator+= (const CAngleVector& other) {
-		v.coord.p += other.v.coord.p;
-		v.coord.b += other.v.coord.b;
-		v.coord.h += other.v.coord.h;
-		return *this;
-		}
-
-	inline CAngleVector& operator-= (const CAngleVector& other) {
-		v.coord.p -= other.v.coord.p;
-		v.coord.b -= other.v.coord.b;
-		v.coord.h -= other.v.coord.h;
-		return *this;
-		}
-#endif
-	inline CAngleVector& operator+= (const CAngleVector other) {
-		v.coord.p += other.v.coord.p;
-		v.coord.b += other.v.coord.b;
-		v.coord.h += other.v.coord.h;
-		return *this;
-		}
-
-	inline CAngleVector& operator-= (const CAngleVector other) {
-		v.coord.p -= other.v.coord.p;
-		v.coord.b -= other.v.coord.b;
-		v.coord.h -= other.v.coord.h;
-		return *this;
-		}
-
-	inline CAngleVector& operator*= (int32_t nScale) {
-		v.coord.p *= nScale;
-		v.coord.b *= nScale;
-		v.coord.h *= nScale;
-		return *this;
-		}
-
-	inline CAngleVector& operator/= (int32_t nScale) {
-		v.coord.p /= nScale;
-		v.coord.b /= nScale;
-		v.coord.h /= nScale;
-		return *this;
-		}
-
-	inline CAngleVector operator+ (const CAngleVector other) {
-		CAngleVector a;
-		a.Set (v.coord.p + other.v.coord.p, v.coord.b + other.v.coord.b, v.coord.h + other.v.coord.h);
-		return a;
-		}
-
-	inline CAngleVector operator- (const CAngleVector other) {
-		CAngleVector a;
-		a.Set (v.coord.p - other.v.coord.p, v.coord.b - other.v.coord.b, v.coord.h - other.v.coord.h);
-		return a;
-		}
-
-	inline CAngleVector operator* (const int32_t nScale) {
-		CAngleVector a;
-		a.Set (v.coord.p * nScale, v.coord.b * nScale, v.coord.h * nScale);
-		return a;
-		}
-
-	inline CAngleVector operator/ (const int32_t nScale) {
-		CAngleVector a;
-		a.Set (v.coord.p / nScale, v.coord.b / nScale, v.coord.h / nScale);
-		return a;
-		}
-
-	inline const float SqrMag (void) const {
-		return X2F (v.coord.p) * X2F (v.coord.p) + X2F (v.coord.b) * X2F (v.coord.b) + X2F (v.coord.h) * X2F (v.coord.h);
-		}
-
-	inline const float Mag (void) const {
-		return (const float) sqrt (SqrMag ());
-		}
-
 };
-
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -513,8 +421,8 @@ inline CFloatVector& CFloatVector::Cross (CFloatVector& dest, const CFloatVector
 inline const CFloatVector CFloatVector::Cross (const CFloatVector& v0, const CFloatVector& v1) {
 	CFloatVector vec;
 	vec.Set (v0.v.coord.y * v1.v.coord.z - v0.v.coord.z * v1.v.coord.y,
-	         v0.v.coord.z * v1.v.coord.x - v0.v.coord.x * v1.v.coord.z,
-	         v0.v.coord.x * v1.v.coord.y - v0.v.coord.y * v1.v.coord.x);
+	       v0.v.coord.z * v1.v.coord.x - v0.v.coord.x * v1.v.coord.z,
+	       v0.v.coord.x * v1.v.coord.y - v0.v.coord.y * v1.v.coord.x);
 	return vec;
 }
 
@@ -553,34 +461,6 @@ inline const CFloatVector CFloatVector::Normal (const CFloatVector& p0, const CF
 
 inline const CFloatVector CFloatVector::Reflect (const CFloatVector& d, const CFloatVector& n) {
 	return n * (Dot (d, n) * -2.0f) + d;
-}
-
-inline const CFloatVector CFloatVector::Min (CFloatVector& v, const float l) {
-	v.v.vec [0] = ::Min (v.v.vec [0], l);
-	v.v.vec [1] = ::Min (v.v.vec [1], l);
-	v.v.vec [2] = ::Min (v.v.vec [2], l);
-	return v;
-}
-
-inline const CFloatVector CFloatVector::Max (CFloatVector& v, const float l) {
-	v.v.vec [0] = ::Max (v.v.vec [0], l);
-	v.v.vec [1] = ::Max (v.v.vec [1], l);
-	v.v.vec [2] = ::Max (v.v.vec [2], l);
-	return v;
-}
-
-inline const CFloatVector CFloatVector::Min (CFloatVector& v, const CFloatVector l) {
-	v.v.vec [0] = ::Min (v.v.vec [0], l.v.vec [0]);
-	v.v.vec [1] = ::Min (v.v.vec [1], l.v.vec [1]);
-	v.v.vec [2] = ::Min (v.v.vec [2], l.v.vec [2]);
-	return v;
-}
-
-inline const CFloatVector CFloatVector::Max (CFloatVector& v, const CFloatVector l) {
-	v.v.vec [0] = ::Max (v.v.vec [0], l.v.vec [0]);
-	v.v.vec [1] = ::Max (v.v.vec [1], l.v.vec [1]);
-	v.v.vec [2] = ::Max (v.v.vec [2], l.v.vec [2]);
-	return v;
 }
 
 // -----------------------------------------------------------------------------
@@ -649,26 +529,6 @@ inline const bool CFloatVector::operator== (const CFloatVector& other) {
 
 inline const bool CFloatVector::operator!= (const CFloatVector& other) {
 	return (v.coord.x != other.v.coord.x) || (v.coord.y != other.v.coord.y) || (v.coord.z != other.v.coord.z);
-}
-
-inline const bool CFloatVector::operator< (const CFloatVector& other)
-{
-return (v.coord.x < other.v.coord.x) && (v.coord.y < other.v.coord.y) && (v.coord.z < other.v.coord.z);
-}
-
-inline const bool CFloatVector::operator<= (const CFloatVector& other)
-{
-return (v.coord.x <= other.v.coord.x) && (v.coord.y <= other.v.coord.y) && (v.coord.z <= other.v.coord.z);
-}
-
-inline const bool CFloatVector::operator> (const CFloatVector& other)
-{
-return (v.coord.x > other.v.coord.x) && (v.coord.y > other.v.coord.y) && (v.coord.z > other.v.coord.z);
-}
-
-inline const bool CFloatVector::operator>= (const CFloatVector& other)
-{
-return (v.coord.x >= other.v.coord.x) && (v.coord.y >= other.v.coord.y) && (v.coord.z >= other.v.coord.z);
 }
 
 inline const CFloatVector& CFloatVector::operator+= (const CFloatVector& other) {
@@ -1136,7 +996,7 @@ inline void CFixVector::SetZero (void)
 memset (&v, 0, sizeof (v));
 }
 
-inline const int32_t CFixVector::Sign (void) const
+inline const int CFixVector::Sign (void) const
 {
 return (v.coord.x * v.coord.y * v.coord.z < 0) ? -1 : 1;
 }
@@ -1169,34 +1029,14 @@ inline const CFixVector CFixVector::operator- (void) const
 	return vec;
 }
 
-inline const bool CFixVector::operator== (const CFixVector& other)
+inline const bool CFixVector::operator== (const CFixVector& vec)
 {
-return (v.coord.x == other.v.coord.x) && (v.coord.y == other.v.coord.y) && (v.coord.z == other.v.coord.z);
+return (v.coord.x == vec.v.coord.x) && (v.coord.y == vec.v.coord.y) && (v.coord.z == vec.v.coord.z);
 }
 
-inline const bool CFixVector::operator!= (const CFixVector& other)
+inline const bool CFixVector::operator!= (const CFixVector& vec)
 {
-return (v.coord.x != other.v.coord.x) || (v.coord.y != other.v.coord.y) || (v.coord.z != other.v.coord.z);
-}
-
-inline const bool CFixVector::operator< (const CFixVector& other)
-{
-return (v.coord.x < other.v.coord.x) && (v.coord.y < other.v.coord.y) && (v.coord.z < other.v.coord.z);
-}
-
-inline const bool CFixVector::operator<= (const CFixVector& other)
-{
-return (v.coord.x <= other.v.coord.x) && (v.coord.y <= other.v.coord.y) && (v.coord.z <= other.v.coord.z);
-}
-
-inline const bool CFixVector::operator> (const CFixVector& other)
-{
-return (v.coord.x > other.v.coord.x) && (v.coord.y > other.v.coord.y) && (v.coord.z > other.v.coord.z);
-}
-
-inline const bool CFixVector::operator>= (const CFixVector& other)
-{
-return (v.coord.x >= other.v.coord.x) && (v.coord.y >= other.v.coord.y) && (v.coord.z >= other.v.coord.z);
+return (v.coord.x != vec.v.coord.x) || (v.coord.y != vec.v.coord.y) || (v.coord.z != vec.v.coord.z);
 }
 
 inline const CFixVector& CFixVector::operator+= (const CFixVector& other)
@@ -1422,7 +1262,7 @@ class CFixMatrix {
 		void CheckAndFix (void);
 
 		//extract angles from a m.matrix
-		const CAngleVector ComputeAngles (void) const;
+		const CAngleVector ExtractAnglesVec (void) const;
 
 		const CFixMatrix& Assign (CFixMatrix& other);
 		const CFixMatrix& Assign (CFloatMatrix& other);
@@ -1609,8 +1449,6 @@ class CFloatMatrix {
 
 		void CheckAndFix (void);
 
-		const CFloatVector ComputeAngles (void) const;
-
 		const CFloatMatrix& Assign (CFixMatrix& other);
 		const CFloatMatrix& Assign (CFloatMatrix& other);
 
@@ -1733,14 +1571,14 @@ inline void CFloatMatrix::CheckAndFix (void) {
 // -----------------------------------------------------------------------------
 // misc remaining C-style funcs
 
-const int32_t FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int32_t bClampToFarthest);
-//const int32_t FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, const CFixVector& vPos, int32_t bClampToFarthest);
+const int FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int bClampToFarthest);
+//const int FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, const CFixVector& vPos, int bClampToFarthest);
 const fix VmLinePointDist (const CFixVector& a, const CFixVector& b, const CFixVector& p);
-const int32_t FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, const CFloatVector& vPos, int32_t bClamp);
-const int32_t FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, int32_t bClamp);
-const int32_t FindPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1, const CFloatVector3& p2, const CFloatVector3& p3, CFloatVector3 *vPos, int32_t bClamp);
-const float VmLinePointDist (const CFloatVector& a, const CFloatVector& b, const CFloatVector& p, int32_t bClamp);
-const float VmLinePointDist (const CFloatVector3& a, const CFloatVector3& b, const CFloatVector3& p, int32_t bClamp);
+const int FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, const CFloatVector& vPos, int bClamp);
+const int FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, int bClamp);
+const int FindPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1, const CFloatVector3& p2, const CFloatVector3& p3, CFloatVector3 *vPos, int bClamp);
+const float VmLinePointDist (const CFloatVector& a, const CFloatVector& b, const CFloatVector& p, int bClamp);
+const float VmLinePointDist (const CFloatVector3& a, const CFloatVector3& b, const CFloatVector3& p, int bClamp);
 const float VmLineLineIntersection (const CFloatVector3& v1, const CFloatVector3& v2, const CFloatVector3& v3, const CFloatVector3& v4, CFloatVector3& va, CFloatVector3& vb);
 const float VmLineLineIntersection (const CFloatVector& v1, const CFloatVector& v2, const CFloatVector& v3, const CFloatVector& v4, CFloatVector& va, CFloatVector& vb);
 

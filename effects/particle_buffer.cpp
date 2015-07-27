@@ -47,9 +47,9 @@
 #include "timeout.h"
 
 CTimeout toFlushed (1000);
-int32_t nFlushes [4] = {0, 0, 0, 0};
-int32_t nPartsFlushed [4] = {0, 0, 0, 0};
-int32_t iFlushed = 0;
+int nFlushes [4] = {0, 0, 0, 0};
+int nPartsFlushed [4] = {0, 0, 0, 0};
+int iFlushed = 0;
 #endif
 
 //------------------------------------------------------------------------------
@@ -70,14 +70,12 @@ void CParticleBuffer::Setup (void)
 	bool alphaControl = AlphaControl ();
 
 PROF_START
-CParticle::mSparkOrient = CFixMatrix::CreateF (gameData.renderData.mine.viewer.mOrient.m.dir.f);
-
 #if USE_OPENMP //> 1
 if (gameStates.app.bMultiThreaded) {
 #	if (LAZY_RENDER_SETUP < 2)
 	if (m_iBuffer <= 1000)
 #	endif
-	for (int32_t i = 0; i < m_iBuffer; i++) {
+	for (int i = 0; i < m_iBuffer; i++) {
 		m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
 		}
 #	if (LAZY_RENDER_SETUP < 2)
@@ -85,9 +83,9 @@ else
 #	endif
 #	pragma omp parallel
 		{
-		int32_t nThread = omp_get_thread_num();
+		int nThread = omp_get_thread_num();
 #	pragma omp for 
-		for (int32_t i = 0; i < m_iBuffer; i++) {
+		for (int i = 0; i < m_iBuffer; i++) {
 			m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
 			}
 		}
@@ -96,7 +94,7 @@ else
 #endif
 	{
 	if ((m_iBuffer < 100) || !RunRenderThreads (rtParticles))
-		for (int32_t i = 0; i < m_iBuffer; i++)
+		for (int i = 0; i < m_iBuffer; i++)
 			m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
 	}
 PROF_END(ptParticles)
@@ -109,64 +107,63 @@ void CParticleBuffer::Reset (void)
 ogl.ResetClientStates (1);
 ogl.SetDepthTest (true);
 ogl.SetAlphaTest (true);
-ogl.SetBlendMode (OGL_BLEND_ALPHA);
+ogl.SetBlendMode (m_bEmissive);
 m_iBuffer = 0;
 m_nType = -1;
 m_bEmissive = false;
 m_dMax = 0.0f;
-//shaderManager.Deploy (-1);
 CEffectArea::Reset ();
 }
 
 //------------------------------------------------------------------------------
 
-void CParticleBuffer::Setup (int32_t nThread)
+void CParticleBuffer::Setup (int nThread)
 {
-int32_t nStep = m_iBuffer / gameStates.app.nThreads;
-int32_t nStart = nStep * nThread;
-int32_t nEnd = (nThread == gameStates.app.nThreads - 1) ? m_iBuffer : nStart + nStep;
+int nStep = m_iBuffer / gameStates.app.nThreads;
+int nStart = nStep * nThread;
+int nEnd = (nThread == gameStates.app.nThreads - 1) ? m_iBuffer : nStart + nStep;
 bool alphaControl = AlphaControl ();
 
-for (int32_t i = nStart; i < nEnd; i++)
+for (int i = nStart; i < nEnd; i++)
 	m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CParticleBuffer::bCompatible [2 * PARTICLE_TYPES] = {0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 
-																				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int CParticleBuffer::bCompatible [2 * PARTICLE_TYPES] = {0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 
+																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-bool CParticleBuffer::Compatible (CParticle* pParticle)
+bool CParticleBuffer::Compatible (CParticle* particleP)
 {
 #if DBG
 if (m_nType == FIRE_PARTICLES)
 	m_nType = m_nType;
 #endif
-int32_t nParticleType = pParticle->RenderType ();
-if ((nParticleType == m_nType) && (pParticle->m_bEmissive == m_bEmissive))
+int nParticleType = particleP->RenderType ();
+if ((nParticleType == m_nType) && (particleP->m_bEmissive == m_bEmissive))
 	return 1;
 return USE_PARTICLE_SHADER && bCompatible [m_nType] && bCompatible [nParticleType];
 }
 
 //------------------------------------------------------------------------------
 
-bool CParticleBuffer::Add (CParticle* pParticle, float brightness, CFloatVector& pos, float rad)
+bool CParticleBuffer::Add (CParticle* particleP, float brightness, CFloatVector& pos, float rad)
 {
 	bool bFlushed = false;
 
-if ((m_iBuffer == PART_BUF_SIZE) || !Compatible (pParticle)) 
+if ((m_iBuffer == PART_BUF_SIZE) || !Compatible (particleP)) 
 	bFlushed = Flush (brightness, true);
 if (!m_iBuffer) {
-	m_nType = pParticle->RenderType ();
-	m_bEmissive = pParticle->m_bEmissive;
+	m_nType = particleP->RenderType ();
+	m_bEmissive = particleP->m_bEmissive;
 	}
 
 	tRenderParticle* pb = m_particles + m_iBuffer++;
 
-pb->particle = pParticle;
+pb->particle = particleP;
 pb->fBrightness = brightness;
-pb->nFrame = pParticle->m_iFrame;
-pb->nRotFrame = pParticle->m_nRotFrame;
+pb->nFrame = particleP->m_iFrame;
+pb->nRotFrame = particleP->m_nRotFrame;
 CEffectArea::Add (pos, rad);
 float d = CFloatVector::Dist (pos, transformation.m_info.posf [0]);
 if (m_dMax < d)
@@ -176,7 +173,7 @@ return bFlushed;
 
 //------------------------------------------------------------------------------
 
-int32_t CParticleBuffer::Init (void)
+int CParticleBuffer::Init (void)
 {
 ogl.ResetClientStates (1);
 ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
@@ -189,13 +186,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CParticleBuffer::UseParticleShader (void)
+int CParticleBuffer::UseParticleShader (void)
 {
 if (!USE_PARTICLE_SHADER)
 	return -1;
 if (!bCompatible [m_nType])
 	return -1;
-int32_t nShader = 0; //ogl.m_features.bTextureArrays.Available ();
+int nShader = 0; //ogl.m_features.bTextureArrays.Available ();
 if ((ogl.m_features.bDepthBlending > -1) && gameOpts->SoftBlend (SOFT_BLEND_PARTICLES))
 	return nShader + 2;
 return nShader;
@@ -206,7 +203,7 @@ return nShader;
 bool CParticleBuffer::Flush (float fBrightness, bool bForce)
 {
 	static vec3 dMax = {5.0f, 3.0f, 5.0f}; // blend ranges for smoke, sparks, bubbles
-	int32_t nShader = 0;
+	int nShader = 0;
 	bool bHaveTexture = false;
 
 if (!m_iBuffer)
@@ -227,8 +224,8 @@ if (toFlushed.Expired ()) {
 	}
 	++nFlushes [iFlushed];
 	nPartsFlushed [iFlushed] += m_iBuffer;
-	int32_t p = 0, f = 0;
-	for (int32_t i = 0; i < 4; i++)
+	int p = 0, f = 0;
+	for (int i = 0; i < 4; i++)
 		if (i != iFlushed)
 		p += nPartsFlushed [i], f = nFlushes [i];
 if (f)
@@ -260,7 +257,7 @@ if (!Init ()) {
 if (ogl.m_features.bShaders) {
 #if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
 	if (m_nType <= SMOKE_PARTICLES) {
-		if ((gameOpts->render.particles.nQuality == 2) && !automap.Active () && lightManager.Headlights ().nLights) {
+		if ((gameOpts->render.particles.nQuality == 2) && !automap.Display () && lightManager.Headlights ().nLights) {
 			CFloatVector color = {1.0f, 1.0f, 1.0f, 1.0f};
 			lightManager.Headlights ().SetupShader (1, 0, &color);
 			}
@@ -283,11 +280,11 @@ if (ogl.m_features.bShaders) {
 				}
 			else {
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE2);
-				ParticleImageInfo (BUBBLE_PARTICLES).pBm->Bind (0);
+				ParticleImageInfo (BUBBLE_PARTICLES).bmP->Bind (0);
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
-				ParticleImageInfo (SPARK_PARTICLES).pBm->Bind (0);
+				ParticleImageInfo (SPARK_PARTICLES).bmP->Bind (0);
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
-				ParticleImageInfo (SMOKE_PARTICLES).pBm->Bind (0);
+				ParticleImageInfo (SMOKE_PARTICLES).bmP->Bind (0);
 				}	
 			}
 		}
@@ -302,15 +299,15 @@ if (ogl.m_features.bShaders) {
 	}
 
 if (!bHaveTexture) {
-	CBitmap* pBm = ParticleImageInfo (m_nType % PARTICLE_TYPES).pBm;
-	if (!pBm) {
+	CBitmap* bmP = ParticleImageInfo (m_nType % PARTICLE_TYPES).bmP;
+	if (!bmP) {
 		PROF_END(ptParticles)
 		Reset ();
 		return false;
 		}
-	if (pBm->CurFrame ())
-		pBm = pBm->CurFrame ();
-	if (pBm->Bind (1) && !particleImageManager.Load (m_nType % PARTICLE_TYPES, 1)) {
+	if (bmP->CurFrame ())
+		bmP = bmP->CurFrame ();
+	if (bmP->Bind (1) && !particleImageManager.Load (m_nType % PARTICLE_TYPES, 1)) {
 		PROF_END(ptParticles)
 		Reset ();
 		return false;

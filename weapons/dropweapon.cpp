@@ -34,17 +34,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //this function is for when the player intentionally drops a powerup
 //this function is based on DropPowerup()
-int32_t SpitPowerup (CObject *pSpitter, uint8_t id, int32_t seed)
+int SpitPowerup (CObject *spitterP, ubyte id, int seed)
 {
-ENTER (0, 0);
-	int16_t					nObject;
-	CObject*					pObj;
-	CFixVector				newVelocity, newPos;
-	tObjTransformation	*pPos = OBJPOS (pSpitter);
+	short			nObject;
+	CObject		*objP;
+	CFixVector	newVelocity, newPos;
+	tObjTransformation	*posP = OBJPOS (spitterP);
 
-if (seed > 0)
+if (seed < 0)
+	gameStates.app.SRand ();
+else
 	gameStates.app.SRand (seed);
-newVelocity = pSpitter->mType.physInfo.velocity + pSpitter->info.position.mOrient.m.dir.f * I2X (SPIT_SPEED);
+newVelocity = spitterP->mType.physInfo.velocity + spitterP->info.position.mOrient.m.dir.f * I2X (SPIT_SPEED);
 newVelocity.v.coord.x += (SRandShort ()) * SPIT_SPEED * 2;
 newVelocity.v.coord.y += (SRandShort ()) * SPIT_SPEED * 2;
 newVelocity.v.coord.z += (SRandShort ()) * SPIT_SPEED * 2;
@@ -55,42 +56,45 @@ if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 //the distance between him and the powerup is less than 2 time their
 //combined radii.  So we need to create powerups pretty far out from
 //the player.
-newPos = pPos->vPos + pPos->mOrient.m.dir.f * pSpitter->info.xSize;
+newPos = posP->vPos + posP->mOrient.m.dir.f * spitterP->info.xSize;
 if (IsMultiGame && (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS))
-	RETVAL (-1)
-nObject = CreatePowerup (id, int16_t (GetTeam (N_LOCALPLAYER) + 1), int16_t (OBJSEG (pSpitter)), newPos, 0);
-pObj = OBJECT (nObject);
-if (!pObj)
-	RETVAL (-1)
-pObj->mType.physInfo.velocity = newVelocity;
-pObj->mType.physInfo.drag = 512;	//1024;
-pObj->mType.physInfo.mass = I2X (1);
-pObj->mType.physInfo.flags = PF_BOUNCES;
-pObj->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [pObj->info.nId].nClipIndex;
-pObj->rType.animationInfo.xFrameTime = gameData.effectData.vClipP [pObj->rType.animationInfo.nClipIndex].xFrameTime;
-pObj->rType.animationInfo.nCurFrame = 0;
-if (pSpitter == gameData.objData.pConsole)
-	pObj->cType.powerupInfo.nFlags |= PF_SPAT_BY_PLAYER;
-switch (pObj->info.nId) {
+	return -1;
+nObject = CreatePowerup (id, short (GetTeam (N_LOCALPLAYER) + 1), short (OBJSEG (spitterP)), newPos, 0);
+if (nObject < 0) {
+	Int3();
+	return nObject;
+	}
+objP = OBJECTS + nObject;
+objP->mType.physInfo.velocity = newVelocity;
+objP->mType.physInfo.drag = 512;	//1024;
+objP->mType.physInfo.mass = I2X (1);
+objP->mType.physInfo.flags = PF_BOUNCE;
+objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+objP->rType.vClipInfo.xFrameTime = gameData.effects.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+objP->rType.vClipInfo.nCurFrame = 0;
+if (spitterP == gameData.objs.consoleP)
+	objP->cType.powerupInfo.nFlags |= PF_SPAT_BY_PLAYER;
+switch (objP->info.nId) {
 	case POW_CONCUSSION_1:
 	case POW_CONCUSSION_4:
 	case POW_SHIELD_BOOST:
 	case POW_ENERGY:
-		pObj->SetLife ((RandShort () + I2X (3)) * 64);		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
+		objP->SetLife ((RandShort () + I2X (3)) * 64);		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
 		if (IsMultiGame)
-			pObj->info.xLifeLeft /= 2;
+			objP->info.xLifeLeft /= 2;
 		break;
 	default:
 		//if (IsMultiGame)
-		//	pObj->info.xLifeLeft = (RandShort () + I2X (3)) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
+		//	objP->info.xLifeLeft = (RandShort () + I2X (3)) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
 		break;
 	}
-RETVAL (nObject)
+MultiSendWeapons (1);
+return nObject;
 }
 
 //	-----------------------------------------------------------------------------
 
-static inline int32_t IsBuiltInDevice (int32_t nDeviceFlag)
+static inline int IsBuiltInDevice (int nDeviceFlag)
 {
 return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMultiGame].loadout.nDevice & nDeviceFlag) != 0);
 }
@@ -99,108 +103,104 @@ return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMul
 
 void DropCurrentWeapon (void)
 {
-ENTER (0, 0);
-	int32_t	nObject = -1,
-				ammo = 0;
+	int	nObject = -1,
+			ammo = 0;
 
-if (IsMultiGame)
-	gameStates.app.SRand ();
-
-if (gameData.weaponData.nPrimary == 0) {	//special laser drop handling
+if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 	if ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) && !IsBuiltInDevice (PLAYER_FLAGS_QUAD_LASERS)) {
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_QUAD_LASERS;
-		nObject = SpitPowerup (gameData.objData.pConsole, POW_QUADLASER);
+		nObject = SpitPowerup (gameData.objs.consoleP, POW_QUADLASER);
 		if (nObject < 0) {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
-			RETURN
+			return;
 			}
 		HUDInitMessage(TXT_DROP_QLASER);
 		}
 	else if (!IsBuiltinWeapon (SUPER_LASER_INDEX) && LOCALPLAYER.DropSuperLaser ()) {
-		nObject = SpitPowerup (gameData.objData.pConsole, POW_SUPERLASER);
+		nObject = SpitPowerup (gameData.objs.consoleP, POW_SUPERLASER);
 		if (nObject < 0) {
 			LOCALPLAYER.AddSuperLaser ();
-			RETURN
+			return;
 			}
 		HUDInitMessage (TXT_DROP_SLASER);
 		}
 	else if (!IsBuiltinWeapon (SUPER_LASER_INDEX) && LOCALPLAYER.DropStandardLaser ()) {
-		nObject = SpitPowerup (gameData.objData.pConsole, POW_LASER);
+		nObject = SpitPowerup (gameData.objs.consoleP, POW_SUPERLASER);
 		if (nObject < 0) {
 			LOCALPLAYER.AddStandardLaser ();
-			RETURN
+			return;
 			}
 		HUDInitMessage (TXT_DROP_LASER);
 		}
 	}
 else {
-	if ((gameData.weaponData.nPrimary == 4) && gameData.weaponData.bTripleFusion) {
-		gameData.weaponData.bTripleFusion = 0;
-		nObject = SpitPowerup (gameData.objData.pConsole, primaryWeaponToPowerup [gameData.weaponData.nPrimary]);
+	if ((gameData.weapons.nPrimary == 4) && gameData.weapons.bTripleFusion) {
+		gameData.weapons.bTripleFusion = 0;
+		nObject = SpitPowerup (gameData.objs.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary]);
 		}
-	else if (gameData.weaponData.nPrimary && !IsBuiltinWeapon (gameData.weaponData.nPrimary)) { //if selected weapon was not the laser
-		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weaponData.nPrimary));
-		nObject = SpitPowerup (gameData.objData.pConsole, primaryWeaponToPowerup [gameData.weaponData.nPrimary]);
+	else if (gameData.weapons.nPrimary && !IsBuiltinWeapon (gameData.weapons.nPrimary)) { //if selected weapon was not the laser
+		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
+		nObject = SpitPowerup (gameData.objs.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary]);
 		}
 	if (nObject < 0) {	// couldn't drop
-		if (gameData.weaponData.nPrimary) 	//if selected weapon was not the laser
-			LOCALPLAYER.primaryWeaponFlags |= (1 << gameData.weaponData.nPrimary);
-		RETURN
+		if (gameData.weapons.nPrimary) 	//if selected weapon was not the laser
+			LOCALPLAYER.primaryWeaponFlags |= (1 << gameData.weapons.nPrimary);
+		return;
 		}
-	HUDInitMessage (TXT_DROP_WEAPON, PRIMARY_WEAPON_NAMES (gameData.weaponData.nPrimary));
+	HUDInitMessage (TXT_DROP_WEAPON, PRIMARY_WEAPON_NAMES (gameData.weapons.nPrimary));
 	}
 audio.PlaySound (SOUND_DROP_WEAPON);
-if ((gameData.weaponData.nPrimary == VULCAN_INDEX) || (gameData.weaponData.nPrimary == GAUSS_INDEX)) {
+if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
 	//if it's one of these, drop some ammo with the weapon
 	ammo = LOCALPLAYER.primaryAmmo [VULCAN_INDEX];
-	if ((LOCALPLAYER.primaryWeaponFlags & HAS_FLAG (VULCAN_INDEX)) && (gameData.weaponData.nPrimary == GAUSS_INDEX))
+	if ((LOCALPLAYER.primaryWeaponFlags & HAS_FLAG (VULCAN_INDEX)) && (gameData.weapons.nPrimary == GAUSS_INDEX))
 		ammo /= 2;		//if both vulcan & gauss, drop half
 	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= ammo;
 	if (nObject >= 0)
-		OBJECT (nObject)->cType.powerupInfo.nCount = ammo;
+		OBJECTS [nObject].cType.powerupInfo.nCount = ammo;
 	}
-if (gameData.weaponData.nPrimary == OMEGA_INDEX) {
+if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 	//dropped weapon has current energy
 	if (nObject >= 0)
-		OBJECT (nObject)->cType.powerupInfo.nCount = gameData.omegaData.xCharge [IsMultiGame];
+		OBJECTS [nObject].cType.powerupInfo.nCount = gameData.omega.xCharge [IsMultiGame];
 	}
-if (IsMultiGame)
+if (IsMultiGame) {
 	MultiSendDropWeapon (nObject);
-if (gameData.weaponData.nPrimary) //if selected weapon was not the laser
+	MultiSendWeapons (1);
+	}
+if (gameData.weapons.nPrimary) //if selected weapon was not the laser
 	AutoSelectWeapon (0, 0);
-RETURN
 }
 
 //	-----------------------------------------------------------------------------
 
 extern void DropOrb (void);
 
-void DropSecondaryWeapon (int32_t nWeapon, int32_t nAmount, int32_t bSilent)
+void DropSecondaryWeapon (int nWeapon, int nAmount, int bSilent)
 {
-ENTER (0, 0);
 if (nWeapon < 0)
-	nWeapon = gameData.weaponData.nSecondary;
+	nWeapon = gameData.weapons.nSecondary;
 if ((LOCALPLAYER.secondaryAmmo [nWeapon] == 0) || 
 	 (IsMultiGame && (nWeapon == 0) && (LOCALPLAYER.secondaryAmmo [nWeapon] <= gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles))) {
 	if (!bSilent)
 		HUDInitMessage (TXT_CANT_DROP_SEC);
-	RETURN
+	return;
 	}
 
-int32_t nPowerup = secondaryWeaponToPowerup [0][nWeapon];
-int32_t bHoardEntropy = (gameData.appData.GameMode (GM_HOARD | GM_ENTROPY)) != 0;
-int32_t bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
+int nPowerup = secondaryWeaponToPowerup [0][nWeapon];
+int bHoardEntropy = (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) != 0;
+int bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
 
 if (!bHoardEntropy && bMine && LOCALPLAYER.secondaryAmmo [nWeapon] < 4) {
 	HUDInitMessage(TXT_DROP_NEED4);
-	RETURN
+	return;
 	}
 if (bHoardEntropy) {
 	DropOrb ();
-	RETURN
+	return;
 	}
 
-int32_t nItems = nAmount;
+int nItems = nAmount;
 if (bMine)
 	LOCALPLAYER.secondaryAmmo [nWeapon] -= 4;
 else {
@@ -211,27 +211,28 @@ else {
 		}
 	}
 
-for (int32_t i = 0; i < nItems; i++) {
-	int32_t nObject = SpitPowerup (gameData.objData.pConsole, nPowerup);
+for (int i = 0; i < nItems; i++) {
+	int nObject = SpitPowerup (gameData.objs.consoleP, nPowerup);
 	if (nObject == -1) { // can't put any more objects in the mine
 		if (bMine)
 			LOCALPLAYER.secondaryAmmo [nWeapon] += 4;
 		else
 			LOCALPLAYER.secondaryAmmo [nWeapon] += nAmount;
-		RETURN
+		return;
 		}
 	if (!bSilent) {
-		HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weaponData.nSecondary));
+		HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weapons.nSecondary));
 		audio.PlaySound (SOUND_DROP_WEAPON);
 		}
-	if (IsMultiGame)
+	if (IsMultiGame) {
 		MultiSendDropWeapon (nObject);
+		MultiSendWeapons (1);
+		}
 	if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0) {
-		LOCALPLAYER.secondaryWeaponFlags &= (~(1 << gameData.weaponData.nSecondary));
+		LOCALPLAYER.secondaryWeaponFlags &= (~(1 << gameData.weapons.nSecondary));
 		AutoSelectWeapon (1, 0);
 		}
 	}
-RETURN
 }
 
 //	-----------------------------------------------------------------------------

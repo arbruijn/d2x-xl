@@ -59,7 +59,7 @@ if (m_bInitialized) {
 
 void CRBA::Init (void)
 {
-	int32_t	d, i, j;
+	int	d, i, j;
 	char	szDrive [FILENAME_LEN], sz [FILENAME_LEN];
 
 if (m_bInitialized) 
@@ -104,7 +104,7 @@ m_bInitialized = 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CRBA::Enabled (void)
+int CRBA::Enabled (void)
 {
 return 1;
 }
@@ -117,7 +117,7 @@ void CRBA::RegisterCD (void)
 
 //------------------------------------------------------------------------------
 
-int32_t CRBA::PlayTrack (int32_t a)
+int CRBA::PlayTrack (int a)
 {
 if (!m_bInitialized) 
 	return -1;
@@ -137,10 +137,10 @@ if (m_bInitialized)
 
 //------------------------------------------------------------------------------
 
-void CRBA::SetVolume (int32_t volume)
+void CRBA::SetVolume (int volume)
 {
 #ifdef __linux__
-	int32_t cdfile, level;
+	int cdfile, level;
 	struct cdrom_volctrl volctrl;
 
 if (!m_bInitialized) 
@@ -151,7 +151,7 @@ level = volume * 3;
 
 if ((level<0) || (level>255)) {
 #ifndef _WIN32
-	PrintLog (0, "Warning: illegal volume value (allowed values 0-255)\n");
+	fprintf (stderr, "illegal volume value (allowed values 0-255)\n");
 #endif
 	return;
 	}
@@ -162,7 +162,7 @@ volctrl.channel2 =
 volctrl.channel3 = level;
 if (ioctl (cdfile, CDROMVOLCTRL, &volctrl) == -1) {
 #ifndef _WIN32
-	PrintLog (0, "CDROMVOLCTRL ioctl failed\n");
+	fprintf (stderr, "CDROMVOLCTRL ioctl failed\n");
 #endif
 	return;
 	}
@@ -179,7 +179,7 @@ if (m_bInitialized)
 
 //------------------------------------------------------------------------------
 
-int32_t CRBA::Resume (void)
+int CRBA::Resume (void)
 {
 if (!m_bInitialized) 
 	return -1;
@@ -189,7 +189,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CRBA::GetNumberOfTracks (void)
+int CRBA::GetNumberOfTracks (void)
 {
 if (!m_bInitialized) 
 	return -1;
@@ -199,7 +199,7 @@ return m_cdInfo->numtracks;
 
 //------------------------------------------------------------------------------
 // plays tracks first through last, inclusive
-int32_t CRBA::PlayTracks (int32_t first, int32_t last)
+int CRBA::PlayTracks (int first, int last)
 {
 if (!m_bInitialized)
 	return 0;
@@ -213,7 +213,7 @@ return 1;
 //------------------------------------------------------------------------------
 // return the track number currently playing.  Useful if CRBA::PlayTracks (void)
 // is called.  Returns 0 if no track playing, else track number
-int32_t CRBA::GetTrackNum (void)
+int CRBA::GetTrackNum (void)
 {
 if (!m_bInitialized)
 	return 0;
@@ -224,23 +224,23 @@ return m_cdInfo->cur_track + 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CRBA::PeekPlayStatus (void)
+int CRBA::PeekPlayStatus (void)
 {
 return (SDL_CDStatus (m_cdInfo) == CD_PLAYING);
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CD_blast_mixer (void)
+int CD_blast_mixer (void)
 {
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CRBA::cddb_sum (int32_t n)
+int CRBA::cddb_sum (int n)
 {
-	int32_t ret = 0;
+	int ret = 0;
 
 // For backward compatibility this algorithm must not change
 while (n > 0) {
@@ -252,9 +252,9 @@ return (ret);
 
 //------------------------------------------------------------------------------
 
-uint32_t CRBA::GetDiscID (void)
+uint CRBA::GetDiscID (void)
 {
-	int32_t i, t = 0, n = 0;
+	int i, t = 0, n = 0;
 
 if (!m_bInitialized)
 	return 0;

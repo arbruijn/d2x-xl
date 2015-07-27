@@ -1,19 +1,19 @@
 #ifndef __CHEATS_H
 #define __CHEATS_H
 
-void KillAllRobots (int32_t bVerbose);
-void KillEverything (int32_t bVerbose);
-void KillThief (int32_t bVerbose);
+void KillAllRobots (int bVerbose);
+void KillEverything (int bVerbose);
+void KillThief (int bVerbose);
 #if DBG
-void KillAllSnipers (int32_t bVerbose);
+void KillAllSnipers (int bVerbose);
 #endif
-void KillBuddy (int32_t bVerbose);
-void FinalCheats (int32_t key);
-void SuperWowieCheat (int32_t bVerbose);
-void WowieCheat (int32_t bVerbose);
-void GasolineCheat (int32_t bVerbose);
-void DoWowieCheat (int32_t bVerbose, int32_t bInitialize);
-void KillAllBossRobots (int32_t bVerbose);
+void KillBuddy (int bVerbose);
+void FinalCheats (int key);
+void SuperWowieCheat (int bVerbose);
+void WowieCheat (int bVerbose);
+void GasolineCheat (int bVerbose);
+void DoWowieCheat (int bVerbose, int bInitialize);
+void KillAllBossRobots (int bVerbose);
 
 #if DBG
 void DoCheatMenu ();

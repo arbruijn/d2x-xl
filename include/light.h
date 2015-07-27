@@ -23,10 +23,10 @@ extern fix xBeamBrightness;
 
 extern void SetDynamicLight (void);
 
-int32_t LightingMethod (void);
+int LightingMethod (void);
 
 // compute the average dynamic light in a CSegment.  Takes the CSegment number
-fix ComputeSegDynamicLight (int32_t nSegment);
+fix ComputeSegDynamicLight (int nSegment);
 
 // compute the lighting for an CObject.  Takes a pointer to the CObject,
 // and possibly a rotated 3d point.  If the point isn't specified, the
@@ -36,20 +36,20 @@ fix ComputeObjectLight(CObject *obj,CFixVector *rotated_pnt);
 void ComputeEngineGlow (CObject *obj, fix *engine_glowValue);
 
 // returns ptr to flickering light structure, or NULL if can't find
-CVariableLight *FindVariableLight (int32_t nSegment, int32_t nSide);
+CVariableLight *FindVariableLight (int nSegment, int nSide);
 
 // turn flickering off (because light has been turned off)
-void DisableVariableLight (int32_t nSegment, int32_t nSide);
+void DisableVariableLight (int nSegment, int nSide);
 
 // turn flickering off (because light has been turned on)
-void EnableVariableLight (int32_t nSegment, int32_t nSide);
+void EnableVariableLight (int nSegment, int nSide);
 
 // returns 1 if ok, 0 if error
-int32_t AddVariableLight(int32_t nSegment, int32_t nSide, fix delay, uint32_t mask);
+int AddVariableLight(int nSegment, int nSide, fix delay, unsigned long mask);
 
 void ReadVariableLight (CVariableLight *fl, CFile& cf);
 
 void InitTextureBrightness (void);
 
-int32_t IsLight (int32_t tMapNum);
+int IsLight (int tMapNum);
 #endif //_LIGHT_H

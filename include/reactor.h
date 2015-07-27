@@ -24,8 +24,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CONTROLCEN_WEAPON_NUM   6
 
 typedef struct tReactorProps {
-	int32_t nModel;
-	int32_t nGuns;
+	int nModel;
+	int nGuns;
 	CFixVector gunPoints [MAX_CONTROLCEN_GUNS];
 	CFixVector gunDirs [MAX_CONTROLCEN_GUNS];
 } __pack__ tReactorProps;
@@ -40,7 +40,7 @@ extern CFixVector Gun_pos[MAX_CONTROLCEN_GUNS];
 void DoReactorFrame(CObject *obj);
 // Initialize control center for a level.
 // Call when a new level is started.
-void InitReactorForLevel(int32_t bRestore);
+void InitReactorForLevel(int bRestore);
 void DoReactorDestroyedStuff(CObject *objp);
 void DoReactorDeadFrame(void);
 fix ReactorStrength (void);
@@ -48,14 +48,14 @@ fix ReactorStrength (void);
 /*
  * reads n reactor structs from a CFILE
  */
-int32_t ReadReactors (CFile& cf);
+int ReadReactors (CFile& cf);
 
 /*
  * reads n tReactorTriggers structs from a CFILE
  */
-int32_t ReadReactorTriggers (CFile& cf);
+int ReadReactorTriggers (CFile& cf);
 
-int32_t FindReactor (CObject *pObj);
-void InitCountdown (CTrigger *pTrigger, int32_t bReactorDestroyed, int32_t nTimer);
+int FindReactor (CObject *objP);
+void InitCountdown (CTrigger *trigP, int bReactorDestroyed, int nTimer);
 
 #endif /* _CNTRLCEN_H */

@@ -60,29 +60,29 @@ extern tDetailData detailData;
 //------------------------------------------------------------------------------
 
 static struct {
-	int32_t	nDigiVol;
-	int32_t   nAmbientVol;
-	int32_t	nMusicVol;
-	int32_t	nLinkVols;
-	int32_t	nRedbook;
-	int32_t	nVolume;
-	int32_t	nGatling;
-	int32_t	nChannels;
+	int	nDigiVol;
+	int   nAmbientVol;
+	int	nMusicVol;
+	int	nLinkVols;
+	int	nRedbook;
+	int	nVolume;
+	int	nGatling;
+	int	nChannels;
 } soundOpts;
 
 static const char* pszLowMediumHigh [3];
 
 //------------------------------------------------------------------------------
 
-void SetRedbookVolume (int32_t volume);
+void SetRedbookVolume (int volume);
 
 //------------------------------------------------------------------------------
 
-int32_t SoundChannelIndex (void)
+int SoundChannelIndex (void)
 {
-	int32_t	h, i;
+	int	h, i;
 
-for (h = (int32_t) sizeofa (detailData.nSoundChannels), i = 0; i < h; i++)
+for (h = (int) sizeofa (detailData.nSoundChannels), i = 0; i < h; i++)
 	if (audio.MaxChannels () < detailData.nSoundChannels [i])
 		break;
 return i - 1;
@@ -90,13 +90,13 @@ return i - 1;
 
 //------------------------------------------------------------------------------
 
-int32_t SoundMenuCallback (CMenu& menu, int32_t& nKey, int32_t nCurItem, int32_t nState)
+int SoundMenuCallback (CMenu& menu, int& nKey, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
 
 CMenuItem*	m;
-int32_t			v;
+int			v;
 
 if ((m = menu ["channels"])) {
 	v = m->Value ();
@@ -111,14 +111,6 @@ if ((m = menu ["gatling sound"])) {
 	v = m->Value ();
 	if (gameOpts->sound.bGatling != v) {
 		gameOpts->sound.bGatling = v;
-		nKey = -2;
-		}
-	}
-
-if ((m = menu ["scrape sound"])) {
-	v = m->Value ();
-	if (gameOpts->sound.bScrape != v) {
-		gameOpts->sound.bScrape = v;
 		nKey = -2;
 		}
 	}
@@ -159,7 +151,7 @@ if ((m = menu ["redbook sound"])) {
 	v = m->Value ();
 	if (redbook.Enabled () != v) {
 		if (v && !gameOpts->sound.bUseRedbook) {
-			InfoBox (TXT_SORRY, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, TXT_REDBOOK_DISABLED);
+			MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_REDBOOK_DISABLED);
 			menu [soundOpts.nRedbook].Value () = 0;
 			menu [soundOpts.nRedbook].Rebuild ();
 			}
@@ -176,7 +168,7 @@ if ((m = menu ["redbook sound"])) {
 				if (v && !redbook.Playing ()) {
 					redbook.Enable (0);
 					gameStates.menus.nInMenu = 0;
-					InfoBox (TXT_SORRY, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, TXT_MUSIC_NOCD);
+					MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_MUSIC_NOCD);
 					gameStates.menus.nInMenu = 1;
 					m->Value () = 0;
 					m->Rebuild ();
@@ -201,7 +193,7 @@ if ((m = menu ["music volume"])) {
 		}
 	else {
 		if (gameConfig.nMidiVolume != v) {
-			int32_t bSongPlaying = (gameConfig.nMidiVolume > 0);
+			int bSongPlaying = (gameConfig.nMidiVolume > 0);
 
 			if (gameConfig.nMidiVolume * v == 0) //=> midi gets either turned on or off
 				nKey = -2;
@@ -246,16 +238,15 @@ pszLowMediumHigh [2] = TXT_HIGH;
 
 void SoundMenu (void)
 {
-	static int32_t choice = 0;
+	static int choice = 0;
 	char szSlider [50];
 
 	CMenu	m;
 #if 0
 	char	szVolume [50];
 #endif
-	int32_t	i;
-	int32_t	bSongPlaying = (gameConfig.nMidiVolume > 0);
-	int32_t	bShuffleMusic = gameOpts->sound.bShuffleMusic;
+	int	i;
+	int	bSongPlaying = (gameConfig.nMidiVolume > 0);
 
 InitStrings ();
 
@@ -279,7 +270,6 @@ do {
 	m.AddCheck ("link volumes", TXT_LINK_AUDIO_VOLUMES, gameOpts->sound.bLinkVolumes, KEY_L, HTX_SYNC_VOLUME);
 	m.AddCheck ("redbook sound", TXT_REDBOOK_ENABLED, redbook.Enabled (), KEY_C, HTX_ONLINE_MANUAL);
 	m.AddCheck ("reverse stereo", TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
-	m.AddCheck ("shuffle music", TXT_SHUFFLE_MUSIC, gameOpts->sound.bShuffleMusic, KEY_U, HTX_ONLINE_MANUAL);
 	if (!gameStates.app.bNostalgia) {
 #if 1
 		if (!redbook.Enabled () && gameConfig.nMidiVolume)
@@ -289,7 +279,6 @@ do {
 		m.AddCheck ("ship sound", TXT_SHIP_SOUND, gameOpts->sound.bShip, KEY_S, HTX_SHIP_SOUND);
 		m.AddCheck ("missile sound", TXT_MISSILE_SOUND, gameOpts->sound.bMissiles, KEY_M, HTX_MISSILE_SOUND);
 		m.AddCheck ("gatling sound", TXT_GATLING_SOUND, gameOpts->sound.bGatling, KEY_G, HTX_GATLING_SOUND);
-		m.AddCheck ("scrape sound", TXT_SCRAPE_SOUND, gameOpts->sound.bScrape, KEY_P, HTX_SCRAPE_SOUND);
 		if (!gameOpts->render.cockpit.bTextGauges)
 			m.AddCheck ("shield warning", TXT_SHIELD_WARNING, gameOpts->gameplay.bShieldWarning, KEY_W, HTX_CPIT_SHIELDWARN);
 		}
@@ -297,30 +286,23 @@ do {
 	i = m.Menu (NULL, TXT_SOUND_OPTS, SoundMenuCallback, &choice);
 	redbook.Enable (m.Value ("redbook sound"));
 	gameConfig.bReverseChannels = m.Value ("reverse stereo");
-	gameOpts->sound.bShuffleMusic = m.Value ("shuffle music");
 	if (!gameStates.app.bNostalgia) {
 		if (!redbook.Enabled () && gameConfig.nMidiVolume)
 			GET_VAL (gameOpts->sound.bFadeMusic, "fade music");
 		GET_VAL (gameOpts->sound.bShip, "ship sound");
 		GET_VAL (gameOpts->sound.bMissiles, "missile sound");
 		GET_VAL (gameOpts->sound.bGatling, "gatling sound");
-		GET_VAL (gameOpts->sound.bScrape, "scrape sound");
 		GET_VAL (gameOpts->gameplay.bShieldWarning, "shield warning");
 		if (gameStates.app.bGameRunning && !(gameOpts->sound.bShip && gameOpts->sound.bGatling))
 			audio.DestroyObjectSound (LOCALPLAYER.nObject);
 		}
-	gameOpts->sound.xCustomSoundVolume = (I2X (1) / 8) * gameConfig.nAudioVolume [0];
-	} while (i == -2);
+	gameOpts->sound.xCustomSoundVolume = fix (float (gameConfig.nAudioVolume [0]) * 10.0f / 8.0f + 0.5f);
+} while (i == -2);
 if (gameConfig.nMidiVolume < 1)
 	midi.PlaySong (NULL, NULL, NULL, 0, 0);
 else if (!bSongPlaying)
 	songManager.PlayCurrent (1);
 audio.SetMaxChannels (32 << (gameStates.sound.nSoundChannels - 2));
-if (bShuffleMusic != gameOpts->sound.bShuffleMusic) {
-	songManager.Align ();
-	if (gameStates.app.bGameRunning)
-		songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
-	}
 }
 
 //------------------------------------------------------------------------------

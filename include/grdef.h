@@ -17,28 +17,27 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  */
 
-extern void gr_set_buffer(int32_t w, int32_t h, int32_t r, int32_t (*buffer_func)());
+extern void gr_set_buffer(int w, int h, int r, int (*buffer_func)());
 
-extern void gr_pal_setblock( int32_t start, int32_t n, uint8_t * palette );
-extern void gr_pal_getblock( int32_t start, int32_t n, uint8_t * palette );
-extern void gr_pal_setone( int32_t index, uint8_t red, uint8_t green, uint8_t blue );
+extern void gr_pal_setblock( int start, int n, ubyte * palette );
+extern void gr_pal_getblock( int start, int n, ubyte * palette );
+extern void gr_pal_setone( int index, ubyte red, ubyte green, ubyte blue );
 
-void gr_linear_movsb( uint8_t * source, uint8_t * dest, int32_t nbytes);
-void gr_linear_movsw( uint8_t * source, uint8_t * dest, int32_t nbytes);
-void gr_linear_stosd( uint8_t * dest, CCanvasColor *color, uint32_t nbytes);
+void gr_linear_movsb( ubyte * source, ubyte * dest, int nbytes);
+void gr_linear_movsw( ubyte * source, ubyte * dest, int nbytes);
+void gr_linear_stosd( ubyte * dest, CCanvasColor *color, uint nbytes);
 
-extern uint32_t gr_var_color;
-extern uint32_t gr_var_bwidth;
-extern uint8_t * gr_var_bitmap;
+extern uint gr_var_color;
+extern uint gr_var_bwidth;
+extern ubyte * gr_var_bitmap;
 
-void gr_linear_movsd( uint8_t * source, uint8_t * dest, uint32_t nbytes);
-void gr_linear_rep_movsd_2x(uint8_t *source, uint8_t *dest, uint32_t nbytes);
+void gr_linear_movsd( ubyte * source, ubyte * dest, uint nbytes);
+void gr_linear_rep_movsd_2x(ubyte *source, ubyte *dest, uint nbytes);
 
-void gr_linear_line( int32_t x0, int32_t y0, int32_t x1, int32_t y1);
+void gr_linear_line( int x0, int y0, int x1, int y1);
 
-extern uint32_t Table8to32[256];
+extern uint Table8to32[256];
 
-#if 0
 #define MINX    0
 #define MINY    0
 #define MAXX    (CCanvas::Current ()->Width ()-1)
@@ -49,6 +48,5 @@ extern uint32_t Table8to32[256];
 #define ROWSIZE CCanvas::Current ()->RowSize ()
 #define DATA    CCanvas::Current ()->Buffer ()
 #define COLOR   CCanvas::Current ()->Color ()
-#endif
 
-void order( int32_t *x1, int32_t *x2 );
+void order( int *x1, int *x2 );

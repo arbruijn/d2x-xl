@@ -28,16 +28,16 @@ m_nFaceVerts = pa->m_nFaces * 3;
 
 //------------------------------------------------------------------------------
 
-void CModel::GetASEModelItems (int32_t nModel, ASE::CModel *pa, float fScale)
+void CModel::GetASEModelItems (int nModel, ASE::CModel *pa, float fScale)
 {
 	ASE::CSubModel*	psa;
 	ASE::CFace*			pfa;
 	CSubModel*			psm;
 	CFace*				pmf = m_faces.Buffer ();
 	CVertex*				pmv = m_faceVerts.Buffer ();
-	CBitmap*				pBm;
-	int32_t				h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
-	int32_t				bTextured;
+	CBitmap*				bmP;
+	int					h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
+	int					bTextured;
 
 for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 	psm = m_subModels + psa->m_nSubModel;
@@ -63,8 +63,7 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 	psm->m_nWeaponPos = psa->m_nWeaponPos;
 	psm->m_nGunPoint = psa->m_nGunPoint;
 	psm->m_bBullets = (psa->m_nBullets > 0);
-	psm->m_nVertexIndex [0] = nIndex;
-	psm->m_nVertices = psa->m_nVerts;
+	psm->m_nIndex = nIndex;
 	psm->m_iFrame = 0;
 	psm->m_tFrame = 0;
 	psm->m_nFrames = (psa->m_bBarrel || psa->m_bThruster) ? 32 : 0;
@@ -77,8 +76,8 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 #else
 		i = pfa->m_nBitmap;
 #endif
-		pBm = pa->m_textures.m_bitmaps + i;
-		bTextured = !pBm->Flat ();
+		bmP = pa->m_textures.m_bitmaps + i;
+		bTextured = !bmP->Flat ();
 		pmf->m_nBitmap = bTextured ? i : -1;
 		pmf->m_nVerts = 3;
 		pmf->m_nId = iFace;
@@ -89,7 +88,7 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 				pmv->m_baseColor.Green () =
 				pmv->m_baseColor.Blue () = 1;
 			else 
-				pBm->GetAvgColor (&pmv->m_baseColor);
+				bmP->GetAvgColor (&pmv->m_baseColor);
 			pmv->m_baseColor.Alpha () = 1;
 			pmv->m_renderColor = pmv->m_baseColor;
 			pmv->m_normal = psa->m_vertices [h].m_normal;
@@ -98,8 +97,6 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 				pmv->m_texCoord = psa->m_texCoord [pfa->m_nTexCoord [i]];
 			h += nVerts;
 			m_vertices [h] = pmv->m_vertex;
-			m_vertexOwner [h].m_nOwner = (uint16_t) psa->m_nSubModel;
-			m_vertexOwner [h].m_nVertex = (uint16_t) h;
 			m_vertNorms [h] = pmv->m_normal;
 			pmv->m_nIndex = h;
 			psm->SetMinMax (&pmv->m_vertex);
@@ -120,13 +117,13 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 
 //------------------------------------------------------------------------------
 
-int32_t CModel::BuildFromASE (CObject *pObj, int32_t nModel)
+int CModel::BuildFromASE (CObject *objP, int nModel)
 {
-	ASE::CModel*	pa = gameData.modelData.modelToASE [1][nModel];
-	int32_t			i, j;
+	ASE::CModel*	pa = gameData.models.modelToASE [1][nModel];
+	int				i, j;
 
 if (!pa) {
-	pa = gameData.modelData.modelToASE [0][nModel];
+	pa = gameData.models.modelToASE [0][nModel];
 	if (!pa)
 		return 0;
 	}
@@ -145,19 +142,17 @@ GetASEModelItems (nModel, pa, 1.0f); //(nModel == 108) || (nModel == 110)) ? 1.1
 m_nModel = nModel;
 m_textures = pa->m_textures.m_bitmaps;
 m_nTextures = pa->m_textures.m_nBitmaps;
-for (i = 0; i < m_nTextures; i++) {
-	sprintf (m_textures [i].Name (), "ASE model %d texture %d", nModel, i);
+for (i = 0; i < m_nTextures; i++)
 	pa->m_textures.m_bitmaps [i].ShareBuffer (m_textures [i]);
-	}
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 for (i = 0; i < m_nTextures; i++)
-	if ((j = (int32_t) m_textures [i].Team ()))
+	if ((j = (int) m_textures [i].Team ()))
 		m_teamTextures [j - 1] = i;
 m_nType = 2;
-gameData.modelData.polyModels [0][nModel].SetRad (Size (pObj, 1), 1);
+gameData.models.polyModels [0][nModel].SetRad (Size (objP, 1));
 Setup (1, 1);
 #if 1
-SetGunPoints (pObj, 1);
+SetGunPoints (objP, 1);
 #endif
 if (gameStates.app.nLogLevel > 1)
 	PrintLog (-1);

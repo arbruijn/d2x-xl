@@ -25,13 +25,13 @@
 //added 05/17/99 Matt Mueller - needed to redefine FD_* so that no asm is used
 #include "checker.h"
 //end addition -MM
-int32_t g_sockfd = -1;
+int g_sockfd = -1;
 struct sockaddr_in kalinix_addr;
 char g_mynodenum[6];
 
-int32_t knix_newSock(void) {
+int knix_newSock(void) {
 
-	int32_t tempsock;
+	int tempsock;
 	struct sockaddr_in taddr;
 
 	taddr.sin_family = AF_INET;
@@ -50,8 +50,8 @@ int32_t knix_newSock(void) {
 	return tempsock;
 }
 
-int32_t knix_Send(int32_t hand, char *data, int32_t len) {
-	int32_t i = 0, t;
+int knix_Send(int hand, char *data, int len) {
+	int i = 0, t;
 
 	while ((t = sendto(hand, data, len, 0, reinterpret_cast<struct sockaddr*> (&kalinix_addr), 
 			sizeof(kalinix_addr))) < 0) {
@@ -63,17 +63,17 @@ int32_t knix_Send(int32_t hand, char *data, int32_t len) {
 	return t;
 }
 
-int32_t knix_Recv(int32_t hand, char *data, int32_t len) {
+int knix_Recv(int hand, char *data, int len) {
 	struct sockaddr_in taddr;
-	uint32_t tlen;
+	uint tlen;
 
 	tlen = sizeof(taddr);
 
-	return (int32_t) recvfrom(hand, data, len, 0, reinterpret_cast<struct sockaddr*> (&taddr), &tlen);
+	return (int) recvfrom(hand, data, len, 0, reinterpret_cast<struct sockaddr*> (&taddr), &tlen);
 
 }
 
-int32_t knix_WaitforSocket(int32_t hand, int32_t timems) {
+int knix_WaitforSocket(int hand, int timems) {
 	fd_set set;
 	struct timeval tv;
 
@@ -85,9 +85,9 @@ int32_t knix_WaitforSocket(int32_t hand, int32_t timems) {
 	return select(hand + 1, &set, NULL, NULL, &tv);
 }
 
-int32_t knix_ReceivePacket(int32_t hand, char *outdata, int32_t *outlen, kaliaddr_ipx *from) {
+int knix_ReceivePacket(int hand, char *outdata, int *outlen, kaliaddr_ipx *from) {
 	static char data[MAX_PACKET_SIZE];
-	int32_t len;
+	int len;
 
 	len = knix_Recv(hand, data, sizeof(data));
 
@@ -105,7 +105,7 @@ int32_t knix_ReceivePacket(int32_t hand, char *outdata, int32_t *outlen, kaliadd
 			from->sa_family = AF_IPX;
 			memcpy(from->sa_nodenum, &data[1], sizeof(from->sa_nodenum));
 			memset(from->sa_netnum, 0, sizeof(from->sa_netnum));
-			memcpy(&from->sa_socket, &data[9], sizeof(uint16_t));
+			memcpy(&from->sa_socket, &data[9], sizeof(ushort));
 			memcpy(outdata, &data[11], len-11 > *outlen ? *outlen : len-11);
 			*outlen = len-11;
 			break;
@@ -126,7 +126,7 @@ int32_t knix_ReceivePacket(int32_t hand, char *outdata, int32_t *outlen, kaliadd
 
 }
 
-int32_t knix_GetMyAddress(void) {
+int knix_GetMyAddress(void) {
 	char initdata[1];
 
 	if (g_sockfd < 0) {
@@ -145,7 +145,7 @@ int32_t knix_GetMyAddress(void) {
 
 }
 
-int32_t KaliSendPacket(int32_t hand, char *data, int32_t len, kaliaddr_ipx *to) {
+int KaliSendPacket(int hand, char *data, int len, kaliaddr_ipx *to) {
 	static char sendbuf[MAX_PACKET_SIZE+11];
 //		char	code; == 3
 //		char	sa_nodenum[6];
@@ -167,9 +167,9 @@ int32_t KaliSendPacket(int32_t hand, char *data, int32_t len, kaliaddr_ipx *to) 
 
 }
 
-int32_t KaliReceivePacket(int32_t hand, char *data, int32_t len, kaliaddr_ipx *from) {
-	int32_t newlen;
-	int32_t t;
+int KaliReceivePacket(int hand, char *data, int len, kaliaddr_ipx *from) {
+	int newlen;
+	int t;
 
 	newlen = len;
 
@@ -184,8 +184,8 @@ int32_t KaliReceivePacket(int32_t hand, char *data, int32_t len, kaliaddr_ipx *f
 
 }
 
-int32_t KaliGetNodeNum(kaliaddr_ipx *myaddr) {
-	int32_t tcount = 0;
+int KaliGetNodeNum(kaliaddr_ipx *myaddr) {
+	int tcount = 0;
 
 	if (g_sockfd < 0 && knix_GetMyAddress())
 		return -1;
@@ -210,9 +210,9 @@ int32_t KaliGetNodeNum(kaliaddr_ipx *myaddr) {
 
 }
 
-int32_t KaliCloseSocket(int32_t hand) {
+int KaliCloseSocket(int hand) {
 	char opendata[3] = {2, 0, 0};
-	int32_t tcount = 0;
+	int tcount = 0;
 
 	knix_Send(hand, opendata, sizeof(opendata));
 
@@ -231,15 +231,15 @@ int32_t KaliCloseSocket(int32_t hand) {
 
 }
 
-int32_t KaliOpenSocket(uint16_t port) {
+int KaliOpenSocket(ushort port) {
 	char opendata[16];
-	int32_t hand;
-	int32_t tcount = 0;
+	int hand;
+	int tcount = 0;
 	long pid;
 
 	opendata[0] = 1; // open socket
 	memcpy(&opendata[1], &port, sizeof(port));
-	pid = (int32_t)htonl(getpid());
+	pid = (int)htonl(getpid());
 	memcpy(&opendata[3], &pid, sizeof(pid));
 	strncpy(&opendata[7], KALI_PROCESS_NAME, sizeof(KALI_PROCESS_NAME));
 	opendata[15] = 0;

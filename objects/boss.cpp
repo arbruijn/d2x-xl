@@ -64,47 +64,47 @@ m_nGateInterval = I2X (4) - gameStates.app.nDifficultyLevel * I2X (2) / 3;
 #define	QUEUE_SIZE	256
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Create list of segments boss is allowed to teleport to at pSegList.
+//	Create list of segments boss is allowed to teleport to at segListP.
 //	Set *segCountP.
 //	Boss is allowed to teleport to segments he fits in (calls ObjectIntersectsWall) and
 //	he can reach from his initial position (calls PathLength).
 //	If bSizeCheck is set, then only add CSegment if boss can fit in it, else any segment is legal.
 //	bOneWallHack added by MK, 10/13/95: A mega-hack! Set to !0 to ignore the
-bool CBossInfo::SetupSegments (CShortArray& segments, int32_t bSizeCheck, int32_t bOneWallHack)
+bool CBossInfo::SetupSegments (CShortArray& segments, int bSizeCheck, int bOneWallHack)
 {
-	CSegment		*pSeg;
-	CObject		*pBossObj = OBJECT (m_nObject);
+	CSegment		*segP;
+	CObject		*bossObjP = OBJECTS + m_nObject;
 	CFixVector	vBossHomePos;
-	int32_t		nMaxSegments, nSegments = 0;
-	int32_t		nBossHomeSeg;
-	int32_t		head, tail, w, childSeg;
-	int32_t		nGroup, nSide;
+	int			nMaxSegments, nSegments = 0;
+	int			nBossHomeSeg;
+	int			head, tail, w, childSeg;
+	int			nGroup, nSide;
 	CIntArray	queue;
 	fix			xBossSizeSave;
 
-	static int16_t bossSegs [MAX_BOSS_TELEPORT_SEGS];
+	static short bossSegs [MAX_BOSS_TELEPORT_SEGS];
 
 //	See if there is a boss.  If not, quick out.
-xBossSizeSave = pBossObj->info.xSize;
-// -- Causes problems!!	-- pBossObj->SetSize (FixMul (I2X (3) / 4, pBossObj->info.xSize));
-nBossHomeSeg = pBossObj->info.nSegment;
-vBossHomePos = pBossObj->info.position.vPos;
-nGroup = SEGMENT (nBossHomeSeg)->m_group;
-if (!queue.Create (gameData.segData.nSegments))
+xBossSizeSave = bossObjP->info.xSize;
+// -- Causes problems!!	-- bossObjP->SetSize (FixMul (I2X (3) / 4, bossObjP->info.xSize));
+nBossHomeSeg = bossObjP->info.nSegment;
+vBossHomePos = bossObjP->info.position.vPos;
+nGroup = SEGMENTS [nBossHomeSeg].m_group;
+if (!queue.Create (gameData.segs.nSegments))
 	return false;
 head = 1;
 tail = 0;
 queue [0] = nBossHomeSeg;
 bossSegs [nSegments++] = nBossHomeSeg;
-nMaxSegments = Min (MAX_BOSS_TELEPORT_SEGS, LEVEL_SEGMENTS);
-gameData.renderData.mine.visibility [0].BumpVisitedFlag ();
+nMaxSegments = min (MAX_BOSS_TELEPORT_SEGS, LEVEL_SEGMENTS);
+gameData.render.mine.visibility [0].BumpVisitedFlag ();
 
 while (tail != head) {
-	pSeg = SEGMENT (queue [tail++]);
+	segP = SEGMENTS + queue [tail++];
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
-		childSeg = pSeg->m_children [nSide];
+		childSeg = segP->m_children [nSide];
 		if (!bOneWallHack) {
-			w = pSeg->IsPassable (nSide, NULL);
+			w = segP->IsDoorWay (nSide, NULL);
 			if (!(w & WID_PASSABLE_FLAG))
 				continue;
 			}
@@ -113,19 +113,19 @@ while (tail != head) {
 			continue;
 		if (bOneWallHack)
 			bOneWallHack--;
-		if (gameData.renderData.mine.Visited (childSeg))
+		if (gameData.render.mine.Visited (childSeg))
 			continue;
-		if (nGroup != SEGMENT (childSeg)->m_group)
+		if (nGroup != SEGMENTS [childSeg].m_group)
 			continue;
-		gameData.renderData.mine.Visit (childSeg);
-		if (bSizeCheck && !BossFitsInSeg (pBossObj, childSeg))
+		gameData.render.mine.Visit (childSeg);
+		if (bSizeCheck && !BossFitsInSeg (bossObjP, childSeg))
 			continue;
 		queue [head++] = childSeg;
 		if (nSegments >= nMaxSegments - 1)
 			goto done;
 #if DBG
 		if (bSizeCheck && (childSeg == nDbgSeg))
-			BRP;
+			nDbgSeg = nDbgSeg;
 #endif
 		bossSegs [nSegments++] = childSeg;
 		}
@@ -137,9 +137,9 @@ segments.Destroy ();
 if (!(nSegments && segments.Create (nSegments)))
 	return false;
 memcpy (segments.Buffer (), bossSegs, nSegments * sizeof (segments [0]));
-pBossObj->SetSize (xBossSizeSave);
-pBossObj->info.position.vPos = vBossHomePos;
-OBJECT (m_nObject)->RelinkToSeg (nBossHomeSeg);
+bossObjP->SetSize (xBossSizeSave);
+bossObjP->info.position.vPos = vBossHomePos;
+OBJECTS [m_nObject].RelinkToSeg (nBossHomeSeg);
 return true;
 }
 
@@ -171,7 +171,7 @@ Init ();
 
 // -----------------------------------------------------------------------------
 
-bool CBossInfo::Setup (int16_t nObject)
+bool CBossInfo::Setup (short nObject)
 {
 if (nObject >= 0)
 	m_nObject = nObject;
@@ -229,7 +229,7 @@ cf.WriteShort (m_gateSegs.Length ());
 
 void CBossInfo::SaveBufferState (CFile& cf, CShortArray& buffer)
 {
-	int32_t	i, j;
+	int	i, j;
 
 if (buffer.Buffer () && (j = buffer.Length ()))
 	for (i = 0; i < j; i++)
@@ -257,22 +257,21 @@ cf.Read (&m_nCloakDuration, sizeof (fix), 1);
 cf.Read (&m_nLastGateTime, sizeof (fix), 1);
 cf.Read (&m_nGateInterval, sizeof (fix), 1);
 cf.Read (&m_nDyingStartTime, sizeof (fix), 1);
-int32_t h;
-cf.Read (&h, sizeof (int32_t), 1);
-m_nDying = int16_t (h);
-CObject* pObj = OBJECT (m_nDying);
-if (!pObj || !pObj->IsBoss ())
-	m_nDying = -1;
-else if (m_nDying && (m_nDyingStartTime > gameData.timeData.xGame))
-	m_nDyingStartTime = gameData.timeData.xGame;
-cf.Read (&h, sizeof (int32_t), 1);
-m_bDyingSoundPlaying = int8_t (h);
+int h;
+cf.Read (&h, sizeof (int), 1);
+m_nDying = short (h);
+if ((m_nDying < 0) || (m_nDying >= gameData.objs.nObjects) || !ROBOTINFO (OBJECTS [m_nDying].info.nId).bossFlag)
+	m_nDying = 0;
+else if (m_nDying && (m_nDyingStartTime > gameData.time.xGame))
+	m_nDyingStartTime = gameData.time.xGame;
+cf.Read (&h, sizeof (int), 1);
+m_bDyingSoundPlaying = sbyte (h);
 cf.Read (&m_nHitTime, sizeof (fix), 1);
 }
 
 // -----------------------------------------------------------------------------
 
-void CBossInfo::LoadState (CFile& cf, int32_t nVersion)
+void CBossInfo::LoadState (CFile& cf, int nVersion)
 {
 if (nVersion > 31)
 	m_nObject = cf.ReadShort ();
@@ -286,8 +285,8 @@ m_nLastGateTime = cf.ReadFix ();
 m_nGateInterval = cf.ReadFix ();
 m_nDyingStartTime = cf.ReadFix ();
 m_nDying = cf.ReadInt ();
-if (m_nDying && (m_nDyingStartTime > gameData.timeData.xGame))
-	m_nDyingStartTime = gameData.timeData.xGame;
+if (m_nDying && (m_nDyingStartTime > gameData.time.xGame))
+	m_nDyingStartTime = gameData.time.xGame;
 m_bDyingSoundPlaying = cf.ReadInt ();
 m_nHitTime = cf.ReadFix ();
 }
@@ -302,20 +301,20 @@ m_nGateSegs = cf.ReadShort ();
 
 // -----------------------------------------------------------------------------
 
-int32_t CBossInfo::LoadBufferState (CFile& cf, CShortArray& buffer, int32_t nBufSize)
+int CBossInfo::LoadBufferState (CFile& cf, CShortArray& buffer, int nBufSize)
 {
-if (!nBufSize || (uint32_t (nBufSize) > uint32_t (LEVEL_SEGMENTS)))
+if (!nBufSize || (uint (nBufSize) > uint (LEVEL_SEGMENTS)))
 	return 1;
 if (!buffer.Create (nBufSize))
 	return 0;
-for (int32_t i = 0; i < nBufSize; i++)
+for (int i = 0; i < nBufSize; i++)
 	buffer [i] = cf.ReadShort ();
 return 1;
 }
 
 // -----------------------------------------------------------------------------
 
-int32_t CBossInfo::LoadBufferStates (CFile& cf)
+int CBossInfo::LoadBufferStates (CFile& cf)
 {
 return LoadBufferState (cf, m_gateSegs, m_nGateSegs) && LoadBufferState (cf, m_teleportSegs, m_nTeleportSegs);
 }
@@ -324,7 +323,7 @@ return LoadBufferState (cf, m_gateSegs, m_nGateSegs) && LoadBufferState (cf, m_t
 
 void CBossInfo::ResetCloakTime (void) 
 { 
-m_nCloakStartTime = m_nCloakEndTime = gameData.timeData.xGame; 
+m_nCloakStartTime = m_nCloakEndTime = gameData.time.xGame; 
 }
 
 // -----------------------------------------------------------------------------
@@ -337,7 +336,7 @@ CBossData::CBossData ()
 
 // ----------------------------------------------------------------------------
 
-bool CBossData::Create (uint32_t nBosses)
+bool CBossData::Create (uint nBosses)
 {
 if (!m_info.Create (nBosses ? nBosses : 10))
 	return false;
@@ -353,9 +352,9 @@ void CBossData::Destroy (void)
 m_info.Destroy ();
 }
 
-int16_t CBossData::Find (int16_t nBossObj)
+short CBossData::Find (short nBossObj)
 {
-for (int16_t nBoss = 0; nBoss < int16_t (m_info.ToS ()); nBoss++)
+for (short nBoss = 0; nBoss < short (m_info.ToS ()); nBoss++)
 	if (m_info [nBoss].m_nObject == nBossObj)
 		return nBoss;
 return -1;
@@ -363,17 +362,17 @@ return -1;
 
 // -----------------------------------------------------------------------------
 
-void CBossData::Setup (int32_t nObject)
+void CBossData::Setup (int nObject)
 {
-for (uint32_t i = 0; i < m_info.ToS (); i++)
+for (uint i = 0; i < m_info.ToS (); i++)
 	m_info [i].Setup (nObject);
 }
 
 // -----------------------------------------------------------------------------
 
-int32_t CBossData::Add (int16_t nObject)
+int CBossData::Add (short nObject)
 {
-	int16_t	nBoss = Find (nObject);
+	short	nBoss = Find (nObject);
 
 if (nBoss >= 0)
 	return nBoss;
@@ -383,22 +382,22 @@ if (!m_info.Grow ())
 	return -1;
 m_info.Top ()->Init ();
 m_info.Top ()->Setup (nObject);
-if (ROBOTINFO (OBJECT (nObject)) && ROBOTINFO (OBJECT (nObject))->bEndsLevel)
+if (ROBOTINFO (OBJECTS [nObject].info.nId).bEndsLevel)
 	extraGameInfo [0].nBossCount [0]++;
 return nBoss;
 }
 
 // -----------------------------------------------------------------------------
 
-void CBossData::Remove (int16_t nBoss)
+void CBossData::Remove (short nBoss)
 {
-if ((nBoss < 0) || (nBoss >= int16_t (m_info.ToS ())))
+if ((nBoss < 0) || (nBoss >= short (m_info.ToS ())))
 	return;
 	
-int16_t nObject = m_info [nBoss].m_nObject;
+short nObject = m_info [nBoss].m_nObject;
 
 if (m_info.Delete (nBoss)) {
-	if (ROBOTINFO (OBJECT (nObject)) && ROBOTINFO (OBJECT (nObject))->bEndsLevel)
+	if (ROBOTINFO (OBJECTS [nObject].info.nId).bEndsLevel)
 		extraGameInfo [0].nBossCount [0]--;
 	memset (&m_info [m_info.ToS ()], 0, sizeof (CBossInfo));
 	}
@@ -408,7 +407,7 @@ if (m_info.Delete (nBoss)) {
 
 void CBossData::InitGateIntervals (void)
 {
-for (uint32_t i = 0; i < m_info.ToS (); i++)
+for (uint i = 0; i < m_info.ToS (); i++)
 	m_info [i].InitGateInterval ();
 }
 
@@ -416,7 +415,7 @@ for (uint32_t i = 0; i < m_info.ToS (); i++)
 
 void CBossData::ResetHitTimes (void)
 {
-for (uint32_t i = 0; i < m_info.ToS (); i++)
+for (uint i = 0; i < m_info.ToS (); i++)
 	m_info [i].ResetHitTime ();
 }
 
@@ -424,14 +423,14 @@ for (uint32_t i = 0; i < m_info.ToS (); i++)
 
 void CBossData::ResetCloakTimes (void)
 {
-for (uint32_t i = 0; i < m_info.ToS (); i++)
-	gameData.bossData [i].ResetCloakTime ();
+for (uint i = 0; i < m_info.ToS (); i++)
+	gameData.bosses [i].ResetCloakTime ();
 }
 
 // -----------------------------------------------------------------------------
 
 void CBossData::SaveStates (CFile& cf) {
-	for (uint32_t i = 0; i < m_info.ToS (); i++)
+	for (uint i = 0; i < m_info.ToS (); i++)
 		m_info [i].SaveState (cf);
 	}
 
@@ -439,7 +438,7 @@ void CBossData::SaveStates (CFile& cf) {
 
 void CBossData::SaveSizeStates (CFile& cf) 
 {
-for (uint32_t i = 0; i < m_info.ToS (); i++)
+for (uint i = 0; i < m_info.ToS (); i++)
 	m_info [i].SaveSizeStates (cf);
 }
 
@@ -447,7 +446,7 @@ for (uint32_t i = 0; i < m_info.ToS (); i++)
 
 void CBossData::SaveBufferStates (CFile& cf) 
 {
-for (uint32_t i = 0; i < m_info.ToS (); i++)
+for (uint i = 0; i < m_info.ToS (); i++)
 	m_info [i].SaveBufferStates (cf);
 }
 
@@ -455,15 +454,15 @@ for (uint32_t i = 0; i < m_info.ToS (); i++)
 
 void CBossData::LoadBinStates (CFile& cf) 
 {
-for (uint32_t i = 0; i < m_info.ToS (); i++)
+for (uint i = 0; i < m_info.ToS (); i++)
 	m_info [i].LoadBinState (cf);
 }
 
 // -----------------------------------------------------------------------------
 
-void CBossData::LoadStates (CFile& cf, int32_t nVersion) 
+void CBossData::LoadStates (CFile& cf, int nVersion) 
 {
-for (uint32_t i = 0; i < m_info.ToS (); i++)
+for (uint i = 0; i < m_info.ToS (); i++)
 	m_info [i].LoadState (cf, nVersion);
 }
 
@@ -471,15 +470,15 @@ for (uint32_t i = 0; i < m_info.ToS (); i++)
 
 void CBossData::LoadSizeStates (CFile& cf) 
 {
-for (uint32_t i = 0; i < m_info.ToS (); i++)
+for (uint i = 0; i < m_info.ToS (); i++)
 	m_info [i].LoadSizeStates (cf);
 }
 
 // -----------------------------------------------------------------------------
 
-int32_t CBossData::LoadBufferStates (CFile& cf) 
+int CBossData::LoadBufferStates (CFile& cf) 
 {
-for (uint32_t i = 0; i < m_info.ToS (); i++)
+for (uint i = 0; i < m_info.ToS (); i++)
 	if (!m_info [i].LoadBufferStates (cf))
 		return 0;
 return 1;

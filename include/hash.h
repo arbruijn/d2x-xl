@@ -16,23 +16,23 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 class CHashTable {
 	public:
-		int32_t 						m_bitSize;
-		int32_t						m_andMask;
-		int32_t						m_size;
-		int32_t						m_nItems;
+		int 						m_bitSize;
+		int						m_andMask;
+		int						m_size;
+		int						m_nItems;
 		CArray<const char*>	m_key;
-		CArray<int32_t>				m_value;
+		CArray<int>				m_value;
 
 	public:
 		CHashTable () { Init (); }
 		void Init (void);
-		int32_t Create (int32_t size);
+		int Create (int size);
 		void Destroy ();
-		int32_t Search (const char *key);
-		void Insert (const char *key, int32_t value);
+		int Search (const char *key);
+		void Insert (const char *key, int value);
 
 	private:
-		int32_t GetKey (const char *key);
+		int GetKey (const char *key);
 
 };
 

@@ -61,7 +61,7 @@ return DSWAP (i)->d;
 #endif
 }
 
-static inline double SwapDouble (double i, int32_t bEndian)
+static inline double SwapDouble (double i, int bEndian)
 {
 if (gameStates.app.bLittleEndian == bEndian)
 	return i;
@@ -98,7 +98,7 @@ return FSWAP (i)->f;
 #endif
 }
 
-static inline float SwapFloat (float i, int32_t bEndian)
+static inline float SwapFloat (float i, int bEndian)
 {
 if (gameStates.app.bLittleEndian == bEndian)
 	return i;
@@ -108,13 +108,13 @@ return SWAPFLOAT (i);
 // ----------------------------------------------------------------------------
 
 typedef union iSwap {
-	int32_t	i;
+	int	i;
 	char	b [4];
 } iSwap;
 
 #define ISWAP(_i)	(reinterpret_cast<iSwap *> (&(_i)))
 
-static inline int32_t SWAPINT (int32_t i)
+static inline int SWAPINT (int i)
 {
 char	h;
 SWAP (h, ISWAP (i)->b [0], ISWAP (i)->b [3]);
@@ -122,7 +122,7 @@ SWAP (h, ISWAP (i)->b [1], ISWAP (i)->b [2]);
 return ISWAP (i)->i;
 }
 
-static inline int32_t SwapInt (int32_t i, int32_t bEndian)
+static inline int SwapInt (int i, int bEndian)
 {
 if (gameStates.app.bLittleEndian == bEndian)
 	return i;
@@ -132,20 +132,20 @@ return SWAPINT (i);
 // ----------------------------------------------------------------------------
 
 typedef union sSwap {
-	int16_t	s;
+	short	s;
 	char	b [2];
 } sSwap;
 
 #define SSWAP(_s)	(reinterpret_cast<sSwap *> (&(_s)))
 
-static inline int16_t SWAPSHORT (int16_t i)
+static inline short SWAPSHORT (short i)
 {
 char	h;
 SWAP (h, SSWAP (i)->b [0], SSWAP (i)->b [1]);
 return SSWAP (i)->s;
 }
 
-static inline int32_t SwapShort (int16_t i, int32_t bEndian)
+static inline int SwapShort (short i, int bEndian)
 {
 if (gameStates.app.bLittleEndian == bEndian)
 	return i;
@@ -154,21 +154,25 @@ return SWAPSHORT (i);
 
 // ----------------------------------------------------------------------------
 
+#ifndef _WINDOWS
+#	define byte unsigned char
+#endif
+
 typedef union usSwap {
-	uint16_t	s;
-	uint8_t		b [2];
+	ushort	s;
+	ubyte		b [2];
 } usSwap;
 
 #define USSWAP(_s)	(reinterpret_cast<usSwap *> (&(_s)))
 
-static inline int16_t SWAPUSHORT (uint16_t i)
+static inline short SWAPUSHORT (ushort i)
 {
-uint8_t h;
+ubyte h;
 SWAP (h, USSWAP (i)->b [0], USSWAP (i)->b [1]);
 return USSWAP (i)->s;
 }
 
-static inline int32_t SwapUShort (uint16_t i, int32_t bEndian)
+static inline int SwapUShort (ushort i, int bEndian)
 {
 if (gameStates.app.bLittleEndian == bEndian)
 	return i;
@@ -177,31 +181,31 @@ return SWAPUSHORT (i);
 
 // ----------------------------------------------------------------------------
 
-static inline CFixVector& SwapVector (CFixVector& v, int32_t bEndian)
+static inline CFixVector& SwapVector (CFixVector& v, int bEndian)
 {
 if (gameStates.app.bLittleEndian != bEndian) {
-	v.v.coord.x = (fix) SWAPINT ((int32_t) v.v.coord.x);
-	v.v.coord.y = (fix) SWAPINT ((int32_t) v.v.coord.y);
-	v.v.coord.z = (fix) SWAPINT ((int32_t) v.v.coord.z);
+	v.v.coord.x = (fix) SWAPINT ((int) v.v.coord.x);
+	v.v.coord.y = (fix) SWAPINT ((int) v.v.coord.y);
+	v.v.coord.z = (fix) SWAPINT ((int) v.v.coord.z);
 	}
 return v;
 }
 
 // ----------------------------------------------------------------------------
 
-static inline CAngleVector& SwapAngVec (CAngleVector& v, int32_t bEndian)
+static inline CAngleVector& SwapAngVec (CAngleVector& v, int bEndian)
 {
 if (gameStates.app.bLittleEndian != bEndian) {
-	v.v.coord.p = (fixang) SWAPSHORT ((int16_t) v.v.coord.p);
-	v.v.coord.b = (fixang) SWAPSHORT ((int16_t) v.v.coord.b);
-	v.v.coord.h = (fixang) SWAPSHORT ((int16_t) v.v.coord.h);
+	v.v.coord.p = (fixang) SWAPSHORT ((short) v.v.coord.p);
+	v.v.coord.b = (fixang) SWAPSHORT ((short) v.v.coord.b);
+	v.v.coord.h = (fixang) SWAPSHORT ((short) v.v.coord.h);
 	}
 return v;
 }
 
 // ----------------------------------------------------------------------------
 
-static inline CFixMatrix& SwapMatrix (CFixMatrix& m, int32_t bEndian)
+static inline CFixMatrix& SwapMatrix (CFixMatrix& m, int bEndian)
 {
 if (gameStates.app.bLittleEndian != bEndian) {
 	SwapVector (m.m.dir.r, bEndian);
@@ -224,59 +228,27 @@ return m;
 #define BE_SHORT(_x)			SwapShort(_x,0)
 
 #ifndef WORDS_NEED_ALIGNMENT
-
-#if 0
-
-// this causes dereferencing type punned pointer warnings from g++
-#define GET_INTEL_INT(s)        INTEL_INT(*reinterpret_cast<uint32_t *>(s))
-#define GET_INTEL_SHORT(s)      INTEL_SHORT(*reinterpret_cast<uint16_t *>(s))
-#define PUT_INTEL_INT(d, s)     { *reinterpret_cast<uint32_t *>(d) = INTEL_INT((uint32_t)(s)); }
-#define PUT_INTEL_SHORT(d, s)   { *reinterpret_cast<uint16_t *>(d) = INTEL_SHORT((uint16_t)(s)); }
-
-#else
-
-static inline uint32_t GET_INTEL_INT (void *s)
-{
-return INTEL_INT (*reinterpret_cast<uint32_t*> (s));
-}
-
-static inline uint16_t GET_INTEL_SHORT (void *s)
-{
-return INTEL_SHORT (*reinterpret_cast<uint16_t*> (s));
-}
-
-static inline void PUT_INTEL_INT (void *d, uint32_t s)
-{
-*reinterpret_cast<uint32_t*> (d) = INTEL_INT (s);
-}
-
-static inline void PUT_INTEL_SHORT (void *d, uint16_t s)
-{
-*reinterpret_cast<uint16_t*> (d) = INTEL_SHORT (s);
-}
-
-#endif
-
+#define GET_INTEL_INT(s)        INTEL_INT(*reinterpret_cast<uint *>(s))
+#define GET_INTEL_SHORT(s)      INTEL_SHORT(*reinterpret_cast<ushort *>(s))
+#define PUT_INTEL_INT(d, s)     { *reinterpret_cast<uint *>(d) = INTEL_INT((uint)(s)); }
+#define PUT_INTEL_SHORT(d, s)   { *reinterpret_cast<ushort *>(d) = INTEL_SHORT((ushort)(s)); }
 #else // ! WORDS_NEED_ALIGNMENT
-
-static inline uint32_t GET_INTEL_INT(void *s)
+static inline uint GET_INTEL_INT(void *s)
 {
-uint32_t tmp;
-memcpy (reinterpret_cast<void *>&tmp, s, 4);
-return INTEL_INT (tmp);
+	uint tmp;
+	memcpy(reinterpret_cast<void *>&tmp, s, 4);
+	return INTEL_INT(tmp);
 }
-
-static inline uint32_t GET_INTEL_SHORT (void *s)
+static inline uint GET_INTEL_SHORT(void *s)
 {
-uint16_t tmp;
-memcpy (reinterpret_cast<void *>&tmp, s, 2);
-return INTEL_SHORT (tmp);
+	ushort tmp;
+	memcpy(reinterpret_cast<void *>&tmp, s, 2);
+	return INTEL_SHORT(tmp);
 }
-
-#define PUT_INTEL_INT(d, s)     { uint32_t tmp = INTEL_INT(s); memcpy(reinterpret_cast<void *>(d), reinterpret_cast<void *>&tmp, 4); }
-
-#define PUT_INTEL_SHORT(d, s)   { uint16_t tmp = INTEL_SHORT(s); memcpy(reinterpret_cast<void *>(d), reinterpret_cast<void *>&tmp, 2); }
-
+#define PUT_INTEL_INT(d, s)     { uint tmp = INTEL_INT(s); \
+                                  memcpy(reinterpret_cast<void *>(d), reinterpret_cast<void *>&tmp, 4); }
+#define PUT_INTEL_SHORT(d, s)   { ushort tmp = INTEL_SHORT(s); \
+                                  memcpy(reinterpret_cast<void *>(d), reinterpret_cast<void *>&tmp, 2); }
 #endif // ! WORDS_NEED_ALIGNMENT
 
 #endif // ! _BYTESWAP_H

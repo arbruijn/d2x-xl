@@ -30,20 +30,19 @@
 #include "buildmodel.h"
 #include "weapon.h"
 #include "headlight.h"
-#include "addon_bitmaps.h"
 
 extern CFaceColor tMapColor;
 
 #if DBG_SHADOWS
-extern int32_t bShadowTest;
-extern int32_t bFrontCap;
-extern int32_t bRearCap;
-extern int32_t bShadowVolume;
-extern int32_t bFrontFaces;
-extern int32_t bBackFaces;
-extern int32_t bSWCulling;
+extern int bShadowTest;
+extern int bFrontCap;
+extern int bRearCap;
+extern int bShadowVolume;
+extern int bFrontFaces;
+extern int bBackFaces;
+extern int bSWCulling;
 #endif
-extern int32_t bZPass;
+extern int bZPass;
 
 #define G3_DRAW_ARRAYS				1
 #define G3_DRAW_SUBMODELS			1
@@ -54,86 +53,82 @@ extern int32_t bZPass;
 #define G3_USE_VBOS					1 //G3_HW_LIGHTING
 #define G3_ALLOW_TRANSPARENCY		1
 
-#if POLYGONAL_OUTLINE
-extern bool bPolygonalOutline;
-#endif
-
 //------------------------------------------------------------------------------
 
-void G3DynLightModel (CObject *pObj, RenderModel::CModel *pModel, uint16_t iVerts, uint16_t nVerts, uint16_t iFaceVerts, uint16_t nFaceVerts)
+void G3DynLightModel (CObject *objP, RenderModel::CModel *modelP, ushort iVerts, ushort nVerts, ushort iFaceVerts, ushort nFaceVerts)
 {
 	CFloatVector				vPos, vVertex;
 	CFloatVector3*				pv, * pn;
 	RenderModel::CVertex*	pmv;
-	CFaceColor*					pColor;
+	CFaceColor*					colorP;
 	float							fAlpha = gameStates.render.grAlpha;
-	int32_t						h, i, bEmissive = pObj->IsProjectile ();
+	int							h, i, bEmissive = objP->IsWeapon () && !objP->IsMissile ();
 
 if (!gameStates.render.bBrightObject) {
-	vPos.Assign (pObj->info.position.vPos);
-	for (i = iVerts, pv = pModel->m_vertices + iVerts, pn = pModel->m_vertNorms + iVerts, pColor = pModel->m_color + iVerts;
+	vPos.Assign (objP->info.position.vPos);
+	for (i = iVerts, pv = modelP->m_vertices + iVerts, pn = modelP->m_vertNorms + iVerts, colorP = modelP->m_color + iVerts;
 		  i < nVerts;
-		  i++, pv++, pn++, pColor++) {
-		pColor->index = 0;
+		  i++, pv++, pn++, colorP++) {
+		colorP->index = 0;
 		vVertex = vPos + *reinterpret_cast<CFloatVector*> (pv);
-		GetVertexColor (-1, -1, i, reinterpret_cast<CFloatVector3*> (pn), vVertex.XYZ (), pColor, NULL, 1, 0, 0);
+		GetVertexColor (-1, -1, i, reinterpret_cast<CFloatVector3*> (pn), vVertex.XYZ (), colorP, NULL, 1, 0, 0);
 		}
 	}
-for (i = iFaceVerts, h = iFaceVerts, pmv = pModel->m_faceVerts + iFaceVerts; i < nFaceVerts; i++, h++, pmv++) {
+for (i = iFaceVerts, h = iFaceVerts, pmv = modelP->m_faceVerts + iFaceVerts; i < nFaceVerts; i++, h++, pmv++) {
 	if (gameStates.render.bBrightObject || bEmissive) {
-		pModel->m_vbColor [h] = pmv->m_baseColor;
-		pModel->m_vbColor [h].Alpha () = fAlpha;
+		modelP->m_vbColor [h] = pmv->m_baseColor;
+		modelP->m_vbColor [h].Alpha () = fAlpha;
 		}
 	else if (pmv->m_bTextured)
-		pModel->m_vbColor [h].Assign (pModel->m_color [pmv->m_nIndex]);
+		modelP->m_vbColor [h].Assign (modelP->m_color [pmv->m_nIndex]);
 	else {
-		pColor = pModel->m_color + pmv->m_nIndex;
-		pModel->m_vbColor [h].Red () = pmv->m_baseColor.Red () * pColor->Red ();
-		pModel->m_vbColor [h].Green () = pmv->m_baseColor.Green () * pColor->Green ();
-		pModel->m_vbColor [h].Blue () = pmv->m_baseColor.Blue () * pColor->Blue ();
-		pModel->m_vbColor [h].Alpha () = pmv->m_baseColor.Alpha ();
+		colorP = modelP->m_color + pmv->m_nIndex;
+		modelP->m_vbColor [h].Red () = pmv->m_baseColor.Red () * colorP->Red ();
+		modelP->m_vbColor [h].Green () = pmv->m_baseColor.Green () * colorP->Green ();
+		modelP->m_vbColor [h].Blue () = pmv->m_baseColor.Blue () * colorP->Blue ();
+		modelP->m_vbColor [h].Alpha () = pmv->m_baseColor.Alpha ();
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void G3LightModel (CObject *pObj, int32_t nModel, fix xModelLight, fix *xGlowValues, int32_t bHires)
+void G3LightModel (CObject *objP, int nModel, fix xModelLight, fix *xGlowValues, int bHires)
 {
-	RenderModel::CModel*		pModel = gameData.modelData.renderModels [bHires] + nModel;
+	RenderModel::CModel*		modelP = gameData.models.renderModels [bHires] + nModel;
 	RenderModel::CVertex*	pmv;
 	RenderModel::CFace*		pmf;
-	CFloatVector				baseColor, *pColor;
+	CFloatVector				baseColor, *colorP;
 	float							fLight, fAlpha = gameStates.render.grAlpha;
-	int32_t						h, i, j, l;
-	int32_t						bEmissive = (pObj->info.nType == OBJ_MARKER) || (pObj->IsProjectile ());
+	int							h, i, j, l;
+	int							bEmissive = (objP->info.nType == OBJ_MARKER) || (objP->IsWeapon () && !objP->IsMissile ());
 
 #if DBG
-if (pObj->Index () == nDbgObj)
-	BRP;
+if (objP->Index () == nDbgObj)
+	objP = objP;
 #endif
 #if 0
 if (xModelLight > I2X (1))
 	xModelLight = I2X (1);
 #endif
 if (SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting ||
-    (gameOpts->ogl.bLightObjects && (gameOpts->ogl.bLightPowerups || (pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_ROBOT))))) {
-	tiRender.pObj = pObj;
-	tiRender.pModel = pModel;
+    (gameOpts->ogl.bLightObjects && (gameOpts->ogl.bLightPowerups || (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT))))) {
+	tiRender.objP = objP;
+	tiRender.modelP = modelP;
 	if (!RunRenderThreads (rtPolyModel))
-		G3DynLightModel (pObj, pModel, 0, pModel->m_nVerts, 0, pModel->m_nFaceVerts);
+		G3DynLightModel (objP, modelP, 0, modelP->m_nVerts, 0, modelP->m_nFaceVerts);
 	}
 else {
-	if (gameData.objData.color.index)
-		baseColor.Assign (gameData.objData.color);
+	if (gameData.objs.color.index)
+		baseColor.Assign (gameData.objs.color);
 	else
 		baseColor.Set (1.0f, 1.0f, 1.0f);
 	baseColor.Alpha () = fAlpha;
-	for (i = pModel->m_nFaces, pmf = pModel->m_faces.Buffer (); i; i--, pmf++) {
+	for (i = modelP->m_nFaces, pmf = modelP->m_faces.Buffer (); i; i--, pmf++) {
 		if (pmf->m_nBitmap >= 0)
-			pColor = &baseColor;
+			colorP = &baseColor;
 		else
-			pColor = NULL;
+			colorP = NULL;
 		if (pmf->m_bGlow)
 			l = xGlowValues [nGlow];
 		else if (bEmissive)
@@ -144,25 +139,25 @@ else {
 			l = FixMul (l, xModelLight);
 			}
 		fLight = X2F (l);
-		for (j = pmf->m_nVerts, h = pmf->m_nIndex, pmv = pModel->m_faceVerts + pmf->m_nIndex; j; j--, h++, pmv++) {
+		for (j = pmf->m_nVerts, h = pmf->m_nIndex, pmv = modelP->m_faceVerts + pmf->m_nIndex; j; j--, h++, pmv++) {
 #if G3_DRAW_ARRAYS
-			if (pColor) {
-				pModel->m_vbColor [h].Red () = pColor->Red () * fLight;
-				pModel->m_vbColor [h].Green () = pColor->Green () * fLight;
-				pModel->m_vbColor [h].Blue () = pColor->Blue () * fLight;
-				pModel->m_vbColor [h].Alpha () = fAlpha;
+			if (colorP) {
+				modelP->m_vbColor [h].Red () = colorP->Red () * fLight;
+				modelP->m_vbColor [h].Green () = colorP->Green () * fLight;
+				modelP->m_vbColor [h].Blue () = colorP->Blue () * fLight;
+				modelP->m_vbColor [h].Alpha () = fAlpha;
 				}
 			else {
-				pModel->m_vbColor [h].Red () = pmv->m_baseColor.Red () * fLight;
-				pModel->m_vbColor [h].Green () = pmv->m_baseColor.Green () * fLight;
-				pModel->m_vbColor [h].Blue () = pmv->m_baseColor.Blue () * fLight;
-				pModel->m_vbColor [h].Alpha () = fAlpha;
+				modelP->m_vbColor [h].Red () = pmv->m_baseColor.Red () * fLight;
+				modelP->m_vbColor [h].Green () = pmv->m_baseColor.Green () * fLight;
+				modelP->m_vbColor [h].Blue () = pmv->m_baseColor.Blue () * fLight;
+				modelP->m_vbColor [h].Alpha () = fAlpha;
 				}
 #else
-			if (pColor) {
-				pmv->m_renderColor.Red () = pColor->Red () * fLight;
-				pmv->m_renderColor.Green () = pColor->Green () * fLight;
-				pmv->m_renderColor.Blue () = pColor->Blue () * fLight;
+			if (colorP) {
+				pmv->m_renderColor.Red () = colorP->Red () * fLight;
+				pmv->m_renderColor.Green () = colorP->Green () * fLight;
+				pmv->m_renderColor.Blue () = colorP->Blue () * fLight;
 				pmv->m_renderColor.Alpha () = fAlpha;
 				}
 			else {
@@ -181,61 +176,60 @@ else {
 
 #if G3_SW_SCALING
 
-void G3ScaleModel (int32_t nModel, int32_t bHires)
+void G3ScaleModel (int nModel, int bHires)
 {
-	RenderModel::CModel	*pModel = gameData.modelData.renderModels [bHires] + nModel;
+	RenderModel::CModel			*modelP = gameData.models.renderModels [bHires] + nModel;
 	CFloatVector			fScale;
-	int32_t					i;
+	int				i;
 	CFloatVector3			*pv;
 	RenderModel::CVertex	*pmv;
 
-if (gameData.modelData.vScale.IsZero ())
+if (gameData.models.vScale.IsZero ())
 	fScale.Create (1,1,1);
 else
-	fScale.Assign (gameData.modelData.vScale);
-if (pModel->m_fScale == fScale)
+	fScale.Assign (gameData.models.vScale);
+if (modelP->m_fScale == fScale)
 	return;
-fScale /= pModel->m_fScale;
-for (i = pModel->m_nVerts, pv = pModel->m_vertices; i; i--, pv++) {
+fScale /= modelP->m_fScale;
+for (i = modelP->m_nVerts, pv = modelP->m_vertices; i; i--, pv++) {
 	pv->p.x *= fScale;
 	pv->p.y *= fScale;
 	pv->p.z *= fScale;
 	}
-for (i = pModel->m_nFaceVerts, pmv = pModel->m_faceVerts; i; i--, pmv++)
-	pmv->m_vertex = pModel->m_vertices [pmv->m_nIndex];
-pModel->m_fScale *= fScale;
+for (i = modelP->m_nFaceVerts, pmv = modelP->m_faceVerts; i; i--, pmv++)
+	pmv->m_vertex = modelP->m_vertices [pmv->m_nIndex];
+modelP->m_fScale *= fScale;
 }
 
 #endif
 
 //------------------------------------------------------------------------------
 
-void G3GetThrusterPos (CObject *pObj, int16_t nModel, RenderModel::CFace *pmf, CFixVector *pvOffset,
-							  CFixVector *vNormal, int32_t nRad, int32_t bHires, uint8_t nType = 255)
+void G3GetThrusterPos (CObject *objP, short nModel, RenderModel::CFace *pmf, CFixVector *vOffsetP,
+							  CFixVector *vNormal, int nRad, int bHires, ubyte nType = 255)
 {
-ENTER (0, 0);
-	RenderModel::CModel		*pModel = gameData.modelData.renderModels [bHires] + nModel;
-	RenderModel::CVertex		*pModelVertex = NULL;
+	RenderModel::CModel*		modelP = gameData.models.renderModels [bHires] + nModel;
+	RenderModel::CVertex*	pmv = NULL;
 	CFloatVector3				v = CFloatVector3::ZERO, vn, vo, vForward = CFloatVector3::Create(0,0,1);
-	CModelThrusters*			pThruster = gameData.modelData.thrusters + nModel;
-	int32_t						i, j = 0, nCount = -pThruster->nCount;
+	CModelThrusters*			mtP = gameData.models.thrusters + nModel;
+	int							i, j = 0, nCount = -mtP->nCount;
 	float							h, nSize;
 
-if (!pObj)
-	RETURN
+if (!objP)
+	return;
 if (nCount < 0) {
-	if (pModel->m_bRendered && gameData.modelData.vScale.IsZero ())
-		RETURN
+	if (modelP->m_bRendered && gameData.models.vScale.IsZero ())
+		return;
 	nCount = 0;
 	}	
 else if (nCount >= MAX_THRUSTERS)
-	RETURN
+	return;
 vn.Assign (pmf ? pmf->m_vNormal : *vNormal);
 if (!IsPlayerShip (nModel) && (CFloatVector3::Dot (vn, vForward) > -1.0f / 3.0f))
-	RETURN
+	return;
 if (pmf) {
-	for (i = 0, j = pmf->m_nVerts, pModelVertex = pModel->m_faceVerts + pmf->m_nIndex; i < j; i++)
-		v += pModelVertex [i].m_vertex;
+	for (i = 0, j = pmf->m_nVerts, pmv = modelP->m_faceVerts + pmf->m_nIndex; i < j; i++)
+		v += pmv [i].m_vertex;
 	v.v.coord.x /= j;
 	v.v.coord.y /= j;
 	v.v.coord.z /= j;
@@ -247,69 +241,67 @@ v.v.coord.z -= 1.0f / 16.0f;
 transformation.Transform (&dir, &dir, 0);
 #else
 #if 1
-if (pvOffset) {
-	vo.Assign (*pvOffset);
+if (vOffsetP) {
+	vo.Assign (*vOffsetP);
 	v += vo;
 	}
 #endif
 #endif
-if (nCount && (v.v.coord.x == pThruster->vPos [0].v.coord.x) && (v.v.coord.y == pThruster->vPos [0].v.coord.y) && (v.v.coord.z == pThruster->vPos [0].v.coord.z))
-	RETURN
-pThruster->vPos [nCount].Assign (v);
-if (pvOffset)
+if (nCount && (v.v.coord.x == mtP->vPos [0].v.coord.x) && (v.v.coord.y == mtP->vPos [0].v.coord.y) && (v.v.coord.z == mtP->vPos [0].v.coord.z))
+	return;
+mtP->vPos [nCount].Assign (v);
+if (vOffsetP)
 	v -= vo;
-pThruster->vDir [nCount] = *vNormal;
-pThruster->vDir [nCount].Neg ();
-pThruster->nType [nCount] = nType;
+mtP->vDir [nCount] = *vNormal;
+mtP->vDir [nCount].Neg ();
+mtP->nType [nCount] = nType;
 //if (!nCount) 
 	{
 	if (!pmf)
-		pThruster->fSize [nCount] = X2F (nRad);
+		mtP->fSize [nCount] = X2F (nRad);
 	else {
 		for (i = 0, nSize = 1000000000; i < j; i++)
-			if (nSize > (h = CFloatVector3::Dist (v, pModelVertex [i].m_vertex)))
+			if (nSize > (h = CFloatVector3::Dist (v, pmv [i].m_vertex)))
 				nSize = h;
-		pThruster->fSize [nCount] = nSize;// * 1.25f;
+		mtP->fSize [nCount] = nSize;// * 1.25f;
 		}
 	}
-pThruster->nCount = -(++nCount);
-RETURN
+mtP->nCount = -(++nCount);
 }
 
 //------------------------------------------------------------------------------
 
-static int32_t bCenterGuns [] = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1};
+static int bCenterGuns [] = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1};
 
-int32_t G3FilterSubModel (CObject *pObj, RenderModel::CSubModel *pSubModel, int32_t nGunId, int32_t nBombId, int32_t nMissileId, int32_t nMissiles)
+int G3FilterSubModel (CObject *objP, RenderModel::CSubModel *psm, int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
-ENTER (0, 0);
-	int32_t nId = pObj->info.nId;
+	int nId = objP->info.nId;
 
-if (!pSubModel->m_bRender)
-	RETVAL (0)
+if (!psm->m_bRender)
+	return 0;
 #if 1
-if (pSubModel->m_bFlare)
-	RETVAL (1)
+if (psm->m_bFlare)
+	return 1;
 #endif
-if (pSubModel->m_nGunPoint >= 0)
-	RETVAL (1)
-if (pSubModel->m_bBullets)
-	RETVAL (1)
+if (psm->m_nGunPoint >= 0)
+	return 1;
+if (psm->m_bBullets)
+	return 1;
 #if 1
-if (pSubModel->m_bThruster && ((pSubModel->m_bThruster & (REAR_THRUSTER | FRONTAL_THRUSTER)) != (REAR_THRUSTER | FRONTAL_THRUSTER)))
-	RETVAL (1)
+if (psm->m_bThruster && ((psm->m_bThruster & (REAR_THRUSTER | FRONTAL_THRUSTER)) != (REAR_THRUSTER | FRONTAL_THRUSTER)))
+	return 1;
 #endif
-if (pSubModel->m_bHeadlight)
-	RETVAL (!HeadlightIsOn (nId))
-if (pSubModel->m_bBombMount)
-	RETVAL (nBombId == 0)
-if (pSubModel->m_bWeapon) {
-	CPlayerData	*pPlayer = gameData.multiplayer.players + nId;
-	int32_t		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
-	int32_t		bSuperLasers = pPlayer->HasSuperLaser ();
-	int32_t		bQuadLasers = gameData.multiplayer.weaponStates [N_LOCALPLAYER].bQuadLasers;
-	int32_t		bCenterGun = bCenterGuns [nGunId];
-	int32_t		nWingtip = bQuadLasers ? bSuperLasers : 2; //gameOpts->render.ship.nWingtip;
+if (psm->m_bHeadlight)
+	return !HeadlightIsOn (nId);
+if (psm->m_bBombMount)
+	return (nBombId == 0);
+if (psm->m_bWeapon) {
+	CPlayerData	*playerP = gameData.multiplayer.players + nId;
+	int		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
+	int		bSuperLasers = playerP->HasSuperLaser ();
+	int		bQuadLasers = gameData.multiplayer.weaponStates [N_LOCALPLAYER].bQuadLasers;
+	int		bCenterGun = bCenterGuns [nGunId];
+	int		nWingtip = bQuadLasers ? bSuperLasers : 2; //gameOpts->render.ship.nWingtip;
 
 	gameOpts->render.ship.nWingtip = nWingtip;
 	if (nWingtip == 0)
@@ -318,247 +310,199 @@ if (pSubModel->m_bWeapon) {
 		nWingtip = !bLasers || bSuperLasers;
 	
 	if (EGI_FLAG (bShowWeapons, 0, 1, 0)) {
-		if (pSubModel->m_nGun == nGunId + 1) {
-			if (pSubModel->m_nGun == FUSION_INDEX + 1) {
-				if ((pSubModel->m_nWeaponPos == 3) && !gameData.multiplayer.weaponStates [N_LOCALPLAYER].bTripleFusion)
-					RETVAL (1)
+		if (psm->m_nGun == nGunId + 1) {
+			if (psm->m_nGun == FUSION_INDEX + 1) {
+				if ((psm->m_nWeaponPos == 3) && !gameData.multiplayer.weaponStates [N_LOCALPLAYER].bTripleFusion)
+					return 1;
 				}
 			else if (bLasers) {
-				if ((pSubModel->m_nWeaponPos > 2) && !bQuadLasers && (nWingtip != bSuperLasers))
-					RETVAL (1)
+				if ((psm->m_nWeaponPos > 2) && !bQuadLasers && (nWingtip != bSuperLasers))
+					return 1;
 				}
 			}
-		else if (pSubModel->m_nGun == LASER_INDEX + 1) {
+		else if (psm->m_nGun == LASER_INDEX + 1) {
 			if (nWingtip)
-				RETVAL (1)
-			RETVAL (!bCenterGun && (pSubModel->m_nWeaponPos < 3))
+				return 1;
+			return !bCenterGun && (psm->m_nWeaponPos < 3);
 			}
-		else if (pSubModel->m_nGun == SUPER_LASER_INDEX + 1) {
+		else if (psm->m_nGun == SUPER_LASER_INDEX + 1) {
 			if (nWingtip != 1)
-				RETVAL (1)
-			RETVAL (!bCenterGun && (pSubModel->m_nWeaponPos < 3))
+				return 1;
+			return !bCenterGun && (psm->m_nWeaponPos < 3);
 			}
-		else if (!pSubModel->m_nGun) {
+		else if (!psm->m_nGun) {
 			if (bLasers && bQuadLasers)
-				RETVAL (1)
-			if (pSubModel->m_nType != gameOpts->render.ship.nWingtip)
-				RETVAL (1)
-			RETVAL (0)
+				return 1;
+			if (psm->m_nType != gameOpts->render.ship.nWingtip)
+				return 1;
+			return 0;
 			}
-		else if (pSubModel->m_nBomb == nBombId)
-			RETVAL ((nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0))
-		else if (pSubModel->m_nMissile == nMissileId) {
-			if (pSubModel->m_nWeaponPos > nMissiles)
-				RETVAL (1)
+		else if (psm->m_nBomb == nBombId)
+			return (nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0);
+		else if (psm->m_nMissile == nMissileId) {
+			if (psm->m_nWeaponPos > nMissiles)
+				return 1;
 			else {
-				static int32_t nMslPos [] = {-1, 1, 0, 3, 2};
-				int32_t nLaunchPos = gameData.multiplayer.weaponStates [nId].nMslLaunchPos;
-				RETVAL ((nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0) && (nLaunchPos == (nMslPos [(int32_t) pSubModel->m_nWeaponPos])))
+				static int nMslPos [] = {-1, 1, 0, 3, 2};
+				int nLaunchPos = gameData.multiplayer.weaponStates [nId].nMslLaunchPos;
+				return (nId == N_LOCALPLAYER) && !AllowedToFireMissile (nId, 0) &&
+						 (nLaunchPos == (nMslPos [(int) psm->m_nWeaponPos]));
 				}
 			}
 		else
-			RETVAL (1)
+			return 1;
 		}
 	else {
-		if (pSubModel->m_nGun == 1)
-			RETVAL (0)
-		if ((pSubModel->m_nGun < 0) && (pSubModel->m_nMissile == 1))
-			RETVAL (0)
-		RETVAL (1)
+		if (psm->m_nGun == 1)
+			return 0;
+		if ((psm->m_nGun < 0) && (psm->m_nMissile == 1))
+			return 0;
+		return 1;
 		}
 	}
-RETVAL (0)
+return 0;
 }
 
 //------------------------------------------------------------------------------
 
-static inline int32_t ObjectHasThruster (CObject *pObj)
+static inline int ObjectHasThruster (CObject *objP)
 {
-return (pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_ROBOT) || pObj->IsMissile ();
+return (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || objP->IsMissile ();
 }
 
 //------------------------------------------------------------------------------
 
-int32_t G3AnimateSubModel (CObject *pObj, RenderModel::CSubModel *pSubModel, int16_t nModel)
+int G3AnimateSubModel (CObject *objP, RenderModel::CSubModel *psm, short nModel)
 {
-ENTER (0, 0);
-	tFiringData*	pFiringData;
+	tFiringData*	fP;
 	float				nTimeout, y;
-	int32_t			nDelay;
+	int				nDelay;
 
-if (!pSubModel->m_nFrames)
-	RETVAL (0)
-if ((pSubModel->m_bThruster & (REAR_THRUSTER | FRONTAL_THRUSTER)) == (REAR_THRUSTER | FRONTAL_THRUSTER)) {
+if (!psm->m_nFrames)
+	return 0;
+if ((psm->m_bThruster & (REAR_THRUSTER | FRONTAL_THRUSTER)) == (REAR_THRUSTER | FRONTAL_THRUSTER)) {
 	nTimeout = gameStates.gameplay.slowmo [0].fSpeed;
 	glPushMatrix ();
 	CFloatVector vCenter;
-	vCenter.Assign (pSubModel->m_vCenter);
+	vCenter.Assign (psm->m_vCenter);
 	glTranslatef (vCenter .v.coord.x, vCenter .v.coord.y, vCenter .v.coord.z);
-	glRotatef (-360.0f * 5.0f * float (pSubModel->m_iFrame) / float (pSubModel->m_nFrames), 0, 0, 1);
+	glRotatef (-360.0f * 5.0f * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
 	glTranslatef (-vCenter .v.coord.x, -vCenter .v.coord.y, -vCenter .v.coord.z);
-	if (gameStates.app.nSDLTicks [0] - pSubModel->m_tFrame > nTimeout) {
-		pSubModel->m_tFrame = gameStates.app.nSDLTicks [0];
-		pSubModel->m_iFrame = (pSubModel->m_iFrame + 1) % pSubModel->m_nFrames;
+	if (gameStates.app.nSDLTicks [0] - psm->m_tFrame > nTimeout) {
+		psm->m_tFrame = gameStates.app.nSDLTicks [0];
+		psm->m_iFrame = (psm->m_iFrame + 1) % psm->m_nFrames;
 		}
 	}
 else {
 	nTimeout = 25 * gameStates.gameplay.slowmo [0].fSpeed;
-	pFiringData = gameData.multiplayer.weaponStates [pObj->info.nId].firing;
-	if (gameData.weaponData.nPrimary == VULCAN_INDEX)
+	fP = gameData.multiplayer.weaponStates [objP->info.nId].firing;
+	if (gameData.weapons.nPrimary == VULCAN_INDEX)
 		nTimeout /= 2;
-	if (pFiringData->nStop > 0) {
-		nDelay = gameStates.app.nSDLTicks [0] - pFiringData->nStop;
+	if (fP->nStop > 0) {
+		nDelay = gameStates.app.nSDLTicks [0] - fP->nStop;
 		if (nDelay > GATLING_DELAY)
-			RETVAL (0)
+			return 0;
 		nTimeout += (float) nDelay / 10;
 		}
-	else if (pFiringData->nStart > 0) {
-		nDelay = GATLING_DELAY - pFiringData->nDuration;
+	else if (fP->nStart > 0) {
+		nDelay = GATLING_DELAY - fP->nDuration;
 		if (nDelay > 0)
 			nTimeout += (float) nDelay / 10;
 		}
 	else
-		RETVAL (0)
+		return 0;
 	glPushMatrix ();
-	y = X2F (pSubModel->m_vCenter .v.coord.y);
+	y = X2F (psm->m_vCenter .v.coord.y);
 	glTranslatef (0, y, 0);
-	glRotatef (360 * float (pSubModel->m_iFrame) / float (pSubModel->m_nFrames), 0, 0, 1);
+	glRotatef (360 * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
 	glTranslatef (0, -y, 0);
-	if (gameStates.app.nSDLTicks [0] - pSubModel->m_tFrame > nTimeout) {
-		pSubModel->m_tFrame = gameStates.app.nSDLTicks [0];
-		pSubModel->m_iFrame = (pSubModel->m_iFrame + 1) % pSubModel->m_nFrames;
+	if (gameStates.app.nSDLTicks [0] - psm->m_tFrame > nTimeout) {
+		psm->m_tFrame = gameStates.app.nSDLTicks [0];
+		psm->m_iFrame = (psm->m_iFrame + 1) % psm->m_nFrames;
 		}
 	}
-RETVAL (1)
+return 1;
 }
 
 //------------------------------------------------------------------------------
 
-static inline int32_t PlayerColor (int32_t nObject)
+static inline int PlayerColor (int nObject)
 {
-	int32_t	nColor;
+	int	nColor;
 
-for (nColor = 0; nColor < N_PLAYERS; nColor++)
-	if (PLAYER (nColor).nObject == nObject)
+for (nColor = 0; nColor < gameData.multiplayer.nPlayers; nColor++)
+	if (gameData.multiplayer.players [nColor].nObject == nObject)
 		return (nColor % MAX_PLAYER_COLORS) + 1;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void G3TransformSubModel (CObject *pObj, int16_t nModel, int16_t nSubModel, CAngleVector *animAnglesP, CFixVector *pvOffset, 
-								  int32_t bHires, int32_t nGunId, int32_t nBombId, int32_t nMissileId, int32_t nMissiles, int32_t bEdges)
+void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclusive, CArray<CBitmap*>& modelBitmaps,
+						   CAngleVector *animAnglesP, CFixVector *vOffsetP, int bHires, int bUseVBO, int nPass, int bTranspFilter,
+							int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
-ENTER (0, 0);
-	RenderModel::CModel*		pModel = gameData.modelData.renderModels [bHires] + nModel;
-	RenderModel::CSubModel*	pSubModel = pModel->m_subModels + nSubModel;
-	CAngleVector				va = animAnglesP ? animAnglesP [pSubModel->m_nAngles] : CAngleVector::ZERO;
+	RenderModel::CModel*		modelP = gameData.models.renderModels [bHires] + nModel;
+	RenderModel::CSubModel*	psm = modelP->m_subModels + nSubModel;
+	RenderModel::CFace*		pmf;
+	CBitmap*						bmP = NULL;
+	CAngleVector				va = animAnglesP ? animAnglesP [psm->m_nAngles] : CAngleVector::ZERO;
 	CFixVector					vo;
-	int32_t						i, j;
+	int							h, i, j, bTranspState, bRestoreMatrix, bTextured = gameOpts->render.debug.bTextures && !(gameStates.render.bCloaked /*|| nPass*/),
+									bGetThruster = !(nPass || bTranspFilter) && ObjectHasThruster (objP);
+	short							nId, nBitmap = -1, nTeamColor;
+	ushort						nFaceVerts, nVerts, nIndex;
 
-if (pSubModel->m_bThruster)
-	RETURN
-if (G3FilterSubModel (pObj, pSubModel, nGunId, nBombId, nMissileId, nMissiles))
-	RETURN
-vo = pSubModel->m_vOffset;
-if (!gameData.modelData.vScale.IsZero ())
-	vo *= gameData.modelData.vScale;
-#if 1
-if (pvOffset) {
-	transformation.Begin (vo, va, __FILE__, __LINE__);
-	vo += *pvOffset;
-	}
-#endif
-if (bEdges) {
-	RenderModel::CModelEdge *pEdge = pSubModel->m_edges.Buffer ();
-	for (i = pSubModel->m_nEdges; i; i--, pEdge++)
-		pEdge->Transform ();
-	}
-else {
-	RenderModel::CFace *pFace = pSubModel->m_faces;
-	for (i = 0; i < pSubModel->m_nFaces; i++, pFace++) {
-		transformation.Transform (pFace->m_vNormalf [1], pFace->m_vNormalf [0]);
-		transformation.Transform (pFace->m_vCenterf [1], pFace->m_vCenterf [0]);
-		}
-	for (i = 0, j = pSubModel->m_nVertexIndex [1]; i < pSubModel->m_nVertices; i++, j++) {
-		uint16_t h = pModel->m_vertexOwner [j].m_nVertex;
-		transformation.Transform (pModel->m_vertices [h], pModel->m_vertices [h]);
-		}
-	}
-for (i = 0, j = pModel->m_nSubModels, pSubModel = pModel->m_subModels.Buffer (); i < j; i++, pSubModel++) {
-	if (pSubModel->m_nParent == nSubModel)
-		G3TransformSubModel (pObj, nModel, i, animAnglesP, &vo, bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
-	}
-transformation.End (__FILE__, __LINE__);
-RETURN
-}
-
-//------------------------------------------------------------------------------
-
-void G3DrawSubModel (CObject *pObj, int16_t nModel, int16_t nSubModel, int16_t nExclusive, CArray<CBitmap*>& modelBitmaps,
-						   CAngleVector *animAnglesP, CFixVector *pvOffset, int32_t bHires, int32_t bUseVBO, int32_t nPass, int32_t bTranspFilter,
-							int32_t nGunId, int32_t nBombId, int32_t nMissileId, int32_t nMissiles, int32_t bEdges, int32_t bBlur)
-{
-ENTER (0, 0);
-	RenderModel::CModel		* pModel = gameData.modelData.renderModels [bHires] + nModel;
-	RenderModel::CSubModel	* pSubModel = pModel->m_subModels + nSubModel;
-	CBitmap*						pBm = NULL;
-	CAngleVector				va = animAnglesP ? animAnglesP [pSubModel->m_nAngles] : CAngleVector::ZERO;
-	CFixVector					vo;
-	int32_t						h, i, j, bTranspState, bRestoreMatrix = 0, bTextured = gameOpts->render.debug.bTextures /*&& !gameStates.render.bCloaked*/&& !(gameOpts->render.debug.bWireFrame & 2),
-									bGetThruster = !(nPass || bTranspFilter) && ObjectHasThruster (pObj);
-	int16_t						nId, nBitmap = -1, nTeamColor;
-	uint16_t						nFaceVerts, nVerts, nIndex;
-
-#if DBG
-if (nModel == nDbgModel)
-	nDbgModel = nModel;
-if (pObj) {
-	if (ObjIdx (pObj) == nDbgObj)
-		BRP;
-	if (pObj->info.nSegment == nDbgSeg)
-		BRP;
-	if (pObj->info.nType == OBJ_DEBRIS)
-		BRP;
-	}
-#endif
-
-if (pObj->info.nType == OBJ_PLAYER)
-	nTeamColor = IsMultiGame ? IsTeamGame ? GetTeam (pObj->info.nId) + 1 : PlayerColor (pObj->Index ()) : gameOpts->render.ship.nColor;
+if (objP->info.nType == OBJ_PLAYER)
+	nTeamColor = IsMultiGame ? IsTeamGame ? GetTeam (objP->info.nId) + 1 : PlayerColor (objP->Index ()) : gameOpts->render.ship.nColor;
 else
 	nTeamColor = 0;
-
-if (pSubModel->m_bThruster) {
+#if 1
+if (psm->m_bThruster /*== 1*/) {
 	if (!nPass) {
-		vo = pSubModel->m_vOffset + pSubModel->m_vCenter;
-		G3GetThrusterPos (pObj, nModel, NULL, &vo, &pSubModel->m_faces->m_vNormal, pSubModel->m_nRad, bHires, pSubModel->m_bThruster);
+		vo = psm->m_vOffset + psm->m_vCenter;
+		G3GetThrusterPos (objP, nModel, NULL, &vo, &psm->m_faces->m_vNormal, psm->m_nRad, bHires, psm->m_bThruster);
 		}
-	if (!pSubModel->m_nFrames)
-		RETURN
+	if (!psm->m_nFrames)
+		return;
 	}
-if (G3FilterSubModel (pObj, pSubModel, nGunId, nBombId, nMissileId, nMissiles))
-	RETURN
-
-vo = pSubModel->m_vOffset;
-if (!gameData.modelData.vScale.IsZero ())
-	vo *= gameData.modelData.vScale;
-
-if (pvOffset && (nExclusive < 0)) {
-	transformation.Begin (vo, va, __FILE__, __LINE__);
-	vo += *pvOffset;
+if (G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
+	return;
+#endif
+vo = psm->m_vOffset;
+if (!gameData.models.vScale.IsZero ())
+	vo *= gameData.models.vScale;
+#if 1
+if (vOffsetP && (nExclusive < 0)) {
+	transformation.Begin (vo, va);
+	vo += *vOffsetP;
 	}
-
-bRestoreMatrix = G3AnimateSubModel (pObj, pSubModel, nModel);
+#endif
+bRestoreMatrix = G3AnimateSubModel (objP, psm, nModel);
 // render the faces
+#if G3_DRAW_SUBMODELS
+// render any dependent submodels
+if ((nExclusive < 0) || (nSubModel != nExclusive)) {
+	for (i = 0, j = modelP->m_nSubModels, psm = modelP->m_subModels.Buffer (); i < j; i++, psm++)
+		if (psm->m_nParent == nSubModel)
+			G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, animAnglesP, &vo, bHires,
+								 bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles);
+	}
+#endif
 #if 0
-pSubModel = pModel->m_subModels + nSubModel;
-if (pSubModel->m_bBillboard)
+psm = modelP->m_subModels + nSubModel;
+if (psm->m_bBillboard)
 #endif
 if ((nExclusive < 0) || (nSubModel == nExclusive)) {
-	pSubModel = pModel->m_subModels + nSubModel;
-	if (pSubModel->m_bBillboard) {
+#if 0
+	if (vOffsetP && (nSubModel == nExclusive))
+		transformation.Begin (vOffsetP, NULL);
+#endif
+	psm = modelP->m_subModels + nSubModel;
+	if (psm->m_bBillboard) {
 		if (!bRestoreMatrix) {
 			bRestoreMatrix = 1;
+			//glMatrixMode (GL_MODELVIEW);
 			glPushMatrix ();
 			}
 		float modelView [16];
@@ -566,220 +510,158 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 		// undo all rotations
 		// beware all scaling is lost as well 
 #if 1
-		for (int32_t i = 0; i < 3; i++) 
-			 for (int32_t j = 0; j < 3; j++)
+		for (int i = 0; i < 3; i++) 
+			 for (int j = 0; j < 3; j++)
 				modelView [i * 4 + j] = (i == j) ? 1.0f : 0.0f;
 #endif
 		glLoadMatrixf (modelView);
 		}
-
 	ogl.SetTexturing (false);
-	if (bEdges) {
-		if (!pSubModel->m_bThruster) {
-			CFloatVector vViewer;
-			vViewer.Assign (transformation.m_info.viewer);
-			float fSize = X2F (pObj->Size ());
-			float d = Max (0.0f, X2F (CFixVector::Dist (pObj->Position (), transformation.m_info.viewer)) - fSize);
-			d /= sqrt (X2F (pObj->Size ()));
-			RenderModel::CModelEdge* pEdge = pSubModel->m_edges.Buffer ();
-			int32_t nScale = 0xFFFF, nEdgeFilter = pObj->IsWeapon () ? 0 : bHires || (fSize > 9.0f); //0 : 2; //bHires;
-			gameData.segData.edgeVertexData [0].Reset ();
-			gameData.segData.edgeVertexData [1].Reset ();
-			for (i = pSubModel->m_nEdges; i; i--, pEdge++) {
-				int32_t s = pEdge->Prepare (vViewer, nEdgeFilter, d);
-				if ((s >= 0) && (nScale > s))
-					nScale = s;
-				}
-			if (nScale < 0xFFFF)
-				RenderMeshOutline (nScale/*, Max (1.0f, X2F (pObj->Size () / 4.5f))*/);
-			}	
-		}
-	else {
-	if (gameOpts->render.debug.bWireFrame & 2)
-		glColor3f (1.0f, 0.5f, 0.0f);
-
-		RenderModel::CFace* pFace = pSubModel->m_faces;
-		for (i = pSubModel->m_nFaces; i; ) {
-			if (bTextured && (nBitmap != (gameStates.render.bCloaked ? 0 : pFace->m_nBitmap))) {
-				nBitmap = gameStates.render.bCloaked ? 0 : pFace->m_nBitmap;
-				if (nBitmap < 0)
-					ogl.SetTexturing (false);
-				else {
-					if (gameStates.render.bCloaked) {
-						pBm = shield [0].Bitmap ();
-						float c = 1.0f - gameStates.render.grAlpha * gameStates.render.grAlpha; //bBlur ? 1.0f - gameStates.render.grAlpha * gameStates.render.grAlpha : pBm ? 1.0f - gameStates.render.grAlpha : 0.0f;
-						//ogl.SetBlendMode (bBlur ? OGL_BLEND_REPLACE : OGL_BLEND_MULTIPLY);
-						glColor4f (c, c, c, gameStates.render.grAlpha);
-						}
-					else if (!bHires)
-						pBm = modelBitmaps [nBitmap];
-					else {
-						pBm = pModel->m_textures + nBitmap;
-#if 0
-						if (!nPass)
-							ogl.SetBlendMode (pSubModel->m_bFlare);
-#endif
-						if (nTeamColor && pBm->Team () && (0 <= (h = pModel->m_teamTextures [nTeamColor % MAX_PLAYER_COLORS]))) {
-							nBitmap = h;
-							pBm = pModel->m_textures + nBitmap;
-							}
-						}
-					if (!pBm)
-						ogl.SetTexturing (false);
-					else {
-#if 0
-						pBm->AvgColor ();
-						CRGBColor *pColor = pBm->GetAvgColor ();
-						if (!gameStates.render.bCloaked)
-							glColor4f ((float) pColor->Red () / 255.0f, (float) pColor->Green () / 255.0f, (float) pColor->Blue () / 255.0f, gameStates.render.grAlpha);
-						ogl.SetTexturing (false);
-						ogl.DisableClientState (GL_COLOR_ARRAY);
-#else
-						ogl.SelectTMU (GL_TEXTURE0, true);
-						ogl.SetTexturing (true);
-						pBm = pBm->Override (-1);
-						if (pBm->Frames ())
-							pBm = pBm->CurFrame ();
-						if (pBm->Bind (1))
-							continue;
-						pBm->Texture ()->Wrap (GL_REPEAT);
-						glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-#endif
-						}
-					}
-				}
-			nIndex = pFace->m_nIndex;
-			if (bHires) {
-				if (!(bTranspState = (pModel->m_bHasTransparency >> 2)))
-					bTranspState = !pBm ? 0 : gameStates.render.bCloaked ? 0 : pSubModel->m_bThruster ? 0 : (pSubModel->m_bGlow || pSubModel->m_bFlare) ? 2 : ((pBm->Flags () & BM_FLAG_TRANSPARENT) != 0) ? 1 : 0;
-				if (bTranspState != bTranspFilter) {
-					if (bTranspState)
-						pModel->m_bHasTransparency |= bTranspState;
-					pFace++;
-					i--;
-					continue;
-					}
-				}
-			if ((nFaceVerts = pFace->m_nVerts) > 4) {
-				if (bGetThruster && pFace->m_bThruster)
-					G3GetThrusterPos (pObj, nModel, pFace, &vo, &pFace->m_vNormal, 0, bHires);
-				nVerts = nFaceVerts;
-				pFace++;
-				i--;
-				}
+	if (gameStates.render.bCloaked)
+		glColor4f (0, 0, 0, gameStates.render.grAlpha);
+	for (i = psm->m_nFaces, pmf = psm->m_faces; i; ) {
+		if (bTextured && (nBitmap != pmf->m_nBitmap)) {
+			if (0 > (nBitmap = pmf->m_nBitmap))
+				ogl.SetTexturing (false);
 			else {
-				nId = pFace->m_nId;
-				nVerts = 0;
-				do {
-					if (bGetThruster && pFace->m_bThruster)
-						G3GetThrusterPos (pObj, nModel, pFace, &vo, &pFace->m_vNormal, 0, bHires);
-					nVerts += nFaceVerts;
-					pFace++;
-					i--;
-					} while (i && (pFace->m_nId == nId));
-				}
-
-#ifdef _WIN32
-			if (glDrawRangeElements)
+				if (!bHires)
+					bmP = modelBitmaps [nBitmap];
+				else {
+					bmP = modelP->m_textures + nBitmap;
+#if 0
+					if (!nPass)
+						ogl.SetBlendMode (psm->m_bFlare);
 #endif
-#if 0 //DBG
-				if (bUseVBO)
+					if (nTeamColor && bmP->Team () && (0 <= (h = modelP->m_teamTextures [nTeamColor % MAX_PLAYER_COLORS]))) {
+						nBitmap = h;
+						bmP = modelP->m_textures + nBitmap;
+						}
+					}
+				ogl.SelectTMU (GL_TEXTURE0, true);
+				ogl.SetTexturing (true);
+				bmP = bmP->Override (-1);
+				if (bmP->Frames ())
+					bmP = bmP->CurFrame ();
+				if (bmP->Bind (1))
+					continue;
+				bmP->Texture ()->Wrap (GL_REPEAT);
+				}
+			}
+		nIndex = pmf->m_nIndex;
+		if (bHires) {
+			if (!(bTranspState = (modelP->m_bHasTransparency >> 2)))
+				bTranspState = !bmP ? 0 : psm->m_bThruster ? 0 : (psm->m_bGlow || psm->m_bFlare) ? 2 : ((bmP->Flags () & BM_FLAG_TRANSPARENT) != 0) ? 1 : 0;
+			if (bTranspState != bTranspFilter) {
+				if (bTranspState)
+					modelP->m_bHasTransparency |= bTranspState;
+				pmf++;
+				i--;
+				continue;
+				}
+			}
+		if ((nFaceVerts = pmf->m_nVerts) > 4) {
+			if (bGetThruster && pmf->m_bThruster)
+				G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->m_vNormal, 0, bHires);
+			nVerts = nFaceVerts;
+			pmf++;
+			i--;
+			}
+		else {
+			nId = pmf->m_nId;
+			nVerts = 0;
+			do {
+				if (bGetThruster && pmf->m_bThruster)
+					G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->m_vNormal, 0, bHires);
+				nVerts += nFaceVerts;
+				pmf++;
+				i--;
+				} while (i && (pmf->m_nId == nId));
+			}
+		//if ((gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) && psm->m_bGlow)
+		//	glowRenderer.Begin (GLOW_HEADLIGHT, 2, false, 1.0f);
+#ifdef _WIN32
+		if (glDrawRangeElements)
+#endif
+#if DBG
+			if (bUseVBO)
 #	if 1
-					glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
-												0, pModel->m_nFaceVerts - 1, nVerts, GL_UNSIGNED_SHORT,
-												G3_BUFFER_OFFSET (nIndex * sizeof (int16_t)));
+				glDrawRangeElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+											0, modelP->m_nFaceVerts - 1, nVerts, GL_UNSIGNED_SHORT,
+											G3_BUFFER_OFFSET (nIndex * sizeof (short)));
 #	else
-					glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
-										 nVerts, GL_UNSIGNED_SHORT,
-										 G3_BUFFER_OFFSET (nIndex * sizeof (int16_t)));
+				glDrawElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+									 nVerts, GL_UNSIGNED_SHORT,
+									 G3_BUFFER_OFFSET (nIndex * sizeof (short)));
 #	endif
-				else
-					glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
-												nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
-												pModel->m_index [0] + nIndex);
+			else
+				glDrawRangeElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
+											modelP->m_index [0] + nIndex);
 #else // DBG
-				if (bUseVBO)
-					glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
-												0, pModel->m_nFaceVerts - 1, nVerts, GL_UNSIGNED_SHORT,
-												G3_BUFFER_OFFSET (nIndex * sizeof (int16_t)));
-				else
-					glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
-												nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
-												pModel->m_index [0] + nIndex);
+			if (bUseVBO)
+				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+											0, modelP->m_nFaceVerts - 1, nVerts, GL_UNSIGNED_SHORT,
+											G3_BUFFER_OFFSET (nIndex * sizeof (short)));
+			else
+				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
+											modelP->m_index [0] + nIndex);
 #endif // DBG
 #ifdef _WIN32
+		else
+			if (bUseVBO)
+				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+									 nVerts, GL_UNSIGNED_SHORT, G3_BUFFER_OFFSET (nIndex * sizeof (short)));
 			else
-				if (bUseVBO)
-					glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
-										 nVerts, GL_UNSIGNED_SHORT, G3_BUFFER_OFFSET (nIndex * sizeof (int16_t)));
-				else
-					glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
-										 nVerts, GL_UNSIGNED_SHORT, pModel->m_index + nIndex);
+				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+									 nVerts, GL_UNSIGNED_SHORT, modelP->m_index + nIndex);
 #endif //_WIN32
-			}
+		//if ((gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) && psm->m_bGlow)
+		//	glowRenderer.End ();
 		}
-	}
-
-#if G3_DRAW_SUBMODELS
-// render any dependent submodels
-if ((nExclusive < 0) || (nSubModel != nExclusive)) {
-	for (i = 0, j = pModel->m_nSubModels, pSubModel = pModel->m_subModels.Buffer (); i < j; i++, pSubModel++)
-		if (pSubModel->m_nParent == nSubModel)
-			G3DrawSubModel (pObj, nModel, i, nExclusive, modelBitmaps, animAnglesP, &vo, bHires,bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles, bEdges, bBlur);
 	}
 if (bRestoreMatrix)
 	glPopMatrix ();
-#endif
 #if 1
-if (pvOffset && (nExclusive < 0))
-	transformation.End (__FILE__, __LINE__);
+if ((nExclusive < 0) /*|| (nSubModel == nExclusive)*/)
+	transformation.End ();
 #endif
-RETURN
 }
 
 //------------------------------------------------------------------------------
 
-void G3DrawModel (CObject *pObj, int16_t nModel, int16_t nSubModel, CArray<CBitmap*>& modelBitmaps,
-						CAngleVector *animAnglesP, CFixVector *pvOffset, int32_t bHires, int32_t bUseVBO, int32_t bTranspFilter,
-						int32_t nGunId, int32_t nBombId, int32_t nMissileId, int32_t nMissiles, int32_t bEdges, int32_t bBlur)
+void G3DrawModel (CObject *objP, short nModel, short nSubModel, CArray<CBitmap*>& modelBitmaps,
+						CAngleVector *animAnglesP, CFixVector *vOffsetP, int bHires, int bUseVBO, int bTranspFilter,
+						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
-ENTER (0, 0);
-	RenderModel::CModel	* pModel;
-	CDynLight				* pLight;
-	int32_t					nPass, iLight, nLights, nLightRange;
-	int32_t					bBright = bEdges || gameStates.render.bFullBright || (pObj && (pObj->info.nType == OBJ_MARKER));
-	int32_t					bEmissive = !bEdges && pObj && (pObj->IsProjectile ());
-	int32_t					bLighting = !bEdges && SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && (bTranspFilter < 2) && !(gameStates.render.bCloaked || bEmissive || bBright) && !(gameOpts->render.debug.bWireFrame & 2);
+	RenderModel::CModel*	modelP;
+	CDynLight*				lightP;
+	int						nPass, iLight, nLights, nLightRange;
+	int						bBright = gameStates.render.bFullBright || (objP && (objP->info.nType == OBJ_MARKER));
+	int						bEmissive = objP && (objP->IsWeapon () && !objP->IsMissile ());
+	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && (bTranspFilter < 2) && !(gameStates.render.bCloaked || bEmissive || bBright);
 	GLenum					hLight;
-	float						fBrightness, fLightScale = gameData.modelData.nLightScale ? X2F (gameData.modelData.nLightScale) : 1.0f;
+	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
 	CFloatVector			color;
-	CDynLightIndex			* pLightIndex = bLighting ? &lightManager.Index (0,0) : NULL;
-	CActiveDynLight		* pActiveLights = pLightIndex ? lightManager.Active (0) + pLightIndex->nFirst : NULL;
-	tObjTransformation	* pPos = OBJPOS (pObj);
+	CDynLightIndex*		sliP = bLighting ? &lightManager.Index (0,0) : NULL;
+	CActiveDynLight*		activeLightsP = sliP ? lightManager.Active (0) + sliP->nFirst : NULL;
+	tObjTransformation*	posP = OBJPOS (objP);
 
-#if POLYGONAL_OUTLINE
-if (bEdges && bPolygonalOutline) // only required if not transforming model outlines via OpenGL when rendering
-	ogl.SetTransform (0);
-else
-#endif
-	ogl.SetupTransform (1);
+ogl.SetupTransform (1);
 if (bLighting) {
-	nLights = pLightIndex->nActive;
+	nLights = sliP->nActive;
 	if (nLights > gameStates.render.nMaxLightsPerObject)
 		nLights = gameStates.render.nMaxLightsPerObject;
 	ogl.EnableLighting (0);
 	}
-else {
+else
 	nLights = 1;
-	}	
 ogl.SetBlending (true);
 ogl.SetDepthWrite (false);
 if (bEmissive || (bTranspFilter == 2))
 	ogl.SetBlendMode (OGL_BLEND_ADD);
-else if (gameStates.render.bCloaked) {
-	ogl.SetBlendMode (bBlur ? OGL_BLEND_REPLACE : OGL_BLEND_MULTIPLY);
-	ogl.SetDepthWrite (true);
-	}
+else if (gameStates.render.bCloaked)
+	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 else if (bTranspFilter)
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 else {
@@ -787,77 +669,78 @@ else {
 	ogl.SetDepthWrite (true);
 	}
 
-if (!bLighting || (pLightIndex->nLast < 0))
+if (!bLighting || (sliP->nLast < 0))
 	nLightRange = 0;
 else
-	nLightRange = pLightIndex->nLast - pLightIndex->nFirst + 1;
-
+	nLightRange = sliP->nLast - sliP->nFirst + 1;
 for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	if (bLighting) {
 		if (nPass) {
 			ogl.SetBlendMode (OGL_BLEND_ADD_WEAK);
 			ogl.SetDepthWrite (false);
 			}
-		for (iLight = 0; (nLightRange > 0) && (iLight < 8) && nLights; pActiveLights++, nLightRange--) {
+		for (iLight = 0; (nLightRange > 0) && (iLight < 8) && nLights; activeLightsP++, nLightRange--) {
 #if DBG
-			if (pActiveLights - lightManager.Active (0) >= MAX_OGL_LIGHTS)
+			if (activeLightsP - lightManager.Active (0) >= MAX_OGL_LIGHTS)
 				break;
-			if (pActiveLights < lightManager.Active (0))
+			if (activeLightsP < lightManager.Active (0))
 				break;
 #endif
 			if (nLights < 0) {
-				CFaceColor* pSegColor = lightManager.AvgSgmColor (pObj->info.nSegment, NULL, 0);
+				CFaceColor* segColorP = lightManager.AvgSgmColor (objP->info.nSegment, NULL, 0);
 				CFloatVector3 vPos;
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
-				vPos.Assign (pObj->info.position.vPos);
+				vPos.Assign (objP->info.position.vPos);
 				glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (&vPos));
-				glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&pSegColor->v.color));
-				glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&pSegColor->v.color));
+				glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&segColorP->v.color));
+				glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&segColorP->v.color));
 				glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f);
 				glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f);
 				glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f);
 				nLights = 0;
 				}
-			else if ((pLight = lightManager.GetActive (pActiveLights, 0))) {
+			else if ((lightP = lightManager.GetActive (activeLightsP, 0))) {
 #if DBG
-				if ((nDbgSeg >= 0) && (pLight->info.nObject >= 0) && (OBJECT (pLight->info.nObject)->info.nSegment == nDbgSeg))
-					BRP;
+				if ((nDbgSeg >= 0) && (lightP->info.nObject >= 0) && (OBJECTS [lightP->info.nObject].info.nSegment == nDbgSeg))
+					nDbgSeg = nDbgSeg;
 #endif
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
-	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (pLight->nObject >= 0) ? -pLight->nObject : pLight->nSegment);
-				fBrightness = pLight->info.fBrightness * fLightScale;
-				memcpy (&color.v.color, &pLight->info.color, sizeof (color.v.color));
+	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (lightP->nObject >= 0) ? -lightP->nObject : lightP->nSegment);
+				fBrightness = lightP->info.fBrightness * fLightScale;
+				memcpy (&color.v.color, &lightP->info.color, sizeof (color.v.color));
 				color.Red () *= fLightScale;
 				color.Green () *= fLightScale;
 				color.Blue () *= fLightScale;
-				glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (pLight->render.vPosf));
+				glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (lightP->render.vPosf));
 				glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&color));
 				glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&color));
-				if (pLight->info.bSpot) {
+				if (lightP->info.bSpot) {
+#if 0
+					lightP = lightP;
+#else
 					glLighti (hLight, GL_SPOT_EXPONENT, 12);
 					glLighti (hLight, GL_SPOT_CUTOFF, 25);
-					glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&pLight->info.vDirf));
+					glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&lightP->info.vDirf));
+#endif
 					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.0f); //0.1f / fBrightness);
 					glLightf (hLight, GL_LINEAR_ATTENUATION, 0.05f / fBrightness);
 					glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.005f / fBrightness);
 					}
 				else {
 					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.0f); //0.1f / fBrightness);
-#if 0
-					glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / fBrightness);
-					glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / fBrightness);
-#else
-					if (X2F (CFixVector::Dist (pObj->info.position.vPos, pLight->info.vPos)) <= pLight->info.fRad) {
+#if 1
+					if (X2F (CFixVector::Dist (objP->info.position.vPos, lightP->info.vPos)) <= lightP->info.fRad) {
 						glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / fBrightness);
 						glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / fBrightness);
 						}
-					else {
+					else 
+#endif
+						{
 						glLightf (hLight, GL_LINEAR_ATTENUATION, 0.05f / fBrightness);
 						glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.005f / fBrightness);
 						}
-#endif
 					}
 				nLights--;
 				}
@@ -865,35 +748,19 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 		for (; iLight < 8; iLight++)
 			glDisable (GL_LIGHT0 + iLight);
 		}
-
-	transformation.Begin (pPos->vPos, pPos->mOrient, __FILE__, __LINE__);
-
-	pModel = gameData.modelData.renderModels [bHires] + nModel;
-	if (bEdges) {
-		if (bHires) {
-		for (int32_t i = 0; i < pModel->m_nSubModels; i++)
-				if (pModel->m_subModels [i].m_nParent == -1) 
-					G3TransformSubModel (pObj, nModel, i, animAnglesP, (nSubModel < 0) ? &pModel->m_subModels [0].m_vOffset : pvOffset,
-												bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
-			}
-		else {
-			G3TransformSubModel (pObj, nModel, 0, animAnglesP, (nSubModel < 0) ? &pModel->m_subModels [0].m_vOffset : pvOffset,
-										bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
-			}
-		}
-
+	transformation.Begin (posP->vPos, posP->mOrient);
+	modelP = gameData.models.renderModels [bHires] + nModel;
 	if (bHires) {
-		for (int32_t i = 0; i < pModel->m_nSubModels; i++)
-			if (pModel->m_subModels [i].m_nParent == -1) {
-				G3DrawSubModel (pObj, nModel, i, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &pModel->m_subModels [0].m_vOffset : pvOffset,
-									 bHires, bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles, bEdges, bBlur);
-				}
+		for (int i = 0; i < modelP->m_nSubModels; i++)
+			if (modelP->m_subModels [i].m_nParent == -1)
+				G3DrawSubModel (objP, nModel, i, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
+									 bHires, bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles);
 		}
-	else {
-		G3DrawSubModel (pObj, nModel, 0, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &pModel->m_subModels [0].m_vOffset : pvOffset,
-							 bHires, bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles, bEdges, bBlur);
-		}
-	transformation.End (__FILE__, __LINE__);
+	else
+		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
+							 bHires, bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles);
+	//if (nSubModel < 0)
+		transformation.End ();
 	if (!bLighting)
 		break;
 	}
@@ -906,230 +773,188 @@ if (bLighting) {
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	ogl.SetDepthWrite (true);
 	}
-#if POLYGONAL_OUTLINE
-if (!bEdges || !bPolygonalOutline)
-#endif
-	ogl.ResetTransform (1);
+ogl.ResetTransform (1);
 //HUDMessage (0, "%s", szLightSources);
-RETURN
 }
 
 //------------------------------------------------------------------------------
 
-void G3RenderDamageLightning (CObject *pObj, int16_t nModel, int16_t nSubModel, CAngleVector *animAnglesP, CFixVector *pvOffset, int32_t bHires)
+void G3RenderDamageLightning (CObject *objP, short nModel, short nSubModel,
+										CAngleVector *animAnglesP, CFixVector *vOffsetP, int bHires)
 {
-ENTER (0, 0);
 if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bDamage))
-	RETURN
+	return;
 
-	RenderModel::CModel*		pModel;
-	RenderModel::CSubModel*	pSubModel;
+	RenderModel::CModel*		modelP;
+	RenderModel::CSubModel*	psm;
 	RenderModel::CFace*		pmf;
 	const CAngleVector*		va;
 	CFixVector					vo;
-	int32_t						i, j;
+	int							i, j;
 
-pModel = gameData.modelData.renderModels [bHires] + nModel;
-if (pModel->m_bValid < 1) {
+modelP = gameData.models.renderModels [bHires] + nModel;
+if (modelP->m_bValid < 1) {
 	if (!bHires)
-		RETURN
-	pModel = gameData.modelData.renderModels [0] + nModel;
-	if (pModel->m_bValid < 1)
-		RETURN
+		return;
+	modelP = gameData.models.renderModels [0] + nModel;
+	if (modelP->m_bValid < 1)
+		return;
 	}
-pSubModel = pModel->m_subModels + nSubModel;
-va = animAnglesP ? animAnglesP + pSubModel->m_nAngles : &CAngleVector::ZERO;
-if (!pObj || (pObj->Damage () > 0.5f))
-	RETURN
+psm = modelP->m_subModels + nSubModel;
+va = animAnglesP ? animAnglesP + psm->m_nAngles : &CAngleVector::ZERO;
+if (!objP || (objP->Damage () > 0.5f))
+	return;
 // set the translation
-vo = pSubModel->m_vOffset;
-if (!gameData.modelData.vScale.IsZero ())
-	vo *= gameData.modelData.vScale;
-if (pvOffset) {
-	transformation.Begin (vo, *va, __FILE__, __LINE__);
-	vo += *pvOffset;
+vo = psm->m_vOffset;
+if (!gameData.models.vScale.IsZero ())
+	vo *= gameData.models.vScale;
+if (vOffsetP) {
+	transformation.Begin (vo, *va);
+	vo += *vOffsetP;
 	}
 // render any dependent submodels
-for (i = 0, j = pModel->m_nSubModels, pSubModel = pModel->m_subModels.Buffer (); i < j; i++, pSubModel++)
-	if (pSubModel->m_nParent == nSubModel)
-		G3RenderDamageLightning (pObj, nModel, i, animAnglesP, &vo, bHires);
+for (i = 0, j = modelP->m_nSubModels, psm = modelP->m_subModels.Buffer (); i < j; i++, psm++)
+	if (psm->m_nParent == nSubModel)
+		G3RenderDamageLightning (objP, nModel, i, animAnglesP, &vo, bHires);
 // render the lightnings
-for (pSubModel = pModel->m_subModels + nSubModel, i = pSubModel->m_nFaces, pmf = pSubModel->m_faces; i; i--, pmf++)
-	lightningManager.RenderForDamage (pObj, NULL, pModel->m_faceVerts + pmf->m_nIndex, pmf->m_nVerts);
-if (pvOffset)
-	transformation.End (__FILE__, __LINE__);
-RETURN
+for (psm = modelP->m_subModels + nSubModel, i = psm->m_nFaces, pmf = psm->m_faces; i; i--, pmf++)
+	lightningManager.RenderForDamage (objP, NULL, modelP->m_faceVerts + pmf->m_nIndex, pmf->m_nVerts);
+if (vOffsetP)
+	transformation.End ();
 }
 
 //------------------------------------------------------------------------------
 
-int32_t G3RenderModel (CObject *pObj, int16_t nModel, int16_t nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
-							  CAngleVector *animAnglesP, CFixVector *pvOffset, fix xModelLight, fix *xGlowValues, CFloatVector *pObjColor)
+int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
+						 CAngleVector *animAnglesP, CFixVector *vOffsetP, fix xModelLight, fix *xGlowValues, CFloatVector *pObjColor)
 {
-ENTER (0, 0);
-if (pObj && (pObj->info.nType == OBJ_PLAYER) && (nModel > 0) && (nModel != COCKPIT_MODEL))
-	nModel += gameData.multiplayer.weaponStates [pObj->info.nId].nShip;
+if (objP && (objP->info.nType == OBJ_PLAYER) && (nModel > 0) && (nModel != COCKPIT_MODEL))
+	nModel += gameData.multiplayer.weaponStates [objP->info.nId].nShip;
 
-	int32_t	i = 0, 
+	int	i = 0, 
 			bHires = (nModel > 0), 
 			bUseVBO = ogl.m_features.bVertexBufferObjects && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
-			bEmissive = (pObj != NULL) && pObj->IsProjectile (),
-			bBlur = 0,
+			bEmissive = (objP != NULL) && objP->IsWeapon () && !objP->IsMissile (),
 			nGunId, nBombId, nMissileId, nMissiles;
 
 nModel = abs (nModel);
-RenderModel::CModel*	pModel = gameData.modelData.renderModels [bHires] + nModel;
+RenderModel::CModel*	modelP = gameData.models.renderModels [bHires] + nModel;
 
-if (!pObj)
-	RETVAL (0)
+if (!objP)
+	return 0;
 #if DBG
 if (nModel == nDbgModel)
 	nDbgModel = nModel;
-if (pObj) {
-	if (ObjIdx (pObj) == nDbgObj)
-		BRP;
-	if (pObj->info.nSegment == nDbgSeg)
-		BRP;
-	if (pObj->info.nType == OBJ_DEBRIS)
-		BRP;
-	}
+if (objP && (ObjIdx (objP) == nDbgObj))
+	nDbgObj = nDbgObj;
+if (objP->info.nSegment == nDbgSeg)
+	nDbgSeg = nDbgSeg;
 #endif
 
 if (bHires) {
-	if (pModel->m_bValid < 1) {
-		if (pModel->m_bValid)
+	if (modelP->m_bValid < 1) {
+		if (modelP->m_bValid)
 			bHires = 0;
 		else {
 			if (IsDefaultModel (nModel)) {
-				if (bUseVBO && pModel->m_bValid && !(pModel->m_vboDataHandle && pModel->m_vboIndexHandle))
-					pModel->m_bValid = 0;
-				i = G3BuildModel (pObj, nModel, pp, modelBitmaps, pObjColor, 1);
+				if (bUseVBO && modelP->m_bValid && !(modelP->m_vboDataHandle && modelP->m_vboIndexHandle))
+					modelP->m_bValid = 0;
+				i = G3BuildModel (objP, nModel, pp, modelBitmaps, pObjColor, 1);
 				if (i < 0)	//successfully built new model
-					RETVAL (gameStates.render.bBuildModels)
+					return gameStates.render.bBuildModels;
 				}
 			else
 				i = 0;
-			pModel->m_bValid = -1;
+			modelP->m_bValid = -1;
 			bHires = 0;
 			}
 		}
 	}
 
 if (!bHires) {
-	pModel = gameData.modelData.renderModels [0] + nModel;
-	if (pModel->m_bValid < 0)
-		RETVAL (0)
-	if (bUseVBO && pModel->m_bValid && !(pModel->m_vboDataHandle && pModel->m_vboIndexHandle))
-		pModel->m_bValid = 0;
-	if (!pModel->m_bValid) {
-		i = G3BuildModel (pObj, nModel, pp, modelBitmaps, pObjColor, 0);
+	modelP = gameData.models.renderModels [0] + nModel;
+	if (modelP->m_bValid < 0)
+		return 0;
+	if (bUseVBO && modelP->m_bValid && !(modelP->m_vboDataHandle && modelP->m_vboIndexHandle))
+		modelP->m_bValid = 0;
+	if (!modelP->m_bValid) {
+		i = G3BuildModel (objP, nModel, pp, modelBitmaps, pObjColor, 0);
 		if (i <= 0) {
 			if (!i)
-				pModel->m_bValid = -1;
-			RETVAL (gameStates.render.bBuildModels)
+				modelP->m_bValid = -1;
+			return gameStates.render.bBuildModels;
 			}
 		}
 	}
 
-pModel->m_bHasTransparency |= (bEmissive << 2);
-
-int32_t bRenderTransparency = bHires && !gameStates.render.bCloaked && (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) && pModel->m_bHasTransparency;
-
-if (!bRenderTransparency && gameStates.render.bCloaked) {
-	shield [0].Animate (10);
-	CFixVector vPos;
-	PolyObjPos (pObj, &vPos);
-#if 1
-	glowRenderer.End ();
-	ogl.ResetClientStates (0);
-	bBlur = (gameOpts->render.nImageQuality >= 4) && glowRenderer.Begin (BLUR_OUTLINE, 5, false, 1.0f);
-	if (bBlur && (glowRenderer.SetViewport (BLUR_OUTLINE, vPos, 2 * X2F (pObj->info.xSize) < 1))) {
-		glowRenderer.Done (BLUR_OUTLINE);
-		bBlur = false;
-		}	
-#endif
-	}
-else
-	ogl.ResetClientStates (1);
+modelP->m_bHasTransparency |= (bEmissive << 2);
 
 //#pragma omp critical (fastModelRender)
 {
 PROF_START
-if (gameOpts->render.debug.bWireFrame & 2)
-	ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
-else if (gameStates.render.bCloaked)
-	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+if (gameStates.render.bCloaked)
+	 ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 else
 	ogl.EnableClientStates (1, 1, gameOpts->ogl.bObjLighting, GL_TEXTURE0);
 if (bUseVBO)
-	glBindBufferARB (GL_ARRAY_BUFFER_ARB, pModel->m_vboDataHandle);
+	glBindBufferARB (GL_ARRAY_BUFFER_ARB, modelP->m_vboDataHandle);
 else {
-	pModel->m_vbVerts.SetBuffer (reinterpret_cast<CFloatVector3*> (pModel->m_vertBuf [0].Buffer ()), 1, pModel->m_nFaceVerts);
-	pModel->m_vbNormals.SetBuffer (pModel->m_vbVerts.Buffer () + pModel->m_nFaceVerts, 1, pModel->m_nFaceVerts);
-	pModel->m_vbColor.SetBuffer (reinterpret_cast<CFloatVector*> (pModel->m_vbNormals.Buffer () + pModel->m_nFaceVerts), 1, pModel->m_nFaceVerts);
-	pModel->m_vbTexCoord.SetBuffer (reinterpret_cast<tTexCoord2f*> (pModel->m_vbColor.Buffer () + pModel->m_nFaceVerts), 1, pModel->m_nFaceVerts);
+	modelP->m_vbVerts.SetBuffer (reinterpret_cast<CFloatVector3*> (modelP->m_vertBuf [0].Buffer ()), 1, modelP->m_nFaceVerts);
+	modelP->m_vbNormals.SetBuffer (modelP->m_vbVerts.Buffer () + modelP->m_nFaceVerts, 1, modelP->m_nFaceVerts);
+	modelP->m_vbColor.SetBuffer (reinterpret_cast<CFloatVector*> (modelP->m_vbNormals.Buffer () + modelP->m_nFaceVerts), 1, modelP->m_nFaceVerts);
+	modelP->m_vbTexCoord.SetBuffer (reinterpret_cast<tTexCoord2f*> (modelP->m_vbColor.Buffer () + modelP->m_nFaceVerts), 1, modelP->m_nFaceVerts);
 	}
 #if G3_SW_SCALING
 G3ScaleModel (nModel);
 #else
 #	if 0
 if (bHires)
-	gameData.modelData.vScale.SetZero ();
+	gameData.models.vScale.SetZero ();
 #	endif
 #endif
 if (!(gameOpts->ogl.bObjLighting || gameStates.render.bCloaked))
-	G3LightModel (pObj, nModel, xModelLight, xGlowValues, bHires);
+	G3LightModel (objP, nModel, xModelLight, xGlowValues, bHires);
 if (bUseVBO) {
-	if (!(gameOpts->render.debug.bWireFrame & 2)) {
-		if (!gameStates.render.bCloaked) {
-			OglNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (pModel->m_nFaceVerts * sizeof (CFloatVector3)));
-			OglColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (pModel->m_nFaceVerts * 2 * sizeof (CFloatVector3)));
-			}
-		OglTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (pModel->m_nFaceVerts * ((2 * sizeof (CFloatVector3) + sizeof (CFloatVector)))));
+	if (!gameStates.render.bCloaked) {
+		OglNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (modelP->m_nFaceVerts * sizeof (CFloatVector3)));
+		OglColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (modelP->m_nFaceVerts * 2 * sizeof (CFloatVector3)));
+		OglTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (modelP->m_nFaceVerts * ((2 * sizeof (CFloatVector3) + sizeof (CFloatVector)))));
 		}
 	OglVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (0));
-	if (pModel->m_vboIndexHandle)
-		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pModel->m_vboIndexHandle);
+	if (modelP->m_vboIndexHandle)
+		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, modelP->m_vboIndexHandle);
 	}
 else {
 	if (!gameStates.render.bCloaked) {
-		OglTexCoordPointer (2, GL_FLOAT, 0, pModel->m_vbTexCoord.Buffer ());
+		OglTexCoordPointer (2, GL_FLOAT, 0, modelP->m_vbTexCoord.Buffer ());
 		if (gameOpts->ogl.bObjLighting)
-			OglNormalPointer (GL_FLOAT, 0, pModel->m_vbNormals.Buffer ());
-		OglColorPointer (4, GL_FLOAT, 0, pModel->m_vbColor.Buffer ());
+			OglNormalPointer (GL_FLOAT, 0, modelP->m_vbNormals.Buffer ());
+		OglColorPointer (4, GL_FLOAT, 0, modelP->m_vbColor.Buffer ());
 		}
-	OglVertexPointer (3, GL_FLOAT, 0, pModel->m_vbVerts.Buffer ());
+	OglVertexPointer (3, GL_FLOAT, 0, modelP->m_vbVerts.Buffer ());
 	}
-nGunId = EquippedPlayerGun (pObj);
-nBombId = EquippedPlayerBomb (pObj);
-nMissileId = EquippedPlayerMissile (pObj, &nMissiles);
-if (!bHires && (pObj->info.nType == OBJ_POWERUP)) {
-	if ((pObj->info.nId == POW_SMARTMINE) || (pObj->info.nId == POW_PROXMINE))
-		gameData.modelData.vScale.Set (I2X (2), I2X (2), I2X (2));
+nGunId = EquippedPlayerGun (objP);
+nBombId = EquippedPlayerBomb (objP);
+nMissileId = EquippedPlayerMissile (objP, &nMissiles);
+if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
+	if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
+		gameData.models.vScale.Set (I2X (2), I2X (2), I2X (2));
 	else
-		gameData.modelData.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
+		gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
 	}
-
-#if DBG
-if (gameOpts->render.debug.bWireFrame & 2) {
-	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
-	glLineWidth (2.0f);
-	}
-#endif
-
-if (bRenderTransparency) {
-	if (pObj->info.nType != OBJ_DEBRIS) {
-		if (pModel->m_bHasTransparency & 5)
-			G3DrawModel (pObj, nModel, nSubModel, modelBitmaps, animAnglesP, pvOffset, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles, 0, 0);
-		if (pModel->m_bHasTransparency & 10) {
+if (bHires && (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) && modelP->m_bHasTransparency) {
+	if ((objP->info.nType != OBJ_DEBRIS)) {
+		if (modelP->m_bHasTransparency & 5)
+			G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
+		if (modelP->m_bHasTransparency & 10) {
 			CFixVector vPos;
-			PolyObjPos (pObj, &vPos);
+			PolyObjPos (objP, &vPos);
 			glowRenderer.Begin (GLOW_HEADLIGHT, 2, true, 0.666f);
-			if (glowRenderer.SetViewport (GLOW_HEADLIGHT, vPos, 2 * X2F (pObj->info.xSize)) < 1) 
+			if (!glowRenderer.SetViewport (GLOW_HEADLIGHT, vPos, 2 * X2F (objP->info.xSize))) 
 				glowRenderer.Done (GLOW_HEADLIGHT);
 			else {
 				ogl.SetFaceCulling (false);
-				G3DrawModel (pObj, nModel, nSubModel, modelBitmaps, animAnglesP, pvOffset, bHires, bUseVBO, 2, nGunId, nBombId, nMissileId, nMissiles, 0, 0);
+				G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 2, nGunId, nBombId, nMissileId, nMissiles);
 				ogl.SetFaceCulling (true);
 				glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 				glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
@@ -1139,67 +964,59 @@ if (bRenderTransparency) {
 		}
 	}
 else {
-	G3DrawModel (pObj, nModel, nSubModel, modelBitmaps, animAnglesP, pvOffset, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 0, bBlur);
-	pModel->m_bRendered = 1;
-	if (gameData.modelData.thrusters [nModel].nCount < 0)
-		gameData.modelData.thrusters [nModel].nCount = -gameData.modelData.thrusters [nModel].nCount;
-	if ((pObj->info.nType != OBJ_DEBRIS) && bHires && pModel->m_bHasTransparency)
-		transparencyRenderer.AddObject (pObj);
+	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles);
+	modelP->m_bRendered = 1;
+	if (gameData.models.thrusters [nModel].nCount < 0)
+		gameData.models.thrusters [nModel].nCount = -gameData.models.thrusters [nModel].nCount;
+	if ((objP->info.nType != OBJ_DEBRIS) && bHires && modelP->m_bHasTransparency)
+		transparencyRenderer.AddObject (objP);
 	}
-
 glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 ogl.SetTexturing (false);
 if (gameStates.render.bCloaked)
-	ogl.DisableClientStates (1, 0, 0, -1);
+	ogl.DisableClientStates (0, 0, 0, -1);
 else
 	ogl.DisableClientStates (1, 1, gameOpts->ogl.bObjLighting, -1);
-
-if (bBlur)
-	glowRenderer.End (/*gameStates.render.grAlpha*/);
-
-if (gameStates.render.CartoonStyle () && !gameStates.render.bCloaked && !bRenderTransparency && (!pObj->IsWeapon () || pObj->IsMissile ()))
-	G3DrawModel (pObj, nModel, nSubModel, modelBitmaps, animAnglesP, pvOffset, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 1, 0);
-
+#if DBG
+if (gameOpts->render.debug.bWireFrame)
+	glLineWidth (3.0f);
+#endif
 #if 1 //!DBG
 if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) {
-	if (pObj && ((pObj->info.nType == OBJ_PLAYER) || (pObj->info.nType == OBJ_ROBOT) || (pObj->info.nType == OBJ_REACTOR))) {
-		RenderModel::CModel*	pModel = gameData.modelData.renderModels [bHires] + nModel;
+	if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {
+		RenderModel::CModel*	modelP = gameData.models.renderModels [bHires] + nModel;
 
-		if (pModel->m_bValid < 1) {
+		if (modelP->m_bValid < 1) {
 			if (!bHires)
-				pModel = NULL;
+				modelP = NULL;
 			else {
-				pModel = gameData.modelData.renderModels [0] + nModel;
-				if (pModel->m_bValid < 1)
-					pModel = NULL;
+				modelP = gameData.models.renderModels [0] + nModel;
+				if (modelP->m_bValid < 1)
+					modelP = NULL;
 				}
 			}
-		if (pModel) {
-			transformation.Begin (pObj->info.position.vPos, pObj->info.position.mOrient, __FILE__, __LINE__);
-			RenderModel::CSubModel*	pSubModel = pModel->m_subModels.Buffer ();
-			for (int32_t i = 0, j = pModel->m_nSubModels; i < j; i++, pSubModel++)
-				if ((pSubModel->m_nParent == -1) && !G3FilterSubModel (pObj, pSubModel, nGunId, nBombId, nMissileId, nMissiles))
-					G3RenderDamageLightning (pObj, nModel, i, animAnglesP, NULL, bHires);
-			//	G3RenderDamageLightning (pObj, nModel, 0, animAnglesP, NULL, bHires);
-			transformation.End (__FILE__, __LINE__);
-#if 0 // lightning is just pushed to the transparency renderer here and will be actually rendered in a subsequent render pass
+		if (modelP) {
+			transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
+			RenderModel::CSubModel*	psm = modelP->m_subModels.Buffer ();
+			for (int i = 0, j = modelP->m_nSubModels; i < j; i++, psm++)
+				if ((psm->m_nParent == -1) && !G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
+					G3RenderDamageLightning (objP, nModel, i, animAnglesP, NULL, bHires);
+	//	G3RenderDamageLightning (objP, nModel, 0, animAnglesP, NULL, bHires);
+			transformation.End ();
 			glowRenderer.End ();
-#endif
 			}
 		}
 	}
 #endif
 #if DBG
-if (gameOpts->render.debug.bWireFrame & 2) {
-	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+if (gameOpts->render.debug.bWireFrame)
 	glLineWidth (1.0f);
-	}
 #endif
 ogl.ClearError (0);
-PROF_END(ptRenderObjectMeshes)
+PROF_END(ptRenderObjectsFast)
 }
-RETVAL (1)
+return 1;
 }
 
 //------------------------------------------------------------------------------

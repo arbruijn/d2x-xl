@@ -16,13 +16,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void CollideInit (void);
 
-int32_t CollideTwoObjects (CObject* pThis, CObject* pOther, CFixVector& vCollision, CFixVector* vNormal = NULL);
+int CollideTwoObjects (CObject* thisP, CObject* otherP, CFixVector& vCollision, CFixVector* vNormal = NULL);
 
 // Returns 1 if robot died, else 0.
 
-int32_t MaybeDetonateWeapon (CObject* pThis, CObject* pOther, CFixVector& vPos);
+int MaybeDetonateWeapon (CObject* thisP, CObject* otherP, CFixVector& vPos);
 
-int32_t NetDestroyReactor (CObject* pReactor);
+int NetDestroyReactor (CObject* reactorP);
 
 void SetDebrisCollisions (void);
 #endif /* _COLLIDE_H */

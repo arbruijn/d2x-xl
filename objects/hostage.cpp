@@ -29,28 +29,28 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------- Globaly used hostage variables --------------------------------
 
-int32_t nHostageTypes = MAX_HOSTAGE_TYPES;		  			// Number of hostage types
-int32_t nHostageVClips [MAX_HOSTAGE_TYPES] = {33};	// tAnimationInfo num for each tpye of hostage
+int nHostageTypes = MAX_HOSTAGE_TYPES;		  			// Number of hostage types
+int nHostageVClips [MAX_HOSTAGE_TYPES] = {33};	// tVideoClip num for each tpye of hostage
 
 
 //-------------- Renders a hostage --------------------------------------------
 
-void DrawHostage (CObject *pObj)
+void DrawHostage (CObject *objP)
 {
-DrawObjectRodTexPoly (pObj, gameData.effectData.animations [0][pObj->rType.animationInfo.nClipIndex].frames [pObj->rType.animationInfo.nCurFrame], 
-							 1, pObj->rType.animationInfo.nCurFrame);
-gameData.renderData.nTotalSprites++;
+DrawObjectRodTexPoly (objP, gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].frames [objP->rType.vClipInfo.nCurFrame], 
+							 1, objP->rType.vClipInfo.nCurFrame);
+gameData.render.nTotalSprites++;
 }
 
 
 //------------- Called once when a hostage is rescued -------------------------
 
-void RescueHostage (int32_t nHostage)
+void RescueHostage (int nHostage)
 {
-paletteManager.BumpEffect (0, 0, 25);		//small blue flash
+paletteManager.BumpEffect(0, 0, 25);		//small blue flash
 LOCALPLAYER.hostages.nOnBoard++;
 // Do an audio effect
-if (gameData.demoData.nState != ND_STATE_PLAYBACK)
+if (gameData.demo.nState != ND_STATE_PLAYBACK)
 	audio.PlaySound (SOUND_HOSTAGE_RESCUED, I2X (1));
 HUDInitMessage (TXT_HOSTAGE_RESCUED);
 }

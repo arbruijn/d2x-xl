@@ -1,3 +1,16 @@
+/*
+THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
+SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
+END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
+ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
+IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
+SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
+FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
+CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
+AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
+COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
+*/
+
 #ifdef HAVE_CONFIG_H
 #	include <conf.h>
 #endif
@@ -20,28 +33,28 @@
 #include "timeout.h"
 #include "console.h"
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
-typedef int32_t ( __fastcall * pPacketHandler) (uint8_t* data, int32_t nLength);
+typedef int ( __fastcall * pPacketHandler) (ubyte *dataP, int nLength);
 #else
-typedef int32_t (* pPacketHandler) (uint8_t* data, int32_t nLength);
+typedef int (* pPacketHandler) (ubyte *dataP, int nLength);
 #endif
 
 typedef struct tPacketHandlerInfo {
 	pPacketHandler	packetHandler;
 	const char*		pszInfo;
-	int32_t				nLength;
-	int16_t				nStatusFilter;
+	int				nLength;
+	short				nStatusFilter;
 	} tPacketHandlerInfo;
 
 static tPacketHandlerInfo packetHandlers [256];
 
-static uint8_t addressFilter [256];
+static ubyte addressFilter [256];
 
 void InitPacketHandlers (void);
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 // Set a flag for packet types that do not carry a sender IP address
 // All other packets need to be patched with the IP address retrieved when
 // receiving the packet from the network adapter
@@ -55,50 +68,22 @@ memset (addressFilter, 0, sizeof (addressFilter));
 	 addressFilter [PID_ENDLEVEL] = 
 	 addressFilter [PID_ENDLEVEL_SHORT] =
 	 addressFilter [PID_GAME_INFO] =
-	 addressFilter [PID_MINE_DATA] =
+	 addressFilter [PID_NAKED_PDATA] =
 	 addressFilter [PID_NAMES_RETURN] =
 	 addressFilter [PID_OBJECT_DATA] =
-	 addressFilter [PID_PLAYER_DATA] =
+	 addressFilter [PID_PDATA] =
 	 addressFilter [PID_PLAYERSINFO] =
 	 addressFilter [PID_EXTRA_GAMEINFO] =
 	 addressFilter [PID_DOWNLOAD] =
 	 addressFilter [PID_UPLOAD] =
 	 addressFilter [PID_XML_GAMEINFO] =
-	 addressFilter [PID_RESEND_MESSAGE] =
-	 addressFilter [PID_CONFIRM_MESSAGE] =
-	 addressFilter [(int32_t) PID_TRACKER_ADD_SERVER] =
-	 addressFilter [(int32_t) PID_TRACKER_GET_SERVERLIST] = 1;
+	 addressFilter [(int) PID_TRACKER_ADD_SERVER] =
+	 addressFilter [(int) PID_TRACKER_GET_SERVERLIST] = 1;
 }
 
-//------------------------------------------------------------------------------
-// Check whether the packet has the correct size. Works for packets with
-// several messages packet together.
+//-----------------------------------------------------------------------------------------------------------------
 
-static int32_t NetworkBadCombinedPacketSize (uint8_t* data, int32_t nLength)
-{
-	int32_t	i = 0;
-
-for (;;) {
-	uint8_t pId = data [i];
-	tPacketHandlerInfo* pInfo = packetHandlers + pId;
-	if (!pInfo->packetHandler) {
-		PrintLog (0, "invalid packet id %d\n", pId);
-		return 0;
-		}
-	nLength -= pInfo->nLength;
-	if (nLength == 0)
-		return 1;
-	if (nLength < 0) {
-		PrintLog (0, "invalid packet size for packet type %d\n", pId);
-		return 0;
-		}
-	i += pInfo->nLength;
-	}
-}
-
-//------------------------------------------------------------------------------
-
-int32_t NetworkBadPacketSize (int32_t nLength, int32_t nExpectedLength, const char *pszId)
+int NetworkBadPacketSize (int nLength, int nExpectedLength, const char *pszId)
 {
 if (!nExpectedLength || (nLength == nExpectedLength))
 	return 0;
@@ -112,12 +97,12 @@ if (nLength == nExpectedLength - 4)
 return 1;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 
-int32_t NetworkBadSecurity (int32_t nSecurity, const char *pszId)
+int NetworkBadSecurity (int nSecurity, const char *pszId)
 {
 #if SECURITY_CHECK
-if (nSecurity == netGameInfo.m_info.nSecurity)
+if (nSecurity == netGame.m_info.nSecurity)
 #endif
 	return 0;
 console.printf (CON_DBG, "Bad security for %s\n", pszId);
@@ -125,48 +110,39 @@ PrintLog (0, "Networking: Bad security id for %s\n", pszId);
 return 1;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
 
-int32_t IgnoreDataHandler (uint8_t* data, int32_t nLength)
+#define THEIR	reinterpret_cast<tSequencePacket*>(dataP)
+
+int GameInfoHandler (ubyte *dataP, int nLength)
 {
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t GameInfoHandler (uint8_t* data, int32_t nLength)
-{
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int32_t XMLGameInfoHandler (uint8_t* data, int32_t nLength)
+int XMLGameInfoHandler (ubyte *dataP, int nLength)
 {
 	static CTimeout to (200);
 
-if (data && (networkData.xmlGameInfoRequestTime <= 0)) {
-	if (to.Expired () && !strcmp ((char*) data + 1, "Descent Game Info Request")) {
+if (dataP && (networkData.xmlGameInfoRequestTime <= 0)) {
+	if (to.Expired () && !strcmp ((char*) dataP + 1, "Descent Game Info Request")) {
 		networkData.xmlGameInfoRequestTime = SDL_GetTicks ();
-		for (int32_t i = 0; i < N_PLAYERS; i++) {
-			if (i == N_LOCALPLAYER)
-				pingStats [i].ping = 0;
-			else {
-				pingStats [i].ping = -1;
-				pingStats [i].launchTime = -networkData.xmlGameInfoRequestTime; // negative value suppresses display of returned ping on HUD
-				NetworkSendPing (i);
-				}
+		for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+			pingStats [i].ping = -1;
+			pingStats [i].launchTime = -networkData.xmlGameInfoRequestTime; // negative value suppresses display of returned ping on HUD
+			NetworkSendPing (i);
 			}
 		}
 	}
 else if (networkData.xmlGameInfoRequestTime > 0) {
 	// check whether all players have returned a ping response
-	int32_t i;
-	for (i = 0; i < N_PLAYERS; i++)
+	int i;
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (pingStats [i].ping < 0)
 			break;
 	// send XML game status when all players have returned a ping response or 1 second has passed since the XML game status request has arrived
-	if ((i == N_PLAYERS) || (SDL_GetTicks () - networkData.xmlGameInfoRequestTime > 1000)) { 
+	if ((i == gameData.multiplayer.nPlayers) || (SDL_GetTicks () - networkData.xmlGameInfoRequestTime > 1000)) { 
 		NetworkSendXMLGameInfo ();
 		networkData.xmlGameInfoRequestTime = -1;
 		to.Start ();
@@ -177,112 +153,112 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t PlayersInfoHandler (uint8_t* data, int32_t nLength)
+int PlayersInfoHandler (ubyte *dataP, int nLength)
 {
 if (gameStates.multi.nGameType >= IPX_GAME)
-	ReceiveNetPlayersPacket (data, &netPlayers [1]);
+	ReceiveNetPlayersPacket (dataP, &netPlayers [1]);
 else
-	memcpy (&netPlayers [1].m_info, data, netPlayers [1].Size ());
+	memcpy (&netPlayers [1].m_info, dataP, netPlayers [1].Size ());
 if (NetworkBadSecurity (netPlayers [1].m_info.nSecurity, "PID_PLAYERSINFO"))
 	return 0;
-pPlayerInfo = &netPlayers [1];
+playerInfoP = &netPlayers [1];
 networkData.bWaitingForPlayerInfo = 0;
-networkData.nSecurityNum = pPlayerInfo->m_info.nSecurity;
+networkData.nSecurityNum = playerInfoP->m_info.nSecurity;
 networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_SYNC;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t LiteInfoHandler (uint8_t* data, int32_t nLength)
+int LiteInfoHandler (ubyte *dataP, int nLength)
 {
-NetworkProcessLiteInfo (data);
+NetworkProcessLiteInfo (dataP);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t GameListHandler (uint8_t* data, int32_t nLength)
+int GameListHandler (ubyte *dataP, int nLength)
 {
-if (banList.Find (reinterpret_cast<tPlayerSyncData*>(data)->player.callsign))
+if (banList.Find (THEIR->player.callsign))
 	return 0;
 if (!IAmGameHost ())
 	return 0;
-NetworkSendLiteInfo (reinterpret_cast<tPlayerSyncData*>(data));
+NetworkSendLiteInfo (THEIR);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t AllGameInfoHandler (uint8_t* data, int32_t nLength)
+int AllGameInfoHandler (ubyte *dataP, int nLength)
 {
-if (NetworkBadSecurity (reinterpret_cast<tPlayerSyncData*>(data)->nSecurity, "PID_SEND_ALL_GAMEINFO"))
+if (NetworkBadSecurity (THEIR->nSecurity, "PID_SEND_ALL_GAMEINFO"))
 	return 0;
 if (!IAmGameHost ())
 	return 0;
-NetworkSendGameInfo (reinterpret_cast<tPlayerSyncData*>(data));
+NetworkSendGameInfo (THEIR);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t AddPlayerHandler (uint8_t* data, int32_t nLength)
+int AddPlayerHandler (ubyte *dataP, int nLength)
 {
-NetworkNewPlayer (reinterpret_cast<tPlayerSyncData*>(data));
+NetworkNewPlayer (THEIR);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t RequestHandler (uint8_t* data, int32_t nLength)
+int RequestHandler (ubyte *dataP, int nLength)
 {
-if (banList.Find (reinterpret_cast<tPlayerSyncData*>(data)->player.callsign))
+if (banList.Find (THEIR->player.callsign))
 	return 0;
 if (networkData.nStatus == NETSTAT_STARTING) // Someone wants to join our game!
-	NetworkAddPlayer (reinterpret_cast<tPlayerSyncData*>(data));	
+	NetworkAddPlayer (THEIR);	
 else if (networkData.nStatus == NETSTAT_WAITING)	// Someone is ready to receive a sync packet
-	NetworkProcessRequest (reinterpret_cast<tPlayerSyncData*>(data));	
+	NetworkProcessRequest (THEIR);	
 else if (networkData.nStatus == NETSTAT_PLAYING) {		// Someone wants to join a game in progress!
-	if (netGameInfo.m_info.bRefusePlayers)
-		DoRefuseStuff (reinterpret_cast<tPlayerSyncData*>(data));
+	if (netGame.m_info.bRefusePlayers)
+		DoRefuseStuff (THEIR);
 	else 
-		NetworkWelcomePlayer (reinterpret_cast<tPlayerSyncData*>(data));
+		NetworkWelcomePlayer (THEIR);
 	}
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t DumpHandler (uint8_t* data, int32_t nLength)
+int DumpHandler (ubyte *dataP, int nLength)
 {
-NetworkProcessDump (reinterpret_cast<tPlayerSyncData*>(data));
+NetworkProcessDump (THEIR);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t QuitJoiningHandler (uint8_t* data, int32_t nLength)
+int QuitJoiningHandler (ubyte *dataP, int nLength)
 {
 if (networkData.nStatus == NETSTAT_STARTING)
-	NetworkRemovePlayer (reinterpret_cast<tPlayerSyncData*>(data));
+	NetworkRemovePlayer (THEIR);
 else if (networkData.nStatus == NETSTAT_PLAYING) 
-	NetworkStopResync (reinterpret_cast<tPlayerSyncData*>(data));
+	NetworkStopResync (THEIR);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t SyncHandler (uint8_t* data, int32_t nLength)
+int SyncHandler (ubyte *dataP, int nLength)
 {
 if (gameStates.multi.nGameType >= IPX_GAME)
-	ReceiveFullNetGamePacket (data, &tempNetInfo);
+	ReceiveFullNetGamePacket (dataP, &tempNetInfo);
 else
-	tempNetInfo = *reinterpret_cast<tNetGameInfo*> (data);
+	tempNetInfo = *reinterpret_cast<tNetGameInfo*> (dataP);
 if (NetworkBadSecurity (tempNetInfo.m_info.nSecurity, "PID_SYNC"))
 	return 0;
 if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_SYNC) {
 #if SECURITY_CHECK
-	if (tempNetInfo.m_info.nSecurity == pPlayerInfo->m_info.nSecurity) {
+	if (tempNetInfo.m_info.nSecurity == playerInfoP->m_info.nSecurity) {
 #endif
 		NetworkProcessSyncPacket (&tempNetInfo, 0);
 		networkData.nSecurityFlag = 0;
@@ -304,170 +280,156 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t ExtraGameInfoHandler (uint8_t* data, int32_t nLength)
+int ExtraGameInfoHandler (ubyte *dataP, int nLength)
 {
 if (gameStates.multi.nGameType >= IPX_GAME)
-	return NetworkProcessExtraGameInfo (data);
+	return NetworkProcessExtraGameInfo (dataP);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t UploadHandler (uint8_t* data, int32_t nLength)
+int UploadHandler (ubyte *dataP, int nLength)
 {
 if (IAmGameHost ())
-	downloadManager.InitUpload (data);
+	downloadManager.InitUpload (dataP);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t DownloadHandler (uint8_t* data, int32_t nLength)
+int DownloadHandler (ubyte *dataP, int nLength)
 {
 if (extraGameInfo [0].bAutoDownload) 
-	downloadManager.InitDownload (data);
+	downloadManager.InitDownload (dataP);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t TrackerHandler (uint8_t* data, int32_t nLength)
+int TrackerHandler (ubyte *dataP, int nLength)
 {
-tracker.ReceiveServerList (data);
+tracker.ReceiveServerList (dataP);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int MultiProcessData (uint8_t* buf, int32_t len);
-
-int32_t ResentMessageHandler (uint8_t* data, int32_t nLength)
-{
-MultiProcessData (data + 1, nLength - 1);
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-void MultiDoConfirmMessage (uint8_t* buf);
-
-int32_t ConfirmMessageHandler (uint8_t* data, int32_t nLength)
-{
-MultiDoConfirmMessage (data);
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int32_t PlayerDataHandler (uint8_t* data, int32_t nLength)
+int PDataHandler (ubyte *dataP, int nLength)
 {
 if (IsNetworkGame)
-	NetworkProcessPlayerData (data);
+	NetworkProcessPData (reinterpret_cast<char*> (dataP));
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t MineDataHandler (uint8_t* data, int32_t nLength)
+int NakedPDataHandler (ubyte *dataP, int nLength)
 {
 if (IsNetworkGame)
-	NetworkProcessMineData (data, nLength);
+	NetworkProcessNakedPData (reinterpret_cast<char*> (dataP), nLength);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t ObjectDataHandler (uint8_t* data, int32_t nLength)
+int ObjectDataHandler (ubyte *dataP, int nLength)
 {
-NetworkReadObjectPacket (data);
+NetworkReadObjectPacket (dataP);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t EndLevelHandler (uint8_t* data, int32_t nLength)
+int EndLevelHandler (ubyte *dataP, int nLength)
 {
-NetworkReadEndLevelPacket (data);
+NetworkReadEndLevelPacket (dataP);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t EndLevelShortHandler (uint8_t* data, int32_t nLength)
+int EndLevelShortHandler (ubyte *dataP, int nLength)
 {
-NetworkReadEndLevelShortPacket (data);
+NetworkReadEndLevelShortPacket (dataP);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t GameUpdateHandler (uint8_t* data, int32_t nLength)
+int GameUpdateHandler (ubyte *dataP, int nLength)
 {
-if (NetworkBadSecurity (reinterpret_cast<tNetGameInfo*> (data)->nSecurity, "PID_GAME_UPDATE"))
+if (NetworkBadSecurity (reinterpret_cast<tNetGameInfo*> (dataP)->nSecurity, "PID_GAME_UPDATE"))
 	return 0;
 if (networkData.nStatus == NETSTAT_PLAYING) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
-		ReceiveLiteNetGamePacket (data, &netGameInfo);
+		ReceiveLiteNetGamePacket (dataP, &netGame);
 	else
-		memcpy (&netGameInfo, data, sizeof (tNetGameInfoLite));
+		memcpy (&netGame, dataP, sizeof (tNetGameInfoLite));
 	}
 if (IsTeamGame) {
-	for (int32_t i = 0; i < N_PLAYERS; i++)
-		if (PLAYER (i).IsConnected ())
-		   MultiSetObjectTextures (OBJECT (PLAYER (i).nObject));
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
+		if (gameData.multiplayer.players [i].Connected ())
+		   MultiSetObjectTextures (OBJECTS + gameData.multiplayer.players [i].nObject);
 	}
 return 1;
 }
 
 //------------------------------------------------------------------------------
    
-int32_t PingSendHandler (uint8_t* data, int32_t nLength)
+int PingSendHandler (ubyte *dataP, int nLength)
 {
-//CONNECT ((int32_t) data [1], (gameStates.multi.nGameType == UDP_GAME) ? data [2] : CONNECT_PLAYING);
-NetworkPing (PID_PING_RETURN, data [1]);
-ResetPlayerTimeout ((int32_t) data [1], -1);
+CONNECT ((int) dataP [1], (gameStates.multi.nGameType == UDP_GAME) ? dataP [2] : CONNECT_PLAYING);
+NetworkPing (PID_PING_RETURN, dataP [1]);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t PingReturnHandler (uint8_t* data, int32_t nLength)
+int PingReturnHandler (ubyte *dataP, int nLength)
 {
-//CONNECT ((int32_t) data [1], (gameStates.multi.nGameType == UDP_GAME) ? data [2] : CONNECT_PLAYING);
-NetworkHandlePingReturn (data [1]);  // data [1] is CPlayerData who told us of reinterpret_cast<tPlayerSyncData*>(data) ping time
-ResetPlayerTimeout ((int32_t) data [1], -1);
+CONNECT ((int) dataP [1], (gameStates.multi.nGameType == UDP_GAME) ? dataP [2] : CONNECT_PLAYING);
+NetworkHandlePingReturn (dataP [1]);  // dataP [1] is CPlayerData who told us of THEIR ping time
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t NamesReturnHandler (uint8_t* data, int32_t nLength)
+int NamesReturnHandler (ubyte *dataP, int nLength)
 {
 if (networkData.nNamesInfoSecurity != -1)
-	NetworkProcessNamesReturn (data);
+	NetworkProcessNamesReturn (reinterpret_cast<char*> (dataP));
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t GamePlayersHandler (uint8_t* data, int32_t nLength)
+int GamePlayersHandler (ubyte *dataP, int nLength)
 {
 if (IAmGameHost () && 
-	 !NetworkBadSecurity (reinterpret_cast<tPlayerSyncData*>(data)->nSecurity, "PID_GAME_PLAYERS"))
-	NetworkSendPlayerNames (reinterpret_cast<tPlayerSyncData*>(data));
+	 !NetworkBadSecurity (THEIR->nSecurity, "PID_GAME_PLAYERS"))
+	NetworkSendPlayerNames (THEIR);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int MissingObjFramesHandler (ubyte *dataP, int nLength)
+{
+NetworkProcessMissingObjFrames (reinterpret_cast<char*> (dataP));
 return 1;
 }
 
 //-----------------------------------------------------------------------------------------------------------------
 
-void InitPacketHandler (uint8_t pId, pPacketHandler packetHandler, const char *pszInfo, int32_t nLength, int16_t nStatusFilter)
+void InitPacketHandler (ubyte pId, pPacketHandler packetHandler, const char *pszInfo, int nLength, short nStatusFilter)
 {
-	tPacketHandlerInfo	*pInfo = packetHandlers + pId;
+	tPacketHandlerInfo	*piP = packetHandlers + pId;
 
-pInfo->packetHandler = packetHandler;
-pInfo->pszInfo = pszInfo;
-pInfo->nLength = nLength;
-pInfo->nStatusFilter = nStatusFilter;
+piP->packetHandler = packetHandler;
+piP->pszInfo = pszInfo;
+piP->nLength = nLength;
+piP->nStatusFilter = nStatusFilter;
 }
 
 //-----------------------------------------------------------------------------------------------------------------
@@ -477,91 +439,62 @@ pInfo->nStatusFilter = nStatusFilter;
 
 void InitPacketHandlers (void)
 {
-PHINIT (PID_LITE_INFO, LiteInfoHandler, LITE_INFO_SIZE, 1 << NETSTAT_BROWSING);
-PHINIT (PID_SEND_ALL_GAMEINFO, AllGameInfoHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));
+PHINIT (PID_XML_GAMEINFO, XMLGameInfoHandler, 0, (short) 0xFFFF);
+PHINIT (PID_GAME_INFO, GameInfoHandler, 0, (short) 0xFFFF);
 PHINIT (PID_PLAYERSINFO, PlayersInfoHandler, ALLNETPLAYERSINFO_SIZE, (1 << NETSTAT_WAITING) | (1 << NETSTAT_PLAYING));
-PHINIT (PID_REQUEST, RequestHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_STARTING) | (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
-PHINIT (PID_SYNC, SyncHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
-PHINIT (PID_PLAYER_DATA, PlayerDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
-PHINIT (PID_ADDPLAYER, AddPlayerHandler, SEQUENCE_PACKET_SIZE, (int16_t) 0xFFFF);
-PHINIT (PID_DUMP, DumpHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
-PHINIT (PID_ENDLEVEL, EndLevelHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_ENDLEVEL));
-PHINIT (PID_QUIT_JOINING, QuitJoiningHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_STARTING) | (1 << NETSTAT_PLAYING));
-PHINIT (PID_OBJECT_DATA, ObjectDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
+PHINIT (PID_LITE_INFO, LiteInfoHandler, LITE_INFO_SIZE, 1 << NETSTAT_BROWSING);
 PHINIT (PID_GAME_LIST, GameListHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));
-PHINIT (PID_GAME_INFO, GameInfoHandler, 0, (int16_t) 0xFFFF);
-PHINIT (PID_PING_SEND, PingSendHandler, 0, (int16_t) 0xFFFF);
-PHINIT (PID_PING_RETURN, PingReturnHandler, 0, (int16_t) 0xFFFF);
-PHINIT (PID_GAME_UPDATE, GameUpdateHandler, 0, (int16_t) 0xFFFF);
-PHINIT (PID_ENDLEVEL_SHORT, EndLevelShortHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_ENDLEVEL));
-PHINIT (PID_MINE_DATA, MineDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
-PHINIT (PID_GAME_PLAYERS, GamePlayersHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));
-PHINIT (PID_NAMES_RETURN, NamesReturnHandler, 0, 1 << NETSTAT_BROWSING);
-PHINIT (PID_EXTRA_GAMEINFO, ExtraGameInfoHandler, 0, (int16_t) 0xFFFF);
-PHINIT (PID_DOWNLOAD, DownloadHandler, 0, (int16_t) 0xFFFF);
+PHINIT (PID_SEND_ALL_GAMEINFO, AllGameInfoHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));
+PHINIT (PID_ADDPLAYER, AddPlayerHandler, SEQUENCE_PACKET_SIZE, (short) 0xFFFF);
+PHINIT (PID_REQUEST, RequestHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_STARTING) | (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
+PHINIT (PID_DUMP, DumpHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
+PHINIT (PID_QUIT_JOINING, QuitJoiningHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_STARTING) | (1 << NETSTAT_PLAYING));
+PHINIT (PID_SYNC, SyncHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
+PHINIT (PID_EXTRA_GAMEINFO, ExtraGameInfoHandler, 0, (short) 0xFFFF);
 PHINIT (PID_UPLOAD, UploadHandler, 0, (1 << NETSTAT_STARTING) | (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
-PHINIT (PID_XML_GAMEINFO, XMLGameInfoHandler, 0, (int16_t) 0xFFFF);
-PHINIT (PID_TRACKER_GET_SERVERLIST, TrackerHandler, 0, (int16_t) 0xFFFF);
-PHINIT (PID_TRACKER_ADD_SERVER, TrackerHandler, 0, (int16_t) 0xFFFF);
-PHINIT (PID_RESEND_MESSAGE, ResentMessageHandler, 0, (1 << NETSTAT_PLAYING));
-PHINIT (PID_CONFIRM_MESSAGE, ConfirmMessageHandler, 0, (1 << NETSTAT_PLAYING));
+PHINIT (PID_DOWNLOAD, DownloadHandler, 0, (short) 0xFFFF);
+PHINIT (PID_TRACKER_GET_SERVERLIST, TrackerHandler, 0, (short) 0xFFFF);
+PHINIT (PID_TRACKER_ADD_SERVER, TrackerHandler, 0, (short) 0xFFFF);
+PHINIT (PID_PDATA, PDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
+PHINIT (PID_NAKED_PDATA, NakedPDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
+PHINIT (PID_OBJECT_DATA, ObjectDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
+PHINIT (PID_ENDLEVEL, EndLevelHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_ENDLEVEL));
+PHINIT (PID_ENDLEVEL_SHORT, EndLevelShortHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_ENDLEVEL));
+PHINIT (PID_GAME_UPDATE, GameUpdateHandler, 0, (short) 0xFFFF);
+PHINIT (PID_PING_SEND, PingSendHandler, 0, (short) 0xFFFF);
+PHINIT (PID_PING_RETURN, PingReturnHandler, 0, (short) 0xFFFF);
+PHINIT (PID_NAMES_RETURN, NamesReturnHandler, 0, 1 << NETSTAT_BROWSING);
+PHINIT (PID_GAME_PLAYERS, GamePlayersHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));
+PHINIT (PID_MISSING_OBJ_FRAMES, MissingObjFramesHandler, 0, (1 << NETSTAT_WAITING) | (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));
 }
 
 //-----------------------------------------------------------------------------------------------------------------
 
-int32_t NetworkProcessSinglePacket (uint8_t* data, int32_t nLength)
+int NetworkProcessPacket (ubyte *dataP, int nLength)
 {
-	uint8_t					pId = data [0];
-	tPacketHandlerInfo*	pInfo = packetHandlers + pId;
-	int32_t					nFuncRes = 0;
+	ubyte						pId = dataP [0];
+	tPacketHandlerInfo	*piP = packetHandlers + pId;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	tPlayerSyncData tmpPacket;
+	tSequencePacket tmpPacket;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	ReceiveSequencePacket (data, &tmpPacket);
-	data = reinterpret_cast<uint8_t*>(&tmpPacket); // reassign reinterpret_cast<tPlayerSyncData*>(data) to point to correctly alinged structure
+	ReceiveSequencePacket (dataP, &tmpPacket);
+	dataP = reinterpret_cast<ubyte*>(&tmpPacket); // reassign THEIR to point to correctly alinged structure
 	}
 #endif
 
-if (!pInfo->packetHandler)
+if (!piP->packetHandler)
 	PrintLog (0, "invalid packet id %d\n", pId);
-else if (!(pInfo->nStatusFilter & (1 << networkData.nStatus)))
+else if (!(piP->nStatusFilter & (1 << networkData.nStatus)))
 	PrintLog (0, "invalid status %d for packet id %d\n", networkData.nStatus, pId);
-else if (!NetworkBadPacketSize (nLength, pInfo->nLength, pInfo->pszInfo)) {
-	console.printf (0, "received %s\n", pInfo->pszInfo);
+else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
+	console.printf (0, "received %s\n", piP->pszInfo);
 	if (!addressFilter [pId])	// patch the proper IP address into the packet header
-		reinterpret_cast<tPlayerSyncData*>(data)->player.network.SetServer (networkData.packetDest.Server ());
-	nFuncRes = pInfo->packetHandler (data, nLength);
+		memcpy (&THEIR->player.network, &networkData.packetSource.src_network, 10);
+	return piP->packetHandler (dataP, nLength);
 	}
-return nFuncRes;
-}
-
-//-----------------------------------------------------------------------------------------------------------------
-
-int32_t NetworkProcessPacket (uint8_t* data, int32_t nLength)
-{
-if (!networkThread.Available () || !(data [0] & 0x80))
-	return NetworkProcessSinglePacket (data, nLength);
-
-if (NetworkBadCombinedPacketSize (data, nLength)) 
-	return 0;
-
-tPacketHandlerInfo* pInfo = NULL;
-
-int32_t nPackets = 0;
-int32_t nProcessed = 0;
-
-data [0] &= ~0x80;
-networkThread.LockProcess ();
-for (int32_t i = 0; i < nLength; i += pInfo->nLength) {
-	++nPackets;
-	pInfo = packetHandlers + data [i];
-	if (NetworkProcessSinglePacket (data + i, pInfo->nLength))
-		++nProcessed;
-	}
-networkThread.UnlockProcess ();
-return nProcessed == nPackets;
+return 0;
 }
 
 //-----------------------------------------------------------------------------------------------------------------

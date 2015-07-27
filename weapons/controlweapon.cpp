@@ -38,38 +38,38 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	Note, only Vulcan cannon requires ammo.
 // NOTE: Now Vulcan and Gauss require ammo. -5/3/95 Yuan
-//uint8_t	DefaultPrimaryAmmoLevel [MAX_PRIMARY_WEAPONS] = {255, 0, 255, 255, 255};
-//uint8_t	DefaultSecondaryAmmoLevel [MAX_SECONDARY_WEAPONS] = {3, 0, 0, 0, 0};
+//ubyte	DefaultPrimaryAmmoLevel [MAX_PRIMARY_WEAPONS] = {255, 0, 255, 255, 255};
+//ubyte	DefaultSecondaryAmmoLevel [MAX_SECONDARY_WEAPONS] = {3, 0, 0, 0, 0};
 
-//	Convert primary weapons to indices in weapon info array.
-uint8_t primaryWeaponToWeaponInfo [MAX_PRIMARY_WEAPONS] = {
+//	Convert primary weapons to indices in gameData.weapons.info array.
+ubyte primaryWeaponToWeaponInfo [MAX_PRIMARY_WEAPONS] = {
 	LASER_ID, VULCAN_ID, SPREADFIRE_ID, PLASMA_ID, FUSION_ID, 
 	SUPERLASER_ID, GAUSS_ID, HELIX_ID, PHOENIX_ID, OMEGA_ID};
 
-uint8_t secondaryWeaponToWeaponInfo [MAX_SECONDARY_WEAPONS] = {
+ubyte secondaryWeaponToWeaponInfo [MAX_SECONDARY_WEAPONS] = {
 	CONCUSSION_ID, HOMINGMSL_ID, PROXMINE_ID, SMARTMSL_ID, MEGAMSL_ID, 
 	FLASHMSL_ID, GUIDEDMSL_ID, SMARTMINE_ID, MERCURYMSL_ID, EARTHSHAKER_ID};
 
 //for each Secondary weapon, which gun it fires out of
-uint8_t secondaryWeaponToGunNum [MAX_SECONDARY_WEAPONS] = {4,4,7,7,7,4,4,7,4,7};
+ubyte secondaryWeaponToGunNum [MAX_SECONDARY_WEAPONS] = {4,4,7,7,7,4,4,7,4,7};
 
-int32_t nMaxPrimaryAmmo [MAX_PRIMARY_WEAPONS] = {
+int nMaxPrimaryAmmo [MAX_PRIMARY_WEAPONS] = {
 	0, VULCAN_AMMO_MAX, 0, 0, 0, 
 	0, VULCAN_AMMO_MAX, 0, 0, 0};
 
-uint8_t nMaxSecondaryAmmo [MAX_SECONDARY_WEAPONS] = {20, 10, 10, 5, 5, 20, 20, 15, 10, 10};
+ubyte nMaxSecondaryAmmo [MAX_SECONDARY_WEAPONS] = {20, 10, 10, 5, 5, 20, 20, 15, 10, 10};
 
 //for each primary weapon, what kind of powerup gives weapon
-uint8_t primaryWeaponToPowerup [MAX_PRIMARY_WEAPONS] = {
+ubyte primaryWeaponToPowerup [MAX_PRIMARY_WEAPONS] = {
 	POW_LASER, POW_VULCAN, POW_SPREADFIRE, POW_PLASMA, POW_FUSION, 
 	POW_LASER, POW_GAUSS, POW_HELIX, POW_PHOENIX, POW_OMEGA};
 
 //for each Secondary weapon, what kind of powerup gives weapon
-uint8_t secondaryWeaponToPowerup [2][MAX_SECONDARY_WEAPONS] = {
+ubyte secondaryWeaponToPowerup [2][MAX_SECONDARY_WEAPONS] = {
 	{POW_CONCUSSION_1, POW_HOMINGMSL_1, POW_PROXMINE, POW_SMARTMSL, POW_MEGAMSL,
 	 POW_FLASHMSL_1, POW_GUIDEDMSL_1, POW_SMARTMINE, POW_MERCURYMSL_1, POW_EARTHSHAKER},
-	{POW_CONCUSSION_4, POW_HOMINGMSL_4, (uint8_t) -1, (uint8_t) -1, (uint8_t) -1,
-	 POW_FLASHMSL_4, POW_GUIDEDMSL_4, (uint8_t) -1, POW_MERCURYMSL_4, POW_EARTHSHAKER}
+	{POW_CONCUSSION_4, POW_HOMINGMSL_4, -1, -1, -1,
+	 POW_FLASHMSL_4, POW_GUIDEDMSL_4, -1, POW_MERCURYMSL_4, POW_EARTHSHAKER}
 	};
 
 CD2D1WeaponInfo weaponInfoD2D1 [D1_MAX_WEAPON_TYPES] = {
@@ -107,12 +107,12 @@ CD2D1WeaponInfo weaponInfoD2D1 [D1_MAX_WEAPON_TYPES] = {
 
 // autoselect ordering
 
-uint8_t nWeaponOrder [2][11]= {{9,8,7,6,5,4,3,2,1,0,255},{9,8,4,3,1,5,0,255,7,6,2}};
-uint8_t nDefaultWeaponOrder [2][11]= {{9,8,7,6,5,4,3,2,1,0,255},{9,8,4,3,1,5,0,255,7,6,2}};
+ubyte nWeaponOrder [2][11]= {{9,8,7,6,5,4,3,2,1,0,255},{9,8,4,3,1,5,0,255,7,6,2}};
+ubyte nDefaultWeaponOrder [2][11]= {{9,8,7,6,5,4,3,2,1,0,255},{9,8,4,3,1,5,0,255,7,6,2}};
 
 // bCycling weapon key pressed?
 
-uint8_t bCycling = 0;
+ubyte bCycling = 0;
 
 //allow player to reorder menus?
 
@@ -187,25 +187,25 @@ uint8_t bCycling = 0;
 
 //	-----------------------------------------------------------------------------
 
-int32_t AllowedToFireGun (void)
+int AllowedToFireGun (void)
 {
 	float	s;
 
-if (gameStates.app.bPlayerIsDead || OBSERVING) {
-	gameData.missileData.nGlobalFiringCount = 0;
+if (gameStates.app.bPlayerIsDead) {
+	gameData.missiles.nGlobalFiringCount = 0;
 	return 0;
 	}
-if (gameStates.app.bD2XLevel && (SEGMENT (gameData.objData.pConsole->info.nSegment)->HasNoDamageProp ()))
+if (gameStates.app.bD2XLevel && (SEGMENTS [gameData.objs.consoleP->info.nSegment].HasNoDamageProp ()))
 	return 0;
 //	Make sure enough time has elapsed to fire laser, but if it looks like it will
 //	be a long while before laser can be fired, then there must be some mistake!
 if (!IsMultiGame && ((s = gameStates.gameplay.slowmo [0].fSpeed) > 1)) {
-	fix t = gameData.laserData.xLastFiredTime + (fix) ((gameData.laserData.xNextFireTime - gameData.laserData.xLastFiredTime) * s);
-	if ((t > gameData.timeData.xGame) && (t < gameData.timeData.xGame + I2X (2) * s))
+	fix t = gameData.laser.xLastFiredTime + (fix) ((gameData.laser.xNextFireTime - gameData.laser.xLastFiredTime) * s);
+	if ((t > gameData.time.xGame) && (t < gameData.time.xGame + I2X (2) * s))
 		return 0;
 	}
 else {
-	if ((gameData.laserData.xNextFireTime > gameData.timeData.xGame) &&  (gameData.laserData.xNextFireTime < gameData.timeData.xGame + I2X (2)))
+	if ((gameData.laser.xNextFireTime > gameData.time.xGame) &&  (gameData.laser.xNextFireTime < gameData.time.xGame + I2X (2)))
 		return 0;
 	}
 return 1;
@@ -216,43 +216,43 @@ return 1;
 fix	xNextFlareFireTime = 0;
 #define	FLARE_BIG_DELAY	 (I2X (2))
 
-int32_t AllowedToFireFlare (void)
+int AllowedToFireFlare (void)
 {
-if ((xNextFlareFireTime > gameData.timeData.xGame) &&
-	 (xNextFlareFireTime < gameData.timeData.xGame + FLARE_BIG_DELAY))	//	In case time is bogus, never wait > 1 second.
+if ((xNextFlareFireTime > gameData.time.xGame) &&
+	 (xNextFlareFireTime < gameData.time.xGame + FLARE_BIG_DELAY))	//	In case time is bogus, never wait > 1 second.
 		return 0;
-if (LOCALPLAYER.Energy () >= WI_EnergyUsage (FLARE_ID))
-	xNextFlareFireTime = gameData.timeData.xGame + F2X (gameStates.gameplay.slowmo [0].fSpeed) / 4;
+if (LOCALPLAYER.Energy () >= WI_energy_usage (FLARE_ID))
+	xNextFlareFireTime = gameData.time.xGame + F2X (gameStates.gameplay.slowmo [0].fSpeed) / 4;
 else
-	xNextFlareFireTime = gameData.timeData.xGame + (fix) (gameStates.gameplay.slowmo [0].fSpeed * FLARE_BIG_DELAY);
+	xNextFlareFireTime = gameData.time.xGame + (fix) (gameStates.gameplay.slowmo [0].fSpeed * FLARE_BIG_DELAY);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t AllowedToFireMissile (int32_t nPlayer, int32_t bCheckSegment)
+int AllowedToFireMissile (int nPlayer, int bCheckSegment)
 {
 	float	s;
 	fix	t;
 
 //	Make sure enough time has elapsed to fire missile, but if it looks like it will
 //	be a long while before missile can be fired, then there must be some mistake!
-if (gameStates.app.bD2XLevel && bCheckSegment && (gameData.objData.pConsole->info.nSegment != -1) &&
-    (SEGMENT (gameData.objData.pConsole->info.nSegment)->HasNoDamageProp ()))
+if (gameStates.app.bD2XLevel && bCheckSegment && 
+    (SEGMENTS [gameData.objs.consoleP->info.nSegment].HasNoDamageProp ()))
 	return 0;
 if (!IsMultiGame && ((s = gameStates.gameplay.slowmo [0].fSpeed) > 1)) {
-	t = gameData.missileData.xLastFiredTime + (fix) ((gameData.missileData.xNextFireTime - gameData.missileData.xLastFiredTime) * s);
-	if ((t > gameData.timeData.xGame) && (t < gameData.timeData.xGame + I2X (5) * s))
+	t = gameData.missiles.xLastFiredTime + (fix) ((gameData.missiles.xNextFireTime - gameData.missiles.xLastFiredTime) * s);
+	if ((t > gameData.time.xGame) && (t < gameData.time.xGame + I2X (5) * s))
 		return 0;
 	}
 else if (nPlayer < 0) {
-	if ((gameData.missileData.xNextFireTime > gameData.timeData.xGame) && 
-		 (gameData.missileData.xNextFireTime < gameData.timeData.xGame + I2X (5)))
+	if ((gameData.missiles.xNextFireTime > gameData.time.xGame) && 
+		 (gameData.missiles.xNextFireTime < gameData.time.xGame + I2X (5)))
 		return 0;
 	}
 else {
 	t = gameData.multiplayer.weaponStates [nPlayer].xMslFireTime;
-	if ((t > gameData.timeData.xGame) && (t < gameData.timeData.xGame + I2X (5)))
+	if ((t > gameData.time.xGame) && (t < gameData.time.xGame + I2X (5)))
 		return 0;
 	}
 return 1;
@@ -265,76 +265,76 @@ return 1;
 //		HAS_ENERGY_FLAG
 //		HAS_AMMO_FLAG
 // See weapon[HA] for bit values
-int32_t PlayerHasWeapon (int32_t nWeapon, int32_t bSecondary, int32_t nPlayer, int32_t bAll)
+int PlayerHasWeapon (int nWeapon, int bSecondary, int nPlayer, int bAll)
 {
-	int32_t		returnValue = 0;
-	int32_t		nWeaponIndex;
-	CPlayerData	*pPlayer = gameData.multiplayer.players + ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
+	int		returnValue = 0;
+	int		nWeaponIndex;
+	CPlayerData	*playerP = gameData.multiplayer.players + ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
 
 //	Hack! If energy goes negative, you can't fire a weapon that doesn't require energy.
 //	But energy should not go negative (but it does), so find out why it does!
 if (gameStates.app.bD1Mission && (nWeapon >= SUPER_WEAPON))
 	return 0;
-if (pPlayer->energy < 0)
-	pPlayer->energy = 0;
+if (playerP->energy < 0)
+	playerP->energy = 0;
 
 if (!bSecondary) {
 	nWeaponIndex = primaryWeaponToWeaponInfo [nWeapon];
 
 	if (nWeapon == SUPER_LASER_INDEX) {
-		if ((pPlayer->primaryWeaponFlags & (1 << LASER_INDEX)) && (bAll || pPlayer->HasSuperLaser ()))
+		if ((playerP->primaryWeaponFlags & (1 << LASER_INDEX)) && (bAll || playerP->HasSuperLaser ()))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else if (nWeapon == LASER_INDEX) {
-		if ((pPlayer->primaryWeaponFlags & (1 << LASER_INDEX)) && (bAll || pPlayer->HasStandardLaser ()))
+		if ((playerP->primaryWeaponFlags & (1 << LASER_INDEX)) && (bAll || playerP->HasStandardLaser ()))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else if (nWeapon == SPREADFIRE_INDEX) {
-		if ((pPlayer->primaryWeaponFlags & (1 << nWeapon)) && (bAll || !(extraGameInfo [0].bSmartWeaponSwitch && (pPlayer->primaryWeaponFlags & (1 << HELIX_INDEX)))))
+		if ((playerP->primaryWeaponFlags & (1 << nWeapon)) && (bAll || !(extraGameInfo [0].bSmartWeaponSwitch && (playerP->primaryWeaponFlags & (1 << HELIX_INDEX)))))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else if (nWeapon == VULCAN_INDEX) {
-		if ((pPlayer->primaryWeaponFlags & (1 << nWeapon)) && (bAll || !(extraGameInfo [0].bSmartWeaponSwitch && (pPlayer->primaryWeaponFlags & (1 << GAUSS_INDEX)))))
+		if ((playerP->primaryWeaponFlags & (1 << nWeapon)) && (bAll || !(extraGameInfo [0].bSmartWeaponSwitch && (playerP->primaryWeaponFlags & (1 << GAUSS_INDEX)))))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else {
-		if (pPlayer->primaryWeaponFlags & (1 << nWeapon))
+		if (playerP->primaryWeaponFlags & (1 << nWeapon))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 
 	// Special case: Gauss cannon uses vulcan ammo.	
 	if (nWeapon == GAUSS_INDEX) {
-		if (WI_AmmoUsage (nWeaponIndex) <= pPlayer->primaryAmmo [VULCAN_INDEX])
+		if (WI_ammo_usage (nWeaponIndex) <= playerP->primaryAmmo [VULCAN_INDEX])
 			returnValue |= HAS_AMMO_FLAG;
 		}
 	else
-		if (WI_AmmoUsage (nWeaponIndex) <= pPlayer->primaryAmmo [nWeapon])
+		if (WI_ammo_usage (nWeaponIndex) <= playerP->primaryAmmo [nWeapon])
 			returnValue |= HAS_AMMO_FLAG;
 	if (nWeapon == OMEGA_INDEX) {	// Hack: Make sure player has energy to omega
-		if (pPlayer->energy || gameData.omegaData.xCharge)
+		if (playerP->energy || gameData.omega.xCharge)
 			returnValue |= HAS_ENERGY_FLAG;
 		}
 	else {
 /*
 		if (nWeapon == SUPER_LASER_INDEX) {
-			if (pPlayer->energy || gameData.omegaData.xCharge)
+			if (playerP->energy || gameData.omega.xCharge)
 				returnValue |= HAS_ENERGY_FLAG;
 		}
 */
-		if (WI_EnergyUsage (nWeaponIndex) <= pPlayer->energy)
+		if (WI_energy_usage (nWeaponIndex) <= playerP->energy)
 			returnValue |= HAS_ENERGY_FLAG;
 		}
 	}
 else {
 	nWeaponIndex = secondaryWeaponToWeaponInfo [nWeapon];
 
-	if (pPlayer->secondaryWeaponFlags & (1 << nWeapon))
+	if (playerP->secondaryWeaponFlags & (1 << nWeapon))
 		returnValue |= HAS_WEAPON_FLAG;
 
-	if (WI_AmmoUsage (nWeaponIndex) <= pPlayer->secondaryAmmo [nWeapon])
+	if (WI_ammo_usage (nWeaponIndex) <= playerP->secondaryAmmo [nWeapon])
 		returnValue |= HAS_AMMO_FLAG;
 
-	if (WI_EnergyUsage(nWeaponIndex) <= pPlayer->energy)
+	if (WI_energy_usage(nWeaponIndex) <= playerP->energy)
 		returnValue |= HAS_ENERGY_FLAG;
 }
 
@@ -345,9 +345,9 @@ return returnValue;
 
 void InitWeaponOrdering (void)
  {
-  // int16_t routine to setup default weapon priorities for new pilots
+  // short routine to setup default weapon priorities for new pilots
 
-  int32_t i;
+  int i;
 
 for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++)
 	primaryOrder [i] = defaultPrimaryOrder [i];
@@ -376,33 +376,33 @@ bCycling = 0;
 
 //	------------------------------------------------------------------------------------
 //if message flag set, print message saying selected
-void SelectWeapon (int32_t nWeaponNum, int32_t bSecondary, int32_t bPrintMessage, int32_t bWaitForRearm)
+void SelectWeapon (int nWeaponNum, int bSecondary, int bPrintMessage, int bWaitForRearm)
 {
 	const char	*szWeaponName;
 
-if (gameData.demoData.nState == ND_STATE_RECORDING)
+if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordPlayerWeapon (bSecondary, nWeaponNum);
 if (!bSecondary) {
-	if (gameData.weaponData.nPrimary != nWeaponNum) {
+	if (gameData.weapons.nPrimary != nWeaponNum) {
 		if (bWaitForRearm) 
 			audio.PlaySound (SOUND_GOOD_SELECTION_PRIMARY);
 		if (IsMultiGame) {
 			if (bWaitForRearm) 
 				MultiSendPlaySound (SOUND_GOOD_SELECTION_PRIMARY, I2X (1));
 			}
-		gameData.laserData.xNextFireTime = bWaitForRearm ? gameData.timeData.xGame + (fix) (gameStates.gameplay.slowmo [1].fSpeed * REARM_TIME) : 0;
-		gameData.laserData.nGlobalFiringCount = 0;
+		gameData.laser.xNextFireTime = bWaitForRearm ? gameData.time.xGame + (fix) (gameStates.gameplay.slowmo [1].fSpeed * REARM_TIME) : 0;
+		gameData.laser.nGlobalFiringCount = 0;
 		} 
-	else if (!gameStates.app.bD1Mission) {
+	else {
 		// Select super version if available.
 		if (bWaitForRearm) {
 			if (!bCycling)
 				; // -- MK, only plays when can't fire weapon anyway, fixes bug -- audio.PlaySound(SOUND_ALREADY_SELECTED);
 			else
-				audio.PlaySound (SOUND_BAD_SELECTION);
+				audio.PlaySound(SOUND_BAD_SELECTION);
 			}
 		}
-	gameData.weaponData.nOverridden = nWeaponNum;
+	gameData.weapons.nOverridden = nWeaponNum;
 	if (!bSecondary && extraGameInfo [IsMultiGame].bSmartWeaponSwitch && !gameStates.app.bD1Mission) {
 		switch (nWeaponNum) {
 			case 1:
@@ -415,7 +415,7 @@ if (!bSecondary) {
 				break;
 			}
 		}
-	gameData.weaponData.nPrimary = (!bSecondary && (nWeaponNum == SUPER_LASER_INDEX)) ? LASER_INDEX : nWeaponNum;
+	gameData.weapons.nPrimary = (!bSecondary && (nWeaponNum == SUPER_LASER_INDEX)) ? LASER_INDEX : nWeaponNum;
 	StopPrimaryFire ();
 	szWeaponName = PRIMARY_WEAPON_NAMES (nWeaponNum);
 #if defined (FORCE_FEEDBACK)
@@ -425,17 +425,17 @@ if (!bSecondary) {
 	bLastPrimaryWasSuper [nWeaponNum % SUPER_WEAPON] = (nWeaponNum >= SUPER_WEAPON);
 	}
 else {
-	if (gameData.weaponData.nSecondary != nWeaponNum) {
+	if (gameData.weapons.nSecondary != nWeaponNum) {
 		if (bWaitForRearm) 
 			audio.PlaySound (SOUND_GOOD_SELECTION_SECONDARY);
 		if (IsMultiGame) {
 			if (bWaitForRearm) 
 				MultiSendPlaySound (SOUND_GOOD_SELECTION_PRIMARY, I2X (1));
 			}
-		gameData.missileData.xNextFireTime = bWaitForRearm ? gameData.timeData.xGame + REARM_TIME : 0;
-		gameData.missileData.nGlobalFiringCount = 0;
+		gameData.missiles.xNextFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
+		gameData.missiles.nGlobalFiringCount = 0;
 		}
-	else if (!gameStates.app.bD1Mission) {
+	else {
 		if (bWaitForRearm) {
 		 if (!bCycling)
 			audio.PlaySound (SOUND_ALREADY_SELECTED);
@@ -444,7 +444,7 @@ else {
 		}
 	}
 	//if (nWeaponNum % SUPER_WEAPON != PROXMINE_INDEX)
-		gameData.weaponData.nSecondary = nWeaponNum;
+		gameData.weapons.nSecondary = nWeaponNum;
 	szWeaponName = SECONDARY_WEAPON_NAMES (nWeaponNum);
 	//save flag for whether was super version
 	bLastSecondaryWasSuper [nWeaponNum % SUPER_WEAPON] = (nWeaponNum >= SUPER_WEAPON);
@@ -462,8 +462,8 @@ if (bPrintMessage) {
 
 void ToggleBomb (void)
 {
-int32_t bomb = bLastSecondaryWasSuper [PROXMINE_INDEX] ? PROXMINE_INDEX : SMARTMINE_INDEX;
-if ((gameData.appData.GameMode (GM_HOARD | GM_ENTROPY)) ||
+int bomb = bLastSecondaryWasSuper [PROXMINE_INDEX] ? PROXMINE_INDEX : SMARTMINE_INDEX;
+if ((gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) ||
 	 !(LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] || LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX])) {
 	audio.PlaySound (SOUND_BAD_SELECTION);
 	HUDInitMessage (TXT_NOBOMBS);
@@ -482,14 +482,14 @@ else {
 //flags whether the last time we use this weapon, it was the 'super' version
 //	------------------------------------------------------------------------------------
 //	Select a weapon, primary or secondary.
-void DoSelectWeapon (int32_t nWeapon, int32_t bSecondary)
+void DoSelectWeapon (int nWeapon, int bSecondary)
 {
-	int32_t	nWeaponSave = nWeapon;
-	int32_t	nWeaponStatus, nCurrent, hasFlag;
-	uint8_t	bLastWasSuper;
+	int	nWeaponSave = nWeapon;
+	int	nWeaponStatus, nCurrent, hasFlag;
+	ubyte	bLastWasSuper;
 
 if (!bSecondary) {
-	nCurrent = gameData.weaponData.nPrimary;
+	nCurrent = gameData.weapons.nPrimary;
 	if ((nCurrent == LASER_INDEX) && LOCALPLAYER.HasSuperLaser ())
 		nCurrent = SUPER_LASER_INDEX;
 	bLastWasSuper = bLastPrimaryWasSuper [nWeapon];
@@ -504,14 +504,12 @@ else if (nWeapon == 2) {
 	return;
 	}
 else {
-	nCurrent = gameData.weaponData.nSecondary;
+	nCurrent = gameData.weapons.nSecondary;
 	bLastWasSuper = bLastSecondaryWasSuper [nWeapon % SUPER_WEAPON];
 	hasFlag = HAS_WEAPON_FLAG + HAS_AMMO_FLAG;
 	}
 
 if ((nCurrent == nWeapon) || (nCurrent == nWeapon + SUPER_WEAPON)) {
-	if (gameStates.app.bD1Mission) // no super weapons in Descent 1
-		return;
 	//already have this selected, so toggle to other of Normal/super version
 	if (!bSecondary && (nCurrent == SUPER_LASER_INDEX))
 		return;
@@ -522,11 +520,6 @@ if ((nCurrent == nWeapon) || (nCurrent == nWeapon + SUPER_WEAPON)) {
 	}
 else {
 	//go to last-select version of requested missile
-	if (gameStates.app.bD1Mission) {// no super weapons in Descent 1
-		bLastWasSuper = 0;
-		if (nWeapon >= SUPER_WEAPON) // should actually never happen here
-			nWeapon -= SUPER_WEAPON;
-		}
 	if (bLastWasSuper && (nWeapon < SUPER_WEAPON))
 		nWeapon += SUPER_WEAPON;
 	nWeaponStatus = PlayerHasWeapon (nWeapon, bSecondary, -1, 0);
@@ -557,7 +550,7 @@ SelectWeapon (nWeapon, bSecondary, 1, 1);
 
 //	----------------------------------------------------------------------------------------
 
-inline int32_t WeaponId (int32_t w)
+inline int WeaponId (int w)
 {
 if (w != LASER_INDEX)
 	return w;
@@ -570,12 +563,12 @@ return SUPER_LASER_INDEX;
 
 void SetLastSuperWeaponStates (void)
 {
-	CPlayerData	*pPlayer = gameData.multiplayer.players + N_LOCALPLAYER;
-	int32_t		i, j;
+	CPlayerData	*playerP = gameData.multiplayer.players + N_LOCALPLAYER;
+	int		i, j;
 
 for (i = 0, j = 1 << 5; i < 5; i++, j <<= 1) {
-	bLastPrimaryWasSuper [i] = i ? ((pPlayer->primaryWeaponFlags & j) != 0) : pPlayer->HasSuperLaser ();
-	bLastSecondaryWasSuper [i] = (pPlayer->secondaryWeaponFlags & j) != 0;
+	bLastPrimaryWasSuper [i] = i ? ((playerP->primaryWeaponFlags & j) != 0) : playerP->HasSuperLaser ();
+	bLastSecondaryWasSuper [i] = (playerP->secondaryWeaponFlags & j) != 0;
 	}
 }
 
@@ -583,21 +576,21 @@ for (i = 0, j = 1 << 5; i < 5; i++, j <<= 1) {
 //	Automatically select next best weapon if unable to fire current weapon.
 // Weapon nType: 0==primary, 1==secondary
 
-void AutoSelectWeapon (int32_t nWeaponType, int32_t bAutoSelect)
+void AutoSelectWeapon (int nWeaponType, int bAutoSelect)
 {
-	int32_t	r;
-	int32_t	nCutPoint;
-	int32_t	bLooped = 0;
+	int	r;
+	int	nCutPoint;
+	int	bLooped = 0;
 
 if (bAutoSelect && !gameOpts->gameplay.nAutoSelectWeapon)
 	return;
 if (!nWeaponType) {
-	r = PlayerHasWeapon (WeaponId (gameData.weaponData.nPrimary), 0, -1, 0);
+	r = PlayerHasWeapon (WeaponId (gameData.weapons.nPrimary), 0, -1, 0);
 	if ((r != HAS_ALL) || bCycling) {
-		int32_t	bTryAgain = 1;
-		int32_t	iCurWeapon = POrderList (WeaponId (gameData.weaponData.nOverridden));
-		int32_t	iNewWeapon = iCurWeapon;
-		int32_t	nCurWeapon, nNewWeapon;
+		int	bTryAgain = 1;
+		int	iCurWeapon = POrderList (WeaponId (gameData.weapons.nOverridden));
+		int	iNewWeapon = iCurWeapon;
+		int	nCurWeapon, nNewWeapon;
 
 		nCurWeapon = primaryOrder [iCurWeapon];
 		nCutPoint = POrderList (255);
@@ -605,7 +598,7 @@ if (!nWeaponType) {
 			if (++iNewWeapon >= nCutPoint) {
 				if (bLooped) {
 					if (bCycling) 
-						SelectWeapon (gameData.weaponData.nPrimary, 0, 0, 1);
+						SelectWeapon (gameData.weapons.nPrimary, 0, 0, 1);
 					else {
 						HUDInitMessage (TXT_NO_PRIMARY);
 #ifdef FORCE_FEEDBACK
@@ -629,11 +622,11 @@ if (!nWeaponType) {
 //	continue;
 
 			nNewWeapon = primaryOrder [iNewWeapon];
-			if (nNewWeapon == gameData.weaponData.nPrimary) {
+			if (nNewWeapon == gameData.weapons.nPrimary) {
 				if ((nCurWeapon == SUPER_LASER_INDEX) && (nNewWeapon == LASER_INDEX))
 					continue;
 				else if (bCycling)
-					SelectWeapon (gameData.weaponData.nPrimary, 0, 0, 1);
+					SelectWeapon (gameData.weapons.nPrimary, 0, 0, 1);
 				else {
 					HUDInitMessage (TXT_NO_PRIMARY);
 #ifdef FORCE_FEEDBACK
@@ -657,17 +650,17 @@ if (!nWeaponType) {
 	} 
 else {
 	Assert(nWeaponType==1);
-	r = PlayerHasWeapon (gameData.weaponData.nSecondary, 1, -1, 0);
+	r = PlayerHasWeapon (gameData.weapons.nSecondary, 1, -1, 0);
 	if (r != HAS_ALL || bCycling) {
-		int32_t	bTryAgain = 1;
-		int32_t	iCurWeapon = SOrderList (gameData.weaponData.nSecondary);
+		int	bTryAgain = 1;
+		int	iCurWeapon = SOrderList (gameData.weapons.nSecondary);
 
 		nCutPoint = SOrderList (255);
 		while (bTryAgain) {
 			if (++iCurWeapon >= nCutPoint) {
 				if (bLooped) {
 					if (bCycling)
-						SelectWeapon (gameData.weaponData.nSecondary, 1, 0, 1);
+						SelectWeapon (gameData.weapons.nSecondary, 1, 0, 1);
 					else
 						HUDInitMessage (TXT_NO_SECSELECT);
 					return;
@@ -677,9 +670,9 @@ else {
 				}
 			if (iCurWeapon == MAX_SECONDARY_WEAPONS)
 				iCurWeapon = 0;
-			if (secondaryOrder [iCurWeapon] == gameData.weaponData.nSecondary) {
+			if (secondaryOrder [iCurWeapon] == gameData.weapons.nSecondary) {
 				if (bCycling)
-					SelectWeapon (gameData.weaponData.nSecondary, 1, 0, 1);
+					SelectWeapon (gameData.weapons.nSecondary, 1, 0, 1);
 				else
 					HUDInitMessage (TXT_NO_SECAVAIL);
 				return;				// Tried all weapons!
@@ -701,7 +694,7 @@ else {
 void ShowWeaponStatus (void)
 {
 #if TRACE
-for (int32_t i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
+for (int i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	if (LOCALPLAYER.primaryWeaponFlags & (1 << i))
 		console.printf (CON_DBG, "HAVE");
 	else
@@ -732,45 +725,43 @@ console.printf (CON_DBG, "\n");
 //	Call this once/frame to process all super mines in the level.
 void ProcessSmartMinesFrame (void)
 {
-	int32_t			i, j;
-	int32_t			nParentObj;
+	int			i, j;
+	int			nParentObj;
 	fix			dist;
-	CObject		*pBomb, *pActor;
+	CObject		*bombP, *actorP;
 	CFixVector	*vBombPos;
 
 	//	If we don't know of there being any super mines in the level, just
 	//	check every 8th CObject each frame.
 gameStates.gameplay.bHaveSmartMines = 0;
 
-FORALL_WEAPON_OBJS (pBomb) {
-	if (pBomb->info.nId != SMARTMINE_ID)
+FORALL_WEAPON_OBJS (bombP, i) {
+	if (bombP->info.nId != SMARTMINE_ID)
 		continue;
-	nParentObj = pBomb->cType.laserInfo.parent.nObject;
+	nParentObj = bombP->cType.laserInfo.parent.nObject;
 	gameStates.gameplay.bHaveSmartMines = 1;
-	if (pBomb->info.xLifeLeft + I2X (2) >= gameData.weaponData.info [0][SMARTMINE_ID].lifetime)
+	if (bombP->info.xLifeLeft + I2X (2) >= gameData.weapons.info [SMARTMINE_ID].lifetime)
 		continue;
-	vBombPos = &pBomb->info.position.vPos;
-	i = pBomb->Index ();
-	FORALL_ACTOR_OBJS (pActor) {
-		if ((pActor->Type () != OBJ_PLAYER) && (pActor->Type () != OBJ_ROBOT))
-			continue;
-		j = pActor->Index ();
+	vBombPos = &bombP->info.position.vPos;
+	i = bombP->Index ();
+	FORALL_ACTOR_OBJS (actorP, j) {
+		j = actorP->Index ();
 		if (j == nParentObj) 
 			continue;
-		dist = CFixVector::Dist (*vBombPos, pActor->info.position.vPos);
-		if (dist - pActor->info.xSize >= I2X (20))
+		dist = CFixVector::Dist (*vBombPos, actorP->info.position.vPos);
+		if (dist - actorP->info.xSize >= I2X (20))
 			continue;
-		if (pBomb->info.nSegment == pActor->info.nSegment)
-			pBomb->UpdateLife (1);
+		if (bombP->info.nSegment == actorP->info.nSegment)
+			bombP->SetLife (1);
 		else {
 			//	Object which is close enough to detonate smart mine is not in same CSegment as smart mine.
 			//	Need to do a more expensive check to make sure there isn't an obstruction.
-			if (((gameData.appData.nFrameCount ^ (i+j)) % 4) == 0) {
-				CHitQuery	hitQuery (0, &pBomb->Position (), &pActor->Position (), pBomb->Segment (), i);
+			if (((gameData.app.nFrameCount ^ (i+j)) % 4) == 0) {
+				CHitQuery	hitQuery (0, &bombP->Position (), &actorP->Position (), bombP->Segment (), i);
 				CHitResult	hitResult;
-				int32_t fate = FindHitpoint (hitQuery, hitResult);
+				int fate = FindHitpoint (hitQuery, hitResult);
 				if (fate != HIT_WALL)
-					pBomb->UpdateLife (1);
+					bombP->SetLife (1);
 				}
 			}
 		}
@@ -779,9 +770,9 @@ FORALL_WEAPON_OBJS (pBomb) {
 
 //------------------------------------------------------------------------------
 //returns which bomb will be dropped next time the bomb key is pressed
-int32_t ArmedBomb (void)
+int ArmedBomb (void)
 {
-	int32_t bomb, otherBomb;
+	int bomb, otherBomb;
 
 	//use the last one selected, unless there aren't any, in which case use
 	//the other if there are any
@@ -805,10 +796,7 @@ return bomb;
 
 void DoWeaponStuff (void)
 {
-if (OBSERVING)
-	return;
-
-  int32_t i;
+  int i;
 
 if (controls [0].useCloakDownCount)
 	ApplyCloak (0, -1);
@@ -816,14 +804,14 @@ if (controls [0].useInvulDownCount)
 	ApplyInvul (0, -1);
 if (controls [0].fireFlareDownCount)
 	if (AllowedToFireFlare ())
-		CreateFlare (gameData.objData.pConsole);
+		CreateFlare (gameData.objs.consoleP);
 if (AllowedToFireMissile (-1, 1)) {
-	i = secondaryWeaponToWeaponInfo [gameData.weaponData.nSecondary];
-	gameData.missileData.nGlobalFiringCount += WI_FireCount (i) * (controls [0].fireSecondaryState || controls [0].fireSecondaryDownCount);
+	i = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
+	gameData.missiles.nGlobalFiringCount += WI_fireCount (i) * (controls [0].fireSecondaryState || controls [0].fireSecondaryDownCount);
 	}
-if (gameData.missileData.nGlobalFiringCount) {
+if (gameData.missiles.nGlobalFiringCount) {
 	DoMissileFiring (1);			//always enable autoselect for Normal missile firing
-	gameData.missileData.nGlobalFiringCount--;
+	gameData.missiles.nGlobalFiringCount--;
 	}
 if (controls [0].cyclePrimaryCount) {
 	for (i = 0; i < controls [0].cyclePrimaryCount; i++)
@@ -837,44 +825,44 @@ if (controls [0].headlightCount) {
 	for (i = 0; i < controls [0].headlightCount; i++)
 	lightManager.Headlights ().Toggle ();
 	}
-if (gameData.missileData.nGlobalFiringCount < 0)
-	gameData.missileData.nGlobalFiringCount = 0;
+if (gameData.missiles.nGlobalFiringCount < 0)
+	gameData.missiles.nGlobalFiringCount = 0;
 //	Drop proximity bombs.
 if (controls [0].dropBombDownCount) {
-	if (gameStates.app.bD2XLevel && (SEGMENT (gameData.objData.pConsole->info.nSegment)->HasNoDamageProp ()))
+	if (gameStates.app.bD2XLevel && (SEGMENTS [gameData.objs.consoleP->info.nSegment].HasNoDamageProp ()))
 		controls [0].dropBombDownCount = 0;
 	else {
-		int32_t ssw_save = gameData.weaponData.nSecondary;
+		int ssw_save = gameData.weapons.nSecondary;
 		while (controls [0].dropBombDownCount--) {
-			int32_t ssw_save2 = gameData.weaponData.nSecondary = ArmedBomb();
-			if (gameData.appData.GameMode (GM_HOARD | GM_ENTROPY))
+			int ssw_save2 = gameData.weapons.nSecondary = ArmedBomb();
+			if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY))
 				DropSecondaryWeapon (-1);
 			else
-				DoMissileFiring (gameData.weaponData.nSecondary == ssw_save);	//only allow autoselect if bomb is actually selected
-			if (gameData.weaponData.nSecondary != ssw_save2 && ssw_save == ssw_save2)
-				ssw_save = gameData.weaponData.nSecondary;    //if bomb was selected, and we ran out & autoselect, then stick with new selection
+				DoMissileFiring (gameData.weapons.nSecondary == ssw_save);	//only allow autoselect if bomb is actually selected
+			if (gameData.weapons.nSecondary != ssw_save2 && ssw_save == ssw_save2)
+				ssw_save = gameData.weapons.nSecondary;    //if bomb was selected, and we ran out & autoselect, then stick with new selection
 			}
-		gameData.weaponData.nSecondary = ssw_save;
+		gameData.weapons.nSecondary = ssw_save;
 	}
 }
 }
 
 //	-----------------------------------------------------------------------------
 
-int32_t tactile_fire_duration []={120,80,150,250,150,200,100,180,280,100};
-int32_t tactile_fire_repeat []={260,90,160,160,160,210,110,191,291,111};
+int tactile_fire_duration []={120,80,150,250,150,200,100,180,280,100};
+int tactile_fire_repeat []={260,90,160,160,160,210,110,191,291,111};
 
 void TactileSetButtonJolt ()
  {
   #ifdef FORCE_FEEDBACK
 
   FILE *infile;
-  int32_t t,i;
-  static int32_t stickmag=-1;
-  int32_t dur,rep;
+  int t,i;
+  static int stickmag=-1;
+  int dur,rep;
 
-  dur=tactile_fire_duration [gameData.weaponData.nPrimary];
-  rep=tactile_fire_repeat [gameData.weaponData.nPrimary];
+  dur=tactile_fire_duration [gameData.weapons.nPrimary];
+  rep=tactile_fire_repeat [gameData.weapons.nPrimary];
 
 if (TactileStick) {
 	if (stickmag==-1) {
@@ -897,14 +885,38 @@ if (TactileStick) {
 
 //	-----------------------------------------------------------------------------
 
-void CWeaponInfo::SetChildren (CFile& cf, int32_t fileVersion, int32_t bD1Data)
+void CWeaponInfo::Read (CFile& cf, int fileVersion)
 {
-if (!bD1Data && (fileVersion >= 3))
+	int i;
+
+renderType = cf.ReadByte ();
+persistent = cf.ReadByte ();
+nModel = cf.ReadShort ();
+nInnerModel = cf.ReadShort ();
+nFlashVClip = cf.ReadByte ();
+nRobotHitVClip = cf.ReadByte ();
+flashSound = cf.ReadShort ();
+nWallHitVClip = cf.ReadByte ();
+fireCount = cf.ReadByte ();
+nRobotHitSound = cf.ReadShort ();
+nAmmoUsage = cf.ReadByte ();
+nVClipIndex = cf.ReadByte ();
+nWallHitSound = cf.ReadShort ();
+destructible = cf.ReadByte ();
+matter = cf.ReadByte ();
+bounce = cf.ReadByte ();
+homingFlag = cf.ReadByte ();
+speedvar = cf.ReadByte ();
+flags = cf.ReadByte ();
+flash = cf.ReadByte ();
+nAfterburnerSize = cf.ReadByte ();
+
+if (fileVersion >= 3)
 	children = cf.ReadByte ();
 else
 	// Set the nType of children correctly when using old datafiles.  
 	// In earlier descent versions this was simply hard-coded in CreateSmartChildren ().
-	switch (this - gameData.weaponData.info [bD1Data].Buffer ()) {
+	switch (this - gameData.weapons.info.Buffer ()) {
 		case SMARTMSL_ID:
 			children = SMARTMSL_BLOB_ID;
 			break;
@@ -923,120 +935,44 @@ else
 			children = -1;
 			break;
 		}
-}
-
-//	-----------------------------------------------------------------------------
-
-void CWeaponInfo::Read (CFile& cf, int32_t fileVersion)
-{
-int32_t bD1 = fileVersion < 0;
-int32_t nId = int32_t (this - gameData.weaponData.info [bD1].Buffer ());
-
-if (bD1) { // D1
-	memcpy (this, gameData.weaponData.info [0] + nId, sizeof (*this));
-
-	/*renderType = */cf.ReadByte ();
-	/*nModel = */cf.ReadByte ();
-	/*nInnerModel = */cf.ReadByte ();
-	persistent = cf.ReadByte ();
-	/*nFlashAnimation = */cf.ReadByte ();
-	flashSound = cf.ReadShort ();
-	/*nRobotHitAnimation = */cf.ReadByte ();
-	nRobotHitSound = cf.ReadShort ();
-	/*nWallHitAnimation = */cf.ReadByte ();
-	nWallHitSound = cf.ReadShort ();
-	fireCount = cf.ReadByte ();
-	nAmmoUsage = cf.ReadByte ();
-	/*nAnimationIndex = */cf.ReadByte ();
-	destructible = cf.ReadByte ();
-	matter = cf.ReadByte ();
-	bounce = cf.ReadByte ();
-	homingFlag = cf.ReadByte ();
-	cf.ReadByte (); 
-	cf.ReadByte ();
-	cf.ReadByte ();
-	xEnergyUsage = cf.ReadFix ();
-	xFireWait = cf.ReadFix ();
-	/*bitmap.index = */cf.ReadShort ();
-	/*xBlobSize = */cf.ReadFix ();
-	xFlashSize = cf.ReadFix ();
-	xImpactSize = cf.ReadFix ();
-	for (int32_t i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
-		strength [i] = cf.ReadFix ();
-	for (int32_t i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
-		speed [i] = cf.ReadFix ();
-	mass = cf.ReadFix ();
-	drag = cf.ReadFix ();
-	thrust = cf.ReadFix ();
-	poLenToWidthRatio = cf.ReadFix ();
-	light = cf.ReadFix ();
-	lifetime = cf.ReadFix ();
-	xDamageRadius = cf.ReadFix ();
-	picture.index = cf.ReadShort ();
-
-	SetChildren (cf, 0, 1);
-	}
+xEnergyUsage = cf.ReadFix ();
+xFireWait = cf.ReadFix ();
+if (fileVersion < 3)
+	xMultiDamageScale = I2X (1);
 else {
-	renderType = cf.ReadByte ();
-	persistent = cf.ReadByte ();
-	nModel = cf.ReadShort ();
-	nInnerModel = cf.ReadShort ();
-	nFlashAnimation = cf.ReadByte ();
-	nRobotHitAnimation = cf.ReadByte ();
-	flashSound = cf.ReadShort ();
-	nWallHitAnimation = cf.ReadByte ();
-	fireCount = cf.ReadByte ();
-	nRobotHitSound = cf.ReadShort ();
-	nAmmoUsage = cf.ReadByte ();
-	nAnimationIndex = cf.ReadByte ();
-	nWallHitSound = cf.ReadShort ();
-	destructible = cf.ReadByte ();
-	matter = cf.ReadByte ();
-	bounce = cf.ReadByte ();
-	homingFlag = cf.ReadByte ();
-	speedvar = cf.ReadByte ();
-	flags = cf.ReadByte ();
-	flash = cf.ReadByte ();
-	nAfterburnerSize = cf.ReadByte ();
-	SetChildren (cf, fileVersion, 0);
-	xEnergyUsage = cf.ReadFix ();
-	xFireWait = cf.ReadFix ();
-	if (fileVersion < 3)
+	xMultiDamageScale = cf.ReadFix ();
+	if (!xMultiDamageScale || (xMultiDamageScale == 0x7fffffff))
 		xMultiDamageScale = I2X (1);
-	else {
-		xMultiDamageScale = cf.ReadFix ();
-		if (!xMultiDamageScale || (xMultiDamageScale == 0x7fffffff))
-			xMultiDamageScale = I2X (1);
-		}
-	ReadBitmapIndex (&bitmap, cf);
-	xBlobSize = cf.ReadFix ();
-	xFlashSize = cf.ReadFix ();
-	xImpactSize = cf.ReadFix ();
-	for (int32_t i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
-		strength [i] = cf.ReadFix ();
-	for (int32_t i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
-		speed [i] = cf.ReadFix ();
-	mass = cf.ReadFix ();
-	drag = cf.ReadFix ();
-	thrust = cf.ReadFix ();
-	poLenToWidthRatio = cf.ReadFix ();
-	light = cf.ReadFix ();
-	lifetime = cf.ReadFix ();
-	xDamageRadius = cf.ReadFix ();
-	ReadBitmapIndex (&picture, cf);
-	if (fileVersion >= 3)
-		ReadBitmapIndex (&hiresPicture, cf);
-	else
-		hiresPicture.index = picture.index;
 	}
-if (CObject::IsMissile (nId))
+ReadBitmapIndex (&bitmap, cf);
+blob_size = cf.ReadFix ();
+xFlashSize = cf.ReadFix ();
+xImpactSize = cf.ReadFix ();
+for (i = 0; i < NDL; i++)
+	strength [i] = cf.ReadFix ();
+for (i = 0; i < NDL; i++)
+	speed [i] = cf.ReadFix ();
+mass = cf.ReadFix ();
+drag = cf.ReadFix ();
+thrust = cf.ReadFix ();
+poLenToWidthRatio = cf.ReadFix ();
+if (CObject::IsMissile (i))
 	poLenToWidthRatio = I2X (10);
-if (nId == SPREADFIRE_ID) {
+light = cf.ReadFix ();
+i = int (this - gameData.weapons.info.Buffer ());
+if (i == SPREADFIRE_ID) {
 	//renderType = 3;
 	light = I2X (1);
 	}
-else if (nId == HELIX_ID)
+else if (i == HELIX_ID)
 	light = I2X (3) / 2;
+lifetime = cf.ReadFix ();
+xDamageRadius = cf.ReadFix ();
+ReadBitmapIndex (&picture, cf);
+if (fileVersion >= 3)
+	ReadBitmapIndex (&hiresPicture, cf);
+else
+	hiresPicture.index = picture.index;
 
 #if PRINT_WEAPON_INFO
 PrintLog (0, "{%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
@@ -1044,14 +980,14 @@ PrintLog (0, "{%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
 	persistent,
 	nModel,
 	nInnerModel,
-	nFlashAnimation,
-	nRobotHitAnimation,
+	nFlashVClip,
+	nRobotHitVClip,
 	flashSound,
-	nWallHitAnimation,
+	nWallHitVClip,
 	fireCount,
 	nRobotHitSound,
 	nAmmoUsage,
-	nAnimationIndex,
+	nVClipIndex,
 	nWallHitSound,
 	destructible,
 	matter,
@@ -1067,13 +1003,13 @@ PrintLog (0, "%d,%d,%d,%d,{%d},%d,%d,%d,{",
 	xFireWait,
 	xMultiDamageScale,
 	bitmap.index,
-	xBlobSize,
+	blob_size,
 	xFlashSize,
 	xImpactSize);
-for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
+for (i = 0; i < NDL; i++)
 	PrintLog (0, "%s%d", i ? "," : "", strength [i]);
 PrintLog (1, "},{");
-for (i = 0; i < DIFFICULTY_LEVEL_COUNT; i++)
+for (i = 0; i < NDL; i++)
 	PrintLog (0, "%s%d", i ? "," : "", speed [i]);
 PrintLog (0, "},%d,%d,%d,%d,%d,%d,%d,{%d},{%d}}\n",
 	mass,
@@ -1090,16 +1026,16 @@ PrintLog (0, "},%d,%d,%d,%d,%d,%d,%d,{%d},{%d}}\n",
 
 //	-----------------------------------------------------------------------------
 
-int32_t ReadWeaponInfos (int32_t nOffset, int32_t nCount, CFile& cf, int32_t fileVersion, bool bDefault)
+int ReadWeaponInfos (int nOffset, int nCount, CFile& cf, int fileVersion, bool bDefault)
 {
-	int32_t i;
+	int i;
 
 #if PRINT_WEAPON_INFO
 PrintLog (1, "\nCWeaponInfo defaultWeaponInfosD2 [] = {\n");
 #endif
 if (bDefault || EGI_FLAG (bAllowCustomWeapons, 0, 0, 1)) {
 	for (i = nOffset; i < nOffset + nCount; i++)
-		gameData.weaponData.info [0][i].Read (cf, fileVersion);
+		gameData.weapons.info [i].Read (cf, fileVersion);
 	}
 else {
 	CWeaponInfo wi;

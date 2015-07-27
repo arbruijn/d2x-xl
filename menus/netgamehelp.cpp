@@ -36,7 +36,7 @@
 
 //------------------------------------------------------------------------------
 
-extern int32_t WhoIsGameHost(), NetworkHowManyConnected(), GetMyNetRanking();
+extern int WhoIsGameHost(), NetworkHowManyConnected(), GetMyNetRanking();
 extern char bPauseableMenu;
 //char *NetworkModeNames[]={"Anarchy", "Team Anarchy", "Robo Anarchy", "Cooperative", "Capture the Flag", "Hoard", "Team Hoard", "Unknown"};
 
@@ -44,71 +44,71 @@ void DoShowNetGameHelp (void)
 {
 	CMenu		m (30);
    char		szText [MENU_MAX_TEXTLEN];
-	int32_t		i, eff;
+	int		i, eff;
 #if DBG
-	int32_t		nLost;
+	int		nLost;
 #endif
 	//char *eff_strings[]={"trashing", "really hurting", "seriously affecting", "hurting", "affecting", "tarnishing"};
 
-sprintf (szText, TXT_INFO_GAME, netGameInfo.m_info.szGameName);
+sprintf (szText, TXT_INFO_GAME, netGame.m_info.szGameName);
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_MISSION, netGameInfo.m_info.szMissionTitle);
+sprintf (szText, TXT_INFO_MISSION, netGame.m_info.szMissionTitle);
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_LEVEL, netGameInfo.m_info.GetLevel ());
+sprintf (szText, TXT_INFO_LEVEL, netGame.m_info.GetLevel ());
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_SKILL, MENU_DIFFICULTY_TEXT (netGameInfo.m_info.difficulty));
+sprintf (szText, TXT_INFO_SKILL, MENU_DIFFICULTY_TEXT (netGame.m_info.difficulty));
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_MODE, GT (537 + netGameInfo.m_info.gameMode));
+sprintf (szText, TXT_INFO_MODE, GT (537 + netGame.m_info.gameMode));
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_SERVER, PLAYER (WhoIsGameHost()).callsign);
+sprintf (szText, TXT_INFO_SERVER, gameData.multiplayer.players [WhoIsGameHost()].callsign);
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_PLRNUM, NetworkHowManyConnected (), netGameInfo.m_info.nMaxPlayers);
+sprintf (szText, TXT_INFO_PLRNUM, NetworkHowManyConnected (), netGame.m_info.nMaxPlayers);
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_PPS, netGameInfo.GetMinPPS ());
+sprintf (szText, TXT_INFO_PPS, netGame.GetPacketsPerSec ());
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_SHORTPKT, netGameInfo.GetShortPackets () ? "Yes" : "No");
+sprintf (szText, TXT_INFO_SHORTPKT, netGame.GetShortPackets () ? "Yes" : "No");
 m.AddText ("", szText);
 #if DBG
-nLost = (int32_t) ((double (networkData.nTotalMissedPackets) / double (networkData.nTotalPacketsGot + networkData.nTotalMissedPackets)) * 100.0);
+nLost = (int) ((double (networkData.nTotalMissedPackets) / double (networkData.nTotalPacketsGot + networkData.nTotalMissedPackets)) * 100.0);
 if (nLost < 0)
 	nLost = 0;
 sprintf (szText, TXT_INFO_LOSTPKT, networkData.nTotalMissedPackets, nLost);
 m.AddText ("", szText);
 #endif
-if (netGameInfo.GetScoreGoal ())
-	sprintf (szText, TXT_INFO_SCOREGOAL, netGameInfo.GetScoreGoal () * 5);
+if (netGame.GetScoreGoal ())
+	sprintf (szText, TXT_INFO_SCOREGOAL, netGame.GetScoreGoal () * 5);
 sprintf (szText, " ");
 sprintf (szText, TXT_INFO_PLRSCONN);
-NETPLAYER (N_LOCALPLAYER).rank = GetMyNetRanking ();
-for (i = 0; i < N_PLAYERS; i++)
-	if (PLAYER (i).connected) {
+netPlayers [0].m_info.players [N_LOCALPLAYER].rank = GetMyNetRanking ();
+for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+	if (gameData.multiplayer.players [i].connected) {
 		if (!gameOpts->multi.bNoRankings) {
 			if (i == N_LOCALPLAYER)
 				sprintf (szText, "%s%s (%d/%d)",
-							pszRankStrings [NETPLAYER (i).rank],
-							PLAYER (i).callsign,
+							pszRankStrings [netPlayers [0].m_info.players [i].rank],
+							gameData.multiplayer.players [i].callsign,
 							networkData.nNetLifeKills,
 							networkData.nNetLifeKilled);
 			else
 				sprintf (szText, "%s%s %d/%d",
-							pszRankStrings[NETPLAYER (i).rank],
-							PLAYER (i).callsign,
+							pszRankStrings[netPlayers [0].m_info.players [i].rank],
+							gameData.multiplayer.players [i].callsign,
 							gameData.multigame.score.matrix[N_LOCALPLAYER][i],
 							gameData.multigame.score.matrix[i][N_LOCALPLAYER]);
 			}
 		else
-			sprintf (szText, "%s", PLAYER (i).callsign);
+			sprintf (szText, "%s", gameData.multiplayer.players [i].callsign);
 		m.AddText ("", szText);
 		}
 	m.AddText ("", "");
-	eff = (int32_t)((double)((double) networkData.nNetLifeKills / ((double) networkData.nNetLifeKilled + (double) networkData.nNetLifeKills))*100.0);
+	eff = (int)((double)((double) networkData.nNetLifeKills / ((double) networkData.nNetLifeKilled + (double) networkData.nNetLifeKills))*100.0);
 	if (eff < 0)
 		eff = 0;
 	if (IsHoardGame) {
-		if (gameData.scoreData.nChampion == -1)
+		if (gameData.score.nChampion == -1)
 			sprintf (szText, TXT_NO_RECORD2);
 		else
-			sprintf (szText, TXT_RECORD3, PLAYER (gameData.scoreData.nChampion).callsign, gameData.scoreData.nHighscore);
+			sprintf (szText, TXT_RECORD3, gameData.multiplayer.players [gameData.score.nChampion].callsign, gameData.score.nHighscore);
 		}
 	else if (!gameOpts->multi.bNoRankings) {
 		sprintf (szText, TXT_EFF_LIFETIME, eff);

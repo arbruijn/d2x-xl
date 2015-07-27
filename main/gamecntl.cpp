@@ -72,16 +72,19 @@ char *pszPauseMsg = NULL;
 //------------------------------------------------------------------------------
 //#define TEST_TIMER    1		//if this is set, do checking on timer
 
+#ifdef SDL_INPUT
 #ifdef __macosx__
 # include <SDL/SDL.h>
 #else
 # include <SDL.h>
+#endif
 #endif
 
 //	Function prototypes --------------------------------------------------------
 
 void SpeedtestInit(void);
 void SpeedtestFrame(void);
+void PlayTestSound(void);
 
 // Functions ------------------------------------------------------------------
 
@@ -96,8 +99,8 @@ void TransferEnergyToShield (fix time)
 
 if (time <= 0)
 	return;
-fix e = Min (time * CONVERTER_RATE, LOCALPLAYER.Energy () - LOCALPLAYER.InitialEnergy ());
-e = Min (e, (LOCALPLAYER.MaxShield () - LOCALPLAYER.Shield ()) * CONVERTER_SCALE);
+fix e = min (time * CONVERTER_RATE, LOCALPLAYER.Energy () - LOCALPLAYER.InitialEnergy ());
+e = min (e, (LOCALPLAYER.MaxShield () - LOCALPLAYER.Shield ()) * CONVERTER_SCALE);
 if (e <= 0) {
 	if (LOCALPLAYER.Energy () <= INITIAL_ENERGY)
 		HUDInitMessage (TXT_TRANSFER_ENERGY, X2I (LOCALPLAYER.InitialEnergy ()));
@@ -108,23 +111,23 @@ if (e <= 0) {
 
 LOCALPLAYER.UpdateEnergy (-e);
 LOCALPLAYER.UpdateShield (e / CONVERTER_SCALE);
-OBJECT (N_LOCALPLAYER)->ResetDamage ();
-NetworkFlushData (); // will send position, shield and weapon info
+OBJECTS [N_LOCALPLAYER].ResetDamage ();
+MultiSendShield ();
 gameStates.app.bUsingConverter = 1;
-if (last_playTime > gameData.timeData.xGame)
+if (last_playTime > gameData.time.xGame)
 	last_playTime = 0;
 
-if (gameData.timeData.xGame > last_playTime + CONVERTER_SOUND_DELAY) {
+if (gameData.time.xGame > last_playTime + CONVERTER_SOUND_DELAY) {
 	audio.PlaySound (SOUND_CONVERT_ENERGY);
-	last_playTime = gameData.timeData.xGame;
+	last_playTime = gameData.time.xGame;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void formatTime(char *str, int32_t secs_int)
+void formatTime(char *str, int secs_int)
 {
-	int32_t h, m, s;
+	int h, m, s;
 
 h = secs_int/3600;
 s = secs_int%3600;
@@ -137,8 +140,8 @@ sprintf(str, "%1d:%02d:%02d", h, m, s );
 
 void PauseGame (void)
 {
-if (!gameData.appData.bGamePaused) {
-	gameData.appData.bGamePaused = 1;
+if (!gameData.app.bGamePaused) {
+	gameData.app.bGamePaused = 1;
 	audio.PauseAll ();
 	rba.Pause ();
 	StopTime ();
@@ -162,7 +165,7 @@ if (redbook.Playing ())
 	rba.Resume ();
 audio.ResumeAll ();
 gameStates.render.cockpit.nShieldFlash = 0;
-gameData.appData.bGamePaused = 0;
+gameData.app.bGamePaused = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -170,14 +173,15 @@ gameData.appData.bGamePaused = 0;
 void DoShowNetGameHelp (void);
 
 //Process selected keys until game unpaused. returns key that left pause (p or esc)
-int32_t DoGamePause (void)
+int DoGamePause (void)
 {
-	int32_t			key = 0;
-	char			szPauseMsg [1000];
-	char			szTotalTime [9], szLevelTime [9];
+	int			key = 0;
+	int			bScreenChanged;
+	char			msg [1000];
+	char			totalTime [9], xLevelTime [9];
 
-if (gameData.appData.bGamePaused) {		//unpause!
-	gameData.appData.bGamePaused = 0;
+if (gameData.app.bGamePaused) {		//unpause!
+	gameData.app.bGamePaused = 0;
 	gameStates.app.bEnterGame = 1;
 #if defined (FORCE_FEEDBACK)
 	if (TactileStick)
@@ -187,7 +191,7 @@ if (gameData.appData.bGamePaused) {		//unpause!
 	}
 
 if (IsNetworkGame) {
-	 DoShowNetGameHelp ();
+	 DoShowNetGameHelp();
     return (KEY_PAUSE);
 	}
 else if (IsMultiGame) {
@@ -195,42 +199,27 @@ else if (IsMultiGame) {
 	return (KEY_PAUSE);
 	}
 PauseGame ();
-
-formatTime (szTotalTime, X2I (LOCALPLAYER.timeTotal) + LOCALPLAYER.hoursTotal * 3600);
-formatTime (szLevelTime, X2I (LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel * 3600);
-
-if (gameData.demoData.nState != ND_STATE_PLAYBACK)
-	sprintf (szPauseMsg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), LOCALPLAYER.hostages.nOnBoard, szLevelTime, szTotalTime);
-else
-	sprintf (szPauseMsg, TXT_PAUSE_MSG2, GAMETEXT (332 + gameStates.app.nDifficultyLevel), LOCALPLAYER.hostages.nOnBoard);
-
-CMenu	m (5);
-
-char* pszToken = strtok (szPauseMsg + strlen ("PAUSE\n\n"), "\n");
-while (pszToken) {
-	m.AddText ("", pszToken);
-	pszToken = strtok (NULL, "\n");
-	}
-
-#if 1
-
-key = m.Menu (NULL, "PAUSE");
-
-#else 
-
-int32_t bScreenChanged;
-
 SetPopupScreenMode ();
+//paletteManager.ResumeEffect ();
+formatTime (totalTime, X2I (LOCALPLAYER.timeTotal) + LOCALPLAYER.hoursTotal * 3600);
+formatTime (xLevelTime, X2I (LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel * 3600);
+  if (gameData.demo.nState!=ND_STATE_PLAYBACK)
+	sprintf (msg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), 
+			   LOCALPLAYER.hostages.nOnBoard, xLevelTime, totalTime);
+   else
+	  	sprintf (msg, TXT_PAUSE_MSG2, GAMETEXT (332 +  gameStates.app.nDifficultyLevel), 
+				   LOCALPLAYER.hostages.nOnBoard);
+
 if (!gameOpts->menus.nStyle) {
 	gameStates.menus.nInMenu++;
 	GameRenderFrame ();
 	gameStates.menus.nInMenu--;
 	}
-messageBox.Show (pszPauseMsg = szPauseMsg, false);	
+messageBox.Show (pszPauseMsg = msg, false);	
 GrabMouse (0, 0);
-while (gameData.appData.bGamePaused) {
+while (gameData.app.bGamePaused) {
 	if (!(gameOpts->menus.nStyle && gameStates.app.bGameRunning))
-		key = KeyGetChar ();
+		key = KeyGetChar();
 	else {
 		gameStates.menus.nInMenu++;
 		while (!(key = KeyInKey ())) {
@@ -240,24 +229,30 @@ while (gameData.appData.bGamePaused) {
 			}
 		gameStates.menus.nInMenu--;
 		}
+#if DBG
+		HandleTestKey(key);
+#endif
 		bScreenChanged = HandleSystemKey (key);
+		HandleVRKey (key);
 		if (bScreenChanged) {
 			GameRenderFrame ();
 			messageBox.Render ();
+#if 0		
+			show_extraViews ();
+			if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
+				RenderGauges();
+#endif			
 			}
 	}
-messageBox.Clear ();
-
-#endif
-
 GrabMouse (1, 0);
+messageBox.Clear ();
 ResumeGame ();
 return key;
 }
 
 //------------------------------------------------------------------------------
 //switch a cockpit window to the next function
-int32_t SelectNextWindowFunction (int32_t nWindow)
+int SelectNextWindowFunction (int nWindow)
 {
 switch (gameStates.render.cockpit.n3DView [nWindow]) {
 	case CV_NONE:
@@ -266,14 +261,14 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 
 	case CV_REAR:
 		if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
-		    (!IsMultiGame || (netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+		    (!IsMultiGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 			gameStates.render.cockpit.n3DView [nWindow] = CV_RADAR_TOPDOWN;
 			break;
 			}
 
 	case CV_RADAR_TOPDOWN:
 		if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
-		    (!IsMultiGame || (netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+		    (!IsMultiGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 			gameStates.render.cockpit.n3DView [nWindow] = CV_RADAR_HEADSUP;
 			break;
 			}
@@ -295,7 +290,7 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 			gameStates.render.cockpit.n3DView [nWindow] = CV_COOP;
 			while (1) {
 				gameStates.render.cockpit.nCoopPlayerView [nWindow]++;
-				if (gameStates.render.cockpit.nCoopPlayerView [nWindow] == N_PLAYERS) {
+				if (gameStates.render.cockpit.nCoopPlayerView [nWindow] == gameData.multiplayer.nPlayers) {
 					gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
 					goto case_marker;
 					}
@@ -312,7 +307,7 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 		//if not multi, fall through
 	case CV_MARKER:
 	case_marker:;
-		if (!IsMultiGame || IsCoopGame || netGameInfo.m_info.bAllowMarkerView) {	//anarchy only
+		if (!IsMultiGame || IsCoopGame || netGame.m_info.bAllowMarkerView) {	//anarchy only
 			gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
 			if (markerManager.Viewer (nWindow) == -1)
 				markerManager.SetViewer (nWindow, N_LOCALPLAYER * 3);
@@ -338,9 +333,9 @@ void SpeedtestInit(void)
 	gameData.speedtest.bOn = 1;
 	gameData.speedtest.nSegment = 0;
 	gameData.speedtest.nSide = 0;
-	gameData.speedtest.nFrameStart = gameData.appData.nFrameCount;
+	gameData.speedtest.nFrameStart = gameData.app.nFrameCount;
 #if TRACE
-	console.printf (CON_DBG, "Starting speedtest.  Will be %i frames.  Each . = 10 frames.\n", gameData.segData.nLastSegment+1);
+	console.printf (CON_DBG, "Starting speedtest.  Will be %i frames.  Each . = 10 frames.\n", gameData.segs.nLastSegment+1);
 #endif
 }
 
@@ -352,30 +347,30 @@ void SpeedtestFrame(void)
 
 	gameData.speedtest.nSide=gameData.speedtest.nSegment % SEGMENT_SIDE_COUNT;
 
-	gameData.objData.pViewer->info.position.vPos = SEGMENT (gameData.speedtest.nSegment)->Center ();
-	gameData.objData.pViewer->info.position.vPos.v.coord.x += 0x10;	
-	gameData.objData.pViewer->info.position.vPos.v.coord.y -= 0x10;	
-	gameData.objData.pViewer->info.position.vPos.v.coord.z += 0x17;
+	gameData.objs.viewerP->info.position.vPos = SEGMENTS [gameData.speedtest.nSegment].Center ();
+	gameData.objs.viewerP->info.position.vPos.v.coord.x += 0x10;	
+	gameData.objs.viewerP->info.position.vPos.v.coord.y -= 0x10;	
+	gameData.objs.viewerP->info.position.vPos.v.coord.z += 0x17;
 
-	gameData.objData.pViewer->RelinkToSeg (gameData.speedtest.nSegment);
-	center_point = SEGMENT (gameData.speedtest.nSegment)->SideCenter (gameData.speedtest.nSide);
-	CFixVector::NormalizedDir(view_dir, center_point, gameData.objData.pViewer->info.position.vPos);
-	//gameData.objData.pViewer->info.position.mOrient = CFixMatrix::Create(view_dir, NULL, NULL);
-	gameData.objData.pViewer->info.position.mOrient = CFixMatrix::CreateF(view_dir);
-	if (((gameData.appData.nFrameCount - gameData.speedtest.nFrameStart) % 10) == 0) {
+	gameData.objs.viewerP->RelinkToSeg (gameData.speedtest.nSegment);
+	center_point = SEGMENTS [gameData.speedtest.nSegment].SideCenter (gameData.speedtest.nSide);
+	CFixVector::NormalizedDir(view_dir, center_point, gameData.objs.viewerP->info.position.vPos);
+	//gameData.objs.viewerP->info.position.mOrient = CFixMatrix::Create(view_dir, NULL, NULL);
+	gameData.objs.viewerP->info.position.mOrient = CFixMatrix::CreateF(view_dir);
+	if (((gameData.app.nFrameCount - gameData.speedtest.nFrameStart) % 10) == 0) {
 #if TRACE
 		console.printf (CON_DBG, ".");
 #endif
 		}
 	gameData.speedtest.nSegment++;
 
-	if (gameData.speedtest.nSegment > gameData.segData.nLastSegment) {
+	if (gameData.speedtest.nSegment > gameData.segs.nLastSegment) {
 		char    msg[128];
 
 		sprintf(msg, TXT_SPEEDTEST, 
-			gameData.appData.nFrameCount-gameData.speedtest.nFrameStart, 
+			gameData.app.nFrameCount-gameData.speedtest.nFrameStart, 
 			X2F(TimerGetFixedSeconds() - gameData.speedtest.nStartTime), 
-			(double) (gameData.appData.nFrameCount-gameData.speedtest.nFrameStart) / X2F(TimerGetFixedSeconds() - gameData.speedtest.nStartTime));
+			(double) (gameData.app.nFrameCount-gameData.speedtest.nFrameStart) / X2F(TimerGetFixedSeconds() - gameData.speedtest.nStartTime));
 #if TRACE
 		console.printf (CON_DBG, "%s", msg);
 #endif

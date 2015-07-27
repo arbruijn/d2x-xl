@@ -12,28 +12,26 @@
 
 //=============================== FIXED POINT ===============================
 
-#ifndef PI
-#  define  PI    3.141592653589793240
+#ifndef Pi
+#  define  Pi    3.141592653589793240
 #endif
 
 
-typedef int32_t fix;		//16 bits int32_t, 16 bits frac
+typedef int32_t fix;		//16 bits int, 16 bits frac
 typedef int16_t fixang;		//angles
 
 typedef struct tQuadInt {// integer 64 bit, previously called "quad"
-	uint32_t low;
+	u_int32_t low;
    int32_t high;
 } __pack__ tQuadInt;
 
-#define WORLDSCALE	1000	// one world unit (65536 in fixed point arithmetic) corresponds to 1000 mm (1 m) of the real world
-
-//Convert an int32_t to a fix
+//Convert an int to a fix
 #define I2X(i) ((static_cast<fix> (i)) * 65536)
 
-//Get the int32_t part of a fix
+//Get the int part of a fix
 #define X2I(_f) ((_f) / 65536)
 
-//Get the int32_t part of a fix, with rounding
+//Get the int part of a fix, with rounding
 #define X2IR(_f) (((_f) + (I2X (1) / 2)) / 65536)
 
 //Convert fix to double and double to fix
@@ -41,56 +39,56 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 #define X2D(_f) (double (_f) / 65536.0)
 #define F2X(_f) (fix ((_f) * 65536))
 
-#define MM2X(_mm) (((_mm) * I2X (1)) / WORLDSCALE)	// mm to world units
-#define X2MM(_i)	(int32_t (X2F (_i) * WORLDSCALE + 0.5f))
-
 //Some handy constants
 //#define F0_1	0x199a
+
+#ifdef _WIN32
+#	define QLONG __int64
+#else
+#	define QLONG long long
+#endif
 
 #if 1
 
 #	if 1
-#	define XRound(_v)					(fix) (_v)
+#	define Round(_v)					(_v)
 #	else
-#	define XRound(_v)					(fix) (((_v) < 0.0) ? (_v) - 0.5 : (_v) + 0.5)
+#	define Round(_v)					(((_v) < 0.0) ? (_v) - 0.5 : (_v) + 0.5)
 #endif
 
-inline float FRound (float v)	{ return (v < 0.0f) ? v - 0.5f : v + 0.5f; }
-inline double DRound (double v)	{ return (v < 0.0) ? v - 0.5 : v + 0.5; }
-
-#define FixMul64(_a, _b)		((int64_t) XRound (double (_b) / 65536.0 * double (_a)))
-#define FixMul(_a, _b)			(XRound (double (_b) / 65536.0 * double (_a)))
-#define FixDiv(_a, _b)			(XRound ((_b) ? (double (_a) / double (_b) * 65536.0) : 1))
-#define FixMulDiv(_a, _b, _c) (XRound ((_c) ? double (_a) / double (_c) * double (_b) : 1))
+#define FixMul64(_a, _b)		((QLONG) Round (double (_b) / 65536.0 * double (_a)))
+#define FixMul(_a, _b)			((fix) Round (double (_b) / 65536.0 * double (_a)))
+#define FixDiv(_a, _b)			((fix) Round ((_b) ? (double (_a) / double (_b) * 65536.0) : 1))
+#define FixMulDiv(_a, _b, _c) ((fix) Round ((_c) ? double (_a) / double (_c) * double (_b) : 1))
 
 #else
 
-#define FixMul64(_a, _b)		(static_cast<int64_t> (((static_cast<int64_t> (_a)) * (static_cast<int64_t> (_b))) / 65536))
+#define FixMul64(_a, _b)		(static_cast<QLONG> (((static_cast<QLONG> (_a)) * (static_cast<QLONG> (_b))) / 65536))
 #define FixMul(_a, _b)			(static_cast<fix> (FixMul64 (_a, _b)))
-#define FixDiv(_a, _b)			(static_cast<fix> ((_b) ? (((static_cast<int64_t> (_a)) * 65536) / (static_cast<int64_t> (_b))) : 1))
-#define FixMulDiv(_a, _b, _c) ((fix) ((_c) ? (((static_cast<int64_t> (_a)) * (static_cast<int64_t> (_b))) / (static_cast<int64_t> (_c))) : 1))
+#define FixDiv(_a, _b)			(static_cast<fix> ((_b) ? (((static_cast<QLONG> (_a)) * 65536) / (static_cast<QLONG> (_b))) : 1))
+#define FixMulDiv(_a, _b, _c) ((fix) ((_c) ? (((static_cast<QLONG> (_a)) * (static_cast<QLONG> (_b))) / (static_cast<QLONG> (_c))) : 1))
 
 #endif
 
 //divide a tQuadInt by a long
-int32_t FixDivQuadLong (uint32_t qlow, uint32_t qhigh, uint32_t d);
+int32_t FixDivQuadLong (u_int32_t qlow, u_int32_t qhigh, u_int32_t d);
 
-//computes the square root of a long, returning a int16_t
-uint16_t LongSqrt (int32_t a);
+//computes the square root of a long, returning a short
+ushort LongSqrt (int32_t a);
 
 //computes the square root of a tQuadInt, returning a long
-extern int32_t nMathFormat;
-extern int32_t nDefMathFormat;
+extern int nMathFormat;
+extern int nDefMathFormat;
 
-uint32_t sqrt64 (uint64_t a);
+uint sqrt64 (unsigned QLONG a);
 
-#define mul64(_a,_b)	(static_cast<int64_t> (_a) * static_cast<int64_t> (_b))
+#define mul64(_a,_b)	(static_cast<QLONG> (_a) * static_cast<QLONG> (_b))
 
 //multiply two fixes, and add 64-bit product to a tQuadInt
 void FixMulAccum (tQuadInt * q, fix a, fix b);
 
-uint32_t QuadSqrt (uint32_t low, int32_t high);
-//uint32_t QuadSqrt (long low, long high);
+u_int32_t QuadSqrt (u_int32_t low, int32_t high);
+//unsigned long QuadSqrt (long low, long high);
 
 //computes the square root of a fix, returning a fix
 fix FixSqrt (fix a);
@@ -117,26 +115,19 @@ fixang FixAtan2 (fix cos, fix sin);
 fix FixISqrt (fix a);
 
 //-----------------------------------------------------------------------------
-
-static inline int32_t Rand (int32_t nMax)
-{
-return int32_t (rand ()) % nMax;
-}
-
-//-----------------------------------------------------------------------------
 // return a random integer in the range [0 .. SHORT_RAND_MAX]
 
 #define SHORT_RAND_MAX 0x7fff
 
-static inline int32_t RandShort (void)
+static inline int RandShort (void)
 {
-return Rand (SHORT_RAND_MAX + 1);
+return int (rand () & SHORT_RAND_MAX);
 }
 
 //-----------------------------------------------------------------------------
 // return a random integer in the range [-SHORT_RAND_MAX / 2 .. +SHORT_RAND_MAX / 2]
 
-static inline int32_t SRandShort (void)
+static inline int SRandShort (void)
 {
 return SHORT_RAND_MAX / 2 - RandShort ();
 }
@@ -156,20 +147,6 @@ inline double RandDouble (void)
 {
 return double (rand ()) / double (RAND_MAX);
 }
-
-//-----------------------------------------------------------------------------
-
-template<typename _T> 
-inline void Swap (_T& a, _T& b) { _T h = a; a = b; b = h; }
-
-template<typename _T> 
-inline const _T Clamp (const _T v, const _T vMin, const _T vMax) { return (v < vMin) ? vMin : (v > vMax) ? vMax : v; }
-
-template<typename _T> 
-inline const _T Min (const _T a, const _T b) { return (a <= b) ? a : b; }
-
-template<typename _T> 
-inline const _T Max (const _T a, const _T b) { return (a >= b) ? a : b; }
 
 //-----------------------------------------------------------------------------
 

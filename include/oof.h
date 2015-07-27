@@ -70,23 +70,23 @@ class CTriangle {
 class CQuad {
 	public:
 		CFloatVector	p [4];
-		CFloatVector	c;
+		CFloatVector c;
 	};
 
 class CChunkHeader {
 	public:
 		tChunkType		m_nType;
-		int32_t			m_nLength;
+		int				m_nLength;
 	};
 
 class CFaceVert {
 	public:
-		int32_t		m_nIndex;
+		int		m_nIndex;
 		float		m_fu;
 		float		m_fv;
 
 	public:
-		int32_t Read (CFile& cf, int32_t bFlipV);
+		int Read (CFile& cf, int bFlipV);
 	};
 
 class CFace {
@@ -95,10 +95,10 @@ class CFace {
 		CFloatVector		m_vRotNormal;
 		CFloatVector		m_vCenter;
 		CFloatVector		m_vRotCenter;
-		int32_t				m_nVerts;
-		int32_t				m_bTextured;
+		int					m_nVerts;
+		int					m_bTextured;
 		union {
-			int32_t			nTexId;
+			int				nTexId;
 			CRGBColor		color;
 			} m_texProps;
 		CFaceVert*			m_vertices;
@@ -106,19 +106,19 @@ class CFace {
 		float					m_fBoundingWidth;
 		CFloatVector		m_vMin;
 		CFloatVector		m_vMax;
-		uint8_t				m_bFacingLight : 1;
-		uint8_t				m_bFacingViewer : 1;
-		uint8_t				m_bReverse : 1;
+		ubyte					m_bFacingLight : 1;
+		ubyte					m_bFacingViewer : 1;
+		ubyte					m_bReverse : 1;
 
 	public:
-		int32_t Read (CFile& cf, CSubModel *pso, CFaceVert *pfv, int32_t bFlipV);
+		int Read (CFile& cf, CSubModel *pso, CFaceVert *pfv, int bFlipV);
 		inline CFloatVector* CalcCenter (CSubModel *pso);
 		inline CFloatVector *CalcNormal (CSubModel *pso);
 };
 
 class CFaceList {
 	public:
-		int32_t				m_nFaces;
+		int					m_nFaces;
 		CArray<CFace>		m_list;
 		CArray<CFaceVert>	m_vertices;
 
@@ -131,7 +131,7 @@ class CFaceList {
 
 class CGlowInfo {
 	public:
-		CFloatVector3	m_color;
+		CFloatVector3		m_color;
 		float				m_fSize;
 		float				m_fLength;
 		CFloatVector	m_vCenter;
@@ -153,28 +153,28 @@ class CSpecialPoint {
 		~CSpecialPoint () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		int32_t Read (CFile& cf);
+		int Read (CFile& cf);
 
 };
 
 class CSpecialList : public CArray<CSpecialPoint> {
 	public:
-		int32_t Read (CFile& cf);
+		int Read (CFile& cf);
 	};
 
 class CPoint {
 	public:
-		int32_t			m_nParent;
+		int				m_nParent;
 	   CFloatVector	m_vPos;
 		CFloatVector	m_vDir;
 
 	public:
-		int32_t Read (CFile& cf, int32_t bParent);
+		int Read (CFile& cf, int bParent);
 	};
 
 class CPointList : public CArray<CPoint> {
 	public:
-		int32_t Read (CFile& cf, int32_t bParent, int32_t nSize);
+		int Read (CFile& cf, int bParent, int nSize);
 	};
 
 class CAttachPoint : public CPoint {
@@ -183,61 +183,61 @@ class CAttachPoint : public CPoint {
 		char				m_bu;
 
 	public:
-		int32_t Read (CFile& cf);
+		int Read (CFile& cf);
 };
 
 class CAttachList : public CArray<CAttachPoint> {
 	public:
-		int32_t Read (CFile& cf);
-		int32_t ReadNormals (CFile& cf);
+		int Read (CFile& cf);
+		int ReadNormals (CFile& cf);
 	};
 
 class CBattery {
 	public:
-		int32_t				m_nVerts;
-		CArray<int32_t>	m_vertIndex;
-		int32_t				m_nTurrets;
-		CArray<int32_t>	m_turretIndex;
+		int				m_nVerts;
+		CArray<int>		m_vertIndex;
+		int				m_nTurrets;
+		CArray<int>		m_turretIndex;
 
 	public:
 		CBattery () { Init (); }
 		void Init (void);
 		void Destroy (void);
-		int32_t Read (CFile& cf);
+		int Read (CFile& cf);
 };
 
 class CArmament : public CArray<CBattery> {
 	public:
-		int32_t Read (CFile& cf);
+		int Read (CFile& cf);
 	};
 
 class CFrameInfo {
 	public:
-		int32_t		m_nFrames;
-		int32_t		m_nFirstFrame;
-		int32_t		m_nLastFrame;
+		int		m_nFrames;
+		int		m_nFirstFrame;
+		int		m_nLastFrame;
 
 	public:
 		CFrameInfo () { Init (); }
 		void Init (void);
-		int32_t Read (CFile& cf, CModel* po, int32_t bTimed);
+		int Read (CFile& cf, CModel* po, int bTimed);
 };
 
 class CPosFrame {
 	public:
-		int32_t			m_iKeyFrame;
+		int				m_iKeyFrame;
 		CFloatVector	m_vPos;
-		int32_t			m_nStartTime;
+		int				m_nStartTime;
 
 	public:
-		int32_t Read (CFile& cf, int32_t bTimed);
+		int Read (CFile& cf, int bTimed);
 
 };
 
 class CAnim : public CFrameInfo {
 	public:
-		int32_t				m_nTicks;
-		CArray<uint8_t>	m_remapTicks;
+		int				m_nTicks;
+		CArray<ubyte>	m_remapTicks;
 
 	public:
 		CAnim () { Init (); }
@@ -251,19 +251,19 @@ class CPosAnim : public CAnim {
 
 	public:
 		void Destroy (void);
-		int32_t Read (CFile& cf, CModel* po, int32_t bTimed);
+		int Read (CFile& cf, CModel* po, int bTimed);
 	};
 
 class CRotFrame {
 	public:
-		int32_t				m_iKeyFrame;
+		int					m_iKeyFrame;
 		CFloatVector		m_vAxis;
-		int32_t				m_nAngle;
+		int					m_nAngle;
 		CFloatMatrix		m_mMat;
-		int32_t				m_nStartTime;
+		int					m_nStartTime;
 
 	public:
-		int32_t Read (CFile& cf, int32_t bTimed);
+		int Read (CFile& cf, int bTimed);
 	};
 
 class CRotAnim : public CAnim {
@@ -274,25 +274,25 @@ class CRotAnim : public CAnim {
 		CRotAnim () { Init (); }
 		void Init (void);
 		void Destroy (void);
-		int32_t Read (CFile& cf, CModel* po, int32_t bTimed);
+		int Read (CFile& cf, CModel* po, int bTimed);
 		void BuildMatrices (void);
 
 	private:
-		void BuildAngleMatrix (CFloatMatrix *pm, int32_t a, CFloatVector *pAxis);
+		void BuildAngleMatrix (CFloatMatrix *pm, int a, CFloatVector *pAxis);
 	};
 
 class CEdge {
 	public:
-		int32_t	m_v0 [2];
-		int32_t	m_v1 [2];
+		int		m_v0 [2];
+		int		m_v1 [2];
 		CFace*	m_faces [2];
 		char		m_bContour;
 	};
 
 class CEdgeList {
 	public:
-		int32_t			m_nEdges;
-		int32_t			m_nContourEdges;
+		int				m_nEdges;
+		int				m_nContourEdges;
 		CArray<CEdge>	m_list;
 
 	public:
@@ -304,24 +304,24 @@ class CEdgeList {
 
 class CSubModel {
 	public:
-		int32_t						m_nIndex;
-		int32_t						m_nParent;
-		int32_t						m_nFlags;
+		int							m_nIndex;
+		int							m_nParent;
+		int							m_nFlags;
 		CFloatVector				m_vNormal;
 		float							m_fd;
 		CFloatVector				m_vPlaneVert;
 		CFloatVector				m_vOffset;
 		float							m_fRadius;
-		int32_t						m_nTreeOffset;
-		int32_t						m_nDataOffset;
+		int							m_nTreeOffset;
+		int							m_nDataOffset;
 		CFloatVector				m_vCenter;
 		char*							m_pszName;
 		char*							m_pszProps;
-		int32_t						m_nMovementType;
-		int32_t						m_nMovementAxis;
-		int32_t						m_nFSLists;
-		CArray<int32_t>			m_fsLists;
-		int32_t						m_nVerts;
+		int							m_nMovementType;
+		int							m_nMovementAxis;
+		int							m_nFSLists;
+		CArray<int>					m_fsLists;
+		int							m_nVerts;
 		CArray<CFloatVector>		m_vertices;
 		CArray<CFloatVector>		m_rotVerts;
 		CArray<CFloatVector>		m_normals;
@@ -337,8 +337,8 @@ class CSubModel {
 		float							m_fFOV;
 		float							m_fRPS;
 		float							m_fUpdate;
-		int32_t						m_nChildren;
-		int32_t						m_children [OOF_MAX_SUBOBJECTS];
+		int							m_nChildren;
+		int							m_children [OOF_MAX_SUBOBJECTS];
 		CAngleVector				m_aMod;
 		CFloatMatrix				m_mMod;				// The angles from parent.  Stuffed by model_set_instance
 		CFloatVector				m_vMod;
@@ -348,31 +348,31 @@ class CSubModel {
 		~CSubModel () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		int32_t Read (CFile& cf, CModel* po, int32_t bFlipV);
-		int32_t AddEdge (CFace *pf, int32_t i0, int32_t i1);
-		int32_t Render (CObject *pObj, CModel *po, CFloatVector vo, int32_t nIndex, float *fLight);
+		int Read (CFile& cf, CModel* po, int bFlipV);
+		int AddEdge (CFace *pf, int i0, int i1);
+		int Render (CObject *objP, CModel *po, CFloatVector vo, int nIndex, float *fLight);
 
 	private:
-		int32_t FindVertex (int32_t i);
-		int32_t FindEdge (int32_t i0, int32_t i1);
+		int FindVertex (int i);
+		int FindEdge (int i0, int i1);
 		void SetProps (char *pszProps);
 
 		void Transform (CFloatVector vo);
 		inline void TransformVertex (CFloatVector *prv, CFloatVector *pv, CFloatVector *vo);
-		int32_t Draw (CObject *pObj, CModel *po, float *fLight);
+		int Draw (CObject *objP, CModel *po, float *fLight);
 };	
 
 class CModel {
 	public:
-		int16_t					m_nModel;
-		int32_t					m_nVersion;
-		int32_t					m_bCustom;
-		int32_t					m_nFlags;
+		short					m_nModel;
+		int					m_nVersion;
+		int					m_bCustom;
+		int					m_nFlags;
 		float					m_fMaxRadius;
 		CFloatVector		m_vMin;
 		CFloatVector		m_vMax;
-		int32_t					m_nDetailLevels;
-		int32_t					m_nSubModels;
+		int					m_nDetailLevels;
+		int					m_nSubModels;
 		CArray<CSubModel>	m_subModels;
 		CPointList			m_gunPoints;
 		CAttachList			m_attachPoints;
@@ -380,9 +380,9 @@ class CModel {
 		CArmament			m_armament;
 		CModelTextures		m_textures;
 		CFrameInfo			m_frameInfo;
-		int32_t					m_bCloaked;
-		int32_t					m_nCloakPulse;
-		int32_t					m_nCloakChangedTime;
+		int					m_bCloaked;
+		int					m_nCloakPulse;
+		int					m_nCloakChangedTime;
 		float					m_fAlpha;
 
 	public:
@@ -391,19 +391,19 @@ class CModel {
 		void Init (void);
 		bool Create (void);
 		void Destroy (void);
-		int32_t Read (char *filename, int16_t nModel, int32_t bFlipV, int32_t bCustom);
-		int32_t ReleaseTextures (void);
-		int32_t ReloadTextures (void);
-		int32_t FreeTextures (void);
-		int32_t Render (CObject *pObj, float *fLight, int32_t bCloaked);
-		int32_t RenderShadow (CObject *pObj, float *fLight);
+		int Read (char *filename, short nModel, int bFlipV, int bCustom);
+		int ReleaseTextures (void);
+		int ReloadTextures (void);
+		int FreeTextures (void);
+		int Render (CObject *objP, float *fLight, int bCloaked);
+		int RenderShadow (CObject *objP, float *fLight);
 
 	private:
-		int32_t ReadInfo (CFile& cf);
-		int32_t ReadTextures (CFile& cf);
+		int ReadInfo (CFile& cf);
+		int ReadTextures (CFile& cf);
 		void BuildAnimMatrices (void);
 		void AssignChildren (void);
-		inline void LinkSubModelBatteries (int32_t iObject, int32_t iBatt);
+		inline void LinkSubModelBatteries (int iObject, int iBatt);
 		void LinkBatteries (void);
 		void BuildPosTickRemapList (void);
 		void BuildRotTickRemapList (void);
@@ -411,7 +411,7 @@ class CModel {
 		void GetSubModelBounds (CSubModel *pso, CFloatVector vo);
 		void GetBounds (void);
 		void ConfigureSubModels (void);
-		int32_t Draw (CObject *pObj, float *fLight);
+		int Draw (CObject *objP, float *fLight);
 
 	};
 
@@ -419,12 +419,12 @@ class CModel {
 
 //------------------------------------------------------------------------------
 
-float OOF_Centroid (CFloatVector *pvCentroid, CFloatVector *pvSrc, int32_t nv);
+float OOF_Centroid (CFloatVector *pvCentroid, CFloatVector *pvSrc, int nv);
 float *OOF_GlIdent (float *pm);
 float *OOF_GlTranspose (float *pDest, float *pSrc);
-int32_t OOF_ReleaseTextures (void);
-int32_t OOF_ReloadTextures (void);
-int32_t OOF_FreeTextures (void);
+int OOF_ReleaseTextures (void);
+int OOF_ReloadTextures (void);
+int OOF_FreeTextures (void);
 
 //------------------------------------------------------------------------------
 

@@ -17,19 +17,19 @@ class CBitmap;
 class CTextureManager;
 
 typedef struct tTexture {
-	int32_t				index;
+	int				index;
 	GLuint	 		handle;
 	GLint				internalFormat;
 	GLenum			format;
-	int32_t 				w, h, tw, th, lw;
-//	int32_t 				bytesu;
-//	int32_t 				bytes;
+	int 				w, h, tw, th, lw;
+//	int 				bytesu;
+//	int 				bytes;
 	GLfloat			u, v;
 	GLclampf			prio;
-	uint8_t				bMipMaps;
+	ubyte				bMipMaps;
 	char				bSmoothe;
-	uint8_t				bRenderBuffer;
-	CBitmap*			pBm;
+	ubyte				bRenderBuffer;
+	CBitmap*			bmP;
 #if RENDER2TEXTURE == 1
 	CPBO				pbo;
 #elif RENDER2TEXTURE == 2
@@ -40,45 +40,54 @@ typedef struct tTexture {
 class CTexture {
 	private:
 #if 1
-		uint32_t			m_nRegistered;
+		CTexture*	m_prev, * m_next;
+		bool			m_bRegistered;
 #endif
 		tTexture	m_info;
 
 	public:
-		CTexture () : m_nRegistered (0) { Init (); }
+		CTexture () { Init (); }
 		~CTexture () { Destroy (); }
-		GLuint Create (int32_t w, int32_t h);
+		GLuint Create (int w, int h);
 		void Init (void);
-		void Setup (int32_t w, int32_t h, int32_t lw, int32_t bpp  = 0, int32_t bMask = 0, int32_t bMipMap = 0, int32_t bSmoothe = 0, CBitmap *pBm = NULL);
-		int32_t Prepare (bool bCompressed = false);
+		void Setup (int w, int h, int lw, int bpp  = 0, int bMask = 0, int bMipMap = 0, int bSmoothe = 0, CBitmap *bmP = NULL);
+		int Prepare (bool bCompressed = false);
 #if TEXTURE_COMPRESSION
-		int32_t Load (uint8_t *buffer, int32_t nBufSize = 0, int32_t nFormat = 0, bool bCompressed = false);
+		int Load (ubyte *buffer, int nBufSize = 0, int nFormat = 0, bool bCompressed = false);
 #else
-		int32_t Load (uint8_t *buffer);
+		int Load (ubyte *buffer);
 #endif
 		void Destroy (void);
-		bool Register (uint32_t i = 0);
+		bool Register (void);
 		void Release (void);
-		static void Wrap (int32_t state);
+		static void Wrap (int state);
 		void Bind (void);
-		int32_t BindRenderBuffer (void);
+		int BindRenderBuffer (void);
 		bool IsBound (void);
 
-		inline int32_t Index (void) { return m_info.index; }
-		inline void SetIndex (int32_t index) { m_info.index = index; }
+		inline CTexture* Prev (void) { return m_prev; }
+		inline CTexture* Next (void) { return m_next; }
+		inline void Link (CTexture* prev, CTexture* next) {
+			m_prev = prev;
+			m_next = next;
+			}
+		inline void SetPrev (CTexture* prev) { m_prev = prev; }
+		inline void SetNext (CTexture* next) { m_next = next; }
+		inline int Index (void) { return m_info.index; }
+		inline void SetIndex (int index) { m_info.index = index; }
 		inline GLint Handle (void) { return GLint (m_info.handle); }
 		inline GLenum Format (void) { return m_info.format; }
 		inline GLint InternalFormat (void) { return m_info.internalFormat; }
 		inline GLfloat U (void) { return m_info.u; }
 		inline GLfloat V (void) { return m_info.v; }
-		inline int32_t Width (void) { return m_info.w; }
-		inline int32_t Height (void) { return m_info.h; }
-		inline int32_t TW (void) { return m_info.tw; }
-		inline int32_t TH (void) { return m_info.th; }
-		inline uint32_t Registered (void) { return m_nRegistered; }
-		inline uint8_t IsRenderBuffer (void) { return m_info.bRenderBuffer; }
-		inline CBitmap* Bitmap (void) { return m_info.pBm; }
-		inline void SetBitmap (CBitmap* pBm) { m_info.pBm = pBm; }
+		inline int Width (void) { return m_info.w; }
+		inline int Height (void) { return m_info.h; }
+		inline int TW (void) { return m_info.tw; }
+		inline int TH (void) { return m_info.th; }
+		inline bool Registered (void) { return m_bRegistered; }
+		inline ubyte IsRenderBuffer (void) { return m_info.bRenderBuffer; }
+		inline CBitmap* Bitmap (void) { return m_info.bmP; }
+		inline void SetBitmap (CBitmap* bmP) { m_info.bmP = bmP; }
 
 		inline void SetHandle (GLuint handle) { m_info.handle = handle; }
 		inline void SetFormat (GLenum format) { m_info.format = format; }
@@ -90,30 +99,35 @@ class CTexture {
 		inline CFBO& FBO (void) { return m_info.fbo; }
 		inline void SetRenderBuffer (CFBO *fbo);
 #endif
-		uint8_t *Copy (int32_t dxo, int32_t dyo, uint8_t *data);
-		uint8_t *Convert (int32_t dxo, int32_t dyo,  CBitmap *pBm, int32_t nTransp, int32_t bSuperTransp, int32_t& bpp);
-#if TEXTURE_COMPRESSION
-		int32_t Compress ();
+		ubyte *Copy (int dxo, int dyo, ubyte *data);
+		ubyte *Convert (int dxo, int dyo,  CBitmap *bmP, int nTransp, int bSuperTransp);
+#if 0
+		inline int Prev (void) { return m_prev; }
+		inline int Next (void) { return m_next; }
+		inline void SetPrev (int prev) { m_prev = prev; }
+		inline void SetNext (int next) { m_next = next; }
 #endif
-		int32_t Verify (void);
+#if TEXTURE_COMPRESSION
+		int Compress ();
+#endif
+		int Verify (void);
 		bool Check (void);
 
 	private:
 		void SetSize (void);
-		void SetBufSize (int32_t dbits, int32_t bits, int32_t w, int32_t h);
-		int32_t FormatSupported (void);
+		void SetBufSize (int dbits, int bits, int w, int h);
+		int FormatSupported (void);
 	};
 
 //------------------------------------------------------------------------------
 
 class CTexturePool : public CDataPool< CTexture > {};
-class CTextureList : public CStack< CTexture* > {};
 
 class CTextureManager {
 	private:
-		CTexture			m_info;
-		CTextureList	m_textures;
-		int32_t				m_nTextures;
+		CTexture		m_info;
+		CTexture*	m_textures;
+		int			m_nTextures;
 
 	public:
 		CTextureManager () { Init (); }
@@ -121,21 +135,19 @@ class CTextureManager {
 		void Init (void);
 		void Smash (void);
 		void Destroy (void);
-		uint32_t Find (CTexture* pTexture);
-		uint32_t Register (CTexture* pTexture);
-		bool Release (CTexture* pTexture);
-		inline CTextureList Textures (void) { return m_textures; }
+		void Register (CTexture* texP);
+		bool Release (CTexture* texP);
+		inline CTexture* Textures (void) { return m_textures; }
 		bool Check (void);
-		uint32_t Check (CTexture* pTexture);
 	};
 
 extern CTextureManager textureManager;
 
 //------------------------------------------------------------------------------
 
-int32_t Pow2ize (int32_t v, int32_t max = 4096);
+int Pow2ize (int x);
 
-extern int32_t nOglMemTarget;
+extern int nOglMemTarget;
 
 //------------------------------------------------------------------------------
 

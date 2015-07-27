@@ -14,114 +14,114 @@ class CModel;
 
 class CFace {
 	public:
-		uint16_t				m_nVerts;
-		uint16_t*			m_vertices;
+		ushort				m_nVerts;
+		ushort*				m_vertices;
 		CFixVector			m_vCenter;
 		CFixVector			m_vNorm;
 		CFixVector			m_vRotNorm;
 		CFloatVector		m_vNormf;
 		CFloatVector		m_vCenterf;
 		float					m_fClipDist;
-		uint8_t				m_bFacingLight :1;
-		uint8_t				m_bFrontFace :1;
-		uint8_t				m_bGlow :1;
-		uint8_t				m_bTest :1;
-		uint8_t				m_bIgnore :1;
-		uint16_t				m_nAdjFaces;
+		ubyte					m_bFacingLight :1;
+		ubyte					m_bFrontFace :1;
+		ubyte					m_bGlow :1;
+		ubyte					m_bTest :1;
+		ubyte					m_bIgnore :1;
+		ushort				m_nAdjFaces;
 
 	public:
 		CFace () { Init (); }
 		void Init (void);
-		inline int32_t IsLit (void);
-		inline int32_t IsFront (void);
-		inline int32_t IsFacingLight (void);
-		inline int32_t IsFacingViewer (void);
+		inline int IsLit (void);
+		inline int IsFront (void);
+		inline int IsFacingLight (void);
+		inline int IsFacingViewer (void);
 		inline CFloatVector* RotateNormal (void);
 		inline CFloatVector* TransformCenter (void);
 		void CalcNormal (CModel* po);
 		CFloatVector CalcCenterf (CModel* po);
 		CFixVector CalcCenter (CModel* po);
-		int32_t RenderShadowVolume (CModel* po, int32_t bCullFront);
-		inline float ClipDist (CObject *pObj);
+		int RenderShadowVolume (CModel* po, int bCullFront);
+		inline float ClipDist (CObject *objP);
 };
 
-inline int32_t operator- (CFace* f, CArray<CFace>& a) { return a.Index (f); }
+inline int operator- (CFace* f, CArray<CFace>& a) { return a.Index (f); }
 
 class CSubModel {
 	public:
 		CFace*				m_faces;		//points at submodel's first face in model's face list (which is sorted by submodels)
-		uint16_t				m_nFaces;
+		ushort				m_nFaces;
 		CFace**				m_litFaces;	//submodel faces facing the current light source
-		uint16_t				m_nLitFaces;
+		ushort				m_nLitFaces;
 		CFixVector			m_vPos;
 		CAngleVector		m_vAngles;
 		float					m_fClipDist;
-		int16_t				m_nParent;
-		uint16_t*			m_adjFaces;
-		int16_t				m_nRenderFlipFlop;
-		int16_t				m_bCalcClipDist;
+		short					m_nParent;
+		ushort*				m_adjFaces;
+		short					m_nRenderFlipFlop;
+		short					m_bCalcClipDist;
 
 	public:
 		CSubModel () { Init (); }
 		void Init (void);
-		int32_t GatherLitFaces (CModel* po);
+		int GatherLitFaces (CModel* po);
 		void RotateNormals (void);
-		int32_t FindEdge (CFace* pf0, int32_t v0, int32_t v1);
-		int32_t CalcFacing (CModel* po);
-		int32_t RenderShadowCaps (CObject *pObj, CModel* po, int32_t bCullFront);
-		int32_t RenderShadowVolume (CModel* po, int32_t bCullFront);
-		int32_t RenderShadow (CObject *pObj, CModel* po);
+		int FindEdge (CFace* pf0, int v0, int v1);
+		int CalcFacing (CModel* po);
+		int RenderShadowCaps (CObject *objP, CModel* po, int bCullFront);
+		int RenderShadowVolume (CModel* po, int bCullFront);
+		int RenderShadow (CObject *objP, CModel* po);
 
 	private:
-		float ClipDistByFaceCenters (CObject *pObj, CModel* po, int32_t i, int32_t incr);
-		float ClipDistByFaceVerts (CObject *pObj, CModel* po, float fMaxDist, int32_t i, int32_t incr);
-		float ClipDist (CObject *pObj, CModel* po);
+		float ClipDistByFaceCenters (CObject *objP, CModel* po, int i, int incr);
+		float ClipDistByFaceVerts (CObject *objP, CModel* po, float fMaxDist, int i, int incr);
+		float ClipDist (CObject *objP, CModel* po);
 };
 
-inline int32_t operator- (CSubModel* o, CArray<CSubModel>& a) { return a.Index (o); }
+inline int operator- (CSubModel* o, CArray<CSubModel>& a) { return a.Index (o); }
 
 class CModel {
 	public:
-		CArray<CSubModel>			m_subModels;
-		int16_t						m_nSubModels;
-		uint16_t						m_nVerts;
-		uint16_t						m_nFaces;
-		uint16_t						m_nFaceVerts;
-		uint16_t						m_nLitFaces;
-		uint16_t						m_nAdjFaces;
-		CArray<CFixVector>		m_vertices;
-		CArray<CFloatVector>		m_vertsf;
-		CArray<float>				m_fClipDist;
-		CArray<uint8_t>			m_vertFlags;
-		CArray<CRenderNormal>	m_vertNorms;
-		CFixVector					m_vCenter;
-		CArray<CFixVector>		m_rotVerts;
-		CArray<CFace>				m_faces;
-		CStack<CFace*>				m_litFaces;
-		CArray<uint16_t>			m_adjFaces;
-		CArray<uint16_t>			m_faceVerts;
-		CArray<uint16_t>			m_vertMap;
-		int16_t						m_iSubObj;
-		uint16_t						m_iVert;
-		uint16_t						m_iFace;
-		uint16_t						m_iFaceVert;
-		char							m_nState;
-		uint8_t						m_nVertFlag;
+		CArray<CSubModel>		m_subModels;
+		short						m_nSubModels;
+		ushort					m_nVerts;
+		ushort					m_nFaces;
+		ushort					m_nFaceVerts;
+		ushort					m_nLitFaces;
+		ushort					m_nAdjFaces;
+		CArray<CFixVector>	m_vertices;
+		CArray<CFloatVector>	m_vertsf;
+		CArray<float>			m_fClipDist;
+		CArray<ubyte>			m_vertFlags;
+		CArray<CRenderNormal>		m_vertNorms;
+		CFixVector				m_vCenter;
+		CArray<CFixVector>	m_rotVerts;
+		CArray<CFace>			m_faces;
+		CStack<CFace*>			m_litFaces;
+		CArray<ushort>			m_adjFaces;
+		CArray<ushort>			m_faceVerts;
+		CArray<ushort>			m_vertMap;
+		short						m_iSubObj;
+		ushort					m_iVert;
+		ushort					m_iFace;
+		ushort					m_iFaceVert;
+		char						m_nState;
+		ubyte						m_nVertFlag;
 
 	public:
 		CModel () { Init (); }
 		~CModel () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		inline void AddTriangle (CFace *pf, uint16_t v0, uint16_t v1, uint16_t v2);
-		int32_t FindFace (uint16_t *p, int32_t nVerts);
-		CFace* AddFace (CSubModel* pso, CFace* pf, CFixVector *pn, uint8_t *p, int32_t bShadowData);
+		inline void AddTriangle (CFace *pf, ushort v0, ushort v1, ushort v2);
+		int FindFace (ushort *p, int nVerts);
+		CFace* AddFace (CSubModel* pso, CFace* pf, CFixVector *pn, ubyte *p, int bShadowData);
 		CFloatVector* VertsToFloat (void);
-		int32_t GatherAdjFaces (void);
+		int GatherAdjFaces (void);
 		void CalcCenters (void);
-		int32_t CountItems (void *modelDataP);
-		int32_t GatherItems (void *modelDataP, CAngleVector *animAngleP, int32_t bInitModel, int32_t bShadowData, int32_t nThis, int32_t nParent);
-		int32_t Create (void *modelDataP, int32_t bShadowData);
+		int CountItems (void *modelDataP);
+		int GatherItems (void *modelDataP, CAngleVector *animAngleP, int bInitModel, int bShadowData, int nThis, int nParent);
+		int Create (void *modelDataP, int bShadowData);
 };
 
 } //namespace POF

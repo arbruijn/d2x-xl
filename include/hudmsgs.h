@@ -14,9 +14,9 @@
 #define MSGC_PICKUP_TOOMUCH	2    // Pickup failed: it's a powerup you have too much from
 #define MSGC_PICKUP_ALREADY	4    // Pickup failed: it's a powerup you already have
 #define MSGC_PICKUP_OK			8    // Pickup succeeded
-#define MSGC_MULTI_USERMSG		16   // netGameInfo messages from other users
-#define MSGC_MULTI_KILL 		32   // netGameInfo kill information
-#define MSGC_MULTI_INFO 		64   // netGameInfo information (join/leave, reactor, exit)
+#define MSGC_MULTI_USERMSG		16   // netGame messages from other users
+#define MSGC_MULTI_KILL 		32   // netGame kill information
+#define MSGC_MULTI_INFO 		64   // netGame information (join/leave, reactor, exit)
 #define MSGC_GAME_ACTION		128  // Something happened in the game (exit,hostage,ship dest)
 #define MSGC_GAME_FEEDBACK		256  // User feedback (F3=Cockpit mode, can't pause, netmsg)
 #define MSGC_MINE_FEEDBACK		512  // Mine feedback (can't open door, reactor invul)
@@ -35,25 +35,25 @@
 #	define HUD_MAX_MSGS 4
 #endif
 
-extern int32_t MSG_Playermessages;
-extern int32_t MSG_Noredundancy;
+extern int MSG_Playermessages;
+extern int MSG_Noredundancy;
 
 //killed 11/01/98 -MM
 //added on 10/04/98 by Matt Mueller to allow hud message logging
-//extern int32_t HUD_log_messages;
+//extern int HUD_log_messages;
 //end addition -MM
 //end kill -MM
 
 #ifdef __GNUC__
-void HUDMessage(int32_t msgClass, const char *format, ...)
+void HUDMessage(int msgClass, const char *format, ...)
 	__attribute__ ((format (printf, 2, 3)));
-int32_t _CDECL_ HUDInitMessage(const char *format, ... )
+int _CDECL_ HUDInitMessage(const char *format, ... )
 	__attribute__ ((format (printf, 1, 2)));
 void _CDECL_ HUDPlayerMessage(const char *format, ... )
 	 __attribute__ ((format (printf, 1, 2)));
 #else
-void _CDECL_ HUDMessage (int32_t msgClass, const char *format, ...);
-int32_t _CDECL_ HUDInitMessage (const char *format, ... );
+void _CDECL_ HUDMessage (int msgClass, const char *format, ...);
+int _CDECL_ HUDInitMessage (const char *format, ... );
 void _CDECL_ HUDPlayerMessage (const char *format, ... );
 #endif
 

@@ -17,13 +17,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "carray.h"
 #include "player.h"
 
-#define AM_SHOW_PLAYERS				(!IsMultiGame || IsTeamGame || IsCoopGame)
+#define AM_SHOW_PLAYERS				(!IsMultiGame || IsTeamGame || IsCoopGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
 #define AM_SHOW_PLAYER(_i)			(!IsMultiGame || \
 											 IsCoopGame || \
-											 (netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP) || \
+											 (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP) || \
 											 (GetTeam (N_LOCALPLAYER) == GetTeam (_i)))
 #define AM_SHOW_ROBOTS				EGI_FLAG (bRobotsOnRadar, 0, 1, 0)
-#if DBG == 1
+#ifdef DBG
 #	define AM_SHOW_POWERUPS(_i)	(EGI_FLAG (bPowerupsOnRadar, 0, 1, 0) >= (_i))
 #else
 #	define AM_SHOW_POWERUPS(_i)	((EGI_FLAG (bPowerupsOnRadar, 0, 1, 0) >= (_i)) && (!IsMultiGame || IsCoopGame))
@@ -34,39 +34,39 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_EDGES 65536 // Determined by loading all the levels by John & Mike, Feb 9, 1995
 
 typedef struct tEdgeInfo {
-	uint16_t		verts [2];     // 4 bytes
-	uint8_t		sides [4];     // 4 bytes
-	int16_t		nSegment [4];  // 8 bytes  // This might not need to be stored... If you can access the normals of a CSide.
-	uint32_t		color;			// 4 bytes
-	uint8_t		nFaces;			// 1 bytes  // 19 bytes...
-	uint8_t		flags;			// 1 bytes  // See the EF_??? defines above.
+	ushort	verts [2];     // 4 bytes
+	ubyte		sides [4];     // 4 bytes
+	short		nSegment [4];  // 8 bytes  // This might not need to be stored... If you can access the normals of a CSide.
+	uint		color;			// 4 bytes
+	ubyte		nFaces;			// 1 bytes  // 19 bytes...
+	ubyte		flags;			// 1 bytes  // See the EF_??? defines above.
 } __pack__ tEdgeInfo;
 
 //------------------------------------------------------------------------------
 
 typedef struct tAutomapWallColors {
-	uint32_t		nNormal;
-	uint32_t		nDoor;
-	uint32_t		nDoorBlue;
-	uint32_t		nDoorGold;
-	uint32_t		nDoorRed;
-	uint32_t		nRevealed;
+	uint	nNormal;
+	uint	nDoor;
+	uint	nDoorBlue;
+	uint	nDoorGold;
+	uint	nDoorRed;
+	uint	nRevealed;
 } tAutomapWallColors;
 
 typedef struct tAutomapColors {
 	tAutomapWallColors	walls;
-	uint32_t					nHostage;
-	uint32_t					nMonsterball;
-	uint32_t					nWhite;
-	uint32_t					nMedGreen;
-	uint32_t					nLgtBlue;
-	uint32_t					nLgtRed;
-	uint32_t					nDkGray;
+	uint						nHostage;
+	uint						nMonsterball;
+	uint						nWhite;
+	uint						nMedGreen;
+	uint						nLgtBlue;
+	uint						nLgtRed;
+	uint						nDkGray;
 } __pack__ tAutomapColors;
 
 typedef struct tAutomapData {
-	int32_t					bCheat;
-	int32_t					bHires;
+	int						bCheat;
+	int						bHires;
 	fix						nViewDist;
 	fix						nMaxDist;
 	fix						nZoom;
@@ -82,76 +82,69 @@ class CAutomap {
 		tAutomapColors			m_colors;
 		CArray<tEdgeInfo>		m_edges;
 		CArray<tEdgeInfo*>	m_brightEdges;
-		int32_t					m_nEdges;
-		int32_t					m_nMaxEdges;
-		int32_t					m_nLastEdge;
-		int32_t					m_nWidth;
-		int32_t					m_nHeight;
-		int32_t					m_bFade;
-		int32_t					m_nColor;
+		int						m_nEdges;
+		int						m_nMaxEdges;
+		int						m_nLastEdge;
+		int						m_nWidth;
+		int						m_nHeight;
+		int						m_bFade;
+		int						m_nColor;
 		float						m_fScale;
-		CFloatVector			m_color;
-		int32_t					m_bChaseCam;
-		int32_t					m_bFreeCam;
+		CFloatVector				m_color;
+		int						m_bChaseCam;
+		int						m_bFreeCam;
 		char						m_szLevelNum [200];
 		char						m_szLevelName [200];
+		CBitmap					m_background;
 		CAngleVector			m_vTAngles;
 		bool						m_bDrawBuffers;
-		int32_t					m_nVerts;
+		int						m_nVerts;
 
 	public:
-		CArray<uint16_t>		m_visited;
-		CArray<uint16_t>		m_visible;
-		int32_t					m_bRadar;
+		CArray<ushort>			m_visited;
+		CArray<ushort>			m_visible;
+		int						m_bRadar;
 		bool						m_bFull;
-		int32_t					m_bActive;
-		int32_t					m_nSegmentLimit;
-		int32_t					m_nMaxSegsAway;
+		int						m_bDisplay;
+		int						m_nSegmentLimit;
+		int						m_nMaxSegsAway;
 
 	public:
 		CAutomap () { Init (); }
 		~CAutomap () {}
 		void Init (void);
 		void InitColors (void);
-		int32_t Setup (int32_t bPauseGame, fix& xEntryTime);
-		int32_t Update (void);
+		bool InitBackground (void);
+		int Setup (int bPauseGame, fix& xEntryTime);
+		int Update (void);
 		void Render (fix xStereoSeparation = 0);
-		void RenderInfo (void);
-		void DoFrame (int32_t nKeyCode, int32_t bRadar);
+		void DoFrame (int nKeyCode, int bRadar);
 		void ClearVisited (void);
-		int32_t ReadControls (int32_t nLeaveMode, int32_t bDone, int32_t& bPauseGame);
+		int ReadControls (int nLeaveMode, int bDone, int& bPauseGame);
 
-		inline int32_t Radar (void) { return m_bRadar; }
-		inline int32_t SegmentLimit (void) { return m_nSegmentLimit; }
-		inline int32_t MaxSegsAway (void) { return m_nMaxSegsAway; }
-		inline int32_t Visible (int32_t nSegment) { return m_bFull || m_visited [nSegment] || (OBSERVING && IsMultiGame && !IsCoopGame); }
-		int32_t Active (void);
-#if DBG
-		void SetActive (int32_t bActive);
-#else
-		inline void SetActive (int32_t bActive) { m_bActive = bActive; }
-#endif
+		inline int Radar (void) { return m_bRadar; }
+		inline int SegmentLimit (void) { return m_nSegmentLimit; }
+		inline int MaxSegsAway (void) { return m_nMaxSegsAway; }
+		inline int Visible (int nSegment) { return m_bFull || m_visited [nSegment]; }
+		inline int Display (void) { return m_bDisplay; }
 
 	private:
-		int32_t SetSegmentDepths (int32_t nStartSeg, uint16_t *depthBufP);
-		void InitView (void);
+		int SetSegmentDepths (int nStartSeg, ushort *depthBufP);
 		void AdjustSegmentLimit (void);
 		void DrawEdges (void);
-		void DrawPlayer (CObject* pObj);
+		void DrawPlayer (CObject* objP);
 		void DrawObjects (void);
 		void DrawLevelId (void);
 		void CreateNameCanvas (void);
-		int32_t GameFrame (int32_t bPauseGame, int32_t bDone);
-		int32_t FindEdge (int32_t v0, int32_t v1, tEdgeInfo*& pEdge);
+		int GameFrame (int bPauseGame, int bDone);
+		int FindEdge (int v0, int v1, tEdgeInfo*& edgeP);
 		void BuildEdgeList (void);
-		void AddEdge (int32_t va, int32_t vb, uint32_t color, uint8_t CSide, int16_t nSegment, int32_t bHidden, int32_t bGrate, int32_t bNoFade);
-		void AddUnknownEdge (int32_t va, int32_t vb);
-		void AddSegmentEdges (CSegment *pSeg);
-		void AddUnknownSegmentEdges (CSegment* pSeg);
-		void SetEdgeColor (int32_t nColor, int32_t bFade, float fScale = 1.e10f);
-		void DrawLine (int16_t v0, int16_t v1);
-		int32_t Texturing (void);
-
+		void AddEdge (int va, int vb, uint color, ubyte CSide, short nSegment, int bHidden, int bGrate, int bNoFade);
+		void AddUnknownEdge (int va, int vb);
+		void AddSegmentEdges (CSegment *segP);
+		void AddUnknownSegmentEdges (CSegment* segP);
+		void SetEdgeColor (int nColor, int bFade, float fScale = 1.e10f);
+		void DrawLine (short v0, short v1);
 };
 
 //------------------------------------------------------------------------------

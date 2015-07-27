@@ -38,9 +38,9 @@ m_nItems = 0;
 
 //------------------------------------------------------------------------------
 
-int32_t CHashTable::Create (int32_t size)
+int CHashTable::Create (int size)
 {
-	int32_t i;
+	int i;
 
 m_size = 0;
 for (i = 1; i < 13; i++) {
@@ -78,13 +78,13 @@ m_size = 0;
 
 //------------------------------------------------------------------------------
 
-int32_t CHashTable::GetKey (const char *key)
+int CHashTable::GetKey (const char *key)
 {
-	int32_t k = 0, i = 0;
+	int k = 0, i = 0;
 	char c;
 
 while ( (c = *key++)) {
-	k ^= ( (int32_t) (tolower (c))) << i;
+	k ^= ( (int) (tolower (c))) << i;
 	i++;
 	}
 return k;
@@ -92,9 +92,9 @@ return k;
 
 //------------------------------------------------------------------------------
 
-int32_t CHashTable::Search (const char *key)
+int CHashTable::Search (const char *key)
 {
-	int32_t i, j, k;
+	int i, j, k;
 
 k = GetKey (key);
 i = 0;
@@ -110,9 +110,9 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-void CHashTable::Insert (const char *key, int32_t value)
+void CHashTable::Insert (const char *key, int value)
 {
-	int32_t i,j,k;
+	int i,j,k;
 
 k = GetKey (key);
 i = 0;

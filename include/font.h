@@ -36,20 +36,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //font structure
 typedef struct tFont {
-	int16_t					width;      // Width in pixels
-	int16_t					height;     // Height in pixels
-	int16_t					flags;      // Proportional?
-	int16_t					baseLine;   //
-	uint8_t					minChar;    // First char defined by this font
-	uint8_t					maxChar;    // Last char defined by this font
-	int16_t					byteWidth;  // Width in unsigned chars
-	uint8_t*					data;       // Ptr to raw data.
-	CArray<uint8_t*>		chars;		// Ptrs to data for each char (required for prop font)
-	int16_t*					widths;     // Array of widths (required for prop font)
-	uint8_t*					kernData;   // Array of kerning triplet data
-	int32_t					dataOffs;
-	int32_t					widthOffs;
-	int32_t					kernDataOffs;
+	short					width;      // Width in pixels
+	short					height;     // Height in pixels
+	short					flags;      // Proportional?
+	short					baseLine;   //
+	ubyte					minChar;    // First char defined by this font
+	ubyte					maxChar;    // Last char defined by this font
+	short					byteWidth;  // Width in unsigned chars
+	ubyte*				data;       // Ptr to raw data.
+	CArray<ubyte*>		chars;		// Ptrs to data for each char (required for prop font)
+	short*				widths;     // Array of widths (required for prop font)
+	ubyte*				kernData;   // Array of kerning triplet data
+	int					dataOffs;
+	int					widthOffs;
+	int					kernDataOffs;
 	// These fields do not participate in disk i/o!
 	CArray<CBitmap> 	bitmaps;
 	CBitmap 				parentBitmap;
@@ -64,65 +64,57 @@ class CFont {
 		~CFont () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		uint8_t* Remap (const char *fontname, uint8_t* fontData);
-		uint8_t* Load (const char *fontname, uint8_t* fontData = NULL);
+		ubyte* Remap (const char *fontname, ubyte* fontData);
+		ubyte* Load (const char *fontname, ubyte* fontData = NULL);
 		void Read (CFile& cf);
-		int32_t StringSize (const char *s, int32_t& stringWidth, int32_t& stringHeight, int32_t& averageWidth);
-		int32_t StringSizeTabbed (const char *s, int32_t& stringWidth, int32_t& stringHeight, int32_t& averageWidth, int32_t *nTabs, int32_t nMaxWidth = 0);
+		void StringSize (const char *s, int& stringWidth, int& stringHeight, int& averageWidth);
+		void StringSizeTabbed (const char *s, int& stringWidth, int& stringHeight, int& averageWidth, int *nTabs, int nMaxWidth);
 
-		int16_t Width (void);
-		int16_t Height (void);
-		inline int16_t Flags (void) { return m_info.flags; }
-		inline int16_t BaseLine (void) { return m_info.baseLine; }
-		inline uint8_t MinChar (void) { return m_info.minChar; }
-		inline uint8_t MaxChar (void) { return m_info.maxChar; }
-		inline int16_t ByteWidth (void) { return m_info.byteWidth; }
-		inline uint8_t* Data (void) { return m_info.data; }
-		inline uint8_t**	Chars (void) { return m_info.chars.Buffer (); }
-		inline int16_t* Widths (void) { return m_info.widths; }
-		inline uint8_t* KernData (void) { return m_info.kernData; }
+		short Width (void);
+		short Height (void);
+		inline short Flags (void) { return m_info.flags; }
+		inline short BaseLine (void) { return m_info.baseLine; }
+		inline ubyte MinChar (void) { return m_info.minChar; }
+		inline ubyte MaxChar (void) { return m_info.maxChar; }
+		inline short ByteWidth (void) { return m_info.byteWidth; }
+		inline ubyte* Data (void) { return m_info.data; }
+		inline ubyte**	Chars (void) { return m_info.chars.Buffer (); }
+		inline short* Widths (void) { return m_info.widths; }
+		inline ubyte* KernData (void) { return m_info.kernData; }
 		inline CBitmap* Bitmaps (void) { return m_info.bitmaps.Buffer (); }
 		inline CBitmap& ParentBitmap (void) { return m_info.parentBitmap; }
 
-		inline void GetWidth (int16_t width) { m_info.width = width; }
-		inline void GetHeight (int16_t height) { m_info.height = height; }
-		inline void GetFlags (int16_t flags) { m_info.flags = flags; }
-		inline void GetBaseLine (int16_t baseLine) { m_info.baseLine = baseLine; }
-		inline void GetMinChar (uint8_t minChar) { m_info.minChar = minChar; }
-		inline void GetMaxChar (uint8_t maxChar) { m_info.maxChar = maxChar; }
-		inline void GetByteWidth (int16_t byteWidth) { m_info.byteWidth = byteWidth; }
-		inline void GetData (uint8_t* data) { m_info.data = data; }
-		inline void GetChars (uint8_t** chars) { m_info.chars = chars; }
-		inline void GetWidths (int16_t* widths) { m_info.widths = widths; }
-		inline void KernData (uint8_t* kernData) { m_info.kernData = kernData; }
+		inline void GetWidth (short width) { m_info.width = width; }
+		inline void GetHeight (short height) { m_info.height = height; }
+		inline void GetFlags (short flags) { m_info.flags = flags; }
+		inline void GetBaseLine (short baseLine) { m_info.baseLine = baseLine; }
+		inline void GetMinChar (ubyte minChar) { m_info.minChar = minChar; }
+		inline void GetMaxChar (ubyte maxChar) { m_info.maxChar = maxChar; }
+		inline void GetByteWidth (short byteWidth) { m_info.byteWidth = byteWidth; }
+		inline void GetData (ubyte* data) { m_info.data = data; }
+		inline void GetChars (ubyte** chars) { m_info.chars = chars; }
+		inline void GetWidths (short* widths) { m_info.widths = widths; }
+		inline void KernData (ubyte* kernData) { m_info.kernData = kernData; }
 		inline void SetBitmaps (CBitmap* bitmaps) { m_info.bitmaps = bitmaps; }
 		inline void SetParentBitmap (CBitmap& parent) { m_info.parentBitmap = parent; }
-		inline void SetBuffer (uint8_t* buffer) { m_info.parentBitmap.SetBuffer (buffer); }
+		inline void SetBuffer (ubyte* buffer) { m_info.parentBitmap.SetBuffer (buffer); }
 
 		inline void GetInfo (tFont& info) { memcpy (&info, &m_info, sizeof (info)); }
 
 		inline bool InFont (char c) { return (c >= 0) && (c <= (char) (m_info.maxChar - m_info.minChar)); }
-		inline int32_t Range (void) { return m_info.maxChar - m_info.minChar + 1; }
+		inline int Range (void) { return m_info.maxChar - m_info.minChar + 1; }
 
-		void GetCharWidth (uint8_t c, uint8_t c2, int32_t& width, int32_t& spacing);
-		inline int32_t GetCharWidth (char* psz) {
-			int32_t w, s;
-			GetCharWidth (*psz, *(psz + 1), w, s);
-			return s;
-			}
-		int32_t GetLineWidth (const char *s, float scale = 1.0f);
-		int32_t GetCenteredX (const char *s, float scale = 1.0f);
-		int32_t TotalWidth (float scale = 1.0f);
+		void GetCharWidth (ubyte c, ubyte c2, int& width, int& spacing);
+		int GetLineWidth (const char *s);
+		int GetCenteredX (const char *s);
+		int TotalWidth (void);
 
-		inline int32_t Scaled (int32_t v, float scale) { return int32_t (ceil (float (v) * scale)); }
-
-		int32_t DrawString (int32_t x, int32_t y, const char *s);
-		char* PadString (char* pszDest, const char* pszText, const char* pszFiller, int32_t nLength);
+		int DrawString (int x, int y, const char *s);
 
 	private:
-		uint8_t *FindKernEntry (uint8_t first, uint8_t second);
-		void ChooseSize (int32_t gap, int32_t& rw, int32_t& rh);
-		void Setup (const char *fontname, uint8_t* fontData, CPalette& palette);
+		ubyte *FindKernEntry (ubyte first, ubyte second);
+		void ChooseSize (int gap, int& rw, int& rh);
+		void Setup (const char *fontname, ubyte* fontData, CPalette& palette);
 		void Create (const char *fontname);
 };
 
@@ -133,25 +125,16 @@ class CFont {
 typedef struct tOpenFont {
 	char		filename [SHORT_FILENAME_LEN];
 	CFont		font;
-	uint8_t*	data;
+	ubyte*	data;
 } tOpenFont;
-
-typedef struct tFontBackup {
-	CFont*	m_font;
-	float		m_scale;
-#if DBG
-	char		m_szId [100];
-#endif
-} tFontBackup;
 
 class CFontManager {
 	private:
-		tOpenFont				m_fonts [MAX_OPEN_FONTS];
-		CFont*					m_gameFonts [MAX_FONTS];
-		CFont*					m_current;
-		CStack<tFontBackup>	m_save;
-		float						m_scale;
-		CStack<float>			m_scaleStack;
+		tOpenFont		m_fonts [MAX_OPEN_FONTS];
+		CFont*			m_gameFonts [MAX_FONTS];
+		CFont*			m_current;
+		CStack<CFont*>	m_save;
+		float				m_scale;
 
 	public:
 		CFontManager () { Init (); }
@@ -162,59 +145,28 @@ class CFontManager {
 		CFont* Load (const char* fontname);
 		void Unload (CFont* font);
 		inline CFont* Current (void) { return m_current; }
-		inline CFont* GameFont (int32_t i) { return ((i >= 0) && (i < MAX_FONTS)) ? m_gameFonts [i] : NULL; }
-		float SetScale (float fScale);
-		float Scale (bool bScaled = true);
-		inline void PushScale (void) { m_scaleStack.Push (m_scale); }
-		inline void PopScale (void) { 
-			if (m_scaleStack.ToS ()) 
-				m_scale = m_scaleStack.Pop (); 
-			}
-		void SetCurrent (CFont* pFont);
-		void SetColor (int32_t fgColor, int32_t bgColor);
+		inline CFont* GameFont (int i) { return ((i >= 0) && (i < MAX_FONTS)) ? m_gameFonts [i] : NULL; }
+		void SetScale (float fScale);
+		float Scale (void);
+		void SetCurrent (CFont* fontP);
+		void SetColor (int fgColor, int bgColor);
 		void SetColorRGB (CRGBAColor *fgColor, CRGBAColor *bgColor);
-		void SetColorRGBi (uint32_t fgColor, int32_t bSetFG, uint32_t bgColor, int32_t bSetBG);
-		void Push (const char* pszId) { 
-			if (m_current && m_save.Grow ()) {
-				m_save.Top ()->m_font = m_current;
-				m_save.Top ()->m_scale = m_scale;
-#if DBG
-				if (pszId)
-					strncpy (m_save.Top ()->m_szId, pszId, sizeof (m_save.Top ()->m_szId));
-				else
-					*m_save.Top ()->m_szId = '\0';
-#endif
-				}
-			}
-		void Pop (void) { 
-			if (ToS ()) {
-				m_current = m_save.Top ()->m_font; 
-				m_scale = m_save.Pop ().m_scale; 
-				}
-			}
-		inline int32_t ToS (void) { return m_save.ToS (); }
-		inline void Reset (void) { 
-			m_save.Truncate (1); 
-			m_current = m_save.ToS () ? m_save.Top ()->m_font : NULL; 
-			}
+		void SetColorRGBi (uint fgColor, int bSetFG, uint bgColor, int bSetBG);
+		void Push (void) { m_save.Push (m_current); }
+		void Pop (void) { m_current = m_save.Pop (); }
 		void Remap ();
-
-		inline int32_t Scaled (int32_t v) { return (int32_t) FRound ((float (v) * Scale ())); }
-		inline int32_t Unscaled (int32_t v) { return (int32_t) FRound ((float (v) / Scale ())); }
 	};
 
 extern CFontManager fontManager;
 
 //-----------------------------------------------------------------------------
 
-int32_t GrString (int32_t x, int32_t y, const char *s, int32_t *idP = NULL);
-int32_t GrUString (int32_t x, int32_t y, const char *s);
-int32_t _CDECL_ GrPrintF (int32_t *idP, int32_t x, int32_t y, const char * format, ...);
-int32_t _CDECL_ GrUPrintf (int32_t x, int32_t y, const char * format, ...);
-CBitmap *CreateStringBitmap (const char *s, int32_t nKey, uint32_t nKeyColor, int32_t *nTabs, int32_t bCentered, int32_t nMaxWidth, int32_t nRowPad, int32_t bForce);
-void DrawCenteredText (int32_t y, char * s);
-int32_t StringWidth (char * s, int32_t n = 0);
-int32_t CenteredStringPos (char* s);
+int GrString (int x, int y, const char *s, int *idP);
+int GrUString (int x, int y, const char *s);
+int _CDECL_ GrPrintF (int *idP, int x, int y, const char * format, ...);
+int _CDECL_ GrUPrintf (int x, int y, const char * format, ...);
+CBitmap *CreateStringBitmap (const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce);
+void DrawCenteredText (int y, char * s);
 
 //-----------------------------------------------------------------------------
 // Global variables
@@ -222,10 +174,10 @@ int32_t CenteredStringPos (char* s);
 
 typedef struct grsString {
 	char				*pszText;
-	CBitmap			*pBm;
-	int32_t				*pId;
-	int16_t				nWidth;
-	int16_t				nLength;
+	CBitmap			*bmP;
+	int				*pId;
+	short				nWidth;
+	short				nLength;
 	} grsString;
 
 void InitStringPool (void);

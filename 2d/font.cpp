@@ -74,30 +74,28 @@ m_info.data = NULL;
 m_info.widths = NULL; 
 m_info.kernData = NULL;
 m_info.chars.Clear ();
-for (uint32_t i = 0; i < m_info.bitmaps.Length (); i++) {
+for (uint i = 0; i < m_info.bitmaps.Length (); i++)
 	m_info.bitmaps [i].Init ();
-	m_info.bitmaps [i].SetCartoonizable (0);
-	}
 m_info.parentBitmap.Init ();
 }
 
 //------------------------------------------------------------------------------
 
-int16_t CFont::Width (void) 
+short CFont::Width (void) 
 { 
-return int16_t (m_info.width * fontManager.Scale ()); 
+return short (m_info.width * fontManager.Scale ()); 
 }
 
-int16_t CFont::Height (void) 
+short CFont::Height (void) 
 { 
-return int16_t (m_info.height * fontManager.Scale ()); 
+return short (m_info.height * fontManager.Scale ()); 
 }
 
 //------------------------------------------------------------------------------
 
-uint8_t *CFont::FindKernEntry (uint8_t first, uint8_t second)
+ubyte *CFont::FindKernEntry (ubyte first, ubyte second)
 {
-	uint8_t *p = m_info.kernData;
+	ubyte *p = m_info.kernData;
 
 while (*p != 255)
 	if ((*p == first) && (*(p + 1) == second))
@@ -110,9 +108,9 @@ return NULL;
 //takes the character AFTER being offset into font
 //takes the character BEFORE being offset into current font
 
-void CFont::GetCharWidth (uint8_t c, uint8_t cNext, int32_t& width, int32_t& spacing)
+void CFont::GetCharWidth (ubyte c, ubyte c2, int& width, int& spacing)
 {
-	int32_t letter = c - m_info.minChar;
+	int letter = c - m_info.minChar;
 
 if (!InFont (letter)) {				//not in font, draw as space
 	width = 0;
@@ -122,13 +120,17 @@ if (!InFont (letter)) {				//not in font, draw as space
 		spacing = m_info.width;
 	}
 else {
-	width = (m_info.flags & FT_PROPORTIONAL) ? m_info.widths [letter] : m_info.width;
+	if (m_info.flags & FT_PROPORTIONAL)
+		width = m_info.widths [letter];
+	else
+		width = m_info.width;
 	spacing = width;
+
 	if (m_info.flags & FT_KERNED) {
-		if ((cNext != 0) && (cNext != '\n')) {
-			int32_t letter2 = cNext - m_info.minChar;
+		if ((c2 != 0) && (c2 != '\n')) {
+			int letter2 = c2 - m_info.minChar;
 			if (InFont (letter2)) {
-				uint8_t *p = FindKernEntry ((uint8_t) letter, (uint8_t) letter2);
+				ubyte *p = FindKernEntry ((ubyte) letter, (ubyte) letter2);
 				if (p)
 					spacing = p [2];
 				}
@@ -139,14 +141,14 @@ else {
 #if DBG
 if (fontManager.Scale () != 1.0f)
 #endif
-spacing = (int32_t) FRound (spacing * fontManager.Scale ());
+	spacing = int (spacing * fontManager.Scale ());
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CFont::GetLineWidth (const char *s, float scale)
+int CFont::GetLineWidth (const char *s)
 {
-	int32_t w, w2, s2;
+	int w, w2, s2;
 
 if (!s)
 	return 0;
@@ -159,22 +161,22 @@ for (w = 0; *s && (*s != '\n'); s++) {
 	GetCharWidth (s[0], s[1], w2, s2);
 	w += s2;
 	}
-return Scaled (w, scale);
+return w;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CFont::GetCenteredX (const char *s, float scale)
+int CFont::GetCenteredX (const char *s)
 {
-return ((CCanvas::Current ()->Width () - GetLineWidth (s, scale)) / 2);
+return ((CCanvas::Current ()->Width () - GetLineWidth (s)) / 2);
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CFont::TotalWidth (float scale)
+int CFont::TotalWidth (void)
 {
-if (m_info.flags & FT_PROPORTIONAL) {
-	int32_t i, w = 0, c = m_info.minChar;
+if (m_info.flags & FT_PROPORTIONAL){
+	int i, w = 0, c = m_info.minChar;
 	for (i = 0; c <= m_info.maxChar; i++, c++) {
 		if (m_info.widths [i] < 0)
 			Error (TXT_FONT_WIDTH);
@@ -182,27 +184,27 @@ if (m_info.flags & FT_PROPORTIONAL) {
 		}
 	return w;
 	}
-return Scaled (m_info.width * Range (), scale);
+return m_info.width * Range ();
 }
 
 //------------------------------------------------------------------------------
 
-void CFont::ChooseSize (int32_t gap, int32_t& rw, int32_t& rh)
+void CFont::ChooseSize (int gap, int& rw, int& rh)
 {
-	int32_t nChars = Range ();
-	int32_t r, x, y, nc = 0, smallest = 999999, smallr = -1, tries;
-	int32_t smallprop = 10000;
-	int32_t h, w;
+	int nChars = Range ();
+	int r, x, y, nc = 0, smallest = 999999, smallr = -1, tries;
+	int smallprop = 10000;
+	int h, w;
 
 for (h = 32; h <= 256; h *= 2) {
 	if (m_info.height > h)
 		continue;
 	r= (h / (m_info.height + gap));
-	w = Pow2ize ((TotalWidth () + (nChars - r) * gap) / r, 65536);
+	w = Pow2ize ((TotalWidth () + (nChars - r) * gap) / r);
 	tries = 0;
 	do {
 		if (tries)
-			w = Pow2ize (w + 1, 65536);
+			w = Pow2ize (w+1);
 		if (tries > 3) 
 			break;
 		nc = 0;
@@ -260,14 +262,14 @@ if (smallr <= 0)
 
 //------------------------------------------------------------------------------
 
-uint8_t* CFont::Remap (const char *fontname, uint8_t* fontData)
+ubyte* CFont::Remap (const char *fontname, ubyte* fontData)
 {
 if (!m_info.parentBitmap.Buffer ())
 	return Load (fontname, fontData);
 m_info.parentBitmap.Texture ()->Destroy ();
 m_info.parentBitmap.SetTranspType (2);
 m_info.parentBitmap.PrepareTexture (0, 0, NULL);
-for (uint32_t i = 0; i < m_info.bitmaps.Length (); i++)
+for (uint i = 0; i < m_info.bitmaps.Length (); i++)
 	m_info.bitmaps [i].SetTexture (m_info.parentBitmap.Texture ());
 return fontData;
 }
@@ -276,12 +278,12 @@ return fontData;
 
 void CFont::Create (const char *fontname)
 {
-	uint8_t		*fp;
+	ubyte		*fp;
 	CPalette *palette;
-	int32_t		nChars = Range ();
-	int32_t		i, j, x, y, w, h, tw = 0, th = 0, curx = 0, cury = 0;
-	uint8_t		white;
-	int32_t		gap = 0; //having a gap just wastes ram, since we don't filter text textures at all.
+	int		nChars = Range ();
+	int		i, j, x, y, w, h, tw = 0, th = 0, curx = 0, cury = 0;
+	ubyte		white;
+	int		gap = 0; //having a gap just wastes ram, since we don't filter text textures at all.
 
 ChooseSize (gap, tw, th);
 palette = m_info.parentBitmap.Palette ();
@@ -323,7 +325,7 @@ for (i = 0; i < nChars; i++) {
 #endif
 		}
 	else {
-		int32_t mask, bits = 0;
+		int mask, bits = 0;
 		//			if (w*h>sizeof (data))
 		//				Error ("OglInitFont: toobig\n");
 		if (m_info.flags & FT_PROPORTIONAL)
@@ -338,7 +340,7 @@ for (i = 0; i < nChars; i++) {
 					bits = *fp++;
 					mask = 0x80;
 					}
-				m_info.parentBitmap [j++] = (uint8_t) ((bits & mask) ? white : TRANSPARENCY_COLOR);
+				m_info.parentBitmap [j++] = (ubyte) ((bits & mask) ? white : TRANSPARENCY_COLOR);
 				mask >>= 1;
 				}
 			}
@@ -355,19 +357,19 @@ m_info.parentBitmap.PrepareTexture (0, 0, NULL);
 //------------------------------------------------------------------------------
 
 //remap a font by re-reading its data & palette
-void CFont::Setup (const char *fontname, uint8_t* fontData, CPalette& palette)
+void CFont::Setup (const char *fontname, ubyte* fontData, CPalette& palette)
 {
-	int32_t	i;
-	int32_t	nChars;
-	uint8_t*	ptr;
+	int		i;
+	int		nChars;
+	ubyte*	ptr;
 
 Destroy ();
 
 // make these offsets relative to font data
 nChars = m_info.maxChar - m_info.minChar + 1;
 if (m_info.flags & FT_PROPORTIONAL) {
-	m_info.widths = reinterpret_cast<int16_t*> (fontData + (size_t) m_info.widthOffs - GRS_FONT_SIZE);
-	m_info.data = reinterpret_cast<uint8_t*> (fontData + (size_t) m_info.dataOffs - GRS_FONT_SIZE);
+	m_info.widths = reinterpret_cast<short*> (fontData + (size_t) m_info.widthOffs - GRS_FONT_SIZE);
+	m_info.data = reinterpret_cast<ubyte*> (fontData + (size_t) m_info.dataOffs - GRS_FONT_SIZE);
 	m_info.chars.Create (nChars);
 	ptr = m_info.data;
 	for (i = 0; i < nChars; i++) {
@@ -380,26 +382,26 @@ if (m_info.flags & FT_PROPORTIONAL) {
 		}
 	}
 else  {
-	m_info.data = reinterpret_cast<uint8_t*> (fontData);
+	m_info.data = reinterpret_cast<ubyte*> (fontData);
 	m_info.widths = NULL;
 	ptr = m_info.data + (nChars * m_info.width * m_info.height);
 	}
 if (m_info.flags & FT_KERNED)
-	m_info.kernData = reinterpret_cast<uint8_t*> (fontData + (size_t) m_info.kernDataOffs - GRS_FONT_SIZE);
+	m_info.kernData = reinterpret_cast<ubyte*> (fontData + (size_t) m_info.kernDataOffs - GRS_FONT_SIZE);
 
 if (m_info.flags & FT_COLOR) {		//remap palette
-#ifdef SWAP_TRANSPARENCY_COLOR			// swap the first and last palette entries (black and white)
+#ifdef SWAP_0_255			// swap the first and last palette entries (black and white)
 	palette.SwapTransparency ();
 	// we also need to swap the data entries. black is white and white is black
-	for (i = 0; i < ptr - m_info.data; i++) {
+	for (i = 0; i < ptr-m_info.data; i++) {
 		if (m_info.data [i] == 0)
 			m_info.data [i] = 255;
 		else if (m_info.data [i] == 255)
 			m_info.data [i] = 0;
 		}
+	}
 #endif
-	m_info.parentBitmap.SetCartoonizable (0);
-	m_info.parentBitmap.SetPalette (&palette, TRANSPARENCY_COLOR, -1, m_info.data, (int32_t) (ptr - m_info.data));
+	m_info.parentBitmap.SetPalette (&palette, TRANSPARENCY_COLOR, -1, m_info.data, (int) (ptr - m_info.data));
 	}
 else
 	m_info.parentBitmap.SetPalette (paletteManager.Default (), TRANSPARENCY_COLOR, -1);
@@ -408,14 +410,14 @@ Create (fontname);
 
 //------------------------------------------------------------------------------
 
-uint8_t* CFont::Load (const char *fontname, uint8_t* fontData)
+ubyte* CFont::Load (const char *fontname, ubyte* fontData)
 {
 	CFile 	cf;
 	CPalette	palette;
 	char 		fileId [4];
-	int32_t 	dataSize;	//size up to (but not including) palette
+	int 		dataSize;	//size up to (but not including) palette
 
-if (!cf.Open (fontname, gameFolders.game.szData [0], "rb", 0)) {
+if (!cf.Open (fontname, gameFolders.szDataDir [0], "rb", 0)) {
 #if TRACE
 	console.printf (CON_VERBOSE, "Can't open font file %s\n", fontname);
 #endif
@@ -433,7 +435,7 @@ if (!strncmp (fileId, "NFSP", 4)) {
 dataSize = cf.ReadInt ();
 dataSize -= GRS_FONT_SIZE; // subtract the size of the header.
 Read (cf);
-if (!(fontData || (fontData = new uint8_t [dataSize]))) {
+if (!(fontData || (fontData = new ubyte [dataSize]))) {
 	cf.Close ();
 	return NULL;
 	}
@@ -451,7 +453,7 @@ return fontData;
 void CFont::Destroy (void)
 {
 m_info.chars.Destroy ();
-for (uint32_t i = 0; i < m_info.bitmaps.Length (); i++)
+for (uint i = 0; i < m_info.bitmaps.Length (); i++)
 	m_info.bitmaps [i].SetTexture (NULL);
 m_info.bitmaps.Destroy ();
 m_info.parentBitmap.Destroy ();
@@ -476,15 +478,15 @@ m_info.kernDataOffs = cf.ReadInt ();
 
 //------------------------------------------------------------------------------
 
-int32_t CFont::StringSize (const char *s, int32_t& stringWidth, int32_t& stringHeight, int32_t& averageWidth)
+void CFont::StringSize (const char *s, int& stringWidth, int& stringHeight, int& averageWidth)
 {
-	int32_t i = 0, longestWidth = 0;
-	int32_t width, spacing;
+	int i = 0, longestWidth = 0;
+	int width, spacing;
 	float fScale = fontManager.Scale ();
 
 stringHeight = m_info.height;
 stringWidth = 0;
-averageWidth = int32_t (m_info.width * fScale);
+averageWidth = int (m_info.width * fScale);
 
 if (s && *s) {
 	fontManager.SetScale (1.0f / (gameStates.app.bDemoData + 1));
@@ -498,9 +500,9 @@ if (s && *s) {
 		if (*s == 0) 
 			break;
 
-		//	1 = next 3 bytes specify color, so skip the 1 and the color value
+		//	1 = next byte specifies color, so skip the 1 and the color value
 		if (*s == CC_COLOR)
-			s += 4;
+			s += 2;
 		else if (*s == CC_LSPACING) {
 			stringHeight += *(s + 1) - '0';
 			s += 2;
@@ -516,87 +518,48 @@ if (s && *s) {
 		}
 	fontManager.SetScale (fScale / (gameStates.app.bDemoData + 1));
 	}
-int32_t lineCount = stringHeight / (m_info.height + 2);
-stringHeight = int32_t (stringHeight * fScale);
-stringWidth = int32_t (longestWidth * fScale);
-return lineCount;
+stringHeight = int (stringHeight * fScale);
+stringWidth = int (longestWidth * fScale);
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CFont::StringSizeTabbed (const char *s, int32_t& stringWidth, int32_t& stringHeight, int32_t& averageWidth, int32_t *nTabs, int32_t nMaxWidth)
+void CFont::StringSizeTabbed (const char *s, int& stringWidth, int& stringHeight, int& averageWidth, int *nTabs, int nMaxWidth)
 {
 	float fScale = fontManager.Scale ();
 
+stringHeight = int (m_info.height * fScale);
 stringWidth = 0;
-stringHeight = int32_t (m_info.height * fScale);
-averageWidth = int32_t (m_info.width * fScale);
+averageWidth = int (m_info.width * fScale);
 
 if (!(s && *s))
-	return 0;
+	return;
 
-stringHeight = 0;
-
-	char		* pi, * pj;
-	int32_t	w, h, sw = 0, nTab = 0;
-	int32_t	nLineCount = 1;
+	char	*pi, *pj;
+	int	w = 0, nTab = 0;
 	static char	hs [10000];
 
 strncpy (hs, s, sizeof (hs));
-for (pi = pj = hs; ; pi++) {
-	switch (*pi) {
-		case '\n':
-			*pi++ = '\0';
-			if (*pi)
-				++nLineCount;
-
-		case '\0':
-			fontManager.Current ()->StringSize (pj, w, h, averageWidth);
-			sw += w;
-			if (stringWidth < sw)
-				stringWidth = sw;
-			stringHeight += h;
-			if (*pi == '\0')
-				return nLineCount;
-			sw = 0;
-			pj = pi;
-			nTab = 0;
-			break;
-
-		case '\t':
-			*pi++ = '\0';
-			fontManager.Current ()->StringSize (pj, w, h, averageWidth);
-			sw += w;
-			if (stringHeight == 0)
-				stringHeight = h;
-			if (nTabs) {
-				if (!gameStates.multi.bSurfingNet && nMaxWidth) {
-					if (pj) {
-						stringWidth = nMaxWidth;
-						return nLineCount;
-						}
-					}
-				else {
-					int32_t xTab = LHX (int32_t (nTabs [nTab] * fScale));
-					if (xTab > sw) {
-						if (!nMaxWidth || (xTab < nMaxWidth))
-							sw = xTab;
-						else {
-							stringWidth = nMaxWidth;
-							return nLineCount;
-							}
-						}
-					}
-				}
-			pj = pi;
-			nTab++;
-			break;
-
-		default:
-			break;
+pi = hs;
+do {
+	pj = strchr (pi, '\t');
+	if (pj)
+		*pj = '\0';
+	fontManager.Current ()->StringSize (pi, w, stringHeight, averageWidth);
+	if (nTab && nTabs) {
+		stringWidth = LHX (int (nTabs [nTab - 1] * fScale));
+		if (gameStates.multi.bSurfingNet)
+			stringWidth += w;
+		else
+			stringWidth += nMaxWidth;
 		}
-	} 
-return nLineCount;
+	else
+		stringWidth += w;
+	if (pj) {
+		nTab++;
+		pi = pj + 1;
+		}
+	} while (pj);
 }
 
 //------------------------------------------------------------------------------
@@ -608,8 +571,6 @@ void CFontManager::Init (void)
 memset (m_fonts, 0, sizeof (m_fonts));
 m_save.Create (10);
 SetScale (1.0f);
-m_scaleStack.Create (10);
-m_scaleStack.SetGrowth (10);
 }
 
 //------------------------------------------------------------------------------
@@ -632,7 +593,7 @@ void CFontManager::Setup (void)
 memset (m_fonts, 0, sizeof (m_fonts));
 
 if (!gameStates.render.fonts.bInstalled) {
-		int32_t i;
+		int i;
 
 	gameStates.render.fonts.bInstalled = 1;
 	gameStates.render.fonts.bHiresAvailable = !gameStates.app.bDemoData;
@@ -650,7 +611,7 @@ if (!gameStates.render.fonts.bInstalled) {
 
 void CFontManager::Destroy (void)
 {
-	int32_t i;
+	int i;
 
 for (i = 0; (i < MAX_OPEN_FONTS); i++)
 	if (m_fonts [i].data)
@@ -661,7 +622,7 @@ for (i = 0; (i < MAX_OPEN_FONTS); i++)
 
 CFont *CFontManager::Load (const char* fontname)
 {
-	int32_t i;
+	int i;
 
 for (i = 0; (i < MAX_OPEN_FONTS) && m_fonts [i].data; i++)
 	;
@@ -682,7 +643,7 @@ void CFontManager::Unload (CFont* font)
 if (!font)
 	return;
 
-	int32_t	i;
+	int	i;
 
 		//find font in list
 for (i = 0; (i < MAX_OPEN_FONTS) && (&m_fonts [i].font != font); i++)
@@ -696,27 +657,21 @@ m_fonts [i].font.Destroy ();
 
 //------------------------------------------------------------------------------
 
-float CFontManager::Scale (bool bScaled) 
+float CFontManager::Scale (void) 
 { 
-return bScaled ? m_scale : m_scale / float (gameStates.app.bDemoData + 1); 
+return m_scale; 
 }
 
 //------------------------------------------------------------------------------
 
-float CFontManager::SetScale (float fScale) 
+void CFontManager::SetScale (float fScale) 
 { 
-float fOldScale = m_scale;
-m_scale = Clamp (fScale * (gameStates.app.bDemoData + 1), 0.1f, 10.0f); 
-#if DBG
-if (m_scale < 1.0f)
-	BRP;
-#endif
-return fOldScale;
+m_scale = fScale * (gameStates.app.bDemoData + 1); 
 }
 
 //------------------------------------------------------------------------------
 
-void CFontManager::SetColor (int32_t fg, int32_t bg)
+void CFontManager::SetColor (int fg, int bg)
 {
 if (fg >= 0)
 	CCanvas::Current ()->FontColor (0).index = fg;
@@ -742,21 +697,21 @@ if (bg) {
 
 //------------------------------------------------------------------------------
 
-void CFontManager::SetColorRGBi (uint32_t fg, int32_t bSetFG, uint32_t bg, int32_t bSetBG)
+void CFontManager::SetColorRGBi (uint fg, int bSetFG, uint bg, int bSetBG)
 {
 if (bSetFG) {
 	CCanvas::Current ()->FontColor (0).rgb = 1;
 	CCanvas::Current ()->FontColor (0).Red () = RGBA_RED (fg);
 	CCanvas::Current ()->FontColor (0).Green () = RGBA_GREEN (fg);
 	CCanvas::Current ()->FontColor (0).Blue () = RGBA_BLUE (fg);
-	CCanvas::Current ()->FontColor (0).Alpha () = uint8_t (RGBA_ALPHA (fg) * gameStates.render.grAlpha);
+	CCanvas::Current ()->FontColor (0).Alpha () = ubyte (RGBA_ALPHA (fg) * gameStates.render.grAlpha);
 	}
 if (bSetBG) {
 	CCanvas::Current ()->FontColor (1).rgb = 1;
 	CCanvas::Current ()->FontColor (1).Red () = RGBA_RED (bg);
 	CCanvas::Current ()->FontColor (1).Green () = RGBA_GREEN (bg);
 	CCanvas::Current ()->FontColor (1).Blue () = RGBA_BLUE (bg);
-	CCanvas::Current ()->FontColor (1).Alpha () = uint8_t (RGBA_ALPHA (bg) * gameStates.render.grAlpha);
+	CCanvas::Current ()->FontColor (1).Alpha () = ubyte (RGBA_ALPHA (bg) * gameStates.render.grAlpha);
 	}
 }
 
@@ -764,20 +719,16 @@ if (bSetBG) {
 
 void CFontManager::Remap (void)
 {
-for (int32_t i = 0; i < MAX_OPEN_FONTS; i++)
+for (int i = 0; i < MAX_OPEN_FONTS; i++)
 	if (m_fonts [i].data)
 		m_fonts [i].font.Remap (m_fonts [i].filename, m_fonts [i].data);
 }
 
  //------------------------------------------------------------------------------
 
-void CFontManager::SetCurrent (CFont* pFont)
+void CFontManager::SetCurrent (CFont* fontP)
 {
-#if DBG
-if (!pFont)
-	pFont = GAME_FONT;
-#endif
-CCanvas::Current ()->SetFont (m_current = pFont); 
+CCanvas::Current ()->SetFont (m_current = fontP); 
 }
  
  //------------------------------------------------------------------------------

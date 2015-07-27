@@ -54,8 +54,8 @@ static const char* pszHiresMovies = "Hires Movies";
 static const char* pszD2XVersion = "D2XVersion";
 static const char* pszTotalGameTime = "TotalGameTime";
 
-int32_t digi_driver_board_16;
-int32_t digi_driver_dma_16;
+int digi_driver_board_16;
+int digi_driver_dma_16;
 
 void InitCustomDetails(void);
 
@@ -63,7 +63,7 @@ tGameConfig gameConfig;
 
 //------------------------------------------------------------------------------
 
-void SetNostalgia (int32_t nLevel)
+void SetNostalgia (int nLevel)
 {
 gameStates.app.bNostalgia = (nLevel < 0) ? 0 : (nLevel > 3) ? 3 : nLevel;
 gameStates.app.iNostalgia = (gameStates.app.bNostalgia > 0);
@@ -93,18 +93,18 @@ gameConfig.nVersion = 0;
 
 // ----------------------------------------------------------------------------
 
-int32_t bHiresMoviesSave;
-int32_t bRedbookEnabledSave;
+int bHiresMoviesSave;
+int bRedbookEnabledSave;
 
 #define MAX_JOY_AXIS
 
-int32_t ReadConfigFile (void)
+int ReadConfigFile (void)
 {
 	CFile			cf;
 	char			line [80], *token, *value, *ptr;
-	uint8_t			gamma;
+	ubyte			gamma;
 	tJoyAxisCal	cal [7];
-	int32_t			i;
+	int			i;
 
 strcpy (gameConfig.szLastPlayer, "");
 memset (cal, 0, sizeof (cal));
@@ -120,7 +120,7 @@ gameConfig.bReverseChannels = 0;
 bHiresMoviesSave = gameOpts->movies.bHires;
 bRedbookEnabledSave = redbook.Enabled ();
 
-if (!cf.Open ("descent.cfg", gameFolders.user.szConfig, "rb", 0))
+if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "rb", 0))
 	return 1;
 while (!cf.EoF ()) {
 	memset (line, 0, 80);
@@ -138,25 +138,25 @@ while (!cf.EoF ()) {
 		if (value [strlen (value) - 1] == '\n')
 			value [strlen (value) - 1] = 0;
 		if (!strcmp (token, pszDigiVolume))
-			gameConfig.nAudioVolume [0] = (uint8_t) strtol (value, NULL, 10);
+			gameConfig.nAudioVolume [0] = (ubyte) strtol (value, NULL, 10);
 		else if (!strcmp (token, pszAmbientVolume))
-			gameConfig.nAudioVolume [1] = (uint8_t) strtol (value, NULL, 10);
+			gameConfig.nAudioVolume [1] = (ubyte) strtol (value, NULL, 10);
 		else if (!strcmp (token, pszMidiVolume))
-			gameConfig.nMidiVolume = (uint8_t) strtol (value, NULL, 10);
+			gameConfig.nMidiVolume = (ubyte) strtol (value, NULL, 10);
 		else if (!strcmp (token, pszRedbookEnabled))
 			redbook.Enable (bRedbookEnabledSave = strtol (value, NULL, 10));
 		else if (!strcmp (token, pszRedbookVolume))
-			gameConfig.nRedbookVolume = (uint8_t) strtol (value, NULL, 10);
+			gameConfig.nRedbookVolume = (ubyte) strtol (value, NULL, 10);
 		else if (!strcmp (token, pszStereoRev))
-			gameConfig.bReverseChannels = (uint8_t) strtol (value, NULL, 10);
+			gameConfig.bReverseChannels = (ubyte) strtol (value, NULL, 10);
 		else if (!strcmp (token, pszGammaLevel)) {
-			gamma = (uint8_t) strtol (value, NULL, 10);
+			gamma = (ubyte) strtol (value, NULL, 10);
 			paletteManager.SetGamma (gamma);
 			}
 		else if (!strcmp (token, pszDetailLevel)) {
 			gameStates.app.nDetailLevel = strtol (value, NULL, 10);
 			if (gameStates.app.nDetailLevel == NUM_DETAIL_LEVELS - 1) {
-				int32_t count,dummy,oc,od,wd,wrd,da,sc;
+				int count,dummy,oc,od,wd,wrd,da,sc;
 				count = sscanf (value, "%d,%d,%d,%d,%d,%d,%d\n", &dummy, &oc, &od, &wd, &wrd, &da, &sc);
 				if (count == 7) {
 					gameStates.render.detail.nObjectComplexity = NMCLAMP (oc, 0, 4);
@@ -182,7 +182,7 @@ while (!cf.EoF ()) {
 			if (p) *p = 0;
 		}
 		else if (!strcmp (token, pszLastMission)) {
-			int32_t j = MsnHasGameVer (value) ? 4 : 0;
+			int j = MsnHasGameVer (value) ? 4 : 0;
 			strncpy (gameConfig.szLastMission, value + j, MISSION_NAME_LEN);
 			char *p = strchr (gameConfig.szLastMission, '\n');
 			if (p)
@@ -227,7 +227,7 @@ if (gameConfig.nRedbookVolume > 8)
 	gameConfig.nRedbookVolume = 8;
 audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32768) / 8, 1);
 audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
-if (cf.Open ("descentw.cfg", gameFolders.user.szConfig, "rb", 0)) {
+if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rb", 0)) {
 	while (!cf.EoF ()) {
 		memset (line, 0, 80);
 		cf.GetS (line, 80);
@@ -262,22 +262,22 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int32_t WriteConfigFile (bool bExitProgram)
+int WriteConfigFile (bool bExitProgram)
 {
 if (gameStates.app.bReadOnly)
 	return 0;
 
 	CFile cf;
 	char str [256];
-	int32_t i, j;
+	int i, j;
 	tJoyAxisCal cal [JOY_MAX_AXES];
-	uint8_t gamma = paletteManager.GetGamma ();
+	ubyte gamma = paletteManager.GetGamma ();
 
 console.printf (CON_VERBOSE, "writing config file ...\n");
 console.printf (CON_VERBOSE, "   getting joystick calibration values ...\n");
 JoyGetCalVals(cal, sizeofa (cal));
 
-if (!cf.Open ("descent.cfg", gameFolders.user.szConfig, "wt", 0))
+if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "wt", 0))
 	return 1;
 sprintf (str, "%s=%u\n", pszD2XVersion, D2X_IVER);
 cf.PutS (str);
@@ -295,8 +295,8 @@ sprintf (str, "%s=%d\n", pszStereoRev, gameConfig.bReverseChannels);
 cf.PutS (str);
 sprintf (str, "%s=%d\n", pszGammaLevel, gamma);
 cf.PutS (str);
-if (bExitProgram && (gameData.timeData.xGameTotal > 0) && (gameConfig.nTotalTime >= 0))
-	gameConfig.nTotalTime += gameData.timeData.xGameTotal / 60;
+if (bExitProgram && (gameData.time.xGameTotal > 0) && (gameConfig.nTotalTime >= 0))
+	gameConfig.nTotalTime += gameData.time.xGameTotal / 60;
 sprintf (str, "%s=%d\n", pszTotalGameTime, gameConfig.nTotalTime);
 cf.PutS (str);
 if (gameStates.app.nDetailLevel == NUM_DETAIL_LEVELS-1)

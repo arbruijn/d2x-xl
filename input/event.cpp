@@ -12,10 +12,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef FAST_EVENTPOLL
 # define TO_EVENT_POLL	11 //ms
 # if TO_EVENT_POLL
 #  include <time.h>
 # endif
+#endif
 
 #ifdef __macosx__
 # include <SDL/SDL.h>
@@ -34,9 +36,9 @@ extern void JoyHatHandler (SDL_JoyHatEvent *jhe);
 extern void JoyAxisHandler (SDL_JoyAxisEvent *jae);
 #endif
 
-static int32_t initialised=0;
+static int initialised=0;
 
-int32_t PollEvent (SDL_Event *event, uint32_t mask)
+int PollEvent (SDL_Event *event, ulong mask)
 {
 	SDL_PumpEvents();
 	/* We can't return -1, just return 0 (no event) on error */
@@ -44,7 +46,7 @@ int32_t PollEvent (SDL_Event *event, uint32_t mask)
 }
 
 
-void event_poll(uint32_t mask)
+void event_poll(ulong mask)
 {
 	SDL_Event event;
 #if TO_EVENT_POLL
@@ -95,7 +97,7 @@ while (SDL_PollEvent (&event)) {
 	}
 }
 
-int32_t event_init()
+int event_init()
 {
 	// We should now be active and responding to events.
 	initialised = 1;
