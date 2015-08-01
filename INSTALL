@@ -1,0 +1,57 @@
+Installation Instructions
+=========================
+
+
+1. Installing the game data
+---------------------------
+
+Game root folder: /usr/local/games/d2x-xl
+Game data: /usr/local/games/d2x-xl/data
+Missions: /usr/local/games/d2x-xl/missions
+Hires models: /usr/local/games/d2x-xl/models
+Hires textures: /usr/local/games/d2x-xl/textures
+Hires sounds: /usr/local/games/d2x-xl/sounds2
+Mods: /usr/local/games/d2x-xl/mods
+
+Configuration files: ~/.d2x-xl/config
+Player profiles (pilots): ~/.d2x-xl/profiles
+Save games: ~/.d2x-xl/savegames
+Screenshots: ~/.d2x-xl/screenshots
+Demos: ~/.d2x-xl/demos
+Temporary files: ~/.d2x-xl/cache
+
+
+2. Installing the program
+--------------------------
+
+2.1. Required packages
+
+You will need to have the following modules and their devel packages installed:
+
+SDL
+SDL_mixer
+SDL_image
+Mesa
+OpenMotif
+DirectFB
+
+It is recommended to download the SDL and SDL_mixer source code from 
+http://www.descent.de and to build and install SDL and SDL_mixer using these.
+This is safe as it mainly fixes bugs in these libraries.
+
+
+2.2. Building the program
+
+To build D2X-XL on Linux cd to the source root folder and invoke the following
+commands:
+
+sh ./autogen.sh
+chmod 0755 ./configure
+./configure --enable-release=yes --enabled-debug=no
+make
+
+
+2.3 Updates
+
+When updating the program, make sure to update the files from the latest D2X-XL
+data release (d2x-xl-data-<version>.rar).

@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/d2x-xl/!svn/ver/2035/trunk/network/linux/include
+END
+ipx_drv.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/d2x-xl/!svn/ver/2035/trunk/network/linux/include/ipx_drv.h
+END
+ipx_mcast4.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svnroot/d2x-xl/!svn/ver/1285/trunk/network/linux/include/ipx_mcast4.h
+END
+ipx_ld.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svnroot/d2x-xl/!svn/ver/2035/trunk/network/linux/include/ipx_ld.h
+END
+ipx_kali.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/d2x-xl/!svn/ver/1285/trunk/network/linux/include/ipx_kali.h
+END
+ipx_hlpr.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/d2x-xl/!svn/ver/1285/trunk/network/linux/include/ipx_hlpr.h
+END
+ukali.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svnroot/d2x-xl/!svn/ver/1907/trunk/network/linux/include/ukali.h
+END
+ipx_bsd.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/d2x-xl/!svn/ver/1285/trunk/network/linux/include/ipx_bsd.h
+END
+ipx_udp.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/d2x-xl/!svn/ver/1895/trunk/network/linux/include/ipx_udp.h
+END
