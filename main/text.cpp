@@ -26,12 +26,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "compbit.h"
 #include "cfile.h"
 
-#if DBG
-#	define DUMP_TEXTS 0
-#else
-#	define DUMP_TEXTS 0
-#endif
-
 #define SHAREWARE_TEXTSIZE  14677
 
 char *text;
@@ -2828,11 +2822,17 @@ return h;
 char **InitTexts (char *szTextFile, int32_t bInitHotKeys)
 {
 	int32_t	h, i, j, l, bHotKeys = 0;
-	char	k;
-	char	*pk, *pDest, *pSrc, **pszTexts;
-#if DUMP_TEXTS == 1
-	FILE	*fTxt = fopen (szTextFile);
-#endif
+	char		k;
+	char		*pk, *pDest, *pSrc, **pszTexts;
+	FILE		*fTxt;
+	
+	int32_t	bDumpTexts = ((i = FindArg ("-dumptexts"))) ? NumArg (i, 1) : 0;
+	char		szDumpFile [255];
+
+if (bDumpTexts == 1) {
+	sprintf (szDumpFile, "%s%s", gameFolders.var.szCache, szTextFile);
+	fTxt = fopen (szDumpFile, "wt");
+	}
 
 j = BASE_TEXT_COUNT + GameTextCount ();
 if (!(pszTexts = new char * [j + 1]))
@@ -2844,40 +2844,39 @@ if (!(*pszTexts = new char [h])) {
 	}
 for (i = 0; i < j; i++) {
 	pSrc = (i < BASE_TEXT_COUNT) ? const_cast<char*> (baseGameTexts [i][0]) : const_cast<char*> (defaultGameTexts [i - BASE_TEXT_COUNT][gameStates.app.bEnglish]);
-#if DUMP_TEXTS == 1
- {
-		char *pi, *pj, s [200];
+	if (bDumpTexts == 1) {
+ 		char *pi, *pj, s [10000];
 
-	Assert (sizeof (s) > strlen (ps));
-	strcpy (s, ps);
-	for (pi = pj = s; *pi; pi++) {
-		if (*pi == '\n') {
-			*pi = 0;
-			fprintf (fTxt, "%s\\n", pj);
-			pj = pi + 1;
+		if (sizeof (s) <= strlen (pSrc))
+			BRP;
+		strcpy (s, pSrc);
+		for (pi = pj = s; *pi; pi++) {
+			if (*pi == '\n') {
+				*pi = 0;
+				fprintf (fTxt, "%s\\n", pj);
+				pj = pi + 1;
+				}
+			else if (*pi == '\t') {
+				*pi = 0;
+				fprintf (fTxt, "%s\\t", pj);
+				pj = pi + 1;
+				}
+	/*
+			else if (*pi == '%') {
+				*pi = 0;
+				fprintf (fTxt, "%s%c", pj, '%');
+				pj = pi + 1;
+				}
+	*/
+			else if (*pi == '\\') {
+				*pi = 0;
+				fprintf (fTxt, "%s\\\\", pj);
+				pj = pi + 1;
+				}
 			}
-		else if (*pi == '\t') {
-			*pi = 0;
-			fprintf (fTxt, "%s\\t", pj);
-			pj = pi + 1;
-			}
-/*
-		else if (*pi == '%') {
-			*pi = 0;
-			fprintf (fTxt, "%s%c", pj, '%');
-			pj = pi + 1;
-			}
-*/
-		else if (*pi == '\\') {
-			*pi = 0;
-			fprintf (fTxt, "%s\\\\", pj);
-			pj = pi + 1;
-			}
+		fprintf (fTxt, "%s\n", pj);
+		fflush (fTxt);
 		}
-	fprintf (fTxt, "%s\n", pj);
-	fflush (fTxt);
-	}
-#endif
 
 	pDest = pszTexts [i] + 1;
 	if (!pSrc) {
@@ -2903,9 +2902,8 @@ for (i = 0; i < j; i++) {
 	pszTexts [i] = pDest;
 	pszTexts [i + 1] = pDest + l;
 	}
-#if DUMP_TEXTS == 1
-fclose (fTxt);
-#endif
+if (bDumpTexts == 1)
+	fclose (fTxt);
 if (bInitHotKeys && !bHotKeys && !gameStates.app.bEnglish && (gameOpts->menus.nHotKeys > 0))
 	gameOpts->menus.nHotKeys = -1;
 return pszTexts;
@@ -3015,7 +3013,7 @@ for (; *p; p++)
 
 //------------------------------------------------------------------------------
 
-void DumpGameText (FILE *fTxt, char *ps)
+void DumpGameText (FILE *fTxt, const char *ps)
 {
 char s [200], *pi, *pj;
 
@@ -3049,22 +3047,27 @@ fprintf (fTxt, "%s\n", pi);
 
 void LoadGameTexts (void)
 {
-#if DUMP_TEXTS == 2
-	FILE *fTxt = fopen (gameStates.app.bEnglish ? "e:\\temp\\descent.tex.e" : "e:\\temp\\descent.tex.g", "wt");
-#elif DUMP_TEXTS == 3
-	FILE *fTxt = fopen ("d:\\temp\\basetex.h", "wt");
-#endif
-	CFile	tFile;
-	CFile	iFile;
-	int32_t	len, h, i, j, bBinary = 0;
-	char	*psz;
 	const char	*filename = "descent.tex";
+	CFile			tFile;
+	CFile			iFile;
+	int32_t		len, h, i, j, bBinary = 0;
+	char			*psz;
 
-#if DUMP_TEXTS == 2
-for (i = 0; *GT (i); i++)
-	DumpGameText (fTxt, const_cast<char*>(GT (i)));
-fclose (fTxt);
-#endif
+	int32_t		bDumpTexts = ((i = FindArg ("-dumptexts"))) ? NumArg (i, 1) : 0;
+	char			szDumpFile [255];
+	FILE			*fTxt = NULL;
+
+if (bDumpTexts == 2) {
+	sprintf (szDumpFile, "%sdescent.tex.%s", gameFolders.var.szCache, gameStates.app.bEnglish ? "eng" : "ger");
+	fTxt = fopen (szDumpFile, "wt");
+	for (i = 0; *GT (i); i++)
+		DumpGameText (fTxt, const_cast<char*>(GT (i)));
+	}
+else if (bDumpTexts == 3) {
+	sprintf (szDumpFile, "%sbasetex.h", gameFolders.var.szCache);
+	fTxt = fopen (szDumpFile, "wt");
+	}
+
 if ((i = FindArg ("-text")))
 	filename = appConfig [i+1];
 if (!tFile.Open (filename, gameFolders.game.szData [0], "rb", 0)) {
@@ -3072,7 +3075,7 @@ if (!tFile.Open (filename, gameFolders.game.szData [0], "rb", 0)) {
 	if (!iFile.Open (filename, gameFolders.game.szData [0], "rb", 0)) {
 		Warning (TXT_NO_TEXTFILES);
 		return;
-	}
+		}
 	bBinary = 1;
 	len = (int32_t) iFile.Length ();
 	text = new char [len];
@@ -3087,20 +3090,11 @@ else {
 	len = (int32_t) tFile.Length ();
 	text = new char [len];
 	atexit (free_text);
-#if 1
 	tFile.Read (text, 1, len);
 	for (i = len, pi = pj = text; i; i--, pi++)
 		if (*pi != 13)
 			*pj++ = *pi;
 	len = (int32_t) (pj - text);
-#else
-	p = text;
-	do {
-		i = CFGetC (&tFile);
-		if (i != 13)
-			*p++ = coord;
-	} while (coord != EOF);
-#endif
 	tFile.Close ();
 	}
 
@@ -3110,9 +3104,8 @@ for (h = i = 0, psz = text; (i < j) && (psz - text < len); i++) {
 	if (!(psz = strchr (psz, '\n'))) {
 		if (i == 644)
 			break;    /* older datafiles */
-#if DUMP_TEXTS
-		fclose (fTxt);
-#endif
+		if (bDumpTexts)
+			fclose (fTxt);
 		if (gameStates.app.bEnglish)
 			Error ("Wrong number of strings in text file - expecting %d, found %d\n", BASE_TEXT_COUNT, i);
 		break;
@@ -3122,9 +3115,8 @@ for (h = i = 0, psz = text; (i < j) && (psz - text < len); i++) {
 		continue;
 	if (i < BASE_TEXT_COUNT) {
 		baseGameTexts [h][0] = ph;
-#if DUMP_TEXTS == 3
-		DumpGameText (fTxt, d2GameTexts [h][0]);
-#endif
+		if (bDumpTexts == 3)
+			DumpGameText (fTxt, d2GameTexts [h][0]);
 		}
 	else if (gameStates.app.bEnglish)
 		break;
@@ -3135,9 +3127,8 @@ for (h = i = 0, psz = text; (i < j) && (psz - text < len); i++) {
 	h++;
 	if (bBinary)
 		DecodeTextLine (ph);
-#if DUMP_TEXTS == 2
-	fprintf (fTxt, "%s\n", ph);
-#endif
+		if (bDumpTexts == 3)
+			fprintf (fTxt, "%s\n", ph);
 	SetupText (ph, filename, i);
 	}
 
@@ -3155,9 +3146,8 @@ if (i == 644) {
 	baseGameTexts [647][0] = const_cast<char*>("R1");
 	baseGameTexts [648][0] = const_cast<char*>("Y1");
 	}
-#if DUMP_TEXTS
-fclose (fTxt);
-#endif
+if (fTxt)
+	fclose (fTxt);
 InitGameTexts ();
 }
 

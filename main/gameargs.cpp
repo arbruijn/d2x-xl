@@ -497,8 +497,8 @@ if ((t = FindArg ("-auto_hogfile"))) {
 		strcat (szAutoHogFile, ".hog");
 	}
 if ((t = FindArg ("-auto_mission"))) {
-	char	c = *appConfig [++t];
-	int32_t		bDelim = ((c == '\'') || (c == '"'));
+	char		c = *appConfig [++t];
+	int32_t	bDelim = ((c == '\'') || (c == '"'));
 
 	strcpy (szAutoMission, &appConfig [t][bDelim]);
 	if (bDelim)
