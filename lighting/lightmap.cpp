@@ -874,6 +874,16 @@ if (nCalls)
 
 //------------------------------------------------------------------------------
 
+int32_t CLightmapManageR::MainThread (void)
+{
+for (int32_t i = 0; i < gameStates.app.nThreads; i++)
+	if (m_bActiveThreads [i])
+		return i;
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
 #if OPTIMIZED_THREADS
 
 //------------------------------------------------------------------------------
@@ -1069,7 +1079,7 @@ for (y = yMin; y < yMax; y++) {
 #if USE_OPENMP
 #	pragma omp critical (LightmapProgressUpdate)
 #endif
-	/*if (!nThread)*/ {
+	if (nThread == MainThread ()) {
 		if (m_progress.Timeout ().Expired ()) {
 			int32_t nKey = KeyInKey ();
 			if (nKey == KEY_ESC)
@@ -1213,6 +1223,7 @@ CreateSpecial (m_data [0].m_texColor, 1, 255);
 m_list.m_nLightmaps = 2;
 #if USE_OPENMP
 if (gameStates.app.nThreads > 1) {
+	memset (m_bActiveThreads, 0, sizeof (m_bActiveThreads));
 #if 0
 	for (int32_t i = 0; i < gameStates.app.nThreads; i++)
 		uniDacsRouter [i].Create (gameData.segData.nSegments);
@@ -1220,6 +1231,7 @@ if (gameStates.app.nThreads > 1) {
 #	pragma omp parallel 
 	{
 		int32_t nThread = omp_get_thread_num ();
+		m_bActiveThreads [nThread] = true;
 #	pragma omp for
 		for (int32_t nFace = 0; nFace < FACES.nFaces; nFace++) {
 			if (m_bSuccess) {
@@ -1230,6 +1242,7 @@ if (gameStates.app.nThreads > 1) {
 				CheckProgressMenu (nThread);
 				}
 			}
+		m_bActiveThreads [nThread] = false;
 		}
 	}
 else

@@ -155,6 +155,7 @@ class CLightmapProgress {
 class CLightmapManager {
 	private:
 		CLightmapData		m_data [MAX_THREADS];
+		bool					m_bActiveThreads [MAX_THREADS];
 		CLightmapList		m_list;
 		CLightmapProgress	m_progress;
 		int32_t				m_bSuccess;
@@ -195,6 +196,7 @@ class CLightmapManager {
 		char* Filename (char *pszFilename, int32_t nLevel);
 		void Blur (CSegFace* pFace, CLightmapFaceData& source, CLightmapFaceData& dest, int32_t direction);
 		void Blur (CSegFace* pFace, CLightmapFaceData& source);
+		int32_t MainThread (void);
 
 		static int32_t CompareFaces (const tSegFacePtr* pf, const tSegFacePtr* pm);
 	};
