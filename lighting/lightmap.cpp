@@ -874,7 +874,7 @@ if (nCalls)
 
 //------------------------------------------------------------------------------
 
-int32_t CLightmapManageR::MainThread (void)
+int32_t CLightmapManager::MainThread (void)
 {
 for (int32_t i = 0; i < gameStates.app.nThreads; i++)
 	if (m_bActiveThreads [i])
