@@ -146,13 +146,14 @@ if (m_pLevelCount) {
 m_pLevelProgress->Value () = 0;
 m_pLevelProgress->MaxValue () = FACES.nFaces;
 m_nLocalProgress = 0; 
+Timeout ().Start (33);
 }
 
 //------------------------------------------------------------------------------
 
 void CLightmapProgress::Render (int32_t nThread)
 {
-if (m_pProgressMenu && !nThread) {
+if (m_pProgressMenu /*&& !nThread*/) {
 	//Lock ();
 	m_pProgressMenu->Render (m_pProgressMenu->Title (), m_pProgressMenu->SubTitle ());
 	//Unlock ();
@@ -1069,8 +1070,7 @@ for (y = yMin; y < yMax; y++) {
 #	pragma omp critical (LightmapProgressUpdate)
 #endif
 	/*if (!nThread)*/ {
-		static CTimeout to (33);
-		if (to.Expired ()) {
+		if (m_progress.Timeout ().Expired ()) {
 			int32_t nKey = KeyInKey ();
 			if (nKey == KEY_ESC)
 				m_bSuccess = 0;

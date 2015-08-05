@@ -120,6 +120,7 @@ class CLightmapProgress {
 		int32_t		m_tStart;
 		int32_t		m_nSkipped;
 		bool			m_bActive;
+		CTimeout		m_to;
 
 	public:
 		CLightmapProgress ();
@@ -135,6 +136,7 @@ class CLightmapProgress {
 		inline CMenuItem *LevelProgress (void) { return m_pProgressMenu ? m_pLevelProgress : NULL; }
 		inline CMenuItem *LevelCount (void) { return m_pProgressMenu ? m_pLevelCount : NULL; }
 		inline CMenuItem *Time (void) { return m_pProgressMenu ? m_pTime : NULL; }
+		inline CTimeout & Timeout (void) { return m_to; }
 
 		inline void Lock (void) { 
 			if (m_pLock)
