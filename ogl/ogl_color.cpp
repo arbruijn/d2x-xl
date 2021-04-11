@@ -10,7 +10,10 @@
 #endif
 
 #ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #	include <stddef.h>
 #	include <io.h>
 #endif

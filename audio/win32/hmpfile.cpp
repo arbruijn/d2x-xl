@@ -22,7 +22,7 @@ hmp_file *hmp_open(const char *filename, int32_t bUseD1Hog)
 
 	if (!cf.Open (const_cast<char*> (filename), gameFolders.game.szData [0], "rb", bUseD1Hog))
 		return NULL;
-	hmp = new hmp_file;
+	hmp = NEW hmp_file;
 	if (!hmp) {
 		cf.Close ();
 		return NULL;
@@ -54,7 +54,7 @@ hmp_file *hmp_open(const char *filename, int32_t bUseD1Hog)
 		    data += sizeof(hmp_tempo);
 #endif
 		hmp->trks [i].len = data;
-		if (!(p = hmp->trks [i].data = new uint8_t [data]))
+		if (!(p = hmp->trks [i].data = NEW uint8_t [data]))
 			goto err;
 #if 0
 		if (i == 0) { /* track 0: add tempo */
@@ -279,7 +279,7 @@ static int32_t setup_buffers(hmp_file *hmp)
 
 	lastbuf = NULL;
 	for (i = 0; i < HMP_BUFFERS; i++) {
-		if (!(buf = reinterpret_cast<MIDIHDR*> (new uint8_t [HMP_BUFSIZE + sizeof(MIDIHDR)])))
+		if (!(buf = reinterpret_cast<MIDIHDR*> (NEW uint8_t [HMP_BUFSIZE + sizeof(MIDIHDR)])))
 			return HMP_OUT_OF_MEM;
 		memset (buf, 0, sizeof (MIDIHDR));
 		buf->lpData = reinterpret_cast<char*> (buf + 1);

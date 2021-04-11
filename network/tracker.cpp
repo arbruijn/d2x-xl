@@ -7,7 +7,10 @@
 
 #include  <string.h>
 #ifdef _WIN32
-#	include <winsock.h>
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <WinSock.h>
+#	pragma pack(pop)
 #else
 #	include <sys/socket.h>
 #endif
@@ -237,7 +240,7 @@ if (trackerList.nServers >= MAX_TRACKER_SERVERS)
 	return -1;
 if (0 < (i = Find (addr)))
 	return i;
-if (!(pslt = new tServerListTable))
+if (!(pslt = NEW tServerListTable))
 	return -1;
 memset (pslt, 0, sizeof (*pslt));
 pslt->nextList = serverListTable;

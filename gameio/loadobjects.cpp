@@ -409,6 +409,7 @@ static int32_t ReadWallInfo (CFile& cf)
 if (gameFileInfo.walls.count && (gameFileInfo.walls.offset > -1)) {
 	int32_t	i;
 
+	gameData.wallData.walls.SetName ("gameData.wallData.walls");
 	if (!gameData.wallData.walls.Resize (gameFileInfo.walls.count)) {
 		Error ("Not enough memory for wall data\n");
 		return -1;
@@ -828,6 +829,7 @@ gameData.renderData.lights.nStatic = 0;
 if ((gameFileInfo.lightDeltaIndices.offset > -1) && gameFileInfo.lightDeltaIndices.count) {
 	int32_t	i;
 
+	gameData.renderData.lights.deltaIndices.SetName ("gameData.renderData.lights.deltaIndices");
 	if (!gameData.renderData.lights.deltaIndices.Resize (gameFileInfo.lightDeltaIndices.count)) {
 		Error ("Not enough memory for light delta index data");
 		return -1;
@@ -864,6 +866,7 @@ if ((gameFileInfo.lightDeltas.offset > -1) && gameFileInfo.lightDeltas.count) {
 #if TRACE
 	console.printf(CON_DBG, "   loading light data ...\n");
 #endif
+	gameData.renderData.lights.deltas.SetName ("gameData.renderData.lights.deltas");
 	if (!gameData.renderData.lights.deltas.Resize (gameFileInfo.lightDeltas.count)) {
 		Error ("Not enough memory for light delta data");
 		return -1;

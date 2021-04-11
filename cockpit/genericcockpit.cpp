@@ -142,7 +142,7 @@ m_history [0].Init ();
 m_history [1].Init ();
 m_info.Init ();
 if (!m_save.Buffer ())
-	m_save.Create (3);
+	m_save.Create (3, "CGenericCockpit::m_save");
 }
 
 //	-----------------------------------------------------------------------------

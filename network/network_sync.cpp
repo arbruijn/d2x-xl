@@ -38,10 +38,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "console.h"
 
+#ifdef WIN32
+#	define ZLIB_WINAPI
+#endif
+
+#include "zlib.h"
+
+#ifdef WIN32
+#	undef ZLIB_WINAPI
+#endif
+
 #if DBG
-#	define OBJ_PACKETS_PER_FRAME 1
+#	define OBJ_PACKETS_PER_FRAME 4
 #else
-#	define OBJ_PACKETS_PER_FRAME 1
+#	define OBJ_PACKETS_PER_FRAME 4
 #endif
 
 //------------------------------------------------------------------------------
@@ -111,104 +121,120 @@ uint8_t objBuf [MAX_PACKET_SIZE];
 
 void NetworkSyncObjects (tNetworkSyncInfo *pSyncInfo)
 {
-	int32_t		bufI, nLocalObj, nPacketsLeft;
+	int32_t		bufI, nLocalObj;
 	int32_t		nObjFrames = 0;
 	int32_t		nPlayer = pSyncInfo->player [1].player.connected;
+	uint8_t		compressedBuffer [sizeof (tBaseObject)];
 	
 pSyncInfo->bDeferredSync = networkThread.SendInBackground ();
 
 // Send clear OBJECTS array CTrigger and send player num
 objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
-for (nPacketsLeft = OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
-	nObjFrames = 0;
-	memset (objBuf, 0, MAX_PAYLOAD_SIZE);
-	objBuf [0] = PID_OBJECT_DATA;
-	bufI = (gameStates.multi.nGameType == UDP_GAME) ? 4 : 3;
+nObjFrames = 0;
+memset (objBuf, 0, MAX_PAYLOAD_SIZE);
+objBuf [0] = PID_OBJECT_DATA;
+bufI = (gameStates.multi.nGameType == UDP_GAME) ? 4 : 3;
 
-	if (pSyncInfo->objs.nCurrent == -1) {	// first packet tells the receiver to reset it's object data
-		pSyncInfo->objs.nSent = 0;
-		pSyncInfo->objs.nMode = 0;
-		pSyncInfo->objs.nFrame = 0;
-		if (!pSyncInfo->objs.nFramesToSkip) {
-			//NetworkSendRejoinSync (nPlayer, pSyncInfo);
-			NW_SET_SHORT (objBuf, bufI, -1);		// object number -1          
-			NW_SET_BYTE (objBuf, bufI, nPlayer);                            
-			NW_SET_SHORT (objBuf, bufI, -1);		// Placeholder for nRemoteObj, not used here
-			}
-		pSyncInfo->objs.nCurrent = 0;
-		nObjFrames = 1;		// first frame contains "reset object data" info
+if (pSyncInfo->objs.nCurrent == -1) {	// first packet tells the receiver to reset its object data
+	pSyncInfo->objs.nSent = 0;
+	pSyncInfo->objs.nMode = 0;
+	pSyncInfo->objs.nFrame = 0;
+	if (!pSyncInfo->objs.nFramesToSkip) {
+		//NetworkSendRejoinSync (nPlayer, pSyncInfo);
+		NW_SET_SHORT (objBuf, bufI, -1);		// object number -1          
+		NW_SET_BYTE (objBuf, bufI, nPlayer);                            
+		NW_SET_SHORT (objBuf, bufI, -1);		// Placeholder for nRemoteObj, not used here
 		}
+	pSyncInfo->objs.nCurrent = 0;
+	nObjFrames = 1;		// first frame contains "reset object data" info
+	}
 
-	for (nLocalObj = pSyncInfo->objs.nCurrent; nLocalObj <= gameData.objData.nLastObject [0]; nLocalObj++) {
-		if (SendObject (pSyncInfo->objs.nMode, nLocalObj, nPlayer)) {
-			if ((MAX_PAYLOAD_SIZE - bufI - 1) < int32_t (sizeof (tBaseObject)) + 5)
-				break; // Not enough room for another CObject
-			int8_t	nObjOwner;
-			int16_t	nRemoteObj = GetRemoteObjNum (int16_t (nLocalObj), nObjOwner);
+for (nLocalObj = pSyncInfo->objs.nCurrent; nLocalObj <= gameData.objData.nLastObject [0]; nLocalObj++) {
+	if (SendObject (pSyncInfo->objs.nMode, nLocalObj, nPlayer)) {
+		int8_t	nObjOwner;
+		int16_t	nRemoteObj = GetRemoteObjNum (int16_t (nLocalObj), nObjOwner);
+
+		uLongf nCompressedSize = sizeof (tBaseObject);
+		if ((compress (compressedBuffer, &nCompressedSize, (uint8_t*) &OBJECT (nLocalObj)->info, sizeof (tBaseObject)) == Z_OK) && (nCompressedSize < sizeof (tBaseObject))) {
+			if ((MAX_PAYLOAD_SIZE - bufI - 1) < int32_t (nCompressedSize) + 6)
+				break; // Not enough room for another object
 			NW_SET_SHORT (objBuf, bufI, nLocalObj);      
 			NW_SET_BYTE (objBuf, bufI, nObjOwner);                                 
 			NW_SET_SHORT (objBuf, bufI, nRemoteObj); 
-			NW_SET_BYTES (objBuf, bufI, &OBJECT (nLocalObj)->info, sizeof (tBaseObject));
-#if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
-			if (gameStates.multi.nGameType >= IPX_GAME)
-				SwapObject (reinterpret_cast<CObject*> (objBuf + bufI - sizeof (tBaseObject)));
-#endif
-			nObjFrames++;
-			pSyncInfo->objs.nSent++;
-			}
-		}
-
-	if (nObjFrames) {	// Send any objects we've buffered
-		pSyncInfo->objs.nCurrent = nLocalObj;	
-		//if (NetworkObjFrameFilter (pSyncInfo)) { // this statement skips any objects successfully sync'd in case the client has reported missing frames
-		if (++pSyncInfo->objs.nFrame > pSyncInfo->objs.nFramesToSkip) {
-			objBuf [1] = nObjFrames;  
-			if (gameStates.multi.nGameType == UDP_GAME)
-				*reinterpret_cast<int16_t*> (objBuf + 2) = INTEL_SHORT (pSyncInfo->objs.nFrame);
-			else
-				objBuf [2] = (uint8_t) pSyncInfo->objs.nFrame;
-			Assert (bufI <= MAX_PAYLOAD_SIZE);
-			if (gameStates.multi.nGameType >= IPX_GAME) {
-				if (!pSyncInfo->bDeferredSync)
-					IPXSendInternetPacketData (objBuf, bufI, pSyncInfo->player [1].player.network.Network (), pSyncInfo->player [1].player.network.Node ());
-				else if (!networkThread.Send (objBuf, bufI, pSyncInfo->player [1].player.network.Network (), pSyncInfo->player [1].player.network.Node ())) {
-					pSyncInfo->bDeferredSync = false;
-					nPacketsLeft = OBJ_PACKETS_PER_FRAME;
-					pSyncInfo->objs.nCurrent = -1;
-					break;
-					}
-				}	
-			}
-		}
-
-	if (pSyncInfo->objs.nCurrent < 0)
-		continue;
-
-	if (nLocalObj > gameData.objData.nLastObject [0]) {
-		if (pSyncInfo->objs.nMode) { // need to send the finishing object data
-			pSyncInfo->objs.nCurrent = nLocalObj;
-			// Send count so other side can make sure he got them all
-			objBuf [0] = PID_OBJECT_DATA;
-			objBuf [1] = 1;
-			pSyncInfo->objs.nFrame++;
-			if (gameStates.multi.nGameType == UDP_GAME) {
-				bufI = 2;
-				NW_SET_SHORT (objBuf, bufI, pSyncInfo->objs.nFrame); 
-				}
-			else {
-				objBuf [2] = (uint8_t) pSyncInfo->objs.nFrame;
-				bufI = 3;
-				}
-			NW_SET_SHORT (objBuf, bufI, -2);
-			NW_SET_BYTE (objBuf, bufI, -1);                                 
-			NW_SET_SHORT (objBuf, bufI, pSyncInfo->objs.nSent);
-			pSyncInfo->nState = 2;
+			NW_SET_BYTE (objBuf, bufI, nCompressedSize);
+			NW_SET_BYTES (objBuf, bufI, compressedBuffer, nCompressedSize);
 			}
 		else {
-			pSyncInfo->objs.nCurrent = 0;
-			pSyncInfo->objs.nMode = 1; // go to next mode
+			if ((MAX_PAYLOAD_SIZE - bufI - 1) < int32_t (sizeof (tBaseObject)) + 6)
+				break; // Not enough room for another object
+			NW_SET_SHORT (objBuf, bufI, nLocalObj);      
+			NW_SET_BYTE (objBuf, bufI, nObjOwner);                                 
+			NW_SET_SHORT (objBuf, bufI, nRemoteObj); 
+			NW_SET_BYTE (objBuf, bufI, sizeof (tBaseObject));
+			NW_SET_BYTES (objBuf, bufI, &OBJECT (nLocalObj)->info, sizeof (tBaseObject));
 			}
-		break;
+
+#if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
+		if (gameStates.multi.nGameType >= IPX_GAME)
+			SwapObject (reinterpret_cast<CObject*> (objBuf + bufI - sizeof (tBaseObject)));
+#endif
+		nObjFrames++;
+		pSyncInfo->objs.nSent++;
+		}
+	}
+
+if (nObjFrames) {	// Send any objects we've buffered
+	pSyncInfo->objs.nCurrent = nLocalObj;	
+	//if (NetworkObjFrameFilter (pSyncInfo)) { // this statement skips any objects successfully sync'd in case the client has reported missing frames
+	if (++pSyncInfo->objs.nFrame > pSyncInfo->objs.nFramesToSkip) {
+		objBuf [1] = nObjFrames;  
+		if (gameStates.multi.nGameType == UDP_GAME)
+			*reinterpret_cast<int16_t*> (objBuf + 2) = INTEL_SHORT (pSyncInfo->objs.nFrame);
+		else
+			objBuf [2] = (uint8_t) pSyncInfo->objs.nFrame;
+		Assert (bufI <= MAX_PAYLOAD_SIZE);
+		if (gameStates.multi.nGameType >= IPX_GAME) {
+#if 0
+			IPXSendInternetPacketData (objBuf, bufI, pSyncInfo->player [1].player.network.Network (), pSyncInfo->player [1].player.network.Node ());
+#else
+			if (!pSyncInfo->bDeferredSync)
+				IPXSendInternetPacketData (objBuf, bufI, pSyncInfo->player [1].player.network.Network (), pSyncInfo->player [1].player.network.Node ());
+			else if (!networkThread.Send (objBuf, bufI, pSyncInfo->player [1].player.network.Network (), pSyncInfo->player [1].player.network.Node ())) {
+				pSyncInfo->bDeferredSync = false;
+				pSyncInfo->objs.nCurrent = -1;
+				return;
+				}
+#endif
+			}	
+		}
+	}
+
+if (pSyncInfo->objs.nCurrent < 0)
+	return;
+
+if (nLocalObj > gameData.objData.nLastObject [0]) {
+	if (pSyncInfo->objs.nMode) { // need to send the finishing object data
+		pSyncInfo->objs.nCurrent = nLocalObj;
+		// Send count so other side can make sure he got them all
+		objBuf [0] = PID_OBJECT_DATA;
+		objBuf [1] = 1;
+		pSyncInfo->objs.nFrame++;
+		if (gameStates.multi.nGameType == UDP_GAME) {
+			bufI = 2;
+			NW_SET_SHORT (objBuf, bufI, pSyncInfo->objs.nFrame); 
+			}
+		else {
+			objBuf [2] = (uint8_t) pSyncInfo->objs.nFrame;
+			bufI = 3;
+			}
+		NW_SET_SHORT (objBuf, bufI, -2);
+		NW_SET_BYTE (objBuf, bufI, -1);                                 
+		NW_SET_SHORT (objBuf, bufI, pSyncInfo->objs.nSent);
+		pSyncInfo->nState = 2;
+		}
+	else {
+		pSyncInfo->objs.nCurrent = 0;
+		pSyncInfo->objs.nMode = 1; // go to next mode
 		}
 	}
 }
@@ -281,12 +307,12 @@ pSyncInfo->nExtras++;
 
 void NetworkSyncConnection (tNetworkSyncInfo *pSyncInfo)
 {
-#if 1
+#if 0
 	time_t	t = (time_t) SDL_GetTicks ();
 
 if (t < pSyncInfo->timeout)
 	return;
-pSyncInfo->timeout = t + 100 / Clamp (MinPPS (), (int16_t) MIN_PPS, (int16_t) DEFAULT_PPS);
+pSyncInfo->timeout = t + 50; // 20 PPS -- 100 / Clamp (MinPPS (), (int16_t) MIN_PPS, (int16_t) DEFAULT_PPS);
 #endif
 if (pSyncInfo->bExtraGameInfo) {
 	NetworkSendExtraGameInfo (&pSyncInfo->player [0]);
@@ -297,7 +323,8 @@ if (pSyncInfo->bAllowedPowerups) {
 	pSyncInfo->bAllowedPowerups = false;
 	}
 else if (pSyncInfo->nState == 1) {
-	NetworkSyncObjects (pSyncInfo);
+	for (int32_t nPacketsLeft = OBJ_PACKETS_PER_FRAME; nPacketsLeft && (pSyncInfo->nState == 1); nPacketsLeft--) 
+		NetworkSyncObjects (pSyncInfo);
 	pSyncInfo->bExtraGameInfo = false;
 	pSyncInfo->bAllowedPowerups = false;
 	}
@@ -325,6 +352,30 @@ void NetworkDoSyncFrame (void)
 for (int16_t i = 0; i < networkData.nJoining; i++)
 	NetworkSyncConnection (networkData.syncInfo + i);
 }
+
+//------------------------------------------------------------------------------
+
+CPlayerSynchronizer playerSynchronizer;
+int nSyncLoops = 0;
+int nSyncFrames = 0;
+
+int _CDECL_ NetworkSyncThread (void *pThreadId)
+{
+#if 0
+for (;;) {
+	if (playerSynchronizer.Run ()) {
+		++nSyncLoops;
+		while (playerSynchronizer.Run ()) {
+			NetworkDoSyncFrame ();
+			++nSyncFrames;
+			}
+		}
+	G3_SLEEP (0);
+	}
+#endif
+return 0;
+}
+
 
 //------------------------------------------------------------------------------
 

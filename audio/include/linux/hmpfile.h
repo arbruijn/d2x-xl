@@ -2,7 +2,10 @@
 #define _HMPFILE_H
 
 #ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #	include <mmsystem.h>
 #endif
 

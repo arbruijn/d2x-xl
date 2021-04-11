@@ -174,7 +174,7 @@ if (!nFired) {
 		OBJECT (nLightObj)->Die ();
 	return 0;
 	}
-postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), I2X (1) / 3, pObj->info.xSize, 1, 
+postProcessManager.Add (NEW CPostEffectShockwave (SDL_GetTicks (), I2X (1) / 3, pObj->info.xSize, 1, 
 																  OBJPOS (pObj)->vPos + OBJPOS (pObj)->mOrient.m.dir.f * pObj->info.xSize, pObj->Index ()));
 vForce.v.coord.x = -(pObj->info.position.mOrient.m.dir.f.v.coord.x << 7);
 vForce.v.coord.y = -(pObj->info.position.mOrient.m.dir.f.v.coord.y << 7);

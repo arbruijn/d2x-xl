@@ -412,7 +412,7 @@ int32_t CSegmentData::FindEdge (int16_t nVertex1, int16_t nVertex2, int32_t nSta
 
 for (int32_t i = nStart; i < nEdges; i++, pEdge++)
 	if ((pEdge->m_nVertices [0] == nVertex1) && (pEdge->m_nVertices [1] == nVertex2))
-		return i;
+		return (CFixVector::Dist (VERTICES [nVertex1], VERTICES [nVertex2]) > 0) ? i : -1;
 return -1;
 }
 
@@ -496,8 +496,13 @@ return 0;
 int32_t CSegmentData::CreateEdgeBuffers (int32_t nLength)
 {
 for (int32_t i = 0; i < 2; i++) {
+	char szLabel [80];
+	sprintf (szLabel, "gameData.segData.edgeVertexData [%d].m_vertices", i);
+	gameData.segData.edgeVertexData [i].m_vertices.SetName (szLabel);
 	if ((gameData.segData.edgeVertexData [i].m_vertices.Length () < uint32_t (nLength)) && !gameData.segData.edgeVertexData [i].m_vertices.Resize (nLength, false))
 		return 0;
+	sprintf (szLabel, "gameData.segData.edgeVertexData [%d].m_dists", i);
+	gameData.segData.edgeVertexData [i].m_dists.SetName (szLabel);
 	if ((gameData.segData.edgeVertexData [i].m_dists.Length () < uint32_t (nLength)) && !gameData.segData.edgeVertexData [i].m_dists.Resize (nLength, false))
 		return 0;
 	}
@@ -508,7 +513,7 @@ return 1;
 
 int32_t CSegmentData::BuildEdgeList (void)
 {
-if (!gameData.segData.edges.Create (CountEdges ()))
+if (!gameData.segData.edges.Create (CountEdges (), "gameData.segData.edges"))
 	return -1;
 
 CSegment	*pSeg = gameData.Segment (0);
@@ -541,7 +546,7 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, pSeg++) {
 		}
 	}
 #if POLYGONAL_OUTLINE
-if (!gameData.segData.edgeVertices.Create (gameData.segData.nEdges * (bPolygonalOutline ? 8 : 4)))
+if (!gameData.segData.edgeVertices.Create (gameData.segData.nEdges * (bPolygonalOutline ? 8 : 4), "gameData.segData.edgeVertices"))
 #else
 if (!CreateEdgeBuffers (gameData.segData.nEdges * 2))
 #endif

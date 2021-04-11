@@ -36,12 +36,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_mem.h"
 #include "text.h"
 
-uint nCurAllocd = 0;
-uint nMaxAllocd = 0;
+size_t nCurAllocd = 0;
+size_t nMaxAllocd = 0;
 
 #if DBG_MALLOC
 #	define FULL_MEM_CHECKING 1
-#	define LONG_MEM_ID 1
+#	define LONG_MEM_ID 0
 #	define MEMSTATS 0
 #else
 #	define FULL_MEM_CHECKING 0
@@ -54,75 +54,216 @@ uint nMaxAllocd = 0;
 
 #define MEM_MAX_INDEX 1000000
 
-static void *pMallocBase [MEM_MAX_INDEX];
-static uint nMallocSize [MEM_MAX_INDEX];
-static ubyte bPresent [MEM_MAX_INDEX];
-static char * szFilename [MEM_MAX_INDEX];
-static char * szVarname [MEM_MAX_INDEX];
-static int nLineNum [MEM_MAX_INDEX];
-static int nId [MEM_MAX_INDEX];
-static int nBytesMalloced = 0;
+static void *	pMallocBase [MEM_MAX_INDEX];
+static size_t	nMallocSize [MEM_MAX_INDEX];
+static uint8_t bPresent [MEM_MAX_INDEX];
+static char *	szFilename [MEM_MAX_INDEX];
+static char *	szVarname [MEM_MAX_INDEX];
+static int32_t nLineNum [MEM_MAX_INDEX];
+static int32_t nId [MEM_MAX_INDEX];
+static size_t	nBytesMalloced = 0;
+static bool		bTrackMemory = true;
 
-static int nFreeList [MEM_MAX_INDEX];
-static int iFreeList = 0;
-static int bMemInitialized = 0;
-static int nLargestIndex = 0;
-static int nMemId = 0;
-int bOutOfMemory = 0;
+//static int32_t nFreeList [MEM_MAX_INDEX];
+//static int32_t iFreeList = 0;
+static int32_t bMemInitialized = 0;
+static int32_t nLargestIndex = 0;
+static int32_t nMemId = 0;
+int32_t bOutOfMemory = 0;
 
 //------------------------------------------------------------------------------
 
 typedef struct tMemBlock {
-	void			*p;
-	const char	*pszFile;
-	int			nLine;
-	uint			nId;
+	public:
+		int32_t		nNext;
+		void			*p;
+		size_t		size;
+		size_t		nId;
+		int32_t		nLine;
+		const char	*pszFile;
+
 } tMemBlock;
 
 #define MAX_MEM_BLOCKS	100000
 
 tMemBlock	memBlocks [MAX_MEM_BLOCKS];
-int nMemBlocks = 0;
-uint nMemBlockId = 0;
-uint nDbgMemBlockId = 0xffffffff;
+int32_t		nMemBlockIndex [MAX_MEM_BLOCKS];
+int32_t		nFreeList = 0;
+int32_t		nUsedList = -1;
+int32_t		nMemBlocks = 0;
+size_t		nMemBlockId = 0;
+int32_t		nDbgMemBlock = -1;
+size_t		nDbgMemBlockId = 0xffffffff;
 
 //------------------------------------------------------------------------------
 
-int FindMemBlock (void *p)
+void CheckMemBlock (void)
 {
-	int			i;
-	tMemBlock	*pm;
+if (memBlocks [6325].pszFile && (memBlocks [6325].pszFile [0] != '.'))
+	BRP;
+}
 
-for (i = nMemBlocks, pm = memBlocks; i; i--, pm++)
-	if (pm->p == p)
-		return (int) (pm - memBlocks);
+//------------------------------------------------------------------------------
+
+bool CheckMemBlockName (const char* pszName)
+{
+if (((pszName [0] < 'A') || (pszName [0] > 'Z')) &&
+	 ((pszName [0] < 'a') || (pszName [0] > 'z')) &&
+	 ((pszName [0] < '0') || (pszName [0] > '9')) &&
+	 (pszName [0] != '.') && (pszName [0] != '\\') && (pszName [0] != '\0'))
+	return false;
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+void CheckMemBlocks (void)
+{
+if (nUsedList >= 0) {
+	for (int32_t i = nUsedList; i > -1; i = memBlocks [i].nNext) {
+		if (i >= sizeofa (memBlocks))
+			BRP;
+		if (!CheckMemBlockName (memBlocks [i].pszFile))
+			BRP;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void LogMemBlocks (bool bCleanup)
+{
+#if DBG_MALLOC
+if (!bMemInitialized) 
+	return;
+
+if (nUsedList >= 0) {
+	int32_t j = 0;
+	for (int32_t i = nUsedList; i > -1; i = memBlocks [i].nNext) {
+		if (i >= sizeofa (memBlocks))
+			BRP;
+		if (!CheckMemBlockName (memBlocks [i].pszFile))
+			BRP;
+		else
+			nMemBlockIndex [j++] = i;
+		}
+
+	PrintLog (0, "\nMEMORY BLOCKS ALLOCATED:\n");
+	size_t nTotal = 0;
+	while (j) {
+		int32_t i = nMemBlockIndex [--j];
+		if (memBlocks [i].nLine)
+			PrintLog (0, "<%05d> [%9d] %s:%d\n", i, memBlocks [i].size, memBlocks [i].pszFile, memBlocks [i].nLine);
+		else
+			PrintLog (0, "<%05d> [%9d] %s\n", i, memBlocks [i].size, memBlocks [i].pszFile);
+		nTotal += memBlocks [i].size;
+		}
+	PrintLog (0, "\nTOTAL: %d bytes\n\n", nTotal);
+#if 1
+	if (bCleanup) {
+		bool b = TrackMemory (false);
+		for (int32_t i = nUsedList; i > -1; i = memBlocks [i].nNext)
+			MemFree (memBlocks [i].p);
+		TrackMemory (b);
+		bMemInitialized = 0;
+		}
+#endif
+	}
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void _CDECL_ CleanupMemBlocks (void)
+{
+#if DBG_MALLOC
+LogMemBlocks (true);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+int32_t FindMemBlock (void *p, int32_t &j)
+{
+j = -1;
+for (int32_t i = nUsedList; i >= 0; i = memBlocks [i].nNext) {
+	if (memBlocks [i].p == p) {
+		if (i == nDbgMemBlock)
+			BRP;
+		return i;
+		}
+	j = i;
+	}
 return -1;
 }
 
 //------------------------------------------------------------------------------
 
-void RegisterMemBlock (void *p, const char *pszFile, int nLine)
+void RegisterMemBlock (void *p, size_t size, const char *pszFile, int32_t nLine)
 {
-if (nMemBlocks < MAX_MEM_BLOCKS) {
-	tMemBlock *pm = memBlocks + nMemBlocks++;
+if (!bTrackMemory)
+	return;
+#if USE_OPENMP
+#pragma omp critical (RegisterMemBlock)
+	{
+#endif
+if (nFreeList > -1) {
+	if (!pszFile)
+		BRP;
+	if (!*pszFile)
+		BRP;
+	if (!CheckMemBlockName (pszFile))
+		BRP;
+	int32_t i = nFreeList;
+	nFreeList = memBlocks [nFreeList].nNext;
+	memBlocks [i].nNext = nUsedList;
+	nUsedList = i;
+
 	if (nMemBlockId == nDbgMemBlockId)
-		pm = pm;
-	pm->p = p;
-	pm->pszFile = pszFile;
-	pm->nLine = nLine;
-	pm->nId = nMemBlockId++;
+		BRP;
+	if (i == nDbgMemBlock)
+		BRP;
+	memBlocks [i].p = p;
+	memBlocks [i].size = size;
+	memBlocks [i].pszFile = pszFile;
+	memBlocks [i].nLine = nLine;
+	memBlocks [i].nId = nMemBlockId++;
+	++nMemBlocks;
 	}	
+#if USE_OPENMP
+}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
-int UnregisterMemBlock (void *p)
+int32_t UnregisterMemBlock (void *p)
 {
-	int	i = FindMemBlock (p);
+	int32_t i, j;
 
-if ((i >= 0) && (i < --nMemBlocks))
-	memBlocks [i] = memBlocks [nMemBlocks];
+#if USE_OPENMP
+#pragma omp critical (UnregisterMemBlock)
+	{
+#endif
+i = FindMemBlock (p, j);
+if (i >= 0) {
+	if (j < 0)
+		nUsedList = memBlocks [i].nNext;
+	else
+		memBlocks [j].nNext = memBlocks [i].nNext;
+	memBlocks [i].nNext = nFreeList;
+	nFreeList = i;
+	memBlocks [nFreeList].pszFile = "";
+	memBlocks [nFreeList].nLine = -1;
+	--nMemBlocks;
+	if (nMemBlocks < 0)
+		BRP;
+	CheckMemBlocks ();
+	}
+#if USE_OPENMP
+}
 return i;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -132,62 +273,51 @@ return i;
 void MemInit ()
 {
 if (!bMemInitialized) {
-	atexit (MemDisplayBlocks);
+	atexit (CleanupMemBlocks);
+	for (int32_t i = 0; i < MAX_MEM_BLOCKS; i++) {
+		memBlocks [i].nId = -1;
+		memBlocks [i].nLine = -1;
+		memBlocks [i].pszFile = "";
+		memBlocks [i].p = NULL;
+		memBlocks [i].nNext = i + 1;
+		}
+	memBlocks [MAX_MEM_BLOCKS - 1].nNext = -1;
+	bMemInitialized = 1;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void PrintInfo (int id)
+void PrintInfo (int32_t id)
 {
-PrintLog ("\tBlock '%s' created in %s, nLine %d.\n",
+PrintLog (0, "\tBlock '%s' created in %s, nLine %d.\n",
 			szVarname [id], szFilename [id], nLineNum [id]);
 }
 
 //------------------------------------------------------------------------------
 
-int MemCheckIntegrity (void *buffer)
+int32_t MemCheckIntegrity (void *buffer)
 {
-	int	i, nSize, nErrors;
-	ubyte	*pCheckData;
+	int32_t	i, nErrors;
+	uint8_t	*pCheckData;
 
-nSize = *reinterpret_cast<int*> (buffer);
-pCheckData = reinterpret_cast<ubyte*> (reinterpret_cast<int*> (buffer) + 1) + nSize;
+size_t nSize = *reinterpret_cast<size_t*> (buffer);
+pCheckData = reinterpret_cast<uint8_t*> (reinterpret_cast<size_t*> (buffer) + 1) + nSize;
 for (i = 0, nErrors = 0; i < CHECKSIZE; i++)
 	if (pCheckData [i] != CHECKBYTE) {
 		nErrors++;
-		PrintLog ("OA: %p ", pCheckData + i);
+		PrintLog (0, "OA: %p ", pCheckData + i);
 		}
 
 if (nErrors && !bOutOfMemory) {
-	PrintLog ("\nMEM_OVERWRITE: Memory after the end of allocated block overwritten.\n");
+	PrintLog (0, "\nMEM_OVERWRITE: Memory after the end of allocated block overwritten.\n");
 #if LONG_MEM_ID
-	PrintLog ("%s\n", reinterpret_cast<char*> (buffer) - 256);
+	PrintLog (0, "%s\n", reinterpret_cast<char*> (buffer) - 256);
 #endif
-	PrintLog ("\t%d/%d check bytes were overwritten.\n", nErrors, CHECKSIZE);
+	PrintLog (0, "\t%d/%d check bytes were overwritten.\n", nErrors, CHECKSIZE);
 	Int3 ();
 	}
 return nErrors;
-}
-
-//------------------------------------------------------------------------------
-
-void _CDECL_ MemDisplayBlocks (void)
-{
-#if DBG_MALLOC
-	int i, numleft = 0;
-
-if (!bMemInitialized) 
-	return;
-
-if (nMemBlocks) {
-	PrintLog ("\nMEMORY LEAKS:\n");
-	for (i = 0; i < nMemBlocks; i++)
-		PrintLog ("%s:%d\n", memBlocks [i].pszFile, memBlocks [i].nLine);
-	for (i = 0; i < nMemBlocks; i++)
-		D2_FREE (memBlocks [i].p);
-	}
-#endif
 }
 
 #endif //FULL_MEM_CHECKING
@@ -200,8 +330,8 @@ void MemFree (void *buffer)
 {
 if (!buffer)
 	return;
-nCurAllocd -= *(reinterpret_cast<uint*> (buffer) - 1);
-free (reinterpret_cast<uint*> (buffer) - 1);
+nCurAllocd -= *(reinterpret_cast<size_t*> (buffer) - 1);
+free (reinterpret_cast<size_t*> (buffer) - 1);
 }
 
 #else
@@ -212,11 +342,11 @@ if (!bMemInitialized)
 	MemInit ();
 if (!buffer)
 	return;
-if (UnregisterMemBlock (buffer) < 0)
+if (bTrackMemory && (UnregisterMemBlock (buffer) < 0))
 	return;
-buffer = reinterpret_cast<void*> (reinterpret_cast<int*> (buffer) - 1);
+buffer = reinterpret_cast<void*> (reinterpret_cast<size_t*> (buffer) - 1);
 #ifndef __macosx__
-nBytesMalloced -= *reinterpret_cast<int*> (buffer);
+nBytesMalloced -= *reinterpret_cast<size_t*> (buffer);
 #endif
 MemCheckIntegrity (buffer);
 #if LONG_MEM_ID
@@ -231,12 +361,12 @@ free (buffer);
 
 #if !DBG_MALLOC
 
-void *MemAlloc (uint size)
+void *MemAlloc (size_t size)
 {
 if (!size)
 	return NULL;
-size += sizeof (uint);
-uint *p = reinterpret_cast<uint*> (malloc (size));
+size += sizeof (size_t);
+size_t *p = reinterpret_cast<size_t*> (malloc (size));
 if (!p)
 	return NULL;
 *p = size;
@@ -248,9 +378,9 @@ return reinterpret_cast<void*> (p + 1);
 
 #else	//!RELEASE
 
-void *MemAlloc (uint size, const char * var, const char * pszFile, int nLine, int bZeroFill)
+void *MemAlloc (size_t size, const char * var, const char * pszFile, int32_t nLine, int32_t bZeroFill)
 {
-	uint *ptr;
+	size_t *ptr;
 
 if (!bMemInitialized)
 	MemInit ();
@@ -259,27 +389,27 @@ if (!size)
 if (nMemBlockId == nDbgMemBlockId)
 	nDbgMemBlockId = nDbgMemBlockId;
 #if LONG_MEM_ID
-ptr = reinterpret_cast<uint*> (malloc (size + CHECKSIZE + sizeof (int) + 256));
+ptr = reinterpret_cast<size_t*> (malloc (size + CHECKSIZE + sizeof (size_t) + 256));
 #else
-ptr = malloc (size + CHECKSIZE + sizeof (int));
+ptr = reinterpret_cast<size_t*> (malloc (size + CHECKSIZE + sizeof (size_t)));
 #endif
 if (!ptr) {
-	PrintLog ("\nMEM_OUT_OF_MEMORY: Malloc returned NULL\n");
-	PrintLog ("\tVar %s, file %s, nLine %d.\n", var, pszFile, nLine);
+	PrintLog (0, "\nMEM_OUT_OF_MEMORY: Malloc returned NULL\n");
+	PrintLog (0, "\tVar %s, file %s, nLine %d.\n", var, pszFile, nLine);
 	Int3 ();
 	return NULL;
 	}
 
 #if LONG_MEM_ID
 sprintf (reinterpret_cast<char*> (ptr), "%s:%d", pszFile, nLine);
-ptr = reinterpret_cast<uint*> (reinterpret_cast<char*> (ptr) + 256);
+ptr = reinterpret_cast<size_t*> (reinterpret_cast<char*> (ptr) + 256);
 #endif
 *ptr++ = size;
 nBytesMalloced += size;
-memset (reinterpret_cast<char*> (ptr + size), CHECKBYTE, CHECKSIZE);
+memset (reinterpret_cast<char*> (ptr) + size, CHECKBYTE, CHECKSIZE);
 if (bZeroFill)
 	memset (ptr, 0, size);
-RegisterMemBlock (ptr, pszFile, nLine);
+RegisterMemBlock (ptr, size, pszFile, nLine);
 return reinterpret_cast<void*> (ptr);
 }
 
@@ -289,7 +419,7 @@ return reinterpret_cast<void*> (ptr);
 
 #if !DBG_MALLOC
 
-void *MemRealloc (void * buffer, uint size)
+void *MemRealloc (void * buffer, size_t size)
 {
 if (!buffer)
 	return MemAlloc (size);
@@ -300,7 +430,7 @@ if (!size) {
 void *newBuffer = MemAlloc (size);
 if (!newBuffer)
 	return buffer;
-uint oldSize = *(reinterpret_cast<uint*> (buffer) - 1);
+size_t oldSize = *(reinterpret_cast<size_t*> (buffer) - 1);
 memcpy (newBuffer, buffer, (size < oldSize) ? size : oldSize);
 MemFree (buffer);
 return newBuffer;
@@ -308,7 +438,7 @@ return newBuffer;
 
 #else
 
-void *MemRealloc (void * buffer, uint size, const char * var, const char * pszFile, int nLine)
+void *MemRealloc (void * buffer, size_t size, const char * var, const char * pszFile, int32_t nLine)
 {
 	void *newbuffer = NULL;
 
@@ -330,8 +460,9 @@ if (!size)
 	MemFree (buffer);
 else {
 	newbuffer = MemAlloc (size, var, pszFile, nLine, 0);
-	if (FindMemBlock (buffer) >= 0) {
-		memcpy (newbuffer, buffer, *(reinterpret_cast<int*> (buffer) - 1));
+	int32_t h;
+	if (FindMemBlock (buffer, h) >= 0) {
+		memcpy (newbuffer, buffer, *(reinterpret_cast<size_t*> (buffer) - 1));
 		MemFree (buffer);
 		}
 	}
@@ -345,7 +476,7 @@ return newbuffer;
 
 void *GetMem (size_t size, char filler)
 {
-	void	*p = new ubyte [size];
+	void	*p = NEW uint8_t [size];
 
 if (p) {
 	memset (p, filler, size);
@@ -354,6 +485,45 @@ if (p) {
 Error (TXT_OUT_OF_MEMORY);
 exit (1);
 }
+
+// ----------------------------------------------------------------------------
+
+#if DBG_MALLOC
+
+bool TrackMemory (bool bTrack)
+{
+bool b = bTrackMemory;
+bTrackMemory = bTrack;
+return b;
+}
+
+#endif
+
+// ----------------------------------------------------------------------------
+
+#if DBG_MALLOC
+
+void* __CRTDECL operator new (size_t size, const char* pszFile, const int32_t nLine) 
+	throw (bad_alloc)
+	{
+   return MemAlloc (size, "", pszFile, nLine, 0);
+	}
+
+void* __CRTDECL operator new[] (size_t size, const char* pszFile, const int32_t nLine) 
+	throw (bad_alloc)
+	{
+   return MemAlloc (size, "", pszFile, nLine, 0);
+	}
+
+void __CRTDECL operator delete (void* p/*, const char* pszFile, const int32_t nLine*/) throw () {
+	MemFree (p);
+	}
+
+void __CRTDECL operator delete[] (void* p/*, const char* pszFile, const int32_t nLine*/) throw () {
+	MemFree (p);
+	}
+
+#endif
 
 //------------------------------------------------------------------------------
 //eof

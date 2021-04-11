@@ -295,4 +295,73 @@ extern CNetworkThread networkThread;
 
 //------------------------------------------------------------------------------
 
+int _CDECL_ NetworkSyncThread (void *pThreadId);
+
+class CPlayerSynchronizer {
+	private:
+		SDL_sem*		m_pSemaphore;
+		SDL_Thread*	m_pThread;
+		int32_t		m_nThreadId;
+		bool			m_bSync;
+
+	public:
+		CPlayerSynchronizer () : m_pSemaphore (NULL), m_pThread (NULL), m_nThreadId (-1), m_bSync (false)
+			{ Setup (); }
+
+		~CPlayerSynchronizer () 
+			{ Destroy (); }
+		
+	void Start (void) {
+		if (!m_pSemaphore)
+			m_bSync = true;
+		else {
+			SDL_SemWait (m_pSemaphore);
+			m_bSync = true;
+			SDL_SemPost (m_pSemaphore);
+			}
+		}
+
+	void Stop (void) {
+		if (!m_pSemaphore)
+			m_bSync = false;
+		else {
+			SDL_SemWait (m_pSemaphore);
+			m_bSync = false;
+			SDL_SemPost (m_pSemaphore);
+			}
+		}
+
+
+	bool Run (void) {
+		if (!m_pSemaphore)
+			return m_bSync;
+		bool	bSync;
+		SDL_SemWait (m_pSemaphore);
+		bSync = m_bSync;
+		SDL_SemPost (m_pSemaphore);
+		return bSync;
+		}
+
+	
+	void Setup (void) {
+		m_pThread = SDL_CreateThread (NetworkSyncThread, &m_nThreadId);
+		m_pSemaphore = SDL_CreateSemaphore (1);
+		}
+
+
+	void Destroy (void) {
+		if (m_pThread) 
+			SDL_KillThread (m_pThread);
+		if (m_pSemaphore)
+			SDL_DestroySemaphore (m_pSemaphore);
+		m_pThread = NULL;
+		m_nThreadId = -1;
+		}
+};
+
+
+extern CPlayerSynchronizer playerSynchronizer;
+
+//------------------------------------------------------------------------------
+
 #endif /* _NETWORK_THREAD_H */

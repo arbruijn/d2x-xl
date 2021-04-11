@@ -3,7 +3,10 @@
 #endif
 
 #define WIN32_LEAN_AND_MEAN
+#pragma pack(push)
+#pragma pack(8)
 #include <windows.h>
+#pragma pack(pop)
 #include "cfile.h"
 #include "findfile.h"
 #include "u_mem.h"
@@ -33,7 +36,7 @@ if (!str)
 int32_t len = (int32_t) strlen (str) + 1;
 if (!w_str) {
 	bAlloc = true;
-	w_str = new wchar_t [len];
+	w_str = NEW wchar_t [len];
 	if (!w_str)
 		return NULL;
 	}

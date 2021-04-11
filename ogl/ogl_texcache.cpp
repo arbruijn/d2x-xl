@@ -10,7 +10,10 @@
 #endif
 
 #ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #	include <stddef.h>
 #	include <io.h>
 #endif
@@ -143,7 +146,7 @@ return pBm;
 
 static void CacheSideTextures (int32_t nSegment)
 {
-	int16_t			nSide, tMap1, tMap2;
+	int16_t		nSide, tMap1, tMap2;
 	CBitmap*		pBm, * bm2, * bmm;
 	CSide*		pSide;
 	CSegment*	pSeg = SEGMENT (nSegment);
@@ -215,16 +218,21 @@ return 1;
 
 static void CacheAddonTextures (void)
 {
-for (int32_t i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
-	PageInAddonBitmap (-i - 1);
-	CBitmap *pBm = BM_ADDON (i);
-	if (pBm) {
-		pBm->SetCartoonizable (i < 2);
-		pBm->SetTranspType (0);
-		pBm->SetupTexture (1, 1); 
+#if 1
+if (!gameStates.app.bNostalgia) {
+	for (int32_t i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
+		PageInAddonBitmap (-i - 1);
+		CBitmap *pBm = BM_ADDON (i);
+		if (pBm) {
+			pBm->SetCartoonizable (i < 2);
+			pBm->SetTranspType (0);
+			pBm->SetupTexture (1, 1); 
+			}
 		}
+	CAddonBitmap::Prepare ();
 	}
-CAddonBitmap::Prepare ();
+
+#endif
 }
 
 //------------------------------------------------------------------------------

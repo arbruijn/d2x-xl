@@ -6,7 +6,10 @@
 
 //#include <iostream>
 #include <string>
+#pragma pack(push)
+#pragma pack(8)
 #include <windows.h>
+#pragma pack(pop)
 #include <wininet.h>
 #include <fstream>
 

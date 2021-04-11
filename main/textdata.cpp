@@ -79,7 +79,7 @@ if (bufSize <= 0) {
 	PrintLog (-1);
 	return;
 	}
-if (!(pMsg->textBuffer = new char [bufSize + 2])) {
+if (!(pMsg->textBuffer = NEW char [bufSize + 2])) {
 	PrintLog (-1);
 	return;
 	}
@@ -96,7 +96,7 @@ for (p = pMsg->textBuffer + 1, nLines = 1; *p; p++) {
 	if (*p == '\n')
 		nLines++;
 	}
-if (!(pMsg->index = new tTextIndex [nLines])) {
+if (!(pMsg->index = NEW tTextIndex [nLines])) {
 	FreeTextData (pMsg);
  	PrintLog (-1);
 	return;

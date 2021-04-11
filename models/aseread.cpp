@@ -403,7 +403,7 @@ while ((pszToken = ReadLine (cf))) {
 		if (!m_nVerts)
 			return CModel::Error ("no vertices found");
 		nVerts += m_nVerts;
-		if (!(m_vertices.Create (m_nVerts)))
+		if (!(m_vertices.Create (m_nVerts, "ASE::CSubModel::m_vertices")))
 			return CModel::Error ("out of memory");
 		m_vertices.Clear ();
 		}
@@ -412,7 +412,7 @@ while ((pszToken = ReadLine (cf))) {
 			return CModel::Error ("no texture coordinates found");
 		m_nTexCoord = IntTok (" \t");
 		if (m_nTexCoord) {
-			if (!(m_texCoord.Create (m_nTexCoord)))
+			if (!(m_texCoord.Create (m_nTexCoord, "ASE::CSubModel::m_texCoord")))
 				return CModel::Error ("out of memory");
 			}
 		}
@@ -423,7 +423,7 @@ while ((pszToken = ReadLine (cf))) {
 		if (!m_nFaces)
 			return CModel::Error ("no faces specified");
 		nFaces += m_nFaces;
-		if (!(m_faces.Create (m_nFaces)))
+		if (!(m_faces.Create (m_nFaces, "ASE::CSubModel::m_faces")))
 			return CModel::Error ("out of memory");
 		m_faces.Clear ();
 		}
@@ -630,7 +630,9 @@ while ((pszToken = ReadLine (cf))) {
 		if (!tga.ReadModelTexture (::strlwr (fn), m_bCustom))
 			return CModel::Error ("texture not found");
 		l = (int32_t) strlen (fn) + 1;
-		if (!m_textures.m_names [nBitmap].Create (l))
+		char szLabel [40];
+		sprintf (szLabel, "ASE::CSubModel::m_textures.m_names [%d]", nBitmap);
+		if (!m_textures.m_names [nBitmap].Create (l, szLabel))
 			return CModel::Error ("out of memory");
 		memcpy (m_textures.m_names [nBitmap].Buffer (), fn, l);
 		if ((ps = strstr (fn, "color")))
@@ -737,7 +739,7 @@ int32_t CModel::ReadSubModel (CFile& cf)
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
-if (!(psm = new CSubModel))
+if (!(psm = NEW CSubModel))
 	return CModel::Error ("out of memory");
 psm->m_nSubModel = m_nSubModels++;
 psm->m_next = m_subModels;
@@ -962,9 +964,9 @@ m_bBarrel = cf.ReadByte ();
 cf.ReadVector (m_vOffset);
 if ((m_nFaces > 100000) || (m_nVerts > 100000) || (m_nTexCoord > 100000))	//probably invalid
 	return 0;
-if ((m_nFaces && !m_faces.Create (m_nFaces)) ||
-	 (m_nVerts && !m_vertices.Create (m_nVerts)) ||
-	(m_nTexCoord && !m_texCoord.Create (m_nTexCoord)))
+if ((m_nFaces && !m_faces.Create (m_nFaces, "ASE::CSubModel::m_faces")) ||
+	 (m_nVerts && !m_vertices.Create (m_nVerts, "ASE::CSubModel::m_vertices")) ||
+	(m_nTexCoord && !m_texCoord.Create (m_nTexCoord, "ASE::CSubModel::m_texCoord")))
 	return 0;
 m_faces.Read (cf);
 m_vertices.Read (cf);
@@ -1023,9 +1025,9 @@ if (m_textures.m_nBitmaps > 100) {	//probably invalid
 	return 0;
 	}
 
-if (!(m_textures.m_bitmaps.Create (m_textures.m_nBitmaps) &&
-	   m_textures.m_names.Create (m_textures.m_nBitmaps) &&
-		m_textures.m_nTeam.Create (m_textures.m_nBitmaps))) {
+if (!(m_textures.m_bitmaps.Create (m_textures.m_nBitmaps, "ASE::CModel::m_textures.m_bitmaps") &&
+	   m_textures.m_names.Create (m_textures.m_nBitmaps, "ASE::CModel::m_textures.m_names") &&
+		m_textures.m_nTeam.Create (m_textures.m_nBitmaps, "ASE::CModel::m_textures.m_nTeam"))) {
 	cf.Close ();
 	Destroy ();
 	return 0;
@@ -1033,7 +1035,9 @@ if (!(m_textures.m_bitmaps.Create (m_textures.m_nBitmaps) &&
 
 for (i = 0; i < m_textures.m_nBitmaps; i++) {
 	if ((h = cf.ReadInt ())) {
-		if (!m_textures.m_names [i].Create (h)) {
+		char szLabel [40];
+		sprintf (szLabel, "ASE::CModel::m_textures.m_names [%d]", i);
+		if (!m_textures.m_names [i].Create (h, szLabel)) {
 			cf.Close ();
 			Destroy ();
 			return 0;
@@ -1056,7 +1060,7 @@ CSubModel*	pSubModel, * pTail = NULL;
 
 m_subModels = NULL;
 for (i = 0; i < m_nSubModels; i++) {
-	if (!(pSubModel = new CSubModel)) {
+	if (!(pSubModel = NEW CSubModel)) {
 		cf.Close ();
 		Destroy ();
 		return 0;

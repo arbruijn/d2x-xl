@@ -85,9 +85,9 @@ int32_t _CDECL_ InfoBox (const char* pszTitle, pMenuCallback callback, int32_t n
 	va_list			args;
 	char				szSubTitle [MSGBOX_TEXT_SIZE];
 	int32_t			bTiny;
-	CMenu				mm;
+	CMenu				m;
 
-if (!mm.Create (5))
+if (!m.Create (5, "InfoBox"))
 	return - 1;
 
 if ((bTiny = nChoices < 0))
@@ -95,8 +95,8 @@ if ((bTiny = nChoices < 0))
 va_start (args, nChoices);
 for (i = 0; i < nChoices; i++) {
 	s = va_arg (args, char *);
-	int32_t nItem = mm.AddText ("msgbox", s, - 1);
-	mm [nItem].m_bCentered = 1;
+	int32_t nItem = m.AddText ("msgbox", s, - 1);
+	m [nItem].m_bCentered = 1;
 	}
 format = va_arg (args, char*);
 if (*format)
@@ -105,7 +105,7 @@ else
 	*szSubTitle = '\0';
 va_end (args);
 Assert (strlen (szSubTitle) < MSGBOX_TEXT_SIZE);
-return mm.Menu (pszTitle, szSubTitle, callback, NULL, BG_SUBMENU, nWallpaper, -1, -1, bTiny);
+return m.Menu (pszTitle, szSubTitle, callback, NULL, BG_SUBMENU, nWallpaper, -1, -1, bTiny);
 }
 
 //------------------------------------------------------------------------------ 

@@ -401,7 +401,7 @@ nTgtInd = extraGameInfo [0].bMslLockIndicators ? extraGameInfo [0].bTargetIndica
 
 do {
 	m.Destroy ();
-	m.Create (20);
+	m.Create (20, "CockpitOptionsMenu");
 
 	sprintf (szSlider, TXT_SHOW_HUD, szHUDType [gameOpts->render.cockpit.bHUD]);
 	m.AddSlider ("show hud", szSlider, gameOpts->render.cockpit.bHUD, 0, 2, KEY_U, HTX_CPIT_SHOWHUD);

@@ -131,7 +131,7 @@ return nCurItem;
 int32_t SetupMainMenu (CMenu& m)
 {
 m.Destroy ();
-m.Create (25);
+m.Create (25, "MainMenu");
 SetScreenMode (SCREEN_MENU);
 m.AddText ("", "");
 m.Top ()->m_bNoScroll = 1;
@@ -213,7 +213,7 @@ return nChoice;
 
 static void PlayMenuMovie (void)
 {
-	int32_t				h, i, j;
+	int32_t			h, i, j;
 	CStack<char*>	m;
 	char*				ps;
 	CListBox			lb;
@@ -224,7 +224,7 @@ for (h = j = 0; j < i; j++)
 		h += movieManager.m_libs [j].m_nMovies;
 if (!h)
 	return;
-if (!m.Create (h))
+if (!m.Create (h, "PlayMenuMovie"))
 	return;
 for (i = j = 0; i < h; i++)
 	if ((ps = movieManager.Cycle (i == 0, 0))) {

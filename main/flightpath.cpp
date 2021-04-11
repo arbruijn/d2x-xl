@@ -11,7 +11,7 @@
 
 //------------------------------------------------------------------------------
 
-void CFpLightath::Reset (int32_t nSize, int32_t nFPS)
+void CFlightPath::Reset (int32_t nSize, int32_t nFPS)
 {
 m_nSize = (nSize < 0) ? MAX_PATH_POINTS : nSize;
 m_tRefresh = (time_t) (1000 / ((nFPS < 0) ? 40 : nFPS));
@@ -23,7 +23,7 @@ m_tUpdate = -1;
 
 //------------------------------------------------------------------------------
 
-void CFpLightath::Update (CObject *pObj)
+void CFlightPath::Update (CObject *pObj)
 {
 if (!pObj)
 	return;
@@ -51,7 +51,7 @@ if (m_nSize && ((m_tUpdate < 0) || (t >= m_tRefresh))) {
 
 //------------------------------------------------------------------------------
 
-tPathPoint* CFpLightath::GetPoint (void)
+tPathPoint* CFlightPath::GetPoint (void)
 {
 	CFixVector*	p = &m_path [m_nEnd].vPos;
 	int32_t		i;
@@ -74,7 +74,7 @@ return m_posP = m_path + i;
 
 //------------------------------------------------------------------------------
 
-void CFpLightath::GetViewPoint (CFixVector* vPos)
+void CFlightPath::GetViewPoint (CFixVector* vPos)
 {
 	tPathPoint* p = GetPoint ();
 
@@ -106,9 +106,9 @@ else {
 
 //------------------------------------------------------------------------------
 
-CFpLightath::CFpLightath ()
+CFlightPath::CFlightPath ()
 {
-if (m_path.Create (MAX_PATH_POINTS))
+if (m_path.Create (MAX_PATH_POINTS, "CFlightPath::m_path"))
 	m_path.Clear (0);
 m_posP = NULL;
 m_nSize = 0;
@@ -116,6 +116,13 @@ m_nStart = 0;
 m_nEnd = 0;
 m_tRefresh = 0;
 m_tUpdate = 0;
+}
+
+//------------------------------------------------------------------------------
+
+CFlightPath::~CFlightPath ()
+{
+m_path.Destroy ();
 }
 
 //------------------------------------------------------------------------------

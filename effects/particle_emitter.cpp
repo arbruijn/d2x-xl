@@ -406,7 +406,7 @@ int32_t CParticleEmitter::SetDensity (int32_t nMaxParts/*, int32_t nDensity*/)
 if (m_nMaxParts == nMaxParts)
 	return 1;
 if (nMaxParts > m_nPartLimit) {
-	if (!(pp = new CParticle [nMaxParts]))
+	if (!(pp = NEW CParticle [nMaxParts]))
 		return 0;
 	if (m_particles.Buffer ()) {
 		if (m_nParts > nMaxParts)

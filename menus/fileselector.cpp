@@ -79,10 +79,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void DeleteSaveGames (char* name)
 {
-	int32_t i;
 	char filename [16];
 
-for (i = 0; i < 10; i++) {
+for (int32_t i = 0; i < 10; i++) {
 	sprintf (filename, "%s.sg%d", name, i);
 	CFile::Delete (filename, gameFolders.user.szSavegames);
 	}
@@ -494,7 +493,7 @@ while (!m_bDone) {
 			fontManager.Current ()->StringSize (m_filenames [i], w, h, aw);
 			x1 = m_nTextLeft;
 			x2 = m_nTextLeft + m_nTextWidth - 1;
-			y1 = (i - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + m_nTextTop;
+			y1 = (i - m_nFirstItem) * (CCanvas::Current ()->Font ()->Height () + 2) + m_nTextTop;
 			y2 = y1 + h + 1;
 			if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
 				if (i == m_nChoice && !mouse2State)
@@ -513,7 +512,7 @@ while (!m_bDone) {
 		GetMousePos ();
 		x1 = m_nTextLeft;
 		x2 = m_nTextLeft + m_nTextWidth - 1;
-		y1 = (m_nChoice - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + m_nTextTop;
+		y1 = (m_nChoice - m_nFirstItem) * (CCanvas::Current ()->Font ()->Height () + 2) + m_nTextTop;
 		y2 = y1 + h + 1;
 		if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
 			if (bDblClick) 

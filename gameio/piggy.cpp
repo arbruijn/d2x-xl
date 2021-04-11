@@ -17,7 +17,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #endif
 
 #include <stdio.h>
@@ -330,7 +333,7 @@ bitmapCacheSize = PIGGY_BUFFER_SIZE;
 // until memory could be allocated, and then once more to leave enough memory
 // for other parts of the program
 for (;;) {
-	if ((bitmapBits [0] = new uint8_t (bitmapCacheSize))) {
+	if ((bitmapBits [0] = NEW uint8_t (bitmapCacheSize))) {
 		delete[] bitmapBits [0];
 		break;
 		}
@@ -520,15 +523,14 @@ if (!bogusBitmap.FrameSize ()) {
 	uint8_t c;
 /*---*/PrintLog (0, "Initializing placeholder bitmap\n");
 	bogusBitmap.Setup (0, 64, 64, 1, "Bogus Bitmap");
-	bogusBitmap.SetBuffer (new uint8_t [4096 * 4096]);
 	bogusBitmap.SetPalette (paletteManager.Game ());
 	c = paletteManager.Game ()->ClosestColor (0, 0, 63);
 	memset (bogusBitmap.Buffer (), c, 4096);
 	c = paletteManager.Game ()->ClosestColor (63, 0, 0);
 	// Make a big red X !
-	for (i = 0; i < 1024; i++) {
-		bogusBitmap [i * 1024 + i] = c;
-		bogusBitmap [i * 1024 + (1023 - i)] = c;
+	for (i = 0; i < 64; i++) {
+		bogusBitmap [i * 64 + i] = c;
+		bogusBitmap [i * 64 + (64 - i)] = c;
 		}
 	PiggyRegisterBitmap (&bogusBitmap, "bogus", 1);
 	bogusSound.nLength [0] = 1024*1024;
@@ -699,7 +701,7 @@ void BMReadD1TMapNums (CFile& cf)
 
 	FreeD1TMapNums ();
 	cf.Seek (8, SEEK_SET);
-	d1_tmap_nums = new int16_t [D1_MAX_TMAP_NUM];
+	d1_tmap_nums = NEW int16_t [D1_MAX_TMAP_NUM];
 	for (i = 0; i < D1_MAX_TMAP_NUM; i++)
 		d1_tmap_nums [i] = -1;
 	for (i = 0; i < D1_MAX_TEXTURES; i++) {

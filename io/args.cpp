@@ -125,7 +125,7 @@ for (int32_t i = 0, j = 0; i < Count (); i++, j++) {
 
 void CConfigManager::Init (void)
 {
-m_properties.Create (100);
+m_properties.Create (100, "CConfigManager::m_properties");
 m_properties.Clear ();
 m_properties.SetGrowth (100);
 m_filename [0] = '\0';

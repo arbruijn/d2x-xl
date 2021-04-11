@@ -179,7 +179,7 @@ if (!gameData.hoardData.bInitialized) {
 	pAnimInfo->flags = 0;
 	pAnimInfo->nSound = -1;
 	pAnimInfo->lightValue = I2X (1);
-	bmDataP = new uint8_t [gameData.hoardData.orb.nSize];
+	bmDataP = NEW uint8_t [gameData.hoardData.orb.nSize];
 	gameData.hoardData.orb.bm.Init (BM_LINEAR, 0, 0, gameData.hoardData.orb.nWidth, gameData.hoardData.orb.nHeight * gameData.hoardData.orb.nFrames);
 	gameData.hoardData.orb.bm.SetBuffer (bmDataP, 0, gameData.hoardData.orb.nSize);
 	for (i = 0; i < gameData.hoardData.orb.nFrames; i++, nBitmap++) {
@@ -218,7 +218,7 @@ if (!gameData.hoardData.bInitialized) {
 	gameData.pigData.tex.pTexMapInfo [i].flags = TMI_GOAL_HOARD;
 	gameData.hoardData.nTextures = gameData.pigData.tex.nTextures [0]++;
 	Assert (gameData.pigData.tex.nTextures [0] < MAX_TEXTURES);
-	bmDataP = new uint8_t [gameData.hoardData.goal.nSize];
+	bmDataP = NEW uint8_t [gameData.hoardData.goal.nSize];
 	gameData.hoardData.goal.bm.Init (BM_LINEAR, 0, 0, gameData.hoardData.goal.nWidth, gameData.hoardData.goal.nHeight * gameData.hoardData.goal.nFrames);
 	gameData.hoardData.goal.bm.SetBuffer (bmDataP, 0, gameData.hoardData.goal.nSize);
 	for (i = 0; i < gameData.hoardData.goal.nFrames; i++, nBitmap++) {

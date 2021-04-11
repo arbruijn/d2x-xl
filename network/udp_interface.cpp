@@ -76,9 +76,12 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include <carray.h>
 
 #ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <winsock2.h>
 #	include <ws2tcpip.h>
 #	include <Wspiapi.h>
+#	pragma pack(pop)
 #else
 #	include <netdb.h>
 #	include <unistd.h>
@@ -263,6 +266,7 @@ int32_t CClientManager::CheckClientSize (void)
 {
 if (m_nClients < m_clients.Length ())
 	return 1;
+m_clients.SetName ("CClientManager::m_clients");
 m_clients.Resize ((m_clients.Buffer () && m_clients.Length ()) ? m_clients.Length () * 2 : MAX_PLAYERS);
 return 1;
 }
@@ -389,7 +393,7 @@ else
 	m_nBroads = 2 * m_nBroads + 2;
 #endif
 
-ifo = new INTERFACE_INFO [cnt];
+ifo = NEW INTERFACE_INFO [cnt];
 
 if (wsaioctl (sock, SIO_GET_INTERFACE_LIST, NULL, 0, ifo, cnt * sizeof (INTERFACE_INFO), &br, NULL, NULL)) != 0) {
 	closesocket(sock);
@@ -497,7 +501,7 @@ if (_IOCTL (sock, SIOCGIFCOUNT, &cnt))
 	cnt = 2 * cnt + 2;
 #	endif
 ifconf.ifc_len = cnt * sizeof (struct ifreq);
-ifconf.ifc_req = new ifreq [ifconf.ifc_len];
+ifconf.ifc_req = NEW ifreq [ifconf.ifc_len];
 memset (ifconf.ifc_req, 0, ifconf.ifc_len);
 if (!_IOCTL (sock, SIOCGIFCONF, &ifconf) || (ifconf.ifc_len % sizeof (struct ifreq))) {
 	close (sock);

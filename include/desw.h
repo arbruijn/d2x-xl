@@ -21,7 +21,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define DESCENT_RENDER_HEIGHT   200
 
 
-#include <windows.h>
+#ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <windows.h>
+#	pragma pack(pop)
+#endif
 
 #include "win/dd.h"
 #include "win/winapp.h"

@@ -296,7 +296,7 @@ nShadows = gameOpts->render.ShadowQuality ();
 nLightTrails = extraGameInfo [0].bLightTrails ? gameOpts->render.particles.bPlasmaTrails ? 2 : 1 : 0;
 do {
 	m.Destroy ();
-	m.Create (30);
+	m.Create (30, "EffectOptionsMenu");
 
 	m.AddCheck ("enable fx", TXT_ENABLE_EFFECTS, gameOpts->render.effects.bEnabled, KEY_E, HTX_ENABLE_EFFECTS);
 	m.AddText ("", "");

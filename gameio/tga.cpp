@@ -616,6 +616,7 @@ if (!m_cf.Exist (szImage, NULL, 0)) {
 
 SDL_Surface*	pImage;
 
+m_pBm->SetName (pszFile);
 if (!(pImage = IMG_Load (szImage)))
 	return 0;
 m_pBm->SetWidth (pImage->w);
@@ -664,6 +665,7 @@ if (bAutoComplete && !(psz = const_cast<char*> (strstr (pszFile, ".tga")))) {
 	strcat (szFile, ".tga");
 	pszFile = szFile;
 	}
+m_pBm->SetName (pszFile);
 m_cf.Open (pszFile, pszFolder, "rb", 0);
 r = (m_cf.File() != NULL) && Load (alpha, brightness, bGrayScale);
 #if TEXTURE_COMPRESSION
@@ -743,7 +745,7 @@ nFactor2 = xFactor * yFactor;
 if (!bRealloc)
 	pDest = pData = m_pBm->Buffer ();
 else {
-	if (!(pData = new uint8_t [xMax * yMax * bpp]))
+	if (!(pData = NEW uint8_t [xMax * yMax * bpp]))
 		return 0;
 	UseBitmapCache (m_pBm, (int32_t) -m_pBm->Height () * int32_t (m_pBm->RowSize ()));
 	pDest = pData;
@@ -933,7 +935,7 @@ nScale = 1 << nScale;
 nFrames = m_pBm->Height () / m_pBm->Width ();
 nFrameSize = m_pBm->Width () * m_pBm->Width () * m_pBm->BPP ();
 nSize = nFrameSize * nFrames * nScale;
-if (!(pBuffer = new uint8_t [nSize]))
+if (!(pBuffer = NEW uint8_t [nSize]))
 	return 0;
 m_pBm->SetHeight (m_pBm->Height () * nScale);
 memset (pBuffer, 0, nSize);
@@ -981,7 +983,7 @@ if (q * q != nFrames)
 w = m_pBm->Width ();
 nFrameSize = w * w * m_pBm->BPP ();
 nSize = nFrameSize * nFrames;
-if (!(pBuffer = new uint8_t [nSize]))
+if (!(pBuffer = NEW uint8_t [nSize]))
 	return 0;
 srcP = m_pBm->Buffer ();
 nRowSize = w * m_pBm->BPP ();
@@ -1117,11 +1119,11 @@ bool CModelTextures::Create (int32_t nBitmaps)
 {
 if (nBitmaps <= 0)
 	return false;
-if (!(m_bitmaps.Create (nBitmaps)))
+if (!(m_bitmaps.Create (nBitmaps, "CModelTextures::m_bitmaps")))
 	return false;
-if (!(m_names.Create (nBitmaps)))
+if (!(m_names.Create (nBitmaps, "CModelTextures::m_names")))
 	return false;
-if (!(m_nTeam.Create (nBitmaps)))
+if (!(m_nTeam.Create (nBitmaps, "CModelTextures::m_nTeam")))
 	return false;
 m_nBitmaps = nBitmaps;
 //m_bitmaps.Clear ();

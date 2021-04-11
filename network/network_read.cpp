@@ -36,6 +36,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "physics.h"
 #include "console.h"
 
+#ifdef WIN32
+#	define ZLIB_WINAPI
+#endif
+
+#include "zlib.h"
+
+#ifdef WIN32
+#	undef ZLIB_WINAPI
+#endif
+
 //------------------------------------------------------------------------------
 
 void NetworkReadEndLevelPacket (uint8_t *data)
@@ -355,7 +365,7 @@ pObj->info.position.vPos = pd->objData.pos;
 pObj->info.position.mOrient = pd->objData.orient;
 pObj->mType.physInfo.velocity = pd->objData.vel;
 pObj->mType.physInfo.rotVel = pd->objData.rotVel;
-PLAYER (nPlayer).m_fpLightath.Update (pObj);
+PLAYER (nPlayer).m_flightPath.Update (pObj);
 if ((pObj->info.renderType != pd->data.nRenderType) && (pd->data.nRenderType == RT_POLYOBJ))
 	MultiTurnGhostToPlayer (nPlayer);
 OBJECT (nObject)->RelinkToSeg (pd->objData.nSegment);
@@ -694,7 +704,27 @@ if (((m_nObjOwner == N_LOCALPLAYER) || (m_nObjOwner == -1)) && (m_nLocalObj != m
 	}
 
 CObject* pObj = OBJECT (m_nLocalObj);
-NW_GET_BYTES (m_data, m_bufI, &pObj->info, sizeof (tBaseObject));
+
+uLongf nUncompressedSize = (uLongf) sizeof (tBaseObject);
+uint8_t uncompressedBuffer [sizeof (tBaseObject)];
+uint8_t nCompressedSize;
+int32_t i;
+
+NW_GET_BYTE (m_data, m_bufI, nCompressedSize);
+
+if (nCompressedSize == sizeof (tBaseObject)) {
+	NW_GET_BYTES (m_data, m_bufI, &pObj->info, sizeof (tBaseObject));
+	}
+else {
+	if ((i = uncompress (uncompressedBuffer, &nUncompressedSize, (uint8_t*) m_data + m_bufI, (uLong) nCompressedSize)) != Z_OK) {
+	// PrintLog (0, "CObjectSynchronizer::Sync: decompression error #%d\n", i);
+		RequestResync ();
+		return -1;
+		}
+	i = 0;
+	NW_GET_BYTES (uncompressedBuffer, i, &pObj->info, sizeof (tBaseObject));
+	m_bufI += nCompressedSize;
+	}
 if (pObj->info.nType != OBJ_NONE) {
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 	if (gameStates.multi.nGameType >= IPX_GAME)
@@ -800,6 +830,7 @@ for (int32_t i = 0; (i < nObjects) && (syncRes > -1); i++) {
 		continue;
 	Sync ();
 	} 
+ResetSyncTimeout (true);
 return syncRes;
 }
 

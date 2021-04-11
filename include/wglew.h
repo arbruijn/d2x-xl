@@ -66,7 +66,10 @@
 #  ifndef WIN32_LEAN_AND_MEAN
 #    define WIN32_LEAN_AND_MEAN 1
 #  endif
-#include <windows.h>
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <windows.h>
+#	pragma pack(pop)
 #  undef WIN32_LEAN_AND_MEAN
 #endif
 

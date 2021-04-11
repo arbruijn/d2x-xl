@@ -28,7 +28,7 @@ CCanvas *CCanvas::Create (int32_t w, int32_t h)
 {
 	CCanvas *pCanvas;
 
-if ((pCanvas = new CCanvas)) 
+if ((pCanvas = NEW CCanvas)) 
 	pCanvas->Setup (w, h);
 return pCanvas;
 }
@@ -39,7 +39,7 @@ void CCanvas::Init (void)
 {
 memset (&m_info, 0, sizeof (m_info));
 if (!m_save.Buffer ())
-	m_save.Create (10);
+	m_save.Create (10, "CCanvas::m_save");
 m_parent = NULL;
 SetName ("Canvas");
 }
@@ -59,7 +59,7 @@ CCanvas *CCanvas::CreatePane (int32_t x, int32_t y, int32_t w, int32_t h)
 {
 	CCanvas *pPane;
 
-if (!(pPane = new CCanvas))	
+if (!(pPane = NEW CCanvas))	
 	return NULL;
 //SetupPane (pPane, x, y, w, h);
 pPane->Setup (this, x, y, w, h);

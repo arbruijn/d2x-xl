@@ -18,8 +18,11 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#pragma pack(push)
+#pragma pack(8)
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#pragma pack(pop)
 
 #include "descent.h"
 #include "network.h"

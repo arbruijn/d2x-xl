@@ -228,28 +228,29 @@ displayModeInfo [i].bAvailable = 1;
 
 void CreateDisplayModeInfoTable (void)
 {
-	SDL_Rect**	displayModes, * displayModeP;
-	int32_t			h, i;
+	SDL_Rect**	displayModes, * pDisplayMode;
+	int32_t		h, i;
+	bool			bDefault;
 
 displayModes = SDL_ListModes (NULL, SDL_FULLSCREEN | SDL_HWSURFACE);
-if (displayModes == (SDL_Rect**) -1) {
-	displayModeP = defaultDisplayModes;
+if ((bDefault = (displayModes == (SDL_Rect**) -1))) {
+	pDisplayMode = defaultDisplayModes;
 	h = sizeofa (defaultDisplayModes);
 	}
 else {
 	for (h = 0; displayModes [h]; h++)
 		;
-	displayModeP = new SDL_Rect [h];
+	pDisplayMode = NEW SDL_Rect [h];
 	for (i = 0; i < h; i++)
-		displayModeP [i] = *displayModes [i];
+		pDisplayMode [i] = *displayModes [i];
 	}
-displayModeInfo.Create (h + 1);
+displayModeInfo.Create (h + 1, "displayModeInfo");
 displayModeInfo.Clear ();
 for (i = 0; i < h; i++) {
-	CreateDisplayModeInfo (i, displayModeP [i].w, displayModeP [i].h, 1);
+	CreateDisplayModeInfo (i, pDisplayMode [i].w, pDisplayMode [i].h, 1);
 	}
-if (displayModes != (SDL_Rect**) -1)
-	delete displayModeP;
+if (!bDefault && (displayModes != (SDL_Rect**) -1))
+	delete[] pDisplayMode;
 displayModeInfo.SortAscending (0, h - 1);
 }
 

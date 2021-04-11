@@ -120,7 +120,7 @@ public:
 	char			*m_pszText;
 	CBitmap		*m_bmText [2];
 	const char	*m_szHelp;
-	char			*m_szId;
+	char			m_szId [256];
 
 protected:
 	int32_t		m_value; // For checkboxes and radio buttons, this is 1 if marked initially, else 0
@@ -135,7 +135,6 @@ public:
 	}
 	void Destroy (void);
 	void FreeTextBms (void);
-	void FreeId (void);
 	int32_t GetSize (int32_t h, int32_t aw, int32_t& nStringWidth, int32_t& nStringHeight,
 			int32_t& nAverageWidth, int32_t& nMenus, int32_t& nOthers, int32_t bTiny);
 	int16_t SetColor (int32_t bIsCurrent, int32_t bTiny);
@@ -261,7 +260,7 @@ public:
 
 	explicit CMenu (uint32_t nLength) {
 		Init ();
-		Create (nLength);
+		Create (nLength, "CMenu");
 		}
 
 	inline void Register (void) {
@@ -446,6 +445,7 @@ private:
 	int32_t HandleKey (int32_t width, int32_t height, int32_t bTinyMode, int32_t* nCurItemP);
 	int32_t HandleMouse (int32_t* nCurItemP);
 	int32_t FindClickedOption (int32_t iMin, int32_t iMax);
+	int32_t SelectClickedOption (void);
 
 	void KeyScrollUp (void);
 	void KeyScrollDown (void);

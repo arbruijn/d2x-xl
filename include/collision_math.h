@@ -217,7 +217,7 @@ int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult, int32_t nColli
 
 //finds the uv coords of the given point on the given seg & CSide
 //fills in u & v. if l is non-NULL fills it in also
-void FindHitPointUV (fix *u,fix *v,fix *l, CFixVector *pnt,CSegment *seg,int32_t nSide,int32_t facenum);
+void FindHitPointUV (fix *u,fix *v,fix *l, CFixVector *pnt,CSegment *seg, int32_t nSide, int32_t facenum);
 
 //Returns true if the CObject is through any walls
 int32_t ObjectIntersectsWall (CObject *pObj);

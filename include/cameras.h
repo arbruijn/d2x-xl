@@ -100,7 +100,7 @@ class CCameraManager {
 		CStack<CCamera>		m_cameras;
 		CCamera*					m_current;
 		CArray<char>			m_faceCameras;
-		CArray<uint16_t>			m_objectCameras;
+		CArray<uint16_t>		m_objectCameras;
 #if MAX_SHADOWMAPS < 0
 		CStaticArray<tShadowMapInfo, -MAX_SHADOWMAPS> m_shadowMaps;
 #elif MAX_SHADOWMAPS > 0

@@ -15,8 +15,11 @@
 //end addition -MM
 
 #if defined(_WIN32) && !defined(_WIN32_WCE)
-#include <windows.h>
-#define lseek(a,b,c) _lseek(a,b,c)
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <windows.h>
+#	pragma pack(pop)
+#	define lseek(a,b,c) _lseek(a,b,c)
 #endif
 
 #if 0

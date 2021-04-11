@@ -16,7 +16,10 @@
 #	include <fcntl.h>
 #	include <unistd.h>
 #else
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #endif
 
 #if defined (AUDIO)

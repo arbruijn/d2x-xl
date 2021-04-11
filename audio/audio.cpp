@@ -454,7 +454,7 @@ ENTER (0, 0);
 	uint8_t	*pDest, *pSrc;
 
 l = FixMulDiv (m_info.bResampled ? m_info.nLength : pSound->nLength [pSound->bCustom], speed, I2X (1));
-if (!(pDest = new uint8_t [l]))
+if (!(pDest = NEW uint8_t [l]))
 	RETVAL (-1)
 pSrc = m_info.bResampled ? m_info.sample.Buffer () : pSound->data [pSound->bCustom].Buffer ();
 for (h = i = j = 0; i < l; i++) {
@@ -729,10 +729,13 @@ m_info.nLoopingStart = -1;
 m_info.nLoopingEnd = -1;
 m_info.nLoopingChannel = -1;
 m_info.fSlowDown = 1.0f;
+m_channels.SetName ("CAudio::m_channels");
 m_channels.Resize (m_info.nMaxChannels);
+m_usedChannels.SetName ("CAudio::m_usedChannels");
 m_usedChannels.Resize (m_info.nMaxChannels);
 if (m_info.bAvailable)
 	Mix_AllocateChannels (m_info.nMaxChannels);
+m_objects.SetName ("CAudio::m_objects");
 m_objects.Resize (MAX_SOUND_OBJECTS);
 m_bSDLInitialized = false;
 m_nListenerSeg = -1;

@@ -8,7 +8,10 @@
 #include <string.h>
 #include <stdlib.h>
 #ifdef _WIN32
-#	include <winsock.h>
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <WinSock.h>
+#	pragma pack(pop)
 #else
 #	include <sys/socket.h>
 #endif

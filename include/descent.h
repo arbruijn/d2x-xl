@@ -1650,7 +1650,7 @@ class CTerrainRenderData {
 
 class CThrusterData {
 	public:
-		CFpLightath		path;
+		CFlightPath		path;
 		float				fSpeed;
 		int16_t			nPulse;
 		time_t			tPulse;
@@ -2195,6 +2195,7 @@ class CSegDistList : public CSegDistHeader {
 			return false;
 		if (!length)
 			return true;
+		dist.SetName ("CSegDistList::dist");
 		if (!(dist.Resize (length, false)))
 			return false;
 		return (dist.Read (cf, length, 0, bCompressed) > 0);
@@ -2820,7 +2821,7 @@ class CTextureData {
 
 	public:
 		CTextureData ();
-		~CTextureData () {}
+		~CTextureData ();
 };
 
 //------------------------------------------------------------------------------
@@ -2857,7 +2858,7 @@ typedef struct tFlagData {
 	tBitmapIndex		bmi;
 	tAnimationInfo*	pAnimInfo;
 	tAnimationState	animState;
-	CFpLightath			path;
+	CFlightPath			path;
 } tFlagData;
 
 //------------------------------------------------------------------------------
@@ -4717,5 +4718,3 @@ fix WI_DamageRadius (int32_t nId);
 //	-----------------------------------------------------------------------------------------------------------
 
 #endif
-
-

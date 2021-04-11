@@ -3192,7 +3192,7 @@ else {
 				int32_t i, j, nObjects, nLevel, nSig;
 
 				nObjects = gameData.objData.nLastObject [0];
-				if (!(curObjs = new CObject [nObjects + 1])) {
+				if (!(curObjs = NEW CObject [nObjects + 1])) {
 					Warning (TXT_INTERPOLATE_BOTS, sizeof (CObject) * nObjects);
 					break;
 					}
@@ -3384,7 +3384,7 @@ if (szSaveName [0] != '\0') {
 	szSaveName [8] = '\0';
 	}
 
-m.Create (1);
+m.Create (1, "DemoNameMenu");
 m.AddInput ("", szSaveName, 8);
 
 do {
@@ -3559,7 +3559,7 @@ void NDStopPlayback ()
 {
 if (bRevertFormat > 0) {
 	int32_t h = (int32_t) (ndInFile.Length () - ndInFile.Tell ());
-	char *p = new char [h];
+	char *p = NEW char [h];
 	if (p) {
 		bRevertFormat = 0;
 		NDRead (p, h, 1);
@@ -3602,7 +3602,7 @@ if (!ndOutFile.Open (outname, "", "wb", 0)) {
 	NDStopPlayback ();
 	return;
 	}
-if (!(buf = new char [BUF_SIZE])) {
+if (!(buf = NEW char [BUF_SIZE])) {
 	NDErrorMsg ("Mot enough memory for output buffer", NULL, NULL);
 	ndOutFile.Close ();
 	NDStopPlayback ();

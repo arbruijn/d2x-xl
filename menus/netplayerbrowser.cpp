@@ -8,7 +8,10 @@
 #include <string.h>
 #include <stdlib.h>
 #ifdef _WIN32
-#	include <winsock.h>
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <WinSock.h>
+#	pragma pack(pop)
 #else
 #	include <sys/socket.h>
 #endif
@@ -44,11 +47,11 @@
 int32_t NetworkSelectTeams (void)
 {
 	CMenu		m;
-	int32_t		choice;
+	int32_t	choice;
 	uint16_t	teamVector = 0;
 	char		teamNames [2][CALLSIGN_LEN+1];
-	int32_t		i, j;
-	int32_t		playerIds [MAX_PLAYERS+2];
+	int32_t	i, j;
+	int32_t	playerIds [MAX_PLAYERS+2];
 	char		szId [100];
 
 // one time initialization
@@ -59,7 +62,7 @@ sprintf (teamNames [1], "%s", TXT_RED);
 
 for (;;) {
 	m.Destroy ();
-	m.Create (MAX_PLAYERS + 4);
+	m.Create (MAX_PLAYERS + 4, "NetworkSelectTeams");
 
 	m.AddInput ("red team", teamNames [0], CALLSIGN_LEN);
 	for (i = j = 0; i < N_PLAYERS; i++) {

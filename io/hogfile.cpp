@@ -18,7 +18,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>
 #if defined (_WIN32_WCE) || defined (_WIN32)
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #	include <sys/stat.h>
 #else
 #	include <sys/stat.h>

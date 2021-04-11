@@ -181,7 +181,7 @@ void AlignPolyModelData (CPolyModel* pModel)
 	chunk ch_list [MAX_CHUNKS];
 	int32_t no_chunks = 0;
 	int32_t tmp_size = pModel->nDataSize + SHIFT_SPACE;
-	uint8_t *tmp = new uint8_t [tmp_size]; // where we build the aligned version of pModel->Data ()
+	uint8_t *tmp = NEW uint8_t [tmp_size]; // where we build the aligned version of pModel->Data ()
 
 	Assert (tmp != NULL);
 	//start with first chunk (is always aligned!)
@@ -249,6 +249,7 @@ m_fileEnd = -1;
 m_filePos = -1;
 m_info.mins.SetZero ();
 m_info.maxs.SetZero ();
+SetName ("CPolyModel");
 }
 
 //------------------------------------------------------------------------------
@@ -574,7 +575,7 @@ void CPolyModel::ReadData (CPolyModel* pDefModel, CFile& cf)
 if (m_info.nId == nDbgModel)
 	BRP;
 #endif
-if (!Create (m_info.nDataSize))
+if (!Create (m_info.nDataSize, "CPolyModel::m_info.nDataSize"))
 	Error ("Not enough memory for game models.");
 CByteArray::Read (cf, m_info.nDataSize);
 if (pDefModel) {

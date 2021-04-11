@@ -530,6 +530,9 @@ h = bmpInventory->Width () * bmpInventory->Width ();
 buffer = bmpInventory->Buffer ();
 CPalette* palette = paletteManager.Load ("groupa.256", NULL);
 for (i = 0; i < NUM_INV_ITEMS; i++) {
+	//char szLabel [40];
+	//sprintf (szLabel, "bmInvItems [%d]", i);
+	bmInvItems [i].CArray<uint8_t>::SetName (bmpInventory->Name ());
 	bmInvItems [i] = *bmpInventory;
 	bmInvItems [i].SetName ("Inventory");
 	bmInvItems [i].SetHeight (bmInvItems [i].Width ());

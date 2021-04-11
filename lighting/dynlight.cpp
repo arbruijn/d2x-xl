@@ -892,7 +892,7 @@ if (!info.bVariable)
 int16_t nLightSeg = LightSeg ();
 if ((nLightSeg < 0) || (info.nSide < 0))
 	RETVAL (0)
-if (!(info.visibleVertices || (info.visibleVertices = new CByteArray ())))
+if (!(info.visibleVertices || (info.visibleVertices = NEW CByteArray ())))
 	RETVAL (-1);
 if (!info.visibleVertices->Create (gameData.segData.nVertices))
 	RETVAL (-1);

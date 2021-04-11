@@ -161,7 +161,7 @@ bool CFaceGridSegment::AddFace (uint16_t nSegment, uint8_t nSide, CFloatVector v
 {
 if (!ContainsTriangle (vertices))
 	return true;
-CGridFace *pFace = new CGridFace;
+CGridFace *pFace = NEW CGridFace;
 if (!pFace)
 	return false;
 memcpy (pFace->m_vertices, vertices, 3 * sizeof (vertices [0]));
@@ -184,6 +184,8 @@ return AddFace (nSegment, nSide, v, vNormal);
 
 //------------------------------------------------------------------------------
 
+static int32_t nDestroyed = 0;
+
 void CFaceGridSegment::Destroy (void)
 {
 for (int32_t i = 0; i < 8; i++) {
@@ -199,6 +201,7 @@ for (;;) {
 		break;
 	m_pFaces = m_pFaces->m_pNextFace;
 	delete pFace;
+	nDestroyed++;
 	}
 m_nFaces = 0;
 }
@@ -226,7 +229,7 @@ vOffs.Set ((m_vMax.v.coord.x - m_vMin.v.coord.x) / 2, (m_vMax.v.coord.y - m_vMin
 for (int32_t nChild = 0, z = 0; z < 2; z++) {
 	for (int32_t y = 0; y < 2; y++) {
 		for (int32_t x = 0; x < 2; x++, nChild++) {
-			if (!(m_pChildren [nChild] = new CFaceGridSegment ()))
+			if (!(m_pChildren [nChild] = NEW CFaceGridSegment ()))
 				return false;
 			CFloatVector vMin, vMax;
 			vMin.Set (m_vMin.v.coord.x + vOffs.v.coord.x * x, m_vMin.v.coord.y + vOffs.v.coord.y * y, m_vMin.v.coord.z + vOffs.v.coord.z * z);
@@ -401,11 +404,11 @@ return m_pRoot->AddFace (nSegment, nSide, v, vNormal);
 
 bool CFaceGrid::Create (int32_t nSize)
 {
-#if !DBG // don't build, octree based visibility tests are slower than those based on Descent's portal structure. Meh.
+#if 1 //!DBG // don't build, octree based visibility tests are slower than those based on Descent's portal structure. Meh.
 return false;
 #else
 ComputeDimensions (nSize);
-if (!(m_pRoot = new CFaceGridSegment))
+if (!(m_pRoot = NEW CFaceGridSegment))
 	return false;
 
 m_vMin.Set (1e6f, 1e6f, 1e6f);
@@ -462,6 +465,7 @@ return m_pRoot->Split ();
 void CFaceGrid::Destroy (void)
 {
 if (m_pRoot) {
+	nDestroyed = 0;
 	delete m_pRoot;
 	m_pRoot = NULL;
 	}

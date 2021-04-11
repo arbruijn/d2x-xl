@@ -163,7 +163,7 @@ else if (gameOpts->app.bExpertMode)
 do {
 	i = 0;
 	m.Destroy ();
-	m.Create (20);
+	m.Create (20, "MiscellaneousMenu");
 	memset (&miscOpts, 0xff, sizeof (miscOpts));
 	sprintf (szSlider + 1, TXT_EXPERT_MODE, pszExpertMode [gameOpts->app.bExpertMode]);
 	*szSlider = *(TXT_EXPERT_MODE - 1);

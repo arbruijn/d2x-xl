@@ -884,7 +884,7 @@ int32_t CMissionManager::Load (int32_t nMission)
 {
 	CFile		cf;
 	char		szFolder [FILENAME_LEN] = {'\0'}, szFile [FILENAME_LEN] = {'\0'};
-	int32_t		i, bFoundHogFile = 0;
+	int32_t	i, bFoundHogFile = 0;
 
 nEnhancedMission = 0;
 if (nMission >= 0) {

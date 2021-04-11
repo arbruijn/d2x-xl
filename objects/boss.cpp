@@ -339,7 +339,7 @@ CBossData::CBossData ()
 
 bool CBossData::Create (uint32_t nBosses)
 {
-if (!m_info.Create (nBosses ? nBosses : 10))
+if (!m_info.Create (nBosses ? nBosses : 10, "CBossData::m_info"))
 	return false;
 m_info.SetGrowth (10);
 m_info.Clear ();

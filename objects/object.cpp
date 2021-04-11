@@ -88,7 +88,7 @@ CArray<uint8_t> CObject::m_bIsEquipment;
 
 void CObject::InitTables (void)
 {
-m_weaponInfo.Create (MAX_WEAPONS);
+m_weaponInfo.Create (MAX_WEAPONS, "CObject::m_weaponInfo");
 m_weaponInfo.Clear (0);
 
 m_weaponInfo [CONCUSSION_ID] |= OBJ_IS_MISSILE;
@@ -159,7 +159,7 @@ m_weaponInfo [SMARTMINE_ID] |= OBJ_IS_PLAYER_MINE;
 m_weaponInfo [SMALLMINE_ID] |= OBJ_IS_PLAYER_MINE;
 m_weaponInfo [ROBOT_SMARTMINE_ID] |= OBJ_IS_ROBOT_MINE;
 
-m_bIsEquipment.Create (MAX_POWERUP_TYPES);
+m_bIsEquipment.Create (MAX_POWERUP_TYPES, "CObject::m_bIsEquipment");
 m_bIsEquipment.Clear (0);
 m_bIsEquipment [POW_EXTRA_LIFE] =
 m_bIsEquipment [POW_KEY_BLUE] =

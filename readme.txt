@@ -1,11 +1,5 @@
-D2X-XL Readme
+This is a Subversion repository; use the 'svnadmin' and 'svnlook' 
+tools to examine it.  Do not add, delete, or modify files here 
+unless you know how to avoid corrupting the repository.
 
-Homepage ...: http://www.descent2.de
-Updates ....: http://www.descent2.de/d2x.html
-Installation: http://www.descent2.de/d2x-install.html
-History ....: http://www.descent2.de/d2x-history.html
-Manual .....: http://www.descent2.de/d2x-manual-1.html
-Switches ...: http://www.descent2.de/d2x-switches.html
-FAQ ........: http://www.descent2.de/d2x-faq.html
-
-Enjoy. :-)
+Visit http://subversion.apache.org/ for more information.

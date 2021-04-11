@@ -19,7 +19,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <stdlib.h>
 #ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <winsock.h>
+#	pragma pack(pop)
 #else
 #	include <sys/socket.h>
 #endif
@@ -505,7 +508,7 @@ void NetworkDoFrame (int bFlush)
 {
 if (!IsNetworkGame) 
 	return;
-if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequence) { // Don't send postion during escape sequence...
+if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequence) { // Don't send position during escape sequence...
 	mineSyncData.Flush ();
 	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds () > (networkData.refuse.xTimeLimit + (I2X (12))))
 		networkData.refuse.bWaitForAnswer = 0;

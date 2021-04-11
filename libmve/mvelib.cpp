@@ -8,6 +8,7 @@
 #endif
 
 #include "mvelib.h"
+#include "u_mem.h"
 
 static const char  MVE_HEADER[]  = "Interplay MVE File\x1A";
 static const int16_t MVE_HDRCONST1 = 0x001A;
@@ -470,7 +471,7 @@ mvefile_reset (movie->movie);
 
 void* MVE_Alloc (uint32_t size)
 {
-return reinterpret_cast<void*> (new uint8_t [size]);
+return reinterpret_cast<void*> (NEW uint8_t [size]);
 }
 
 //-----------------------------------------------------------------------

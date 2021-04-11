@@ -18,7 +18,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>
 #if defined (_WIN32_WCE) || defined (_WIN32)
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #	include <sys/stat.h>
 #else
 #	include <sys/stat.h>
@@ -303,7 +306,7 @@ int32_t CFile::EoF (void)
 if (!m_info.file)
 	return 1;
 #endif
-return (m_info.rawPosition >= m_info.size) && (m_info.pBufferos >= m_info.bufLen);
+return (m_info.rawPosition >= m_info.size) && (m_info.pBuffer >= m_info.bufLen);
 }
 
 // ----------------------------------------------------------------------------
@@ -426,7 +429,7 @@ m_info.rawPosition = 0;
 m_info.size = (length < 0) ? ffilelength (fp) : length;
 m_info.libOffset = (length < 0) ? 0 : ftell (fp);
 m_info.filename = const_cast<char*> (filename);
-m_info.pBufferos = m_info.bufLen = 0;
+m_info.pBuffer = m_info.bufLen = 0;
 return length;
 }
 
@@ -496,26 +499,26 @@ inline
 #endif
 int32_t CFile::FillBuffer (void)
 {
-if (m_info.pBufferos >= m_info.bufLen) {
+if (m_info.pBuffer >= m_info.bufLen) {
 	if (m_info.rawPosition >= m_info.size) 
 		return EOF;
 	size_t h = m_info.size - m_info.rawPosition;
 	if (h > sizeof (m_info.buffer))
 		h = sizeof (m_info.buffer);
-	m_info.pBufferos = 0;
+	m_info.pBuffer = 0;
 	m_info.bufLen = int32_t (Read (m_info.buffer, 1, h));
 	m_info.rawPosition = ftell (m_info.file) - m_info.libOffset;
 	if (m_info.bufLen < (int32_t) h)
 		m_info.size = m_info.rawPosition;
 	}
-return m_info.pBufferos;
+return m_info.pBuffer;
 }
 
 // ----------------------------------------------------------------------------
 
 //int32_t CFile::GetC (void) 
 //{
-//return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.pBufferos++];
+//return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.pBuffer++];
 //}
 
 // ----------------------------------------------------------------------------
@@ -597,7 +600,7 @@ if (bufLen < nSize) {
 	return -1;
 	}
 CByteArray compressedBuffer;
-if (!compressedBuffer.Create (nCompressedSize)) {
+if (!compressedBuffer.Create (nCompressedSize, "ReadCompressed::compressedBuffer")) {
 	// PrintLog (0, "ReadCompressed: couldn't create decompression buffer\n");
 	return -1;
 	}
@@ -621,7 +624,7 @@ size_t CFile::WriteCompressed (const void* buf, uint32_t bufLen)
 //PrintLog (0, "WriteCompressed: %d bytes @ %d\n", bufLen, (int32_t) m_info.rawPosition);
 uLongf nCompressedSize = compressBound (bufLen);
 CByteArray compressedBuffer;
-if (compressedBuffer.Create (nCompressedSize) && (compress (compressedBuffer.Buffer (), &nCompressedSize, (uint8_t*) buf, bufLen) == Z_OK)) {
+if (compressedBuffer.Create (nCompressedSize, "WriteCompressed::compressedBuffer") && (compress (compressedBuffer.Buffer (), &nCompressedSize, (uint8_t*) buf, bufLen) == Z_OK)) {
 	size_t h = Write (&bufLen, 1, sizeof (bufLen), -1);
 	h += Write (&nCompressedSize, 1, sizeof (nCompressedSize), -1);
 	h += Write (compressedBuffer.Buffer (), sizeof (uint8_t), nCompressedSize, -1);
@@ -1030,7 +1033,7 @@ char *CFile::ReadData (const char *filename, const char *folder, int32_t bUseD1H
 if (!Open (filename, folder, "rb", bUseD1Hog))
 	return NULL;
 nSize = Length ();
-if (!(pData = new char [nSize]))
+if (!(pData = NEW char [nSize]))
 	return NULL;
 if (!Read (pData, nSize, 1)) {
 	delete[] pData;

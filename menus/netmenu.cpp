@@ -8,7 +8,10 @@
 #include <string.h>
 #include <stdlib.h>
 #ifdef _WIN32
-#	include <winsock.h>
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <WinSock.h>
+#	pragma pack(pop)
 #else
 #	include <sys/socket.h>
 #endif
@@ -436,7 +439,7 @@ void NetworkMoreGameOptions (void)
 
 do {
 	m.Destroy ();
-	m.Create (40);
+	m.Create (40, "NetworkMoreGameOptions");
 	sprintf (szSlider + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	*szSlider = *(TXT_DIFFICULTY2 - 1);
 	m.AddSlider ("difficulty", szSlider + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
@@ -661,7 +664,7 @@ void NetworkD2XOptions (void)
 
 do {
 	m.Destroy ();
-	m.Create (40);
+	m.Create (40, "NetworkD2XOptions");
 	m.AddCheck ("competition", TXT_COMPETITION_MODE, extraGameInfo [1].bCompetition, KEY_C, HTX_MULTI2_COMPETITION);
 	if (!extraGameInfo [1].bCompetition) {
 		m.AddCheck ("friendly fire", TXT_FRIENDLY_FIRE, extraGameInfo [0].bFriendlyFire, KEY_F, HTX_MULTI2_FFIRE);
@@ -866,7 +869,7 @@ void MissileLoadoutMenu (void)
 j = sizeofa (powerupMap);
 do {
 	m.Destroy ();
-	m.Create (j);
+	m.Create (j, "MissileLoadoutMenu");
 	for (i = 0; i < j; i++) {
 		if ((h = powerupMap [i]) < 0) {
 			h = m.AddText ("", szMslNames [i]);
@@ -1054,7 +1057,7 @@ void BuildGameParamsMenu (CMenu& m, char* szName, char* szLevelText, char* szLev
 sprintf (szLevel, "%d", mpParams.nLevel);
 
 m.Destroy ();
-m.Create (35);
+m.Create (35, "GameParamsMenu");
 if (gameStates.multi.nGameType == UDP_GAME) {
 	if (UDPGetMyAddress () < 0) 
 		strcpy (szIpAddr, TXT_IP_FAIL);

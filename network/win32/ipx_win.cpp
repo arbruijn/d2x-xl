@@ -11,7 +11,10 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <windows.h>
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <windows.h>
+#	pragma pack(pop)
 #include <wsipx.h>
 #include <errno.h>
 #include <stdio.h>

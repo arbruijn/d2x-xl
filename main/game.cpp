@@ -475,53 +475,57 @@ gameStates.app.cheats.bEnabled = 0;
 void CleanupAfterGame (bool bHaveLevel)
 {
 ENTER (0, 0);
+if (gameStates.app.bGameRunning) {
 #ifdef MWPROFILE
-ProfilerSetStatus (0);
+	ProfilerSetStatus (0);
 #endif
-DestroyEffectsThread ();
-networkThread.Stop ();
-importantMessages [0].Destroy ();
-importantMessages [1].Destroy ();
-songManager.DestroyPlaylists ();
-gameData.timeData.xGameTotal = (SDL_GetTicks () - gameData.timeData.xGameStart) / 1000;
-gameStates.render.bRenderIndirect = 0;
-G3EndFrame (transformation, 0);
-audio.StopAll ();
-if (gameStates.sound.bD1Sound) {
-	gameStates.sound.bD1Sound = 0;
-	//audio.Shutdown ();
-	//audio.Setup ();
+	DestroyEffectsThread ();
+	networkThread.Stop ();
+	importantMessages [0].Destroy ();
+	importantMessages [1].Destroy ();
+	songManager.LoadDescentSongs (NULL, gameStates.app.bD1Mission);
+	songManager.DestroyPlaylists ();
+	gameData.timeData.xGameTotal = (SDL_GetTicks () - gameData.timeData.xGameStart) / 1000;
+	gameStates.render.bRenderIndirect = 0;
+	G3EndFrame (transformation, 0);
+	audio.StopAll ();
+	if (gameStates.sound.bD1Sound) {
+		gameStates.sound.bD1Sound = 0;
+		//audio.Shutdown ();
+		//audio.Setup ();
+		}
+	if ((gameData.demoData.nState == ND_STATE_RECORDING) || (gameData.demoData.nState == ND_STATE_PAUSED))
+		NDStopRecording ();
+	if (bHaveLevel)
+		MultiLeaveGame ();
+	if (gameData.demoData.nState == ND_STATE_PLAYBACK)
+		NDStopPlayback ();
+	gameData.Destroy ();
+	postProcessManager.Destroy ();
+	transparencyRenderer.ResetBuffers ();
+	CGenericCockpit::Rewind (false);
+	ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
+	StopPlayerMovement ();
+	GameDisableCheats ();
+	UnloadCamBot ();
+	#ifdef APPLE_DEMO
+	SetFunctionMode (FMODE_EXIT);		// get out of game in Apple OEM version
+	#endif
+	if (pfnTIRStop)
+		pfnTIRStop ();
+	shaderManager.Destroy (true);
+	ogl.InitEnhanced3DShader (); // always need the stereo rendering shaders 
+	meshBuilder.DestroyVBOs ();
+	UnloadLevelData ();
+	missionConfig.Init ();
+	PiggyCloseFile ();
+	SavePlayerProfile ();
+	ResetModFolders ();
+	gameStates.app.bGameRunning = 0;
+	backgroundManager.Rebuild ();
+	LogMemBlocks (false);
+	SetFunctionMode (FMODE_MENU);	
 	}
-if ((gameData.demoData.nState == ND_STATE_RECORDING) || (gameData.demoData.nState == ND_STATE_PAUSED))
-	NDStopRecording ();
-if (bHaveLevel)
-	MultiLeaveGame ();
-if (gameData.demoData.nState == ND_STATE_PLAYBACK)
-	NDStopPlayback ();
-gameData.Destroy ();
-postProcessManager.Destroy ();
-transparencyRenderer.ResetBuffers ();
-CGenericCockpit::Rewind (false);
-ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
-StopPlayerMovement ();
-GameDisableCheats ();
-UnloadCamBot ();
-#ifdef APPLE_DEMO
-SetFunctionMode (FMODE_EXIT);		// get out of game in Apple OEM version
-#endif
-if (pfnTIRStop)
-	pfnTIRStop ();
-shaderManager.Destroy (true);
-ogl.InitEnhanced3DShader (); // always need the stereo rendering shaders 
-meshBuilder.DestroyVBOs ();
-UnloadLevelData ();
-missionConfig.Init ();
-PiggyCloseFile ();
-SavePlayerProfile ();
-ResetModFolders ();
-gameStates.app.bGameRunning = 0;
-backgroundManager.Rebuild ();
-SetFunctionMode (FMODE_MENU);	
 RETURN
 }
 
@@ -1133,12 +1137,17 @@ if (m_bRunning) { // game states are updated in separate thread
 #endif
 	if (fps) {
 		t += 1000 / fps - SDL_GetTicks ();
-		if (t > 0)
+		if (t > 0) {
+			//playerSynchronizer.Start ();
 			G3_SLEEP (t);
+			//playerSynchronizer.Stop ();
+			}
 		}	
 	}
 else {
+	//playerSynchronizer.Start ();
 	CalcFrameTime (fps);
+	//playerSynchronizer.Stop ();
 	HandleControls (bControls);
 	gameStates.render.EnableCartoonStyle (1, 1, 1);
 	m_nResult = Preprocess ();

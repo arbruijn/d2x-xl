@@ -1883,7 +1883,7 @@ const char *defaultGameTexts [][2] = {
  {"Unzureichende Grafik-Hardware.\nD2X-XL laeuft mit reduzierten\nEinstellungen.", "Insufficient graphics hardware.\nD2X-XL will run at reduced settings."},
  {"Raketen", "Missiles"},
  {"Du hast D2X-XL jetzt\nschon einige Zeit genutzt.\n\nWenn Du es noch nicht getan hast,\nunterstuetze seine Weiterentwicklung\nbitte mit einer Spende.",
-  "You have been using D2X-XL\nfor quite a while now.\n\nPlease support its future development\nwith a donation if you haven't\ndone so already."},
+  "You have been using D2X-XL\nfor quite a while now.\n\nPlease consider supporting\nits future development\nwith a donation."},
  {"~Schadensmodell: %s", "~Damage Model: %s"},
  {"zur naechsten Flaeche", "to closest face"},
  {"zur Mine", "to mine"},
@@ -2835,10 +2835,10 @@ if (bDumpTexts == 1) {
 	}
 
 j = BASE_TEXT_COUNT + GameTextCount ();
-if (!(pszTexts = new char * [j + 1]))
+if (!(pszTexts = NEW char * [j + 1]))
 	return NULL;
 h = GameTextSize ();
-if (!(*pszTexts = new char [h])) {
+if (!(*pszTexts = NEW char [h])) {
 	delete[] pszTexts;
 	return NULL;
 	}
@@ -2955,7 +2955,7 @@ for (nLine = 0; cf.GetS (szText, sizeof (szText)); nLine++) {
 	l = int32_t (strlen (p));
 	if (!l)
 		continue;
-	if (!(t = new char [l + 1]))
+	if (!(t = NEW char [l + 1]))
 		break;
 	memcpy (t, p, l + 1);
 	SetupText (t, szFile, nLine);
@@ -3078,7 +3078,7 @@ if (!tFile.Open (filename, gameFolders.game.szData [0], "rb", 0)) {
 		}
 	bBinary = 1;
 	len = (int32_t) iFile.Length ();
-	text = new char [len];
+	text = NEW char [len];
 	atexit (free_text);
 	iFile.Read (text, 1, len);
 	iFile.Close ();
@@ -3088,7 +3088,7 @@ else {
 	char *pi, *pj;
 
 	len = (int32_t) tFile.Length ();
-	text = new char [len];
+	text = NEW char [len];
 	atexit (free_text);
 	tFile.Read (text, 1, len);
 	for (i = len, pi = pj = text; i; i--, pi++)

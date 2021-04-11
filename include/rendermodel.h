@@ -147,7 +147,10 @@ class CSubModel {
 		~CSubModel () { Destroy (); }
 		void Init (void) { memset (this, 0, sizeof (*this)); }
 		bool Create (void);
-		void Destroy (void) { Init (); }
+		void Destroy (void) { 
+			m_edges.Destroy ();
+			Init (); 
+			}
 		void InitMinMax (void);
 		void SetMinMax (CFloatVector3 *pVertex);
 		void SortFaces (CBitmap* pTexture);

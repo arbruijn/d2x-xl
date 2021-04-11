@@ -130,7 +130,7 @@ int32_t CModel::BuildFromOOF (CObject *pObj, int32_t nModel)
 {
 	OOF::CModel*	po = gameData.modelData.modelToOOF [1][nModel];
 	CBitmap*			pBm;
-	int32_t				i;
+	int32_t			i;
 
 if (!po) {
 	po = gameData.modelData.modelToOOF [0][nModel];
@@ -150,6 +150,7 @@ if (!Create ()) {
 	}
 GetOOFModelItems (nModel, po, /*((nModel == 108) || (nModel == 110)) ? 0.805f :*/ 1.0f);
 m_nModel = nModel;
+m_textures.SetName ("RenderModel::CModel::m_textures");
 m_textures = po->m_textures.m_bitmaps;
 m_nTextures = po->m_textures.m_nBitmaps;
 for (i = 0, pBm = m_textures.Buffer (); i < m_nTextures; i++, pBm++) {

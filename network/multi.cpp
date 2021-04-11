@@ -238,6 +238,10 @@ int32_t MultiMsgLen (uint8_t nMsg)
 #if 0
 return multiMessageLengths [nMsg][0];
 #else
+#	if DBG
+	if (nMsg > MULTI_MAX_TYPE)
+		return 0;
+#	endif
 	int32_t l = multiMessageLengths [nMsg][gameStates.multi.nGameType == UDP_GAME];
 
 return (l > 0) ? l : multiMessageLengths [nMsg][0];
@@ -269,7 +273,7 @@ if (gameStates.multi.nGameType != UDP_GAME)
 int32_t nId = importantMessages [0].Add (buf);
 if (nId < 0)
 	return false;
-PUT_INTEL_INT (buf, nId);
+PUT_INTEL_INT (buf + 1, nId);
 return true;
 }
 
@@ -426,7 +430,7 @@ void ResetPlayerPaths (void)
 
 for (i = 0; i < MAX_PLAYERS; i++, pPlayer++) {
 	gameData.renderData.thrusters [i].path.Reset (10, 1);
-	PLAYER (i).m_fpLightath.Reset (-1, -1);
+	PLAYER (i).m_flightPath.Reset (-1, -1);
 	}
 }
 
@@ -438,7 +442,7 @@ for (int32_t i = 0; i < N_PLAYERS; i++) {
 	CObject* pObj = OBJECT (PLAYER (i).nObject);
 	if (pObj) {
 		gameData.renderData.thrusters [i].path.Update (pObj);
-		PLAYER (i).m_fpLightath.Update (pObj);
+		PLAYER (i).m_flightPath.Update (pObj);
 		}
 	}
 }
@@ -1412,15 +1416,15 @@ void MultiDoPosition (uint8_t* buf)
 if (IsNetworkGame) 
 	return;
 
-int32_t pBuffer = 0;
+int32_t pBuffer = 1;
 if (gameStates.multi.nGameType == UDP_GAME) {
 	CObject* pObj = OBJECT (PLAYER (buf [pBuffer++]).nObject);
 	memcpy (&pObj->Position (), buf + pBuffer, sizeof (CFixVector));
 	pBuffer += sizeof (CFixVector);
 	memcpy (&pObj->Orientation (), buf + pBuffer, sizeof (CFixMatrix));
 	pBuffer += sizeof (CFixMatrix);
-	memcpy (&pObj->Velocity (), buf + pBuffer, sizeof (CFixMatrix));
-	pBuffer += sizeof (CFixMatrix);
+	memcpy (&pObj->Velocity (), buf + pBuffer, sizeof (CFixVector));
+	pBuffer += sizeof (CFixVector);
 #if (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 	INTEL_VECTOR (pObj->Position ());
 	INTEL_MATRIX (pObj->Orientation ());
@@ -2210,16 +2214,27 @@ extern FILE *RecieveLogFile;
 // Takes a bunch of messages, check them for validity,
 // and pass them to MultiProcessData.
 
+#if DBG
+uint8_t msgLog [10000];
+int32_t nMsgs = 0;
+#endif
+
 void MultiProcessBigData (uint8_t *buf, int32_t bufLen)
 {
-for (int32_t pBufferos = 0, msgLen = 0; pBufferos < bufLen; pBufferos += msgLen) {
-	uint8_t nType = buf [pBufferos];
+#if DBG
+nMsgs = 0;
+#endif
+for (int32_t pBuffer = 0, msgLen = 0; pBuffer < bufLen; pBuffer += msgLen) {
+	uint8_t nType = buf [pBuffer];
+#if DBG
+	msgLog [nMsgs++] = nType;
+#endif
 	if (nType > MULTI_MAX_TYPE)
 		return;
 	msgLen = MultiMsgLen (nType);
-	if (pBufferos + msgLen > bufLen) 
+	if (pBuffer + msgLen > bufLen) 
 		return;
-	if (!MultiProcessData (buf + pBufferos, msgLen))
+	if (!MultiProcessData (buf + pBuffer, msgLen))
 		return;
 	}
 }
@@ -2230,8 +2245,8 @@ int MultiCheckBigData (uint8_t *buf, int32_t bufLen)
 {
 	static uint8_t nDbgType = MULTI_RESTORE_GAME;
 
-for (int32_t pBufferos = 0, msgLen = 0; pBufferos < bufLen; pBufferos += msgLen) {
-	uint8_t nType = buf [pBufferos];
+for (int32_t pBuffer = 0, msgLen = 0; pBuffer < bufLen; pBuffer += msgLen) {
+	uint8_t nType = buf [pBuffer];
 #if DBG
 	if (nType == nDbgType)
 		BRP;
@@ -2239,7 +2254,7 @@ for (int32_t pBufferos = 0, msgLen = 0; pBufferos < bufLen; pBufferos += msgLen)
 	if (nType > MULTI_MAX_TYPE)
 		return 0;
 	msgLen = MultiMsgLen (nType);
-	if (pBufferos + msgLen > bufLen) 
+	if (pBuffer + msgLen > bufLen) 
 		return 0;
 	}
 return 1;
@@ -2621,13 +2636,16 @@ int32_t pBuffer = 0;
 gameData.multigame.msg.buf [pBuffer++] = MULTI_POSITION;
 if (gameStates.multi.nGameType == UDP_GAME) {
 	gameData.multigame.msg.buf [pBuffer++] = pObj->Id ();
-	memcpy (gameData.multigame.msg.buf + pBuffer, &pObj->info.position, sizeof (tObjTransformation));
+	memcpy (gameData.multigame.msg.buf + pBuffer, &pObj->Position (), sizeof (CFixVector));
+	pBuffer += sizeof (CFixVector);
+	memcpy (gameData.multigame.msg.buf + pBuffer, &pObj->Orientation (), sizeof (CFixMatrix));
+	pBuffer += sizeof (CFixMatrix);
+
 #if (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 	tObjTransformation* p = reinterpret_cast<tObjTransformation*> (gameData.multigame.msg.buf + pBuffer);
 	INTEL_VECTOR (t.vPos);
 	INTEL_MATRIX (t.mOrientation);
 #endif
-	pBuffer += sizeof (tObjTransformation);
 	memcpy (gameData.multigame.msg.buf + pBuffer, &pObj->Velocity (), sizeof (CFixVector));
 #if (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 	INTEL_VECTOR (*reinterpret_cast<CFixVector*>(gameData.multigame.msg.buf + pBuffer));
@@ -2845,7 +2863,7 @@ pBuffer += 2;
 gameData.multigame.msg.buf [pBuffer++] = (int8_t) nSide;
 gameData.multigame.msg.buf [pBuffer++] = (uint8_t) flags;
 SET_MSG_ID
-NetworkSendMineSyncPacket (gameData.multigame.msg.buf, 5, nPlayer);
+NetworkSendMineSyncPacket (gameData.multigame.msg.buf, pBuffer, nPlayer);
 }
 
 //
@@ -4473,7 +4491,8 @@ pBuffer += 4;
 if (bCreate || !gameData.hoardData.pMonsterBall) {
 	gameData.hoardData.nMonsterballSeg = FindSegByPos (v, nSegment, 1, 0);
 	gameData.hoardData.vMonsterballPos = v;
-	CreateMonsterball ();
+	if (!CreateMonsterball ())
+		return;
 	gameData.hoardData.pMonsterBall->info.position.vPos = v;
 	}
 v.v.coord.x = GET_INTEL_INT (buf + pBuffer);
@@ -5051,7 +5070,7 @@ pBuffer += (MAX_ROBOTS_CONTROLLED * 4);
 memcpy (&(gameData.multigame.msg.buf [pBuffer]), &gameData.multigame.robots.fired, MAX_ROBOTS_CONTROLLED * 4);
 pBuffer += (MAX_ROBOTS_CONTROLLED * 4);
 SET_MSG_ID
-NetworkSendMineSyncPacket (gameData.multigame.msg.buf, 1, nPlayer);
+NetworkSendMineSyncPacket (gameData.multigame.msg.buf, pBuffer, nPlayer);
 }
 
 //-----------------------------------------------------------------------------
@@ -5569,7 +5588,7 @@ ADD_MSG_ID
 gameData.multigame.msg.buf [pBuffer++] = nPlayer; // dummy values
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + pBuffer, nSegment);
 pBuffer += 2;
-gameData.multigame.msg.buf [pBuffer] = nSide; // dummy values
+gameData.multigame.msg.buf [pBuffer++] = nSide; // dummy values
 SET_MSG_ID
 MultiSendData (gameData.multigame.msg.buf, pBuffer, 0);
 }

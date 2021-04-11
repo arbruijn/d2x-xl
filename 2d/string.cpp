@@ -132,7 +132,7 @@ if (ps->pszText && (ps->nLength < l)) {
 	}
 if (!ps->pszText) {
 	ps->nLength = 3 * l / 2;
-	if (!(ps->pszText = new char [ps->nLength])) {
+	if (!(ps->pszText = NEW char [ps->nLength])) {
 		delete ps->pBm;
 		ps->pBm = NULL;
 		*idP = 0;

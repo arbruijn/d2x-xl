@@ -2,8 +2,11 @@
 #define _OGL_SHADER_H
 
 #ifdef _WIN32
-#include <windows.h>
-#include <stddef.h>
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <windows.h>
+#	pragma pack(pop)
+#	include <stddef.h>
 #endif
 
 #include "glew.h"

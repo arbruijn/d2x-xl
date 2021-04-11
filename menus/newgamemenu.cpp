@@ -315,7 +315,7 @@ if (gameStates.app.bPrecomputeLightmaps)
 
 for (;;) {
 	m.Destroy ();
-	m.Create (20);
+	m.Create (20, "NewGameMenu");
 
 	if (nMission >= 0) {
 		nMaxLevel = GetHighestLevel ();
@@ -384,15 +384,6 @@ for (;;) {
 		return -1;
 		}
 
-	if (gameStates.app.bPrecomputeLightmaps)
-		GET_VAL (gameStates.app.bRebuildLightmaps, "rebuild lightmaps");
-	else {
-		GET_VAL (gameOpts->app.bEnableMods, "enable mods");
-		GET_VAL (extraGameInfo [IsMultiGame].bAllowCustomWeapons, "allow custom weapons");
-		if (!extraGameInfo [IsMultiGame].bAllowCustomWeapons)
-			SetDefaultWeaponProps ();
-		}
-
 	if (!gameStates.app.bPrecomputeLightmaps && (choice == m.IndexOf ("loadout")))
 		LoadoutOptionsMenu ();
 	else if (choice == m.IndexOf ("mission selector")) {
@@ -437,6 +428,10 @@ else {
 		gameData.bossData.InitGateIntervals ();
 		}
 	GetShipSelection (m, optShip);
+	GET_VAL (gameOpts->app.bEnableMods, "enable mods");
+	GET_VAL (extraGameInfo [IsMultiGame].bAllowCustomWeapons, "allow custom weapons");
+	if (!extraGameInfo [IsMultiGame].bAllowCustomWeapons)
+		SetDefaultWeaponProps ();
 	SavePlayerProfile ();
 	}
 
@@ -550,7 +545,7 @@ if ((gameStates.app.bNostalgia < 2) && (gameData.multiplayer.autoNG.bValid > 0))
 do {
 	nOldGameMode = gameData.appData.nGameMode;
 	m.Destroy ();
-	m.Create (15);
+	m.Create (15, "MultiplayerMenu");
 	if (DBG || gameStates.app.bNostalgia < 2) {
 		m.AddMenu ("create game", TXT_CREATE_GAME, KEY_S, HTX_NETWORK_SERVER);
 		m.AddMenu ("join game", TXT_JOIN_GAME, KEY_J, HTX_NETWORK_CLIENT);

@@ -145,7 +145,7 @@ class CCanvas : public CViewport, public CBitmap {
 
 		static void Push (CCanvas* pCanvas) { 
 			if (!m_save.Buffer ())
-				m_save.Create (10);
+				m_save.Create (10, "CCanvas::m_save");
 			if (m_save.Grow ()) {
 				m_save.Top ()->m_canvas = pCanvas;
 #if DBG

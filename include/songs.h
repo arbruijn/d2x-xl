@@ -93,16 +93,16 @@ class CSongData {
 class CSongInfo {
 	public:
 		CSongData			data [MAX_NUM_SONGS];
-		int32_t					songIndex [2][MAX_NUM_SONGS];
-		int32_t					bInitialized;
-		int32_t					bPlaying;
-		int32_t					nTotalSongs;
-		int32_t					nSongs [2];
-		int32_t					nFirstLevelSong [2];
-		int32_t					nLevelSongs [2];
-		int32_t					nCurrent;
-		int32_t					nLevel;
-		int32_t					nD1EndLevelSong;
+		int32_t				songIndex [2][MAX_NUM_SONGS];
+		int32_t				bInitialized;
+		int32_t				bPlaying;
+		int32_t				nTotalSongs;
+		int32_t				nSongs [2];
+		int32_t				nFirstLevelSong [2];
+		int32_t				nLevelSongs [2];
+		int32_t				nCurrent;
+		int32_t				nLevel;
+		int32_t				nD1EndLevelSong;
 		time_t				tStart;
 		time_t				tSlowDown;
 		time_t				tPos;
@@ -140,6 +140,7 @@ class CSongManager {
 		void Shuffle (void);
 		void Sort (void);
 		void Align (void);
+		int32_t LoadDescentSongs (char *pszFile, int32_t bD1Songs);
 		int32_t LoadDescentPlaylists (void);
 		int32_t LoadUserPlaylist (char *pszPlaylist);
 		int32_t LoadModPlaylist (void);
@@ -165,6 +166,7 @@ class CSongManager {
 		inline int32_t TotalCount (void) { return m_info.nTotalSongs; }
 		inline int32_t Count (uint32_t i) { return m_info.nSongs [i]; }
 		inline CSongData& SongData (uint32_t i = 0) { return m_info.data [i]; }
+
 	};
 
 extern CSongManager songManager;

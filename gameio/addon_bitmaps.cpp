@@ -54,7 +54,7 @@ CAnimation shockwave (const_cast<char*>("shockwave1.tga"), 96, 1);
 void CAddonBitmap::Register (CAddonBitmap* pBm)
 {
 if (!m_list.Buffer ()) {
-	m_list.Create (10);
+	m_list.Create (10, "CAddonBitmap::m_list");
 	m_list.SetGrowth (10);
 	}
 m_list.Push (pBm);
@@ -167,7 +167,7 @@ if (pszName)
 else
 	*m_szName = '\0';
 if (m_nFrames)
-	m_frames.Create (m_nFrames);
+	m_frames.Create (m_nFrames, pszName);
 m_bCartoonize = bCartoonize;
 }
 
@@ -307,6 +307,9 @@ thruster.Unload ();
 shield [0].Unload ();
 shield [1].Unload ();
 shield [2].Unload ();
+pyroIcon.Unload ();
+cloakIcon.Unload ();
+invulIcon.Unload ();
 explBlast.Unload ();
 sparks.Unload ();
 deadzone.Unload ();

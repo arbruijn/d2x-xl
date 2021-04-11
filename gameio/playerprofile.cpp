@@ -234,10 +234,10 @@ int32_t CPlayerProfile::Register (void *valP, const char *pszIdent, int32_t i, i
 	CParam	*pp;
 
 l = (int32_t) strlen (MakeTag (szTag, pszIdent, i, j));
-pp = new CParam;
+pp = NEW CParam;
 if (!pp)
 	return 0;
-pp->szTag = new char [l + 1];
+pp->szTag = NEW char [l + 1];
 if (!pp->szTag)
 	return 0;
 memcpy (pp->szTag, szTag, l + 1);
@@ -1994,7 +1994,7 @@ strncpy (text, LOCALPLAYER.callsign,CALLSIGN_LEN);
 
 for (;;) {
 	m.Destroy ();
-	m.Create (1);
+	m.Create (1, "PilotNameMenu");
 	m.AddInput ("", text, 8);
 
 	nmAllowedChars = playername_allowed_chars;

@@ -3,7 +3,10 @@
 
 #ifdef _WIN32
 
-#include <windows.h>
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <windows.h>
+#	pragma pack(pop)
 
 // Empty file
 typedef struct FILEFINDSTRUCT {

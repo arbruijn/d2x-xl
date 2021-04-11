@@ -24,9 +24,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_CRITICAL		1   //this doesn't get played directly (only when mine critical)
 #define EF_ONE_SHOT		2   //this is a special that gets played once
 #define EF_STOPPED		4   //this has been stopped
-#define EF_ALTFMT			8
-#define EF_FROMPOG		16
-#define EF_INITIALIZED	32
+#define EF_ALTFMT			16
+#define EF_FROMPOG		32
+#define EF_INITIALIZED	64
 
 typedef struct tChangeEffect {
 	int16_t					nWallTexture;		//Which element of Textures array to replace.

@@ -1047,7 +1047,7 @@ m_data.nHead =
 m_data.nTail =
 m_data.nSounds = 0;
 m_data.nChannel = -1;
-m_data.queue.Create (MAX_SOUND_QUEUE);
+m_data.queue.Create (MAX_SOUND_QUEUE, "CSoundQueue::m_data.queue");
 }
 
 //------------------------------------------------------------------------------

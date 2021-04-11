@@ -106,15 +106,15 @@ class CDLL {
 			}
 
 		void Unlink (CDLLElement* e) {
-			if (m_head == e)
-				m_head = m_head->GetNext ();
-			if (m_tail == e)
-				m_tail = m_tail->GetPrev ();
+			if (m_head == e) {
+				if ((m_head = m_head->GetNext ()))
+					m_head->SetPrev (NULL);
+				}
+			if (m_tail == e) {
+				if ((m_tail = m_tail->GetPrev ()))
+					m_tail->SetNext (NULL);
+				}
 			e->Unlink ();
-			if (m_head)
-				m_head->SetPrev (NULL);
-			if (m_tail)
-				m_tail->SetNext (NULL);
 			--m_length;
 			}
 

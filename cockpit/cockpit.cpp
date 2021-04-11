@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 CGenericCockpit::CGenericCockpit ()
 {
-m_save.Create (10);
+m_save.Create (10, "CGenericCockpit::m_save");
 }
 
 //	-----------------------------------------------------------------------------

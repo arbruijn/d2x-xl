@@ -666,9 +666,9 @@ ENTER (0, 0);
 
 if (depthBuffer.Buffer ())
 	RETVAL (1)
-if (!depthBuffer.Create (uint32_t (ITEM_DEPTHBUFFER_SIZE * scale)))
+if (!depthBuffer.Create (uint32_t (ITEM_DEPTHBUFFER_SIZE * scale), "CTranspItemBuffers::depthBuffer"))
 	RETVAL (0)
-if (!itemHeap.Create (uint32_t (ITEM_BUFFER_SIZE * scale))) {
+if (!itemHeap.Create (uint32_t (ITEM_BUFFER_SIZE * scale), "CTranspItemBuffers::itemHeap")) {
 	depthBuffer.Destroy ();
 	RETVAL (0)
 	}
@@ -771,7 +771,7 @@ return -1;
 int32_t CTransparencyRenderer::AllocBuffers (void)
 {
 ENTER (0, 0);
-for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
+for (int32_t i = 0; i < gameStates.app.nThreads; i++)
 	if (!m_data.buffers [i].Create ())
 		RETVAL (0)
 RETVAL (1)

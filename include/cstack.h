@@ -111,9 +111,9 @@ class CStack : public CArray< _T > {
 			m_tos = 0;
 			}
 
-		inline _T *Create (uint32_t length) {
+		inline _T *Create (uint32_t length, const char* pszName = NULL) {
 			Destroy ();
-			return CArray<_T>::Create (length);
+			return CArray<_T>::Create (length, pszName);
 			}
 
 		inline uint32_t Growth (void) { return m_growth; }

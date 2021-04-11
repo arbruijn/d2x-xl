@@ -14,7 +14,10 @@
 #	include <SDL_net/SDL_net.h>
 #else
 #	ifdef _WIN32
+#		pragma pack(push)
+#		pragma pack(8)
 #		include <WinSock.h>
+#		pragma pack(pop)
 #	endif
 #	include <SDL.h>
 #	include <SDL_thread.h>

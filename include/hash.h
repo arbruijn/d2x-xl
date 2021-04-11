@@ -16,12 +16,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 class CHashTable {
 	public:
-		int32_t 						m_bitSize;
-		int32_t						m_andMask;
-		int32_t						m_size;
-		int32_t						m_nItems;
+		int32_t 					m_bitSize;
+		int32_t					m_andMask;
+		int32_t					m_size;
+		int32_t					m_nItems;
 		CArray<const char*>	m_key;
-		CArray<int32_t>				m_value;
+		CArray<int32_t>		m_value;
 
 	public:
 		CHashTable () { Init (); }

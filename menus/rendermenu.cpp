@@ -675,7 +675,7 @@ nIPD = X2MM (gameOpts->render.stereo.xSeparation [1]) - RIFT_MIN_IPD; //RIFT_IPD
 
 do {
 	m.Destroy ();
-	m.Create (50);
+	m.Create (50, "RenderOptionsMenu");
 	if (!gameStates.app.bPrecomputeLightmaps) {
 #if !DBG
 		if (!gameOpts->app.bNotebookFriendly)

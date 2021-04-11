@@ -54,12 +54,12 @@ size = m_size;
 m_andMask = m_size - 1;
 if (m_size == 0)
 	Error ("Hashtable has size of 0");
-if (!m_key.Create (size))
+if (!m_key.Create (size, "CHashTable::m_key"))
 	Error ("Not enough memory to create a hash table of size %d", size);
 for (i = 0; i < size; i++)
 	m_key [i] = NULL;
 // Use calloc cause we want zero'd array.
-if (!m_value.Create (size)) {
+if (!m_value.Create (size, "CHashTable::m_value")) {
 	m_key.Destroy ();
 	Error ("Not enough memory to create a hash table of size %d\n", size);
 	}

@@ -1185,7 +1185,9 @@ if (!m_bQuick) {
 			}
 		}
 	}
-gameStates.app.bGameRunning = 0;
+
+CleanupAfterGame ();
+LogMemBlocks (false);
 i = LoadState (0, bSecret);
 gameData.appData.bGamePaused = 0;
 if (i) {

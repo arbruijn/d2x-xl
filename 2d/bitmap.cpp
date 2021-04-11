@@ -126,6 +126,7 @@ UnregisterBitmap (this);
 uint8_t* CBitmap::CreateBuffer (void)
 {
 if (m_info.props.rowSize * m_info.props.h) {
+	CArray<uint8_t>::SetName (*Name () ? Name () : "CBitmap");
 	CArray<uint8_t>::Resize ((m_info.nBPP > 1) ? m_info.props.h * m_info.props.rowSize : MAX_BMP_SIZE (m_info.props.w, m_info.props.h));
 #if DBG
 	Clear ();
@@ -140,7 +141,7 @@ static int32_t _w, _h, _bpp;
 
 CBitmap* CBitmap::Create (uint8_t mode, int32_t w, int32_t h, int32_t bpp, const char* pszName)
 {
-	CBitmap	*pBm = new CBitmap; 
+	CBitmap	*pBm = NEW CBitmap; 
 
 _w = w;
 _h = h;
@@ -264,7 +265,7 @@ CBitmap *CBitmap::CreateChild (int32_t x, int32_t y, int32_t w, int32_t h)
 {
     CBitmap *child;
 
-if  (!(child = new CBitmap))
+if  (!(child = NEW CBitmap))
 	return NULL;
 child->InitChild (this, x, y, w, h);
 return child;
@@ -665,6 +666,8 @@ if (!(pAltBm = Override ()))
 SetOverride (NULL);
 if (BPP () == 1)
 	DelFlags (BM_FLAG_TGA);
+if (pAltBm->BPP () == 1)
+	return 1;
 if ((pAltBm->Type () == BM_TYPE_FRAME) && !(pAltBm = pAltBm->Parent ()))
 	return 1;
 if (pAltBm->Type () != BM_TYPE_ALT)

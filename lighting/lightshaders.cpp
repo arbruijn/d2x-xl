@@ -964,7 +964,7 @@ char *BuildLightingShader (const char *pszTemplate, int32_t nLights)
 	int32_t	l = (int32_t) strlen (pszTemplate) + 1;
 	char	*pszFS, szLights [2];
 
-if (!(pszFS = new char [l]))
+if (!(pszFS = NEW char [l]))
 	return NULL;
 if (nLights > MAX_LIGHTS_PER_PIXEL)
 	nLights = MAX_LIGHTS_PER_PIXEL;

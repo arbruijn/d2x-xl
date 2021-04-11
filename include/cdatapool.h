@@ -41,9 +41,9 @@ class CDataPool {
 			Init (); 
 			}
 
-		inline bool Create (uint32_t size) { 
+		inline bool Create (uint32_t size, const char* pszName = "CDataPool::m_buffer") { 
 			Destroy ();
-			if (!m_buffer.Create (size))
+			if (!m_buffer.Create (size, pszName))
 				return false;
 			uint32_t i;
 			for (i = 0; i < size; i++) {

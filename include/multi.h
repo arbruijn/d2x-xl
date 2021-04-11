@@ -590,7 +590,7 @@ CObject* MultiRobot (int32_t nObject);
 
 // Reserve space for the message id in the message. This macro will place the message id right after the one byte message type in the message buffer.
 // pBuffer must point to the byte in the message buffer following the player id. The variable _msgId is created and points to the first byte of the reserved space in the message buffer.
-#define ADD_MSG_ID				uint8_t* _msgIdP = gameData.multigame.msg.buf + pBuffer; \
+#define ADD_MSG_ID				uint8_t* _msgIdP = gameData.multigame.msg.buf + pBuffer - 1; \
 										if (gameStates.multi.nGameType == UDP_GAME) { \
 											PUT_INTEL_INT (gameData.multigame.msg.buf + pBuffer, 0); \
 											pBuffer += 4; \

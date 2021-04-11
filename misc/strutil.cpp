@@ -48,7 +48,7 @@ char *StrDup (const char *source)
 	char	*newstr;
 	int32_t	l = (int32_t) strlen (source) + 1;
 
-if ((newstr = new char [l]))
+if ((newstr = NEW char [l]))
 	memcpy (newstr, source, l);
 return newstr;
 }

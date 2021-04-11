@@ -90,7 +90,10 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#pragma pack(push)
+#pragma pack(8)
 #include <winsock.h>
+#pragma pack(pop)
 
 #include "descent.h"
 #include "args.h"

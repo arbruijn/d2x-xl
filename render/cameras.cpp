@@ -535,15 +535,15 @@ if (gameData.demoData.nState == ND_STATE_PLAYBACK)
 #endif
 PrintLog (1, "creating cameras\n");
 Destroy ();
-if (!m_cameras.Create (MAX_CAMERAS)) {
+if (!m_cameras.Create (MAX_CAMERAS, "CCameraManager::m_cameras")) {
 	PrintLog (-1);
 	return 0;
 	}
-if (!m_faceCameras.Create (gameData.segData.nSegments * 6)) {
+if (!m_faceCameras.Create (gameData.segData.nSegments * 6, "CCameraManager::m_faceCameras")) {
 	PrintLog (-1);
 	return 0;
 	}
-if (!m_objectCameras.Create (LEVEL_OBJECTS)) {
+if (!m_objectCameras.Create (LEVEL_OBJECTS, "CCameraManager::m_objectCameras")) {
 	PrintLog (-1);
 	return 0;
 	}

@@ -217,7 +217,7 @@ class __pack__ CPlayerInfo {
 
 class CPlayerData : public CPlayerInfo {
 	public:
-		CFpLightath	m_fpLightath;
+		CFlightPath	m_flightPath;
 		CShipEnergy	m_shield;
 		CShipEnergy	m_energy;
 		int8_t		m_nObservedPlayer;
@@ -237,7 +237,7 @@ class CPlayerData : public CPlayerInfo {
 		void Reset (void) { 
 			m_shield.Reset ();
 			m_energy.Reset ();
-			m_fpLightath.Reset (-1, -1);
+			m_flightPath.Reset (-1, -1);
 			m_nObservedPlayer = 0;
 			m_laserLevels [0] = m_laserLevels [1] = 0;
 			m_bExploded = 0;
@@ -259,7 +259,7 @@ class CPlayerData : public CPlayerInfo {
 		bool WaitingForExplosion (void);
 		bool WaitingForWeaponInfo (void);
 
-		inline CFpLightath& FpLightath (void) { return m_fpLightath; }
+		inline CFlightPath& FpLightath (void) { return m_flightPath; }
 		inline int8_t ObservedPlayer (void) { return m_nObservedPlayer; }
 		inline void SetObservedPlayer (int8_t nPlayer) { m_nObservedPlayer = nPlayer; }
 

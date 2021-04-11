@@ -101,7 +101,6 @@ char DOWN_ARROW_MARKER [2] = {(char) 136, 0};
 void CMenuItem::Destroy (void)
 {
 FreeTextBms ();
-FreeId ();
 }
 
 //------------------------------------------------------------------------------ 
@@ -113,16 +112,6 @@ for (int32_t i = 0; i < 2; i++)
 		delete m_bmText [i];
 		m_bmText [i] = NULL;
 		}
-}
-
-//------------------------------------------------------------------------------ 
-
-void CMenuItem::FreeId (void)
-{
-if (m_szId) {
-	delete m_szId;
-	m_szId = NULL;
-	}
 }
 
 //------------------------------------------------------------------------------ 
@@ -741,9 +730,13 @@ return m_pszText;
 void CMenuItem::SetId (const char* pszId)
 {
 if (pszId && *pszId) {
-	size_t l = strlen (pszId) + 1;
-	if ((m_szId = new char [l]))
-		memcpy (m_szId, pszId, l);
+	size_t l = strlen (pszId);
+	if (l > sizeof (m_szId) - 1) {
+		PrintLog (0, "Error: Invalid menu item id '%s'\n", pszId);
+		l = sizeof (m_szId) - 1;
+		}
+	memcpy (m_szId, pszId, l);
+	m_szId [l] = '\0';
 	}
 }
 

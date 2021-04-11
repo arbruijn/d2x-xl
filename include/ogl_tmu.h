@@ -3,8 +3,11 @@
 #define _OGL_TMU_H
 
 #ifdef _WIN32
-#include <windows.h>
-#include <stddef.h>
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <windows.h>
+#	pragma pack(pop)
+#	include <stddef.h>
 #endif
 
 #define	USE_DISPLAY_LISTS	0

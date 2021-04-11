@@ -10,7 +10,10 @@
 #endif
 
 #ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #	include <stddef.h>
 #	include <io.h>
 #endif
@@ -102,7 +105,7 @@ Destroy (true);
 
 void CShaderManager::Init (void)
 {
-m_shaders.Create (100);
+m_shaders.Create (100, "CShaderManager::m_shaders");
 m_shaders.SetGrowth (100);
 m_shaders.Clear ();
 m_nCurrent = -1;
@@ -160,7 +163,7 @@ if (fSize <= 0) {
 	}
 #endif
 
-if (!(pBuffer = new char [fSize + 1])) {
+if (!(pBuffer = NEW char [fSize + 1])) {
 	fclose (fp);
 	return NULL;	// out of memory
 	}
@@ -181,7 +184,7 @@ void CShaderManager::PrintLog (GLhandleARB handle, int32_t bProgram)
 #ifdef GL_VERSION_20
 if (bProgram) {
 	glGetProgramiv (GLuint (intptr_t (handle)), GL_INFO_LOG_LENGTH, &nLogLen);
-	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
+	if ((nLogLen > 0) && (infoLog = NEW char [nLogLen])) {
 		glGetProgramInfoLog (GLuint (intptr_t (handle)), nLogLen, &charsWritten, infoLog);
 		if (*infoLog) {
 			::PrintLog (1);
@@ -193,7 +196,7 @@ if (bProgram) {
 	}
 else {
 	glGetShaderiv (GLuint (intptr_t (handle)), GL_INFO_LOG_LENGTH, &nLogLen);
-	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
+	if ((nLogLen > 0) && (infoLog = NEW char [nLogLen])) {
 		glGetShaderInfoLog (GLuint (intptr_t (handle)), nLogLen, &charsWritten, infoLog);
 		if (*infoLog) {
 			::PrintLog (1);
@@ -205,7 +208,7 @@ else {
 	}
 #else
 glGetObjectParameterivARB (GLuint (intptr_t (handle)), GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
-if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
+if ((nLogLen > 0) && (infoLog = NEW char [nLogLen])) {
 	glGetInfoLogARB (GLuint (intptr_t (handle)), nLogLen, &charsWritten, infoLog);
 	if (*infoLog) {
 		::PrintLog (1);
@@ -245,6 +248,7 @@ int32_t CShaderManager::Alloc (int32_t& nShader)
 {
 if ((nShader >= 0) && (nShader < int32_t (m_shaders.ToS ())) && (m_shaders [nShader].pRef == &nShader))
 	return nShader;
+m_shaders.SetName ("CShaderManager::m_shaders");
 if (!m_shaders.Grow ())
 	return nShader = -1;
 nShader = m_shaders.ToS () - 1;

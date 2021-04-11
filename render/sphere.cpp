@@ -1382,7 +1382,11 @@ ENTER (0, 0);
 m_nFaces = 6 * int32_t (pow (4.0f, float (Quality ())));
 m_nVertices = m_nFaces * 3;
 
-if (m_faces.Create (m_nFaces) && m_quads [0].Create (m_nFaces) && m_quads [1].Create (m_nFaces) && m_worldVerts.Create (m_nVertices) && m_viewVerts.Create (m_nVertices)) 
+if (m_faces.Create (m_nFaces, "CQuadSphere::m_nFaces") && 
+	 m_quads [0].Create (m_nFaces, "CQuadSphere::m_quads [0]") && 
+	 m_quads [1].Create (m_nFaces, "CQuadSphere::m_quads [1]") && 
+	 m_worldVerts.Create (m_nVertices, "CQuadSphere::m_worldVerts") && 
+	 m_viewVerts.Create (m_nVertices, "CQuadSphere::m_viewVerts")) 
 	RETVAL (1)
 m_viewVerts.Destroy ();
 m_worldVerts.Destroy ();
@@ -1404,7 +1408,7 @@ int32_t CQuadSphere::CreateEdgeList (void)
 m_nEdges = m_nFaces * 2;
 if (!gameData.segData.CreateEdgeBuffers (m_nEdges))
 	return -1;
-if (!m_edges.Create (m_nEdges))
+if (!m_edges.Create (m_nEdges, "CQuadSphere::m_edges"))
 	return -1;
 
 m_nEdges = 0;
@@ -1551,11 +1555,11 @@ if (m_bValid && to.Expired ()) {
 CSphere *CreateSphere (void)
 {
 #if SPHERE_TYPE == SPHERE_TYPE_RINGS
-return new CRingedSphere ();
+return NEW CRingedSphere ();
 #elif SPHERE_TYPE == SPHERE_TYPE_TRIANGLES
-return new CTriangleSphere ();
+return NEW CTriangleSphere ();
 #elif SPHERE_TYPE == SPHERE_TYPE_QUADS
-return new CQuadSphere ();
+return NEW CQuadSphere ();
 #endif
 }
 

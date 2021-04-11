@@ -1,5 +1,8 @@
 #ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #	include <stddef.h>
 #	include <io.h>
 #elif !defined (__unix__)
@@ -115,6 +118,8 @@ void CLightmapProgress::Setup (void)
 if (!(m_pProgressMenu = CMenu::Active ()))
 	return;
 
+Timeout ().Start (33);
+
 if (!gameStates.app.bPrecomputeLightmaps) {
 	m_pTotalProgress = (*m_pProgressMenu) ["progress bar 1"];
 	return;
@@ -146,7 +151,6 @@ if (m_pLevelCount) {
 m_pLevelProgress->Value () = 0;
 m_pLevelProgress->MaxValue () = FACES.nFaces;
 m_nLocalProgress = 0; 
-Timeout ().Start (33);
 }
 
 //------------------------------------------------------------------------------
@@ -319,7 +323,7 @@ if (!m_buffers.Create (nBuffers))
 	return false;
 m_buffers.Clear ();
 for (int32_t i = 0; i < nBuffers; i++) {
-	if (!(m_buffers [i] = new CLightmapBuffer)) {
+	if (!(m_buffers [i] = NEW CLightmapBuffer)) {
 		for (; i > 0; --i)
 			delete m_buffers [i];
 		m_buffers.Destroy ();
@@ -371,7 +375,7 @@ if (buffers.Create (nBuffers)) {
 		}
 	else {
 		for (int32_t i = m_nBuffers; i < nBuffers; i++) {
-			if (!(buffers [i] = new CLightmapBuffer)) {
+			if (!(buffers [i] = NEW CLightmapBuffer)) {
 				for (; i > m_nBuffers; --i)
 					delete buffers [i];
 				buffers.Destroy ();
@@ -874,7 +878,7 @@ if (nCalls)
 
 //------------------------------------------------------------------------------
 
-int32_t CLightmapManager::MainThread (void)
+int32_t CLightmapManager::MainThreadId (void)
 {
 for (int32_t i = 0; i < gameStates.app.nThreads; i++)
 	if (m_bActiveThreads [i])
@@ -921,10 +925,9 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	BRP;
 #endif
 
+m_bActiveThreads [nThread] = true;
 data.m_vcd.pVertPos = &data.m_vcd.vertPos;
 pPixelPos = data.m_pixelPos + yMin * w;
-
-#if 1 
 
 // move edges for lightmap calculation slighty into the face to avoid lighting errors due to numerical errors when computing point to face visibility
 // for light sources and lightmap vertices. Otherwise these may occur at the borders of a face when the face to be lit is adjacent to a light emitting face.
@@ -1079,21 +1082,21 @@ for (y = yMin; y < yMax; y++) {
 #if USE_OPENMP
 #	pragma omp critical (LightmapProgressUpdate)
 #endif
-	if (nThread == MainThread ()) {
+	if (nThread == MainThreadId ()) {
 		if (m_progress.Timeout ().Expired ()) {
 			int32_t nKey = KeyInKey ();
 			if (nKey == KEY_ESC)
 				m_bSuccess = 0;
 			if (nKey == KEY_ALTED + KEY_F4)
 				exit (0);
-			CheckProgressMenu (nThread);
 			m_progress.Render (nThread);
-			CheckProgressMenu (nThread);
 			}
 		}
 
-	if (!m_bSuccess)
+	if (!m_bSuccess) {
+		m_bActiveThreads [nThread] = false;
 		return;
+		}
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			BRP;
@@ -1116,9 +1119,6 @@ for (y = yMin; y < yMax; y++) {
 			if (y == w - 1)
 				BRP;
 			}
-#endif
-		CheckProgressMenu (nThread);
-#if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			BRP;
 		int32_t nLights = lightManager.SetNearestToPixel (nSegment, nSide, &data.m_vNormal, pPixelPos, pFace->m_info.fRads [1] / 10.0f, nThread);
@@ -1128,11 +1128,9 @@ for (y = yMin; y < yMax; y++) {
 #else
 		if (0 < lightManager.SetNearestToPixel (nSegment, nSide, &data.m_vNormal, pPixelPos, pFace->m_info.fRads [1] / 10.0f, nThread)) {
 #endif
-			CheckProgressMenu (nThread);
 			data.m_vcd.vertPos.Assign (*pPixelPos);
 			color.SetZero ();
 			ComputeVertexColor (nSegment, nSide, -1, &color, &data.m_vcd, nThread);
-			CheckProgressMenu (nThread);
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 				BRP;
@@ -1175,7 +1173,6 @@ for (y = yMin; y < yMax; y++) {
 			pTexColor->Red () = (uint8_t) (255 * color.Red ());
 			pTexColor->Green () = (uint8_t) (255 * color.Green ());
 			pTexColor->Blue () = (uint8_t) (255 * color.Blue ());
-			CheckProgressMenu (nThread);
 			}
 		}
 	}
@@ -1196,15 +1193,12 @@ else if (data.m_nColor == 2) {
 	data.nWhiteLightmaps++;
 	}
 else {
-	CheckProgressMenu (nThread);
 	Blur (pFace, data);
 #if USE_OPENMP
 #	pragma omp critical (BuildLightmap)
 #endif
 	{
-	CheckProgressMenu (nThread);
 	Copy (data.m_texColor, m_list.m_nLightmaps);
-	CheckProgressMenu (nThread);
 	pFace->m_info.nLightmap = m_list.m_nLightmaps++;
 	}
 	}
@@ -1216,6 +1210,35 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 
 //------------------------------------------------------------------------------
 
+int32_t CLightmapManager::GetFace (void)
+{
+	int32_t nFace;
+#if USE_OPENMP
+#	pragma omp critical (GetFace)
+#endif
+	{
+	nFace = (m_nFaces > 0) ? FACES.nFaces - m_nFaces-- : -1;
+	}
+return nFace;
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapManager::BuildThread (int32_t nThread)
+{
+m_bActiveThreads [nThread] = true;
+while (m_bSuccess) {
+	int32_t nFace = GetFace ();
+	if (nFace < 0)
+		break;
+	m_progress.Update (nThread);
+	Build (FACES.faces + nFace, nThread);
+	}
+m_bActiveThreads [nThread] = false;
+}
+
+//------------------------------------------------------------------------------
+
 int32_t CLightmapManager::BuildAll (int32_t nFace)
 {
 CreateSpecial (m_data [0].m_texColor, 0, 0);
@@ -1223,384 +1246,32 @@ CreateSpecial (m_data [0].m_texColor, 1, 255);
 m_list.m_nLightmaps = 2;
 #if USE_OPENMP
 if (gameStates.app.nThreads > 1) {
+	m_nFaces = FACES.nFaces;
 	memset (m_bActiveThreads, 0, sizeof (m_bActiveThreads));
 #if 0
 	for (int32_t i = 0; i < gameStates.app.nThreads; i++)
 		uniDacsRouter [i].Create (gameData.segData.nSegments);
 #endif
-#	pragma omp parallel 
-	{
-		int32_t nThread = omp_get_thread_num ();
-		m_bActiveThreads [nThread] = true;
-#	pragma omp for
-		for (int32_t nFace = 0; nFace < FACES.nFaces; nFace++) {
-			if (m_bSuccess) {
-				CheckProgressMenu (nThread);
-				m_progress.Update (nThread);
-				CheckProgressMenu (nThread);
-				Build (FACES.faces + nFace, nThread);
-				CheckProgressMenu (nThread);
-				}
-			}
-		m_bActiveThreads [nThread] = false;
+#	pragma omp parallel for
+	for (int32_t nThread = 0; nThread < gameStates.app.nThreads; nThread++) {
+		BuildThread (nThread);
 		}
 	}
 else
 #endif
 	{
 	uniDacsRouter [0].Create (gameData.segData.nSegments);
+	m_bActiveThreads [0] = true;
 	for (int32_t nFace = 0; nFace < FACES.nFaces; nFace++) {
 		if (m_bSuccess) {
 			m_progress.Update ();
 			Build (FACES.faces + nFace, 0);
 			}
 		}
+	m_bActiveThreads [0] = false;
 	}
 return m_bSuccess;
 }
-
-#else 
-
-//------------------------------------------------------------------------------
-// build one entire lightmap in single threaded mode or in horizontal stripes when multi threaded
-
-void CLightmapManager::Build (CSegFace* pFace, int32_t nThread)
-{
-	CFixVector*		pPixelPos;
-	CRGBColor*		pTexColor;
-	CFloatVector3	color;
-	int32_t			w, h, x, y, yMin, yMax;
-	uint8_t			nTriangles = pFace->m_info.nTriangles - 1;
-	int16_t			nSegment = pFace->m_info.nSegment;
-	int8_t			nSide = (int8_t) pFace->m_info.nSide;
-	bool				bBlack, bWhite;
-	CLightmapData&	data = m_data [0];
-
-	CVertColorData	vcd = data.m_vcd; // need a local copy for each thread!
-
-h = LM_H;
-w = LM_W;
-
-if (nThread < 0) {
-	yMin = 0;
-	yMax = h;
-	nThread = 0;
-	}
-else {
-	int32_t nStep = (h + gameStates.app.nThreads - 1) / gameStates.app.nThreads;
-	yMin = nStep * nThread;
-	yMax = yMin + nStep;
-	if (yMax > h)
-		yMax = h;
-	}
-
-#if DBG
-if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	BRP;
-#endif
-
-vcd.pVertPos = &vcd.vertPos;
-pPixelPos = data.m_pixelPos + yMin * w;
-
-#if 1 
-
-// move edges for lightmap calculation slighty into the face to avoid lighting errors due to numerical errors when computing point to face visibility
-// for light sources and lightmap vertices. Otherwise these may occur at the borders of a face when the face to be lit is adjacent to a light emitting face.
-// The result of such lighting errors are dark spots at the borders of level geometry faces.
-
-CFloatVector corners [4] = {
-	FVERTICES [data.m_sideVerts [0]],
-	FVERTICES [data.m_sideVerts [1]],
-	FVERTICES [data.m_sideVerts [2]],
-	FVERTICES [data.m_sideVerts [nTriangles ? 3 : 0]],
-	};
-
-CFloatVector o0 = corners [0];
-o0 -= corners [1];
-CFloatVector::Normalize (o0);
-o0 *= 0.0015f;
-
-CFloatVector o1 = corners [1];
-o1 -= corners [2];
-CFloatVector::Normalize (o1);
-o1 *= 0.0015f;
-
-CFloatVector o2 = corners [2];
-o2 -= corners [3];
-CFloatVector::Normalize (o2);
-o2 *= 0.0015f;
-
-if (!nTriangles) {
-	corners [0] += o2;
-	corners [0] -= o0;
-	corners [1] += o0;
-	corners [1] -= o1;
-	corners [2] += o1;
-	corners [2] -= o2;
-	}
-else {
-	CFloatVector o3 = corners [3];
-	o3	-= corners [0];
-	CFloatVector::Normalize (o3);
-	o3 *= 0.0015f;
-
-	corners [0] += o3;
-	corners [0] -= o0;
-	corners [1] += o0;
-	corners [1] -= o1;
-	corners [2] += o1;
-	corners [2] -= o2;
-	corners [3] += o2;
-	corners [3] -= o3;
-	}
-
-CFixVector v0, v1, v2, v3;
-
-v0.Assign (corners [0]);
-v1.Assign (corners [1]);
-v2.Assign (corners [2]);
-v3.Assign (corners [3]);
-
-#else
-
-CFixVector v0 = VERTICES [data.m_sideVerts [0]];
-CFixVector v1 = VERTICES [data.m_sideVerts [1]];
-CFixVector v2 = VERTICES [data.m_sideVerts [2]];
-CFixVector v3 = VERTICES [data.m_sideVerts [3]];
-
-#endif
-
-CFixVector dx, dy;
-
-if (!nTriangles) {
-	CFixVector l0 = v2 - v1;
-	CFixVector l1 = v1 - v0;
-	for (y = yMin; y < yMax; y++) {
-		for (x = 0; x <= y; x++, pPixelPos++) {
-			dx = l0;
-			dy = l1;
-			dx *= data.nOffset [x];
-			dy *= data.nOffset [y];
-			*pPixelPos = v0;
-			*pPixelPos += dx; 
-			*pPixelPos += dy; 
-			}
-		}
-	}
-else if (data.m_nType != SIDE_IS_TRI_13) {
-	CFixVector l0 = v2 - v1;
-	CFixVector l1 = v1 - v0;
-	CFixVector l2 = v3 - v0;
-	CFixVector l3 = v2 - v3;
-	for (y = yMin; y < yMax; y++) {
-		for (x = 0; x < w; x++, pPixelPos++) {
-			if (x <= y) {
-				dx = l0;
-				dy = l1;
-				}
-			else {
-				dx = l2; 
-				dy = l3; 
-				}
-			dx *= data.nOffset [x];
-			dy *= data.nOffset [y];
-			*pPixelPos = v0;
-			*pPixelPos += dx; 
-			*pPixelPos += dy; 
-			}
-		}
-	}
-else { 
-	--h;
-	CFixVector l0 = v3 - v0;
-	CFixVector l1 = v1 - v0;
-	CFixVector l2 = v1 - v2;
-	CFixVector l3 = v3 - v2;
-	for (y = yMin; y < yMax; y++) {
-		for (x = 0; x < w; x++, pPixelPos++) {
-			if (h - y >= x) {
-				dx = l0;
-				dx *= data.nOffset [x];
-				dy = l1;
-				dy *= data.nOffset [y];  
-				*pPixelPos = v0;
-				}
-			else {
-				dx = l2;
-				dx *= data.nOffset [h - x];  
-				dy = l3;
-				dy *= data.nOffset [h - y]; 
-				*pPixelPos = v2; 
-				}
-			*pPixelPos += dx; 
-			*pPixelPos += dy; 
-			}
-		}
-	}
-
-bBlack = bWhite = true;
-for (y = yMin; y < yMax; y++) {
-
-
-#if DBG
-	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-		BRP;
-#endif
-	int32_t h = nTriangles ? w : y + 1;
-	pPixelPos = data.m_pixelPos + y * w;
-	for (x = 0; x < h; x++, pPixelPos++) { 
-
-	if (!nThread) {
-		static CTimeout to (33);
-		if (to.Expired ()) {
-			int32_t nKey = KeyInKey ();
-			if (nKey == KEY_ESC)
-				m_bSuccess = 0;
-			if (nKey == KEY_ALTED + KEY_F4)
-				exit (0);
-
-			CMenu* m = CMenu::Active ();
-			if (m)
-				m->Render (m->Title (), m->SubTitle ());
-			}
-		}
-
-	if (!m_bSuccess)
-		return;
-#if DBG
-		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
-			BRP;
-			if ((x == w - 1) && (y == w - 1))
-				BRP;
-			if (((x == 0) || (x == w - 1)) || ((y == 0) || (y == w - 1)))
-				BRP;
-			if (x == 0)
-				BRP;
-			if (x == w - 1)
-				BRP;
-			if (y == 0)
-				BRP;
-			if (y == w - 1)
-				BRP;
-			}
-		fix dist = x ? CFixVector::Dist (*pPixelPos, *(pPixelPos - 1)) : 0;
-#endif
-#if DBG
-		int32_t nLights = lightManager.SetNearestToPixel (nSegment, nSide, &data.m_vNormal, pPixelPos, pFace->m_info.fRads [1] / 10.0f, nThread);
-		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-			BRP;
-		if (0 < nLights) {
-#else
-		if (0 < lightManager.SetNearestToPixel (nSegment, nSide, &data.m_vNormal, pPixelPos, pFace->m_info.fRads [1] / 10.0f, nThread)) {
-#endif
-			vcd.vertPos.Assign (*pPixelPos);
-			color.SetZero ();
-			ComputeVertexColor (nSegment, nSide, -1, &color, &vcd, nThread);
-#if DBG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-				BRP;
-#endif
-			if ((color.Red () >= 1.0f / 255.0f) || (color.Green () >= 1.0f / 255.0f) || (color.Blue () >= 1.0f / 255.0f)) {
-					bBlack = false;
-				if (color.Red () >= 254.0f / 255.0f)
-					color.Red () = 1.0f;
-				else
-					bWhite = false;
-				if (color.Green () >= 254.0f / 255.0f)
-					color.Green () = 1.0f;
-				else
-					bWhite = false;
-				if (color.Blue () >= 254.0f / 255.0f)
-					color.Blue () = 1.0f;
-				else
-					bWhite = false;
-				}
-			pTexColor = data.m_texColor + x * w + y;
-			pTexColor->Red () = (uint8_t) (255 * color.Red ());
-			pTexColor->Green () = (uint8_t) (255 * color.Green ());
-			pTexColor->Blue () = (uint8_t) (255 * color.Blue ());
-			}
-		}
-	}
-#pragma omp critical (CLightmapManagerBuild)
-{
-if (bBlack)
-	data.m_nColor |= 1;
-else if (bWhite)
-	data.m_nColor |= 2;
-else 
-	data.m_nColor |= 4;
-}
-#if DBG
-if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	BRP;
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-int32_t CLightmapManager::BuildAll (int32_t nFace)
-{
-	CLightmapData&	data = m_data [0];
-	int32_t			nLastFace;
-
-INIT_PROGRESS_LOOP (nFace, nLastFace, FACES.nFaces);
-
-if (nFace <= 0) {
-	CreateSpecial (data.m_texColor, 0, 0);
-	CreateSpecial (data.m_texColor, 1, 255);
-	m_list.m_nLightmaps = 2;
-	}
-//Next Go through each surface and create a lightmap for it.
-for (data.pFace = &FACES.faces [nFace]; nFace < nLastFace; nFace++, data.pFace++) {
-#if DBG
-	if ((data.pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (data.pFace->m_info.nSide == nDbgSide)))
-		BRP;
-#endif
-	m_progress.Update ();
-	if (SEGMENT (data.pFace->m_info.nSegment)->m_function == SEGMENT_FUNC_SKYBOX) {
-		data.pFace->m_info.nLightmap = 1;
-		continue;
-		}
-	if (FaceIsInvisible (data.pFace))
-		continue;
-	data.Setup (data.pFace);
-	if (gameStates.app.nThreads < 2)
-		Build (data.pFace, -1);
-	else {
-#if USE_OPENMP
-#	pragma omp parallel for
-		for (int32_t i = 0; i < gameStates.app.nThreads; i++)
-			Build (data.pFace, i);
-#else
-		if (!RunRenderThreads (rtLightmap, gameStates.app.nThreads))
-			Build (data.pFace, -1);
-#endif
-		}
-	if (!m_bSuccess)
-		return 0;
-#if DBG
-	if ((data.pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (data.pFace->m_info.nSide == nDbgSide)))
-		BRP;
-#endif
-	if (data.m_nColor == 1) {
-		data.pFace->m_info.nLightmap = 0;
-		data.nBlackLightmaps++;
-		}
-	else if (data.m_nColor == 2) {
-		data.pFace->m_info.nLightmap = 1;
-		data.nWhiteLightmaps++;
-		}
-	else {
-		Blur (data.pFace, data);
-		Copy (data.m_texColor, m_list.m_nLightmaps);
-		data.pFace->m_info.nLightmap = m_list.m_nLightmaps++;
-		}
-	}
-return 1;
-}
-
-#endif
 
 //------------------------------------------------------------------------------
 

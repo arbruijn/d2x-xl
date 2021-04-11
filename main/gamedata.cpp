@@ -692,7 +692,7 @@ if (gameOpts->render.bUseRift) {
 		detectionMessage = "Oculus HMD Display detected; Sensor not detected.\n";
 		}
 	else {
-		m_pSensorFusion = new OVR::SensorFusion;
+		m_pSensorFusion = NEW OVR::SensorFusion;
 		m_pSensorFusion->AttachToSensor (m_pSensorP);
 		m_pSensorFusion->SetYawCorrectionEnabled (true);
 #if 0
@@ -943,9 +943,9 @@ Destroy ();
 void CFaceListIndex::Create (void)
 {
 Destroy (true);
-roots.Create (gameData.segData.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
-tails.Create (gameData.segData.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
-usedKeys.Create (gameData.segData.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+roots.Create (gameData.segData.nFaceKeys, "CFaceListIndex::roots"); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+tails.Create (gameData.segData.nFaceKeys, "CFaceListIndex::tails"); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+usedKeys.Create (gameData.segData.nFaceKeys, "CFaceListIndex::usedKeys"); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 Init ();
 }
 
@@ -1168,7 +1168,7 @@ bool CSegmentGrid::Create (int32_t nGridSize, int32_t bSkyBox)
 	CSegment*		pSeg;
 	tSegGridIndex*	pIndex;
 	CFixVector		v0, v1;
-	int32_t				size, i, j, x, y, z;
+	int32_t			size, i, j, x, y, z;
 
 Destroy ();
 m_vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
@@ -1203,7 +1203,7 @@ m_vDim /= I2X (m_nGridSize);
 ToInt (Ceil (m_vDim));
 size = ++m_vDim.v.coord.x * ++m_vDim.v.coord.y * ++m_vDim.v.coord.z;
 
-if (!m_index.Create (size))
+if (!m_index.Create (size, "CSegmentGrid::m_index"))
 	return false;
 m_index.Clear ();
 
@@ -1244,7 +1244,7 @@ for (i = j = 0; i < size; i++) {
 	m_index [i].nSegments = 0;
 	}
 
-if (!m_segments.Create (j)) {
+if (!m_segments.Create (j, "CSegmentGrid::m_segments")) {
 	m_index.Destroy ();
 	return false;
 	}
@@ -1305,12 +1305,15 @@ return m_index [i].nSegments;
 
 CWallData::CWallData ()
 {
-exploding.Create (MAX_EXPLODING_WALLS);
-activeDoors.Create (MAX_DOORS);
-cloaking.Create (MAX_CLOAKING_WALLS);
-for (int32_t i = 0; i < 2; i++)
-	anims [i].Create (MAX_WALL_ANIMS);
-bitmaps.Create (MAX_WALL_ANIMS);
+exploding.Create (MAX_EXPLODING_WALLS, "CWallData::exploding");
+activeDoors.Create (MAX_DOORS, "CWallData::activeDoors");
+cloaking.Create (MAX_CLOAKING_WALLS, "CWallData::cloaking");
+for (int32_t i = 0; i < 2; i++) {
+	char szLabel [40];
+	sprintf (szLabel, "CWallData::anims [%d]", i);
+	anims [i].Create (MAX_WALL_ANIMS, szLabel);
+	}
+bitmaps.Create (MAX_WALL_ANIMS, "CWallData::bitmaps");
 nWalls = 0;
 CLEAR (nAnims);
 }
@@ -1344,9 +1347,9 @@ CTriggerData::CTriggerData ()
 bool CTriggerData::Create (int32_t nTriggers, bool bObjTriggers)
 {
 if (bObjTriggers) {
-	triggers [1].Create (nTriggers);
+	triggers [1].Create (nTriggers, "CTriggerData::triggers [1]");
 #if 0
-	objTriggerRefs.Create (MAX_OBJ_TRIGGERS);
+	objTriggerRefs.Create (MAX_OBJ_TRIGGERS, "CTriggerData::objTriggerRefs");
 	objTriggerRefs.Clear (0xff);
 #endif
 	m_nTriggers [1] = nTriggers;
@@ -1357,8 +1360,8 @@ else {
 #else
 	CREATE (objTriggerRefs, LEVEL_OBJECTS, 0);
 #endif
-	triggers [0].Create (nTriggers);
-	delay.Create (nTriggers);
+	triggers [0].Create (nTriggers, "CTriggerData::triggers [0]");
+	delay.Create (nTriggers, "CTriggerData::delay");
 	delay.Clear (0xff);
 	m_nTriggers [0] = nTriggers;
 	}
@@ -1385,8 +1388,11 @@ m_nTriggers [1] = 0;
 CEffectData::CEffectData ()
 {
 for (int32_t i = 0; i < 2; i++) {
-	effects [i].Create (MAX_EFFECTS);
-	animations [i].Create (MAX_ANIMATIONS_D2);
+	char szLabel [40];
+	sprintf (szLabel, "CEffectData::effects [%d]", i);
+	effects [i].Create (MAX_EFFECTS, szLabel);
+	sprintf (szLabel, "CEffectData::animations [%d]", i);
+	animations [i].Create (MAX_ANIMATIONS_D2, szLabel);
 	}
 }
 
@@ -1394,8 +1400,11 @@ for (int32_t i = 0; i < 2; i++) {
 
 CSoundData::CSoundData ()
 {
-for (int32_t i = 0; i < 2; i++)
-	sounds [i].Create (MAX_SOUND_FILES); //[MAX_SOUND_FILES];
+for (int32_t i = 0; i < 2; i++) {
+	char szLabel [40];
+	sprintf (szLabel, "CSoundData::sounds [%d]", i);
+	sounds [i].Create (MAX_SOUND_FILES, szLabel); //[MAX_SOUND_FILES];
+	}
 sounds [0].ShareBuffer (pSound);
 nType = 0;
 }
@@ -1405,27 +1414,36 @@ nType = 0;
 CTextureData::CTextureData ()
 {
 for (int32_t i = 0; i < 2; i++) {
-	bitmapFiles [i].Create (MAX_BITMAP_FILES);
-	bitmapFlags [i].Create (MAX_BITMAP_FILES);
-	bitmaps [i].Create (MAX_BITMAP_FILES);
-	altBitmaps [i].Create (MAX_BITMAP_FILES);
-	bmIndex [i].Create (MAX_TEXTURES + MAX_TEXTURES / 10);
+	char szLabel [40];
+	sprintf (szLabel, "CTextureData::bitmapFiles [%d]", i);
+	bitmapFiles [i].Create (MAX_BITMAP_FILES, szLabel);
+	sprintf (szLabel, "CTextureData::bitmapFlags [%d]", i);
+	bitmapFlags [i].Create (MAX_BITMAP_FILES, szLabel);
+	sprintf (szLabel, "CTextureData::bitmaps [%d]", i);
+	bitmaps [i].Create (MAX_BITMAP_FILES, szLabel);
+	sprintf (szLabel, "CTextureData::altBitmaps [%d]", i);
+	altBitmaps [i].Create (MAX_BITMAP_FILES, szLabel);
+	sprintf (szLabel, "CTextureData::bmIndex [%d]", i);
+	bmIndex [i].Create (MAX_TEXTURES + MAX_TEXTURES / 10, szLabel);
 	bmIndex [i].Clear ();
-	textureIndex [i].Create (MAX_BITMAP_FILES);
-	tMapInfo [i].Create (MAX_TEXTURES + MAX_TEXTURES / 10);	//add some room for extra textures like e.g. from the hoard data
+	sprintf (szLabel, "CTextureData::textureIndex [%d]", i);
+	textureIndex [i].Create (MAX_BITMAP_FILES, szLabel);
+	sprintf (szLabel, "CTextureData::tMapInfo [%d]", i);
+	tMapInfo [i].Create (MAX_TEXTURES + MAX_TEXTURES / 10, szLabel);	//add some room for extra textures like e.g. from the hoard data
 	tMapInfo [i].Clear ();
-	defaultBrightness [i].Create (MAX_WALL_TEXTURES);
+	sprintf (szLabel, "CTextureData::defaultBrightness [%d]", i);
+	defaultBrightness [i].Create (MAX_WALL_TEXTURES, szLabel);
 	defaultBrightness [i].Clear ();
 	}
-objBmIndex.Create (MAX_OBJ_BITMAPS);
-defaultObjBmIndex.Create (MAX_OBJ_BITMAPS);
-addonBitmaps.Create (MAX_ADDON_BITMAP_FILES);
-bitmapXlat.Create (MAX_BITMAP_FILES);
-aliases.Create (MAX_ALIASES);
-pObjBmIndex.Create (MAX_OBJ_BITMAPS);
-cockpitBmIndex.Create (N_COCKPIT_BITMAPS);
-bitmapColors.Create (MAX_BITMAP_FILES);
-brightness.Create (MAX_WALL_TEXTURES);
+objBmIndex.Create (MAX_OBJ_BITMAPS, "CTextureData::objBmIndex");
+defaultObjBmIndex.Create (MAX_OBJ_BITMAPS, "CTextureData::defaultObjBmIndex");
+addonBitmaps.Create (MAX_ADDON_BITMAP_FILES, "CTextureData::addonBitmaps");
+bitmapXlat.Create (MAX_BITMAP_FILES, "CTextureData::bitmapXlat");
+aliases.Create (MAX_ALIASES, "CTextureData::aliases");
+pObjBmIndex.Create (MAX_OBJ_BITMAPS, "CTextureData::pObjBmIndex");
+cockpitBmIndex.Create (N_COCKPIT_BITMAPS, "CTextureData::cockpitBmIndex");
+bitmapColors.Create (MAX_BITMAP_FILES, "CTextureData::bitmapColors");
+brightness.Create (MAX_WALL_TEXTURES, "CTextureData::brightness");
 brightness.Clear ();
 
 bitmaps [0].ShareBuffer (pBitmap);
@@ -1442,6 +1460,44 @@ nHamFileVersion = 0;
 nFirstMultiBitmap = 0;
 CLEAR (nBitmaps);
 CLEAR (nTextures);
+}
+
+// ----------------------------------------------------------------------------
+
+CTextureData::~CTextureData ()
+{
+for (int32_t i = 0; i < 2; i++) {
+	bitmapFiles [i].Destroy ();
+	bitmapFlags [i].Destroy ();
+	bitmaps [i].Destroy ();
+	altBitmaps [i].Destroy ();
+	bmIndex [i].Destroy ();
+	textureIndex [i].Destroy ();
+	tMapInfo [i].Destroy ();	//add some room for extra textures like e.g. from the hoard data
+	defaultBrightness [i].Destroy ();
+	}
+objBmIndex.Destroy ();
+defaultObjBmIndex.Destroy ();
+addonBitmaps.Destroy ();
+bitmapXlat.Destroy ();
+aliases.Destroy ();
+pObjBmIndex.Destroy ();
+cockpitBmIndex.Destroy ();
+bitmapColors.Destroy ();
+brightness.Destroy ();
+
+bitmaps [0].SetBuffer (NULL);
+altBitmaps [0].SetBuffer (NULL);
+bmIndex [0].SetBuffer (NULL);
+bitmapFiles [0].SetBuffer (NULL);
+tMapInfo [0].SetBuffer (NULL);
+gameData.pigData.tex.nFirstMultiBitmap = -1;
+nObjBitmaps = 0;
+bPageFlushed = 0;
+nExtraBitmaps = 0;
+nAliases = 0;
+nHamFileVersion = 0;
+nFirstMultiBitmap = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1471,14 +1527,16 @@ playerSegP = NULL;
 CRobotData::CRobotData ()
 {
 for (int32_t i = 0; i < 2; i++) {
-	info [i].Create (MAX_ROBOT_TYPES);
+	char szLabel [40];
+	sprintf (szLabel, "CRobotData::info [%d]", i);
+	info [i].Create (MAX_ROBOT_TYPES, szLabel);
 	info [i].Clear (0xff);
 	}
-defaultInfo.Create (MAX_ROBOT_TYPES);
+defaultInfo.Create (MAX_ROBOT_TYPES, "CRobotData::defaultInfo");
 defaultInfo.Clear (0xff);
-joints.Create (MAX_ROBOT_JOINTS);
+joints.Create (MAX_ROBOT_JOINTS, "CRobotData::joints");
 joints.Clear (0xff);
-defaultJoints.Create (MAX_ROBOT_JOINTS);
+defaultJoints.Create (MAX_ROBOT_JOINTS, "CRobotData::defaultJoints");
 defaultJoints.Clear (0xff);
 CLEAR (robotNames);
 nJoints = 0;
@@ -1553,17 +1611,25 @@ bool CModelData::Create (void)
 	int32_t i;
 
 for (i = 0; i < 2; i++) {
-	aseModels [i].Create (MAX_POLYGON_MODELS);
-	oofModels [i].Create (MAX_POLYGON_MODELS);
-	for (int32_t j = 0; j < 2; j++)
-		pofData [i][j].Create (MAX_POLYGON_MODELS);
+	char szLabel [40];
+	sprintf (szLabel, "CModelData::aseModels [%d]", i);
+	aseModels [i].Create (MAX_POLYGON_MODELS, szLabel);
+	sprintf (szLabel, "CModelData::oofModels [%d]", i);
+	oofModels [i].Create (MAX_POLYGON_MODELS, szLabel);
+	for (int32_t j = 0; j < 2; j++) {
+		sprintf (szLabel, "CModelData::pofModels [%d][%d]", i, j);
+		pofData [i][j].Create (MAX_POLYGON_MODELS, szLabel);
+		}
 	CREATE (modelToOOF [i], MAX_POLYGON_MODELS, 0);
 	CREATE (modelToASE [i], MAX_POLYGON_MODELS, 0);
-	renderModels [i].Create (MAX_POLYGON_MODELS);
+	sprintf (szLabel, "CModelData::renderModels [%d]", i);
+	renderModels [i].Create (MAX_POLYGON_MODELS, szLabel);
 	}
 CREATE (bHaveHiresModel, MAX_POLYGON_MODELS, 0);
 for (i = 0; i < 3; i++) {
-	polyModels [i].Create (MAX_POLYGON_MODELS);
+	char szLabel [40];
+	sprintf (szLabel, "CModelData::polyModels [%d]", i);
+	polyModels [i].Create (MAX_POLYGON_MODELS, szLabel);
 	for (int32_t j = 0; j < MAX_POLYGON_MODELS; j++)
 		polyModels [i][j].SetKey (j);
 	}
@@ -1572,7 +1638,7 @@ CREATE (polyModelPoints, MAX_POLYGON_VERTS, 0);
 for (i = 0; i < MAX_POLYGON_VERTS; i++)
 	polyModelPoints [i].SetIndex (-1);
 CREATE (fPolyModelVerts, MAX_POLYGON_VERTS, 0);
-textures.Create (MAX_POLYOBJ_TEXTURES);
+textures.Create (MAX_POLYOBJ_TEXTURES, "CModelData::textures");
 CREATE (textureIndex, MAX_POLYOBJ_TEXTURES, 0xff);
 CREATE (nDyingModels, MAX_POLYGON_MODELS, 0xff);
 CREATE (nDeadModels, MAX_POLYGON_MODELS, 0xff);
@@ -1586,11 +1652,9 @@ return true;
 
 void CModelData::Destroy (void)
 {
-	int32_t	h, i;
-
 PrintLog (1, "unloading polygon model data\n");
-for (h = 0; h < 2; h++) {
-	for (i = 0; i < MAX_POLYGON_MODELS; i++) {
+for (int32_t h = 0; h < 2; h++) {
+	for (int32_t i = 0; i < MAX_POLYGON_MODELS; i++) {
 #if DBG
 		if ((nDbgModel >= 0) && (i == nDbgModel))
 			BRP;
@@ -1614,9 +1678,12 @@ gameData.renderData.morph.xRate = MORPH_RATE;
 
 CCockpitData::CCockpitData ()
 {
-for (int32_t i = 0; i < 2; i++)
-	if (gauges [i].Create (MAX_GAUGE_BMS))
+for (int32_t i = 0; i < 2; i++) {
+	char szLabel [40];
+	sprintf (szLabel, "CCockpitData::gauges [%d]", i);
+	if (gauges [i].Create (MAX_GAUGE_BMS, szLabel))
 		gauges [i].Clear (0xff);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1838,11 +1905,14 @@ return IsGuidedMissile (guidedMissile [nPlayer].pObj) ? guidedMissile [nPlayer].
 
 CColorData::CColorData ()
 {
-if (textures.Create (MAX_WALL_TEXTURES))
+if (textures.Create (MAX_WALL_TEXTURES, "CColorData::textures"))
 	textures.Clear ();
-for (int32_t i = 0; i < 2; i++)
-	if (defaultTextures [i].Create (MAX_WALL_TEXTURES))
+for (int32_t i = 0; i < 2; i++) {
+	char szLabel [40];
+	sprintf (szLabel, "CColorData::defaultData [%d]", i);
+	if (defaultTextures [i].Create (MAX_WALL_TEXTURES, szLabel))
 		defaultTextures [i].Clear ();
+	}
 nVisibleLights = 0;
 }
 
@@ -2046,8 +2116,8 @@ gameData.aiData.bEnableAnimation = 1;
 gameData.aiData.bInfoEnabled = 0;
 gameData.aiData.nAwarenessEvents = 0;
 gameData.aiData.target.nDistToLastPosFiredAt = 0;
-cloakInfo.Create (MAX_AI_CLOAK_INFO);
-awarenessEvents.Create (MAX_AWARENESS_EVENTS);
+cloakInfo.Create (MAX_AI_CLOAK_INFO, "CAIData::cloakInfo");
+awarenessEvents.Create (MAX_AWARENESS_EVENTS, "CAIData::awarenessEvents");
 gameData.aiData.freePointSegs = gameData.aiData.routeSegs.Buffer ();
 nHitSeg = -1;
 nHitType = -1;

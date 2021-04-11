@@ -52,7 +52,7 @@ if ((h < 0) || (h / sizeof (CIpToCountry) < 1) || (h % sizeof (CIpToCountry) != 
 
 uint32_t nRecords = (uint32_t) cf.ReadInt ();
 
-if (!ipToCountry.Create ((uint32_t) nRecords))
+if (!ipToCountry.Create ((uint32_t) nRecords, "ipToCountry"))
 	return false;
 
 bool bSuccess = (ipToCountry.Read (cf, nRecords) == nRecords);

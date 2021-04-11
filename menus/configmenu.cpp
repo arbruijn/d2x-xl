@@ -113,7 +113,7 @@ void ConfigMenu (void)
 
 do {
 	m.Destroy ();
-	m.Create (20);
+	m.Create (20, "ConfigMenu");
 	m.AddMenu ("sound options", TXT_SOUND_MUSIC, KEY_M, HTX_OPTIONS_SOUND);
 	m.AddText ("", "");
 	m.AddMenu ("config options", TXT_CONTROLS_, KEY_O, HTX_OPTIONS_CONFIG);

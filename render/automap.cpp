@@ -135,16 +135,16 @@ m_data.viewer.vPos.SetZero ();
 m_data.viewTarget.SetZero ();
 m_data.viewer.mOrient = CFixMatrix::IDENTITY;
 if (!m_visited.Buffer ())
-	m_visited.Create (MAX_SEGMENTS_D2X);
+	m_visited.Create (MAX_SEGMENTS_D2X, "CAutomap::m_visited");
 m_visited.Clear ();
 if (!m_visible.Buffer ())
-	m_visible.Create (MAX_SEGMENTS_D2X);
+	m_visible.Create (MAX_SEGMENTS_D2X, "CAutomap::m_visible");
 m_visible.Clear ();
 m_nEdges = 0;
 m_nMaxEdges = MAX_EDGES;
 m_nLastEdge = -1;
-m_edges.Create (MAX_EDGES);
-m_brightEdges.Create (MAX_EDGES);
+m_edges.Create (MAX_EDGES, "CAutomap::m_edges");
+m_brightEdges.Create (MAX_EDGES, "CAutomap::m_brightEdges");
 InitColors ();
 }
 

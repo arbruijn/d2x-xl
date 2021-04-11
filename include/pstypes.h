@@ -68,10 +68,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifdef _WIN32
-# define inline __inline
-#endif
-
-#ifdef _WIN32
 #	ifndef _CDECL_
 #		define _CDECL_	_cdecl
 #	endif

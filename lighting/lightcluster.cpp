@@ -26,7 +26,7 @@ m_bUse = 1;
 
 bool CLightClusterManager::Init (void)
 {
-if (!m_objects.Create (LEVEL_OBJECTS))
+if (!m_objects.Create (LEVEL_OBJECTS, "CLightClusterManager::m_objects"))
 	return false;
 m_objects.Clear (0xff);
 return true;

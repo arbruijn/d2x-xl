@@ -16,7 +16,10 @@
 
 #ifndef G3_SLEEP
 #	ifdef _WIN32
+#		pragma pack(push)
+#		pragma pack(8)
 #		include <windows.h>
+#		pragma pack(pop)
 #		define	G3_SLEEP(_t)	Sleep (_t)
 #	else
 #		include <unistd.h>

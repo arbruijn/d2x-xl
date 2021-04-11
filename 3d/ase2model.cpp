@@ -143,6 +143,7 @@ if (!Create ()) {
 	}
 GetASEModelItems (nModel, pa, 1.0f); //(nModel == 108) || (nModel == 110)) ? 1.145f : 1.0f);
 m_nModel = nModel;
+m_textures.SetName ("ASE::CModel::m_textures");
 m_textures = pa->m_textures.m_bitmaps;
 m_nTextures = pa->m_textures.m_nBitmaps;
 for (i = 0; i < m_nTextures; i++) {

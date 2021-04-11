@@ -82,7 +82,7 @@ return 1;
 bool CBanList::Create (void)
 {
 
-if (!CStack<CBanListEntry>::Create (100))
+if (!CStack<CBanListEntry>::Create (100, "BanList"))
 	return false;
 SetGrowth (100);
 return true;

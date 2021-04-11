@@ -243,7 +243,7 @@ szDZoneSizes [4] = TXT_VERY_LARGE;
 do {
 	do {
 		m.Destroy ();
-		m.Create (20);
+		m.Create (20, "MouseConfigMenu");
 
 		controls.SetType ();
 		mouseOpts.nUse = m.AddCheck ("use device", TXT_USE_MOUSE, gameOpts->input.mouse.bUse, KEY_M, HTX_CONF_USEMOUSE);
@@ -410,7 +410,7 @@ void JoystickConfigMenu (void)
 do {
 	do {
 		m.Destroy ();
-		m.Create (20);
+		m.Create (20, "JoystickConfigMenu");
 
 		controls.SetType ();
 		m.AddCheck ("use device", TXT_USE_JOY, gameOpts->input.joystick.bUse, KEY_J, HTX_CONF_USEJOY);
@@ -493,7 +493,7 @@ szDZoneSizes [4] = TXT_VERY_LARGE;
 
 do {
 	m.Destroy ();
-	m.Create (5);
+	m.Create (5, "OculusRiftConfigMenu");
 
 	AddDeadzoneControl (m, szDeadzone, TXT_RIFT_DEADZONE, HTX_RIFT_DEADZONE, szDZoneSizes, gameOpts->input.oculusRift.nDeadzone, KEY_U);
 	i = m.Menu (NULL, TXT_RIFT_CONFIG, OculusRiftConfigCallback, &choice);
@@ -605,7 +605,7 @@ szDZoneSizes [4] = TXT_VERY_LARGE;
 
 do {
 	m.Destroy ();
-	m.Create (20);
+	m.Create (20, "TrackIRConfigMenu");
 
 	m.AddCheck ("use device", TXT_USE_TRACKIR, gameOpts->input.trackIR.bUse, KEY_M, HTX_USE_TRACKIR);
 	if (gameOpts->input.trackIR.bUse) {
@@ -691,7 +691,7 @@ void KeyboardConfigMenu (void)
 do {
 	do {
 		m.Destroy ();
-		m.Create (20);
+		m.Create (20, "KeyboardConfigMenu");
 
 		controls.SetType ();
 		m.AddMenu ("customize device", TXT_CUST_JOY, KEY_K, HTX_CONF_CUSTKBD);
@@ -749,7 +749,7 @@ do {
 	if (TIRLoad ())
 		pfnTIRStart ();
 	m.Destroy ();
-	m.Create (10);
+	m.Create (10, "InputDeviceConfig");
 
 	controls.SetType ();
 	m.AddMenu ("keyboard options", TXT_KBDCFG_MENUCALL, KEY_K, HTX_KEYBOARD_CONFIG);

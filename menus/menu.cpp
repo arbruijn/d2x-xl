@@ -160,11 +160,11 @@ return Menu (pszTitle, pszSubTitle, callback, NULL, BG_SUBMENU, BG_STANDARD, -1,
 //------------------------------------------------------------------------------ 
 
 int32_t CMenu::FixedFontMenu (const char* pszTitle, const char* pszSubTitle, 
-										pMenuCallback callback, int32_t* nCurItemP, int32_t nType, int32_t nWallpaper, 
+										pMenuCallback callback, int32_t* pnCurItem, int32_t nType, int32_t nWallpaper, 
 										int32_t width, int32_t height)
 {
 SetScreenMode (SCREEN_MENU);
-return Menu (pszTitle, pszSubTitle, callback, nCurItemP, nType, nWallpaper, width, height, 0);
+return Menu (pszTitle, pszSubTitle, callback, pnCurItem, nType, nWallpaper, width, height, 0);
 }
 
 //------------------------------------------------------------------------------ 
@@ -817,7 +817,7 @@ if (m_nChoice > -1) {
 			else
 				item.Value () = 1;
 			if (m_props.bIsScrollBox) {
-				if (m_nChoice == (m_props.nMaxOnMenu + m_props.nScrollOffset -1) || m_nChoice == m_props.nScrollOffset)
+				if ((m_nChoice == m_props.nMaxOnMenu + m_props.nScrollOffset -1) || (m_nChoice == m_props.nScrollOffset))
 					m_nLastScrollCheck = -1;				
 					}
 			
@@ -826,7 +826,7 @@ if (m_nChoice > -1) {
 
 		case NM_TYPE_RADIO:
 			for (int32_t i = 0; i < int32_t (ToS ()); i++) {
-				if ((i != m_nChoice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == item.m_group) && (Item (i).Value ())) {
+				if ((i != m_nChoice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == item.m_group) && Item (i).Value ()) {
 					Item (i).Value () = 0;
 					Item (i).m_bRedraw = 1;
 					}
@@ -840,7 +840,7 @@ if (m_nChoice > -1) {
 
 //------------------------------------------------------------------------------ 
 
-void CMenu::LaunchOption (int32_t* nCurItemP)
+void CMenu::LaunchOption (int32_t* pnCurItem)
 {
 if (m_nChoice > -1) {
 	CMenuItem& item = Item (m_nChoice);
@@ -857,8 +857,8 @@ if (m_nChoice > -1) {
 			}
 		}
 	else {
-		if (nCurItemP)
-			*nCurItemP = m_nChoice;
+		if (pnCurItem)
+			*pnCurItem = m_nChoice;
 		m_bDone = 1;
 		}
 	}
@@ -907,7 +907,7 @@ return 0;
 
 //------------------------------------------------------------------------------ 
 
-int32_t CMenu::QuickSelect (int32_t* nCurItemP)
+int32_t CMenu::QuickSelect (int32_t* pnCurItem)
 {
 if ((Item (m_nChoice).m_nType == NM_TYPE_INPUT) || (Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU))
 	return 0;
@@ -961,7 +961,7 @@ if (ascii < 255) {
 			KeyCheckOption ();
 		else if ((t != NM_TYPE_SLIDER) && (Item (choice1).m_nKey != 0))
 			if (gameOpts->menus.nHotKeys > 0)
-				LaunchOption (nCurItemP);
+				LaunchOption (pnCurItem);
 		return 1;
 
 		} while (choice1 != m_nChoice);
@@ -971,7 +971,7 @@ return 0;
 
 //------------------------------------------------------------------------------ 
 
-int32_t CMenu::HandleKey (int32_t width, int32_t height, int32_t bTinyMode, int32_t* nCurItemP)
+int32_t CMenu::HandleKey (int32_t width, int32_t height, int32_t bTinyMode, int32_t* pnCurItem)
 {
 switch (m_nKey) {
 
@@ -1066,7 +1066,7 @@ switch (m_nKey) {
 
 	case KEY_ENTER:
 	case KEY_PADENTER:
-		LaunchOption (nCurItemP);
+		LaunchOption (pnCurItem);
 		break;
 
 	case KEY_COMMAND + KEY_P:
@@ -1094,8 +1094,8 @@ switch (m_nKey) {
 			}
 		else {
 			m_bDone = 1;
-			if (nCurItemP)
-				*nCurItemP = m_nChoice;
+			if (pnCurItem)
+				*pnCurItem = m_nChoice;
 			m_nChoice = -1;
 			}
 		break;
@@ -1143,15 +1143,25 @@ return -1;
 
 //------------------------------------------------------------------------------ 
 
-int32_t CMenu::MouseCheckOption (void)
+int32_t CMenu::SelectClickedOption (void)
 {
 int32_t i = FindClickedOption (0, int32_t (ToS ()));
 if (i < 0)
 	return 0;
-
-m_nChoice = i + m_props.nScrollOffset - m_props.nMaxNoScroll;
-if ((m_nChoice < 0) || (m_nChoice >= int32_t (ToS ())))
+i += m_props.nScrollOffset - m_props.nMaxNoScroll;
+if ((i < 0) || (i >= int32_t (ToS ())))
 	return 0;
+return m_nChoice = i;
+}
+
+//------------------------------------------------------------------------------ 
+
+int32_t CMenu::MouseCheckOption (void)
+{
+if (0 > SelectClickedOption ())
+	return 0;
+
+int32_t i;
 
 switch (Item (m_nChoice).m_nType) {
 	case NM_TYPE_CHECK:
@@ -1163,7 +1173,7 @@ switch (Item (m_nChoice).m_nType) {
 
 	case NM_TYPE_RADIO:
 		for (i = 0; i < int32_t (ToS ()); i++) {
-			if ((i!= m_nChoice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == Item (m_nChoice).m_group) && (Item (i).Value ())) {
+			if ((i != m_nChoice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == Item (m_nChoice).m_group) && (Item (i).Value ())) {
 				Item (i).Value () = 0;
 				Item (i).m_bRedraw = 1;
 				}
@@ -1244,12 +1254,8 @@ return 0;
 
 int32_t CMenu::MouseScrollValue (void)
 {
-	int32_t i = FindClickedOption (m_props.nScrollOffset, int32_t (ToS ()));
-
-if (i < 0)
+if (0 > SelectClickedOption ())
 	return 0;
-
-m_nChoice = i;
 
 CMenuItem& item = Item (m_nChoice);
 
@@ -1262,6 +1268,7 @@ if (item.m_nType == NM_TYPE_SLIDER) {
 
 	int32_t w = lw + mw * item.Range ();
 	int32_t x = m_xMouse - item.m_xSlider;
+	int32_t i;
 
 	if ((x >= 0) && (x < lw))
 		i = 0;
@@ -1294,13 +1301,13 @@ return 1;
 
 //------------------------------------------------------------------------------ 
 
-int32_t CMenu::HandleMouse (int32_t* nCurItemP)
+int32_t CMenu::HandleMouse (int32_t* pnCurItem)
 {
 if (m_bAllText) {
 	if (!m_nMouseState) 
 		return 0;
-	if (nCurItemP)
-		*nCurItemP = m_nChoice;
+	if (pnCurItem)
+		*pnCurItem = m_nChoice;
 	m_bDone = 1;
 	}
 
@@ -1318,45 +1325,57 @@ if (m_nMouseState) {
 		return 1;
 	if (MouseScrollValue ())
 		return 1;
+	return 0;
 	}
 	
+if (!m_nOldMouseState)
+	return 0;
+
 if (m_bDone)
 	return 0;
 
-if (!m_nMouseState && m_nOldMouseState) {
-	if ((m_nChoice > -1) && (Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU)) {
-		if (FindClickedOption (m_nChoice, m_nChoice + 1) == m_nChoice) {
-			if (nCurItemP)
-				*nCurItemP = m_nChoice;
-			m_bDone = 1;
-			return 0;
-			}
-
-		if (Item (m_nChoice).m_group == 0) {
-			Item (m_nChoice).m_group = 1;
-			Item (m_nChoice).m_bRedraw = 1;
-			if	(strnicmp (Item (m_nChoice).m_savedText, TXT_EMPTY, strlen (TXT_EMPTY))) 
-				Item (m_nChoice).TrimWhitespace ();
-			else {
-				Item (m_nChoice).m_text [0] = '\0';
-				Item (m_nChoice).Value () = -1;
-				} 
-			}
+if (m_bCloseBox) {
+	GetMousePos ();
+	int32_t x1 = MENU_CLOSE_X;
+	int32_t x2 = x1 + MENU_CLOSE_SIZE;
+	int32_t y1 = MENU_CLOSE_Y;
+	int32_t y2 = y1 + MENU_CLOSE_SIZE;
+	if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
+		if (pnCurItem)
+			*pnCurItem = m_nChoice;
+		m_nChoice = -1;
+		m_bDone = 1;
 		}
+	}
 
-	if (m_bCloseBox) {
-		GetMousePos ();
-		int32_t x1 = MENU_CLOSE_X;
-		int32_t x2 = x1 + MENU_CLOSE_SIZE;
-		int32_t y1 = MENU_CLOSE_Y;
-		int32_t y2 = y1 + MENU_CLOSE_SIZE;
-		if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
-			if (nCurItemP)
-				*nCurItemP = m_nChoice;
-			m_nChoice = -1;
-			m_bDone = 1;
-			}
-		}
+if (0 > SelectClickedOption ())
+	return 0;
+
+CMenuItem& item = Item (m_nChoice);
+
+if (item.m_nType == NM_TYPE_INPUT_MENU) {
+	if (pnCurItem)
+		*pnCurItem = m_nChoice;
+	m_bDone = 1;
+	return 0;
+	}
+
+if (item.m_nType == NM_TYPE_MENU) {
+	if (pnCurItem)
+		*pnCurItem = m_nChoice;
+	LaunchOption (pnCurItem);
+	return 0;
+	}
+
+if (item.m_group == 0) {
+	item.m_group = 1;
+	item.m_bRedraw = 1;
+	if	(strnicmp (item.m_savedText, TXT_EMPTY, strlen (TXT_EMPTY))) 
+		item.TrimWhitespace ();
+	else {
+		item.m_text [0] = '\0';
+		item.Value () = -1;
+		} 
 	}
 
 return 0;
@@ -1455,13 +1474,13 @@ return 1;
 
 //------------------------------------------------------------------------------ 
 
-void CMenu::Update (const char* pszTitle, const char* pszSubTitle, int32_t nType, int32_t nWallpaper, int32_t width, int32_t height, int32_t bTinyMode, int32_t* nCurItemP)
+void CMenu::Update (const char* pszTitle, const char* pszSubTitle, int32_t nType, int32_t nWallpaper, int32_t width, int32_t height, int32_t bTinyMode, int32_t* pnCurItem)
 {
 if (m_bThrottle)
 	m_to.Throttle ();	// give the CPU some time to breathe
 
-if (nCurItemP)
-	*nCurItemP = m_nChoice;
+if (pnCurItem)
+	*pnCurItem = m_nChoice;
 if (gameStates.app.bGameRunning && IsMultiGame) {
 	gameStates.multi.bPlayerIsTyping [N_LOCALPLAYER] = 1;
 	MultiSendTyping ();
@@ -1522,10 +1541,10 @@ if (InitProps (pszTitle, pszSubTitle)) {
 
 //------------------------------------------------------------------------------ 
 
-int32_t CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback, int32_t* nCurItemP, 
+int32_t CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback, int32_t* pnCurItem, 
 							int32_t nType, int32_t nWallpaper, int32_t width, int32_t height, int32_t bTinyMode)
 {
-	int32_t			nItem = nCurItemP ? *nCurItemP : 0;
+	int32_t			nItem = pnCurItem ? *pnCurItem : 0;
 	int32_t			bSoundStopped = 0, bTimeStopped = 0;
 	int32_t			exception = 0;
 	int32_t			i;
@@ -1537,7 +1556,7 @@ int32_t bKeyRepeat = gameStates.input.keys.bRepeat;
 gameStates.input.keys.bRepeat = 1;
 
 while (!m_bDone) {
-	Update (pszTitle, pszSubTitle, nType, nWallpaper, width, height, bTinyMode, nCurItemP);
+	Update (pszTitle, pszSubTitle, nType, nWallpaper, width, height, bTinyMode, pnCurItem);
 	// Redraw everything...
 	Render (pszTitle, pszSubTitle, NULL);
 	if (callback && (SDL_GetTicks () - m_tEnter > gameOpts->menus.nFade))
@@ -1561,8 +1580,8 @@ while (!m_bDone) {
 		m_bDontRestore = (m_nKey == -3);		// - 3 means don't restore
 		if (m_nChoice < 0) {
 			m_nChoice = -m_nChoice - 1;
-			if (nCurItemP)
-				*nCurItemP = m_nChoice;
+			if (pnCurItem)
+				*pnCurItem = m_nChoice;
 			}
 		m_nChoice = m_nKey;
 		m_nKey = -1;
@@ -1571,10 +1590,10 @@ while (!m_bDone) {
 
 	m_nOldChoice = m_nChoice;
 	if (m_nKey && (console.Events (m_nKey) || m_bWheelUp || m_bWheelDown))
-		if (HandleKey (width, height, bTinyMode, nCurItemP))
+		if (HandleKey (width, height, bTinyMode, pnCurItem))
 			continue;
 
-	if (HandleMouse (nCurItemP))
+	if (HandleMouse (pnCurItem))
 		continue;
 
 	//	 HACK! Don't redraw loadgame preview
@@ -1582,7 +1601,7 @@ while (!m_bDone) {
 		Item (0).m_bRedraw = 0;
 
 	if (m_nChoice > -1) {
-		if (!QuickSelect (nCurItemP) && !EditValue ())
+		if (!QuickSelect (pnCurItem) && !EditValue ())
 			KeyScrollValue ();
 		}
 #endif
@@ -1825,7 +1844,7 @@ void NMWrapText (char* dbuf, char* sbuf, int32_t line_length)
 	char* wordptr;
 	char* tbuf;
 
-	tbuf = new char [strlen (sbuf) + 1];
+	tbuf = NEW char [strlen (sbuf) + 1];
 	strcpy (tbuf, sbuf);
 
 	wordptr = strtok (tbuf, " ");
@@ -1855,7 +1874,7 @@ void ProgressBar (const char* szCaption, int32_t nBars, int32_t nCurProgress, in
 	CMenu		menu;
 
 nBars = Clamp (nBars, 1, 2);
-menu.Create (3 + (nBars - 1) * 3 + (doProgress ? doProgress (menu, i, i, -1) : 0)); // doProgress can add menu items - ask it how many it will add
+menu.Create (3 + (nBars - 1) * 3 + (doProgress ? doProgress (menu, i, i, -1) : 0), "ProgressBar"); // doProgress can add menu items - ask it how many it will add
 
 if (doProgress) { // let doProgress add menu items before the gauges
 	i = 0;

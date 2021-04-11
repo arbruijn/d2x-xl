@@ -100,7 +100,7 @@ static char *OOF_ReadString (CFile& cf, const char *pszIdent)
 	int32_t	l;
 
 l = OOF_ReadInt (cf, "string length");
-if (!(psz = new char [l + 1]))
+if (!(psz = NEW char [l + 1]))
 	return NULL;
 if (!l || cf.Read (psz, l, 1)) {
 	psz [l] = '\0';
@@ -121,7 +121,7 @@ static int32_t OOF_ReadIntList (CFile& cf, CArray<int32_t>& list)
 list.Destroy ();
 if (!(i = OOF_ReadInt (cf, "nList"))) 
 	return 0;
-if (!list.Create (i))
+if (!list.Create (i, "OOF_ReadIntList::list"))
 	return -1;
 for (i = 0; i < list.Length (); i++) {
 	if (bLogOOF)
@@ -201,7 +201,7 @@ static bool OOF_ReadVertList (CFile& cf, CArray<CFloatVector>& list, int32_t nVe
 	char	szId [20] = "";
 
 OOF_InitMinMax (pvMin, pvMax);
-if (!list.Create (nVerts))
+if (!list.Create (nVerts, "OOF_ReadVertList::list"))
 	return false;
 
 for (int32_t i = 0; i < nVerts; i++) {
@@ -307,12 +307,12 @@ int32_t CRotAnim::Read (CFile& cf, CModel* po, int32_t bTimed)
 {
 if (!this->CFrameInfo::Read (cf, po, bTimed))
 	return 0;
-if (!m_frames.Create (m_nFrames))
+if (!m_frames.Create (m_nFrames, "OOF::CRotAmin::m_frames"))
 	return 0;
 m_frames.Clear (0);
 if (bTimed &&
 	 (m_nTicks = abs (m_nLastFrame - m_nFirstFrame) + 1) &&
-	 !m_remapTicks.Create (m_nTicks)) {
+	 !m_remapTicks.Create (m_nTicks, "OOF::CRotAmin::m_remapTicks")) {
 	 Destroy ();
 	return 0;
 	}
@@ -411,11 +411,11 @@ if (!this->CFrameInfo::Read (cf, po, bTimed))
 	return 0;
 if (bTimed &&
 	 (m_nTicks = m_nLastFrame - m_nFirstFrame) &&
-	 !m_remapTicks.Create (m_nTicks)) {
+	 !m_remapTicks.Create (m_nTicks, "OOF::CPosAmin::m_remapTicks")) {
 	 Destroy ();
 	 return 0;
 	}
-if (!m_frames.Create (m_nFrames)) {
+if (!m_frames.Create (m_nFrames, "OOF::CPosAmin::m_frames")) {
 	Destroy ();
 	return 0;
 	}
@@ -439,10 +439,14 @@ memset (this, 0, sizeof (*this));
 
 void CSpecialPoint::Destroy (void)
 {
-delete[] m_pszName;
-m_pszName = NULL;
-delete[] m_pszProps;
-m_pszProps = NULL;
+if (m_pszName) {
+	delete[] m_pszName;
+	m_pszName = NULL;
+	}
+if (m_pszProps) {
+	delete[] m_pszProps;
+	m_pszProps = NULL;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -452,6 +456,7 @@ int32_t CSpecialPoint::Read (CFile& cf)
 Init ();
 nIndent += 2;
 OOF_PrintLog ("reading special point\n");
+Destroy ();
 if (!(m_pszName = OOF_ReadString (cf, "pszName"))) {
 	nIndent -= 2;
 	return 0;
@@ -475,7 +480,7 @@ int32_t CSpecialList::Read (CFile& cf)
 i = OOF_ReadInt (cf, "nVerts");
 if (!i)
 	return 1;
-if (!Create (i))
+if (!Create (i, "OOF::CSpecialList"))
 	return 0;
 for (i = 0; i < Length (); i++)
 	(*this) [i].Read (cf);
@@ -506,7 +511,7 @@ OOF_PrintLog ("reading point list\n");
 i = OOF_ReadInt (cf, "nPoints");
 if (nSize < i)
 	nSize = i;
-if (!Create (i)) {
+if (!Create (i, "OOF::CPointList")) {
 	nIndent -= 2;
 	return 0;
 	}
@@ -529,7 +534,7 @@ int32_t CAttachList::Read (CFile& cf)
 nIndent += 2;
 OOF_PrintLog ("reading attach list\n");
 i = OOF_ReadInt (cf, "nPoints");
-if (!Create (i)) {
+if (!Create (i, "OOF::CAttachList")) {
 	nIndent -= 2;
 	return 0;
 	}
@@ -624,7 +629,7 @@ if (!(l = OOF_ReadInt (cf, "nBatts"))) {
 	nIndent -= 2;
 	return 1;
 	}
-if (!Create (l)) {
+if (!Create (l, "OOF::CArmament")) {
 	Destroy ();
 	nIndent -= 2;
 	return 0;
@@ -727,7 +732,7 @@ else {
 if (pfv) {
 	m_vertices = pfv;
 #else
-	if (!(m_vertices= new CFaceVert [m_nVerts])) {
+	if (!(m_vertices= NEW CFaceVert [m_nVerts])) {
 		nIndent -= 2;
 		return OOF_FreeFace (&f);
 		}
@@ -842,14 +847,19 @@ void CSubModel::Destroy (void)
 	int32_t	i;
 #endif
 
-delete[] m_pszName;
-m_pszName = NULL;
-delete[] m_pszProps;
-m_pszProps = NULL;
+if (m_pszName) {
+	delete[] m_pszName;
+	m_pszName = NULL;
+	}
+if (m_pszProps) {
+	delete[] m_pszProps;
+	m_pszProps = NULL;
+	}
+m_fsLists.Destroy ();
 m_vertices.Destroy ();
 m_rotVerts.Destroy ();
-m_vertColors.Destroy ();
 m_normals.Destroy ();
+m_vertColors.Destroy ();
 m_pfAlpha.Destroy ();
 m_posAnim.Destroy ();
 m_rotAnim.Destroy ();
@@ -1013,7 +1023,7 @@ if (!stricmp (command,"$glow=")) {
 	Assert (!(m_nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)));
 	sscanf (data, " %f, %f, %f, %f", &r, &g, &b, &size);
 	m_nFlags |= OOF_SOF_GLOW;
-	//m_glowInfo = new CGlowInfo;
+	//m_glowInfo = NEW CGlowInfo;
 	m_glowInfo.m_color.Red () = r;
 	m_glowInfo.m_color.Green () = g;
 	m_glowInfo.m_color.Blue () = b;
@@ -1028,7 +1038,7 @@ if (!stricmp (command,"$thruster=")) {
 	Assert (!(m_nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER)));
 	sscanf(data, " %f, %f, %f, %f", &r,&g,&b,&size);
 	m_nFlags |= OOF_SOF_THRUSTER;
-	//m_glowInfo = new CGlowInfo;
+	//m_glowInfo = NEW CGlowInfo;
 	m_glowInfo.m_color.Red () = r;
 	m_glowInfo.m_color.Green () = g;
 	m_glowInfo.m_color.Blue () = b;
@@ -1170,12 +1180,12 @@ if (m_nVerts) {
 		return 0;
 		}
 	m_vCenter = (m_vMin + m_vMax) / 2.0f;
-	if (!m_rotVerts.Create (m_nVerts)) {
+	if (!m_rotVerts.Create (m_nVerts, "OOF::CSubModel::m_rotVerts")) {
 		Destroy ();
 		nIndent -= 2;
 		return 0;
 		}
-	if (!m_vertColors.Create (m_nVerts)) {
+	if (!m_vertColors.Create (m_nVerts, "OOF::CSubModel::m_vertColors")) {
 		Destroy ();
 		nIndent -= 2;
 		return 0;
@@ -1186,7 +1196,7 @@ if (m_nVerts) {
 		Destroy ();
 		return 0;
 		}
-	if (!m_pfAlpha.Create (m_nVerts)) {
+	if (!m_pfAlpha.Create (m_nVerts, "OOF::CSubModel::m_nVerts")) {
 		Destroy ();
 		nIndent -= 2;
 		return 0;
@@ -1203,7 +1213,7 @@ if (m_nVerts) {
 			}
 	}
 m_faces.m_nFaces = OOF_ReadInt (cf, "nFaces");
-if (!m_faces.m_list.Create (m_faces.m_nFaces)) {
+if (!m_faces.m_list.Create (m_faces.m_nFaces, "OOF::CSubModel::m_faces::m_list")) {
 	Destroy ();
 	nIndent -= 2;
 	return 0;
@@ -1214,12 +1224,12 @@ m_edges.m_nEdges = 0;
 for (bReadData = 0; bReadData < 2; bReadData++) {
 	cf.Seek (nPos, SEEK_SET);
 	if (bReadData) {
-		if (!m_faces.m_vertices.Create (nFaceVerts)) {
+		if (!m_faces.m_vertices.Create (nFaceVerts, "OOF::CSubModel::m_faces.m_vertices")) {
 			Destroy ();
 			nIndent -= 2;
 			return 0;
 			}
-		if (!m_edges.m_list.Create (nFaceVerts)) {
+		if (!m_edges.m_list.Create (nFaceVerts, "OOF::CSubModel::m_edges.m_list")) {
 			Destroy ();
 			nIndent -= 2;
 			return 0;
@@ -1301,6 +1311,7 @@ for (i = 0; i < m_textures.m_nBitmaps; i++) {
 		return 0;
 		}
 	m_textures.m_names [i].SetBuffer (pszName, 0, uint32_t (strlen (pszName) + 1));
+	pszName = NULL;
 	CTGA tga (m_textures.m_bitmaps + i);
 	if (!tga.ReadModelTexture (m_textures.m_names [i].Buffer (), m_bCustom)) {
 #if DBG
@@ -1372,7 +1383,7 @@ OOF_ReadVector (cf, &m_vMax, "vMax");
 m_nDetailLevels = OOF_ReadInt (cf, "nDetailLevels");
 nIndent -= 2;
 cf.Seek (m_nDetailLevels * sizeof (int32_t), SEEK_CUR);
-if (!m_subModels.Create (m_nSubModels))
+if (!m_subModels.Create (m_nSubModels, "OOF::CModel::m_subModels"))
 	return 0;
 return 1;
 }
@@ -1553,12 +1564,14 @@ for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++)
 
 int32_t CModel::Read (char *filename, int16_t nModel, int32_t bFlipV, int32_t bCustom)
 {
+if (nModel == nDbgModel)
+	BRP;
 if (m_nModel >= 0)
 	return 0;
 
 	CFile			cf;
 	char			fileId [4];
-	int32_t			i, nLength, nFrames, nSubModels, bTimed = 0;
+	int32_t		i, nLength, nFrames, nSubModels, bTimed = 0;
 
 bLogOOF = (fLog != NULL) && FindArg ("-printoof");
 nIndent = 0;
@@ -1603,6 +1616,7 @@ while (!cf.EoF ()) {
 
 	if (!cf.Read (chunkID, sizeof (chunkID), 1)) {
 		cf.Close ();
+		Destroy ();
 		return 0;
 		}
 	OOF_PrintLog ("chunkID = '%c%c%c%c'\n", chunkID [0], chunkID [1], chunkID [2], chunkID [3]);

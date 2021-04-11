@@ -25,7 +25,7 @@ typedef struct tPathPoint {
 	bool					bFlipped;
 } tPathPoint;
 
-class CFpLightath {
+class CFlightPath {
 	public:
 		CArray<tPathPoint>	m_path; // [MAX_PATH_POINTS];
 		tPathPoint*				m_posP;
@@ -36,7 +36,8 @@ class CFpLightath {
 		time_t					m_tUpdate;
 
 	public:
-		CFpLightath ();
+		CFlightPath ();
+		~CFlightPath ();
 		void Update (CObject *pObj);
 		tPathPoint *GetPoint (void);
 		void GetViewPoint (CFixVector* vPos = NULL);

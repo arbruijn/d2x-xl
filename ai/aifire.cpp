@@ -321,7 +321,7 @@ if (0 > (nShot = CreateNewWeaponSimple (&vFire, vFirePoint, pObj->Index (), (uin
 
 if ((nWeaponType == FUSION_ID) && (gameStates.app.nSDLTicks [0] - pObj->TimeLastEffect () > 1000)) {
 	pObj->SetTimeLastEffect (gameStates.app.nSDLTicks [0]);
-	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), I2X (1) / 3, pObj->info.xSize, 1, 
+	postProcessManager.Add (NEW CPostEffectShockwave (SDL_GetTicks (), I2X (1) / 3, pObj->info.xSize, 1, 
 																	  OBJPOS (pObj)->vPos + OBJPOS (pObj)->mOrient.m.dir.f * pObj->info.xSize, pObj->Index ()));
 	}
 

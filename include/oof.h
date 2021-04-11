@@ -201,6 +201,7 @@ class CBattery {
 
 	public:
 		CBattery () { Init (); }
+		~CBattery () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
 		int32_t Read (CFile& cf);
@@ -241,6 +242,7 @@ class CAnim : public CFrameInfo {
 
 	public:
 		CAnim () { Init (); }
+		~CAnim () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
 	};
@@ -250,6 +252,7 @@ class CPosAnim : public CAnim {
 		CArray<CPosFrame>	m_frames;
 
 	public:
+		~CPosAnim () { Destroy (); }
 		void Destroy (void);
 		int32_t Read (CFile& cf, CModel* po, int32_t bTimed);
 	};
@@ -272,6 +275,7 @@ class CRotAnim : public CAnim {
 
 	public:
 		CRotAnim () { Init (); }
+		~CRotAnim () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
 		int32_t Read (CFile& cf, CModel* po, int32_t bTimed);
@@ -364,15 +368,15 @@ class CSubModel {
 
 class CModel {
 	public:
-		int16_t					m_nModel;
-		int32_t					m_nVersion;
-		int32_t					m_bCustom;
-		int32_t					m_nFlags;
+		int16_t				m_nModel;
+		int32_t				m_nVersion;
+		int32_t				m_bCustom;
+		int32_t				m_nFlags;
 		float					m_fMaxRadius;
 		CFloatVector		m_vMin;
 		CFloatVector		m_vMax;
-		int32_t					m_nDetailLevels;
-		int32_t					m_nSubModels;
+		int32_t				m_nDetailLevels;
+		int32_t				m_nSubModels;
 		CArray<CSubModel>	m_subModels;
 		CPointList			m_gunPoints;
 		CAttachList			m_attachPoints;
@@ -380,9 +384,9 @@ class CModel {
 		CArmament			m_armament;
 		CModelTextures		m_textures;
 		CFrameInfo			m_frameInfo;
-		int32_t					m_bCloaked;
-		int32_t					m_nCloakPulse;
-		int32_t					m_nCloakChangedTime;
+		int32_t				m_bCloaked;
+		int32_t				m_nCloakPulse;
+		int32_t				m_nCloakChangedTime;
 		float					m_fAlpha;
 
 	public:

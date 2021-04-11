@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <sys/types.h>
 #ifndef _WIN32
-#include <unistd.h>
+#	include <unistd.h>
 #endif
 #ifndef _WIN32_WCE
-#include <errno.h>
+#	include <errno.h>
 #endif
 
 #include "maths.h"
@@ -50,7 +50,7 @@ typedef struct CFILE {
 	size_t	rawPosition;
 	char		buffer [16384];
 	int32_t	bufLen;
-	int32_t	pBufferos;
+	int32_t	pBuffer;
 } CFILE;
 
 class CFile {
@@ -76,7 +76,7 @@ class CFile {
 		int32_t EoF (void);
 		int32_t Error (void);
 		size_t Write (const void *buf, int32_t elsize, int32_t nelem, int32_t bCompressed = 0);
-		inline int32_t GetC (void) { return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.pBufferos++]; }
+		inline int32_t GetC (void) { return (FillBuffer () == EOF) ? EOF : m_info.buffer [m_info.pBuffer++]; }
 
 		size_t ReadCompressed (const void* buf, uint32_t bufLen);
 		size_t WriteCompressed (const void* buf, uint32_t bufLen);

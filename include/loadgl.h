@@ -10,10 +10,13 @@
 #define __LOADGL_H__
 
 #ifdef _WIN32
-#include <windows.h>
-#define OGLFUNCCALL	__stdcall
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <windows.h>
+#	pragma pack(pop)
+#	define OGLFUNCCALL	__stdcall
 #else
-#define OGLFUNCCALL
+#	define OGLFUNCCALL
 #endif
 
 #include <GL/gl.h>

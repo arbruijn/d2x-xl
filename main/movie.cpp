@@ -124,7 +124,7 @@ if (!cf.Open (filename, gameFolders.game.szData [0], "rb", 0)) { // first try te
 	}
 
 size = (int32_t) cf.Length ();
-m_pRawData = new uint8_t [size+1];
+m_pRawData = NEW uint8_t [size+1];
 readCount = (int32_t) cf.Read (m_pRawData, 1, size);
 cf.Close ();
 m_pRawData [size] = 0;
@@ -244,7 +244,7 @@ while (nNextSubTitle < m_nCaptions && nFrame >= m_captions [nNextSubTitle].first
 
 void* CMovie::Alloc (uint32_t size)
 {
-return reinterpret_cast<void*> (new uint8_t [size]);
+return reinterpret_cast<void*> (NEW uint8_t [size]);
 }
 
 // ----------------------------------------------------------------------
@@ -418,7 +418,7 @@ if (nFiles > 255) {
 	gameStates.app.bLittleEndian = 0;
 	nFiles = SWAPINT (nFiles);
 	}
-if (!m_movies.Create (nFiles))
+if (!m_movies.Create (nFiles, "CMovieLib::m_movies"))
 	return 0;
 m_nMovies = nFiles;
 offset = 4 + 4 + nFiles * (13 + 4);	//id + nFiles + nFiles * (filename + size)
@@ -540,7 +540,7 @@ m_bHaveExtras = 0;
 m_nLib = -1;
 m_nMovies = -1;
 m_nMovie = -1;
-m_libs.Create (N_MOVIE_LIBS);
+m_libs.Create (N_MOVIE_LIBS, "CMovieManager::m_libs");
 }
 
 //-----------------------------------------------------------------------

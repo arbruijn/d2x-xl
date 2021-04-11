@@ -16,7 +16,13 @@ bool CDialHeap::Create (int16_t nNodes)
 ENTER (0, 0);
 Destroy ();
 m_nNodes = nNodes;
-if (!(m_index.Create (65536) && m_dirtyIndex.Create (65536) && m_cost.Create (nNodes) && m_dirtyCost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes) && m_edge.Create (nNodes))) {
+if (!(m_index.Create (65536, "CDialHeap::m_index") && 
+		m_dirtyIndex.Create (65536, "CDialHeap::m_dirtyIndex") && 
+		m_cost.Create (nNodes, "CDialHeap::m_cost") && 
+		m_dirtyCost.Create (nNodes, "CDialHeap::m_dirtyCost") && 
+		m_links.Create (nNodes, "CDialHeap::m_links") && 
+		m_pred.Create (nNodes, "CDialHeap::m_pred") && 
+		m_edge.Create (nNodes, "CDialHeap::m_edge"))) {
 	Destroy ();
 	RETVAL (false)
 	}
@@ -232,7 +238,7 @@ if (!m_pred.Buffer () || !m_edge.Buffer ()) { // -> Bug!
 
 if (!route) {
 	if (!m_route.Buffer ())
-		m_route.Create (m_nNodes);
+		m_route.Create (m_nNodes, "CDialHeap::m_route");
 	route = m_route.Buffer ();
 	}
 

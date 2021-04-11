@@ -308,7 +308,7 @@ pszSmokeAlpha [4] = TXT_EXTREME;
 
 do {
 	m.Destroy ();
-	m.Create (50);
+	m.Create (50, "SmokeDetailsMenu");
 	memset (&smokeOpts, 0xff, sizeof (smokeOpts));
 
 	for (j = 1; j < 5; j++)

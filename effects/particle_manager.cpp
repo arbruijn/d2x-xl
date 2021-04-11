@@ -84,7 +84,9 @@ for (i = 0; i < VERT_BUFFER_SIZE; i++, pf++) {
 #endif
 for (int32_t i = 0; i < 2; i++) {
 	if (!m_objectSystems [i].Buffer ()) {
-		if (!m_objectSystems [i].Create (LEVEL_OBJECTS)) {
+		char szLabel [40];
+		sprintf (szLabel, "CParticleManager::m_objectSystems [%d]", i);
+		if (!m_objectSystems [i].Create (LEVEL_OBJECTS, szLabel)) {
 			Shutdown ();
 			extraGameInfo [0].bUseParticles = 0;
 			return;
@@ -93,19 +95,19 @@ for (int32_t i = 0; i < 2; i++) {
 		}
 	}
 if (!m_objExplTime.Buffer ()) {
-	if (!m_objExplTime.Create (LEVEL_OBJECTS)) {
+	if (!m_objExplTime.Create (LEVEL_OBJECTS, "CParticleManager::m_objExplTime")) {
 		Shutdown ();
 		extraGameInfo [0].bUseParticles = 0;
 		return;
 		}
 	m_objExplTime.Clear (0);
 	}
-if (!m_systems.Create (MAX_PARTICLE_SYSTEMS)) {
+if (!m_systems.Create (MAX_PARTICLE_SYSTEMS, "CParticleManager::m_systems")) {
 	Shutdown ();
 	extraGameInfo [0].bUseParticles = 0;
 	return;
 	}
-m_systemList.Create (MAX_PARTICLE_SYSTEMS);
+m_systemList.Create (MAX_PARTICLE_SYSTEMS, "CParticleManager::m_systemList");
 int32_t i = 0;
 int32_t nCurrent = m_systems.FreeList ();
 for (CParticleSystem* pSystem = m_systems.GetFirst (nCurrent); pSystem; pSystem = GetNext (nCurrent))

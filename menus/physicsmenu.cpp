@@ -254,7 +254,7 @@ for (nDrag = sizeofa (nDragTable); nDrag; ) {
 nFusionRamp = (extraGameInfo [0].nFusionRamp > 2) ? 1 : 2;
 do {
 	m.Destroy ();
-	m.Create (30);
+	m.Create (30, "PhysicsOptionsMenu");
 	if (!gameStates.app.bGameRunning)
 		m.AddCheck ("unnerf D1 weapons", TXT_UNNERF_D1_WEAPONS, extraGameInfo [0].bUnnerfD1Weapons, KEY_U, HTX_UNNERF_D1_WEAPONS);
 	if (!extraGameInfo [0].bUnnerfD1Weapons) {

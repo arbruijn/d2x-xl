@@ -262,7 +262,7 @@ InitStrings ();
 gameStates.sound.nSoundChannels = SoundChannelIndex ();
 do {
 	m.Destroy ();
-	m.Create (20);
+	m.Create (20, "SoundMenu");
 	soundOpts.nGatling = -1;
 	if (gameOpts->app.bNotebookFriendly || gameOpts->app.bExpertMode) {
 		sprintf (szSlider + 1, TXT_SOUND_CHANNEL_COUNT, pszLowMediumHigh [gameStates.sound.nSoundChannels - 2]);

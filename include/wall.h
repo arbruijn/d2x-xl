@@ -241,7 +241,7 @@ class CWall {
 inline int32_t operator- (CWall* o, CArray<CWall>& a) { return a.Index (o); }
 
 //------------------------------------------------------------------------------
-//CWall clip flags
+//wall clip flags
 #define WCF_EXPLODES    1       //door explodes when opening
 #define WCF_BLASTABLE   2       //this is a blastable CWall
 #define WCF_TMAP1       4       //this uses primary tmap, not tmap2

@@ -17,7 +17,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #endif
 
 #include <stdio.h>
@@ -369,7 +372,7 @@ for (int32_t bD1 = 0; bD1 < 2; bD1++) {
 
 void UnloadTextures (void)
 {
-	int32_t		i, bD1;
+	int32_t	i, bD1;
 	CBitmap	*pBm;
 
 #if TRACE
@@ -416,7 +419,7 @@ for (bD1 = 0; bD1 < 2; bD1++)
 void GetFlagData (const char *bmName, int32_t nIndex)
 {
 	int32_t		i;
-	tFlagData*	pf;
+	tFlagData	*pf;
 
 if (strstr (bmName, "flag01#0") == bmName)
 	i = 0;
@@ -696,7 +699,7 @@ return NULL;
 static int32_t HaveHiresAnimation (const char* bmName, int32_t bD1)
 {
 	char			szAnim [FILENAME_LEN];
-	const char*	ps = strchr (bmName, '#');
+	const char	*ps = strchr (bmName, '#');
 
 if (!ps)
 	return -1;
@@ -756,10 +759,42 @@ return false;
 
 //------------------------------------------------------------------------------
 
+int32_t SetEffectFlags (int32_t nTexture, int32_t nEffectFlags, int32_t nWallFlags)
+{
+int32_t bFound = 0;
+
+tEffectInfo *pEffectInfo = NULL;
+for (;;) {
+	if (!(pEffectInfo = FindEffect (pEffectInfo, nTexture)))
+		break;
+	pEffectInfo->flags &= ~(EF_ALTFMT | EF_FROMPOG);
+	pEffectInfo->flags |= nEffectFlags;
+	bFound = 1;
+	}
+
+tWallEffect *pWallEffect = FindWallEffect (nTexture);
+if (pWallEffect) {
+	pWallEffect->flags &= ~(WCF_ALTFMT | WCF_FROMPOG);
+	pWallEffect->flags |= nWallFlags;
+	bFound = 1;
+	}
+
+tAnimationInfo *pAnimInfo = FindAnimation (nTexture);
+if (pAnimInfo) {
+	pAnimInfo->flags &= ~(WCF_ALTFMT | WCF_FROMPOG);
+	pAnimInfo->flags |= nWallFlags;
+	bFound = 1;
+	}
+
+return bFound;
+}
+
+//------------------------------------------------------------------------------
+
 int32_t ReadHiresBitmap (CBitmap* pBm, const char* bmName, int32_t nIndex, int32_t bD1)
 {
 #if DBG
-if (strstr (bmName, "door05#0"))
+if (strstr (bmName, "misc068"))
 	BRP;
 #endif
 
@@ -775,9 +810,11 @@ if (!pszFile)
 #if DBG
 if (!strcmp (bmName, "hostage#0"))
 	BRP;
+#	if 0
 const char* s = strchr (bmName, '#');
 if (s && (s [1] != '0'))
-	BRP;
+	return 0;
+#	endif
 #endif
 
 if (nFile < 2)	//was level specific mod folder
@@ -794,7 +831,7 @@ else
 CTGA tga (pAltBm);
 
 #if DBG
-if (strstr (pszFile, "metl086"))
+if (strstr (pszFile, "rbot010"))
 	pszFile = pszFile;
 #endif
 if (!tga.Read (pszFile, ""))
@@ -819,27 +856,8 @@ pBm->SetFrameCount (uint8_t (nFrames));
 
 if ((nIndex >= 0) && (nIndex < 0x7FFFFFFF)) {	// replacement texture for a lores game texture
 	if (pBm->Height () > pBm->Width ()) {
-		tEffectInfo	*pEffectInfo = NULL;
-		tWallEffect *pWallEffect;
-		tAnimationInfo *pAnimInfo;
-		while ((pEffectInfo = FindEffect (pEffectInfo, nIndex))) {
-			//e->vc.nFrameCount = nFrames;
-			pEffectInfo->flags |= EF_ALTFMT;
-			//pEffectInfo->animationInfo.flags |= WCF_ALTFMT;
-			}
-		if (!pEffectInfo) {
-			if ((pWallEffect = FindWallEffect (nIndex))) {
-			//w->nFrameCount = nFrames;
-				pWallEffect->flags |= WCF_ALTFMT;
-				}
-			else if ((pAnimInfo = FindAnimation (nIndex))) {
-				//v->nFrameCount = nFrames;
-				pAnimInfo->flags |= WCF_ALTFMT;
-				}
-			else {
-				PrintLog (0, "couldn't find animation for '%s'\n", bmName);
-				}
-			}
+		if (!SetEffectFlags (nIndex, EF_ALTFMT, WCF_ALTFMT))
+			PrintLog (0, "couldn't find animation for '%s'\n", bmName);
 		}
 	}
 
@@ -916,10 +934,6 @@ if (pBm->Buffer ())
 StopTime ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
-#if DBG
-if (nIndex == 262)
-	nIndex = nIndex;
-#endif
 if (gameStates.app.bNostalgia)
 	gameOpts->render.textures.bUseHires [0] = 0;
 
@@ -931,6 +945,8 @@ pBm->SetKey (nIndex);
 
 #if DBG
 if ((nIndex >= 0) && (nIndex == nDbgTexture))
+	BRP;
+if (strstr (bmName, "force02"))
 	BRP;
 #endif
 
@@ -976,6 +992,8 @@ if (bitmapOffsets [bD1][bmi] == 0)
 #if DBG
 if (bmi == nDbgTexture)
 	BRP;
+if (strstr (gameData.pigData.tex.bitmapFiles [bD1][bmi].name, "misc068"))
+	BRP;
 #endif
 pBm = &gameData.pigData.tex.bitmaps [bD1][bmi];
 if ((pBmo = pBm->Override ()))
@@ -1004,7 +1022,7 @@ void LoadReplacementBitmaps (const char *pszLevelName)
 {
 	char		szFilename [FILENAME_LEN];
 	CFile		cf;
-	int32_t		i, j;
+	int32_t	i, j;
 	CBitmap	bm;
 
 //first, free up data allocated for old bitmaps
@@ -1024,8 +1042,8 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 		return;
 		}
 	nBitmapNum = cf.ReadInt ();
-	indices = new uint16_t [nBitmapNum];
-	bmh = new tPIGBitmapHeader [nBitmapNum];
+	indices = NEW uint16_t [nBitmapNum];
+	bmh = NEW tPIGBitmapHeader [nBitmapNum];
 #if 0
 	cf.Read (indices, nBitmapNum * sizeof (uint16_t), 1);
 	cf.Read (bmh, nBitmapNum * sizeof (tPIGBitmapHeader), 1);
@@ -1063,7 +1081,7 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 		if (bHaveTGA) {
 			CTGA			tga (&bm);
 			tTGAHeader&	h = tga.Header ();
-			int32_t			nFrames = bm.Height () / bm.Width ();
+			int32_t		nFrames = bm.Height () / bm.Width ();
 
 			h.width = 
 			h.height = bm.Width ();
@@ -1073,26 +1091,9 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 				break;
 				}
 			bm.SetFrameCount ((uint8_t) nFrames);
-			if (nFrames > 1) {
-				tEffectInfo	*pEffectInfo = NULL;
-				tWallEffect *pWallEffect;
-				tAnimationInfo *pAnimInfo;
-				while ((pEffectInfo = FindEffect (pEffectInfo, indices [i]))) {
-					//e->vc.nFrameCount = nFrames;
-					pEffectInfo->flags |= EF_ALTFMT | EF_FROMPOG;
-					}
-				if (!pEffectInfo) {
-					if ((pWallEffect = FindWallEffect (indices [i]))) {
-						//w->nFrameCount = nFrames;
-						pWallEffect->flags |= WCF_ALTFMT | WCF_FROMPOG;
-						}
-					else if ((pAnimInfo = FindAnimation (i))) {
-						//v->nFrameCount = nFrames;
-						pAnimInfo->flags |= WCF_ALTFMT | WCF_FROMPOG;
-						}
-					}
-				}
 			j = indices [i];
+			if (nFrames > 1)
+				SetEffectFlags (j, EF_ALTFMT | EF_FROMPOG, WCF_ALTFMT | WCF_FROMPOG);
 			bm.SetKey (j);
 			}
 		else {
@@ -1103,6 +1104,7 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 				BRP;
 #endif
 			bm.SetKey (j);
+			SetEffectFlags (j, 0, 0);
 			bm.RLEExpand (NULL, 0);
 			*bm.Props () = *gameData.pigData.tex.pBitmap [j].Props ();
 			bm.SetPalette (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
@@ -1112,22 +1114,33 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 			BRP;
 #endif
 		gameData.pigData.tex.pBitmap [j].Unload (j, 0);
-		bm.SetFromPog (1);
 		char szName [20];
 		if (*gameData.pigData.tex.pBitmap [j].Name ())
 			sprintf (szName, "[%s]", gameData.pigData.tex.pBitmap [j].Name ());
 		else
 			sprintf (szName, "POG#%04d", j);
-		bm.SetName (szName);
-		gameData.pigData.tex.pAltBitmap [j] = bm;
-		gameData.pigData.tex.pAltBitmap [j].SetBuffer (bm.Buffer (), 0, bm.Length ());
+		CBitmap* pAltBm = gameData.pigData.tex.pAltBitmap + j;
+		pAltBm->SetName (szName);
+		*pAltBm->Props () = *bm.Props ();
+		pAltBm->SetFlags (bm.Flags ());
+		pAltBm->SetKey (j);
+		pAltBm->SetBPP (bm.BPP ());
+		pAltBm->SetType (bm.Type ());
+		pAltBm->SetFromPog (1);
+		pAltBm->SetTranspType (bm.m_info.nTranspType);
+		pAltBm->SetFrameCount (bm.FrameCount ());
+		pAltBm->m_info.palette = bm.m_info.palette;
+		memset (pAltBm->m_info.transparentFrames, 0, sizeof (pAltBm->m_info.transparentFrames));
+		memset (pAltBm->m_info.supertranspFrames, 0, sizeof (pAltBm->m_info.supertranspFrames));
+		pAltBm->SetBuffer (bm.Buffer (), 0, bm.Length ());
 		bm.SetBuffer (NULL);
-		gameData.pigData.tex.pBitmap [j].SetOverride (gameData.pigData.tex.pAltBitmap + j);
-		CBitmap* pBm = gameData.pigData.tex.pAltBitmap + j;
+		gameData.pigData.tex.pBitmap [j].SetOverride (pAltBm);
+		pAltBm->SetAvgColorIndex (bmh [i].avgColor);
+
 		CFloatVector3 color;
-		if (0 <= pBm->AvgColor (&color))
-			pBm->SetAvgColorIndex (pBm->Palette ()->ClosestColor (&color));
-		UseBitmapCache (gameData.pigData.tex.pAltBitmap + j, (int32_t) bm.Width () * (int32_t) bm.RowSize ());
+		if (0 <= pAltBm->AvgColor (&color))
+			pAltBm->SetAvgColorIndex (pAltBm->Palette ()->ClosestColor (&color));
+		UseBitmapCache (pAltBm, (int32_t) bm.Width () * (int32_t) bm.RowSize ());
 		}
 	delete[] indices;
 	delete[] bmh;
@@ -1171,7 +1184,7 @@ bool BitmapLoaded (int32_t bmi, int32_t nFrame, int32_t bD1)
 if (!pBm)
 	return false;
 #if 1
-if (nFrame && gameData.pigData.tex.bitmaps [bD1][bmi - nFrame].Override ()) {
+if (/*nFrame &&*/ gameData.pigData.tex.bitmaps [bD1][bmi - nFrame].Override ()) {
 	pBm->DelFlags (BM_FLAG_PAGED_OUT);
 	pBm->SetOverride (gameData.pigData.tex.bitmaps [bD1][bmi - nFrame].Override ());
 	return true;
@@ -1190,6 +1203,8 @@ void LoadTexture (int32_t bmi, int32_t nFrame, int32_t bD1, bool bHires)
 {
 #if DBG
 if ((nDbgTexture >= 0) && (bmi == nDbgTexture))
+	BRP;
+if (strstr (gameData.pigData.tex.bitmapFiles [bD1][bmi].name, "misc068"))
 	BRP;
 #endif
 if (!BitmapLoaded (bmi, nFrame, bD1))

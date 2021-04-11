@@ -367,7 +367,7 @@ Update ();
 
 CConsole* CConsole::Create (void)
 {
-return new CConsole;
+return NEW CConsole;
 }
 
 //------------------------------------------------------------------------------
@@ -476,11 +476,14 @@ if (h / (CON_LINE_SPACE + m_canvas.Font ()->Height ()) > lines)
 else
 	m_LineBuffer = lines;
 
-m_ConsoleLines.Create (m_LineBuffer);
-m_CommandLines.Create (m_LineBuffer);
+m_ConsoleLines.Create (m_LineBuffer, "CConsole::m_ConsoleLines");
+m_CommandLines.Create (m_LineBuffer, "CConsole::m_CommandLines");
 for (loop = 0; loop < m_LineBuffer; loop++) {
-	m_ConsoleLines [loop].Create (CON_CHARS_PER_LINE);
-	m_CommandLines [loop].Create (CON_CHARS_PER_LINE);
+	char szLabel [40];
+	sprintf (szLabel, "CConsole::m_ConsoleLines [%d]", loop);
+	m_ConsoleLines [loop].Create (CON_CHARS_PER_LINE, szLabel);
+	sprintf (szLabel, "CConsole::m_CommandLines [%d]", loop);
+	m_CommandLines [loop].Create (CON_CHARS_PER_LINE, szLabel);
 	}
 memset (m_Command, 0, CON_CHARS_PER_LINE);
 memset (m_LCommand, 0, CON_CHARS_PER_LINE);

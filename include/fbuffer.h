@@ -2,7 +2,10 @@
 #define __FBO_H
 
 #ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #	include <stddef.h>
 #endif
 #include "ogl_defs.h"

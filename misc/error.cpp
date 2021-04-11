@@ -501,6 +501,8 @@ if (*gameFolders.user.szCache && (gameStates.app.nLogLevel > 0)) {
 
 //------------------------------------------------------------------------------
 
+bool bPrintingLog = false;
+
 void _CDECL_ PrintLog (const int32_t nIndent, const char *fmt, ...)
 {
 #if USE_OPENMP
@@ -508,6 +510,7 @@ void _CDECL_ PrintLog (const int32_t nIndent, const char *fmt, ...)
 	{
 #endif
 if (fLog /*&& !gameStates.app.nTraceLevel*/) {
+	bPrintingLog = true;
 	if (fmt && *fmt) {
 		va_list arglist;
 			static char	szLogLine [2][100000] = {{'\0'}, {'\0'}};
@@ -532,6 +535,7 @@ if (fLog /*&& !gameStates.app.nTraceLevel*/) {
 		}
 	if (nIndent)
 		IndentLog (nIndent);
+	bPrintingLog = false;
 	}
 #if USE_OPENMP
 }

@@ -7,7 +7,16 @@
 #define ALT_SQRT 2
 
 #include <stdlib.h>
+
+#ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
+#endif
 #include <cmath>
+#ifdef _WIN32
+#	pragma pack(pop)
+#endif
+
 #include "pstypes.h"
 
 //=============================== FIXED POINT ===============================

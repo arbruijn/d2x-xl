@@ -270,6 +270,10 @@ if (replacementModels [i].pszHires)
 	sprintf (szModel [1], "%s.oof", replacementModels [i].pszHires);
 else
 	szModel [1][0] = '\0';
+#if DBG
+if (nModel == nDbgModel)
+	BRP;
+#endif
 if (!(po->Read (szModel [1], nModel, replacementModels [i].bFlipV, bCustom) || 
 	   po->Read (szModel [0], nModel, replacementModels [i].bFlipV, bCustom)))
 	return 0;
@@ -321,30 +325,30 @@ return i;
 
 // ----------------------------------------------------------------------------
 
-int16_t LoadHiresModel (int32_t nModel, int16_t i, int32_t bCustom, const char* filename)
+int16_t LoadHiresModel (int16_t nModel, int32_t bCustom, const char* filename)
 {
 	int16_t	j = sizeofa (replacementModels);
 
 #if DBG
-if ((nDbgModel >= 0) && (replacementModels [i].nModel == nDbgModel))
+if ((nDbgModel >= 0) && (replacementModels [nModel].nModel == nDbgModel))
 	BRP;
 #endif
 if (filename)
-	replacementModels [i].pszHires = filename;
-bool bLog = (replacementModels [i].pszHires != NULL) && (gameStates.app.nLogLevel > 1);
+	replacementModels [nModel].pszHires = filename;
+bool bLog = (replacementModels [nModel].pszHires != NULL) && (gameStates.app.nLogLevel > 1);
 if (bLog)
-	PrintLog (1, "Loading model %d (%s)\n", replacementModels [i].nModel, replacementModels [i].pszHires);
+	PrintLog (1, "Loading model %d (%s)\n", replacementModels [nModel].nModel, replacementModels [nModel].pszHires);
 #if DBG
-if (replacementModels [i].nModel == nDbgModel)
+if (replacementModels [nModel].nModel == nDbgModel)
 	BRP;
 #endif
-if ((j = LoadASEModel (gameData.modelData.aseModels [bCustom != 0] + gameData.modelData.nHiresModels, i, bCustom))) {
+if ((j = LoadASEModel (gameData.modelData.aseModels [bCustom != 0] + gameData.modelData.nHiresModels, nModel, bCustom))) {
 	if (bLog)
 		PrintLog (-1);
 	return j;
 	}
 #if 1
-if (bCustom && (j = LoadOOFModel (gameData.modelData.oofModels [bCustom != 0] + gameData.modelData.nHiresModels, i, bCustom))) {
+if (bCustom && (j = LoadOOFModel (gameData.modelData.oofModels [bCustom != 0] + gameData.modelData.nHiresModels, nModel, bCustom))) {
 	if (bLog)
 		PrintLog (-1);
 	return j;
@@ -352,7 +356,7 @@ if (bCustom && (j = LoadOOFModel (gameData.modelData.oofModels [bCustom != 0] + 
 #endif
 if (bLog)
 	PrintLog (-1);
-return bCustom ? ++i : LoadLoresModel (i);
+return bCustom ? ++nModel : LoadLoresModel (nModel);
 }
 
 //------------------------------------------------------------------------------
@@ -367,7 +371,7 @@ if (nState)
 
 //paletteManager.ResumeEffect ();
 if (loadOp == 0) {
-	loadIdx = LoadHiresModel (gameData.modelData.nHiresModels, loadIdx, 0);
+	loadIdx = LoadHiresModel (loadIdx, 0);
 	if (loadIdx >= (int32_t) sizeofa (replacementModels)) {
 		loadOp = 1;
 		loadIdx = 0;
@@ -433,7 +437,7 @@ else /*if (gameOpts->render.bHiresModels [0])*/ {
 			messageBox.Show (TXT_LOADING_MODELS);
 		if (bCustom || gameOpts->render.bHiresModels [0]) {
 			while (i < j)
-				i = LoadHiresModel (gameData.modelData.nHiresModels, i, bCustom);
+				i = LoadHiresModel (i, bCustom);
 			i = 0;
 			}
 		if (!bCustom) {

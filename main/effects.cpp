@@ -143,7 +143,7 @@ CBitmap *SetupHiresAnim (int16_t *pFrame, int32_t nFrames, int32_t nBaseTex, int
 if (!(pBm || (pBm = FindAnimBaseTex (pFrame, nFrames, bIndirect, bObject, &iBaseFrame))))
 	return NULL;
 #if DBG
-if (strstr (pBm->Name (), "misc068"))
+if (strstr (pBm->Name (), "force02"))
 	pBm = pBm;
 #endif
 if (pBm->FrameCount () < 2)

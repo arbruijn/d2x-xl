@@ -1104,7 +1104,7 @@ CControlConfig::tItemPos* CControlConfig::GetItemPos (kcItem* items, int32_t nIt
 	tItemPos	*pos;
 	int32_t			i;
 
-if (!(pos = new tItemPos [nItems]))
+if (!(pos = NEW tItemPos [nItems]))
 	return NULL;
 for (i = 0; i < nItems; i++) {
 	pos [i].l = items [i].x + items [i].w1;
@@ -1123,7 +1123,7 @@ int32_t* CControlConfig::GetItemRef (int32_t nItems, tItemPos* pos)
 	int32_t	*ref;
 	int32_t	i;
 
-if (!(ref = new int32_t [nItems]))
+if (!(ref = NEW int32_t [nItems]))
 	return NULL;
 for (i = 0; i < nItems; i++)
 	ref [pos [i].i] = i;

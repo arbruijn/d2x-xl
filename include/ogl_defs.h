@@ -12,17 +12,20 @@
 
 #if DBG
 #	define DBG_SHADERS			0
-#	define DBG_OGL					1
+#	define DBG_OGL				1
 #else
 #	define DBG_SHADERS			0
-#	define DBG_OGL					0
+#	define DBG_OGL				0
 #endif
 
 #define RENDER2TEXTURE			2	//0: glCopyTexSubImage, 1: pixel buffers, 2: frame buffers
 #define OGL_POINT_SPRITES		1
 
 #ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #	include <stddef.h>
 #endif
 

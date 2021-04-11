@@ -49,7 +49,8 @@ m_info.viewf [1] =
 m_info.viewf [2] = CFloatMatrix::IDENTITY;
 m_info.zoom = 0;
 m_info.zoomf = 0;
-m_save.Create (MAX_INSTANCE_DEPTH);
+m_sysMats.SetName ("CTransformation::m_sysMats");
+m_save.Create (MAX_INSTANCE_DEPTH, "CTransformation::m_save");
 }
 
 //------------------------------------------------------------------------------

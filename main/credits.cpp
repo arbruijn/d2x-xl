@@ -16,8 +16,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifdef _WIN32
-#include <windows.h>
-#include <stddef.h>
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <windows.h>
+#	pragma pack(pop)
+#	include <stddef.h>
 #endif
 #include <stdio.h>
 #include <stdlib.h>

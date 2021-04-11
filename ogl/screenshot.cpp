@@ -13,8 +13,11 @@
 #include <stdio.h>
 #include <string.h>
 #ifdef _WIN32
-#include <io.h>
-#include <windows.h>
+#	include <io.h>
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <windows.h>
+#	pragma pack(pop)
 #endif
 
 #ifndef _WIN32
@@ -84,7 +87,7 @@ else {
 		outBufSize = imgSize;
 		if (outBuf)
 			delete outBuf;
-		outBuf = new tBGR [outBufSize];
+		outBuf = NEW tBGR [outBufSize];
 		}
 	if (outBuf) {
 		tTGAHeader hdr;
@@ -164,7 +167,7 @@ do {
 	} while (!access (szSaveName, 0));
 
 if ((bTmpBuf = (buf == NULL))) {
-	buf = new uint8_t [gameData.renderData.screen.Width () * gameData.renderData.screen.Height () * 3];
+	buf = NEW uint8_t [gameData.renderData.screen.Width () * gameData.renderData.screen.Height () * 3];
 	ogl.SetTexturing (false);
 	ogl.SetReadBuffer (GL_FRONT, 0);
 	gameData.renderData.screen.Activate ("SaveScreenShot (screen)");

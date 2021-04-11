@@ -291,7 +291,7 @@ m_info.parentBitmap.AddFlags (BM_FLAG_TRANSPARENT);
 m_info.parentBitmap.SetPalette (palette);
 //if (!(m_info.flags & FT_COLOR))
 m_info.parentBitmap.Texture ()->Register ();
-m_info.bitmaps.Create (nChars); 
+m_info.bitmaps.Create (nChars, "CFont::m_info.bitmaps"); 
 //m_info.bitmaps.Clear ();
 h = m_info.height;
 white = palette->ClosestColor (63, 63, 63);
@@ -368,7 +368,7 @@ nChars = m_info.maxChar - m_info.minChar + 1;
 if (m_info.flags & FT_PROPORTIONAL) {
 	m_info.widths = reinterpret_cast<int16_t*> (fontData + (size_t) m_info.widthOffs - GRS_FONT_SIZE);
 	m_info.data = reinterpret_cast<uint8_t*> (fontData + (size_t) m_info.dataOffs - GRS_FONT_SIZE);
-	m_info.chars.Create (nChars);
+	m_info.chars.Create (nChars, "CFont::m_info.chars");
 	ptr = m_info.data;
 	for (i = 0; i < nChars; i++) {
 		m_info.widths [i] = INTEL_SHORT (m_info.widths [i]);
@@ -433,7 +433,7 @@ if (!strncmp (fileId, "NFSP", 4)) {
 dataSize = cf.ReadInt ();
 dataSize -= GRS_FONT_SIZE; // subtract the size of the header.
 Read (cf);
-if (!(fontData || (fontData = new uint8_t [dataSize]))) {
+if (!(fontData || (fontData = NEW uint8_t [dataSize]))) {
 	cf.Close ();
 	return NULL;
 	}
@@ -606,9 +606,9 @@ return nLineCount;
 void CFontManager::Init (void)
 {
 memset (m_fonts, 0, sizeof (m_fonts));
-m_save.Create (10);
+m_save.Create (10, "CFontManager::m_save");
 SetScale (1.0f);
-m_scaleStack.Create (10);
+m_scaleStack.Create (10, "CFontManager::m_scaleStack");
 m_scaleStack.SetGrowth (10);
 }
 

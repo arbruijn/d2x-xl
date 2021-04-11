@@ -241,17 +241,17 @@ m_vboIndexHandle = 0;
 
 bool CModel::Create (void)
 {
-m_vertices.Create (m_nVerts);
-m_vertexOwner.Create (m_nVerts);
-m_color.Create (m_nVerts);
-m_vertBuf [0].Create (m_nFaceVerts);
-m_faceVerts.Create (m_nFaceVerts);
-m_vertNorms.Create (m_nFaceVerts);
-m_subModels.Create (m_nSubModels);
-m_faces.Create (m_nFaces);
-m_index [0].Create (m_nFaceVerts);
-m_sortedVerts.Create (m_nFaceVerts);
-m_edges.Create (m_nFaceVerts);
+m_vertices.Create (m_nVerts, "RenderModel::CModel::m_vertices");
+m_vertexOwner.Create (m_nVerts, "RenderModel::CModel::m_vertexOwner");
+m_color.Create (m_nVerts, "RenderModel::CModel::m_color");
+m_vertBuf [0].Create (m_nFaceVerts, "RenderModel::CModel::m_vertBuf [0]");
+m_faceVerts.Create (m_nFaceVerts, "RenderModel::CModel::m_faceVerts");
+m_vertNorms.Create (m_nFaceVerts, "RenderModel::CModel::m_vertNorms");
+m_subModels.Create (m_nSubModels, "RenderModel::CModel::m_subModels");
+m_faces.Create (m_nFaces, "RenderModel::CModel::m_faces");
+m_index [0].Create (m_nFaceVerts, "RenderModel::CModel::m_index [0]");
+m_sortedVerts.Create (m_nFaceVerts, "RenderModel::CModel::m_sortedVerts");
+m_edges.Create (m_nFaceVerts, "RenderModel::CModel::m_edges");
 
 m_vertices.Clear (0);
 m_color.Clear (0xff);
@@ -333,6 +333,7 @@ m_vertBuf [0].Destroy ();
 m_vertBuf [1].SetBuffer (0);	//avoid trying to delete memory allocated by the graphics driver
 m_color.Destroy ();
 m_vertices.Destroy ();
+m_edges.Destroy ();
 m_vertexOwner.Destroy ();
 
 Init ();
@@ -588,7 +589,7 @@ m_nEdges = 0;
 #if 1
 for (uint16_t i = 0; i < m_nFaces; i++, pFace++)
 	m_nEdges += pFace->m_nVerts;
-if (!(m_edges.Create (m_nEdges)))
+if (!(m_edges.Create (m_nEdges, "RenderModel::CSubModel::m_edges")))
 	return false;
 m_nEdges = 0;
 #endif
@@ -888,7 +889,7 @@ if (m_nType >= 0) {
 		}
 	}
 //first get the biggest distance between any two model vertices
-if (vertices.Create (m_nFaceVerts)) {
+if (vertices.Create (m_nFaceVerts, "CModel::Radius::vertices")) {
 		CFloatVector3	*pv, *pvi, *pvj;
 
 	for (i = 0, h = m_nSubModels, pSubModel = m_subModels.Buffer (), pv = vertices.Buffer (); i < h; i++, pSubModel++) {

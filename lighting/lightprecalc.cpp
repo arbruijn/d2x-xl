@@ -258,7 +258,7 @@ ENTER (0, nThread);
 if (!lightManager.LightCount (0))
 	RETVAL (0)
 
-if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
+if (!(pDists = NEW tLightDist [lightManager.LightCount (0)])) {
 	gameOpts->render.nLightingMethod = 0;
 	gameData.renderData.shadows.nLights = 0;
 	RETVAL (0)
@@ -314,7 +314,7 @@ G3_SLEEP (0);
 if (!lightManager.LightCount (0))
 	RETVAL (0)
 
-if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
+if (!(pDists = NEW tLightDist [lightManager.LightCount (0)])) {
 	gameOpts->render.nLightingMethod = 0;
 	gameData.renderData.shadows.nLights = 0;
 	RETVAL (0)
@@ -735,13 +735,13 @@ if (nStage) {
 	// Why does this get called here? I don't remember, but it seems to be unnecessary. [DM]
 	//SetupSegments (fix (I2X (1) * 0.001f)); 
 	int32_t i = sizeof (gameData.segData.bVertVis [0]) * gameData.segData.nVertices * VERTVIS_FLAGS;
-	if (!gameData.segData.bVertVis.Create (i)) 
+	if (!gameData.segData.bVertVis.Create (i, "gameData.segData.bVertVis")) 
 		RETVAL (false);
 	}
 else {
 	gameData.segData.bVertVis.Clear ();
 	if (lightManager.GeometryLightCount ()) {
-		if (!gameData.segData.bLightVis.Create ((lightManager.GeometryLightCount () * LEVEL_SEGMENTS + 3) / 4))
+		if (!gameData.segData.bLightVis.Create ((lightManager.GeometryLightCount () * LEVEL_SEGMENTS + 3) / 4, "gameData.segData.bLightVis"))
 			RETVAL (false);
 		gameData.segData.bLightVis.Clear ();
 		}

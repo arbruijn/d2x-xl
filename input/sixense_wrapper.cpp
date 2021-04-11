@@ -12,7 +12,7 @@ CSixense::CSixense ()
 if ((m_bAvailable = (sixenseInit () == SIXENSE_SUCCESS))) {
 	m_nBases = sixenseGetMaxBases ();
 	if (m_nBases)
-		m_axis = new fix [m_nBases * 2 * 3];
+		m_axis = NEW fix [m_nBases * 2 * 3];
 	}
 }
 

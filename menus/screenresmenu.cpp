@@ -161,7 +161,7 @@ do {
 	screenResOpts.nWideScreen = -1;
 	cShortCut = '1';
 	m.Destroy ();
-	m.Create (N_SCREENRES_ITEMS);
+	m.Create (N_SCREENRES_ITEMS, "ScreenResMenu");
 	for (i = 0, j = NUM_DISPLAY_MODES - 1; i < j; i++) {
 		if (!(displayModeInfo [i].bAvailable = ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].dim)))
 			continue;

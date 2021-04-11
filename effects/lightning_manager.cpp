@@ -75,23 +75,23 @@ Shutdown (true);
 void CLightningManager::Init (void)
 {
 ENTER (0, 0);
-if (!(m_objects.Buffer () || m_objects.Create (LEVEL_OBJECTS))) {
+if (!(m_objects.Buffer () || m_objects.Create (LEVEL_OBJECTS, "CLightningManager::m_objects"))) {
 	Shutdown (1);
 	extraGameInfo [0].bUseLightning = 0;
 	RETURN
 	}
 m_objects.Clear (0xff);
-if (!(m_lights.Buffer () || m_lights.Create (2 * LEVEL_SEGMENTS))) {
+if (!(m_lights.Buffer () || m_lights.Create (2 * LEVEL_SEGMENTS, "CLightningManager::m_lights"))) {
 	Shutdown (1);
 	extraGameInfo [0].bUseLightning = 0;
 	RETURN
 	}
-if (!m_emitters.Create (MAX_LIGHTNING_SYSTEMS)) {
+if (!m_emitters.Create (MAX_LIGHTNING_SYSTEMS, "CLightningManager::m_emitters")) {
 	Shutdown (1);
 	extraGameInfo [0].bUseLightning = 0;
 	RETURN
 	}
-m_emitterList.Create (MAX_LIGHTNING_SYSTEMS);
+m_emitterList.Create (MAX_LIGHTNING_SYSTEMS, "CLightningManager::m_emitterList");
 int32_t i = 0;
 int32_t nCurrent = m_emitters.FreeList ();
 for (CLightningEmitter* pEmitter = m_emitters.GetFirst (nCurrent); pEmitter; pEmitter = m_emitters.GetNext (nCurrent))

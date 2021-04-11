@@ -257,7 +257,7 @@ static void ShuffleIntegers (int32_t* v, int32_t l)
 {
 if ((l < 1) || !v)
 	return;
-int32_t* index = new int32_t [l];
+int32_t* index = NEW int32_t [l];
 if (!index)
 	return;
 for (int32_t i = 0; i < l; i++)
@@ -391,7 +391,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 				CFile::SplitPath (szSong, szSongFolder, NULL, NULL);
 				if (!*szSongFolder)
 					i += (int32_t) strlen (szListFolder);
-				pszSong = new char [i - bSecret];
+				pszSong = NEW char [i - bSecret];
 				if (!pszSong) {
 					cf.Close ();
 					Destroy ();
@@ -413,11 +413,11 @@ for (bRead = 0; bRead < 2; bRead++) {
 	cf.Close ();
 	if (!bRead && nSongs [2]) {
 		m_levelSongs.Destroy ();
-		if (!m_levelSongs.Create (nSongs [2])) {
+		if (!m_levelSongs.Create (nSongs [2], "CPlaylist::m_levelSongs")) {
 			Destroy ();
 			return 0;
 			}
-		m_songIndex.Create (nSongs [2]);
+		m_songIndex.Create (nSongs [2], "CPlaylist::m_songIndex");
 		m_levelSongs.Clear (0);
 		}
 	}
@@ -497,57 +497,63 @@ m_mod.Align ();
 
 //------------------------------------------------------------------------------
 
+int32_t CSongManager::LoadDescentSongs (char *pszFolder, int32_t bD1Songs)
+{
+	int32_t	i = 0;
+	char		* p, inputline [81];
+	CFile		cf;
+
+if (!pszFolder || !*pszFolder)
+	hogFileManager.UseD1 ("descent.hog");
+if (!CFile::Exist ("descent.sng", pszFolder, bD1Songs)||   // mac (demo?) datafiles don't have the .sng file
+	 !cf.Open ("descent.sng", pszFolder, "rb", bD1Songs)) {
+	if (!bD1Songs)
+		Warning ("Couldn't open Descent %d song list", bD1Songs ? 1 : 2);
+	return 0;
+	}
+
+while (cf.GetS (inputline, 80)) {
+	if ((p = strchr (inputline,'\n')))
+		*p = '\0';
+	if (*inputline) {
+		Assert (i < MAX_NUM_SONGS);
+		if (3 == sscanf (inputline, "%s %s %s", m_info.data [i].filename, m_info.data [i].melodicBankFile, m_info.data [i].drumBankFile)) {
+			if (!m_info.nFirstLevelSong [bD1Songs] && strstr (m_info.data [i].filename, "game01.hmp"))
+					m_info.nFirstLevelSong [bD1Songs] = i;
+			if (bD1Songs && strstr (m_info.data [i].filename, "endlevel.hmp"))
+				m_info.nD1EndLevelSong = i;
+			i++;
+			}
+		}
+	}
+m_info.nSongs [bD1Songs] = i;
+m_info.nLevelSongs [bD1Songs] = m_info.nSongs [bD1Songs] - m_info.nFirstLevelSong [bD1Songs];
+if (bD1Songs && !m_info.nFirstLevelSong [bD1Songs])
+	Warning ("Descent 1 songs are missing.");
+cf.Close ();
+return i;
+}
+
+//------------------------------------------------------------------------------
+
 void CSongManager::Setup (void)
 {
-	int32_t	i, bD1Songs;
-	char	*p, inputline [81];
-	CFile	cf;
-
 if (m_info.bInitialized)
 	return;
-hogFileManager.UseD1 ("descent.hog");
-for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
-		if (!FindArg ("-nomixer"))
-			CD_blast_mixer ();   // Crank it!
-	if (CFile::Exist ("descent.sng", gameFolders.game.szData [0], bD1Songs)) {   // mac (demo?) datafiles don't have the .sng file
-		if (!cf.Open ("descent.sng", gameFolders.game.szData [0], "rb", bD1Songs)) {
-			if (bD1Songs)
-				break;
-			else
-				Warning ("Couldn't open descent.sng");
-			}
-		while (cf.GetS (inputline, 80)) {
-			if ((p = strchr (inputline,'\n')))
-				*p = '\0';
-			if (*inputline) {
-				Assert(i < MAX_NUM_SONGS);
-				if (3 == sscanf (inputline, "%s %s %s", m_info.data [i].filename, m_info.data [i].melodicBankFile, m_info.data [i].drumBankFile)) {
-					if (!m_info.nFirstLevelSong [bD1Songs] && strstr (m_info.data [i].filename, "game01.hmp"))
-						 m_info.nFirstLevelSong [bD1Songs] = i;
-					if (bD1Songs && strstr (m_info.data [i].filename, "endlevel.hmp"))
-						m_info.nD1EndLevelSong = i;
-					i++;
-					}
-				}
-			}
-		m_info.nSongs [bD1Songs] = i;
-		m_info.nLevelSongs [bD1Songs] = m_info.nSongs [bD1Songs] - m_info.nFirstLevelSong [bD1Songs];
-		if (!m_info.nFirstLevelSong [bD1Songs])
-			Warning ("Descent 1 songs are missing.");
-		cf.Close ();
-		}
-	m_info.nTotalSongs = i;
-	m_info.bInitialized = 1;
-	//	rba. Hook
-	if (!gameOpts->sound.bUseRedbook)
-		redbook.Enable (0);
-	else {	// use redbook
-		rba.Init ();
-		if (rba.Enabled ()) {
-			redbook.SetVolume (gameConfig.nRedbookVolume);
-			redbook.ForceRegister ();
-			redbook.Register ();
-			}
+for (int32_t bD1Songs = 0; bD1Songs < 2; bD1Songs++)
+	m_info.nTotalSongs = LoadDescentSongs (gameFolders.game.szData [0], bD1Songs);
+//	rba. Hook
+m_info.bInitialized = 1;
+if (!FindArg ("-nomixer"))
+	CD_blast_mixer ();   // Crank it!
+if (!gameOpts->sound.bUseRedbook)
+	redbook.Enable (0);
+else {	// use redbook
+	rba.Init ();
+	if (rba.Enabled ()) {
+		redbook.SetVolume (gameConfig.nRedbookVolume);
+		redbook.ForceRegister ();
+		redbook.Register ();
 		}
 	}
 LoadDescentPlaylists ();

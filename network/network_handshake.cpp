@@ -32,13 +32,18 @@ void CMessage::Setup (uint32_t id, uint8_t* message)
 m_timestamp = SDL_GetTicks ();
 m_players = 0;
 if (message) {
-	m_id = (id & 0x0FFFFFFF) | (uint32_t (N_LOCALPLAYER) << 28);
+	m_id = (id & 0x0FFFFFFF) | (uint32_t (N_LOCALPLAYER) << 28); // lower 3 bytes: id, upper byte: player
 	m_resendTime = m_timestamp;
 	for (int32_t i = 0; i < N_PLAYERS; i++)
 		if ((i != N_LOCALPLAYER) && (PLAYER (i).IsConnected ()))
 			m_players |= (1 << i);
 	m_message [0] = PID_RESEND_MESSAGE;
+#if DBG
+	if (MultiMsgLen (message [0]) >= sizeof (m_message))
+		BRP;
+#endif
 	memcpy (m_message + 1, message, MultiMsgLen (message [0]));
+	PUT_INTEL_INT (m_message + 2, m_id);
 	}
 else {
 	m_id = id;
@@ -96,7 +101,7 @@ CMessage* msg = FreeList ();
 if (msg)
 	SetFreeList (msg->GetNext ());
 else
-	msg = new CMessage;
+	msg = NEW CMessage;
 return msg;
 }
 
@@ -171,13 +176,12 @@ void CMessageList::Update (void)
 CMessage* i = Head ();
 
 while (i) {
-	if (!i->Update ()) {
-		CMessage* j = i;
-		i = i->GetPrev ();
+	CMessage* j = i;
+	i = i->GetNext ();
+	if (!j->Update ()) {
 		Unlink (j);
 		Free (j);
 		}
-	i = i ? i->GetNext () : Head ();
 	}
 }
 
@@ -208,7 +212,7 @@ SetFreeList (NULL);
 
 //------------------------------------------------------------------------------
 // importantMessages [0] are the messages that have been sent from this client and are waiting for their reception to be confirmed
-// importantMessages [1] are the messages that have been received by this client and need to be confirmed, but should not be processed again if resent by their originator
+// importantMessages [1] are the messages that have been received by this client and need to be confirmed, and should not be processed again if resent by their originator
 
 CMessageList importantMessages [2];
 

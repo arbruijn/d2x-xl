@@ -3,7 +3,10 @@
 #define _PBUFFER_H_
 
 #ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #	include <stddef.h>
 #endif
 

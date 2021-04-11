@@ -1,14 +1,10 @@
  SUBDIRS = @D2X_MAIN_SUBDIRS@
 
-if EDITOR
-DIST_SUBDIRS = editor
-endif
-
 noinst_LIBRARIES = libmain.a
 
 INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/effects -I $(top_srcdir)/input/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL
 
-libmain_a_SOURCES = ${EDITOR_SRCS} ${NETWORK_SRCS} \
+libmain_a_SOURCES = ${NETWORK_SRCS} \
 	briefings.cpp cheats.cpp cmd.cpp config.cpp credits.cpp crypt.cpp descent.cpp dialheap.cpp dropobject.cpp effects.cpp \
 	endlevel.cpp findpath.cpp findsegment.cpp flightpath.cpp meshedge.cpp game.cpp gameargs.cpp gamecntl.cpp gamedata.cpp \
 	gamefolders.cpp gameoptions.cpp gametime.cpp gamestates.cpp highscores.cpp kconfig.cpp mglobal.cpp movie.cpp newdemo.cpp \

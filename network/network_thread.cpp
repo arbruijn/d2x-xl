@@ -6,7 +6,10 @@
 #include <string.h>
 #include <stdlib.h>
 #ifdef _WIN32
-#	include <winsock.h>
+#	pragma pack(push)
+#	pragma pack(8)
+#	include <WinSock.h>
+#	pragma pack(pop)
 #else
 #	include <sys/socket.h>
 #endif
@@ -214,7 +217,7 @@ CNetworkPacket* packet = m_packets [2];
 if (m_packets [2])
 	m_packets [2] = m_packets [2]->Next ();
 else
-	packet = new CNetworkPacket;
+	packet = NEW CNetworkPacket;
 ++m_nPackets;
 Unlock (bLock, __FUNCTION__);
 return packet;
@@ -454,7 +457,7 @@ receiver->Unlock (true, __FUNCTION__);
 
 bool CNetworkClientList::Create (void) 
 { 
-if (!CStack<CNetworkClientInfo>::Create (100))
+if (!CStack<CNetworkClientInfo>::Create (100, "NetworkClientList"))
 	return false;
 SetGrowth (100);
 return true;

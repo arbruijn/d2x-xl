@@ -112,11 +112,11 @@ if (m_nMaxTriangles && m_nMaxEdges) {
 else {
 	m_nMaxTriangles = FACES.nFaces * 4;
 	m_nMaxEdges = FACES.nFaces * 4;
-	if (!m_edges.Create (m_nMaxEdges)) {
+	if (!m_edges.Create (m_nMaxEdges, "CTriMeshBuilder::m_edges")) {
 		PrintLog (0, "Not enough memory for building the triangle mesh (%d edges).\n", m_nMaxEdges);
 		RETVAL (0)
 		}
-	if (!m_triangles.Create (m_nMaxTriangles)) {
+	if (!m_triangles.Create (m_nMaxTriangles, "CTriMeshBuilder::m_triangles")) {
 		PrintLog (0, "Not enough memory for building the triangle mesh (%d tris).\n", m_nMaxTriangles);
 		FreeData ();
 		RETVAL (0)
@@ -712,7 +712,7 @@ RETURN
 void CTriMeshBuilder::CreateFaceVertLists (void)
 {
 ENTER (0, 0);
-	int32_t*			bTags = new int32_t [gameData.segData.nVertices];
+	int32_t*			bTags = NEW int32_t [gameData.segData.nVertices];
 	CSegFace*		pFace;
 	tFaceTriangle*	pTriangle;
 	int32_t			h, i, j, k, nFace;
@@ -754,6 +754,7 @@ for (i = FACES.nFaces, pFace = FACES.faces.Buffer (), nFace = 0; i; i--, pFace++
 			}
 		}
 	}
+delete[] bTags;
 #if 1
 //sort each face's vertex index list
 for (i = FACES.nFaces, pFace = FACES.faces.Buffer (); i; i--, pFace++)
@@ -817,7 +818,7 @@ if (bOk) {
 		nExpectedSize += abs (nSizes [i]);
 	}
 if (bOk)
-	bOk = ((ioBuffer = new char [nExpectedSize]) != NULL);
+	bOk = ((ioBuffer = NEW char [nExpectedSize]) != NULL);
 if (bOk) {
 	if (!mdh.bCompressed)
 		bOk = cf.Read (ioBuffer, nExpectedSize, 1) == 1;
@@ -864,32 +865,32 @@ if (bOk) {
 	gameData.segData.fVertices.Create (mdh.nVertices);
 	memcpy (gameData.segData.fVertices.Buffer (), pBuffer, nSize = sizeof (gameData.segData.fVertices [0]) * mdh.nVertices);
 	pBuffer += nSize;
-	FACES.faces.Create (mdh.nFaces);
+	FACES.faces.Create (mdh.nFaces, "gameData.segData.faceData.faces");
 	FACES.faces.Clear ();
 	for (int32_t i = 0; i < mdh.nFaces; i++, pBuffer += sizeof (CSegFaceInfo))
 		memcpy (&FACES.faces [i].m_info, pBuffer, sizeof (CSegFaceInfo));
-	FACES.tris.Create (mdh.nTris);
+	FACES.tris.Create (mdh.nTris, "gameData.segData.faceData.tris");
 	memcpy (FACES.tris.Buffer (), pBuffer, nSize = sizeof (FACES.tris [0]) * mdh.nTris);
 	pBuffer += nSize;
-	FACES.vertices.Create (nTriVerts);
+	FACES.vertices.Create (nTriVerts, "gameData.segData.faceData.vertices");
 	memcpy (FACES.vertices.Buffer (), pBuffer, nSize = sizeof (FACES.vertices [0]) * nTriVerts);
 	pBuffer += nSize;
-	FACES.normals.Create (nTriVerts);
+	FACES.normals.Create (nTriVerts, "gameData.segData.faceData.normals");
 	memcpy (FACES.normals.Buffer (), pBuffer, nSize = sizeof (FACES.normals [0]) * nTriVerts);
 	pBuffer += nSize;
-	FACES.texCoord.Create (nTriVerts);
+	FACES.texCoord.Create (nTriVerts, "gameData.segData.faceData.texCoord");
 	memcpy (FACES.texCoord.Buffer (), pBuffer, nSize = sizeof (FACES.texCoord [0]) * nTriVerts);
 	pBuffer += nSize;
-	FACES.ovlTexCoord.Create (nTriVerts);
+	FACES.ovlTexCoord.Create (nTriVerts, "gameData.segData.faceData.ovlTexCoord");
 	memcpy (FACES.ovlTexCoord.Buffer (), pBuffer, nSize = sizeof (FACES.ovlTexCoord [0]) * nTriVerts);
 	pBuffer += nSize;
-	FACES.color.Create (nTriVerts);
+	FACES.color.Create (nTriVerts, "gameData.segData.faceData.color");
 	memcpy (FACES.color.Buffer (), pBuffer, nSize = sizeof (FACES.color [0]) * nTriVerts);
 	pBuffer += nSize;
-	FACES.lMapTexCoord.Create (gameData.segData.nFaces * 3 * 2);
+	FACES.lMapTexCoord.Create (gameData.segData.nFaces * 3 * 2, "gameData.segData.faceData.lMapTextCoord");
 	memcpy (FACES.lMapTexCoord.Buffer (), pBuffer, nSize = sizeof (FACES.lMapTexCoord [0]) * FACES.lMapTexCoord.Length ());
 	pBuffer += nSize;
-	FACES.faceVerts.Create (mdh.nFaceVerts);
+	FACES.faceVerts.Create (mdh.nFaceVerts, "gameData.segData.faceData.faceVerts");
 	memcpy (FACES.faceVerts.Buffer (), pBuffer, nSize = sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts);
 	pBuffer += nSize;
 	VERTEX_OWNERS.Resize (mdh.nVertices);
@@ -1267,7 +1268,7 @@ ENTER (0, 0);
 	CSegFace	*pFace = FACES.faces.Buffer ();
 	CArray<CSegFace*>	keyFaceRef;
 
-keyFaceRef.Create (FACES.nFaces);
+keyFaceRef.Create (FACES.nFaces, "CQuadMeshBuilder::ComputeFaceKeys::keyFaceRef");
 for (int32_t i = 0; i < FACES.nFaces; i++, pFace++) {
 #if DBG
 	if (i == nDbgFace)

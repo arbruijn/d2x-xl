@@ -197,7 +197,7 @@ void CParticleImageManager::AdjustBrightness (CBitmap *pBm)
 
 if (j < 2)
 	return;
-if (!(fFrameBright = new float [j]))
+if (!(fFrameBright = NEW float [j]))
 	return;
 for (i = 0, pBmf = pBm->Frames (); i < j; i++, pBmf++) {
 	CTGA tga (pBmf);

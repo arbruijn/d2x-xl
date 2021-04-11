@@ -160,7 +160,7 @@ void gr_ibitblt_find_hole_size(CBitmap *mask_bmp, int32_t *minx, int32_t *miny, 
 	*maxy = 0;
 
 	if (scanline == NULL)
-		scanline = new double [MAX_WIDTH / sizeof(double)];
+		scanline = NEW double [MAX_WIDTH / sizeof(double)];
 
 	for (y = 0; y < mask_bmp->Height (); y++) {
 		for (x = 0; x < mask_bmp->Width (); x++) {

@@ -189,7 +189,7 @@ void CustomDetailsMenu (void)
 
 do {
 	m.Destroy ();
-	m.Create (DL_MAX);
+	m.Create (DL_MAX, "CustomDetailsMenu");
 	m.AddSlider ("object complexity", TXT_OBJ_COMPLEXITY, gameStates.render.detail.nObjectComplexity, 0, DIFFICULTY_LEVEL_COUNT-1, 0, HTX_ONLINE_MANUAL);
 	m.AddSlider ("object detail", TXT_OBJ_DETAIL, gameStates.render.detail.nObjectDetail, 0, DIFFICULTY_LEVEL_COUNT-1, 0, HTX_ONLINE_MANUAL);
 	m.AddSlider ("wall detail", TXT_WALL_DETAIL, gameStates.render.detail.nWallDetail, 0, DIFFICULTY_LEVEL_COUNT-1, 0, HTX_ONLINE_MANUAL);

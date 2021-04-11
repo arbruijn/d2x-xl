@@ -255,18 +255,18 @@ class CFrameTimeFactory {
 	public:
 		static CFrameTimeFactory* GetInstance (void) {
 			if (!m_instance)
-				m_instance = new CFrameTimeFactory;
+				m_instance = NEW CFrameTimeFactory;
 			return m_instance;
 			}
 
 		static CGenericFrameTime* GetTimer (void) {
 			if (!m_timer)
 #ifdef _WIN32
-				m_timer = new CWindowsFrameTime ();
+				m_timer = NEW CWindowsFrameTime ();
 #elif defined (__unix__) || defined(__macosx__)
-				m_timer = new CUnixFrameTime ();
+				m_timer = NEW CUnixFrameTime ();
 #else
-				m_timer = new CSDLFrameTime ();
+				m_timer = NEW CSDLFrameTime ();
 #endif
 			return m_timer;
 			}

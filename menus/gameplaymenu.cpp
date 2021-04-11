@@ -351,7 +351,7 @@ InitStrings ();
 nAIAggressivity = (gameOpts->gameplay.nAIAggressivity && gameOpts->gameplay.nAIAwareness) ? 5 :  gameOpts->gameplay.nAIAggressivity;
 do {
 	m.Destroy ();
-	m.Create (20);
+	m.Create (20, "GameplayOptionsMenu");
 
 	if (!bRestricted) {
 		sprintf (szSlider + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));

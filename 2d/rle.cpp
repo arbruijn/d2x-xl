@@ -301,7 +301,7 @@ int32_t CBitmap::RLECompress (void)
 		}
 	}
 
-	if (!(rle_data = new uint8_t [MAX_BMP_SIZE (m_info.props.w, m_info.props.h)]))
+	if (!(rle_data = NEW uint8_t [MAX_BMP_SIZE (m_info.props.w, m_info.props.h)]))
 		return 0;
 	if (!large_rle)
 		doffset = 4 + m_info.props.h;
@@ -603,7 +603,7 @@ void CBitmap::RLESwapTransparencyColor (void)
 	uint16_t nLineSize;
 
 rle_big = m_info.props.flags & BM_FLAG_RLE_BIG;
-temp = new uint8_t [MAX_BMP_SIZE (m_info.props.w, m_info.props.h)];
+temp = NEW uint8_t [MAX_BMP_SIZE (m_info.props.w, m_info.props.h)];
 if (rle_big) {                  // set ptrs to first lines
 	ptr = Buffer () + 4 + 2 * m_info.props.h;
 	ptr2 = temp + 4 + 2 * m_info.props.h;
@@ -662,7 +662,7 @@ int32_t CBitmap::RLERemap (uint8_t *colorMap, int32_t maxLen)
 	uint16_t nLineSize;
 
 bWideRLE = m_info.props.flags & BM_FLAG_RLE_BIG;
-remapBuf = new uint8_t [MAX_BMP_SIZE (m_info.props.w, m_info.props.h) + 30000];
+remapBuf = NEW uint8_t [MAX_BMP_SIZE (m_info.props.w, m_info.props.h) + 30000];
 if (bWideRLE) {                  // set ptrs to first lines
 	pSrc = Buffer () + 4 + 2 * m_info.props.h;
 	pDest = remapBuf + 4 + 2 * m_info.props.h;
@@ -729,6 +729,7 @@ rowSizeTable.b = Buffer ();
 srcP = Buffer () + i; // first row contains uncompressed row lengths
 i *= 2 * m_info.props.rowSize;
 if (!gameData.pigData.tex.rleBuffer || (rleBufSize < i)) {
+	gameData.pigData.tex.rleBuffer.SetName ("gameData.pigData.tex.rleBuffer");
 	gameData.pigData.tex.rleBuffer.Resize (rleBufSize = i);
 	if (!gameData.pigData.tex.rleBuffer) 
 		return -1;

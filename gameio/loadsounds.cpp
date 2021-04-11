@@ -17,7 +17,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifdef _WIN32
+#	pragma pack(push)
+#	pragma pack(8)
 #	include <windows.h>
+#	pragma pack(pop)
 #endif
 
 #include <stdio.h>
@@ -209,7 +212,7 @@ if (0 >= (pSound->nLength [0] = (int32_t) cf.Length ())) {
 	cf.Close ();
 	return 0;
 	}
-if (!pSound->data [0].Create (pSound->nLength [0])) {
+if (!pSound->data [0].Create (pSound->nLength [0], "CSoundSample::data [0]")) {
 	cf.Close ();
 	return 0;
 	}
@@ -389,13 +392,13 @@ int32_t LoadD2Sounds (bool bCustom)
 if (!(gameData.pigData.sound.nType || bCustom))
 	return 1;
 
-	CFile		cf;
+	CFile			cf;
 	int32_t		sndId, sndVersion;
 	int32_t		nSounds;
 	int32_t		nLoadedSounds = 0;
-	bool		bUseLowRes = false;
-	char		szFile [FILENAME_LEN];
-	char*		pszFile, * pszFolder;
+	bool			bUseLowRes = false;
+	char			szFile [FILENAME_LEN];
+	char			* pszFile, * pszFolder;
 
 if (gameStates.app.bNostalgia)
 	gameOpts->sound.bHires [0] = 0;
