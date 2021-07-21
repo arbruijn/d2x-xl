@@ -86,7 +86,7 @@ class CStack : public CArray< _T > {
 				}
 //#pragma omp critical
 			if (i < --m_tos)
-				memcpy (this->m_data.buffer + i, this->m_data.buffer + i + 1, sizeof (_T) * (m_tos - i));
+				memmove (this->m_data.buffer + i, this->m_data.buffer + i + 1, sizeof (_T) * (m_tos - i));
 			return true;
 			}
 
