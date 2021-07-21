@@ -86,6 +86,7 @@ if (!(m_lights.Buffer () || m_lights.Create (2 * LEVEL_SEGMENTS, "CLightningMana
 	extraGameInfo [0].bUseLightning = 0;
 	RETURN
 	}
+m_lights.Clear();
 if (!m_emitters.Create (MAX_LIGHTNING_SYSTEMS, "CLightningManager::m_emitters")) {
 	Shutdown (1);
 	extraGameInfo [0].bUseLightning = 0;
