@@ -1017,7 +1017,7 @@ tCheat cheats [] = {
 void FinalCheats (int32_t key)
 {
 key = KeyToASCII (key);
-memcpy (szCheatBuf, szCheatBuf + 1, sizeof (szCheatBuf) - 1);
+memmove (szCheatBuf, szCheatBuf + 1, sizeof (szCheatBuf) - 1);
 szCheatBuf [CHEATSPOT] = key;
 pszCheat = jcrypt (szCheatBuf + 7);
 for (tCheat *pCheat = cheats; pCheat->pszCheat && !Cheat (pCheat); pCheat++)
