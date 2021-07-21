@@ -28,7 +28,7 @@ extern int32_t joybutton_text []; //from KConfig.c
 
 char bJoyPresent = 0;
 
-int32_t joyDeadzone [4] = {32767 / 10, 32767 / 10, 32767 / 10, 32767 / 10};	//10% of max. range
+int32_t joyDeadzone [UNIQUE_JOY_AXES] = {32767 / 10, 32767 / 10, 32767 / 10, 32767 / 10};	//10% of max. range
 
 class CJoyInfo {
 	public:

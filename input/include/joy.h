@@ -165,7 +165,7 @@ int32_t JoyGetScaledReading (int32_t raw, int32_t axn);
 void JoySetSlowReading (int32_t flag);
 int32_t JoySetDeadzone (int32_t nRelZone, int32_t nAxis);
 
-extern int32_t joyDeadzone [4];
-extern int32_t joyDeadzoneRel [4];
+extern int32_t joyDeadzone [UNIQUE_JOY_AXES];
+extern int32_t joyDeadzoneRel [UNIQUE_JOY_AXES];
 
 #endif // _JOY_H
