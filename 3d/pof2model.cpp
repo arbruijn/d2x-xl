@@ -171,8 +171,10 @@ for (i = nVerts, pVertexIndex = WORDPTR (p+30); i; i--, pVertexIndex++, uvl++, p
 	j = *pVertexIndex;
 	Assert (pVertex - m_faceVerts < m_nFaceVerts);
 	pVertex->m_vertex = m_vertices [j];
-	pVertex->m_texCoord.v.u = X2F (uvl->u);
-	pVertex->m_texCoord.v.v = X2F (uvl->v);
+	if (bTextured) {
+		pVertex->m_texCoord.v.u = X2F (uvl->u);
+		pVertex->m_texCoord.v.v = X2F (uvl->v);
+		}
 	pVertex->m_renderColor =
 	pVertex->m_baseColor = baseColor;
 	pVertex->m_bTextured = bTextured;
