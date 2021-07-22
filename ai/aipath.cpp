@@ -281,6 +281,7 @@ ENTER (1, 0);
 	CHitResult			hitResult;
 	int32_t				hitType;
 	int32_t				bAvoidTarget;
+	int32_t				bNotAtGoal = 0;
 
 #if PATH_VALIDATION
 ValidateAllPaths ();
@@ -356,7 +357,9 @@ while (nCurSeg != nEndSeg) {
 
 	if (qHead >= qTail) {
 		//	Couldn't get to goal, return a path as far as we got, which is probably acceptable to the unparticular caller.
-		nEndSeg = segmentQ [qTail-1].end;
+		if (qTail > 0)
+			nEndSeg = segmentQ [qTail-1].end;
+		bNotAtGoal = 1;
 		break;
 		}
 	nCurSeg = segmentQ [qHead].end;
@@ -365,12 +368,21 @@ while (nCurSeg != nEndSeg) {
 
 pathTooLong: ;
 	}	//	while (nCurSeg ...
-//	Set qTail to the CSegment which ends at the goal.
-while (segmentQ [--qTail].end != nEndSeg)
-	if (qTail < 0) {
+if (qTail <= 0) {
+	if (!bNotAtGoal) {
 		*numPoints = lNumPoints;
 		RETVAL (-1)
 		}
+	qTail--;
+	}
+else {
+	//	Set qTail to the CSegment which ends at the goal.
+	while (segmentQ [--qTail].end != nEndSeg)
+		if (qTail < 0) {
+			*numPoints = lNumPoints;
+			RETVAL (-1)
+			}
+	}
 for (i = qTail; i >= 0; ) {
 	nParentSeg = segmentQ [i].start;
 	lNumPoints++;
