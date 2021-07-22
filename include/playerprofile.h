@@ -61,7 +61,7 @@ class CParam {
 
 		~CParam () {
 			if (szTag) {
-				delete szTag;
+				delete[] szTag;
 				szTag = NULL;
 				}
 			}

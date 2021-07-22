@@ -248,7 +248,7 @@ bool b = TrackMemory (true);
 #endif
 #if DBG
 if (texIds [i - 1])
-	delete texIds [i - 1];
+	delete[] texIds [i - 1];
 #endif
 
 if (i != m_textures.ToS ()) {

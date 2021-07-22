@@ -333,7 +333,7 @@ bitmapCacheSize = PIGGY_BUFFER_SIZE;
 // until memory could be allocated, and then once more to leave enough memory
 // for other parts of the program
 for (;;) {
-	if ((bitmapBits [0] = NEW uint8_t (bitmapCacheSize))) {
+	if ((bitmapBits [0] = NEW uint8_t [bitmapCacheSize])) {
 		delete[] bitmapBits [0];
 		break;
 		}

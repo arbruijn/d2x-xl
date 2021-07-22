@@ -689,7 +689,7 @@ for (i = 0; (i < MAX_OPEN_FONTS) && (&m_fonts [i].font != font); i++)
 		;
 if (i >= MAX_OPEN_FONTS)
 	return;
-delete m_fonts [i].data;
+delete[] m_fonts [i].data;
 m_fonts [i].data = NULL;
 m_fonts [i].font.Destroy ();
 }
