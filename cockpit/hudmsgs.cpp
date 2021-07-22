@@ -257,7 +257,7 @@ if (IsMultiGame) {
 		return 0;
 	}
 if (pMsgs->nMessages > 1) {
-	pszLastMsg = pMsgs->szMsgs [((pMsgs->nLast - 1) ? pMsgs->nLast : HUD_MAX_MSGS) - 2];
+	pszLastMsg = pMsgs->szMsgs [((pMsgs->nLast > 1) ? pMsgs->nLast : HUD_MAX_MSGS) - 2];
 	if (pszLastMsg && (!strcmp (pszLastMsg, pszMsg))) {
 		pMsgs->xTimer = I2X (3);		// 1 second per 5 characters
 		return 0;	// ignore since it is the same as the last one
