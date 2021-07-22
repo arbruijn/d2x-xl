@@ -1259,7 +1259,7 @@ CFixVector vEdge = *v1 - *v0;
 //first, find pRef of closest approach of vec & edge
 fix edgeLen = CFixVector::Normalize (vEdge);
 fix moveLen = CFixVector::Normalize (vMove);
-fix edge_t, move_t;
+fix edge_t, move_t = -1;
 CheckLineToLine (&edge_t, &move_t, v0, &vEdge, p0, &vMove);
 //make sure t values are in valid range
 if ((move_t < 0) || (move_t > moveLen + rad))
