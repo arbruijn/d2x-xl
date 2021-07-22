@@ -1188,8 +1188,8 @@ int32_t CObject::CollidePlayerAndReactor (CObject* pReactor, CFixVector& vHitPt,
 {
 ENTER (1, 0);
 if (info.nId == N_LOCALPLAYER) {
-	int32_t i = FindReactor (this);
-	if (0 >= i)
+	int32_t i = FindReactor (pReactor);
+	if (i >= 0)
 		gameData.reactorData.states [i].bHit = 1;
 	AIDoCloakStuff ();				//	In case player cloaked, make control center know where he is.
 	}
