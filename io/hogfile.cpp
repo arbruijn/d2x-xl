@@ -299,12 +299,11 @@ FILE *CHogFile::Find (tHogFileList *pHogFiles, const char *folder, const char *n
 	FILE		*fp;
 	tHogFile	*phf;
 	char		*hogFilename = pHogFiles->szName;
+	char		fn [FILENAME_LEN];
   
 if (! (pHogFiles->bInitialized && *hogFilename))
 	return NULL;
 if (*folder) {
-	char fn [FILENAME_LEN];
-
 	sprintf (fn, "%s%s", folder, pHogFiles->szName);
 	hogFilename = fn;
 	}
