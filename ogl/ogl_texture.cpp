@@ -169,7 +169,7 @@ RETURN
 uint32_t CTextureManager::Check (CTexture* pTexture)
 {
 uint32_t i = pTexture->Registered ();
-return i && (i <= m_textures.ToS ()) && (m_textures [i] != pTexture) ? i : 0;
+return i && (i <= m_textures.ToS ()) && (m_textures [i - 1] == pTexture) ? i : 0;
 }
 
 //------------------------------------------------------------------------------
