@@ -220,11 +220,11 @@ void ApplyLight (fix xObjIntensity, int32_t nObjSeg, CFixVector *vObjPos, int32_
 	CFixVector*		vVertPos;
 	fix				dist, xOrigIntensity = xObjIntensity;
 	CObject*			pObj = (nObject < 0) ? NULL : OBJECT (nObject);
-	CPlayerData*	pPlayer = pObj ? gameData.multiplayer.players + pObj->info.nId : NULL;
 
 nObjType = pObj ? pObj->info.nType : OBJ_NONE;
 if (pObj && SHOW_DYN_LIGHT) {
 	if (nObjType == OBJ_PLAYER) {
+		CPlayerData*	pPlayer = pObj ? gameData.multiplayer.players + pObj->info.nId : NULL;
 		if (EGI_FLAG (headlight.bAvailable, 0, 0, 0)) {
 			if (!HeadlightIsOn (pObj->info.nId))
 				lightManager.Headlights ().Remove (pObj);
