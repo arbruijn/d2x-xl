@@ -206,7 +206,7 @@ char *MsnGetS (char *s, int32_t n, CFile& cf)
 r = cf.GetS (s, n);
 if (r) {
 	l = (int32_t) strlen (s) - 1;
-	if (s [l] == '\n')
+	if (l >= 0 && s [l] == '\n')
 		s [l] = 0;
 	}
 return r;
