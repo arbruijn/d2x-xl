@@ -1428,6 +1428,7 @@ for (int32_t i = 0; i < 2; i++) {
 	bmIndex [i].Clear ();
 	sprintf (szLabel, "CTextureData::textureIndex [%d]", i);
 	textureIndex [i].Create (MAX_BITMAP_FILES, szLabel);
+	textureIndex [i].Clear();
 	sprintf (szLabel, "CTextureData::tMapInfo [%d]", i);
 	tMapInfo [i].Create (MAX_TEXTURES + MAX_TEXTURES / 10, szLabel);	//add some room for extra textures like e.g. from the hoard data
 	tMapInfo [i].Clear ();
