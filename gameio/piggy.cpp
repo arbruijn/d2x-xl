@@ -396,7 +396,7 @@ if (pig_id != PIGFILE_ID || pigVersion != PIGFILE_VERSION) {
 	}
 strncpy (szCurrentPigFile [0], szPigName, sizeof (szCurrentPigFile [0]));
 nBitmapNum = pFile->ReadInt ();
-nHeaderSize = nBitmapNum * sizeof (tPIGBitmapHeader);
+nHeaderSize = nBitmapNum * PIGBITMAPHEADER_SIZE;
 nDataStart = nHeaderSize + (int32_t) pFile->Tell ();
 if (bRegister)
 	gameData.pigData.tex.nBitmaps [0] = 1;
@@ -765,7 +765,7 @@ cf.Seek (nPigDataStart, SEEK_SET);
 nBitmapNum = cf.ReadInt ();
 nSoundNum = int32_t (cf.ReadShort ());
 cf.Seek (sizeof (int16_t), SEEK_CUR);	//skip another 2 bytes
-nHeaderSize = nBitmapNum * PIGBITMAPHEADER_D1_SIZE + nSoundNum * sizeof (tPIGSoundHeader);
+nHeaderSize = nBitmapNum * PIGBITMAPHEADER_D1_SIZE + nSoundNum * PIGSOUNDHEADER_SIZE;
 nBmHdrOffs = nPigDataStart + 2 * sizeof (int32_t);
 nBmDataOffs = nBmHdrOffs + nHeaderSize;
 if (soundNumP)

@@ -147,6 +147,8 @@ typedef struct tPIGBitmapHeader {
 	int32_t offset;
 } __pack__ tPIGBitmapHeader;
 
+#define PIGBITMAPHEADER_SIZE 18
+
 typedef struct tPIGBitmapHeaderD1 {
 	char name [8];
 	uint8_t dflags;           // bits 0-5 anim frame num, bit 6 abm flag
@@ -165,6 +167,8 @@ typedef struct tPIGSoundHeader {
 	int32_t data_length;
 	int32_t offset;
 } __pack__ tPIGSoundHeader;
+
+#define PIGSOUNDHEADER_SIZE 20
 
 // an index into the bitmap collection of the piggy file
 typedef struct tBitmapIndex {

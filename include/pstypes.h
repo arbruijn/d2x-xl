@@ -55,6 +55,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define NULL 0
 #endif
 
+#if 1 // packing no longer needed
+#define __pack__
+#else
 // the following stuff has nothing to do with types but needed everywhere,
 // and since this file is included everywhere, it's here.
 #ifdef __GNUC__
@@ -65,6 +68,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 # define __pack__
 #else
 # error d2x will not work without packed structures
+#endif
 #endif
 
 #ifdef _WIN32
