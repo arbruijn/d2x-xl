@@ -206,7 +206,7 @@ m_bPlaying = 0;
 #if 1
 int32_t CRedbook::HaveD2CD (void)
 {
-	int32_t discid;
+	uint32_t discid;
 
 if (!redbook.Enabled ())
 	return 0;
