@@ -492,7 +492,7 @@ if (nResult) {
 		CreateFileListMessage (szMsg, vertigoFiles, int32_t (sizeofa (vertigoFiles)));
 		}
 	if (nResult & 8) {
-		strcat (szMsg, "\n\nCritical - D2X-XL couldn't find the following D2X-XL files:\n\n");
+		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following D2X-XL files:\n\n");
 		CreateFileListMessage (szMsg, addonFiles, int32_t (sizeofa (addonFiles)), true);
 		}
 	if (nResult & 16) {
@@ -507,7 +507,7 @@ if (nResult) {
 		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following D2X-XL sound files:\n\n");
 		CreateFileListMessage (szMsg, addonSoundFiles, int32_t (sizeofa (addonSoundFiles)), true);
 		}
-	if (nResult & (1 | 8)) {
+	if (nResult & 1) {
 		char s [256];
 		sprintf (s, "\n\nAssumed program folder: '%s'.\n", gameFolders.game.szRoot);
 		strcat (szMsg, s);
