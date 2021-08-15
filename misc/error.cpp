@@ -404,15 +404,15 @@ if (gameData.renderData.screen.Width () && gameData.renderData.screen.Height () 
 #if defined (_WIN32)
 else
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
-#elif defined(__linux__)
+#elif defined (__macosx__)
+	NativeMacOSXMessageBox (pszMsg);
+#else
 #	if LINUX_MSGBOX
 	if (gameStates.app.bLinuxMsgBox)
 		XmMessageBox (pszMsg, nType == MB_ICONERROR);
 	else
 #	endif
-	PrintLog (0, "D2X-XL: %s\n", pszMsg);
-#elif defined (__macosx__)
-	NativeMacOSXMessageBox (pszMsg);
+	fprintf (stderr, "D2X-XL: %s\n", pszMsg);
 #endif
 gameData.appData.bGamePaused = 0;
 }
