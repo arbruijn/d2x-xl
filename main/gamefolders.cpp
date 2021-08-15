@@ -409,11 +409,15 @@ if (GetAppFolder (gameFolders.game.szRoot, szNoFolder, "", "")) {
 	PrintLog (-1);
 	return 0;
 	}
+#if 0
 if (GetAppFolder (gameFolders.game.szRoot, gameFolders.missions.szRoot, BASE_MISSION_FOLDER, "")) {
 	Error ("Missions could not be found");
 	PrintLog (-1);
 	return 0;
 	}
+#else
+MakeFolder (gameFolders.missions.szRoot, gameFolders.game.szRoot, BASE_MISSION_FOLDER);
+#endif
 
 MakeFolder (gameFolders.game.szData [0], gameFolders.game.szRoot, DATA_FOLDER);
 MakeFolder (gameFolders.game.szData [1], gameFolders.game.szData [0], "d2x-xl");
