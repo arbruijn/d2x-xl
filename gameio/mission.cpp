@@ -357,7 +357,7 @@ if (gameOpts->menus.bShowLevelVersion) {
 	strcat (temp, filename);
 	}
 else
-	strncpy (m_list [m_nCount].szMissionName, key, sizeof (m_list [m_nCount].szMissionName));
+	strncpy (m_list [m_nCount].szMissionName, value, sizeof (m_list [m_nCount].szMissionName));
 m_list [m_nCount].szMissionName [sizeof (m_list [m_nCount].szMissionName) - 1] = '\0';
 
 while (cf.GetS (lineBuf, sizeof (lineBuf))) {
