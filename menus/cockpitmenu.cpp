@@ -363,7 +363,7 @@ if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1
 	winFuncList [i++] = CV_RADAR_TOPDOWN;
 	winFuncList [i++] = CV_RADAR_HEADSUP;
 	}
-memset (winFuncMap, 0xFF, sizeofa (winFuncMap));
+memset (winFuncMap, 0xFF, sizeof (winFuncMap));
 for (int32_t j = 0; j < i; j++)
 	winFuncMap [winFuncList [j]] = j;
 return i;
