@@ -1806,7 +1806,7 @@ CMenuItem* pItem = AddItem ();
 if (!pItem)
 	return -1;
 pItem->m_nType = NM_TYPE_NUMBER;
-pItem->m_pszText = (char*) (szText);
+pItem->m_pszText = NULL;
 pItem->SetText (szText);
 pItem->Value () = NMCLAMP (nValue, nMin, nMax);
 pItem->MinValue () = nMin;
