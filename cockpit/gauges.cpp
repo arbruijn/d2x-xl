@@ -416,10 +416,10 @@ int oldLives [2]			= {-1, -1};
 fix oldAfterburner [2]	= {-1, -1};
 int oldBombcount [2]		= {0, 0};
 
-#define COCKPIT_PRIMARY_BOX		 (!gameStates.video.nDisplayMode ? 0 : 4)
-#define COCKPIT_SECONDARY_BOX		 (!gameStates.video.nDisplayMode ? 1 : 5)
-#define SB_PRIMARY_BOX				 (!gameStates.video.nDisplayMode ? 2 : 6)
-#define SB_SECONDARY_BOX			 (!gameStates.video.nDisplayMode ? 3 : 7)
+#define COCKPIT_PRIMARY_BOX		 (!GAME_HIRES ? 0 : 4)
+#define COCKPIT_SECONDARY_BOX		 (!GAME_HIRES ? 1 : 5)
+#define SB_PRIMARY_BOX				 (!GAME_HIRES ? 2 : 6)
+#define SB_SECONDARY_BOX			 (!GAME_HIRES ? 3 : 7)
 
 static double xScale, yScale;
 
@@ -983,7 +983,7 @@ if (!bShowAlways && countx == oldBombcount [gameStates.render.vr.nCurrentPage])
 // I hate doing this off of hard coded coords!!!!
 if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {		//draw background
 	CCanvas::Current ()->SetColorRGBi (bgColor);
-	if (!gameStates.video.nDisplayMode) {
+	if (!GAME_HIRES) {
 		HUDRect (169, 189, 189, 196);
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL (128, 128, 128));
 		OglDrawLine (HUD_SCALE_X (168), HUD_SCALE_Y (189), HUD_SCALE_X (189), HUD_SCALE_Y (189));
@@ -1548,7 +1548,7 @@ ubyte afterburnerBarTableHires [AFTERBURNER_GAUGE_H_H*2] = {
 void DrawAfterburnerBar (int nEnergy)
 {
 	int		x [4], y [4], yMax;
-	ubyte*	tableP = gameStates.video.nDisplayMode ? afterburnerBarTableHires : afterburnerBarTable;
+	ubyte*	tableP = GAME_HIRES ? afterburnerBarTableHires : afterburnerBarTable;
 
 BitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
@@ -1649,7 +1649,7 @@ if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 inline int NumDispX (int val)
 {
 int x = ((val > 99) ? 7 : (val > 9) ? 11 : 15);
-if (!gameStates.video.nDisplayMode)
+if (!GAME_HIRES)
 	x /= 2;
 return x + NUMERICAL_GAUGE_X;
 }
@@ -1666,9 +1666,9 @@ if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 BitBlt (GAUGE_NUMERICAL, dx, dy);
 fontManager.SetCurrent (GAME_FONT);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
-nIdShields = PrintF (&nIdShields, NumDispX (shield), dy + (gameStates.video.nDisplayMode ? 36 : 16), "%d", shield);
+nIdShields = PrintF (&nIdShields, NumDispX (shield), dy + (GAME_HIRES ? 36 : 16), "%d", shield);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
-nIdEnergy = PrintF (&nIdEnergy, NumDispX (energy), dy + (gameStates.video.nDisplayMode ? 5 : 2), "%d", energy);
+nIdEnergy = PrintF (&nIdEnergy, NumDispX (energy), dy + (GAME_HIRES ? 5 : 2), "%d", energy);
 
 if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 	CCanvas::SetCurrent (GetCurrentGameScreen ());
@@ -1692,7 +1692,7 @@ static tKeyGaugeInfo keyGaugeInfo [] = {
 void DrawKeys (void)
 {
 CCanvas::SetCurrent (GetCurrentGameScreen ());
-int bHires = gameStates.video.nDisplayMode != 0;
+int bHires = GAME_HIRES;
 for (int i = 0; i < 3; i++)
 	BitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x [bHires], keyGaugeInfo [i].y [bHires]);
 }
@@ -1707,7 +1707,7 @@ void DrawWeaponInfo (int info_index, tGaugeBox *box, int xPic, int yPic, const c
 
 	static int nIdWeapon [3] = {0, 0, 0}, nIdLaser [2] = {0, 0};
 
-BitBlt (((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) 
+BitBlt (((gameData.pig.tex.nHamFileVersion >= 3) && GAME_HIRES)
 			  ? gameData.weapons.info [info_index].hiresPicture.index
 			  : gameData.weapons.info [info_index].picture.index, 
 			  xPic, yPic, true, true, (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) ? I2X (2) : I2X (1), orient);

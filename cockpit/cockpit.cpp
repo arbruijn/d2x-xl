@@ -182,7 +182,7 @@ DrawAmmoInfo (ScaleX (SECONDARY_AMMO_X), ScaleY (SECONDARY_AMMO_Y), ammoCount, 0
 static inline int32_t NumDispX (int32_t val)
 {
 int32_t x = ((val > 99) ? 7 : (val > 9) ? 11 : 15);
-if (!gameStates.video.nDisplayMode)
+if (!GAME_HIRES)
 	x /= 2;
 return x + NUMERICAL_GAUGE_X;
 }
@@ -425,7 +425,7 @@ BitBlt (GAUGE_AFTERBURNER, AFTERBURNER_GAUGE_X, AFTERBURNER_GAUGE_Y);
 int32_t yMax = FixMul (I2X (1) - gameData.physicsData.xAfterburnerCharge, AFTERBURNER_GAUGE_H);
 if (yMax) {
 	int32_t		x [4], y [4];
-	uint8_t*	tableP = gameStates.video.nDisplayMode ? afterburnerBarTableHires : afterburnerBarTable;
+	uint8_t*	tableP = GAME_HIRES ? afterburnerBarTableHires : afterburnerBarTable;
 
 	y [0] = y [1] = ScaleY (AFTERBURNER_GAUGE_Y);
 	y [3] = ScaleY (AFTERBURNER_GAUGE_Y + yMax) - 1;
@@ -471,7 +471,7 @@ static tKeyGaugeInfo keyGaugeInfo [] = {
 
 void CCockpit::DrawKeys (void)
 {
-int32_t bHires = gameStates.video.nDisplayMode != 0;
+int32_t bHires = GAME_HIRES;
 for (int32_t i = 0; i < 3; i++)
 	BitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x [bHires], keyGaugeInfo [i].y [bHires]);
 }

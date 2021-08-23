@@ -56,6 +56,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fastrender.h"
 #include "postprocessing.h"
 #include "network_lib.h"
+#include "hud_defs.h"
 
 #ifndef PI
 #	define PI 3.141592653589793240
@@ -659,7 +660,7 @@ if (m_bActive < 0) {
 		bPauseGame = 0;
 	if (bPauseGame)
 		PauseGame ();
-	if (m_bRadar || (gameStates.video.nDisplayMode > 1)) {
+	if (m_bRadar || GAME_HIRES) {
 		//GrSetMode (gameStates.video.nLastScreenMode);
 		if (m_bRadar) {
 			m_nWidth = CCanvas::Current ()->Width ();

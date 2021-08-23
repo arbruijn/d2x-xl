@@ -212,11 +212,11 @@ if (IsMultiGame) {
 	sprintf (szKilled, "%5d", LOCALPLAYER.netKilledTotal);
 	fontManager.Current ()->StringSize (szKilled, w, h, aw);
 	CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
-	Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + 0], y + 1, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
+	Rect (lastX [(GAME_HIRES ? 2 : 0) + 0], y + 1, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
 	SetFontColor (MEDGREEN_RGBA);
 	x = SB_SCORE_RIGHT - w - 2;	
 	nIdKilled = DrawHUDText (&nIdKilled, ScaleX (x), y + 1, szKilled);
-	lastX [(gameStates.video.nDisplayMode ? 2 : 0) + 0] = x;
+	lastX [(GAME_HIRES ? 2 : 0) + 0] = x;
 	}
 else if (LOCALPLAYER.lives > 1) {
 	int32_t y = ScaleY (SB_LIVES_Y + HeightPad ());
@@ -320,9 +320,9 @@ void CStatusBar::DrawShieldText (void)
 	char szShield [20];
 
 SetFontScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
-//LoadTexture (gameData.pigData.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.modelData.nCockpits / 2 : 0)].index, 0);
+//LoadTexture (gameData.pigData.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (GAME_HIRES ? gameData.modelData.nCockpits / 2 : 0)].index, 0);
 SetFontColor (BLACK_RGBA);
-Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
+Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (GAME_HIRES ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
 sprintf (szShield, "%d", (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
 fontManager.Current ()->StringSize (szShield, w, h, aw);
 SetFontColor (RGBA_PAL2 (14, 14, 23));
@@ -355,7 +355,7 @@ static tKeyGaugeInfo keyGaugeInfo [] = {
 
 void CStatusBar::DrawKeys (void)
 {
-int32_t bHires = gameStates.video.nDisplayMode != 0;
+int32_t bHires = GAME_HIRES;
 for (int32_t i = 0; i < 3; i++)
 	BitBlt ((LOCALPLAYER.flags & keyGaugeInfo [i].nFlag) ? keyGaugeInfo [i].nGaugeOn : keyGaugeInfo [i].nGaugeOff, keyGaugeInfo [i].x [bHires], keyGaugeInfo [i].y [bHires]);
 }
@@ -391,7 +391,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 void CStatusBar::ClearBombCount (int32_t bgColor)
 {
 CCanvas::Current ()->SetColorRGBi (bgColor);
-if (!gameStates.video.nDisplayMode) {
+if (!GAME_HIRES) {
 	Rect (169, 189, 189, 196);
 	CCanvas::Current ()->SetColorRGBi (RGB_PAL (128, 128, 128));
 	OglDrawLine (ScaleX (168), ScaleY (189), ScaleX (189), ScaleY (189));
@@ -476,7 +476,7 @@ m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
 
-int32_t h = gameData.pigData.tex.bitmaps [0][gameData.pigData.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.modelData.nCockpits / 2) : 0)].index].Height ();
+int32_t h = gameData.pigData.tex.bitmaps [0][gameData.pigData.tex.cockpitBmIndex [CM_STATUS_BAR + (GAME_HIRES ? (gameData.modelData.nCockpits / 2) : 0)].index].Height ();
 if (gameStates.app.bDemoData)
 	h *= 2;
 if (gameData.renderData.screen.Height () > 480)

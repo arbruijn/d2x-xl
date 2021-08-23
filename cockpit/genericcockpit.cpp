@@ -59,10 +59,10 @@ CCanvas *Canv_AfterburnerGauge;
 CCanvas *Canv_RightEnergyGauge;
 CCanvas *numericalGaugeCanv;
 
-#define COCKPIT_PRIMARY_BOX		 (!gameStates.video.nDisplayMode ? 0 : 4)
-#define COCKPIT_SECONDARY_BOX		 (!gameStates.video.nDisplayMode ? 1 : 5)
-#define SB_PRIMARY_BOX				 (!gameStates.video.nDisplayMode ? 2 : 6)
-#define SB_SECONDARY_BOX			 (!gameStates.video.nDisplayMode ? 3 : 7)
+#define COCKPIT_PRIMARY_BOX		 (!GAME_HIRES ? 0 : 4)
+#define COCKPIT_SECONDARY_BOX		 (!GAME_HIRES ? 1 : 5)
+#define SB_PRIMARY_BOX				 (!GAME_HIRES ? 2 : 6)
+#define SB_SECONDARY_BOX			 (!GAME_HIRES ? 3 : 7)
 #endif
 
 CHUD			hudCockpit;
@@ -486,7 +486,7 @@ m_info.nDamage [0] = gameData.objData.pConsole->AimDamage ();
 m_info.nDamage [1] = gameData.objData.pConsole->DriveDamage ();
 m_info.nDamage [2] = gameData.objData.pConsole->GunDamage ();
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
-m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.modelData.nCockpits / 2 : 0;
+m_info.nCockpit = (GAME_HIRES && !gameStates.app.bDemoData) ? gameData.modelData.nCockpits / 2 : 0;
 m_info.nEnergy = LOCALPLAYER.EnergyLevel ();
 if (m_info.nEnergy < 0)
 	m_info.nEnergy  = 0;
@@ -663,7 +663,7 @@ else
 	RETURN
 gameStates.render.cockpit.nType = nType;
 gameStates.zoom.nFactor = float (gameStates.zoom.nMinFactor);
-m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.modelData.nCockpits / 2 : 0;
+m_info.nCockpit = (GAME_HIRES && !gameStates.app.bDemoData) ? gameData.modelData.nCockpits / 2 : 0;
 gameStates.render.cockpit.nNextType = -1;
 cockpit->Setup (false, false);
 if (bClearMessages)

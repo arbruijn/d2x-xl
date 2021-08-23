@@ -674,7 +674,7 @@ void CGenericCockpit::DrawWeaponInfo (int32_t nWeaponType, int32_t nIndex, tGaug
 
 	static int32_t nIdWeapon [2][3] = {{0, 0, 0},{0, 0, 0}}, nIdLaser [2] = {0, 0};
 
-i = ((gameData.pigData.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode)
+i = ((gameData.pigData.tex.nHamFileVersion >= 3) && GAME_HIRES)
 	 ? gameData.weaponData.info [0][nIndex].hiresPicture.index
 	 : gameData.weaponData.info [0][nIndex].picture.index;
 LoadTexture (i, 0, 0);

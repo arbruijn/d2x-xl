@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cockpit.h"
 #include "headlight.h"
 #include "hudicons.h"
+#include "hud_defs.h"
 
 //	-----------------------------------------------------------------------------
 
@@ -322,7 +323,7 @@ CBitmap* CHUDIcons::LoadWeaponIcon (int32_t i, int32_t l)
 	CBitmap		* pBm, * pBmo;
 	int32_t		m = i ? secondaryWeaponToWeaponInfo [l] : primaryWeaponToWeaponInfo [l];
 
-if ((gameData.pigData.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
+if ((gameData.pigData.tex.nHamFileVersion >= 3) && GAME_HIRES) {
 	LoadTexture (gameData.weaponData.info [0][m].hiresPicture.index, 0, 0);
 	pBm = gameData.pigData.tex.bitmaps [0] + gameData.weaponData.info [0][m].hiresPicture.index;
 	}
