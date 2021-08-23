@@ -559,7 +559,7 @@ if (nUsedForLevel && stricmp (paletteManager.LastPig (), pszPaletteName) != 0) {
 		}
 	}
 if (bForce || pszLevelName || stricmp (paletteManager.LastLoaded (), pszPaletteName)) {
-	strncpy (paletteManager.LastLoaded (), pszPaletteName, sizeof (paletteManager.LastLoaded ()));
+	paletteManager.SetLastLoaded (pszPaletteName);
 	palette = paletteManager.Load (pszPaletteName, pszLevelName);
 	//if (!(paletteManager.FadedOut () || bNoScreenChange))
 	//	ResumeEffect ();
@@ -567,7 +567,7 @@ if (bForce || pszLevelName || stricmp (paletteManager.LastLoaded (), pszPaletteN
 	LoadGameBackground ();
 	}
 if (nUsedForLevel && stricmp (paletteManager.LastPig (), pszPaletteName) != 0) {
-	strncpy (paletteManager.LastPig (), pszPaletteName, sizeof (paletteManager.LastPig ()));
+	paletteManager.SetLastPig (pszPaletteName);
 	TexMergeFlush ();
 	RLECacheFlush ();
 	}
