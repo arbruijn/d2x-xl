@@ -927,10 +927,9 @@ else
 
 //	-----------------------------------------------------------------------------
 
-void CWeaponInfo::Read (CFile& cf, int32_t fileVersion)
+void CWeaponInfo::Read (CFile& cf, int32_t fileVersion, int32_t nId)
 {
 int32_t bD1 = fileVersion < 0;
-int32_t nId = int32_t (this - gameData.weaponData.info [bD1].Buffer ());
 
 if (bD1) { // D1
 	memcpy (this, gameData.weaponData.info [0] + nId, sizeof (*this));
@@ -1099,12 +1098,12 @@ PrintLog (1, "\nCWeaponInfo defaultWeaponInfosD2 [] = {\n");
 #endif
 if (bDefault || EGI_FLAG (bAllowCustomWeapons, 0, 0, 1)) {
 	for (i = nOffset; i < nOffset + nCount; i++)
-		gameData.weaponData.info [0][i].Read (cf, fileVersion);
+		gameData.weaponData.info [0][i].Read (cf, fileVersion, i);
 	}
 else {
 	CWeaponInfo wi;
 	for (i = nOffset; i < nOffset + nCount; i++)
-		wi.Read (cf, fileVersion);
+		wi.Read (cf, fileVersion, i);
 	}
 #if PRINT_WEAPON_INFO
 PrintLog (-1, "}\n\n");

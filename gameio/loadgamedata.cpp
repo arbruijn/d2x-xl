@@ -654,7 +654,7 @@ gameData.weaponData.nTypes [1] = cf.ReadInt ();
 PrintLog (1, "\nCD1WeaponInfo defaultWeaponInfosD1 [] = {\n");
 #endif
 for (int32_t i = 0; i < gameData.weaponData.nTypes [1]; i++)
-	gameData.weaponData.info [1][i].Read (cf, -1);
+	gameData.weaponData.info [1][i].Read (cf, -1, i);
 #if PRINT_WEAPON_INFO
 PrintLog (-1, "};\n\n");
 #endif

@@ -83,7 +83,7 @@ class __pack__ CWeaponInfo {
 		tBitmapIndex    hiresPicture;  // a hires picture of the above
 
 	public:
-		void Read (CFile& cf, int32_t nFileVersion);
+		void Read (CFile& cf, int32_t nFileVersion, int32_t nId);
 		void SetChildren (CFile& cf, int32_t fileVersion, int32_t bD1Data);
 
 	};
