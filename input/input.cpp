@@ -981,6 +981,15 @@ void CControlsManager::DoOculusRift (void)
 
 #ifdef _WIN32
 
+#include <SDL_syswm.h>
+
+HWND GetWindowHandle(void) {
+	SDL_SysWMinfo info;
+	SDL_VERSION(&info.version);
+	SDL_GetWMInfo(&info);
+	return info.window;
+}
+
 int32_t CControlsManager::ReadTrackIR (void)
 {
 transformation.m_info.bUsePlayerHeadAngles = 0;
@@ -988,7 +997,7 @@ if (!(gameStates.input.bHaveTrackIR && gameOpts->input.trackIR.bUse))
 	return 0;
 if (!pfnTIRQuery (&tirInfo)) {
 	pfnTIRExit ();
-	if ((gameStates.input.bHaveTrackIR = pfnTIRInit ((HWND) SDL_GetWindowHandle ())))
+	if ((gameStates.input.bHaveTrackIR = pfnTIRInit ((HWND) GetWindowHandle ())))
 		pfnTIRStart ();
 	return 0;
 	}

@@ -630,7 +630,8 @@ LOAD_TIR_FUNC (tpfnTIRStart, TIRStart)
 LOAD_TIR_FUNC (tpfnTIRStop, TIRStop)
 LOAD_TIR_FUNC (tpfnTIRCenter, TIRCenter)
 LOAD_TIR_FUNC (tpfnTIRQuery, TIRQuery)
-if (pfnTIRInit ((HWND) SDL_GetWindowHandle ()))
+extern HWND GetWindowHandle();
+if (pfnTIRInit ((HWND) GetWindowHandle ()))
 	return gameStates.input.bHaveTrackIR = 1;
 TIRUnload ();
 return gameStates.input.bHaveTrackIR = 0;
