@@ -85,6 +85,9 @@
 /* Define if you want an assembler free build */
 #undef NO_ASM
 
+/* Define if you want an Oculus Rift build */
+#undef OCULUS_RIFT
+
 /* Define if you want an OpenGL build */
 #undef OGL
 

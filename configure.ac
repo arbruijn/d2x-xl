@@ -15,7 +15,7 @@ AC_CANONICAL_TARGET
 AC_EXEEXT
 AC_OBJEXT
 
-AM_INIT_AUTOMAKE([1.6])
+AM_INIT_AUTOMAKE([1.6 subdir-objects])
 
 AM_CONFIG_HEADER(conf.h)
 
@@ -118,14 +118,22 @@ AC_ARG_ENABLE(debug,
     [  --enable-debug         Take out debug symbols, Asserts, Int3, etc ],,)
 if test x$enable_debug != xyes; then
     AC_DEFINE(NDEBUG,,[Define to disable asserts, int3, etc.])
-    CFLAGS="-O3 $CFLAGS -fopenmp"
-    CXXFLAGS="-O3 $CXXFLAGS -fopenmp"
-#    AC_DEFINE(OPENMP,,[Define to enable openmp code])
+    CFLAGS="-O3 $CFLAGS"
+    CXXFLAGS="-O3 $CXXFLAGS"
    else
-    CFLAGS="-g $CFLAGS -fopenmp"
-    CXXFLAGS="-g $CXXFLAGS -fopenmp"
+    CFLAGS="-g $CFLAGS"
+    CXXFLAGS="-g $CXXFLAGS"
     AC_DEFINE(_DEBUG,,[Define to enable asserts, int3, etc.])
     D2X_FEATURES="debug ${D2X_FEATURES}"
+fi
+
+dnl Build with OpenMP?
+AC_ARG_ENABLE(openmp,
+    [  --enable-openmp         OpenMP multithreading build ],,)
+if test x$enable_openmp = xyes; then
+    CFLAGS="$CFLAGS -fopenmp"
+    CXXFLAGS="$CXXFLAGS -fopenmp"
+#    AC_DEFINE(OPENMP,,[Define to enable openmp code])
 fi
 
 dnl Build with RELEASE?
@@ -304,6 +312,15 @@ else
     else
         CFLAGS="-I \$(top_srcdir)/arch/linux/include $CFLAGS"
         D2X_ARCH_SUBDIRS="linux ${D2X_ARCH_SUBDIRS}"
+    fi
+fi
+
+if test x$MINGW32 = xyes; then
+    dnl Build with Oculus Rift support
+    AC_ARG_WITH(oculusrift,
+        [  --with-oculusrift       Build Oculus Rift VR support ],,)
+    if test x$with_oculusrift = xyes; then
+        AC_DEFINE(OCULUS_RIFT,1,[Define if you want an Oculus Rift build])
     fi
 fi
 
