@@ -85,7 +85,7 @@ void Breakpoint (void);
 
 #if !DBG
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #	define	__FUNC__	__FUNCSIG__
 #else
 #	define	__FUNC__	__PRETTY_FUNCTION__

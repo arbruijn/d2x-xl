@@ -546,6 +546,8 @@ class CArray : public CQuickSort < _T > {
 		// ----------------------------------------
 
 #ifdef _WIN32
+		typedef typename CQuickSort<_T>::comparator comparator;
+
 		inline void SortAscending (comparator compare, int32_t left = 0, int32_t right = -1) {
 			if (m_data.buffer) 
 				CQuickSort<_T>::SortAscending (m_data.buffer, left, (right >= 0) ? right : m_data.length - 1, compare);

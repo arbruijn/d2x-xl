@@ -130,6 +130,8 @@ class CStack : public CArray< _T > {
 				CQuickSort<_T>::SortDescending (this->m_data.buffer, left, (right >= 0) ? right : m_tos - 1);
 			}
 #ifdef _WIN32
+		typedef typename CQuickSort<_T>::comparator comparator;
+
 		inline void SortAscending (comparator compare, int32_t left = 0, int32_t right = -1) {
 			if (this->m_data.buffer)
 				CQuickSort<_T>::SortAscending (this->m_data.buffer, left, (right >= 0) ? right : m_tos - 1, compare);
