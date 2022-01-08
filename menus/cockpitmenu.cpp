@@ -509,8 +509,9 @@ do {
 #endif
 	} while (i >= 0);
 
-	for (int32_t j = 0; j < 2; j++)
-		gameStates.render.cockpit.n3DView [i] = winFuncList [winFunc [j]];
+	if (i >= 0)
+		for (int32_t j = 0; j < 2; j++)
+			gameStates.render.cockpit.n3DView [i] = winFuncList [winFunc [j]];
 	GET_VAL (gameOpts->render.cockpit.bReticle, "show reticle");
 	GET_VAL (gameOpts->render.cockpit.bHUD, "show hud");
 	GET_VAL (gameOpts->render.cockpit.bMissileView, "missile view");
