@@ -474,7 +474,7 @@ return bNone ? 0 : netGameInfo.GetScoreGoal () ? netGameInfo.GetScoreGoal () * B
 
 static void CheckScoreGoal (int32_t nPlayer, bool bForce = false)
 {
-if (PLAYER (nPlayer).nScoreGoalCount >= ScoreGoal (bForce)) {
+if (nPlayer >= 0 && PLAYER (nPlayer).nScoreGoalCount >= ScoreGoal (bForce)) {
 	if (nPlayer != N_LOCALPLAYER) 
 		HUDInitMessage (TXT_REACH_SCOREGOAL2, PLAYER (nPlayer).callsign);
 	else {
