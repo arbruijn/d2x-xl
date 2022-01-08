@@ -145,7 +145,7 @@ if (m_nType == FIRE_PARTICLES)
 int32_t nParticleType = pParticle->RenderType ();
 if ((nParticleType == m_nType) && (pParticle->m_bEmissive == m_bEmissive))
 	return 1;
-return USE_PARTICLE_SHADER && bCompatible [m_nType] && bCompatible [nParticleType];
+return USE_PARTICLE_SHADER && m_nType >= 0 && bCompatible [m_nType] && bCompatible [nParticleType];
 }
 
 //------------------------------------------------------------------------------
