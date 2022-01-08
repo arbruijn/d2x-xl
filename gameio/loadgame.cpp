@@ -2068,11 +2068,10 @@ void CObject::Bash (uint8_t nId)
 if (Type () == OBJ_POWERUP)
 	RemovePowerupInMine (info.nId);
 AddPowerupInMine (nId, 1, true);
-if (Type () != OBJ_POWERUP) {
+if (Type () != OBJ_POWERUP)
 	SetType (OBJ_POWERUP);
-	info.renderType = RT_POWERUP;
-	info.controlType = CT_POWERUP;
-	}
+info.renderType = RT_POWERUP;
+info.controlType = CT_POWERUP;
 info.nId = nId;
 SetSizeFromPowerup ();
 rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [nId].nClipIndex;
