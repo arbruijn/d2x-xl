@@ -302,12 +302,11 @@ public:
 		if (szId && *szId) {
 			if (*szId == '?')
 				return IndexOf (szId + 1, false);
-			if (m_current && m_current->m_szId
-					&& !stricmp (szId, m_current->m_szId))
+			if (m_current && !stricmp (szId, m_current->m_szId))
 				return (int32_t) (m_current - Buffer ());
 			m_current = Buffer ();
 			for (uint32_t i = 0; i < m_tos; i++, m_current++) {
-				if (m_current->m_szId && !stricmp (szId, m_current->m_szId))
+				if (!stricmp (szId, m_current->m_szId))
 					return i;
 			}
 		}
