@@ -238,6 +238,8 @@ class CSphereEdge : public CMeshEdge {
 			}
 		virtual void Transform (float fScale);
 		int32_t Prepare (CFloatVector vViewer, int32_t nFilter = 2, float fScale = -1.0f);
+	private:
+		using CMeshEdge::Transform;
 	};
 
 // -----------------------------------------------------------------------------
