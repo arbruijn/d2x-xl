@@ -190,7 +190,7 @@ for (int32_t y1 = 0; y1 < pBm->Height (); y1++) {
 
 void gr_ubitmap00m(int32_t x, int32_t y, CBitmap *pBm)
 {
-	register int32_t y1;
+	int32_t y1;
 	int32_t destRowSize;
 
 	uint8_t * dest;
@@ -221,7 +221,7 @@ void gr_ubitmap00m(int32_t x, int32_t y, CBitmap *pBm)
 
 void gr_ubitmap012(int32_t x, int32_t y, CBitmap *pBm)
 {
-	register int32_t x1, y1;
+	int32_t x1, y1;
 	uint8_t * src;
 
 	src = pBm->Buffer ();
@@ -238,7 +238,7 @@ void gr_ubitmap012(int32_t x, int32_t y, CBitmap *pBm)
 
 void gr_ubitmap012m(int32_t x, int32_t y, CBitmap *pBm)
 {
-	register int32_t x1, y1;
+	int32_t x1, y1;
 	uint8_t * src;
 
 	src = pBm->Buffer ();
@@ -258,7 +258,7 @@ void gr_ubitmap012m(int32_t x, int32_t y, CBitmap *pBm)
 
 void gr_ubitmapGENERIC(int32_t x, int32_t y, CBitmap * pBm)
 {
-	register int32_t x1, y1;
+	int32_t x1, y1;
 
 	for (y1=0; y1 < pBm->Height (); y1++)    {
 		for (x1=0; x1 < pBm->Width (); x1++)    {
@@ -272,7 +272,7 @@ void gr_ubitmapGENERIC(int32_t x, int32_t y, CBitmap * pBm)
 
 void gr_ubitmapGENERICm(int32_t x, int32_t y, CBitmap * pBm)
 {
-	register int32_t x1, y1;
+	int32_t x1, y1;
 	uint8_t c;
 
 	for (y1=0; y1 < pBm->Height (); y1++) {
@@ -401,7 +401,7 @@ extern void gr_rle_expand_scanline_svga_masked(CBitmap * dest, int32_t dx, int32
 void StretchToBitmapRLE (int32_t w, int32_t h, int32_t dx, int32_t dy, int32_t sx, int32_t sy, CBitmap * src, CBitmap * dest)
 {
 	int32_t i, data_offset;
-	register int32_t y1;
+	int32_t y1;
 	uint8_t * sbits;
 
 	data_offset = 1;
