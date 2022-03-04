@@ -1,5 +1,5 @@
 #ifndef __autodl_h
-#define autodl_h
+#define __autodl_h
 
 #define PID_DL_START		68
 #define PID_DL_OPEN		69
