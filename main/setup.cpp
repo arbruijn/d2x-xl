@@ -222,6 +222,7 @@ if (!FFF (szSource, &ffs, 0)) {
 		CFile::Rename (szDest, szSource, "");
 #endif
 		} while (!FFN (&ffs, 0));
+	FFC (&ffs);
 	}
 
 if (bMoveSubFolders) {
@@ -232,6 +233,7 @@ if (bMoveSubFolders) {
 			CFile::MkDir (szDest);
 			MoveFiles (szDest, szSource, true);
 			} while (!FFN (&ffs, 1));
+		FFC (&ffs);
 		}
 	}
 }
@@ -313,6 +315,7 @@ do {
 				}
 			}
 	} while (!FFN (&ffs, 0));
+FFC(&ffs);
 return true;
 }
 
