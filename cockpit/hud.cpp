@@ -588,7 +588,7 @@ color.rgb = 1;
 
 CCanvas::Current ()->SetFont (GAME_FONT);
 for (i = 0; i < 3; i++) {
-	if (szEnergy [i] < 0)
+	if (nEnergy [i] < 0)
 		strcpy (szEnergy [i], " ---");
 	else
 		sprintf (szEnergy [i], "%4d", nEnergy [i]);
