@@ -186,7 +186,7 @@ else {
 
 void InitCountdown (CTrigger *pTrigger, int32_t bReactorDestroyed, int32_t nTimer)
 {
-if (pTrigger && (pTrigger->m_info.time > 0))
+if (pTrigger && (pTrigger->m_info.time [0] > 0))
 	gameData.reactorData.countdown.nTotalTime = pTrigger->m_info.time [0];
 else if (gameStates.app.nBaseCtrlCenExplTime != DEFAULT_CONTROL_CENTER_EXPLOSION_TIME)
 	gameData.reactorData.countdown.nTotalTime = 
