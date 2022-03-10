@@ -1160,7 +1160,7 @@ dot = CFixVector::Dot (vNormToGoal, vNormFwd);
 if (dot < -I2X (15) / 16)
 	vNormCurVel = vNormToGoal;
 else
-	vNormCurVel += vNormToGoal / (I2X (1) / 2);
+	vNormCurVel += vNormToGoal * (I2X (1) / 2);
 CFixVector::Normalize (vNormCurVel);
 //	Set speed based on this robot nType's maximum allowed speed and how hard it is turning.
 //	How hard it is turning is based on the dot product of (vector to goal) and (current velocity vector)
