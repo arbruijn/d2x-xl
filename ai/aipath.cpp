@@ -101,16 +101,10 @@ ENTER (1, 0);
 	fix			dot, mag1, mag2 = 0;
 
 for (i = 1; i < nSegs - 1; i += 2) {
-	if (i == 1) {
-		temp1 = pPointSeg [i].point - pPointSeg [i-1].point;
-		mag1 = temp1.Mag();
-		}
-	else {
-		temp1 = temp2;
-		mag1 = mag2;
-		}
+	temp1 = pPointSeg [i].point - pPointSeg [i-1].point;
+	mag1 = temp1.Mag();
 	temp2 = pPointSeg [i + 1].point - pPointSeg [i].point;
-	mag2 = temp1.Mag();
+	mag2 = temp2.Mag();
 	dot = CFixVector::Dot (temp1, temp2);
 	if (dot * 9/8 > FixMul (mag1, mag2))
 		pPointSeg [i].nSegment = -1;
