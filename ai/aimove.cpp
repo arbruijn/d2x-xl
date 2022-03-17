@@ -271,7 +271,7 @@ RETURN
 void MoveAwayFromTarget (CObject *pObj, CFixVector *vVecToTarget, int32_t attackType)
 {
 ENTER (1, 0);
-	tPhysicsInfo	physicsInfo = pObj->mType.physInfo;
+	tPhysicsInfo&	physicsInfo = pObj->mType.physInfo;
 	fix				ft = gameData.timeData.xFrame * 16;
 
 physicsInfo.velocity -= gameData.aiData.target.vDir * ft;
