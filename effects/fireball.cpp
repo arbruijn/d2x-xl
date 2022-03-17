@@ -233,7 +233,7 @@ FORALL_OBJS (pObj) {
 		}
 	else if (nType == OBJ_ROBOT) {
 		CFixVector	vNegForce;
-		fix			xScale = -2 * (7 - gameStates.app.nDifficultyLevel) / 8;
+		fix			xScale = I2X (-2) * (7 - gameStates.app.nDifficultyLevel) / 8;
 
 		pObj->ApplyForce (vForce);
 		//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
