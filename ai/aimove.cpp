@@ -103,7 +103,7 @@ if (bDotBased && (dot < I2X (3) / 4))
 	//	more quickly than the general code
 	physicsInfo.velocity += *vGoalVec * (gameData.timeData.xFrame * 32);
 else 
-	physicsInfo.velocity += *vGoalVec * ((gameData.timeData.xFrame * 64) * (5 * gameStates.app.nDifficultyLevel / 4));
+	physicsInfo.velocity += *vGoalVec * ((gameData.timeData.xFrame * 64) * (5 + gameStates.app.nDifficultyLevel) / 4);
 fix speed = physicsInfo.velocity.Mag ();
 fix xMaxSpeed = pObj->MaxSpeed ();
 //	Green guy attacks twice as fast as he moves away.
