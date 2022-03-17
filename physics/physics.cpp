@@ -1370,7 +1370,7 @@ RETURN
 //		and	they are of different signs.
 void PhysicsSetRotVelAndSaturate (fix *dest, fix delta)
 {
-*dest = (((delta ^ *dest) >= 0) || (abs (delta) <= I2X (1) / 8)) ? delta : delta / 4;
+*dest = (((delta ^ *dest) >= 0) || (abs (delta) >= I2X (1) / 8)) ? delta : delta / 4;
 }
 
 //	------------------------------------------------------------------------------------------------------
