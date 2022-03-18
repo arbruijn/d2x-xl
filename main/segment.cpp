@@ -779,8 +779,10 @@ else {
 		nConnSide = ConnectedSide (pConnSeg);
 		if (nConnSide >= 0) {
 			CWall* pWall = pConnSeg->Wall (nConnSide);
-			if (pWall)
+			if (pWall) {
 				pWall->state = WALL_DOOR_OPENING;
+				nConnWall = pConnSeg->Side (nConnSide)->m_nWall;
+				}
 			}	
 		}
 	}
