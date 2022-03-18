@@ -1203,7 +1203,8 @@ CFloatVector vEdge = *edge_v1 - *edge_v0;
 float edge_len = CFloatVector::Normalize (vEdge);
 float move_len = CFloatVector::Normalize (vMove);
 float edge_t, move_t;
-CheckLineToLinef (edge_t, move_t, *edge_v0, vEdge, p0, vMove);
+if (!CheckLineToLinef (edge_t, move_t, *edge_v0, vEdge, p0, vMove))
+	return IT_NONE;
 //make sure t values are in valid range
 if ((move_t < 0) || (move_t > move_len + rad))
 	return IT_NONE;
@@ -1260,7 +1261,8 @@ CFixVector vEdge = *v1 - *v0;
 fix edgeLen = CFixVector::Normalize (vEdge);
 fix moveLen = CFixVector::Normalize (vMove);
 fix edge_t, move_t = -1;
-CheckLineToLine (&edge_t, &move_t, v0, &vEdge, p0, &vMove);
+if (!CheckLineToLine (&edge_t, &move_t, v0, &vEdge, p0, &vMove))
+	return IT_NONE;
 //make sure t values are in valid range
 if ((move_t < 0) || (move_t > moveLen + rad))
 #if DBG
