@@ -394,7 +394,7 @@ if (gameData.bossData [i].m_nLastGateTime > gameData.timeData.xGame)
 //	@mk, 10/13/95:  Reason:
 //		Level 4 boss behind locked door.  But he's allowed to teleport out of there.  So he
 //		teleports out of there right away, and blasts player right after first door.
-if (!gameData.aiData.nTargetVisibility && (gameData.timeData.xGame - gameData.bossData [i].m_nHitTime > I2X (2)))
+if (!nTargetVisibility && (gameData.timeData.xGame - gameData.bossData [i].m_nHitTime > I2X (2)))
 	RETURN
 
 if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
