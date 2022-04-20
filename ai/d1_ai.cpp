@@ -1631,7 +1631,7 @@ if (player_visibility == 2) {
 			}
 		}
 	} 
-else if (WI_HomingFlag (pObj->info.nId) == 1) {
+else if (WI_HomingFlag (ROBOTINFO (pObj)->nWeaponType) == 1) {
 	//	Robots which fire homing weapons might fire even if they don't have a bead on the pPlayer.
 	if (((!object_animates) || (pLocalInfo->achievedState [pStaticInfo->CURRENT_GUN] == D1_AIS_FIRE)) &&
 		 (pLocalInfo->pNextrimaryFire <= 0) && (CFixVector::Dist (aiHitResult.vPoint, pObj->info.position.vPos) > I2X (40))) {
