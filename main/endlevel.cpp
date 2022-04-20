@@ -963,7 +963,7 @@ if (pExitFlightData->bStart || (UpdateObjectSeg (pObj, false) > 0)) {
 		if ((nExitSide >= 0) && (pSeg->m_children [nExitSide] >= 0)) {
 			fix d, dLargest = -I2X (1);
 			CSide* pSide = pSeg->m_sides;
-			for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
+			for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++, pSide++) {
 				if (pSide->FaceCount ()) {
 					d = CFixVector::Dot (pSide->m_normals [0], pExitFlightData->pObj->info.position.mOrient.m.dir.u);
 					if (d > dLargest) {
