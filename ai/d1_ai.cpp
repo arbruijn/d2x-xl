@@ -1246,6 +1246,7 @@ void move_object_to_legal_spot(CObject *pObj)
 
 			vSegCenter = SEGMENT (pSeg->m_children [i])->Center ();
 			goal_dir = vSegCenter - pObj->info.position.vPos;
+			CFixVector::Normalize (goal_dir);
 			goal_dir *= pObj->info.xSize;
 			pObj->info.position.vPos += goal_dir;
 			if (!ObjectIntersectsWall (pObj)) {
