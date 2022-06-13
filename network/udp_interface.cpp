@@ -1226,7 +1226,7 @@ if (!(bTracker
 #else
 	dataLen -= 14;
 #endif
-	memcpy (outBuf, outBuf + 8, dataLen);
+	memmove (outBuf, outBuf + 8, dataLen);
 	} //bTracker
 #if DBG
 else
