@@ -890,13 +890,14 @@ if (pStateInfo->pRobotInfo->companion) {
 			else if (((nSegment = AIRouteSeg (uint32_t (i + 2 * pStaticInfo->PATH_DIR))) >= 0) && (SEGMENT (nSegment)->HasOpenableDoor () != -1))
 				bDoStuff = 1;
 			}
-		if (!bDoStuff && (pStateInfo->pLocalInfo->mode == AIM_GOTO_PLAYER) && (gameData.aiData.target.xDist < 3 * MIN_ESCORT_DISTANCE / 2)) {
+		if (!bDoStuff && (pStateInfo->pLocalInfo->mode == AIM_GOTO_PLAYER) && (gameData.aiData.target.xDist < 3 * MIN_ESCORT_DISTANCE / 2) &&
+			(CFixVector::Dot (gameData.aiData.target.pObj->info.position.mOrient.m.dir.f, gameData.aiData.target.vDir) > -I2X (1)/4)) {
 			bDoStuff = 1;
 			}
 		else
 			;
 
-		if (bDoStuff && (CFixVector::Dot (pObj->info.position.mOrient.m.dir.f, gameData.aiData.target.vDir) < I2X (1) / 2)) {
+		if (bDoStuff) {
 			CreateNewWeaponSimple (&pObj->info.position.mOrient.m.dir.f, &pObj->info.position.vPos, pObj->Index (), FLARE_ID, 1);
 			pStateInfo->pLocalInfo->pNextrimaryFire = I2X (1)/2;
 			if (!gameData.escortData.bMayTalk) // If buddy not talking, make him fire flares less often.
