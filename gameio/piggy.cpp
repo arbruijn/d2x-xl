@@ -313,7 +313,9 @@ if (gameStates.app.bUseSwapFile) {
  {
 	MEMORYSTATUS	memStat;
 	GlobalMemoryStatus (&memStat);
-	bitmapCacheSize = (int32_t) (memStat.dwAvailPhys / 10) * PIGGY_MEM_QUOTA;
+	bitmapCacheSize = memStat.dwAvailPhys >= 1920 * 1024 * 1024 ?
+		1536 * 1024 * 1024 :
+		(int32_t) (memStat.dwAvailPhys / 10) * PIGGY_MEM_QUOTA;
 #	if DBG
 	gameStates.render.nMaxTextureQuality = 3;
 #	else
