@@ -154,7 +154,7 @@ if (!gameStates.app.bNostalgia)
 m.AddMenu ("view credits", TXT_CREDITS, KEY_C, HTX_MAIN_CREDITS);
 if (!gameStates.app.bNostalgia)
 	m.AddMenu ("precalc lightmaps", TXT_PRECALC_LIGHTMAPS, KEY_A, HTX_PRECALC_LIGHTMAPS);
-#if defined(_WIN32) || defined(__unix__)
+#if !defined (D2X_VARIANT) && (defined(_WIN32) || defined(__unix__))
 m.AddMenu ("check update", TXT_CHECK_FOR_UPDATE, KEY_U, HTX_CHECK_FOR_UPDATE);
 #endif
 #if 1
