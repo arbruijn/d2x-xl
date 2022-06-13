@@ -65,10 +65,10 @@
 #define PROCLOCK 0
 
 #define SEND_IN_BACKGROUND		0
-#define LISTEN_IN_BACKGROUND	1
+#define LISTEN_IN_BACKGROUND	0
 #define USE_PACKET_IDS			0
 
-#define MULTI_THREADED_NETWORKING 1 // set to 0 to have D2X-XL manage network traffic the old way
+#define MULTI_THREADED_NETWORKING 0 // set to 0 to have D2X-XL manage network traffic the old way
 
 //------------------------------------------------------------------------------
 
@@ -767,8 +767,12 @@ return packet;
 
 int32_t CNetworkThread::GetPacketData (uint8_t* data)
 {
-if (!ListenInBackground ())
-	return IpxGetPacketData (data);
+if (!ListenInBackground ()) {
+	int32_t size = IpxGetPacketData (data);
+	if (size)
+		networkData.packetDest = networkData.packetSource;
+	return size;
+}
 
 CNetworkPacket* packet = GetPacket (true);
 if (!packet)

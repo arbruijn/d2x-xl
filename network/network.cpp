@@ -358,7 +358,7 @@ int32_t nPackets = 0;
 int32_t t = SDL_GetTicks ();
 int32_t size;
 
-for (; (size = IpxGetPacketData (packet)) && nQueries && (SDL_GetTicks () - t < 50); nQueries--)
+for (; nQueries && (SDL_GetTicks () - t < 50) && (size = networkThread.GetPacketData (packet)); nQueries--)
 	if (NetworkProcessPacket (packet, size))
 		nPackets++;
 
