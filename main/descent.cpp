@@ -277,8 +277,10 @@ else
 
 gameStates.menus.bDrawCopyright = 0;
 if (!nInfoType) {
+	char szVersion[32];
+	snprintf(szVersion, sizeof(szVersion), "V%d.%d%s", D2X_MAJOR, D2X_MINOR, D2X_VARIANT);
 	fontManager.SetCurrent (GAME_FONT);
-	fontManager.Current ()->StringSize ("V2.2", w, h, aw);
+	fontManager.Current ()->StringSize (szVersion, w, h, aw);
 	fontManager.SetColorRGBi (RGB_PAL (63, 47, 0), 1, 0, 0);
 	h += 2;
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - h, "visit www.descent2.de");
@@ -300,7 +302,7 @@ if (!nInfoType) {
 			NULL);
 #endif
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 2 * h - 2, TXT_COPYRIGHT);
-	GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2, CCanvas::Current ()->Height () - 2 * h - 2, "V%d.%d", D2X_MAJOR, D2X_MINOR);
+	GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2, CCanvas::Current ()->Height () - 2 * h - 2, "%s", szVersion);
 	if (bVertigo < 0)
 		bVertigo = CFile::Exist ("d2x.hog", gameFolders.missions.szRoot, 0);
 	if (bVertigo) {

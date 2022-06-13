@@ -138,7 +138,7 @@
 #define USE_SDL_NET 1
 
 /* Version number of package */
-#define VERSION "1.18.74"
+#define VERSION "1.18.74-ar1"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
