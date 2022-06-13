@@ -581,6 +581,7 @@ if (pszFolder && *pszFolder) {
 	}
 else if (!*pszSong)
 	return m_info.bPlaying = 0;
+midi.SetVolume ((gameConfig.nMidiVolume * 128) / 8);
 return m_info.bPlaying = midi.PlaySong (pszSong, NULL, NULL, bLoop, 0);
 }
 
@@ -650,6 +651,7 @@ if (*pszFolder) {
 		sprintf (szFilename, "%sslevel%02d.ogg", pszFolder, -nLevel);
 	else
 		sprintf (szFilename, "%slevel%02d.ogg", pszFolder, nLevel);
+	midi.SetVolume ((gameConfig.nMidiVolume * 128) / 8);
 	if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 		return 1;
 	}
