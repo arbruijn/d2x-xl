@@ -481,7 +481,7 @@ return (b == 1.0f) ? TXT_STANDARD : (b < 1.0f) ? TXT_LOW : TXT_HIGH;
 void CPaletteManager::Init (void)
 {
 memset (&m_data, 0, sizeof (m_data));
-SetGamma (-1);
+SetGamma (3); // standard brightness
 m_save.Create (10, "CPaletteManager::m_save");
 }
 
