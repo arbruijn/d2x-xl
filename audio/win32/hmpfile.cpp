@@ -284,7 +284,7 @@ static int32_t setup_buffers(hmp_file *hmp)
 		memset (buf, 0, sizeof (MIDIHDR));
 		buf->lpData = reinterpret_cast<char*> (buf + 1);
 		buf->dwBufferLength = HMP_BUFSIZE;
-		buf->dwUser = (DWORD)(size_t)hmp;
+		buf->dwUser = (DWORD_PTR)hmp;
 		buf->lpNext = lastbuf;
 		lastbuf = buf;
 	}
@@ -308,7 +308,7 @@ static void reset_tracks(struct hmp_file *hmp)
 
 //------------------------------------------------------------------------------
 
-static void _stdcall midi_callback(HMIDISTRM hms, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2) 
+static void _stdcall midi_callback(HMIDISTRM hms, UINT uMsg, DWORD dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
 	MIDIHDR *mhdr;
 	hmp_file *hmp;
