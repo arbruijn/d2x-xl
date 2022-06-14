@@ -125,7 +125,8 @@ void UpdateFiringState (void)
 {
 	int32_t	bGatling = (gameData.weaponData.nPrimary == VULCAN_INDEX) || (gameData.weaponData.nPrimary == GAUSS_INDEX);
 
-if ((controls [0].firePrimaryState != 0) || (controls [0].firePrimaryDownCount != 0)) {
+gameData.weaponData.firing [0].bPressed = (controls [0].firePrimaryState != 0) || (controls [0].firePrimaryDownCount != 0);
+if (gameData.weaponData.firing [0].bPressed) {
 	if (gameData.weaponData.firing [0].nStart <= 0) {
 		gameData.weaponData.firing [0].nStart = gameStates.app.nSDLTicks [0];
 		if (bGatling) {

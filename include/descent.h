@@ -2895,6 +2895,7 @@ typedef struct tFiringData {
 	int32_t					nDuration;
 	int32_t					bSound;
 	int32_t					bSpeedUp;
+	int32_t					bPressed;
 	} tFiringData;
 
 class CWeaponData {

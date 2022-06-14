@@ -1043,7 +1043,7 @@ void FireGun (void)
 ENTER (0, 0);
 	int32_t i = primaryWeaponToWeaponInfo [gameData.weaponData.nPrimary];
 
-if (gameData.weaponData.firing [0].nDuration)
+if (gameData.weaponData.firing [0].bPressed)
 	gameData.laserData.nGlobalFiringCount += WI_FireCount (i);
 if ((gameData.weaponData.nPrimary == FUSION_INDEX) && gameData.laserData.nGlobalFiringCount)
 	ChargeFusion ();
