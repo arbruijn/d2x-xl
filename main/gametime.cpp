@@ -346,7 +346,7 @@ if (fps <= 0)
 
 #if EXACT_FRAME_TIME
 
-	int32_t nDeltaTime;
+	int32_t nDeltaTime = 0;
 
 if (fps <= 1) 
 	nDeltaTime = 0;
