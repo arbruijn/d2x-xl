@@ -1108,7 +1108,6 @@ void CAudio::SetFxVolume (int32_t fxVolume, int32_t nType)
 ENTER (0, 0);
 if (!gameStates.app.bUseSound)
 	RETURN;
-#ifdef _WIN32
 int32_t nVolume = FixMulDiv (fxVolume, SOUND_MAX_VOLUME, 0x7fff);
 if (nVolume > SOUND_MAX_VOLUME)
 	m_info.nVolume [nType] = SOUND_MAX_VOLUME;
@@ -1120,7 +1119,6 @@ if (!m_info.bAvailable)
 	RETURN;
 if (!(nType || songManager.Playing ()))
 	midi.FixVolume (FixMulDiv (fxVolume, 128, SOUND_MAX_VOLUME));
-#endif
 SyncSounds ();
 RETURN
 }
