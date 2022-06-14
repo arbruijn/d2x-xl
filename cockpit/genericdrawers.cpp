@@ -1333,7 +1333,7 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nType != CM_FULL
 	LoadTexture (i, 0, 0, true);
 	if (pBm->HasOverride ())
 		pBm = pBm->Override (-1);
-	ogl.m_states.nTransparencyLimit = 8;	//add transparency to black areas of palettized cockpits (namely the display windows)
+	ogl.m_states.nTransparencyLimit = 0;	//add transparency to black areas of palettized cockpits (namely the display windows)
 	pBm->SetTranspType (3);
 	pBm->SetupTexture (0, 1);
 	ogl.m_states.nTransparencyLimit = 0;
