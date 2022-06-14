@@ -194,6 +194,8 @@ m_nFileCount = 0;
 m_bDemosDeleted = 0;
 m_callback = NULL;
 
+m_props.width = 0;
+
 nWidth = nHeight = nTitleHeight = 0;
 m_nTextLeft = m_nTextTop = m_nTextWidth = m_nTextHeight = 0;
 if (!m_filenames.Create (MENU_MAX_FILES))
