@@ -36,6 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderthreads.h"
 #include "gpgpu_lighting.h"
 #include "fastrender.h"
+#include "addon_bitmaps.h"
 
 // 0: use average of the normals of all faces a vertex belongs to for lighting and only compute light once per frame and vertex (faster and smoother)
 // 1: compute light for each face using the face's normal, computing lights multiple times for each vertex per frame (more correct)
@@ -165,7 +166,8 @@ if ((pFace->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (pFace->m_info.nSi
 #endif
 if (!FaceIsVisible (pFace->m_info.nSegment, pFace->m_info.nSide))
 	return pFace->m_info.bVisible = 0;
-if ((pFace->m_info.bSparks == 1) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks)
+if ((pFace->m_info.bSparks == 1) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks &&
+	sparks.Bitmap())
 	return pFace->m_info.bVisible = 0;
 return pFace->m_info.bVisible = 1;
 }
