@@ -525,7 +525,7 @@ if (!bogusBitmap.FrameSize ()) {
 	uint8_t c;
 /*---*/PrintLog (0, "Initializing placeholder bitmap\n");
 	bogusBitmap.Setup (0, 64, 64, 1, "Bogus Bitmap");
-	bogusBitmap.SetPalette (paletteManager.Game ());
+	bogusBitmap.SetPaletteOpaque (paletteManager.Game ());
 	c = paletteManager.Game ()->ClosestColor (0, 0, 63);
 	memset (bogusBitmap.Buffer (), c, 4096);
 	c = paletteManager.Game ()->ClosestColor (63, 0, 0);

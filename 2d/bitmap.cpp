@@ -332,13 +332,16 @@ if (gameData.pigData.tex.textureIndex [0][m_info.nId] >= 0) {
 
 //------------------------------------------------------------------------------
 
-void CBitmap::SetPalette (CPalette *palette, int32_t transparentColor, int32_t superTranspColor, uint8_t* pBuffer, int32_t bufLen)
+void CBitmap::SetPalette (CPalette *palette, int32_t transparentColor, int32_t superTranspColor, uint8_t* pBuffer, int32_t bufLen, int32_t bOpaque)
 {
 if (!palette) {
 	m_info.palette = NULL;
 	return;
 	}
 m_info.palette = paletteManager.Add (*palette, transparentColor, superTranspColor);
+
+if (bOpaque)
+	return;
 
 	int32_t colorFrequencies [256];
 

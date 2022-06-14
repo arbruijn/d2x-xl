@@ -660,7 +660,7 @@ PrintLog (-1);
 if (bFull) {
 	/*---*/PrintLog (1, "Loading default palette\n");
 	paletteManager.SetDefault (paletteManager.Load (D2_DEFAULT_PALETTE, NULL));
-	CCanvas::Current ()->SetPalette (paletteManager.Default ());	//just need some valid palette here
+	CCanvas::Current ()->SetPaletteOpaque (paletteManager.Default ());	//just need some valid palette here
 	PrintLog (-1);
 	/*---*/PrintLog (1, "Initializing game fonts\n");
 	fontManager.Setup ();	// must load after palette data loaded.

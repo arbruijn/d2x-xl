@@ -86,7 +86,7 @@ SetupCanvasses ();
 gameData.renderData.screen.SetAspect (FixDiv (gameData.renderData.screen.Width (), (fix) (gameData.renderData.screen.Height () * ((double) w / (double) h))));
 gameData.renderData.screen.CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);
 gameData.renderData.screen.CreateBuffer ();
-gameData.renderData.screen.CCanvas::SetPalette (paletteManager.Default ()); //just need some valid palette here
+gameData.renderData.screen.CCanvas::SetPaletteOpaque (paletteManager.Default ()); //just need some valid palette here
 //gameData.renderData.screen.props.rowSize = screen->pitch;
 //gameData.renderData.screen.Buffer () = reinterpret_cast<uint8_t*> (screen->pixels);
 /***/PrintLog (1, "initializing OpenGL window\n");
