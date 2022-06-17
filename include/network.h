@@ -123,6 +123,8 @@ extern int32_t nNetworkGameType;
 extern int32_t nNetworkGameSubType;
 #endif
 
+#pragma pack(push, 1)
+
 typedef struct tPlayerSyncData {
 	uint8_t           nType;
 	int32_t           nSecurity;
@@ -356,6 +358,8 @@ typedef struct tNetworkObjInfo {
 } __pack__ tNetworkObjInfo;
 
 extern tExtraGameInfo extraGameInfo [3];
+
+#pragma pack(pop)
 
 //	-----------------------------------------------------------------------------
 

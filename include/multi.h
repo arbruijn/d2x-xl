@@ -283,6 +283,8 @@ enum compType {DOS,WIN_32,WIN_95,MAC} __pack__ ;
 // the server and node members since I cannot change the order ot these
 // members.
 
+#pragma pack(push, 1)
+
 typedef struct tNetPlayerInfo {
 	char				callsign [CALLSIGN_LEN+1];
 	CNetworkInfo	network;
@@ -471,6 +473,8 @@ typedef struct tNetGameInfo : tNetGameInfoLite {
 		tNetGameInfoD2X	d2x;
 		} versionSpecific;
 	} __pack__ tNetGameInfo;
+
+#pragma pack(pop)
 
 class CNetGameInfo {
 	public:

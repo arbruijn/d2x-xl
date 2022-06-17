@@ -20,13 +20,13 @@ libnetwork_a_SOURCES = autodl.cpp banlist.cpp network_handshake.cpp \
    multibot.cpp multimsg.cpp netmisc.cpp network.cpp \
    network_init.cpp network_join.cpp network_lib.cpp network_phandler.cpp \
    network_process.cpp network_read.cpp network_send.cpp network_sync.cpp \
-   tracker.cpp udp_interface.cpp win32/winnet.cpp
+   tracker.cpp udp_interface.cpp win32/winnet.cpp objbufio.cpp
 else
 libnetwork_a_SOURCES = ${NETWORK_SRCS} ${IPX_SRCS} ${KALI_SRCS} \
 	autodl.cpp banlist.cpp multi.cpp multibot.cpp multimsg.cpp netmisc.cpp \
 	network.cpp network_handshake.cpp network_init.cpp network_join.cpp network_lib.cpp \
 	network_phandler.cpp network_process.cpp network_read.cpp network_send.cpp \
-	network_sync.cpp network_thread.cpp tracker.cpp udp_interface.cpp 
+	network_sync.cpp network_thread.cpp tracker.cpp udp_interface.cpp objbufio.cpp
 endif
 	
 

@@ -183,6 +183,8 @@ typedef struct tLongPos {
 	int16_t				nSegment;
 } __pack__ tLongPos;
 
+#pragma pack(push, 1)
+
 // A compressed form for sending crucial data about via slow devices,
 // such as modems and buggies.
 typedef struct tShortPos {
@@ -191,6 +193,8 @@ typedef struct tShortPos {
 	int16_t		nSegment;
 	int16_t		vel [3];
 } __pack__ tShortPos;
+
+#pragma pack(pop)
 
 class CShortPos {
 	private:

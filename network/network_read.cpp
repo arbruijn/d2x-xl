@@ -35,6 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objeffects.h"
 #include "physics.h"
 #include "console.h"
+#include "objbufio.h"
 
 #ifdef WIN32
 #	define ZLIB_WINAPI
@@ -705,15 +706,16 @@ if (((m_nObjOwner == N_LOCALPLAYER) || (m_nObjOwner == -1)) && (m_nLocalObj != m
 
 CObject* pObj = OBJECT (m_nLocalObj);
 
-uLongf nUncompressedSize = (uLongf) sizeof (tBaseObject);
-uint8_t uncompressedBuffer [sizeof (tBaseObject)];
+uLongf nUncompressedSize = (uLongf) OBJECT_BUFFER_SIZE;
+uint8_t uncompressedBuffer [OBJECT_BUFFER_SIZE];
 uint8_t nCompressedSize;
 int32_t i;
 
 NW_GET_BYTE (m_data, m_bufI, nCompressedSize);
 
-if (nCompressedSize == sizeof (tBaseObject)) {
-	NW_GET_BYTES (m_data, m_bufI, &pObj->info, sizeof (tBaseObject));
+if (nCompressedSize == sizeof (uncompressedBuffer)) {
+	ObjectReadFromBuffer(pObj, m_data + m_bufI);
+	m_bufI += sizeof (uncompressedBuffer);
 	}
 else {
 	if ((i = uncompress (uncompressedBuffer, &nUncompressedSize, (uint8_t*) m_data + m_bufI, (uLong) nCompressedSize)) != Z_OK) {
@@ -721,8 +723,7 @@ else {
 		RequestResync ();
 		return -1;
 		}
-	i = 0;
-	NW_GET_BYTES (uncompressedBuffer, i, &pObj->info, sizeof (tBaseObject));
+	ObjectReadFromBuffer(pObj, uncompressedBuffer);
 	m_bufI += nCompressedSize;
 	}
 if (pObj->info.nType != OBJ_NONE) {

@@ -37,6 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "monsterball.h"
 #include "text.h"
 #include "console.h"
+#include "objbufio.h"
 
 #ifdef WIN32
 #	define ZLIB_WINAPI
@@ -73,6 +74,7 @@ for (int16_t i = 0; i < networkData.nJoining; )
 //------------------------------------------------------------------------------
 
 static int32_t objFilter [] = {1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1};
+// only robot, hostage, player, weapon, powerup, reactor, ghost, marker
 
 static inline int32_t NetworkFilterObject (CObject *pObj)
 {
@@ -153,9 +155,11 @@ for (nLocalObj = pSyncInfo->objs.nCurrent; nLocalObj <= gameData.objData.nLastOb
 	if (SendObject (pSyncInfo->objs.nMode, nLocalObj, nPlayer)) {
 		int8_t	nObjOwner;
 		int16_t	nRemoteObj = GetRemoteObjNum (int16_t (nLocalObj), nObjOwner);
+		uint8_t objBuf[OBJECT_BUFFER_SIZE];
 
-		uLongf nCompressedSize = sizeof (tBaseObject);
-		if ((compress (compressedBuffer, &nCompressedSize, (uint8_t*) &OBJECT (nLocalObj)->info, sizeof (tBaseObject)) == Z_OK) && (nCompressedSize < sizeof (tBaseObject))) {
+		uLongf nCompressedSize = sizeof(objBuf);
+		ObjectWriteToBuffer(OBJECT (nLocalObj), objBuf);
+		if ((compress (compressedBuffer, &nCompressedSize, objBuf, sizeof (objBuf)) == Z_OK) && (nCompressedSize < sizeof (tBaseObject))) {
 			if ((MAX_PAYLOAD_SIZE - bufI - 1) < int32_t (nCompressedSize) + 6)
 				break; // Not enough room for another object
 			NW_SET_SHORT (objBuf, bufI, nLocalObj);      
