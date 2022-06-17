@@ -30,6 +30,7 @@ void CLightningEmitter::Init (int32_t nId)
 {
 m_bValid = 0;
 m_nId = nId;
+m_bSound = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -136,7 +137,7 @@ RETURN
 void CLightningEmitter::DestroySound (void)
 {
 ENTER (0, 0);
-if ((m_bSound > 0) & (m_nObject >= 0))
+if ((m_bSound > 0) && (m_nObject >= 0))
 	audio.DestroyObjectSound (m_nObject);
 RETURN
 }
