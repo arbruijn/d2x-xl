@@ -277,13 +277,16 @@ else
 
 gameStates.menus.bDrawCopyright = 0;
 if (!nInfoType) {
+	#if 0
 	char szVersion[32];
-	snprintf(szVersion, sizeof(szVersion), "V%d.%d%s", D2X_MAJOR, D2X_MINOR, D2X_VARIANT);
+	snprintf(szVersion, sizeof(szVersion), "V%s", VERSION);
+	#endif
 	fontManager.SetCurrent (GAME_FONT);
-	fontManager.Current ()->StringSize (szVersion, w, h, aw);
+	//fontManager.Current ()->StringSize (szVersion, w, h, aw);
+	h = fontManager.Current ()->Height();
 	fontManager.SetColorRGBi (RGB_PAL (63, 47, 0), 1, 0, 0);
 	h += 2;
-	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - h, "visit www.descent2.de");
+	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - h, "variant d2x-xl.2ar.nl original www.descent2.de");
 	//fontManager.SetColorRGBi (RGB_PAL (51, 34, 0), 1, 0, 0);
 	fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 3 * h - 6, "Press F1 for help in menus");
@@ -302,7 +305,9 @@ if (!nInfoType) {
 			NULL);
 #endif
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 2 * h - 2, TXT_COPYRIGHT);
+	#if 0
 	GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2, CCanvas::Current ()->Height () - 2 * h - 2, "%s", szVersion);
+	#endif
 	if (bVertigo < 0)
 		bVertigo = CFile::Exist ("d2x.hog", gameFolders.missions.szRoot, 0);
 	if (bVertigo) {
@@ -327,7 +332,7 @@ if (!nInfoType) {
 if (!nInfoType) {
 	fontManager.SetCurrent (MEDIUM2_FONT);
 	fontManager.Current ()->StringSize (D2X_NAME, w, h, aw);
-	GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
+	GrPrintF (NULL, CCanvas::Current ()->Width () - w - ws + aw / 2/*SUBVER_XOFFS*/, y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
 	}
 else {
 	//gameStates.render.grAlpha = 0.75f;
