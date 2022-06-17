@@ -1148,7 +1148,6 @@ else {
 	//playerSynchronizer.Start ();
 	CalcFrameTime (fps);
 	//playerSynchronizer.Stop ();
-	HandleControls (bControls);
 	gameStates.render.EnableCartoonStyle (1, 1, 1);
 	m_nResult = Preprocess ();
 	gameStates.render.DisableCartoonStyle ();
@@ -1156,6 +1155,7 @@ else {
 		RETVAL (m_nResult)
 	if (bRender)
 		Render ();
+	HandleControls (bControls);
 	gameStates.render.EnableCartoonStyle (1, 1, 1);
 	m_nResult = Postprocess ();
 	gameStates.render.DisableCartoonStyle ();

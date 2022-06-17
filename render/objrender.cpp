@@ -354,14 +354,27 @@ RETURN
 void SetRobotLocationInfo (CObject *pObj)
 {
 if (pObj && (gameStates.app.bPlayerFiredLaserThisFrame != -1)) {
+	CFixVector vPos;
+	#if 0
 	CRenderPoint temp;
 
 	temp.TransformAndEncode (pObj->info.position.vPos);
 	if (temp.Behind ())		//robot behind the screen
 		return;
+
+	vPos = temp.ViewPos ();
+	#else
+	CFixMatrix m = transformation.m_info.view [1];
+	m.Scale (transformation.m_info.scale);
+	vPos = m * (pObj->info.position.vPos - transformation.m_info.pos);
+
+	if (vPos.v.coord.z <= 0) //robot behind the screen
+		return;
+	#endif
+
 	//the code below to check for CObject near the center of the screen
 	//completely ignores z, which may not be good
-	if ((abs (temp.ViewPos ().v.coord.x) < I2X (4)) && (abs (temp.ViewPos ().v.coord.y) < I2X (4))) {
+	if ((abs (vPos.v.coord.x) < I2X (4)) && (abs (vPos.v.coord.y) < I2X (4))) {
 		pObj->cType.aiInfo.nDangerLaser = gameStates.app.bPlayerFiredLaserThisFrame;
 		pObj->cType.aiInfo.nDangerLaserSig = OBJECT (gameStates.app.bPlayerFiredLaserThisFrame)->info.nSignature;
 		}
