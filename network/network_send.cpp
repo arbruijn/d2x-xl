@@ -185,9 +185,7 @@ int32_t NetworkSendGameListRequest (int32_t bAutoLaunch)
 {
 	tPlayerSyncData me;
 
-#if DBG
 memset (&me, 0, sizeof (me));
-#endif
 me.nType = PID_GAME_LIST;
 memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN + 1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -223,6 +221,7 @@ void NetworkSendAllInfoRequest (char nType, int32_t nSecurity)
 	// Send a broadcast request for game info
 	tPlayerSyncData me;
 
+memset (&me, 0, sizeof (me));
 me.nSecurity = nSecurity;
 me.nType = nType;
 memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN + 1);
