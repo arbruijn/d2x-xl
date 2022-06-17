@@ -513,7 +513,7 @@ return masks;
 
 int32_t UseHitbox (CObject *pObj)
 {
-return !gameStates.app.bNostalgia &&
+return !gameStates.app.bNostalgia && !EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		 (pObj->info.renderType == RT_POLYOBJ) && (pObj->rType.polyObjInfo.nModel >= 0) && 
 		 ((pObj->info.nType != OBJ_WEAPON) || ((pObj->info.nId != GAUSS_ID) && (pObj->info.nId != VULCAN_ID)));
 }

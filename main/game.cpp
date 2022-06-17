@@ -1449,12 +1449,14 @@ if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	CObject*					pPowerup = OBJECT (nObject);
 	tObjTransformation*	pPos = OBJPOS (pPlayer);
 	CFixVector				vCollision;
+	int32_t					scale;
 
 Assert (pPowerup->info.nType == OBJ_POWERUP);
 if (pPowerup->info.nFlags & OF_SHOULD_BE_DEAD)
 	return;
+scale = EGI_FLAG (nHitboxes, 0, 0, 0) ? gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1 : 1;
 if (CFixVector::Dist (pPowerup->info.position.vPos, pPos->vPos) >=
-	 2 * (pPlayer->info.xSize + pPowerup->info.xSize) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
+	 2 * (pPlayer->info.xSize + pPowerup->info.xSize) / scale)
 	return;
 vCollision = CFixVector::Avg (pPowerup->info.position.vPos, pPos->vPos);
 pPlayer->CollidePlayerAndPowerup (pPowerup, vCollision);
