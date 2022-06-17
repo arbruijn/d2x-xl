@@ -513,6 +513,7 @@ int32_t NetworkWaitForSync (void)
 	tPlayerSyncData	me;
 
 networkData.nStatus = NETSTAT_WAITING;
+text[0] = 0;
 m.AddText ("", text);
 m.AddText ("", const_cast<char*> (TXT_NET_LEAVE));
 networkData.nJoinState = 0;
