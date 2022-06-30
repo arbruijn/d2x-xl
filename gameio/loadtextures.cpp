@@ -967,7 +967,7 @@ nPrevIndex = nIndex;
 strcpy (szPrevBm, bmName);
 #endif
 CFloatVector3 color;
-if (0 <= (pBm->AvgColor (&color)))
+if (pBm->BPP () == 1 && 0 <= (pBm->AvgColor (&color)))
 	pBm->SetAvgColorIndex (uint8_t (pBm->Palette ()->ClosestColor (&color)));
 StartTime (0);
 return 1;
@@ -1138,7 +1138,7 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 		pAltBm->SetAvgColorIndex (bmh [i].avgColor);
 
 		CFloatVector3 color;
-		if (0 <= pAltBm->AvgColor (&color))
+		if (pAltBm->BPP () == 1 && 0 <= pAltBm->AvgColor (&color))
 			pAltBm->SetAvgColorIndex (pAltBm->Palette ()->ClosestColor (&color));
 		UseBitmapCache (pAltBm, (int32_t) bm.Width () * (int32_t) bm.RowSize ());
 		}
