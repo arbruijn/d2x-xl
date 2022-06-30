@@ -39,6 +39,7 @@ void CModel::GetASEModelItems (int32_t nModel, ASE::CModel *pa, float fScale)
 	int32_t				h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
 	int32_t				bTextured;
 
+m_vertexOwner.Clear ();
 for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 	psm = m_subModels + psa->m_nSubModel;
 #if DBG

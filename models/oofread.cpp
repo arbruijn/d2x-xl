@@ -714,6 +714,7 @@ m_vNormal.x = -m_vNormal.x;
 m_vNormal.y = -m_vNormal.y;
 m_vNormal.z = -m_vNormal.z;
 #endif
+m_bReverse = 0;
 m_nVerts = OOF_ReadInt (cf, "nVerts");
 m_bTextured = OOF_ReadInt (cf, "bTextured");
 if (m_bTextured) {

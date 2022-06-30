@@ -50,6 +50,7 @@ void CModel::GetOOFModelItems (int32_t nModel, OOF::CModel *po, float fScale)
 	CFace*				pmf = m_faces.Buffer ();
 	int32_t				h, i, j, n, nIndex = 0;
 
+m_vertexOwner.Clear ();
 for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Buffer (); i; i--, pso++, psm++) {
 	psm->m_nParent = pso->m_nParent;
 	if (psm->m_nParent < 0)
