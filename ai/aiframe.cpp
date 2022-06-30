@@ -1292,7 +1292,8 @@ RETVAL (0)
 int32_t AIWakeupHandler (CObject *pObj, tAIStateInfo *pStateInfo)
 {
 ENTER (1, 0);
-if (!gameData.aiData.nTargetVisibility &&
+if (gameOpts->gameplay.nAIAwareness &&
+	!gameData.aiData.nTargetVisibility &&
 	 (pStateInfo->pLocalInfo->targetAwarenessType < PA_WEAPON_WALL_COLLISION) &&
 	 (gameData.aiData.target.xDist > MAX_WAKEUP_DIST)) {
 	AIDoRandomPatrol (pObj, pStateInfo->pLocalInfo);
