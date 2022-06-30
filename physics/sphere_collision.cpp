@@ -1549,9 +1549,10 @@ for (;;) {
 				continue;
 			}
 		uint16_t* vertices = pSide->m_vertices;
+		bool bSkipFindIntersection = false;
 		nFaceCount = pSide->m_nFaces;
 		for (nFace = 0; nFace < nFaceCount; nFace++, vertices += 3) {
-			if (!(nFace && pSide->IsQuad ())) {
+			if (!bSkipFindIntersection) {
 				CFloatVector* n = pSide->m_fNormals + nFace;
 #if DBG
 				if ((nDbgSeg >= 0) && (nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -1568,16 +1569,11 @@ for (;;) {
 						BRP;
 					else
 #	endif
-					if (pSide->IsQuad ())
-						nFace = nFaceCount;
 					continue;
 					}
 #endif
-				if (!FindPlaneLineIntersection (vIntersection, &FVERTICES [*vertices], n, p0, p1)) {
-					if (pSide->IsQuad ())
-						nFace = nFaceCount;
+				if (!FindPlaneLineIntersection (vIntersection, &FVERTICES [*vertices], n, p0, p1))
 					continue;
-					}
 				v0 = *p0 - vIntersection;
 				v1 = *p1 - vIntersection;
 				l0 = v0.Mag ();
@@ -1585,12 +1581,10 @@ for (;;) {
 				if ((l0 >= 0.001f) && (l1 >= 0.001f)) {
 					v0 /= l0;
 					v1 /= l1;
-					if (CFloatVector::Dot (v0, *n) == CFloatVector::Dot (v1, *n)) {
-						if (pSide->IsQuad ())
-							nFace = nFaceCount;
+					if (CFloatVector::Dot (v0, *n) == CFloatVector::Dot (v1, *n))
 						continue;
-						}
 					}
+				bSkipFindIntersection = pSide->IsQuad ();
 				}
 #if DBG
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
