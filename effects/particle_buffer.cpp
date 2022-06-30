@@ -282,6 +282,13 @@ if (ogl.m_features.bShaders) {
 				particleImageManager.LoadMultipleTextures (GL_TEXTURE1); // texture arrays don't seem to like being bound to another than GL_TEXTURE0 though - this doesn't work
 				}
 			else {
+				if (!ParticleImageInfo (BUBBLE_PARTICLES).bHave ||
+					!ParticleImageInfo (SPARK_PARTICLES).bHave ||
+					!ParticleImageInfo (SMOKE_PARTICLES).bHave) {
+					PROF_END(ptParticles)
+					Reset ();
+					return false;
+					}
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE2);
 				ParticleImageInfo (BUBBLE_PARTICLES).pBm->Bind (0);
 				ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
