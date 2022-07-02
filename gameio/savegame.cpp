@@ -296,7 +296,7 @@ else { // input
 				return -(i + NM_IMG_SPACE) - 1;
 				}
 		}
-	if (!menu [NM_IMG_SPACE - 1].m_text || strcmp (menu [NM_IMG_SPACE - 1].m_text, saveGameInfo [i].Time ())) {
+	if (strcmp (menu [NM_IMG_SPACE - 1].m_text, saveGameInfo [i].Time ())) {
 		menu [NM_IMG_SPACE - 1].SetText (saveGameInfo [i].Time ());
 		menu [NM_IMG_SPACE - 1].m_bRebuild = 1;
 		}
