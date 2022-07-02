@@ -9,6 +9,7 @@ class CVertex {
 		CFloatVector3			m_normal;
 	};
 
+#pragma pack(push, 1)
 class CFace {
 	public:
 		CFloatVector3			m_vNormal;
@@ -16,6 +17,7 @@ class CFace {
 		uint16_t					m_nTexCoord [3];
 		int16_t					m_nBitmap;
 };
+#pragma pack(pop)
 
 class CSubModel {
 	public:
