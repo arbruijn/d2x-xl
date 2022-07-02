@@ -578,6 +578,7 @@ if (bCompressed > 0) {
 //if (bCompressed < 0)
 //	PrintLog (0, "Read: %d bytes @ %d\n", (int32_t) size, (int32_t) m_info.rawPosition);
 i = fread (buf, 1, size, m_info.file);
+if (i < size) ::Error("read past eof got %ld expected %ld in %s", i, size, m_info.filename);
 m_info.rawPosition += i;
 return i / elSize;
 }

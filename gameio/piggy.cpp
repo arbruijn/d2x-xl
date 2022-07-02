@@ -470,7 +470,7 @@ if (gameData.pigData.tex.nHamFileVersion < 3) // hamfile contains sound info
 	nSoundOffset = cf.ReadInt ();
 BMReadAll (cf, nType == 0);
 /*---*/PrintLog (0, "Loading bitmap index translation table\n");
-	gameData.pigData.tex.bitmapXlat.Read (cf, MAX_BITMAP_FILES);
+	//gameData.pigData.tex.bitmapXlat.Read (cf, MAX_BITMAP_FILES); // unused and partially missing in ham
 if (gameData.pigData.tex.nHamFileVersion < 3) {
 	cf.Seek (nSoundOffset, SEEK_SET);
 	int32_t nSoundNum = cf.ReadInt ();
