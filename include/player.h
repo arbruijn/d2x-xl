@@ -230,6 +230,7 @@ class CPlayerData : public CPlayerInfo {
 
 	public:
 		CPlayerData () { 
+			energy = shield = 0;
 			Reset ();
 			Setup (); 
 			}
