@@ -1222,11 +1222,16 @@ return 0;
 
 int32_t CSaveGameManager::LoadMission (void)
 {
-	char	szMission [16];
+	char	szMission [129];
 	int32_t	i, nVersionFilter = gameOpts->app.nVersionFilter;
 
 m_cf.Read (szMission, sizeof (char), 9);
 szMission [9] = '\0';
+if (!szMission [0]) { // Read Rebirth extended mission name
+	m_cf.Read (szMission, sizeof (char), 128);
+	szMission [sizeof (szMission) - 1] = 0;
+	}
+
 gameOpts->app.nVersionFilter = 3;
 i = missionManager.LoadByName (szMission, 0, gameFolders.missions.szDownloads);
 if (!i)
