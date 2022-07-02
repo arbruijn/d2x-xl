@@ -985,6 +985,10 @@ if (to.Expired () /*&& !gameData.reactorData.bDestroyed*/)
 	int32_t t = SDL_GetTicks ();
 	for (int32_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {
 		if (nPlayer != N_LOCALPLAYER) {
+			if (!networkData.nLastPacketTime [nPlayer]) {
+				ResetPlayerTimeout (nPlayer, t);
+				continue;
+			}
 			switch (s = ConnectionStatus (nPlayer)) {
 				case 0:
 					break; // no action 
@@ -996,17 +1000,16 @@ if (to.Expired () /*&& !gameData.reactorData.bDestroyed*/)
 						}
 
 				case 2:
-					if ((networkData.nLastPacketTime [nPlayer] == 0) || (t - networkData.nLastPacketTime [nPlayer] < extraGameInfo [0].timeout.nDisconnectPlayer)) {
-						ResetPlayerTimeout (nPlayer, t);
+					if (t - networkData.nLastPacketTime [nPlayer] < extraGameInfo [0].timeout.nDisconnectPlayer)
 						break;
-						}
+					// fall through
 
 				case 3:
-					if ((networkData.nLastPacketTime [nPlayer] == 0) || (t - networkData.nLastPacketTime [nPlayer] < extraGameInfo [0].timeout.nDisconnectPlayer)) {
-						ResetPlayerTimeout (nPlayer, t);
+					if (t - networkData.nLastPacketTime [nPlayer] < extraGameInfo [0].timeout.nDisconnectPlayer) {
 						MultiTurnPlayerToGhost (nPlayer);
 						break;
 						}
+					// fall through
 
 				default:
 					if (NetworkTimeoutPlayer (nPlayer, t))
