@@ -80,7 +80,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int32_t _CDECL_ InfoBox (const char* pszTitle, pMenuCallback callback, int32_t nWallpaper, int32_t nChoices, ...)
 {
-	int32_t			i;
+	int32_t			i, choice = 0;
 	char*				format, * s;
 	va_list			args;
 	char				szSubTitle [MSGBOX_TEXT_SIZE];
@@ -95,7 +95,7 @@ if ((bTiny = nChoices < 0))
 va_start (args, nChoices);
 for (i = 0; i < nChoices; i++) {
 	s = va_arg (args, char *);
-	int32_t nItem = m.AddText ("msgbox", s, - 1);
+	int32_t nItem = m.AddMenu ("msgbox", s, - 1);
 	m [nItem].m_bCentered = 1;
 	}
 format = va_arg (args, char*);
@@ -105,7 +105,7 @@ else
 	*szSubTitle = '\0';
 va_end (args);
 Assert (strlen (szSubTitle) < MSGBOX_TEXT_SIZE);
-return m.Menu (pszTitle, szSubTitle, callback, NULL, BG_SUBMENU, nWallpaper, -1, -1, bTiny);
+return m.Menu (pszTitle, szSubTitle, callback, &choice, BG_SUBMENU, nWallpaper, -1, -1, bTiny);
 }
 
 //------------------------------------------------------------------------------ 
