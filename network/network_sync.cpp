@@ -126,7 +126,7 @@ void NetworkSyncObjects (tNetworkSyncInfo *pSyncInfo)
 	int32_t		bufI, nLocalObj;
 	int32_t		nObjFrames = 0;
 	int32_t		nPlayer = pSyncInfo->player [1].player.connected;
-	uint8_t		compressedBuffer [sizeof (tBaseObject)];
+	uint8_t		compressedBuffer [OBJECT_BUFFER_SIZE];
 	
 pSyncInfo->bDeferredSync = networkThread.SendInBackground ();
 
@@ -155,11 +155,11 @@ for (nLocalObj = pSyncInfo->objs.nCurrent; nLocalObj <= gameData.objData.nLastOb
 	if (SendObject (pSyncInfo->objs.nMode, nLocalObj, nPlayer)) {
 		int8_t	nObjOwner;
 		int16_t	nRemoteObj = GetRemoteObjNum (int16_t (nLocalObj), nObjOwner);
-		uint8_t objBuf[OBJECT_BUFFER_SIZE];
+		uint8_t objPacked [OBJECT_BUFFER_SIZE];
 
-		uLongf nCompressedSize = sizeof(objBuf);
-		ObjectWriteToBuffer(OBJECT (nLocalObj), objBuf);
-		if ((compress (compressedBuffer, &nCompressedSize, objBuf, sizeof (objBuf)) == Z_OK) && (nCompressedSize < sizeof (tBaseObject))) {
+		uLongf nCompressedSize = sizeof (objPacked);
+		ObjectWriteToBuffer (OBJECT (nLocalObj), objPacked);
+		if ((compress (compressedBuffer, &nCompressedSize, objPacked, sizeof (objPacked)) == Z_OK) && (nCompressedSize < sizeof (objPacked))) {
 			if ((MAX_PAYLOAD_SIZE - bufI - 1) < int32_t (nCompressedSize) + 6)
 				break; // Not enough room for another object
 			NW_SET_SHORT (objBuf, bufI, nLocalObj);      
@@ -169,13 +169,13 @@ for (nLocalObj = pSyncInfo->objs.nCurrent; nLocalObj <= gameData.objData.nLastOb
 			NW_SET_BYTES (objBuf, bufI, compressedBuffer, nCompressedSize);
 			}
 		else {
-			if ((MAX_PAYLOAD_SIZE - bufI - 1) < int32_t (sizeof (tBaseObject)) + 6)
+			if ((MAX_PAYLOAD_SIZE - bufI - 1) < int32_t (sizeof (objPacked)) + 6)
 				break; // Not enough room for another object
 			NW_SET_SHORT (objBuf, bufI, nLocalObj);      
 			NW_SET_BYTE (objBuf, bufI, nObjOwner);                                 
 			NW_SET_SHORT (objBuf, bufI, nRemoteObj); 
-			NW_SET_BYTE (objBuf, bufI, sizeof (tBaseObject));
-			NW_SET_BYTES (objBuf, bufI, &OBJECT (nLocalObj)->info, sizeof (tBaseObject));
+			NW_SET_BYTE (objBuf, bufI, sizeof (objPacked));
+			NW_SET_BYTES (objBuf, bufI, objPacked, sizeof (objPacked));
 			}
 
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
