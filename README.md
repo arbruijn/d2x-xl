@@ -4,7 +4,7 @@
 
 ## Download current Windows build
 
-[d2x-xl-1.18.74-ar3.zip](https://github.com/arbruijn/d2x-xl/releases/download/v1.18.74-ar3/d2x-xl-1.18.74-ar3.zip)
+[d2x-xl-1.18.74-ar4.zip](https://github.com/arbruijn/d2x-xl/releases/download/v1.18.74-ar4/d2x-xl-1.18.74-ar4.zip)
 
 ## Changes
 
