@@ -86,9 +86,9 @@ return QuadSqrt (q.low, q.high);
 
 void CFixVector::Check (void)
 {
-fix check = labs (v.coord.x) | labs(v.coord.y) | labs(v.coord.z);
+uint32_t check = abs (v.coord.x) | abs(v.coord.y) | abs(v.coord.z);
 
-if (check == 0)
+if (check == 0 || check == 0x80000000)
 	return;
 
 int32_t cnt = 0;
@@ -115,9 +115,9 @@ else if ((check & 0xffff8000) == 0) {		//too small
 		cnt += 2;
 		check <<= 2;
 		}
-	v.coord.x >>= cnt;
-	v.coord.y >>= cnt;
-	v.coord.z >>= cnt;
+	v.coord.x <<= cnt;
+	v.coord.y <<= cnt;
+	v.coord.z <<= cnt;
 	}
 }
 
