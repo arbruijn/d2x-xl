@@ -92,6 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "hogfile.h"
 #include "waypoint.h"
+#include "objbufio.h"
 
 #define STATE_VERSION				64
 #define STATE_COMPATIBLE_VERSION 20
@@ -2080,8 +2081,10 @@ if (IsMultiGame) {
 	m_cf.Read (&netPlayers [0], netPlayers [0].Size (), 1);
 	m_cf.Read (&nPlayers, sizeof (N_PLAYERS), 1);
 	m_cf.Read (&N_LOCALPLAYER, sizeof (N_LOCALPLAYER), 1);
-	for (i = 0; i < nPlayers; i++)
-		m_cf.Read (restoredPlayers + i, sizeof (CPlayerData), 1);
+	for (i = 0; i < nPlayers; i++) {
+		//m_cf.Read (restoredPlayers + i, sizeof (CPlayerData), 1);
+		LoadPlayer (restoredPlayers + i);
+	}
 	nServerPlayer = SetServerPlayer (restoredPlayers, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
 	GetConnectedPlayers (restoredPlayers, nPlayers);
 	}
@@ -2092,11 +2095,13 @@ if (!PrepareLevel (nCurrentLevel, true, m_bSecret == 1, true, false)) {
 	return 0;
 	}
 nLocalObjNum = LOCALPLAYER.nObject;
-if (m_bSecret != 1)	//either no secret restore, or CPlayerData died in scret level
-	m_cf.Read (&LOCALPLAYER.callsign, sizeof (CPlayerInfo), 1);
-else {
+if (m_bSecret != 1) {	//either no secret restore, or CPlayerData died in scret level
+	//m_cf.Read (&LOCALPLAYER.callsign, sizeof (CPlayerInfo), 1);
+	LoadPlayer (&LOCALPLAYER);
+} else {
 	CPlayerData	retPlayer;
-	m_cf.Read (&retPlayer.callsign, sizeof (CPlayerInfo), 1);
+	LoadPlayer (&retPlayer);
+	//m_cf.Read (&retPlayer.callsign, sizeof (CPlayerInfo), 1);
 	AwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
 LOCALPLAYER.SetObject (nLocalObjNum);
@@ -2117,15 +2122,25 @@ if (!m_bBetweenLevels) {
 	gameStates.render.bDoAppearanceEffect = 0;			// Don't do this for middle o' game stuff.
 	//Clear out all the OBJECTS from the lvl file
 	ResetSegObjLists ();
-	ResetObjects (1);
+	//ResetObjects (1);
+	InitObjects (false);
 	//Read objects, and pop 'em into their respective segments.
 	m_cf.Read (&gameData.objData.nObjects, sizeof (int32_t), 1);
 	gameData.objData.nLastObject [0] = gameData.objData.nObjects - 1;
-	for (i = 0; i < gameData.objData.nObjects; i++)
-		m_cf.Read (&OBJECT (i)->info, sizeof (tBaseObject), 1);
+	for (i = 0; i < gameData.objData.nObjects; i++) {
+		uint8_t buf [OBJECT_BUFFER_SIZE];
+		//m_cf.Read (&OBJECT (i)->info, sizeof (tBaseObject), 1);
+		m_cf.Read (buf, sizeof (buf), 1);
+		ObjectReadFromBuffer (OBJECT (i), buf, true);
+		OBJECT (i)->Link ();
+	}
+	if (gameData.objData.nObjects >= 2 &&
+		!OBJECTS [0].info.nSignature && !OBJECTS [1].info.nSignature) // rebirth missing signature
+		for (i = 0; i < gameData.objData.nObjects; i++)
+			OBJECTS [i].info.nSignature = i;
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	FixObjects ();
-	ClaimObjectSlots ();
+	//ClaimObjectSlots ();
 	InitCamBots (1);
 	gameData.objData.nNextSignature++;
 	//	1 = Didn't die on secret level.
@@ -2230,14 +2245,35 @@ if (!m_bBetweenLevels) {
 	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.producerData.nRobotMakers))
 		return 0;
 	for (i = 0; i < gameData.producerData.nRobotMakers; i++) {
-		m_cf.Read (gameData.producerData.robotMakers [i].objFlags, sizeof (int32_t), 2);
-		m_cf.Read (&gameData.producerData.robotMakers [i].xHitPoints, 
-						sizeof (tObjectProducerInfo) - (reinterpret_cast<char*> (&gameData.producerData.robotMakers [i].xHitPoints) - reinterpret_cast<char*> (&gameData.producerData.robotMakers [i])), 1);
+		tObjProducerInfoD2 info;
+		//tObjectProducerInfo *pObjProducer;
+		m_cf.Read (&info, sizeof (info), 1);
+		// all static stuff?
+		//m_cf.Read (gameData.producerData.robotMakers [i].objFlags, sizeof (int32_t), 2);
+		//m_cf.Read (&gameData.producerData.robotMakers [i].xHitPoints,
+		//				sizeof (tObjectProducerInfo) - (reinterpret_cast<char*> (&gameData.producerData.robotMakers [i].xHitPoints) - reinterpret_cast<char*> (&gameData.producerData.robotMakers [i])), 1);
 		}
 	m_cf.Read (&gameData.reactorData.triggers, sizeof (CTriggerTargets), 1);
 	if (ReadBoundedInt (MAX_FUEL_CENTERS, &gameData.producerData.nProducers))
 		return 0;
-	gameData.producerData.producers.Read (m_cf, gameData.producerData.nProducers);
+	//gameData.producerData.producers.Read (m_cf, gameData.producerData.nProducers);
+	for (i = 0; i < gameData.producerData.nProducers; i++) {
+		int32_t nType = m_cf.ReadInt ();
+		int32_t nSegment = m_cf.ReadInt ();
+		tProducerInfo *pProducer = gameData.producerData.producers +
+			SEGMENTS [nSegment].m_value; // account for renumbering
+		pProducer->nType = nType;
+		pProducer->nSegment = nSegment;
+		pProducer->bFlag = m_cf.ReadByte ();
+		pProducer->bEnabled = m_cf.ReadByte ();
+		pProducer->nLives = m_cf.ReadByte ();
+		m_cf.ReadByte (); // dummy
+		pProducer->xCapacity = m_cf.ReadFix ();
+		pProducer->xMaxCapacity = m_cf.ReadFix ();
+		pProducer->xTimer = m_cf.ReadFix ();
+		pProducer->xDisableTime = m_cf.ReadFix ();
+		m_cf.ReadVector (pProducer->vCenter);
+	}
 
 	// Restore the control cen info
 	gameData.reactorData.states [0].bHit = m_cf.ReadInt ();

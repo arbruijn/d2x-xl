@@ -81,6 +81,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //old CTrigger structs
 
+#pragma pack(push, 1)
+
 typedef struct tTriggerV29 {
 	int8_t   nType;
 	int16_t   flags;
@@ -102,6 +104,19 @@ typedef struct tTriggerV30 {
 	int16_t   sides [MAX_TRIGGER_TARGETS];
 } __pack__ tTriggerV30;
 
+typedef struct tCompatibleTrigger {
+	uint8_t   type;       //what this trigger does
+	uint8_t   flags;      //currently unused
+	int8_t   num_links;  //how many doors, etc. linked to this
+	int8_t   pad;        //keep alignment
+	fix     value;
+	fix     time;
+	int16_t   seg [MAX_TRIGGER_TARGETS];
+	int16_t   side [MAX_TRIGGER_TARGETS];
+} __pack__ tCompatibleTrigger;
+
+#pragma pack(pop)
+
 //flags for V30 & below triggers
 #define TRIGGER_CONTROL_DOORS      1    // Control Trigger
 #define TRIGGER_SHIELD_DAMAGE      2    // Shield Damage Trigger
@@ -121,17 +136,6 @@ typedef struct tTriggerV30 {
 //------------------------------------------------------------------------------
 //the CTrigger really should have both a nType & a flags, since most of the
 //flags bits are exclusive of the others.
-
-typedef struct tCompatibleTrigger {
-	uint8_t   type;       //what this trigger does
-	uint8_t   flags;      //currently unused
-	int8_t   num_links;  //how many doors, etc. linked to this
-	int8_t   pad;        //keep alignment
-	fix     value;
-	fix     time;
-	int16_t   seg [MAX_TRIGGER_TARGETS];
-	int16_t   side [MAX_TRIGGER_TARGETS];
-} __pack__ tCompatibleTrigger;
 
 class CTriggerInfo {
 	public:

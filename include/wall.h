@@ -145,6 +145,8 @@ class CCloakingWall {
 //------------------------------------------------------------------------------
 //Start old CWall structures
 
+#pragma pack(push, 1)
+
 typedef struct tWallV16 {
 	int8_t   nType;             // What kind of special CWall.
 	int8_t   flags;             // Flags for the CWall.
@@ -186,6 +188,8 @@ typedef struct v19_door {
 	int16_t   nType [2];            // What kind of door animation.
 	fix     open;               // How long it has been open.
 } __pack__ v19_door;
+
+#pragma pack(pop)
 
 //End old CWall structures
 

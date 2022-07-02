@@ -42,6 +42,8 @@ typedef struct tProducerInfo {
 
 // The max number of robot centers per mine.
 
+#pragma pack(push, 1)
+
 typedef struct  {
 	int32_t		objFlags;    		// Up to 32 different robots
 	fix			xHitPoints;     	// How hard it is to destroy this particular object producer
@@ -49,6 +51,16 @@ typedef struct  {
 	int16_t		nSegment;         // Segment this is attached to.
 	int16_t		nProducer;    		// Index in producer array.
 } __pack__ old_tObjProducerInfo;
+
+typedef struct  {
+	int32_t		objFlags [2];    	// Up to 64 different robots
+	fix			xHitPoints;     	// How hard it is to destroy this particular object producer
+	fix			xInterval;       	// Interval between materialogrifizations
+	int16_t		nSegment;         // Segment this is attached to.
+	int16_t		nProducer;    		// Index in producer array.
+} __pack__ tObjProducerInfoD2;
+
+#pragma pack(pop)
 
 typedef struct tObjectProducerInfo {
 	int32_t		objFlags [3]; 		// Up to 92 different robots

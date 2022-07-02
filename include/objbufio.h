@@ -7,6 +7,6 @@
 // Only supports network sync'ed objects: robot, hostage, player, weapon, powerup, reactor, ghost, marker
 
 void ObjectWriteToBuffer(CObject *pObj, void *pBuffer);
-void ObjectReadFromBuffer(CObject *pObj, void *pBuffer);
+void ObjectReadFromBuffer(CObject *pObj, void *pBuffer, bool compat = false);
 
 #endif

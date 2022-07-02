@@ -48,6 +48,8 @@ m_cf.Read (&gameData.aiData.bInitialized, sizeof (int32_t), 1);
 m_cf.Read (&gameData.aiData.nOverallAgitation, sizeof (int32_t), 1);
 gameData.aiData.localInfo.Read (m_cf, (m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2);
 h = (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
+if (h > gameData.aiData.routeSegs.Length ())
+	gameData.aiData.routeSegs.Resize (h);
 j = (h > int32_t (gameData.aiData.routeSegs.Length ())) ? int32_t (gameData.aiData.routeSegs.Length ()) : h;
 for (i = 0; i < j; i++) {
 	m_cf.Read (&gameData.aiData.routeSegs [i].nSegment, sizeof (gameData.aiData.routeSegs [i].nSegment), 1);

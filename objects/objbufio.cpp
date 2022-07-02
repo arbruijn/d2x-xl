@@ -12,7 +12,7 @@
 
 typedef uint8_t ubyte;
 typedef int8_t sbyte;
-typedef ubyte pint[4], puint[4], pfix[4], pfloat[4];
+typedef ubyte pint[4], puint[4], pfix[4], pfloat[4], prgba[4];
 typedef ubyte pshort[2], pushort[2], pfixang[2];
 typedef struct pvector { pfix x, y, z; } pvector;
 typedef struct pangvec { pfixang p, b, h; } pangvec;
@@ -59,17 +59,15 @@ typedef struct tAIStaticInfoPacked {
 	sbyte	bDyingSoundPlaying;
 	pshort	nDangerLaser;
 	pint	nDangerLaserSig;
-	fix		xDyingStartTime;
+	pfix		xDyingStartTime;
 } tAIStaticInfoPacked;
 
-/*
-typedef struct tLightInfoPacked {
+typedef struct tObjLightInfoPacked {
     pfix     intensity;
 	pshort	 nSegment; // XL extension
 	pshort	 nObjects; // XL extension
 	pfloat	 color; // XL extension
-} tLightInfoPacked;
-*/
+} tObjLightInfoPacked;
 
 typedef struct tPowerupInfoPacked {
 	pint     nCount;
@@ -77,20 +75,71 @@ typedef struct tPowerupInfoPacked {
 	pint     nFlags;
 } tPowerupInfoPacked;
 
-/*
-typedef struct tWayPointInfoPacked {
-	pint	nId [2];
-	pint	nSuccessor [2];
-	pint	nSpeed;
-} tWayPointInfo;
-*/
-
 typedef struct tAnimationStatePacked {
 	pint     nClipIndex;
 	pfix     xTotalTime; // XL extension
 	pfix     xFrameTime;
 	sbyte   nCurFrame;
-} animationInfoPacked;
+} tAnimationStatePacked;
+
+typedef struct tAnimationStateCompat {
+	pint     nClipIndex;
+	pfix     xFrameTime;
+	sbyte   nCurFrame;
+} tAnimationStateCompat;
+
+typedef struct tParticleInfoPacked {
+	pint		nLife;
+	pint		nSize [2];
+	pint		nParts;
+	pint		nSpeed;
+	pint		nDrift;
+	pint		nBrightness;
+	prgba		color;
+	sbyte		nSide;
+	sbyte		nType;
+	sbyte		bEnabled;
+} tParticleInfoPacked;
+
+typedef struct tLightningInfoPacked {
+	pint		nLife;
+	pint		nDelay;
+	pint		nLength;
+	pint		nAmplitude;
+	pint		nOffset;
+	pint		nWayPoint;
+	pshort		nBolts;
+	pshort		nId;
+	pshort		nTarget;
+	pshort		nNodes;
+	pshort		nChildren;
+	pshort		nFrames;
+	sbyte			nWidth;
+	sbyte			nAngle;
+	sbyte			nStyle;
+	sbyte			nSmoothe;
+	sbyte			bClamp;
+	sbyte			bGlow;
+	sbyte			bBlur;
+	sbyte			bSound;
+	sbyte			bRandom;
+	sbyte			bInPlane;
+	sbyte			bEnabled;
+	sbyte			bDirection;
+	prgba		color;
+} tLightningInfoPacked;
+
+typedef struct tSoundInfoPacked {
+	char	szFilename [40];
+	pfix	nVolume;
+	char	bEnabled;
+} tSoundInfoPacked;
+
+typedef struct tWayPointInfoPacked {
+	pint	nId [2];
+	pint	nSuccessor [2];
+	pint	nSpeed;
+} tWayPointInfoPacked;
 
 typedef struct tPolyobjInfoPacked {
 	pint     nModel;
@@ -124,27 +173,32 @@ typedef struct objectPacked {
 
 	union {
 		tPhysicsInfoPacked   physInfo;
-		pvector           spinRate;
+		pvector              spinRate;
 	} mType;
 
 	union {
 		tLaserInfoPacked     laserInfo;
 		tExplosionInfoPacked explInfo;
-		tAIStaticInfoPacked     aiInfo;
-		//tLightInfoPacked     lightInfo;
+		tAIStaticInfoPacked  aiInfo;
+		tObjLightInfoPacked  lightInfo;
 		tPowerupInfoPacked   powerupInfo;
-		//tWayPointInfo        wayPointInfo;
+		tWayPointInfoPacked  wayPointInfo;
 	} cType;
 
 	union {
-		tPolyobjInfoPacked   polyObjInfo;
-		animationInfoPacked     animationInfo;
+		tPolyobjInfoPacked      polyObjInfo;
+		tAnimationStatePacked   animationInfo;
+		tAnimationStateCompat   animationInfoCompat;
+		tParticleInfoPacked		particleInfo;
+		tLightningInfoPacked	lightningInfo;
+		tSoundInfoPacked		soundInfo;
 	} rType;
 } tObjectPacked;
 
 #define COPY_B(a, b) a = b
 #define COPY_S(a, b) memcpy(&a, &b, sizeof(a))
-#define COPY_I(a, b) memcpy(&a, &b, sizeof(b))
+#define COPY_I(a, b) memcpy(&a, &b, sizeof(a))
+#define COPY_F(a, b) memcpy(&a, &b, sizeof(a))
 
 void ObjectWriteToBuffer(CObject *obj, void *buffer)
 {
@@ -223,6 +277,10 @@ void ObjectWriteToBuffer(CObject *obj, void *buffer)
 	{
 		case CT_NONE:
 		case CT_FLYING:
+		case CT_CNTRLCEN:
+		case CT_REMOTE:
+		case CT_SLEW:
+		case CT_DEBRIS:
 			break;
 
 		case CT_WEAPON:
@@ -245,6 +303,8 @@ void ObjectWriteToBuffer(CObject *obj, void *buffer)
 			break;
 
 		case CT_AI:
+		case CT_MORPH:
+		case CT_CAMERA:
 		{
 			int i;
 			COPY_B(objPacked->cType.aiInfo.behavior           , obj->cType.aiInfo.behavior);
@@ -265,6 +325,21 @@ void ObjectWriteToBuffer(CObject *obj, void *buffer)
 			COPY_I(objPacked->cType.powerupInfo.nCount         , obj->cType.powerupInfo.nCount);
 			COPY_I(objPacked->cType.powerupInfo.xCreationTime  , obj->cType.powerupInfo.xCreationTime);
 			COPY_I(objPacked->cType.powerupInfo.nFlags         , obj->cType.powerupInfo.nFlags);
+			break;
+
+		case CT_LIGHT:
+		    COPY_I(objPacked->cType.lightInfo.intensity, obj->cType.lightInfo.intensity);
+			COPY_S(objPacked->cType.lightInfo.nSegment, obj->cType.lightInfo.nSegment);
+			COPY_S(objPacked->cType.lightInfo.nObjects, obj->cType.lightInfo.nObjects);
+			COPY_F(objPacked->cType.lightInfo.color, obj->cType.lightInfo.color);
+			break;
+
+		case CT_WAYPOINT:
+			COPY_I(objPacked->cType.wayPointInfo.nId [0], obj->cType.wayPointInfo.nId [0]);
+			COPY_I(objPacked->cType.wayPointInfo.nId [1], obj->cType.wayPointInfo.nId [1]);
+			COPY_I(objPacked->cType.wayPointInfo.nSuccessor [0], obj->cType.wayPointInfo.nSuccessor [0]);
+			COPY_I(objPacked->cType.wayPointInfo.nSuccessor [1], obj->cType.wayPointInfo.nSuccessor [1]);
+			COPY_I(objPacked->cType.wayPointInfo.nSpeed, obj->cType.wayPointInfo.nSpeed);
 			break;
 
 		default:
@@ -297,10 +372,63 @@ void ObjectWriteToBuffer(CObject *obj, void *buffer)
 		case RT_HOSTAGE:
 		case RT_POWERUP:
 		case RT_FIREBALL:
+		case RT_THRUSTER:
+		case RT_EXPLBLAST:
+		case RT_SHRAPNELS:
+		case RT_SHOCKWAVE:
 			COPY_I(objPacked->rType.animationInfo.nClipIndex , obj->rType.animationInfo.nClipIndex);
 			COPY_I(objPacked->rType.animationInfo.xTotalTime , obj->rType.animationInfo.xTotalTime);
 			COPY_I(objPacked->rType.animationInfo.xFrameTime , obj->rType.animationInfo.xFrameTime);
 			COPY_B(objPacked->rType.animationInfo.nCurFrame  , obj->rType.animationInfo.nCurFrame);
+			break;
+
+		case RT_LASER:
+			break;
+
+		case RT_PARTICLES:
+			COPY_I(objPacked->rType.particleInfo.nLife , obj->rType.particleInfo.nLife);
+			COPY_I(objPacked->rType.particleInfo.nSize [0] , obj->rType.particleInfo.nSize [0]);
+			COPY_I(objPacked->rType.particleInfo.nSize [1] , obj->rType.particleInfo.nSize [1]);
+			COPY_I(objPacked->rType.particleInfo.nParts , obj->rType.particleInfo.nParts);
+			COPY_I(objPacked->rType.particleInfo.nSpeed , obj->rType.particleInfo.nSpeed);
+			COPY_I(objPacked->rType.particleInfo.nDrift , obj->rType.particleInfo.nDrift);
+			COPY_I(objPacked->rType.particleInfo.nBrightness , obj->rType.particleInfo.nBrightness);
+			COPY_I(objPacked->rType.particleInfo.color , obj->rType.particleInfo.color);
+			COPY_B(objPacked->rType.particleInfo.nSide , obj->rType.particleInfo.nSide);
+			COPY_B(objPacked->rType.particleInfo.nType , obj->rType.particleInfo.nType);
+			COPY_B(objPacked->rType.particleInfo.bEnabled , obj->rType.particleInfo.bEnabled);
+			break;
+
+		case RT_LIGHTNING:
+			COPY_I(objPacked->rType.lightningInfo.nLife , obj->rType.lightningInfo.nLife);
+			COPY_I(objPacked->rType.lightningInfo.nDelay , obj->rType.lightningInfo.nDelay);
+			COPY_I(objPacked->rType.lightningInfo.nLength , obj->rType.lightningInfo.nLength);
+			COPY_I(objPacked->rType.lightningInfo.nAmplitude , obj->rType.lightningInfo.nAmplitude);
+			COPY_I(objPacked->rType.lightningInfo.nOffset , obj->rType.lightningInfo.nOffset);
+			COPY_S(objPacked->rType.lightningInfo.nBolts , obj->rType.lightningInfo.nBolts);
+			COPY_S(objPacked->rType.lightningInfo.nId , obj->rType.lightningInfo.nId);
+			COPY_S(objPacked->rType.lightningInfo.nTarget , obj->rType.lightningInfo.nTarget);
+			COPY_S(objPacked->rType.lightningInfo.nNodes , obj->rType.lightningInfo.nNodes);
+			COPY_S(objPacked->rType.lightningInfo.nChildren , obj->rType.lightningInfo.nChildren);
+			COPY_S(objPacked->rType.lightningInfo.nFrames , obj->rType.lightningInfo.nFrames);
+			COPY_B(objPacked->rType.lightningInfo.nWidth , obj->rType.lightningInfo.nWidth);
+			COPY_B(objPacked->rType.lightningInfo.nAngle , obj->rType.lightningInfo.nAngle);
+			COPY_B(objPacked->rType.lightningInfo.nStyle , obj->rType.lightningInfo.nStyle);
+			COPY_B(objPacked->rType.lightningInfo.nSmoothe , obj->rType.lightningInfo.nSmoothe);
+			COPY_B(objPacked->rType.lightningInfo.bClamp , obj->rType.lightningInfo.bClamp);
+			COPY_B(objPacked->rType.lightningInfo.bGlow , obj->rType.lightningInfo.bGlow);
+			COPY_B(objPacked->rType.lightningInfo.bSound , obj->rType.lightningInfo.bSound);
+			COPY_B(objPacked->rType.lightningInfo.bRandom , obj->rType.lightningInfo.bRandom);
+			COPY_B(objPacked->rType.lightningInfo.bInPlane , obj->rType.lightningInfo.bInPlane);
+			COPY_I(objPacked->rType.lightningInfo.color , obj->rType.lightningInfo.color);
+			COPY_B(objPacked->rType.lightningInfo.bEnabled , obj->rType.lightningInfo.bEnabled);
+			break;
+
+		case RT_SOUND:
+			memcpy (objPacked->rType.soundInfo.szFilename, obj->rType.soundInfo.szFilename, sizeof (objPacked->rType.soundInfo.szFilename));
+			objPacked->rType.soundInfo.szFilename [sizeof (objPacked->rType.soundInfo.szFilename) - 1] = '\0';
+			COPY_I(objPacked->rType.soundInfo.nVolume , obj->rType.soundInfo.nVolume);
+			COPY_B(objPacked->rType.soundInfo.bEnabled , obj->rType.soundInfo.bEnabled);
 			break;
 
 		default:
@@ -310,10 +438,12 @@ void ObjectWriteToBuffer(CObject *obj, void *buffer)
 
 #undef COPY_S
 #undef COPY_I
+#undef COPY_F
 #define COPY_S(a, b) memcpy(&a, &b, sizeof(a))
 #define COPY_I(a, b) memcpy(&a, &b, sizeof(a))
+#define COPY_F(a, b) memcpy(&a, &b, sizeof(a))
 
-void ObjectReadFromBuffer(CObject *obj, void *buffer)
+void ObjectReadFromBuffer(CObject *obj, void *buffer, bool compat)
 {
 	tObjectPacked *objPacked = (tObjectPacked *)buffer;
 	COPY_I(obj->info.nSignature        , objPacked->nSignature);
@@ -389,6 +519,10 @@ void ObjectReadFromBuffer(CObject *obj, void *buffer)
 	{
 		case CT_NONE:
 		case CT_FLYING:
+		case CT_CNTRLCEN:
+		case CT_REMOTE:
+		case CT_SLEW:
+		case CT_DEBRIS:
 			break;
 
 		case CT_WEAPON:
@@ -411,6 +545,8 @@ void ObjectReadFromBuffer(CObject *obj, void *buffer)
 			break;
 
 		case CT_AI:
+		case CT_MORPH:
+		case CT_CAMERA:
 		{
 			int i;
 			COPY_B(obj->cType.aiInfo.behavior           , objPacked->cType.aiInfo.behavior);
@@ -431,6 +567,21 @@ void ObjectReadFromBuffer(CObject *obj, void *buffer)
 			COPY_I(obj->cType.powerupInfo.nCount        , objPacked->cType.powerupInfo.nCount);
 			COPY_I(obj->cType.powerupInfo.xCreationTime , objPacked->cType.powerupInfo.xCreationTime);
 			COPY_I(obj->cType.powerupInfo.nFlags        , objPacked->cType.powerupInfo.nFlags);
+			break;
+
+		case CT_LIGHT:
+		    COPY_I(obj->cType.lightInfo.intensity, objPacked->cType.lightInfo.intensity);
+			COPY_S(obj->cType.lightInfo.nSegment, objPacked->cType.lightInfo.nSegment);
+			COPY_S(obj->cType.lightInfo.nObjects, objPacked->cType.lightInfo.nObjects);
+			COPY_F(obj->cType.lightInfo.color, objPacked->cType.lightInfo.color);
+			break;
+
+		case CT_WAYPOINT:
+			COPY_I(obj->cType.wayPointInfo.nId [0], objPacked->cType.wayPointInfo.nId [0]);
+			COPY_I(obj->cType.wayPointInfo.nId [1], objPacked->cType.wayPointInfo.nId [1]);
+			COPY_I(obj->cType.wayPointInfo.nSuccessor [0], objPacked->cType.wayPointInfo.nSuccessor [0]);
+			COPY_I(obj->cType.wayPointInfo.nSuccessor [1], objPacked->cType.wayPointInfo.nSuccessor [1]);
+			COPY_I(obj->cType.wayPointInfo.nSpeed, objPacked->cType.wayPointInfo.nSpeed);
 			break;
 
 		default:
@@ -463,13 +614,69 @@ void ObjectReadFromBuffer(CObject *obj, void *buffer)
 		case RT_HOSTAGE:
 		case RT_POWERUP:
 		case RT_FIREBALL:
-			COPY_I(obj->rType.animationInfo.nClipIndex , objPacked->rType.animationInfo.nClipIndex);
-			COPY_I(obj->rType.animationInfo.xTotalTime , objPacked->rType.animationInfo.xTotalTime);
-			COPY_I(obj->rType.animationInfo.xFrameTime , objPacked->rType.animationInfo.xFrameTime);
-			COPY_B(obj->rType.animationInfo.nCurFrame  , objPacked->rType.animationInfo.nCurFrame);
+		case RT_THRUSTER:
+		case RT_EXPLBLAST:
+		case RT_SHRAPNELS:
+		case RT_SHOCKWAVE:
+			if (compat) {
+				COPY_I(obj->rType.animationInfo.nClipIndex , objPacked->rType.animationInfoCompat.nClipIndex);
+				COPY_I(obj->rType.animationInfo.xFrameTime , objPacked->rType.animationInfoCompat.xFrameTime);
+				COPY_B(obj->rType.animationInfo.nCurFrame  , objPacked->rType.animationInfoCompat.nCurFrame);
+				obj->rType.animationInfo.xTotalTime = 0; // only used for thruster clips
+			} else {
+				COPY_I(obj->rType.animationInfo.nClipIndex , objPacked->rType.animationInfo.nClipIndex);
+				COPY_I(obj->rType.animationInfo.xTotalTime , objPacked->rType.animationInfo.xTotalTime);
+				COPY_I(obj->rType.animationInfo.xFrameTime , objPacked->rType.animationInfo.xFrameTime);
+				COPY_B(obj->rType.animationInfo.nCurFrame  , objPacked->rType.animationInfo.nCurFrame);
+			}
 			break;
 
 		case RT_LASER:
+			break;
+
+		case RT_PARTICLES:
+			COPY_I(obj->rType.particleInfo.nLife , objPacked->rType.particleInfo.nLife);
+			COPY_I(obj->rType.particleInfo.nSize [0] , objPacked->rType.particleInfo.nSize [0]);
+			COPY_I(obj->rType.particleInfo.nSize [1] , objPacked->rType.particleInfo.nSize [1]);
+			COPY_I(obj->rType.particleInfo.nParts , objPacked->rType.particleInfo.nParts);
+			COPY_I(obj->rType.particleInfo.nSpeed , objPacked->rType.particleInfo.nSpeed);
+			COPY_I(obj->rType.particleInfo.nDrift , objPacked->rType.particleInfo.nDrift);
+			COPY_I(obj->rType.particleInfo.nBrightness , objPacked->rType.particleInfo.nBrightness);
+			COPY_I(obj->rType.particleInfo.color , objPacked->rType.particleInfo.color);
+			COPY_B(obj->rType.particleInfo.nSide , objPacked->rType.particleInfo.nSide);
+			COPY_B(obj->rType.particleInfo.nType , objPacked->rType.particleInfo.nType);
+			COPY_B(obj->rType.particleInfo.bEnabled , objPacked->rType.particleInfo.bEnabled);
+
+		case RT_LIGHTNING:
+			COPY_I(obj->rType.lightningInfo.nLife , objPacked->rType.lightningInfo.nLife);
+			COPY_I(obj->rType.lightningInfo.nDelay , objPacked->rType.lightningInfo.nDelay);
+			COPY_I(obj->rType.lightningInfo.nLength , objPacked->rType.lightningInfo.nLength);
+			COPY_I(obj->rType.lightningInfo.nAmplitude , objPacked->rType.lightningInfo.nAmplitude);
+			COPY_I(obj->rType.lightningInfo.nOffset , objPacked->rType.lightningInfo.nOffset);
+			COPY_S(obj->rType.lightningInfo.nBolts , objPacked->rType.lightningInfo.nBolts);
+			COPY_S(obj->rType.lightningInfo.nId , objPacked->rType.lightningInfo.nId);
+			COPY_S(obj->rType.lightningInfo.nTarget , objPacked->rType.lightningInfo.nTarget);
+			COPY_S(obj->rType.lightningInfo.nNodes , objPacked->rType.lightningInfo.nNodes);
+			COPY_S(obj->rType.lightningInfo.nChildren , objPacked->rType.lightningInfo.nChildren);
+			COPY_S(obj->rType.lightningInfo.nFrames , objPacked->rType.lightningInfo.nFrames);
+			COPY_B(obj->rType.lightningInfo.nWidth , objPacked->rType.lightningInfo.nWidth);
+			COPY_B(obj->rType.lightningInfo.nAngle , objPacked->rType.lightningInfo.nAngle);
+			COPY_B(obj->rType.lightningInfo.nStyle , objPacked->rType.lightningInfo.nStyle);
+			COPY_B(obj->rType.lightningInfo.nSmoothe , objPacked->rType.lightningInfo.nSmoothe);
+			COPY_B(obj->rType.lightningInfo.bClamp , objPacked->rType.lightningInfo.bClamp);
+			COPY_B(obj->rType.lightningInfo.bGlow , objPacked->rType.lightningInfo.bGlow);
+			COPY_B(obj->rType.lightningInfo.bSound , objPacked->rType.lightningInfo.bSound);
+			COPY_B(obj->rType.lightningInfo.bRandom , objPacked->rType.lightningInfo.bRandom);
+			COPY_B(obj->rType.lightningInfo.bInPlane , objPacked->rType.lightningInfo.bInPlane);
+			COPY_I(obj->rType.lightningInfo.color , objPacked->rType.lightningInfo.color);
+			COPY_B(obj->rType.lightningInfo.bEnabled , objPacked->rType.lightningInfo.bEnabled);
+			break;
+
+		case RT_SOUND:
+			memcpy (obj->rType.soundInfo.szFilename, objPacked->rType.soundInfo.szFilename, sizeof (obj->rType.soundInfo.szFilename));
+			obj->rType.soundInfo.szFilename [sizeof (obj->rType.soundInfo.szFilename) - 1] = '\0';
+			COPY_I(obj->rType.soundInfo.nVolume , objPacked->rType.soundInfo.nVolume);
+			COPY_B(obj->rType.soundInfo.bEnabled , objPacked->rType.soundInfo.bEnabled);
 			break;
 
 		default:

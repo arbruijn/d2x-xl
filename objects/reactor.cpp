@@ -492,6 +492,9 @@ if ((BOSS_COUNT <= 0) && !gameStates.gameplay.nReactorCount [0]) {
 	}
 #endif
 
+if (bRestore && gameData.bossData.ToS () > BOSS_COUNT)
+	gameData.bossData.Shrink (gameData.bossData.ToS () - BOSS_COUNT);
+
 if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 	gameData.reactorData.bDisabled = 0;
 else if (gameData.bossData.ToS () > 0) {

@@ -29,6 +29,7 @@
 - Run without d2x-xl files
 - Set default brightness to standard
 - Use energy spark texture if effect bitmap missing
+- Load vanilla/Rebirth D2 save games
 
 #### Build/platform
 
