@@ -211,6 +211,9 @@ void MoveFiles (const char* pszDestFolder, const char* pszSourceFolder, bool bMo
 	FFS	ffs;
 	char	szSource [FILENAME_LEN], szDest [FILENAME_LEN];
 
+if (strcmp(pszDestFolder, pszSourceFolder) == 0)
+	return;
+
 sprintf (szSource, "%s*.*", pszSourceFolder);
 if (!FFF (szSource, &ffs, 0)) {
 	do {
