@@ -849,6 +849,7 @@ gameOptions [0].Init ();
 InitArgs (argc, argv);
 EvalArgs ();
 GetAppFolders (true);
+ReadConfigFile ();
 CheckAndFixSetup ();
 gameStates.app.nLogLevel = appConfig.Int ("-printlog", 1);
 OpenLogFile ();
