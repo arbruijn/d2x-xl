@@ -516,7 +516,7 @@ if ((nType == OBJ_WEAPON) && (pObj->info.nId == OMEGA_ID) && omegaLightning.Exis
 if ((nType == nDbgObjType) && ((nDbgObjId < 0) || (pObj->info.nId == nDbgObjId)))
 	BRP;
 #endif
-if (gameOpts->render.textures.bUseHires [0] || gameOpts->render.effects.bTransparent) {
+if ((gameOpts->render.textures.bUseHires [0] || gameOpts->render.effects.bTransparent) && gameOpts->render.nImageQuality) {
 	if (fAlpha) {
 		bAdditive = ((nType == OBJ_FIREBALL) || (nType == OBJ_EXPLOSION)) ? /*glowRenderer.Available (GLOW_SPRITES) ? 2 :*/ 1 : ((nType == OBJ_WEAPON) && (pObj->info.nId == OMEGA_ID)) ? 2 : 0;
 #if 0

@@ -560,6 +560,7 @@ if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer [0]))//sho
 	uint16_t		r, g, b, a;
 	int32_t		x, y, c;
 	int32_t		bPosterize = gameStates.render.CartoonStyle () && gameStates.render.bPosterizeTextures;
+	int32_t		bAutoTransp = nTranspType == 1 && gameOpts->render.nImageQuality;
 
 
 //pBm->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
@@ -668,7 +669,7 @@ for (y = 0; y < m_info.h; y++) {
 							 (g < ogl.m_states.nTransparencyLimit) &&
 							 (b < ogl.m_states.nTransparencyLimit))
 							a = 0;
-						else if (nTranspType == 1) {
+						else if (bAutoTransp) {
 #if 0 //non-linear formula
 							double da = (double) (r * 3 + g * 5 + b * 2) / (10.0 * 255.0);
 							da *= da;
