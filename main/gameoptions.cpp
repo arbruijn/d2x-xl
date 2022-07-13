@@ -471,12 +471,10 @@ void CSoundOptions::Init (int32_t i)
 {
 bUseRedbook = 1;
 audioSampleRate = SAMPLE_RATE_22K;
-#if 0
-#	if USE_SDL_MIXER
-	gameOptions [1].sound.bUseSDLMixer = 1;
-#	else
-	gameOptions [1].sound.bUseSDLMixer = 0;
-#	endif
+#if USE_SDL_MIXER
+gameOptions [1].sound.bUseSDLMixer = 1;
+#else
+gameOptions [1].sound.bUseSDLMixer = 0;
 #endif
 bHires [0] = gameStates.app.bStandalone;
 bHires [1] = 0;
