@@ -494,7 +494,7 @@ return char_written;
 
 // ----------------------------------------------------------------------------
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 inline 
 #endif
 int32_t CFile::FillBuffer (void)
