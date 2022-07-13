@@ -1,0 +1,37 @@
+2022-07-13 v1.18.74-ar5
+- No extra transparency if image quality is low
+- Enable SDLMixer (ogg music) by default
+- Skip missing files warning if ran before
+
+2022-07-02 v1.18.74-ar4
+- Fix network player timeout
+- Fix loading vanilla/Rebirth save games
+- Fix ase model caching regression
+
+2022-06-17 v1.18.74-ar3
+Stability
+- Disable OpenMP, network and sound threads
+- Fix various out of bounds access
+- Fix various unintialized memory access
+- Fix memory leak with FindFileFirst
+Game play
+- Restore bot / powerup collision if Collision model set to standard
+- Restore GuideBot flare fire behaviour
+- Fix level 12 boss not spewing on energy hits
+- Fire primary in same frame
+- GuideBot pathing fixes
+- Various AI fixes
+Setup
+- Run without d2x-xl files
+- Set default brightness to standard
+- Use energy spark texture if effect bitmap missing
+Build/platform
+- Fix cmake build
+- Fix Windows build with cmake/autotools/gcc
+- Fix build with newer gcc versions
+- Use unpatched SDL on Windows
+- Fix midi on Win64
+- Fix Fx volume on Linux
+- Fix warnings
+- Disable structure packing except for network structs
+- Print warnings/errors to console on Linux
