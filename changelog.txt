@@ -1,3 +1,10 @@
+2022-08-31 v1.18.74-ar6
+- Scale briefing font
+- Fix joystick banking sensitivity
+- Fix small reticle artifacts
+- Fix briefing background glitches/cursor flashing
+- Save crash information on Windows
+
 2022-07-13 v1.18.74-ar5
 - No extra transparency if image quality is low
 - Enable SDLMixer (ogg music) by default

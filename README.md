@@ -2,9 +2,9 @@
 
 [D2X-XL](https://www.descent2.de) with stability, compatibility and build fixes.
 
-## Download current Windows build
+## Download latest Windows build
 
-[d2x-xl-1.18.74-ar5.zip](https://github.com/arbruijn/d2x-xl/releases/download/v1.18.74-ar5/d2x-xl-1.18.74-ar5.zip)
+[d2x-xl-1.18.74-ar6.zip](https://github.com/arbruijn/d2x-xl/releases/download/v1.18.74-ar6/d2x-xl-1.18.74-ar6.zip)
 
 ## Changes
 
