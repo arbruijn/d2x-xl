@@ -281,7 +281,7 @@ void CFont::Create (const char *fontname)
 	int32_t		nChars = Range ();
 	int32_t		i, j, x, y, w, h, tw = 0, th = 0, curx = 0, cury = 0;
 	uint8_t		white;
-	int32_t		gap = 0; //having a gap just wastes ram, since we don't filter text textures at all.
+	int32_t		gap = 1; //having a gap prevents bleeding when upscaling
 
 ChooseSize (gap, tw, th);
 palette = m_info.parentBitmap.Palette ();

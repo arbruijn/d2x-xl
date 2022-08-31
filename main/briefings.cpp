@@ -650,7 +650,12 @@ float CBriefing::GetScale (void)
 #if 0 //DBG
 return ogl.IsSideBySideDevice () ? 0.5f : 1.0f;
 #else
-return (ogl.IsOculusRift () /*&& gameStates.app.bGameRunning*/) ? 0.5f : 1.0f;
+float sw = gameData.renderData.screen.Width () / 1280.0f;
+float sh = gameData.renderData.screen.Height () / 960.0f;
+float s = sw < sh ? sw : sh;
+if (s < 1)
+	s = 1;
+return (ogl.IsOculusRift () /*&& gameStates.app.bGameRunning*/) ? 0.5f : s;
 #endif
 }
 
@@ -746,9 +751,9 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 			// invalid call
 			break;
 		}
+	fontManager.SetScale (fontManager.Scale () / GetScale ());
 	baseCanv->Deactivate ();
 	}
-fontManager.SetScale (fontManager.Scale () / GetScale ());
 }
 
 //---------------------------------------------------------------------------
@@ -765,7 +770,8 @@ m_message [1] = 0;
 
 int32_t	w, h, aw;
 fontManager.SetCurrent (GAME_FONT);
-fontManager.SetScale (fontManager.Scale () * GetScale ());
+float oldScale = fontManager.Scale();
+fontManager.SetScale (oldScale * GetScale ());
 fontManager.Current ()->StringSize (m_message, w, h, aw);
 
 static fix tText = 0;
@@ -801,6 +807,9 @@ if (m_info.bFlashingCursor && (delay > 0) && !m_info.bRedraw)
 
 //draw the character
 RenderElement (2);
+
+fontManager.SetScale (oldScale);
+
 return w;
 }
 
@@ -850,13 +859,18 @@ return LoadImage (szBriefScreen);
 
 void CBriefing::FlashCursor (int32_t bCursor)
 {
+float oldScale;
+
 if (bCursor == 0)
 	return;
 if ((TimerGetFixedSeconds () % (I2X (1)/2)) > (I2X (1)/4))
 	fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
 else
 	fontManager.SetColorRGB (&eraseColorRgb, NULL);
+
+fontManager.SetScale ((oldScale = fontManager.Scale ()) * GetScale ());
 GrPrintF (NULL, Scaled (m_info.briefingTextX + 1), Scaled (m_info.briefingTextY), "_");
+fontManager.SetScale (oldScale);
 //if (ogl.m_states.nDrawBuffer == GL_FRONT)
 //	ogl.Update (0);
 }
