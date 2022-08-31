@@ -219,7 +219,7 @@ else {
 	cf.Close ();
 	return PCX_ERROR_NO_PALETTE;
 	}
-pBm->SetPalette (&palette);
+pBm->SetPalette (&palette, -1, -1, NULL, 0, 1);
 cf.Close ();
 return PCX_ERROR_NONE;
 }
