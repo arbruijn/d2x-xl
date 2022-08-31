@@ -28,6 +28,7 @@
 # include <SDL.h>
 #endif
 
+#include "descent.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "lightmap.h"
