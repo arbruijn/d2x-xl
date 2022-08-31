@@ -127,7 +127,7 @@ ogl.SelectTMU (GL_TEXTURE0);
 ogl.SetTexturing (true);
 if (Bind (bMipMaps))
 	return NULL;
-m_info.pTexture->Wrap (GL_REPEAT);
+m_info.pTexture->Wrap (GL_CLAMP);
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 return &m_info.texture;
