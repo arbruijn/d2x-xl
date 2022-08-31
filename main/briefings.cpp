@@ -290,6 +290,7 @@ nFuncRes = 0;
 nEraseColor = BLACK_RGBA;
 *szBitmapName = '\0';
 strcpy (szSpinningRobot, "rba.mve");
+bFlashingCursor = 0;
 }
 
 //-----------------------------------------------------------------------------
