@@ -704,9 +704,9 @@ for (i = 0; i < 60; i += 30) {
 			}
 		if ((v = kcJoystick [i + 17].value) < 255) {
 			if (kcJoystick [64].value)		// If inverted...
-				m_info [2].bankTime += m_joyAxis [v];
+				m_info [2].bankTime += DeltaAxis (v);
 			else
-				m_info [2].bankTime -= m_joyAxis [v];
+				m_info [2].bankTime -= DeltaAxis (v);
 			}
 		if ((v = kcJoystick [i + 18].value) < 255) {
 			if (kcJoystick [65].value)		// If inverted...
