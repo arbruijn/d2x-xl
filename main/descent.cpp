@@ -835,6 +835,9 @@ signal (SIGILL, D2SignalHandler);
 signal (SIGINT, D2SignalHandler);
 signal (SIGSEGV, D2SignalHandler);
 signal (SIGTERM, D2SignalHandler);
+#ifdef WIN32
+LoadLibraryA("backtrace.dll");
+#endif
 #if 0 //def _WIN32
 SDL_SetSpecialKeyHandling (0);
 #endif
