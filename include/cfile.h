@@ -67,7 +67,7 @@ class CFile {
 		void Init (void);
 		int32_t Open (const char *filename, const char *folder, const char *mode, int32_t bUseD1Hog);
 		size_t Length (void);							// Returns actual size of file...
-		size_t Read (void *buf, size_t elsize, size_t nelem, int32_t bCompressed = 0);
+		size_t Read (void *buf, size_t elsize, size_t nelem, int32_t bCompressed = 0, int32_t bPartial = 0);
 		int32_t Close (void);
 		size_t Size (const char *hogname, const char *folder, int32_t bUseD1Hog);
 		size_t Seek (long offset, int32_t where);

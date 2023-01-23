@@ -563,7 +563,7 @@ return buf;
 
 // ----------------------------------------------------------------------------
 
-size_t CFile::Read (void *buf, size_t elSize, size_t nElems, int32_t bCompressed)
+size_t CFile::Read (void *buf, size_t elSize, size_t nElems, int32_t bCompressed, int32_t bPartial)
 {
 size_t i, size = elSize * nElems;
 
@@ -578,7 +578,7 @@ if (bCompressed > 0) {
 //if (bCompressed < 0)
 //	PrintLog (0, "Read: %d bytes @ %d\n", (int32_t) size, (int32_t) m_info.rawPosition);
 i = fread (buf, 1, size, m_info.file);
-if (i < size) ::Error("read past eof got %ld expected %ld in %s", i, size, m_info.filename);
+if (i < size && !bPartial) ::Error("read past eof got %ld expected %ld in %s", i, size, m_info.filename);
 m_info.rawPosition += i;
 return i / elSize;
 }
@@ -1007,7 +1007,7 @@ if (!cf.Open (pszDest, NULL, "wb", 0))
 if (!Open (pszSrc, NULL, "rb", 0))
 	return -2;
 while (!EoF ()) {
-	int32_t bytes_read = (int32_t) Read (buf, 1, COPY_BUF_SIZE);
+	int32_t bytes_read = (int32_t) Read (buf, 1, COPY_BUF_SIZE, 0, 1);
 	if (Error ())
 		::Error (TXT_FILEREAD_ERROR, pszSrc, strerror (errno));
 	Assert (bytes_read == COPY_BUF_SIZE || EoF ());
