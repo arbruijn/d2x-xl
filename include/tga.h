@@ -5,6 +5,7 @@
 #	include <conf.h>
 #endif
 
+#pragma pack(push, 1)
 typedef struct {
     char  identSize;         // size of ID field that follows 18 char header (0 usually)
     char  colorMapType;      // nType of colour map 0=none, 1=has palette
@@ -21,6 +22,7 @@ typedef struct {
     char   bits;              // image bits per pixel 8,16,24,32
     char   descriptor;        // image descriptor bits (vh flip bits)
 } __pack__ tTGAHeader;
+#pragma pack(pop)
 
 
 class CTGAHeader {
