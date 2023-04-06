@@ -513,6 +513,7 @@ typedef struct tFaceTriangle {
 	int32_t				nIndex;
 	} tFaceTriangle;
 
+#pragma pack(push,1)
 class CSegFaceInfo {
 	public:
 		uint16_t				index [4];
@@ -559,6 +560,7 @@ class CSegFaceInfo {
 		char					nTransparent;
 		char					nColored;
 		};
+#pragma pack(pop)
 
 class CSegFace {
 	public:

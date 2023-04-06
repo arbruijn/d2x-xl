@@ -839,9 +839,15 @@ if (bOk) {
 				PrintLog (0, "Mesh builder: reading face info failed\n");
 				bOk = false;
 				}
-			nSize += sizeof (CSegFaceInfo) * mdh.nFaces;
+			// ignore if written with unpacked CSegFaceInfo
+			if (mdh.nFaces >= 2 && (reinterpret_cast<CSegFaceInfo*> (ioBuffer + nSize))[1].nFrame < -1 ||
+				mdh.nFaces >= 3 && (reinterpret_cast<CSegFaceInfo*> (ioBuffer + nSize))[2].nFrame < -1 ||
+					(reinterpret_cast<CSegFaceInfo*> (ioBuffer + nSize))[2].nTriIndex >= mdh.nTris)
+				bOk = false;
+			else
+				nSize += sizeof (CSegFaceInfo) * mdh.nFaces;
 			}
-		for (++i; nSizes [i] > 0; i++) {
+		for (++i; bOk && nSizes [i] > 0; i++) {
 			if (cf.Read (ioBuffer + nSize, nSizes [i], 1, 1) != 1) {
 				PrintLog (0, "Mesh builder: reading mesh element #%d failed\n", i + 1);
 				bOk = false;
