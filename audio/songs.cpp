@@ -35,7 +35,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "songs.h"
 #include "soundthreads.h"
 
+#ifdef WIN32
 char CDROM_dir[40] = ".\\";
+#else
+char CDROM_dir[40] = "./";
+#endif
 
 char CPlaylist::m_szDefaultPlaylist [FILENAME_LEN];
 
@@ -239,7 +243,7 @@ int32_t SongsHaveD2CD ()
 
 getcwd (cwd, 128);
 strcpy (temp, CDROM_dir);
-if (temp [strlen (temp) - 1] == '\\')
+if (temp [strlen (temp) - 1] == '\\' || temp [strlen (temp) - 1] == '/')
 	temp [strlen (temp) - 1] = 0;
 if (!chdir (temp)) {
 	chdir (cwd);
