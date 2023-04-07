@@ -1,3 +1,10 @@
+2023-04-07 v1.18-74-ar7
+- Add Borderless Window option
+- Support VSync off on Linux
+- Fix screenshots
+- Fix level mesh/model data caching
+- Fix initial setup data file copy
+
 2022-08-31 v1.18.74-ar6
 - Scale briefing font
 - Fix joystick banking sensitivity
