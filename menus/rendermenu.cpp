@@ -273,10 +273,8 @@ if (gameOpts->app.bNotebookFriendly || gameOpts->app.bExpertMode)
 				}
 			else
 				sprintf (m->Text (), TXT_NO_FRAMECAP);
-#if _WIN32
 			if (gameStates.render.bVSyncOk)
-				wglSwapIntervalEXT (v < 0);
-#endif
+				ogl.SwapInterval (v < 0);
 			gameOpts->render.nMaxFPS = v;
 			gameStates.render.bVSync = (v < 0);
 			m->m_bRebuild = 1;

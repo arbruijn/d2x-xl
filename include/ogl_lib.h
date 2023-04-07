@@ -643,6 +643,8 @@ class COGL {
 		void InitShadowMapShader (void);
 		void DeleteShadowMapShader (void);
 
+		void SwapInterval (int32_t nInterval);
+
 #if DBG_OGL
 	private:
 		int32_t m_bLocked;

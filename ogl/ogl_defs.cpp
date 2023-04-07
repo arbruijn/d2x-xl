@@ -124,11 +124,7 @@ m_features.bMultipleRenderTargets = (pszOglExtensions && strstr (pszOglExtension
 
 void COGL::SetupRefreshSync (void)
 {
-#ifdef _WIN32
 gameStates.render.bVSyncOk = 1;
-#else
-gameStates.render.bVSyncOk = 0;
-#endif
 }
 
 //------------------------------------------------------------------------------

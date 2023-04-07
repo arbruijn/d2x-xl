@@ -1840,10 +1840,8 @@ extraGameInfo [1].bFastPitch = 2;
 for (i = 0; i < UNIQUE_JOY_AXES; i++)
 	JoySetDeadzone (gameOpts->input.joystick.deadzones [i], i);
 DefaultAllSettings (false);
-#if _WIN32
 if (gameStates.render.bVSyncOk)
-	wglSwapIntervalEXT (gameOpts->render.nMaxFPS < 0);
-#endif
+	ogl.SwapInterval (gameOpts->render.nMaxFPS < 0);
 #if CONFIGURE_LIGHT_COMPONENTS
 #	if !USE_SPECULAR_LIGHT
 gameOpts->render.color.nSpecularLight = 0;
