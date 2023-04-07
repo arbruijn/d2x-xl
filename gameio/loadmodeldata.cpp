@@ -594,6 +594,9 @@ int32_t LoadModelData (void)
 	tModelDataHeader	mdh;
 	int32_t					bOk;
 
+#if 1
+return 0;
+#else
 if (!gameStates.app.bCacheModelData)
 	return 0;
 if (!cf.Open ("modeldata.d2x", gameFolders.var.szCache, "rb", 0))
@@ -607,6 +610,7 @@ if (!bOk)
 	gameData.modelData.spheres.Clear ();
 cf.Close ();
 return bOk;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -617,6 +621,9 @@ int32_t SaveModelData (void)
 	tModelDataHeader	mdh = {MODEL_DATA_VERSION};
 	int32_t					bOk;
 
+#if 1
+return 0;
+#else
 if (!gameStates.app.bCacheModelData)
 	return 0;
 if (!cf.Open ("modeldata.d2x", gameFolders.var.szCache, "wb", 0))
@@ -625,6 +632,7 @@ bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
 		(gameData.modelData.spheres.Write (cf) == gameData.modelData.spheres.Length ()) &&
 cf.Close ();
 return bOk;
+#endif
 }
 
 //------------------------------------------------------------------------------
