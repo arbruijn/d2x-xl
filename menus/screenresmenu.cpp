@@ -196,6 +196,7 @@ do {
 		sprintf (szCustY, "%d", displayModeInfo [CUSTOM_DISPLAY_MODE].h);
 	m.AddInput ("custom width", szCustX, 4, NULL);
 	m.AddInput ("custom height", szCustY, 4, NULL);
+	m.AddCheck ("borderless", "Use borderless window", gameConfig.bBorderless != 0, KEY_B, NULL);
 
 	choice = ScreenResModeToMenuItem (gameStates.video.nDisplayMode);
 	m [choice].Value () = 1;
@@ -233,6 +234,13 @@ do {
 		InfoBox (TXT_SORRY, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, TXT_ERROR_SCRMODE);
 		return;
 		}
+	int32_t bBorderlessNew = m.Value ("borderless");
+	if (gameConfig.bBorderless != bBorderlessNew) {
+		extern uint32_t nCurrentVGAMode;
+		nCurrentVGAMode = -1;
+		gameStates.video.nDisplayMode = -1;
+		gameConfig.bBorderless = bBorderlessNew;
+	}
 	if (i != gameStates.video.nDisplayMode) {
 		SetDisplayMode (i, 0);
 		SetScreenMode (SCREEN_MENU);

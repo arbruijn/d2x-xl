@@ -34,10 +34,12 @@
 #include "menu.h"
 #include "screens.h"
 #include "sdlgl.h"
+#include "config.h"
 
 //------------------------------------------------------------------------------
 
-#define SDL_VIDEO_FLAGS	(SDL_OPENGL | SDL_DOUBLEBUF | SDL_HWSURFACE | (ogl.m_states.bFullScreen ? SDL_FULLSCREEN : 0))
+#define SDL_VIDEO_FLAGS	(SDL_OPENGL | SDL_DOUBLEBUF | SDL_HWSURFACE | \
+	(gameConfig.bBorderless ? SDL_NOFRAME : ogl.m_states.bFullScreen ? SDL_FULLSCREEN : 0))
 
 //------------------------------------------------------------------------------
 
@@ -137,12 +139,15 @@ int32_t SdlGlInitWindow (int32_t w, int32_t h, int32_t bForce)
 	GLint			i;
 
 if (ogl.m_states.bInitialized) {
-	if (!bForce && (w == ogl.m_states.nCurWidth) && (h == ogl.m_states.nCurHeight) && (ogl.m_states.bCurFullScreen == ogl.m_states.bFullScreen))
+	if (!bForce && (w == ogl.m_states.nCurWidth) && (h == ogl.m_states.nCurHeight) &&
+		(ogl.m_states.bCurFullScreen == ogl.m_states.bFullScreen) &&
+		(ogl.m_states.bCurBorderless == gameConfig.bBorderless))
 		return -1;
 	ogl.Update (1); // blank screen/window
 	ogl.Update (1);
 	if ((w != ogl.m_states.nCurWidth) || (h != ogl.m_states.nCurHeight) ||
-		 (ogl.m_states.bCurFullScreen != ogl.m_states.bFullScreen)) {
+		 (ogl.m_states.bCurFullScreen != ogl.m_states.bFullScreen) ||
+		 (ogl.m_states.bCurBorderless != gameConfig.bBorderless)) {
 		textureManager.Destroy ();//if we are or were fullscreen, changing vid mode will invalidate current textures
 		bRebuild = 1;
 		}
@@ -197,6 +202,7 @@ SDL_ShowCursor (0);
 ogl.m_states.nCurWidth = w;
 ogl.m_states.nCurHeight = h;
 ogl.m_states.bCurFullScreen = ogl.m_states.bFullScreen;
+ogl.m_states.bCurBorderless = gameConfig.bBorderless;
 if (ogl.m_states.bInitialized && bRebuild) {
 	ogl.SetViewport (0, 0, w, h);
 	if (gameStates.app.bGameRunning) {

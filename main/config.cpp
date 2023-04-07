@@ -53,6 +53,7 @@ static const char* pszVrTracking = "VR_tracking";
 static const char* pszHiresMovies = "Hires Movies";
 static const char* pszD2XVersion = "D2XVersion";
 static const char* pszTotalGameTime = "TotalGameTime";
+static const char* pszBorderless = "Borderless";
 
 int32_t digi_driver_board_16;
 int32_t digi_driver_dma_16;
@@ -89,6 +90,7 @@ gameConfig.nRedbookVolume = 0;
 gameConfig.nControlType = 0;
 gameConfig.bReverseChannels = 0;
 gameConfig.nVersion = 0;
+gameConfig.bBorderless = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -115,6 +117,7 @@ gameConfig.nMidiVolume = 0;
 gameConfig.nRedbookVolume = 0;
 gameConfig.nControlType = 0;
 gameConfig.bReverseChannels = 0;
+gameConfig.bBorderless = 0;
 
 //set these here in case no cfg file
 bHiresMoviesSave = gameOpts->movies.bHires;
@@ -198,6 +201,8 @@ while (!cf.EoF ()) {
 			gameConfig.nVersion = strtoul (value, NULL, 10);
 		else if (!strcmp (token, pszTotalGameTime))
 			gameConfig.nTotalTime = strtol (value, NULL, 10);
+		else if (!strcmp (token, pszBorderless))
+			gameConfig.bBorderless = strtol (value, NULL, 10);
 		else if (!strcmp (token, pszHiresMovies) && gameStates.app.bNostalgia)
 			bHiresMoviesSave = gameOpts->movies.bHires = strtol (value, NULL, 10);
 	}
@@ -298,6 +303,8 @@ cf.PutS (str);
 if (bExitProgram && (gameData.timeData.xGameTotal > 0) && (gameConfig.nTotalTime >= 0))
 	gameConfig.nTotalTime += gameData.timeData.xGameTotal / 60;
 sprintf (str, "%s=%d\n", pszTotalGameTime, gameConfig.nTotalTime);
+cf.PutS (str);
+sprintf (str, "%s=%d\n", pszBorderless, gameConfig.bBorderless);
 cf.PutS (str);
 if (gameStates.app.nDetailLevel == NUM_DETAIL_LEVELS-1)
 	sprintf (str, "%s=%d,%d,%d,%d,%d,%d,%d\n",

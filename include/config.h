@@ -43,6 +43,7 @@ typedef struct tGameConfig {
 	int32_t		vrTracking;
 	uint32_t		nVersion;
 	int32_t		nTotalTime;
+	int32_t		bBorderless;
 } __pack__ tGameConfig;
 
 extern tGameConfig gameConfig;

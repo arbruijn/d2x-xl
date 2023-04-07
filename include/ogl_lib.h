@@ -223,6 +223,7 @@ class COglStates {
 		int32_t	iLight;
 		int32_t	nFirstLight;
 		int32_t	bCurFullScreen;
+		int32_t	bCurBorderless;
 		int32_t	bpp;
 		int32_t	bScaleLight;
 		int32_t	bDynObjLight;

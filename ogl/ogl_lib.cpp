@@ -323,6 +323,7 @@ viewport [1] = CViewport (),
 nCurWidth =
 nCurHeight = -1;
 bCurFullScreen = -1;
+bCurBorderless = -1;
 bpp = 32;
 nRGBAFormat = GL_RGBA;
 nRGBFormat = GL_RGB;
