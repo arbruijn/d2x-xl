@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 project(D2X-XL)
 include(CheckIncludeFiles)
+set(OpenGL_GL_PREFERENCE LEGACY)
 
 #checks
 #need to do a proper check for this
