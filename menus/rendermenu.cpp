@@ -256,7 +256,7 @@ if (!gameStates.app.bNostalgia) {
 	}
 
 #if !DBG
-if (gameOpts->app.bNotebookFriendly)
+if (gameOpts->app.bNotebookFriendly || gameOpts->app.bExpertMode)
 #endif
 {
 	if ((m = menu ["frame cap"])) {
@@ -678,7 +678,7 @@ do {
 	m.Create (50, "RenderOptionsMenu");
 	if (!gameStates.app.bPrecomputeLightmaps) {
 #if !DBG
-		if (!gameOpts->app.bNotebookFriendly)
+		if (!gameOpts->app.bNotebookFriendly && !gameOpts->app.bExpertMode)
 			m.AddCheck ("frame cap", TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
 #endif
 		if (!gameStates.app.bNostalgia) {
@@ -688,7 +688,7 @@ do {
 			}
 		m.AddText ("", "");
 #if !DBG
-		if (gameOpts->app.bNotebookFriendly)
+		if (gameOpts->app.bNotebookFriendly || gameOpts->app.bExpertMode)
 #endif
 			{
 			if (gameOpts->render.nMaxFPS > 1)
@@ -848,7 +848,7 @@ do {
 			gameOpts->movies.bSubTitles = (m.Value ("movie subtitles") != 0);
 
 #if !DBG
-		if (!gameOpts->app.bNotebookFriendly)
+		if (!gameOpts->app.bNotebookFriendly && !gameOpts->app.bExpertMode)
 			gameOpts->render.nMaxFPS = m.Value ("frame cap") ? 1 : 120;
 #endif
 		if (!gameStates.app.bNostalgia)
