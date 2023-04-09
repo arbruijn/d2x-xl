@@ -375,6 +375,9 @@ CPlayerData& player = PLAYER ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
 
 player.numKillsLevel = 0;
 player.numRobotsLevel = CountRobotsInLevel ();
+player.hostages.nLevel = CountHostagesInLevel ();
+if (!bRestore)
+	player.hostages.nTotal += player.hostages.nLevel;
 //player.Setup ();
 if (bNewGame) {
 	player.score = 0;
@@ -395,8 +398,6 @@ if (bNewGame) {
 	player.nScoreGoalCount = 0;
 	player.hostages.nRescued = 0;
 	player.numRobotsTotal = player.numRobotsLevel;
-	player.hostages.nLevel = CountHostagesInLevel ();
-	player.hostages.nTotal += player.hostages.nLevel;
 	player.hostages.nOnBoard = 0;
 	player.SetLaserLevels (0, 0);
 	player.flags = 0;
