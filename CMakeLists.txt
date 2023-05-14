@@ -39,6 +39,10 @@ else()
 message(STATUS "type Debug ${CMAKE_BUILD_TYPE}")
 endif()
 
+if (DBGDBG)
+	add_definitions(-DDBG)
+endif()
+
 #finds
 if(USE_OPENMP)
 find_package(OpenMP)
