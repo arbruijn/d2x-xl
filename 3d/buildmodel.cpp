@@ -1122,6 +1122,8 @@ void CModel::SetRobotGunPoints (OOF::CModel *po)
 	OOF::CPoint*	pp;
 	int32_t			i, j = po->m_gunPoints.Length ();
 
+if (j > MAX_GUNS)
+	j = MAX_GUNS;
 for (i = 0, pp = po->m_gunPoints.Buffer (); i < j; i++, pp++) {
 	m_nGunSubModels [i] = pp->m_nParent;
 	pSubModel = m_subModels + pp->m_nParent;
