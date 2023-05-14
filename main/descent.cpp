@@ -1131,6 +1131,17 @@ if (*szAutoHogFile && *szAutoMission) {
 	hogFileManager.UseMission (szAutoHogFile);
 	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	}
+int n;
+if ((n = FindArg ("-level")) && appConfig [n + 1]) {
+	int nm;
+	if ((nm = FindArg ("-mission")) && appConfig [nm + 1]) {
+		missionManager.LoadByName (appConfig [nm + 1], -1 , NULL);
+	} else {
+	    missionManager.BuildList (1, -1);
+	    missionManager.Load (FindArg ("-d1") ? 0 : 1);
+	}
+    StartNewGame (atoi (appConfig [n + 1]));
+    }
 #if !DBG
 DUKickstarterNotification ();
 #endif
