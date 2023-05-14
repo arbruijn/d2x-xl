@@ -517,6 +517,7 @@ class CGameplayOptions {
 		int32_t nAutoLeveling;
 		int32_t bEscortHotKeys;
 		int32_t bSkipBriefingScreens;
+		int32_t bSkipEndLevelScreen;
 		int32_t bHeadlightOnWhenPickedUp;
 		int32_t bShieldWarning;
 		int32_t bInventory;

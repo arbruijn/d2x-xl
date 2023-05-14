@@ -1296,6 +1296,10 @@ sprintf (szTitle,
 			TXT_DESTROYED);
 Assert (c <= N_GLITZITEMS);
 paletteManager.DisableEffect ();
+
+if (gameOpts->gameplay.bSkipEndLevelScreen)
+	return;
+
 if (network && IsNetworkGame)
 	m.Menu (NULL, szTitle, NetworkEndLevelPoll2, NULL, BG_SUBMENU, BG_STARS);
 else
