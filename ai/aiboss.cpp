@@ -173,7 +173,8 @@ if (objType < 0)
 if (objType == 255) {	// spawn an arbitrary robot
 	maxRobotTypes = gameData.botData.nTypes [gameStates.app.bD1Mission];
 	do {
-		pRobotInfo = ROBOTINFO (Rand (maxRobotTypes));
+		objType = Rand (maxRobotTypes);
+		pRobotInfo = ROBOTINFO (objType);
 		} while (!pRobotInfo ||							//should be a valid robot ...
 					pRobotInfo->bossFlag ||				//well ... don't spawn another boss, huh? ;)
 					pRobotInfo->companion ||				//the buddy bot isn't exactly an enemy ... ^_^
