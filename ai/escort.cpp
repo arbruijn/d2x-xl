@@ -905,9 +905,9 @@ ENTER (1, 0);
 
 vVecToRobot = pBuddyObj->info.position.vPos - pObj->info.position.vPos;
 dist = CFixVector::Normalize (vVecToRobot);
-if (dist > I2X (100))
+if (dist > I2X (400))
 	RETVAL (0)
-if (!ObjectToObjectVisibility (pBuddyObj, pObj, FQ_TRANSWALL, 0.5f))
+if (!ObjectToObjectVisibility (pBuddyObj, pObj, FQ_TRANSWALL, dist < I2X(40) ? 0.95f : 0.99f))
 	RETVAL (0)
 if (gameData.weaponData.info [0][MEGAMSL_ID].renderType == 0) {
 #if TRACE
@@ -920,7 +920,9 @@ if (gameData.weaponData.info [0][MEGAMSL_ID].renderType == 0) {
 console.printf (CON_DBG, "Buddy firing mega in frame %i\n", gameData.appData.nFrameCount);
 #endif
 BuddyMessage (TXT_BUDDY_GAHOOGA);
-nWeaponObj = CreateNewWeaponSimple (&pBuddyObj->info.position.mOrient.m.dir.f, &pBuddyObj->info.position.vPos, nObject, MEGAMSL_ID, 1);
+CFixVector pos = pBuddyObj->info.position.vPos;
+pos += pBuddyObj->info.position.mOrient.m.dir.f * I2X(5);
+nWeaponObj = CreateNewWeaponSimple (&pBuddyObj->info.position.mOrient.m.dir.f, &pos, nObject, CONCUSSION_ID, 1);
 if (nWeaponObj != -1)
 	BashBuddyWeaponInfo (nWeaponObj);
 RETVAL (1)
@@ -937,15 +939,15 @@ ENTER (1, 0);
 	int16_t	nWeaponObj;
 
 dist = CFixVector::Dist (pBuddyObj->info.position.vPos, pObj->info.position.vPos);
-if (dist > I2X (80))
+if (dist > I2X (200) || dist < I2X(20))
 	RETVAL (0)
-if (!ObjectToObjectVisibility (pBuddyObj, pObj, FQ_TRANSWALL, -1.0f))
+if (!ObjectToObjectVisibility (pBuddyObj, pObj, FQ_TRANSWALL, 0.8f))
 	RETVAL (0)
 #if TRACE
 console.printf (CON_DBG, "Buddy firing smart missile in frame %i\n", gameData.appData.nFrameCount);
 #endif
 BuddyMessage (TXT_BUDDY_WHAMMO);
-nWeaponObj = CreateNewWeaponSimple (&pBuddyObj->info.position.mOrient.m.dir.f, &pBuddyObj->info.position.vPos, nObject, SMARTMSL_ID, 1);
+nWeaponObj = CreateNewWeaponSimple (&pBuddyObj->info.position.mOrient.m.dir.f, &pBuddyObj->info.position.vPos, nObject, HOMINGMSL_ID, 1);
 if (nWeaponObj != -1)
 	BashBuddyWeaponInfo (nWeaponObj);
 RETVAL (1)
@@ -964,7 +966,12 @@ if (!BuddyMayTalk ())
 if (buddyLastMissileTime > gameData.timeData.xGame)
 	buddyLastMissileTime = 0;
 
-if (buddyLastMissileTime + I2X (2) < gameData.timeData.xGame) {
+if (buddyLastMissileTime + (I2X (1) / 2) < gameData.timeData.xGame) {
+	if (gameData.reactorData.states [0].nObject != -1 &&
+		MaybeBuddyFireMega (gameData.reactorData.states [0].nObject)) {
+		buddyLastMissileTime = gameData.timeData.xGame;
+		RETURN
+		}
 	//	See if a robot potentially in view cone
 	FORALL_ROBOT_OBJS (pObj)
 		if (!pObj->IsGuideBot ())
@@ -996,6 +1003,7 @@ if (nObject < 0)
 	tAIStaticInfo*	aip = &pObj->cType.aiInfo;
 	tAILocalInfo*	ailp = gameData.aiData.localInfo + nObject;
 
+nPlayerVisibility = 1;
 gameData.escortData.nObjNum = nObject;
 if (nPlayerVisibility) {
 	xBuddyLastSeenPlayer = gameData.timeData.xGame;
@@ -1036,12 +1044,13 @@ if (gameData.escortData.nSpecialGoal == ESCORT_GOAL_SCRAM) {
 	RETURN
 	}
 //	Force checking for new goal every 5 seconds, and create new path, if necessary.
-if (((gameData.escortData.nSpecialGoal != ESCORT_GOAL_SCRAM) && ((gameData.escortData.xLastPathCreated + I2X (5)) < gameData.timeData.xGame)) ||
-	 ((gameData.escortData.nSpecialGoal == ESCORT_GOAL_SCRAM) && ((gameData.escortData.xLastPathCreated + I2X (15)) < gameData.timeData.xGame))) {
+if (ailp->mode == AIM_IDLING &&
+	(((gameData.escortData.nSpecialGoal != ESCORT_GOAL_SCRAM) && ((gameData.escortData.xLastPathCreated + I2X (5)) < gameData.timeData.xGame)) ||
+	 ((gameData.escortData.nSpecialGoal == ESCORT_GOAL_SCRAM) && ((gameData.escortData.xLastPathCreated + I2X (15)) < gameData.timeData.xGame)))) {
 	gameData.escortData.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 	gameData.escortData.xLastPathCreated = gameData.timeData.xGame;
 	}
-if ((gameData.escortData.nSpecialGoal != ESCORT_GOAL_SCRAM) && TimeToVisitPlayer (pObj, ailp, aip)) {
+if (0 && (gameData.escortData.nSpecialGoal != ESCORT_GOAL_SCRAM) && TimeToVisitPlayer (pObj, ailp, aip)) {
 	int32_t	nMaxLen;
 
 	Buddy_last_player_path_created = gameData.timeData.xGame;
@@ -1082,13 +1091,26 @@ else if (gameData.escortData.nGoalObject == ESCORT_GOAL_UNSPECIFIED) {
 		gameData.escortData.nGoalObject = EscortSetGoalObject ();
 		ailp->mode = AIM_GOTO_OBJECT;		//	May look stupid to be before path creation, but AIDoorIsOpenable uses mode to determine what doors can be got through
 		EscortCreatePathToGoal (pObj);
+		if (gameData.escortData.nGoalObject == ESCORT_GOAL_CONTROLCEN && aip->nPathLength)
+			aip->nPathLength--;
 		if (aip->nPathLength > 0) {
 			aip->nPathLength = SmoothPath (pObj, gameData.aiData.routeSegs + aip->nHideIndex, aip->nPathLength);
-			if (aip->nPathLength < 3)
-				CreateNSegmentPath (pObj, 5, gameData.aiData.target.nBelievedSeg);
+			//if (aip->nPathLength < 3)
+			//	CreateNSegmentPath (pObj, 5, gameData.aiData.target.nBelievedSeg);
 			ailp->mode = AIM_GOTO_OBJECT;
 			}
+		else
+			ailp->mode = AIM_IDLING;
 		}
+	}
+else if (ailp->mode == AIM_IDLING && gameData.escortData.nGoalObject != ESCORT_GOAL_EXIT && 
+	gameData.escortData.nGoalIndex >= 0) {
+	CFixVector vNormToGoal = OBJECT(gameData.escortData.nGoalIndex)->Position () - pObj-> Position ();
+	CFixVector::Normalize (vNormToGoal);
+	AITurnTowardsVector (&vNormToGoal, pObj, ROBOTINFO (pObj)->turnTime [gameStates.app.nDifficultyLevel]);
+	}
+else if (ailp->mode == AIM_IDLING) {
+	gameData.escortData.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 	}
 RETURN
 }

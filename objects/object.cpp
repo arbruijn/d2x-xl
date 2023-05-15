@@ -2011,6 +2011,7 @@ return ((info.nType == OBJ_ROBOT) && (pRobotInfo = ROBOTINFO (info.nId))) ? pRob
 bool CObject::IsGuideBot (void) 
 {
 tRobotInfo* pRobotInfo;
+if (info.nType == OBJ_PLAYER) return true;
 return (info.nType == OBJ_ROBOT) && (pRobotInfo = ROBOTINFO (info.nId)) && pRobotInfo->companion;
 }
 

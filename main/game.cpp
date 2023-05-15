@@ -938,7 +938,8 @@ SetWarnFunc (ShowInGameWarning);
 cockpit->Init ();
 gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
 gameData.SetViewer (gameData.objData.pConsole);
-FlyInit (gameData.objData.pConsole);
+if (gameData.objData.pConsole->info.controlType != CT_AI)
+	FlyInit (gameData.objData.pConsole);
 if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
 	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
 ResetTime ();

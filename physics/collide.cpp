@@ -80,8 +80,8 @@ if (!pWall || (pWall->nType != WALL_DOOR))
 if ((pWall->keys == KEY_NONE) && (pWall->state == WALL_DOOR_CLOSED) && !(pWall->flags & WALL_DOOR_LOCKED))
 	SEGMENT (nHitSeg)->OpenDoor (nHitSide);
 else if (pRobotInfo && pRobotInfo->companion) {
-	if ((pLocalInfo->mode != AIM_GOTO_PLAYER) && (gameData.escortData.nSpecialGoal != ESCORT_GOAL_SCRAM))
-		RETURN;
+	//if ((pLocalInfo->mode != AIM_GOTO_PLAYER) && (gameData.escortData.nSpecialGoal != ESCORT_GOAL_SCRAM))
+	//	RETURN;
 	if (!(pWall->flags & WALL_DOOR_LOCKED) || ((pWall->keys != KEY_NONE) && (pWall->keys & LOCALPLAYER.flags)))
 		SEGMENT (nHitSeg)->OpenDoor (nHitSide);
 	}
@@ -1133,7 +1133,7 @@ CObject *pAttacker = OBJECT (nAttacker);
 if (!pAttacker)
 	RETURN;
 int32_t attackerType = pAttacker->info.nType;
-if (attackerType != OBJ_PLAYER) {
+if (attackerType != OBJ_PLAYER && !pAttacker->IsGuideBot()) {
 #if TRACE
 	console.printf (CON_DBG, "Damage to control center by CObject of nType %i prevented by MK! \n", whotype);
 #endif
@@ -2024,8 +2024,8 @@ int32_t CObject::CollidePlayerAndPowerup (CObject* pPowerup, CFixVector& vHitPt,
 ENTER (1, 0);
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	RETVAL (1)
-if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead && (info.nId == N_LOCALPLAYER)) {
-	int32_t bPowerupUsed = DoPowerup (pPowerup, info.nId);
+if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead && (1 || info.nId == N_LOCALPLAYER)) {
+	int32_t bPowerupUsed = DoPowerup (pPowerup, 0); //info.nId);
 	if (bPowerupUsed) {
 		pPowerup->Die ();
 		if (IsMultiGame)

@@ -348,7 +348,7 @@ if ((pObj == NULL) || pObj->IsGuideBot ()) {
 			if (nClip == -1)
 				RETVAL (1)
 			//	Buddy allowed to go through secret doors to get to player.
-			else if ((ailp_mode != AIM_GOTO_PLAYER) && (gameData.wallData.pAnim [nClip].flags & WCF_HIDDEN)) {
+			else if (0 && (ailp_mode != AIM_GOTO_PLAYER) && (gameData.wallData.pAnim [nClip].flags & WCF_HIDDEN)) {
 				if (pWall->state == WALL_DOOR_CLOSED)
 					RETVAL (0)
 				else

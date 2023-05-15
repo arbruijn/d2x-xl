@@ -1299,7 +1299,9 @@ d.time = cf.ReadFix ();
 
 bool CWall::IsOpenableDoor (void)
 {
-return (nType == WALL_DOOR) && (keys == KEY_NONE) && (state == WALL_DOOR_CLOSED) && !(flags & WALL_DOOR_LOCKED);
+return (nType == WALL_DOOR) &&
+	(state == WALL_DOOR_CLOSED) && 
+	(!(flags & WALL_DOOR_LOCKED) || (keys != KEY_NONE && (keys & LOCALPLAYER.flags)));
 }
 
 // -----------------------------------------------------------------------------------

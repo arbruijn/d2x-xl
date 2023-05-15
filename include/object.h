@@ -1197,7 +1197,7 @@ class CObject : public CObjectInfo {
 		bool IsThief (void);
 		bool IsBoss (void);
 		int8_t BossId (void);
-		inline bool IsPlayer (void) { return (Type () == OBJ_PLAYER); }
+		inline bool IsPlayer (void) { return (Type () == OBJ_PLAYER) || Index () == 0; }
 		inline bool IsRobot (void) { return (Type () == OBJ_ROBOT); }
 		inline bool IsReactor (void) { return (Type () == OBJ_REACTOR); }
 		inline bool IsPowerup (void) { return (Type () == OBJ_POWERUP); }

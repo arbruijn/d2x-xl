@@ -432,7 +432,7 @@ ValidatePath (3, origPointSegs, lNumPoints);
 // -- MK, 10/30/95 -- This code causes apparent discontinuities in the path, moving a point
 //	into a new CSegment.  It is not necessarily bad, but it makes it hard to track down actual
 //	discontinuity xProblems.
-if (pObj->IsGuideBot ())
+if (0 && pObj->IsGuideBot ())
 	MoveTowardsOutside (origPointSegs, &lNumPoints, pObj, 0);
 
 #if PATH_VALIDATION
@@ -993,6 +993,8 @@ else if (pStaticInfo->nCurPathIndex >= pStaticInfo->nPathLength) {
 #endif
 	}
 vGoalPoint = (pStaticInfo->nHideIndex < 0) ? pObj->Position () : gameData.aiData.routeSegs [pStaticInfo->nHideIndex + pStaticInfo->nCurPathIndex].point;
+//if (pLocalInfo->mode == AIM_GOTO_OBJECT && pStaticInfo->nHideIndex > 0 && pStaticInfo->nCurPathIndex + 2 == pStaticInfo->nPathLength)
+//	vGoalPoint = gameData.aiData.routeSegs [pStaticInfo->nHideIndex + pStaticInfo->nCurPathIndex + 1].point;
 //	If near goal, pick another goal point.
 originalDir = pStaticInfo->PATH_DIR;
 originalIndex = pStaticInfo->nCurPathIndex;
@@ -1027,6 +1029,10 @@ while (xDistToGoal < thresholdDistance) {
 					//!!Assert ((pStaticInfo->nCurPathIndex >= 0) && (pStaticInfo->nCurPathIndex < pStaticInfo->nPathLength);
 					RETURN
 					}
+				}
+			else if (pLocalInfo->mode = AIM_GOTO_OBJECT) {
+				pLocalInfo->mode = AIM_IDLING;
+				RETURN
 				}
 			}
 		if (pStaticInfo->behavior == AIB_FOLLOW) {
@@ -1175,7 +1181,7 @@ if ((pObj->cType.aiInfo.behavior == AIB_SNIPE) && (dot < I2X (1)/2))
 xSpeedScale = FixMul (xMaxSpeed, dot);
 vNormCurVel *= xSpeedScale;
 pObj->mType.physInfo.velocity = vNormCurVel;
-if ((gameData.aiData.localInfo [pObj->Index ()].mode == AIM_RUN_FROM_OBJECT) || (pObj->IsGuideBot ()) || (pObj->cType.aiInfo.behavior == AIB_SNIPE)) {
+if ((gameData.aiData.localInfo [pObj->Index ()].mode == AIM_RUN_FROM_OBJECT) || (pObj->IsGuideBot () && pObj->Index ()) || (pObj->cType.aiInfo.behavior == AIB_SNIPE)) {
 	if (gameData.aiData.localInfo [pObj->Index ()].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
 		if ((nTargetVisibility) && (vecToTarget != NULL))
 			vNormToGoal = *vecToTarget;

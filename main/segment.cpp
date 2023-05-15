@@ -1067,7 +1067,7 @@ if (!pTrigger)
 	return;
 
 if (pObj
-	 ? pTrigger->Operate (pObj->Index (), pObj->IsPlayer () ? pObj->info.nId : pObj->IsGuideBot () ? N_LOCALPLAYER : -1, bShot, 0)
+	 ? pTrigger->Operate (pObj->Index (), pObj->IsGuideBot () ? N_LOCALPLAYER : pObj->IsPlayer () ? pObj->info.nId : -1, bShot, 0)
 	 : pTrigger->Operate (-1, -1, bShot, 0)
 	)
 	return;

@@ -1199,6 +1199,13 @@ if (!StartNewLevel (nLevel, true)) {
 LOCALPLAYER.startingLevel = nLevel;		// Mark where they started
 GameDisableCheats ();
 InitSeismicDisturbances ();
+OBJECT (0)->info.controlType = CT_AI;
+OBJECT (0)->info.nType = OBJ_ROBOT;
+OBJECT (0)->info.nId = 33;
+ROBOTINFO (33)->xMaxSpeed[0] = I2X(80);
+InitAIObject (0, AIB_NORMAL, OBJECT (0)->Segment());
+gameStates.app.cheats.bMadBuddy = 1;
+gameOpts->gameplay.bUseD1AI = 0;
 return 1;
 }
 
@@ -2224,6 +2231,14 @@ if (!bNewGame)
 	ogl.ChooseDrawBuffer ();
 if (bResume)
 	networkThread.Resume ();
+
+OBJECT (0)->info.controlType = CT_AI;
+OBJECT (0)->info.nType = OBJ_ROBOT;
+OBJECT (0)->info.nId = 33;
+ROBOTINFO (33)->xMaxSpeed[0] = I2X(100);
+InitAIObject (0, AIB_NORMAL, OBJECT (0)->Segment());
+gameStates.app.cheats.bMadBuddy = 1;
+
 return 1;
 }
 
