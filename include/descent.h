@@ -3095,7 +3095,7 @@ class CMultiplayerData {
 		int32_t								nLastHitTime [MAX_PLAYERS];
 		int32_t								tAppearing [MAX_PLAYERS][2];
 		int8_t								bTeleport [MAX_PLAYERS];
-		CWeaponState						weaponStates [MAX_PLAYERS];
+		CWeaponState						weaponStates [MAX_PLAYERS + 4];
 		char									bWasHit [MAX_PLAYERS];
 		int32_t								bulletEmitters [MAX_PLAYERS];
 		int32_t					 			gatlingSmoke [MAX_PLAYERS];
