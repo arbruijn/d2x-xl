@@ -260,7 +260,7 @@ FORALL_OBJS (pObj) {
 #endif
 		pObj->ApplyRotForce (vNegForce);
 		if (pObj->info.xShield >= 0) {
-			if (pObj->IsBoss () && bossProps [gameStates.app.bD1Mission][pObj->BossId () - BOSS_D2].bInvulKinetic)
+			if (pObj->IsBoss () && pObj->BossId () >= BOSS_D2 && bossProps [gameStates.app.bD1Mission][pObj->BossId () - BOSS_D2].bInvulKinetic)
 				damage /= 4;
 			if (pObj->ApplyDamageToRobot (damage, nParent)) {
 #if DBG
