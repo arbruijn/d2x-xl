@@ -953,7 +953,9 @@ switch (m_list [nMission].location) {
 		break;
 	}
 sprintf (szFile, "%s%s", m_list [nMission].filename, (m_list [nMission].nDescentVersion == 2) ? ".mn2" : ".msn");
+#ifdef WIN32
 strlwr (szFile);
+#endif
 if (!cf.Open (szFile, szFolder, "rb", 0)) {
 	nCurrentMission = -1;
 	return 0;		//error!
@@ -971,7 +973,9 @@ if (!strcmp (m_list [nMission].filename, szBuiltinMissionFilename [0]))
 	bFoundHogFile = 1;
 else {
 	sprintf (szFile, "%s%s.hog", szFolder, m_list [nMission].filename);
+	#ifdef WIN32
 	strlwr (szFile);
+	#endif
 	bFoundHogFile = hogFileManager.UseMission (szFile);
 	if (bFoundHogFile) {
 		// for Descent 1 missions, load descent.hog
@@ -982,7 +986,9 @@ else {
 		}
 	else {
 		sprintf (szFile, "%s%s%s", szFolder, m_list [nMission].filename, (m_list [nMission].nDescentVersion == 2) ? ".rl2" : ".rdl");
+		#ifdef WIN32
 		strlwr (szFile);
+		#endif
 		bFoundHogFile = hogFileManager.UseMission (szFile);
 		if (bFoundHogFile) {
 			strcpy (szLevelNames [0], hogFileManager.AltFiles ().files [0].name);
@@ -990,7 +996,9 @@ else {
 			}
 		else {
 			sprintf (szFile, "%s%s", szFolder, szLevelNames [0]);
+			#ifdef WIN32
 			strlwr (szFile);
+			#endif
 			bFoundHogFile = hogFileManager.UseMission (szFile);
 			}
 		}
