@@ -420,6 +420,8 @@ if (i) {
 	nAIAggressivity = 0;
 	nShip [0] = 0;
 	nShip [1] = -1;
+	bOrigAmmoRack = 1;
+	bPauseGame = 1;
 	}
 else {
 	nAutoSelectWeapon = 2;
@@ -437,6 +439,8 @@ else {
 	nAIAggressivity = 0;
 	nShip [0] = 0;
 	nShip [1] = -1;
+	bOrigAmmoRack = 0;
+	bPauseGame = 0;
 	}
 }
 

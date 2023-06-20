@@ -1020,7 +1020,7 @@ void CAutomap::DoFrame (int32_t nKeyCode, int32_t bRadar)
 	int32_t			nLeaveMode = 0;
 	int32_t			bFirstTime = 1;
 	fix				xEntryTime;
-	int32_t			bPauseGame = (gameOpts->menus.nStyle == 0);		// Set to 1 if everything is paused during automap...No pause during net.
+	int32_t			bPauseGame = (gameOpts->menus.nStyle == 0) || (!IsMultiGame && gameOpts->gameplay.bPauseGame);		// Set to 1 if everything is paused during automap...No pause during net.
 	fix				t1 = 0, t2 = 0;
 	int32_t			nContrast = ogl.m_states.nContrast;
 

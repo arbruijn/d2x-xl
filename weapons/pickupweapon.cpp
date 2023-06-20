@@ -108,7 +108,7 @@ else if (gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip == 2)
 	nMaxAmount *= 2;
 else {
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_AMMO_RACK) {
-		if (gameStates.app.bNostalgia)
+		if (gameStates.app.bNostalgia || gameOpts->gameplay.bOrigAmmoRack)
 			nMaxAmount *= 2;
 		else
 			nMaxAmount = 3 * nMaxAmount / 2;

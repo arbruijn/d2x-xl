@@ -703,6 +703,8 @@ for (i = 0; i < 2; i++) {
 	RP (gameOptions [i].render.cockpit.bHUD, i, 0);
 	RP (gameOptions [i].render.cockpit.bReticle, i, 0);
 
+	RP (gameOptions [i].gameplay.bOrigAmmoRack, i, 0);
+	RP (gameOptions [i].gameplay.bPauseGame, i, 0);
 #if 0
 	RP (extraGameInfo [i].bFlickerLights, i, 0);
 	RP (extraGameInfo [i].bKillMissiles, i, 0);
@@ -1177,6 +1179,8 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.cockpit.bMissileView", "0"},
 	 {"gameOptions[0].render.cockpit.bHUD", "1"},
 	 {"gameOptions[0].render.cockpit.bReticle", "1"},
+	 {"gameOptions[0].gameplay.bOrigAmmoRack", "0"},
+	 {"gameOptions[0].gameplay.bPauseGame", "0"},
 	 {"nWeaponOrder[1][0]", "9"},
 	 {"nWeaponOrder[1][1]", "4"},
 	 {"nWeaponOrder[1][2]", "8"},
@@ -1220,6 +1224,8 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[1].render.cockpit.bMissileView", "0"},
 	 {"gameOptions[1].render.cockpit.bHUD", "1"},
 	 {"gameOptions[1].render.cockpit.bReticle", "1"},
+	 {"gameOptions[1].gameplay.bOrigAmmoRack", "0"},
+	 {"gameOptions[1].gameplay.bPauseGame", "0"},
 	 {"keyboard.Pitch forward[0].value", "-56"},
 	 {"keyboard.Pitch forward[1].value", "-1"},
 	 {"keyboard.Pitch backward[0].value", "-48"},

@@ -390,6 +390,8 @@ do {
 				m.AddSlider ("recharge speed", szSlider + 1, extraGameInfo [0].nRechargeSpeed, 0, 2, KEY_S, HTX_RECHARGE_SPEED);
 				}
 			}
+		m.AddCheck ("original ammo rack", "Original Ammo Rack", gameOpts->gameplay.bOrigAmmoRack,0, NULL);
+		m.AddCheck ("pause game", "Pause Game in Menu / Automap", gameOpts->gameplay.bPauseGame, 0, NULL);
 		}
 	m.AddText ("", "");
 	m.AddMenu ("reorder guns", TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
@@ -438,6 +440,8 @@ if (!bRestricted) {
 		if (!extraGameInfo [0].bAllowCustomWeapons)
 			SetDefaultWeaponProps ();
 		}
+	GET_VAL (gameOpts->gameplay.bOrigAmmoRack, "original ammo rack");
+	GET_VAL (gameOpts->gameplay.bPauseGame, "pause game");
 	}
 GetShipSelection (m, optShip);
 DefaultGameplaySettings ();

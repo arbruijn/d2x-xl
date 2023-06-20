@@ -528,6 +528,8 @@ class CGameplayOptions {
 		int32_t bNoThief;
 		int32_t bObserve;
 		int32_t nShip [2];
+		int32_t bOrigAmmoRack;
+		int32_t bPauseGame;
 
 	public:
 		CGameplayOptions () { Init (); }
