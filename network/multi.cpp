@@ -1685,6 +1685,7 @@ if (pObj->info.nFlags & (OF_SHOULD_BE_DEAD | OF_EXPLODING | OF_DESTROYED))
 NetworkResetObjSync (nLocalObj);
 //if ((pObj->info.nType == OBJ_POWERUP) && IsNetworkGame) 
 //	RemovePowerupInMine (pObj->info.nId);
+pObj->SetRemoteKilled (true);
 if (pObj->info.nType == OBJ_ROBOT)
 	MultiDestroyRobot (pObj);
 else

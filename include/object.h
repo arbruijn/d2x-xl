@@ -894,6 +894,7 @@ class CObject : public CObjectInfo {
 		bool				m_bRotate;
 		bool				m_bSynchronize;
 		bool				m_bCollapse;   // collapse blast effect after first expanding it
+		bool				m_bRemoteKilled;
 		int32_t			m_nFrame;
 		int32_t			m_bIgnore [2]; // ignore this object (physics: type = 0, pickup powerup: type = 1)
 #if DBG
@@ -1180,6 +1181,9 @@ class CObject : public CObjectInfo {
 		inline bool Rotating (void) { return m_bRotate; }
 		inline void Collapse (bool bCollapse) { m_bCollapse = bCollapse; }
 		inline bool Collapsing (void) { return m_bCollapse; }
+
+		inline bool RemoteKilled (void) { return m_bRemoteKilled; }
+		inline void SetRemoteKilled (bool bRemoteKilled) { m_bRemoteKilled = bRemoteKilled; }
 
 		int32_t ModelId (bool bRaw = false);
 

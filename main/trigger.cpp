@@ -1328,7 +1328,7 @@ switch (Type ()) {
 		break;
 
 	case TT_MESSAGE:
-		if (nPlayer == N_LOCALPLAYER)
+		if (nPlayer == N_LOCALPLAYER || (bObjTrigger && !pObj->RemoteKilled ()))
 			DoShowMessage ();
 		break;
 
