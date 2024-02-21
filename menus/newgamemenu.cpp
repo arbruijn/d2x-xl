@@ -477,7 +477,8 @@ else if ((nChoice == multiOpts.nStartIPX) || (nChoice == multiOpts.nStartKali) |
 else if ((nChoice != multiOpts.nJoinIPX) && (nChoice != multiOpts.nJoinKali) && (nChoice != multiOpts.nJoinMCast4))
 	return 0;
 gameOpts->app.bSinglePlayer = 0;
-missionManager.Load (missionManager.nLastMission);
+if (missionManager.nLastMission != -1)
+	missionManager.Load (missionManager.nLastMission);
 gameStates.multi.bServer [0] = 
 gameStates.multi.bServer [1] = (nChoice & 1) == 0;
 gameStates.app.bHaveExtraGameInfo [1] = gameStates.multi.bServer [0];
