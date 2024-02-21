@@ -284,7 +284,7 @@ if (nState) { // render
 		gameData.SetStereoOffsetType (nOffsetSave);
 		}
 	else {
-		saveGameInfo [nCurItem - 1].Image ()->BlitClipped ((CCanvas::Current ()->Width ()-THUMBNAIL_W) / 2, menu [0].m_y - 5);
+		image->BlitClipped ((CCanvas::Current ()->Width ()-THUMBNAIL_W) / 2, menu [0].m_y - 5);
 		}
 	}
 else { // input
