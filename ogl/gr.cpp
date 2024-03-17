@@ -405,8 +405,6 @@ int32_t SetSideBySideDisplayMode (void)
 {
 if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT)
 	SetCustomDisplayMode (gameData.renderData.rift.HResolution (), gameData.renderData.rift.VResolution (), 0);
-else if (gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_HDMI)
-	SetCustomDisplayMode (1920, 1080, 0);
 else
 	return true;
 if (!SetDisplayMode (CUSTOM_DISPLAY_MODE, 0))
