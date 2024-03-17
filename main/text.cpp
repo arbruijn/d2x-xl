@@ -1952,7 +1952,7 @@ const char *defaultGameTexts [][2] = {
  {"Deine Version von D2X-XL\npasst nicht zu der Version,\ndie fuer dieses Spiel verwendet wird.", "Your version of D2X-XL\ndoes not match the version\nin use for that game."},
  {"\nerlaubte Schiffe:", "\nships allowed:"},
  {"Oculus Rift", "Oculus Rift"},
- {"3D TV (1080p)", "3D TV (1080p)"},
+ {"SBS 3D", "SBS 3D"},
  {"~FOV: %s", "~FOV: %s"},
  {"~Pupillenabstand: %d mm", "I~PD: %d mm"},
  {"Anaglyphenbrille", "Anaglyph Glasses"},
