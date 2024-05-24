@@ -1,3 +1,6 @@
+2024-05-24 v1.18-74-ar9
+- Fix exit sequence
+
 2024-02-21 v1.18-74-ar8
 - Add original ammo rack option
 - Add pause game in automap/menus option
