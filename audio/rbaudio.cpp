@@ -73,7 +73,7 @@ if (SDL_Init (SDL_INIT_CDROM) < 0) {
 	}
 
 if ((j = SDL_CDNumDrives ()) == 0) {
-	Warning (TXT_CDROM_NONE);
+	//Warning (TXT_CDROM_NONE);
 	return;
 	}
 
