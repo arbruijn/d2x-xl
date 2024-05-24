@@ -609,6 +609,8 @@ ENTER (0, 0);
 
 memcpy (&infoSave, &info, sizeof (tObjectInfo));
 
+info.vLastPos = info.position.vPos;
+
 #if DBG
 if (OBJ_IDX (this) == nDbgObj)
 	BRP;
