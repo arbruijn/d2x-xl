@@ -468,7 +468,7 @@ if (!gameStates.render.bOutsideMine) {
 			if (pObj) {
 				externalExplosion = *pObj;
 				pObj->Die ();
-				gameStates.render.nFlashScale = I2X (1);	//kill lights in mine
+				//gameStates.render.nFlashScale = I2X (1);	//kill lights in mine
 				ext_expl_halflife = pObj->info.xLifeLeft;
 				gameStates.render.bExtExplPlaying = 1;
 				}
