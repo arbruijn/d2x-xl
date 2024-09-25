@@ -129,6 +129,9 @@ RETVAL (1)
 
 //------------------------------------------------------------------------------
 
+#ifdef __GNUC__
+__attribute__((optimize("-O3")))
+#endif
 tEdge *CTriMeshBuilder::FindEdge (uint16_t nVert1, uint16_t nVert2, int32_t i)
 {
 	tEdge	*pEdge = &m_edges [++i];
