@@ -1977,11 +1977,11 @@ else if (gameData.demoData.nState != ND_STATE_PLAYBACK) {
 	}
 
 if (gameStates.app.bFirstSecretVisit || (gameData.demoData.nState == ND_STATE_PLAYBACK)) {
+	if (!gameStates.app.bAutoRunMission && gameStates.app.bD1Mission)
+		ShowLevelIntro (nLevel);
 	if (!LoadLevel (nLevel, bLoadTextures, false))
 		return 0;
 	InitSecretLevel (nLevel);
-	if (!gameStates.app.bAutoRunMission && gameStates.app.bD1Mission)
-		ShowLevelIntro (nLevel);
 	//songManager.PlayLevelSong (missionManager.nCurrentLevel, 0);
 	InitRobotsForLevel ();
 	InitReactorForLevel (0);
