@@ -886,7 +886,11 @@ void HandleTestKey(int32_t key)
 			break;
 
 		case KEYDBGGED + KEY_SHIFTED + KEY_B:
-			KillEverything (1);
+			KillEverything (1, 0);
+			break;
+
+		case KEYDBGGED + KEY_SHIFTED + KEY_N:
+			KillEverything (1, 1);
 			break;
 	}
 }

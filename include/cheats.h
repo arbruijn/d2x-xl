@@ -2,7 +2,7 @@
 #define __CHEATS_H
 
 void KillAllRobots (int32_t bVerbose);
-void KillEverything (int32_t bVerbose);
+void KillEverything (int32_t bVerbose, int32_t bSecretExit);
 void KillThief (int32_t bVerbose);
 #if DBG
 void KillAllSnipers (int32_t bVerbose);

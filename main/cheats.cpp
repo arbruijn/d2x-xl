@@ -185,13 +185,17 @@ if (bVerbose)
 	HUDInitMessage (TXT_BOTS_TOASTED, nKilled);
 }
 
+static bool IsSecretExit(CTrigger& t) {
+	return (t.Type () == TT_SECRET_EXIT) || ((t.Type () == TT_DESCENT1) && ((t.Flags () & TRIGGER_SECRET_EXIT) != 0));
+}
+
 //	--------------------------------------------------------------------------
 //	Detonate reactor.
 //	Award player all powerups in mine.
 //	Place palyer just outside exit.
 //	Kill all bots in mine.
 //	Yippee!!
-void KillEverything (int32_t bVerbose)
+void KillEverything (int32_t bVerbose, int32_t bSecretExit)
 {
 	int32_t  i, j;
 	CObject*	pObj;
@@ -217,7 +221,8 @@ extraGameInfo [1].nBossCount [0] =
 extraGameInfo [1].nBossCount [1] = 0;
 DoReactorDestroyedStuff (NULL);
 for (i = 0; i < gameData.trigData.m_nTriggers [0]; i++) {
-	if (GEOTRIGGER (i)->IsExit ()) {
+	auto pTrigger = GEOTRIGGER (i);
+	if (bSecretExit ? IsSecretExit(*pTrigger) :  pTrigger->IsExit ()) {
 		for (j = 0; j < gameData.wallData.nWalls; j++) {
 			if (WALL (j)->nTrigger == i) {
 				int16_t nSegment = WALL (j)->nSegment;
@@ -492,7 +497,7 @@ PickupEffect (20, 20, 20, 0, TXT_EXTRA_LIFE);
 
 void FinishLevelCheat (int32_t bVerbose)
 {
-KillEverything (bVerbose);
+KillEverything (bVerbose, 0);
 }
 
 //------------------------------------------------------------------------------
