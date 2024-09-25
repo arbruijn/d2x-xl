@@ -457,7 +457,7 @@ if (automap.Active ()) {
 	automap.DoFrame (0, 0);
 	CalcFrameTime ();
 	}
-else if (gameData.appData.bGamePaused /*|| timer_paused*/) {
+else if (gameData.appData.bGamePaused || gameOpts->gameplay.bPauseGame /*|| timer_paused*/) {
 	GameRenderFrame ();
 	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 	CalcFrameTime ();
