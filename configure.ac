@@ -4,7 +4,7 @@
 define([D2X_MAJOR],1)
 define([D2X_MINOR],18)
 define([D2X_MICRO],74)
-define([D2X_VARIANT],ar9)
+define([D2X_VARIANT],ar10)
 
 AC_INIT(d2x-xl,[D2X_MAJOR.D2X_MINOR.D2X_MICRO-D2X_VARIANT],[karx11erx@hotmail.com])
 AC_PREREQ(2.52)

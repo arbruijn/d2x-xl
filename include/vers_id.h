@@ -3,7 +3,7 @@
 
 //#ifndef HAVE_CONFIG_H
 #	ifndef VERSION
-#		define VERSION		"1.18.74-ar9"
+#		define VERSION		"1.18.74-ar10"
 #	endif
 //#endif
 
@@ -19,7 +19,7 @@
 #	define D2X_MICRO	74
 #endif
 #ifndef D2X_VARIANT
-#	define D2X_VARIANT	"ar9"
+#	define D2X_VARIANT	"ar10"
 #endif
 
 #define VERSION_TYPE		"Full Version"

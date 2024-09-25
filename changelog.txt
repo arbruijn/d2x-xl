@@ -1,3 +1,8 @@
+2024-09-25 v1.18-74-ar10
+- Fix full cockpit camera views
+- Fix position of briefing robot in 1920x1080 and higher
+- Fix missing transparency in D1 secret levels
+
 2024-05-24 v1.18-74-ar9
 - Fix exit sequence
 
