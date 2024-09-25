@@ -601,7 +601,7 @@ for (int32_t i = 0, j = sizeofa (keyProperties); i < j; i++) {
 			keyCode |= KEY_CTRLED;
 		if (gameStates.input.keys.pressed [KEY_LCMD] || gameStates.input.keys.pressed [KEY_RCMD])
 			keyCode |= KEY_COMMAND;
-#if DBG
+#ifndef RELEASE
 	   if (gameStates.input.keys.pressed [KEY_DELETE])
 			keyCode |= KEYDBGGED;
 #endif			

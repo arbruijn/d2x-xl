@@ -679,7 +679,7 @@ switch (key) {
 
 //	--------------------------------------------------------------------------
 
-#if DBG
+#ifndef RELEASE
 
 void HandleTestKey(int32_t key)
 {
@@ -976,7 +976,7 @@ while ((key = KeyInKeyTime (&keyTime)) != 0) {
 		HandleEndlevelKey (key);
 	else if (gameData.demoData.nState == ND_STATE_PLAYBACK) {
 		HandleDemoKey (key);
-#if DBG
+#ifndef RELEASE
 		HandleTestKey (key);
 #endif
 		}
@@ -984,7 +984,7 @@ while ((key = KeyInKeyTime (&keyTime)) != 0) {
 		FinalCheats (key);
 		HandleSystemKey (key);
 		HandleGameKey (key);
-#if DBG
+#ifndef RELEASE
 		HandleTestKey (key);
 #endif
 		}

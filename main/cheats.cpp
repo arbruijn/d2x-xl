@@ -1031,7 +1031,7 @@ for (tCheat *pCheat = cheats; pCheat->pszCheat && !Cheat (pCheat); pCheat++)
 
 //------------------------------------------------------------------------------
 // Internal Cheat Menu
-#if DBG
+#ifndef RELEASE
 void DoCheatMenu ()
 {
 	int32_t	mmn;

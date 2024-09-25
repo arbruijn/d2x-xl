@@ -693,7 +693,7 @@ else {
 	}
 }
 
-#if DBG
+#ifndef RELEASE
 
 //	----------------------------------------------------------------------------------------
 //	Show player which weapons he has, how much ammo...

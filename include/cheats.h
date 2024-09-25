@@ -4,7 +4,7 @@
 void KillAllRobots (int32_t bVerbose);
 void KillEverything (int32_t bVerbose, int32_t bSecretExit);
 void KillThief (int32_t bVerbose);
-#if DBG
+#ifndef RELEASE
 void KillAllSnipers (int32_t bVerbose);
 #endif
 void KillBuddy (int32_t bVerbose);
@@ -15,7 +15,7 @@ void GasolineCheat (int32_t bVerbose);
 void DoWowieCheat (int32_t bVerbose, int32_t bInitialize);
 void KillAllBossRobots (int32_t bVerbose);
 
-#if DBG
+#ifndef RELEASE
 void DoCheatMenu ();
 #endif
 
