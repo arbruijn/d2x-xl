@@ -212,6 +212,9 @@ if (!pViewer) {								//this nUser is done
 		bOverlapDirty [nWindow] = 0;
 	RETURN
 	}
+// init scale
+XScale();
+YScale();
 UpdateRenderedData (nWindow + 1, pViewer, bRearView, nUser);
 m_info.weaponBoxUser [nWindow] = nUser;						//say who's using window
 CObject* pViewerSave = gameData.SetViewer (pViewer);
