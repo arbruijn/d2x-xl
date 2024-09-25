@@ -202,6 +202,7 @@ class COglStates {
 		int32_t	nColorBits;
 		int32_t	nPreloadTextures;
 		uint8_t	nTransparencyLimit;
+		int32_t nTransparencyStartY;
 		GLint	nDepthBits;
 		GLint	nStencilBits;
 		GLint	nStereo;

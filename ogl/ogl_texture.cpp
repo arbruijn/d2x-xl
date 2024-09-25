@@ -629,7 +629,8 @@ for (y = 0; y < m_info.h; y++) {
 							}
 						if ((r < ogl.m_states.nTransparencyLimit) &&
 							 (g < ogl.m_states.nTransparencyLimit) &&
-							 (b < ogl.m_states.nTransparencyLimit)) {
+							 (b < ogl.m_states.nTransparencyLimit) &&
+							 (y >= ogl.m_states.nTransparencyStartY)) {
 							m_info.format = ogl.m_states.nRGBAFormat;
 							goto restart;
 							}
@@ -667,7 +668,8 @@ for (y = 0; y < m_info.h; y++) {
 							}
 						if ((r < ogl.m_states.nTransparencyLimit) &&
 							 (g < ogl.m_states.nTransparencyLimit) &&
-							 (b < ogl.m_states.nTransparencyLimit))
+							 (b < ogl.m_states.nTransparencyLimit) &&
+							 (y >= ogl.m_states.nTransparencyStartY))
 							a = 0;
 						else if (bAutoTransp) {
 #if 0 //non-linear formula
