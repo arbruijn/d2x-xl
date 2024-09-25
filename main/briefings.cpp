@@ -633,10 +633,10 @@ if (ogl.IsOculusRift ()) {
 	h = w = 9 * w / 10;
 	}
 else {
-	x = RescaleX (138);
-	y = RescaleY (55);
-	w = RescaleX (163);
-	h = RescaleY (136);
+	x = AdjustX (138);
+	y = AdjustY (55);
+	w = AdjustX (163);
+	h = AdjustY (136);
 	}
 AnimCanv ().Setup (baseCanv, x, y, w, h);
 AnimCanv ().Activate ("CBriefing::SetupAnimationCanvas", baseCanv);
