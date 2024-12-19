@@ -41,9 +41,6 @@
 #define SDL_VIDEO_FLAGS	(SDL_OPENGL | SDL_DOUBLEBUF | SDL_HWSURFACE | \
 	(gameConfig.bBorderless ? SDL_NOFRAME : ogl.m_states.bFullScreen ? SDL_FULLSCREEN : 0))
 
-//#define SDL_VIDEO_FLAGS	(SDL_OPENGL)
-
-
 //------------------------------------------------------------------------------
 
 static uint16_t gammaRamp [512];
@@ -131,7 +128,7 @@ if (ogl.m_features.bQuadBuffers/*.Apply ()*/)
 if (ogl.m_states.bFSAA) {
 	SdlGlSetAttribute (NULL, "SDL_GL_MULTISAMPLEBUFFERS", SDL_GL_MULTISAMPLEBUFFERS, 1);
 	SdlGlSetAttribute (NULL, "SDL_GL_MULTISAMPLESAMPLES", SDL_GL_MULTISAMPLESAMPLES, 4);
-}
+	}
 PrintLog (-1);
 }
 
