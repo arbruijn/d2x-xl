@@ -41,6 +41,9 @@
 #define SDL_VIDEO_FLAGS	(SDL_OPENGL | SDL_DOUBLEBUF | SDL_HWSURFACE | \
 	(gameConfig.bBorderless ? SDL_NOFRAME : ogl.m_states.bFullScreen ? SDL_FULLSCREEN : 0))
 
+//#define SDL_VIDEO_FLAGS	(SDL_OPENGL)
+
+
 //------------------------------------------------------------------------------
 
 static uint16_t gammaRamp [512];
@@ -70,8 +73,12 @@ return SDL_SetGammaRamp ((Uint16*) (gammaRamp + paletteManager.RedEffect () * 4)
 
 int32_t SdlGlVideoModeOK (int32_t w, int32_t h)
 {
+/* Information about the current video settings. */
+const SDL_VideoInfo* info = NULL;
 PrintLog (1, "checking video mode (%d X %d)\n", w, h);
-int32_t nColorBits = SDL_VideoModeOK (w, h, FindArg ("-gl_16bpp") ? 16 : 32, SDL_VIDEO_FLAGS);
+info = SDL_GetVideoInfo( );
+int32_t nColorBits = SDL_VideoModeOK (w, h, FindArg ("-gl_16bpp") ? 16 : info->vfmt->BitsPerPixel, SDL_VIDEO_FLAGS);
+
 PrintLog (0, "SDL suggests %d bits/pixel\n", nColorBits);
 if (!nColorBits) {
 	PrintLog (-1);
@@ -117,17 +124,14 @@ if (0 < (t = FindArg ("-gl_depth")) && appConfig [t+1]) {
 	SdlGlSetAttribute (NULL, "SDL_GL_DEPTH_SIZE", SDL_GL_DEPTH_SIZE, ogl.m_states.nDepthBits);
 	SdlGlSetAttribute (NULL, "SDL_GL_STENCIL_SIZE", SDL_GL_STENCIL_SIZE, 8);
 	}
-SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_RED_SIZE", SDL_GL_ACCUM_RED_SIZE, 5);
-SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_GREEN_SIZE", SDL_GL_ACCUM_GREEN_SIZE, 5);
-SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_BLUE_SIZE", SDL_GL_ACCUM_BLUE_SIZE, 5);
-SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_ALPHA_SIZE", SDL_GL_ACCUM_ALPHA_SIZE, 5);
+
 SdlGlSetAttribute (NULL, "SDL_GL_DOUBLEBUFFER", SDL_GL_DOUBLEBUFFER, 1);
 if (ogl.m_features.bQuadBuffers/*.Apply ()*/)
 	SdlGlSetAttribute (NULL, "SDL_GL_STEREO", SDL_GL_STEREO, 1);
 if (ogl.m_states.bFSAA) {
 	SdlGlSetAttribute (NULL, "SDL_GL_MULTISAMPLEBUFFERS", SDL_GL_MULTISAMPLEBUFFERS, 1);
 	SdlGlSetAttribute (NULL, "SDL_GL_MULTISAMPLESAMPLES", SDL_GL_MULTISAMPLESAMPLES, 4);
-	}
+}
 PrintLog (-1);
 }
 
@@ -167,6 +171,8 @@ SDL_putenv (const_cast<char*>("SDL_VIDEO_CENTERED=1"));
 /***/PrintLog (1, "setting SDL video mode (%dx%dx%d, %s)\n", w, h, ogl.m_states.nColorBits, ogl.m_states.bFullScreen ? "fullscreen" : "windowed");
 if (!SdlGlVideoModeOK (w, h) ||
 	 !SDL_SetVideoMode (w, h, ogl.m_states.nColorBits, SDL_VIDEO_FLAGS)) {
+	PrintLog(-1);
+	PrintLog(1, "SDL error: %s\n", SDL_GetError());
 	PrintLog (-1);
 	Error ("Could not set %dx%dx%d opengl video mode\n", w, h, ogl.m_states.nColorBits);
 	return 0;
