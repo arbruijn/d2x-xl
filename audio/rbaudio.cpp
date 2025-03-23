@@ -96,7 +96,7 @@ if ((i = FindArg ("-cdrom")) && *appConfig [++i]) {
 	}
 
 if (! (m_cdInfo = SDL_CDOpen (d))) {
-	Warning (TXT_CDROM_OPEN);
+	//Warning (TXT_CDROM_OPEN);
 	return;
 	}
 m_bInitialized = 1;
