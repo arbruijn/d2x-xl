@@ -35,6 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "banlist.h"
 #include "console.h"
+#include "vers_id.h"
 
 //------------------------------------------------------------------------------
 

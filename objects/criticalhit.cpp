@@ -41,6 +41,7 @@
 #include "loadgame.h"
 #include "objeffects.h"
 #include "multi.h"
+#include "vers_id.h"
 
 #define REPAIR_DELAY	1500
 

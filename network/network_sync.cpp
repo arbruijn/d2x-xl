@@ -38,6 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "console.h"
 #include "objbufio.h"
+#include "vers_id.h"
 
 #ifdef WIN32
 #	define ZLIB_WINAPI

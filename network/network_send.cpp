@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "monsterball.h"
 #include "marker.h"
 #include "console.h"
+#include "vers_id.h"
 
 //------------------------------------------------------------------------------
 

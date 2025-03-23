@@ -32,6 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_color.h"
 #include "menu.h"
 #include "marker.h"
+#include "vers_id.h"
 
 CMarkerManager markerManager;
 

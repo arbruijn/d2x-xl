@@ -29,6 +29,7 @@
 #include "key.h"
 #include "menu.h"
 #include "tracker.h"
+#include "vers_id.h"
 
 #ifdef __macosx__
 # include <SDL/SDL.h>

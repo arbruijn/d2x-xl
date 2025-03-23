@@ -33,6 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "menu.h"
 #include "console.h"
+#include "vers_id.h"
 
 static const char* pszDigiVolume = "DigiVolume";
 static const char* pszAmbientVolume = "AmbientVolume";

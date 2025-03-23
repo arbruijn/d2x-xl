@@ -91,7 +91,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_THREADS		8
 
-#include "vers_id.h"
 #include "pstypes.h"
 #include "3d.h"
 #include "loadgamedata.h"

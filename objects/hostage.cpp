@@ -25,6 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hostage.h"
 #include "newdemo.h"
 #include "text.h"
+#include "vers_id.h"
 
 
 //------------- Globaly used hostage variables --------------------------------

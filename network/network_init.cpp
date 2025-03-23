@@ -27,6 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network_lib.h"
 #include "netmisc.h"
 #include "hogfile.h"
+#include "vers_id.h"
 
 #define SECURITY_CHECK	1
 
