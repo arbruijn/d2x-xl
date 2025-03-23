@@ -1576,10 +1576,9 @@ if (m_nModel >= 0)
 
 bLogOOF = (fLog != NULL) && FindArg ("-printoof");
 nIndent = 0;
-OOF_PrintLog ("\nreading %s%s\n", gameFolders.game.szModels, filename);
-if (bCustom 
-	 ? !cf.Open (filename, gameFolders.mods.szModels [bCustom - 1], "rb", 0)
-	 : !cf.Open (filename, gameFolders.game.szModels, "rb", 0)) {
+const char *folder = bCustom ? gameFolders.mods.szModels [bCustom - 1] : gameFolders.game.szModels;
+OOF_PrintLog ("\nreading %s%s\n", folder, filename);
+if (!cf.Open (filename, folder, "rb", 0)) {
 	OOF_PrintLog ("file not found");
 	return 0;
 	}
@@ -1616,6 +1615,7 @@ while (!cf.EoF ()) {
 	char chunkID [4];
 
 	if (!cf.Read (chunkID, sizeof (chunkID), 1)) {
+		OOF_PrintLog ("Read chunkID failed\n");
 		cf.Close ();
 		Destroy ();
 		return 0;
@@ -1625,6 +1625,7 @@ while (!cf.EoF ()) {
 	switch (ListType (chunkID)) {
 		case 0:
 			if (!ReadTextures (cf)) {
+				OOF_PrintLog ("ReadTextures failed\n");
 				Destroy ();
 				return 0;
 				}
@@ -1632,6 +1633,7 @@ while (!cf.EoF ()) {
 
 		case 1:
 			if (!ReadInfo (cf)) {
+				OOF_PrintLog ("ReadInfo failed\n");
 				Destroy ();
 				return 0;
 				}
@@ -1639,6 +1641,7 @@ while (!cf.EoF ()) {
 
 		case 2:
 			if (!m_subModels [nSubModels].Read (cf, this, bFlipV)) {
+				OOF_PrintLog ("subModel.Read failed\n");
 				Destroy ();
 				return 0;
 				}
@@ -1647,6 +1650,7 @@ while (!cf.EoF ()) {
 
 		case 3:
 			if (!m_gunPoints.Read (cf, m_nVersion >= 1908, MAX_GUNS)) {
+				OOF_PrintLog ("gunPoints.Read failed\n");
 				Destroy ();
 				return 0;
 				}
@@ -1654,6 +1658,7 @@ while (!cf.EoF ()) {
 
 		case 4:
 			if (!m_specialPoints.Read (cf)) {
+				OOF_PrintLog ("specialPoints.Read failed\n");
 				Destroy ();
 				return 0;
 				}
@@ -1661,6 +1666,7 @@ while (!cf.EoF ()) {
 
 		case 5:
 			if (!m_attachPoints.Read (cf)) {
+				OOF_PrintLog ("attachPoints.Read failed\n");
 				Destroy ();
 				return 0;
 				}
@@ -1672,6 +1678,7 @@ while (!cf.EoF ()) {
 				m_frameInfo.m_nFrames = OOF_ReadInt (cf, "nFrames");
 			for (i = 0; i < m_nSubModels; i++)
 				if (!m_subModels [i].m_posAnim.Read (cf, this, bTimed)) {
+					OOF_PrintLog ("posAnim.Read failed\n");
 					Destroy ();
 					return 0;
 					}
@@ -1686,6 +1693,7 @@ while (!cf.EoF ()) {
 				m_frameInfo.m_nFrames = OOF_ReadInt (cf, "nFrames");
 			for (i = 0; i < m_nSubModels; i++)
 				if (!m_subModels [i].m_rotAnim.Read (cf, this, bTimed)) {
+					OOF_PrintLog ("rotAnim.Read failed\n");
 					Destroy ();
 					return 0;
 					}
@@ -1695,6 +1703,7 @@ while (!cf.EoF ()) {
 
 		case 9:
 			if (!m_armament.Read (cf)) {
+				OOF_PrintLog ("armament.Read failed\n");
 				Destroy ();
 				return 0;
 				}
@@ -1702,6 +1711,7 @@ while (!cf.EoF ()) {
 
 		case 10:
 			if (!m_attachPoints.ReadNormals (cf)) {
+				OOF_PrintLog ("attachPoints.ReadNormals failed\n");
 				Destroy ();
 				return 0;
 				}
