@@ -188,7 +188,7 @@ if (m_pBm->BPP () == 3) {
 		}
 	avgColor.Alpha () = 1.0f;
 	}
-else {
+else if (m_pBm->BPP () == 4) { // can also be 1 BPP for png files
 	int32_t nSuperTransp;
 
 	if (!(nFrames = h / w))
@@ -615,6 +615,8 @@ if (!m_cf.Exist (szImage, NULL, 0)) {
 	}
 
 SDL_Surface*	pImage;
+SDL_PixelFormat*pFmt;
+bool bSwapRB;
 
 m_pBm->SetName (pszFile);
 if (!(pImage = IMG_Load (szImage)))
@@ -624,9 +626,12 @@ m_pBm->SetHeight (pImage->h);
 m_pBm->SetBPP (pImage->format->BytesPerPixel);
 if (!m_pBm->CreateBuffer ())
 	return 0;
-memcpy (m_pBm->Buffer (), pImage->pixels, m_pBm->Size ());
+pFmt = pImage->format;
+memcpy (m_pBm->Buffer (), pImage->pixels,
+	pImage->w * pImage->h * pFmt->BytesPerPixel); // don't use m_pBm->Size(), has min size for 1 BPP
 SDL_FreeSurface (pImage);
-SetProperties (alpha, bGrayScale, brightness);
+bSwapRB = pFmt->Rshift == 16 && pFmt->Gshift == 8 && pFmt->Bshift == 0;
+SetProperties (alpha, bGrayScale, brightness, bSwapRB);
 return 1;
 }
 
