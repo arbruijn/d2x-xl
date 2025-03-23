@@ -307,6 +307,8 @@ int32_t CRotAnim::Read (CFile& cf, CModel* po, int32_t bTimed)
 {
 if (!this->CFrameInfo::Read (cf, po, bTimed))
 	return 0;
+if (!m_nFrames)
+	return 1;
 if (!m_frames.Create (m_nFrames, "OOF::CRotAmin::m_frames"))
 	return 0;
 m_frames.Clear (0);
