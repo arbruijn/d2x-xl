@@ -279,6 +279,15 @@ if (!fp && (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.game.szA
 		}
 	}
 //if (!fp) PrintLog (0, "CFGetFileHandle (): error opening %s\n", pfn);
+if (!fp) {
+	int n = strlen(filename);
+	if (n > 4 && n < PATH_MAX && stricmp(filename + n - 4, ".tga") == 0) {
+		char buf[PATH_MAX];
+		memcpy(buf, filename, n - 4);
+		strcpy(buf + n - 4, ".png");
+		return GetFileHandle(buf, folder, mode);
+		}
+	}
 return fp;
 }
 
@@ -341,6 +350,13 @@ if ((fp = hogFileManager.Find (pfn, &length, bUseD1Hog))) {
 	fclose (fp);
 	return 2;		// file found in hogP
 	}
+int n = strlen(pfn);
+if (n > 4 && n < PATH_MAX && stricmp(pfn + n - 4, ".tga") == 0) {
+	char buf[PATH_MAX];
+	memcpy(buf, pfn, n - 4);
+	strcpy(buf + n - 4, ".png");
+	return Exist(buf, folder, bUseD1Hog);
+}
 return 0;		// Couldn't find it.
 }
 
