@@ -425,7 +425,7 @@ else if ((ps = strstr (m_szBackground, ".pcx"))) {
 	}
 
 
-if (strstr (m_szBackground, ".tga")) {
+if (strstr (m_szBackground, ".tga") || strstr(m_szBackground, ".png")) {
 	CTGA tga (&m_background);
 	if (!tga.Read (m_szBackground, gameFolders.game.szData [0], -1, 1.0, 0))
 		return PCX_ERROR_OPENING;

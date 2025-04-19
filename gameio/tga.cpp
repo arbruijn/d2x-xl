@@ -161,7 +161,8 @@ if (m_pBm->BPP () == 3) {
 #		pragma omp for reduction (+: nVisible)
 			for (int32_t i = 0; i < j; i++) {
 				if (p [i].Red () || p [i].Green () || p [i].Blue ()) {
-					::Swap (p [i].Red (), p [i].Blue ());
+					if (bSwapRB)
+						::Swap (p [i].Red (), p [i].Blue ());
 					ac [tId].Red () += p [i].Red ();
 					ac [tId].Green () += p [i].Green ();
 					ac [tId].Blue () += p [i].Blue ();
@@ -179,7 +180,8 @@ if (m_pBm->BPP () == 3) {
 #endif
 	for (int32_t i = 0, j = w * h; i < j; i++) {
 		if (p [i].Red () || p [i].Green () || p [i].Blue ()) {
-			::Swap (p [i].Red (), p [i].Blue ());
+			if (bSwapRB)
+				::Swap (p [i].Red (), p [i].Blue ());
 			avgColor.Red () += p [i].Red ();
 			avgColor.Green () += p [i].Green ();
 			avgColor.Blue () += p [i].Blue ();
@@ -586,11 +588,56 @@ return m_header.Write (m_cf, m_pBm) && WriteData ();
 
 #if USE_SDL_IMAGE
 
+static int rwops_seek(SDL_RWops* rw, int offset, int whence)
+{
+    CFile* cf = (CFile*)rw->hidden.unknown.data1;
+    return (int)cf->Seek (offset, whence);
+}
+
+static int rwops_read(SDL_RWops *rw, void *ptr, int size, int maxnum)
+{
+    CFile* cf = (CFile*)rw->hidden.unknown.data1;
+    return (int)cf->Read (ptr, size, maxnum);
+}
+
+static int rwops_write(SDL_RWops *rw, const void *ptr, int size, int num)
+{
+    CFile* cf = (CFile*)rw->hidden.unknown.data1;
+    return (int)cf->Write (ptr, size, num);
+}
+
+static int rwops_close(SDL_RWops *rw)
+{
+	CFile* cf = (CFile*)rw->hidden.unknown.data1;
+	if (cf->Close ())
+		return EOF;
+    SDL_FreeRW(rw);
+    return 0;
+}
+
+static SDL_RWops *create_rwops(CFile* cf)
+{
+	SDL_RWops *retval = NULL;
+
+	if (!(retval = SDL_AllocRW ()))
+		return NULL;
+
+	retval->seek  = rwops_seek;
+	retval->read  = rwops_read;
+	retval->write = rwops_write;
+	retval->close = rwops_close;
+	retval->hidden.unknown.data1 = (void *)cf;
+
+	return retval;
+}
+
 int32_t CTGA::ReadImage (const char* pszFile, const char* pszFolder, int32_t alpha, double brightness, int32_t bGrayScale)
 {
-	char	szFolder [FILENAME_LEN], szFile [FILENAME_LEN], szExt [FILENAME_LEN], szImage [FILENAME_LEN];
 	CFile	cf;
+	char szFile [FILENAME_LEN], *p;
 
+#if 0
+	char	szFolder [FILENAME_LEN], szFile [FILENAME_LEN], szExt [FILENAME_LEN], szImage [FILENAME_LEN];
 m_cf.SplitPath (pszFile, szFolder, szFile, szExt);
 if (!pszFolder)
 	pszFolder = gameFolders.game.szData [0];
@@ -613,24 +660,68 @@ if (!m_cf.Exist (szImage, NULL, 0)) {
 		return 0;
 #	endif
 	}
+#endif
 
 SDL_Surface*	pImage;
 SDL_PixelFormat*pFmt;
 bool bSwapRB;
+int32_t nBpp;
 
 m_pBm->SetName (pszFile);
-if (!(pImage = IMG_Load (szImage)))
-	return 0;
-m_pBm->SetWidth (pImage->w);
-m_pBm->SetHeight (pImage->h);
-m_pBm->SetBPP (pImage->format->BytesPerPixel);
-if (!m_pBm->CreateBuffer ())
+strcpy (szFile, pszFile);
+if (!(p = strrchr(szFile, '.')))
+	p = szFile + strlen(szFile);
+strcpy(p, ".png");
+//printf("szFile: %s\n", szFile);
+cf.Open (szFile, pszFolder, "rb", 0);
+SDL_RWops *rw = create_rwops(&cf);
+pImage = IMG_LoadTyped_RW (rw, 0, "PNG");
+SDL_FreeRW(rw);
+cf.Close();
+if (!pImage)
 	return 0;
 pFmt = pImage->format;
-memcpy (m_pBm->Buffer (), pImage->pixels,
-	pImage->w * pImage->h * pFmt->BytesPerPixel); // don't use m_pBm->Size(), has min size for 1 BPP
+nBpp = pFmt->BytesPerPixel == 2 ? 1 : pFmt->BytesPerPixel; // bug in SDL_image with grayscale with alpha
+m_pBm->ReleaseTexture ();
+m_pBm->SetWidth (pImage->w);
+m_pBm->SetHeight (pImage->h);
+m_pBm->SetBPP (nBpp == 1 ? 4 : nBpp);
+if (!m_pBm->CreateBuffer ())
+	return 0;
+if (nBpp == 1) {
+	uint8_t *src = (uint8_t*)pImage->pixels;
+	uint32_t *dst = (uint32_t*)m_pBm->Buffer ();
+	int32_t size = pImage->w * pImage->h;
+	if (pFmt->palette) {
+		uint32_t pal32[256];
+		int32_t n = pFmt->palette->ncolors;
+		SDL_Color* c = pFmt->palette->colors;
+		for (int32_t i = 0; i < n; i++, c++)
+			pal32[i] = 0xff000000 | (c->b << 16) | (c->g << 8) | c->r;
+		if (pImage->flags & SDL_SRCCOLORKEY)
+			pal32[pFmt->colorkey] = 0;
+		while (size--)
+			*dst++ = pal32[*src++];
+		}
+	else if (pImage->flags & SDL_SRCCOLORKEY) {
+		uint8_t ckey = pFmt->colorkey;
+		while (size--) {
+			uint8_t c = *src++;
+			*dst++ = c == ckey ? 0 : 0xff000000 | c * 0x010101;
+			}
+		}
+	else {
+		while (size--)
+			*dst++ = 0xff000000 | *src++ * 0x010101;
+		}
+	bSwapRB = false;
+	}
+else {
+	memcpy (m_pBm->Buffer (), pImage->pixels,
+		pImage->w * pImage->h * nBpp); // don't use m_pBm->Size(), has min size for 1 BPP
+	bSwapRB = pFmt->Rshift == 16 && pFmt->Gshift == 8 && pFmt->Bshift == 0;
+	}
 SDL_FreeSurface (pImage);
-bSwapRB = pFmt->Rshift == 16 && pFmt->Gshift == 8 && pFmt->Bshift == 0;
 SetProperties (alpha, bGrayScale, brightness, bSwapRB);
 return 1;
 }

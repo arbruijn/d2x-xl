@@ -109,7 +109,15 @@ if ((l = (int32_t) strlen (szFolder))) {
 			szFolder [l-1] = '\0';
 		}
 	}
-if (!(i = FFF (szFolder, &ffs, *szFilter == '\0'))) {
+i = FFF (szFolder, &ffs, *szFilter == '\0');
+if (i && *szFilter) {
+	int32_t n = strlen(szFolder);
+	if (n > 4 && strcmp(szFolder + n - 4, ".tga") == 0) {
+		strcpy(szFolder + n - 4, ".png");
+		i = FFF (szFolder, &ffs, *szFilter == '\0');
+		}
+	}
+if (!i) {
 	if (szDestFolder != szSubFolder) {
 		memcpy (szDestFolder, szFolder, l);
 		szDestFolder [l] = '\0';
