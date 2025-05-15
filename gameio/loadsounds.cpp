@@ -573,7 +573,7 @@ Mix_Chunk *LoadAddonSound (const char *pszSoundFile, uint8_t *bBuiltIn)
 {
 	Mix_Chunk*		pChunk;
 	char				szWAV [FILENAME_LEN];
-	const char*		pszFolder, * pszFile;
+	const char*		pszFolder, * pszFile, * pszPath;
 	int32_t				i;
 	CFile				cf;
 
@@ -607,7 +607,16 @@ else {
 	pszFile = const_cast<char*>(pszSoundFile);
 	}
 sprintf (szWAV, "%s%s", pszFolder, pszFile);
-if (!(pChunk = Mix_LoadWAV (szWAV)))
+#ifdef WIN32
+wchar_t wbuf[PATH_MAX];
+char buf[PATH_MAX];
+int n = MultiByteToWideChar(CP_ACP, 0, szWAV, -1, wbuf, sizeof(wbuf) / sizeof(wbuf[0]));
+WideCharToMultiByte(CP_UTF8, 0, wbuf, n, buf, sizeof(buf), NULL, NULL);
+pszPath = buf;
+#else
+pszPath = szWAV;
+#endif
+if (!(pChunk = Mix_LoadWAV (pszPath)))
 	return NULL;
 if (i >= 0)
 	addonSounds [i].pChunk = pChunk;

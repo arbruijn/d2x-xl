@@ -173,8 +173,12 @@ if (gameOpts->sound.bUseSDLMixer) {
 			}
 		pfnSong = fnSong;
 		}
+	wchar_t wbuf[PATH_MAX];
+	char buf[PATH_MAX];
+	int n = MultiByteToWideChar(CP_ACP, 0, pfnSong, -1, wbuf, sizeof(wbuf) / sizeof(wbuf[0]));
+	WideCharToMultiByte(CP_UTF8, 0, wbuf, n, buf, sizeof(buf), NULL, NULL);
 	try {
-		m_music = Mix_LoadMUS (pfnSong);
+		m_music = Mix_LoadMUS (buf);
 		}
 	catch (...) {	// critical problem in midi playback -> turn it off
 		SetVolume (gameConfig.nMidiVolume = 0);
