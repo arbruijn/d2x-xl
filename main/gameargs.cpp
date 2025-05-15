@@ -212,6 +212,8 @@ else
 #	endif //__macosx__
 if ((t = FindArg ("-sdl_mixer")))
 	gameOptions [0].sound.bUseSDLMixer = NumArg (t, 1);
+else
+	gameOptions [0].sound.bUseSDLMixer = 1;
 #endif //USE_SDL_MIXER
 if ((t = FindArg ("-midifix")))
 	gameStates.sound.bMidiFix = NumArg (t, 1);
