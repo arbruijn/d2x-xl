@@ -873,6 +873,8 @@ ENTER (0, 0);
 if (!InternalSetup (fSlowDown, nFormat, NULL))
 	RETVAL (0)
 SDL_QuitSubSystem (SDL_INIT_AUDIO);
+if (!gameStates.app.bUseSound)
+	RETVAL (1)
 if (!InternalSetup (fSlowDown, nFormat, "alsa"))
 	RETVAL (0)
 SDL_QuitSubSystem (SDL_INIT_AUDIO);
