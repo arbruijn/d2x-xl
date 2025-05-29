@@ -110,7 +110,7 @@ if (!(text = StrDup (value)))
 if (m_text)
 	delete[] m_text;
 m_text = text;
-m_value = strtod (value, reinterpret_cast<char **> (NULL));
+m_value = strtod (value, NULL);
 }
 
 //------------------------------------------------------------------------------

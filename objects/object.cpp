@@ -285,7 +285,7 @@ CObject *ObjFindFirstOfType (int32_t nType)
 FORALL_OBJS (pObj)
 	if (pObj->info.nType == nType)
 		return (pObj);
-return reinterpret_cast<CObject*> (NULL);
+return NULL;
 }
 
 //------------------------------------------------------------------------------
