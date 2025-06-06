@@ -274,7 +274,8 @@ pObj->mType.physInfo.rotVel.SetZero (); // better safe than sorry ...
 int32_t CObject::PowerupToDevice (void)
 {
 ENTER (0, 0);
-if (gameStates.app.bNostalgia)
+if (gameStates.app.bNostalgia ||
+	(gameData.demoData.nState == ND_STATE_PLAYBACK && gameData.demoData.bUseShortPos)) // shortpos -> non-xl demo
 	RETVAL (0)
 if (!gameOpts->Use3DPowerups ())
 	RETVAL (0)
