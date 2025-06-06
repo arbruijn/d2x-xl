@@ -1065,7 +1065,7 @@ void COGL::SwapInterval (int32_t nInterval)
 #ifdef WIN32
 	wglSwapIntervalEXT (nInterval);
 #else
-	glXSwapIntervalEXT (glXGetCurrentDisplay (), glXGetCurrentDrawable (), nInterval);
+	//glXSwapIntervalEXT (glXGetCurrentDisplay (), glXGetCurrentDrawable (), nInterval);
 #endif
 }
 

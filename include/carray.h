@@ -259,7 +259,7 @@ class CArray : public CQuickSort < _T > {
 		// ----------------------------------------
 
 		void SetBuffer (_T *buffer, int32_t nMode = 0, uint32_t length = 0xffffffff) {
-			if (m_data.buffer != buffer) {
+			//if (m_data.buffer != buffer) {
 				if (!(m_data.buffer = buffer))
 					Init ();
 				else {
@@ -267,7 +267,7 @@ class CArray : public CQuickSort < _T > {
 					m_data.nMode = nMode;
 					}
 				}
-			}
+			//}
 			
 		// ----------------------------------------
 

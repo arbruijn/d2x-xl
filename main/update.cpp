@@ -195,7 +195,9 @@ CDownload* CDownload::m_handler = NULL;
 #	define FILEEXT		"rar"
 #	define FILETYPE	"src"
 
+#if 0
 #include <curl/curl.h>
+#endif
 #include <cstdio>
 
 // ----------------------------------------------------------------------------
@@ -225,6 +227,7 @@ class CLinuxDownload : public CDownload {
 			}
 
 		virtual int32_t Fetch (void) {
+#if 0
 			CURL* hCurl;
 			if (!(hCurl = curl_easy_init ()))
 				return m_nResult = 1;
@@ -259,6 +262,7 @@ class CLinuxDownload : public CDownload {
 			curl_easy_cleanup (hCurl);
 			std::fclose (file);
 			m_nState = 1;
+#endif			
 			return m_nResult = 0;
 			}
 	};
