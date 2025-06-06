@@ -62,6 +62,7 @@ void DoJasonInterpolate (fix xRecordedTime);
 
 static int8_t	bNDBadRead;
 static int32_t		bRevertFormat = -1;
+static int8_t	bDemoD1;
 
 void DemoError (void)
 {
@@ -132,6 +133,9 @@ PrintLog (0, "Error in demo playback\n");
 #define DEMO_VERSION_D2X        20      // last D1 version was 13
 #define DEMO_GAME_TYPE          3       // 1 was shareware, 2 registered
 
+#define DEMO_VERSION_D1         13      // last D1 version was 13
+#define DEMO_GAME_TYPE_D1       2       // 1 was shareware, 2 registered
+
 #define DEMO_FILENAME           "tmpdemo.dem"
 
 CFile ndInFile;
@@ -198,6 +202,7 @@ pObj->info.position.mOrient.m.dir.f.v.coord.y = *sp++ << MATRIX_PRECISION;
 pObj->info.position.mOrient.m.dir.r.v.coord.z = *sp++ << MATRIX_PRECISION;
 pObj->info.position.mOrient.m.dir.u.v.coord.z = *sp++ << MATRIX_PRECISION;
 pObj->info.position.mOrient.m.dir.f.v.coord.z = *sp++ << MATRIX_PRECISION;
+pObj->info.position.mOrient.CheckAndFix ();
 nSegment = spp->nSegment;
 pObj->info.nSegment = nSegment;
 const CFixVector& v = gameData.segData.vertices [SEGMENT (nSegment)->m_vertices [0]];
@@ -724,6 +729,10 @@ switch (pObj->info.renderType) {
 		int32_t i, tmo;
 		if ((pObj->info.nType != OBJ_ROBOT) && (pObj->info.nType != OBJ_PLAYER) && (pObj->info.nType != OBJ_CLUTTER)) {
 			pObj->rType.polyObjInfo.nModel = NDReadInt ();
+			if (bDemoD1 && pObj->info.nType == OBJ_WEAPON)
+				pObj->rType.polyObjInfo.nModel = WEAPONINFO (pObj->info.nId)->nModel;
+			if (bDemoD1 && pObj->info.nType == OBJ_REACTOR)
+				pObj->rType.polyObjInfo.nModel = gameData.reactorData.props [0].nModel;
 			pObj->rType.polyObjInfo.nSubObjFlags = NDReadInt ();
 			}
 		if ((pObj->info.nType != OBJ_PLAYER) && (pObj->info.nType != OBJ_DEBRIS))
@@ -1789,6 +1798,7 @@ if ((c != ND_EVENT_START_DEMO) || bNDBadRead) {
 if (bRevertFormat > 0)
 	bRevertFormat = 0;
 gameData.demoData.nVersion = NDReadByte ();
+bDemoD1 = gameData.demoData.nVersion == DEMO_VERSION_D1;
 if (gameOpts->demo.bRevertFormat && !bRevertFormat) {
 	if (gameData.demoData.nVersion == DEMO_VERSION)
 		bRevertFormat = -1;
@@ -1798,21 +1808,21 @@ if (gameOpts->demo.bRevertFormat && !bRevertFormat) {
 		}
 	}
 gameType = NDReadByte ();
-if (gameType < DEMO_GAME_TYPE) {
+if (gameType < (bDemoD1 ? DEMO_GAME_TYPE_D1 : DEMO_GAME_TYPE)) {
 	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_RECORDED);
 	return NDErrorMsg (szMsg, "    In Descent: First Strike", NULL);
 	}
-if (gameType != DEMO_GAME_TYPE) {
+if (gameType != (bDemoD1 ? DEMO_GAME_TYPE_D1 : DEMO_GAME_TYPE)) {
 	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_RECORDED);
 	return NDErrorMsg (szMsg, "   In Unknown Descent version", NULL);
 	}
-if (gameData.demoData.nVersion < DEMO_VERSION) {
+if (gameData.demoData.nVersion < (bDemoD1 ? DEMO_VERSION_D1 : DEMO_VERSION)) {
 	if (bRandom)
 		return 1;
 	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_DEMO_OLD);
 	return NDErrorMsg (szMsg, NULL, NULL);
 	}
-gameData.demoData.bUseShortPos = (gameData.demoData.nVersion == DEMO_VERSION);
+gameData.demoData.bUseShortPos = bDemoD1 || (gameData.demoData.nVersion == DEMO_VERSION);
 gameData.timeData.xGame = NDReadFix ();
 gameData.bossData.ResetCloakTimes ();
 gameData.demoData.xJasonPlaybackTotal = 0;
@@ -1847,9 +1857,9 @@ if (gameData.demoData.nGameMode & GM_MULTI) {
 	}
 else
 	LOCALPLAYER.score = NDReadInt ();      // Note link to above if!
-for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
+for (i = 0; i < (bDemoD1 ? MAX_D1_PRIMARY_WEAPONS : MAX_PRIMARY_WEAPONS); i++)
 	LOCALPLAYER.primaryAmmo [i] = NDReadShort ();
-for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
+for (i = 0; i < (bDemoD1 ? MAX_D1_SECONDARY_WEAPONS : MAX_SECONDARY_WEAPONS); i++)
 	LOCALPLAYER.secondaryAmmo [i] = NDReadShort ();
 laserLevel = NDReadByte ();
 if (laserLevel != LOCALPLAYER.LaserLevel ()) {
@@ -1860,7 +1870,9 @@ if (laserLevel != LOCALPLAYER.LaserLevel ()) {
 NDReadString (szCurrentMission);
 nVersionFilter = gameOpts->app.nVersionFilter;
 gameOpts->app.nVersionFilter = 3;	//make sure mission will be loaded
-i = missionManager.LoadByName (szCurrentMission, -1);
+i = bDemoD1 && !szCurrentMission[0] ?
+	(missionManager.BuildList (1, -1), missionManager.Load (missionManager.nBuiltInMission [1])) :
+	missionManager.LoadByName (szCurrentMission, -1);
 gameOpts->app.nVersionFilter = nVersionFilter;
 if (!i) {
 	if (bRandom)
@@ -1992,12 +2004,13 @@ while (!bDone) {
 			if (gameData.demoData.nVcrState == ND_STATE_PLAYBACK)
 				gameData.demoData.xRecordedTotal += gameData.demoData.xRecordedTime;
 			gameData.demoData.nFrameCount--;
+			++gameData.objData.nFrameCount; // invalidates caches
 			CATCH_BAD_READ
 			break;
 			}
 
 		case ND_EVENT_VIEWER_OBJECT:        // Followed by an CObject structure
-			WhichWindow = NDReadByte ();
+			WhichWindow = bDemoD1 ? 0 : NDReadByte ();
 			if (WhichWindow&15) {
 				NDReadObject (&extraobj);
 				if (gameData.demoData.nVcrState != ND_STATE_PAUSED) {
@@ -2138,12 +2151,12 @@ while (!bDone) {
 			nSegment = NDReadInt ();
 			nSide = NDReadInt ();
 			nObject = NDReadInt ();
-			bShot = NDReadInt ();
+			bShot = bDemoD1 ? 0 : NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demoData.nVcrState != ND_STATE_PAUSED) {
 				CSegment*	pSeg = SEGMENT (nSegment);
 				CTrigger*	pTrigger = pSeg->Trigger (nSide);
-				if (pTrigger && (pTrigger->m_info.nType == TT_SECRET_EXIT)) {
+				if (!bDemoD1 && pTrigger && (pTrigger->m_info.nType == TT_SECRET_EXIT)) {
 					int32_t truth;
 
 					nTag = NDReadByte ();
@@ -2812,7 +2825,7 @@ while (!bDone) {
 				return -1;
 			meshBuilder.ComputeFaceKeys ();
 			gameData.demoData.bCtrlcenDestroyed = 0;
-			if (bJustStartedPlayback) {
+			if (bJustStartedPlayback && !bDemoD1) {
 				gameData.wallData.nWalls = NDReadInt ();
 				for (i = 0; i < gameData.wallData.nWalls; i++) {   // restore the walls
 					WALL (i)->nType = NDReadByte ();
@@ -3688,11 +3701,15 @@ void DoJasonInterpolate (fix xRecordedTime)
 gameData.demoData.xJasonPlaybackTotal += gameData.timeData.xFrame;
 if (!gameData.demoData.bFirstTimePlayback) {
 	// get the difference between the recorded time and the playback time
+	if (gameData.demoData.xJasonPlaybackTotal < gameData.demoData.xRecordedTotal) {
+		TimerDelay (gameData.demoData.xRecordedTotal - gameData.demoData.xJasonPlaybackTotal);
+		return;
+	}
 	xDelay = (xRecordedTime - gameData.timeData.xFrame);
 	if (xDelay >= 0) {
-		StopTime ();
-		TimerDelay (xDelay);
-		StartTime (0);
+		//StopTime ();
+		//TimerDelay (xDelay);
+		//StartTime (0);
 		}
 	else {
 		while (gameData.demoData.xJasonPlaybackTotal > gameData.demoData.xRecordedTotal)
