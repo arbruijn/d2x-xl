@@ -62,6 +62,7 @@ void DoJasonInterpolate (fix xRecordedTime);
 
 static int8_t	bNDBadRead;
 static int32_t		bRevertFormat = -1;
+static int8_t	bDemoD1;
 
 void DemoError (void)
 {
@@ -123,6 +124,51 @@ PrintLog (0, "Error in demo playback\n");
 #define ND_EVENT_LINK_SOUND_TO_OBJ  49  // record audio.CreateObjectSound
 #define ND_EVENT_KILL_SOUND_TO_OBJ  50  // record audio.DestroyObjectSound
 
+#define ND_EVENT_D1_EOF					0			// EOF
+#define ND_EVENT_D1_START_DEMO		1			// Followed by 16 character, NULL terminated filename of .SAV file to use
+#define ND_EVENT_D1_START_FRAME		2			// Followed by integer frame number, then a fix FrameTime
+#define ND_EVENT_D1_VIEWER_OBJECT	3			// Followed by an object structure
+#define ND_EVENT_D1_RENDER_OBJECT	4			// Followed by an object structure
+#define ND_EVENT_D1_SOUND				5			// Followed by int soundum
+#define ND_EVENT_D1_SOUND_ONCE		6			// Followed by int soundum
+#define ND_EVENT_D1_SOUND_3D			7			// Followed by int soundum, int angle, int volume
+#define ND_EVENT_D1_WALL_HIT_PROCESS 8			// Followed by int segnum, int side, fix damage
+#define ND_EVENT_D1_TRIGGER			9			// Followed by int segnum, int side, int objnum
+#define ND_EVENT_D1_HOSTAGE_RESCUED 10			// Followed by int hostage_type
+#define ND_EVENT_D1_SOUND_3D_ONCE	11			// Followed by int soundum, int angle, int volume
+#define ND_EVENT_D1_MORPH_FRAME		12			// Followed by ? data
+#define ND_EVENT_D1_WALL_TOGGLE		13			// Followed by int seg, int side
+#define ND_EVENT_D1_HUD_MESSAGE		14			// Followed by char size, char * string (+null)
+#define ND_EVENT_D1_CONTROL_CENTER_DESTROYED 15	// Just a simple flag
+#define ND_EVENT_D1_PALETTE_EFFECT	16			// Followed by short r,g,b
+#define ND_EVENT_D1_PLAYER_ENERGY   17       // followed by byte energy
+#define ND_EVENT_D1_PLAYER_SHIELD   18       // followed by byte shields
+#define ND_EVENT_D1_PLAYER_FLAGS    19			// followed by player flags
+#define ND_EVENT_D1_PLAYER_WEAPON   20       // followed by weapon type and weapon number
+#define ND_EVENT_D1_EFFECT_BLOWUP   21			// followed by segment, side, and pnt
+#define ND_EVENT_D1_HOMING_DISTANCE 22			// followed by homing distance
+#define ND_EVENT_D1_LETTERBOX       23       // letterbox mode for death seq.
+#define ND_EVENT_D1_RESTORE_COCKPIT 24			// restore cockpit after death
+#define ND_EVENT_D1_REARVIEW        25			// going to rear view mode
+#define ND_EVENT_D1_WALL_SET_TMAP_NUM1 26		// Wall changed
+#define ND_EVENT_D1_WALL_SET_TMAP_NUM2 27		// Wall changed
+#define ND_EVENT_D1_NEW_LEVEL			28			// followed by level number
+#define ND_EVENT_D1_MULTI_CLOAK		29			// followed by player num
+#define ND_EVENT_D1_MULTI_DECLOAK	30			// followed by player num
+#define ND_EVENT_D1_RESTORE_REARVIEW	31		// restore cockpit after rearview mode
+#define ND_EVENT_D1_MULTI_DEATH		32			// with player number
+#define ND_EVENT_D1_MULTI_KILL		33			// with player number
+#define ND_EVENT_D1_MULTI_CONNECT	34			// with player number
+#define ND_EVENT_D1_MULTI_RECONNECT	35			// with player number
+#define ND_EVENT_D1_MULTI_DISCONNECT	36		// with player number
+#define ND_EVENT_D1_MULTI_SCORE		37			// playernum / score
+#define ND_EVENT_D1_PLAYER_SCORE		38			// followed by score
+#define ND_EVENT_D1_PRIMARY_AMMO		39			// with old/new ammo count
+#define ND_EVENT_D1_SECONDARY_AMMO	40			// with old/new ammo count
+#define ND_EVENT_D1_DOOR_OPENING		41			// with segment/side
+#define ND_EVENT_D1_LASER_LEVEL		42			// no data
+
+
 
 #define NORMAL_PLAYBACK         0
 #define SKIP_PLAYBACK           1
@@ -131,6 +177,9 @@ PrintLog (0, "Error in demo playback\n");
 
 #define DEMO_VERSION_D2X        20      // last D1 version was 13
 #define DEMO_GAME_TYPE          3       // 1 was shareware, 2 registered
+
+#define DEMO_VERSION_D1         13      // last D1 version was 13
+#define DEMO_GAME_TYPE_D1       2       // 1 was shareware, 2 registered
 
 #define DEMO_FILENAME           "tmpdemo.dem"
 
@@ -724,6 +773,10 @@ switch (pObj->info.renderType) {
 		int32_t i, tmo;
 		if ((pObj->info.nType != OBJ_ROBOT) && (pObj->info.nType != OBJ_PLAYER) && (pObj->info.nType != OBJ_CLUTTER)) {
 			pObj->rType.polyObjInfo.nModel = NDReadInt ();
+			if (bDemoD1 && pObj->info.nType == OBJ_WEAPON)
+				pObj->rType.polyObjInfo.nModel = WEAPONINFO (pObj->info.nId)->nModel;
+			if (bDemoD1 && pObj->info.nType == OBJ_REACTOR)
+				pObj->rType.polyObjInfo.nModel = gameData.reactorData.props [0].nModel;
 			pObj->rType.polyObjInfo.nSubObjFlags = NDReadInt ();
 			}
 		if ((pObj->info.nType != OBJ_PLAYER) && (pObj->info.nType != OBJ_DEBRIS))
@@ -1782,10 +1835,11 @@ int32_t NDReadDemoStart (int32_t bRandom)
 	char	szMsg [128], szCurrentMission [FILENAME_LEN];
 
 c = NDReadByte ();
-if ((c != ND_EVENT_START_DEMO) || bNDBadRead) {
+if ((c != ND_EVENT_START_DEMO) && (c != ND_EVENT_D1_START_DEMO) || bNDBadRead) {
 	sprintf (szMsg, "%s\n%s", TXT_CANT_PLAYBACK, TXT_DEMO_CORRUPT);
 	return NDErrorMsg (szMsg, NULL, NULL);
 	}
+bDemoD1 = c == ND_EVENT_D1_START_DEMO;
 if (bRevertFormat > 0)
 	bRevertFormat = 0;
 gameData.demoData.nVersion = NDReadByte ();
@@ -1798,21 +1852,21 @@ if (gameOpts->demo.bRevertFormat && !bRevertFormat) {
 		}
 	}
 gameType = NDReadByte ();
-if (gameType < DEMO_GAME_TYPE) {
+if (gameType < (bDemoD1 ? DEMO_GAME_TYPE_D1 : DEMO_GAME_TYPE)) {
 	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_RECORDED);
 	return NDErrorMsg (szMsg, "    In Descent: First Strike", NULL);
 	}
-if (gameType != DEMO_GAME_TYPE) {
+if (gameType != (bDemoD1 ? DEMO_GAME_TYPE_D1 : DEMO_GAME_TYPE)) {
 	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_RECORDED);
 	return NDErrorMsg (szMsg, "   In Unknown Descent version", NULL);
 	}
-if (gameData.demoData.nVersion < DEMO_VERSION) {
+if (gameData.demoData.nVersion < (bDemoD1 ? DEMO_VERSION_D1 : DEMO_VERSION)) {
 	if (bRandom)
 		return 1;
 	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_DEMO_OLD);
 	return NDErrorMsg (szMsg, NULL, NULL);
 	}
-gameData.demoData.bUseShortPos = (gameData.demoData.nVersion == DEMO_VERSION);
+gameData.demoData.bUseShortPos = bDemoD1 || (gameData.demoData.nVersion == DEMO_VERSION);
 gameData.timeData.xGame = NDReadFix ();
 gameData.bossData.ResetCloakTimes ();
 gameData.demoData.xJasonPlaybackTotal = 0;
@@ -1847,9 +1901,9 @@ if (gameData.demoData.nGameMode & GM_MULTI) {
 	}
 else
 	LOCALPLAYER.score = NDReadInt ();      // Note link to above if!
-for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
+for (i = 0; i < (bDemoD1 ? MAX_D1_PRIMARY_WEAPONS : MAX_PRIMARY_WEAPONS); i++)
 	LOCALPLAYER.primaryAmmo [i] = NDReadShort ();
-for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
+for (i = 0; i < (bDemoD1 ? MAX_D1_SECONDARY_WEAPONS : MAX_SECONDARY_WEAPONS); i++)
 	LOCALPLAYER.secondaryAmmo [i] = NDReadShort ();
 laserLevel = NDReadByte ();
 if (laserLevel != LOCALPLAYER.LaserLevel ()) {
@@ -1860,7 +1914,9 @@ if (laserLevel != LOCALPLAYER.LaserLevel ()) {
 NDReadString (szCurrentMission);
 nVersionFilter = gameOpts->app.nVersionFilter;
 gameOpts->app.nVersionFilter = 3;	//make sure mission will be loaded
-i = missionManager.LoadByName (szCurrentMission, -1);
+i = bDemoD1 && !szCurrentMission[0] ?
+	(missionManager.BuildList (1, -1), missionManager.Load (missionManager.nBuiltInMission [1])) :
+	missionManager.LoadByName (szCurrentMission, -1);
 gameOpts->app.nVersionFilter = nVersionFilter;
 if (!i) {
 	if (bRandom)
@@ -1942,6 +1998,778 @@ else {
 
 //	-----------------------------------------------------------------------------
 
+int32_t NDReadFrameInfoD1 (void)
+{
+	int32_t bDone, nSegment, nTexture, nSide, nObject, soundno, angle, volume, i, bShot;
+	CObject *pObj;
+	uint8_t nTag, WhichWindow;
+	static int8_t saved_letter_cockpit;
+	static int8_t saved_rearview_cockpit;
+	CObject extraobj;
+	CSegment *pSeg;
+
+bDone = 0;
+nTag = 255;
+#if 0
+for (int32_t nObject = 1; nObject < gameData.objData.nLastObject [0]; nObject++)
+	if ((OBJECT (nObject)->info.nType != OBJ_NONE) && (OBJECT (nObject)->info.nType != OBJ_EFFECT))
+		ReleaseObject (nObject);
+#else
+if (gameData.demoData.nVcrState != ND_STATE_PAUSED)
+	ResetSegObjLists ();
+ResetObjects (1);
+#endif
+/*
+cameraManager.Destroy ();
+cameraManager.Create ();
+*/
+LOCALPLAYER.homingObjectDist = -I2X (1);
+pPrevObj = NULL;
+while (!bDone) {
+	nTag = NDReadByte ();
+	CATCH_BAD_READ
+	switch (nTag) {
+		case ND_EVENT_D1_START_FRAME: {        // Followed by an integer frame number, then a fix gameData.timeData.xFrame
+			bDone = 1;
+			if (bRevertFormat > 0)
+				bRevertFormat = 0;
+			NDReadShort ();
+			if (!bRevertFormat) {
+				NDWriteShort (gameData.demoData.nFrameBytesWritten - 1);
+				bRevertFormat = 1;
+				}
+			if (bRevertFormat > 0)
+				gameData.demoData.nFrameBytesWritten = 3;
+			gameData.demoData.nFrameCount = NDReadInt ();
+			gameData.demoData.xRecordedTime = NDReadInt ();
+			if (gameData.demoData.nVcrState == ND_STATE_PLAYBACK)
+				gameData.demoData.xRecordedTotal += gameData.demoData.xRecordedTime;
+			gameData.demoData.nFrameCount--;
+			CATCH_BAD_READ
+			break;
+			}
+
+		case ND_EVENT_D1_VIEWER_OBJECT:        // Followed by an CObject structure
+			gameData.SetViewer (OBJECTS.Buffer ());
+			NDReadObject (gameData.objData.pViewer);
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED) {
+				CATCH_BAD_READ
+				nSegment = gameData.objData.pViewer->info.nSegment;
+				gameData.objData.pViewer->info.nNextInSeg = 
+				gameData.objData.pViewer->info.nPrevInSeg = 
+				gameData.objData.pViewer->info.nSegment = -1;
+
+				// HACK HACK HACK -- since we have multiple level recording, it can be the case
+				// HACK HACK HACK -- that when rewinding the demo, the viewer is in a CSegment
+				// HACK HACK HACK -- that is greater than the highest index of segments.  Bash
+				// HACK HACK HACK -- the viewer to CSegment 0 for bogus view.
+
+				if (nSegment > gameData.segData.nLastSegment)
+					nSegment = 0;
+				gameData.objData.pViewer->LinkToSeg (nSegment);
+				}
+			break;
+
+		case ND_EVENT_D1_RENDER_OBJECT:       // Followed by an CObject structure
+			nObject = AllocObject ();
+			if (nObject == -1)
+				break;
+#if DBG
+			if (nObject == nDbgObj)
+				BRP;
+#endif
+			pObj = OBJECT (nObject);
+			NDReadObject (pObj);
+			CATCH_BAD_READ
+			if (pObj->info.controlType == CT_POWERUP)
+				pObj->DoPowerupFrame ();
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED) {
+				nSegment = pObj->info.nSegment;
+				pObj->info.nNextInSeg = pObj->info.nPrevInSeg = pObj->info.nSegment = -1;
+				// HACK HACK HACK -- don't render OBJECTS is segments greater than gameData.segData.nLastSegment
+				// HACK HACK HACK -- (see above)
+				if (nSegment > gameData.segData.nLastSegment)
+					break;
+				pObj->LinkToSeg (nSegment);
+				if ((pObj->info.nType == OBJ_PLAYER) && (gameData.demoData.nGameMode & GM_MULTI)) {
+					int32_t nPlayer = (gameData.demoData.nGameMode & GM_TEAM) ? GetTeam (pObj->info.nId) : (pObj->info.nId % MAX_PLAYER_COLORS) + 1;
+					if (nPlayer == 0)
+						break;
+					nPlayer--;
+					for (i = 0; i < N_PLAYER_SHIP_TEXTURES; i++)
+						mpTextureIndex [nPlayer][i] = gameData.pigData.tex.objBmIndex [gameData.pigData.tex.pObjBmIndex [gameData.modelData.polyModels [0][pObj->ModelId ()].FirstTexture () + i]];
+					mpTextureIndex [nPlayer][4] = gameData.pigData.tex.objBmIndex [gameData.pigData.tex.pObjBmIndex [gameData.pigData.tex.nFirstMultiBitmap + nPlayer * 2]];
+					mpTextureIndex [nPlayer][5] = gameData.pigData.tex.objBmIndex [gameData.pigData.tex.pObjBmIndex [gameData.pigData.tex.nFirstMultiBitmap + nPlayer * 2 + 1]];
+					pObj->rType.polyObjInfo.nAltTextures = nPlayer+1;
+					}
+				}
+			break;
+
+		case ND_EVENT_D1_SOUND:
+			soundno = NDReadInt ();
+			CATCH_BAD_READ
+			if (gameData.demoData.nVcrState == ND_STATE_PLAYBACK)
+				audio.PlaySound ((int16_t) soundno);
+			break;
+
+			//--unused		case ND_EVENT_D1_SOUND_ONCE:
+			//--unused			NDReadInt (&soundno);
+			//--unused			if (bNDBadRead) { bDone = -1; break; }
+			//--unused			if (gameData.demoData.nVcrState == ND_STATE_PLAYBACK)
+			//--unused				audio.PlaySound (soundno);
+			//--unused			break;
+
+		case ND_EVENT_D1_SOUND_3D:
+			soundno = NDReadInt ();
+			angle = NDReadInt ();
+			volume = NDReadInt ();
+			CATCH_BAD_READ
+			if (gameData.demoData.nVcrState == ND_STATE_PLAYBACK)
+				audio.PlaySound ((int16_t) soundno, SOUNDCLASS_GENERIC, volume, angle);
+			break;
+
+		case ND_EVENT_D1_SOUND_3D_ONCE:
+			soundno = NDReadInt ();
+			angle = NDReadInt ();
+			volume = NDReadInt ();
+			CATCH_BAD_READ
+			if (gameData.demoData.nVcrState == ND_STATE_PLAYBACK)
+				audio.PlaySound ((int16_t) soundno, SOUNDCLASS_GENERIC, volume, angle, 1);
+			break;
+
+		case ND_EVENT_D1_WALL_HIT_PROCESS: {
+				int32_t player, nSegment;
+				fix damage;
+
+			nSegment = NDReadInt ();
+			nSide = NDReadInt ();
+			damage = NDReadFix ();
+			player = NDReadInt ();
+			CATCH_BAD_READ
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED)
+				SEGMENT (nSegment)->ProcessWallHit ((int16_t) nSide, damage, player, OBJECT (0));
+			break;
+		}
+
+		case ND_EVENT_D1_TRIGGER:
+			nSegment = NDReadInt ();
+			nSide = NDReadInt ();
+			nObject = NDReadInt ();
+			CATCH_BAD_READ
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED) {
+				CSegment*	pSeg = SEGMENT (nSegment);
+				CTrigger*	pTrigger = pSeg->Trigger (nSide);
+				pSeg->OperateTrigger ((int16_t) nSide, OBJECT (nObject), bShot);
+				}
+			break;
+
+		case ND_EVENT_D1_HOSTAGE_RESCUED: {
+				int32_t hostage_number;
+
+			hostage_number = NDReadInt ();
+			CATCH_BAD_READ
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED)
+				RescueHostage (hostage_number);
+			}
+			break;
+
+		case ND_EVENT_D1_MORPH_FRAME: {
+			nObject = AllocObject ();
+			if (nObject==-1)
+				break;
+			pObj = OBJECT (nObject);
+			NDReadObject (pObj);
+			pObj->info.renderType = RT_POLYOBJ;
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED) {
+				CATCH_BAD_READ
+				if (gameData.demoData.nVcrState != ND_STATE_PAUSED) {
+					nSegment = pObj->info.nSegment;
+					pObj->info.nNextInSeg = pObj->info.nPrevInSeg = pObj->info.nSegment = -1;
+					pObj->LinkToSeg (nSegment);
+					}
+				}
+			}
+			break;
+
+		case ND_EVENT_D1_WALL_TOGGLE:
+			nSegment = NDReadInt ();
+			nSide = NDReadInt ();
+			CATCH_BAD_READ
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED)
+				SEGMENT (nSegment)->ToggleWall (nSide);
+			break;
+
+		case ND_EVENT_D1_CONTROL_CENTER_DESTROYED:
+			gameData.reactorData.countdown.nSecsLeft = NDReadInt ();
+			gameData.reactorData.bDestroyed = 1;
+			CATCH_BAD_READ
+			if (!gameData.demoData.bCtrlcenDestroyed) {
+				NDPopCtrlCenTriggers ();
+				gameData.demoData.bCtrlcenDestroyed = 1;
+				//DoReactorDestroyedStuff (NULL);
+				}
+			break;
+
+		case ND_EVENT_D1_HUD_MESSAGE: {
+			char hud_msg [60];
+
+			NDReadString (hud_msg);
+			CATCH_BAD_READ
+			HUDInitMessage (hud_msg);
+			}
+			break;
+
+		case ND_EVENT_D1_PALETTE_EFFECT: {
+			int16_t r, g, b;
+
+			r = NDReadShort ();
+			g = NDReadShort ();
+			b = NDReadShort ();
+			CATCH_BAD_READ
+			paletteManager.StartEffect (r, g, b);
+			paletteManager.SetFadeDelay (I2X (1));
+			}
+			break;
+
+		case ND_EVENT_D1_PLAYER_ENERGY: {
+			uint8_t energy;
+			uint8_t old_energy;
+
+			old_energy = NDReadByte ();
+			energy = NDReadByte ();
+			CATCH_BAD_READ
+			if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+				 (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+				LOCALPLAYER.SetEnergy (I2X (energy));
+			else if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+				if (old_energy != 255)
+					LOCALPLAYER.SetEnergy (I2X (old_energy));
+				}
+			}
+			break;
+
+		case ND_EVENT_D1_PLAYER_SHIELD: {
+			uint8_t shield;
+			uint8_t old_shield;
+
+			old_shield = NDReadByte ();
+			shield = NDReadByte ();
+			CATCH_BAD_READ
+			if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+				 (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+				LOCALPLAYER.SetShield (I2X (shield));
+			else if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+				if (old_shield != 255)
+					LOCALPLAYER.SetShield (I2X (old_shield));
+				}
+			}
+			break;
+
+		case ND_EVENT_D1_PLAYER_FLAGS: {
+			uint32_t oflags;
+
+			LOCALPLAYER.flags = NDReadInt ();
+			CATCH_BAD_READ
+			oflags = LOCALPLAYER.flags >> 16;
+			LOCALPLAYER.flags &= 0xffff;
+
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 ((gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD) && (oflags != 0xffff))) {
+				if (!(oflags & PLAYER_FLAGS_CLOAKED) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
+					LOCALPLAYER.cloakTime = 0;
+					gameData.demoData.bPlayersCloaked &= ~ (1 << N_LOCALPLAYER);
+					}
+				if ((oflags & PLAYER_FLAGS_CLOAKED) && !(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
+					LOCALPLAYER.cloakTime = gameData.timeData.xGame - (CLOAK_TIME_MAX / 2);
+					gameData.demoData.bPlayersCloaked |= (1 << N_LOCALPLAYER);
+					}
+				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
+					LOCALPLAYER.invulnerableTime = 0;
+				if ((oflags & PLAYER_FLAGS_INVULNERABLE) && !(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
+					LOCALPLAYER.invulnerableTime = gameData.timeData.xGame - (INVULNERABLE_TIME_MAX / 2);
+				LOCALPLAYER.flags = oflags;
+				}
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+				if (!(oflags & PLAYER_FLAGS_CLOAKED) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
+					LOCALPLAYER.cloakTime = gameData.timeData.xGame - (CLOAK_TIME_MAX / 2);
+					gameData.demoData.bPlayersCloaked |= (1 << N_LOCALPLAYER);
+					}
+				if ((oflags & PLAYER_FLAGS_CLOAKED) && !(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
+					LOCALPLAYER.cloakTime = 0;
+					gameData.demoData.bPlayersCloaked &= ~ (1 << N_LOCALPLAYER);
+					}
+				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
+					LOCALPLAYER.invulnerableTime = gameData.timeData.xGame - (INVULNERABLE_TIME_MAX / 2);
+				if ((oflags & PLAYER_FLAGS_INVULNERABLE) && !(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
+					LOCALPLAYER.invulnerableTime = 0;
+				}
+			cockpit->UpdateLaserWeaponInfo ();     // in case of quad laser change
+			}
+			break;
+
+		case ND_EVENT_D1_PLAYER_WEAPON: {
+			int8_t nWeaponType, weapon_num;
+			int8_t old_weapon;
+
+			nWeaponType = NDReadByte ();
+			weapon_num = NDReadByte ();
+			old_weapon = NDReadByte ();
+			if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+				 (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+				if (nWeaponType == 0)
+					gameData.weaponData.nPrimary = (int32_t)weapon_num;
+				else
+					gameData.weaponData.nSecondary = (int32_t)weapon_num;
+				}
+			else if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+				if (nWeaponType == 0)
+					gameData.weaponData.nPrimary = (int32_t)old_weapon;
+				else
+					gameData.weaponData.nSecondary = (int32_t)old_weapon;
+				}
+			}
+			break;
+
+		case ND_EVENT_D1_EFFECT_BLOWUP: {
+			int16_t nSegment;
+			int8_t nSide;
+			CFixVector pnt;
+			CObject dummy;
+
+			//create a dummy CObject which will be the weapon that hits
+			//the monitor. the blowup code wants to know who the parent of the
+			//laser is, so create a laser whose parent is the player
+			dummy.cType.laserInfo.parent.nType = OBJ_PLAYER;
+			nSegment = NDReadShort ();
+			nSide = NDReadByte ();
+			NDReadVector (pnt);
+			if (gameData.demoData.nVcrState != ND_STATE_PAUSED)
+				SEGMENT (nSegment)->BlowupTexture (nSide, pnt, &dummy, 0);
+			}
+			break;
+
+		case ND_EVENT_D1_HOMING_DISTANCE: {
+			int16_t distance;
+
+			distance = NDReadShort ();
+			LOCALPLAYER.homingObjectDist = 
+				I2X ((int32_t) distance << 16);
+			}
+			break;
+
+		case ND_EVENT_D1_LETTERBOX:
+			if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+				 (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+				saved_letter_cockpit = gameStates.render.cockpit.nType;
+				cockpit->Activate (CM_LETTERBOX);
+				}
+			else if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+				cockpit->Activate (saved_letter_cockpit);
+			break;
+
+		case ND_EVENT_D1_REARVIEW:
+			if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+				 (gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+				saved_rearview_cockpit = gameStates.render.cockpit.nType;
+				if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
+					cockpit->Activate (CM_REAR_VIEW);
+				gameStates.render.bRearView=1;
+				}
+			else if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+				if (saved_rearview_cockpit == CM_REAR_VIEW)     // hack to be sure we get a good cockpit on restore
+					saved_rearview_cockpit = CM_FULL_COCKPIT;
+				cockpit->Activate (saved_rearview_cockpit);
+				gameStates.render.bRearView = 0;
+				}
+			break;
+
+		case ND_EVENT_D1_RESTORE_COCKPIT:
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+				saved_letter_cockpit = gameStates.render.cockpit.nType;
+				cockpit->Activate (CM_LETTERBOX);
+				}
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+				cockpit->Activate (saved_letter_cockpit);
+			break;
+
+
+		case ND_EVENT_D1_RESTORE_REARVIEW:
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+				saved_rearview_cockpit = gameStates.render.cockpit.nType;
+				if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
+					cockpit->Activate (CM_REAR_VIEW);
+				gameStates.render.bRearView=1;
+				}
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+				if (saved_rearview_cockpit == CM_REAR_VIEW)     // hack to be sure we get a good cockpit on restore
+					saved_rearview_cockpit = CM_FULL_COCKPIT;
+				cockpit->Activate (saved_rearview_cockpit);
+				gameStates.render.bRearView=0;
+				}
+			break;
+
+
+		case ND_EVENT_D1_WALL_SET_TMAP_NUM1: {
+			int16_t nSegment, nConnSeg, tmap = 0;
+			uint8_t nSide, nConnSide;
+			int16_t nAnim = 0, nFrame = 0;
+
+			nSegment = NDReadShort ();
+			nSide = NDReadByte ();
+			nConnSeg = NDReadShort ();
+			nConnSide = NDReadByte ();
+			if (gameData.demoData.nVersion < 18)
+				tmap = NDReadShort ();
+			else {
+				nAnim = NDReadShort ();
+				nFrame = NDReadShort ();
+				}
+			if ((nConnSeg >= 0) &&
+				 (gameData.demoData.nVcrState != ND_STATE_PAUSED) && 
+				 (gameData.demoData.nVcrState != ND_STATE_REWINDING) &&
+				 (gameData.demoData.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
+				if (gameData.demoData.nVersion >= 18)
+					SEGMENT (nSegment)->SetTexture (nSide, SEGMENT (nConnSeg), nConnSide, nAnim, nFrame);
+				else
+					SEGMENT (nSegment)->m_sides [nSide].m_nBaseTex = SEGMENT (nConnSeg)->m_sides [nConnSide].m_nBaseTex = tmap;
+				}
+			}
+			break;
+
+		case ND_EVENT_D1_WALL_SET_TMAP_NUM2: {
+			int16_t nSegment, nConnSeg, tmap = 0;
+			uint8_t nSide, nConnSide;
+			int32_t nAnim = 0, nFrame = 0;
+
+			nSegment = NDReadShort ();
+			nSide = NDReadByte ();
+			nConnSeg = NDReadShort ();
+			nConnSide = NDReadByte ();
+			if (gameData.demoData.nVersion < 18)
+				tmap = NDReadShort ();
+			else {
+				nAnim = NDReadShort ();
+				nFrame = NDReadShort ();
+				}
+			if ((gameData.demoData.nVcrState != ND_STATE_PAUSED) &&
+				 (gameData.demoData.nVcrState != ND_STATE_REWINDING) &&
+				 (gameData.demoData.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
+				Assert (tmap!=0 && SEGMENT (nSegment)->m_sides [nSide].m_nOvlTex!=0);
+				if (gameData.demoData.nVersion >= 18)
+					SEGMENT (nSegment)->SetTexture (nSide, SEGMENT (nConnSeg), nConnSide, nAnim, nFrame);
+				else {
+					SEGMENT (nSegment)->m_sides [nSide].m_nOvlTex = tmap & 0x3fff;
+					SEGMENT (nSegment)->m_sides [nSide].m_nOvlOrient = (tmap >> 14) & 3;
+					if (nConnSide < 6) {
+						SEGMENT (nConnSeg)->m_sides [nConnSide].m_nOvlTex = tmap & 0x3fff;
+						SEGMENT (nConnSeg)->m_sides [nConnSide].m_nOvlOrient = (tmap >> 14) & 3;
+						}
+					}
+				}
+			}
+			break;
+
+		case ND_EVENT_D1_MULTI_CLOAK: {
+			int8_t nPlayer = NDReadByte ();
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+				PLAYER (nPlayer).flags &= ~PLAYER_FLAGS_CLOAKED;
+				PLAYER (nPlayer).cloakTime = 0;
+				gameData.demoData.bPlayersCloaked &= ~(1 << nPlayer);
+				}
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+				PLAYER (nPlayer).flags |= PLAYER_FLAGS_CLOAKED;
+				PLAYER (nPlayer).cloakTime = gameData.timeData.xGame  - (CLOAK_TIME_MAX / 2);
+				gameData.demoData.bPlayersCloaked |= (1 << nPlayer);
+				}
+			}
+			break;
+
+		case ND_EVENT_D1_MULTI_DECLOAK: {
+			int8_t nPlayer = NDReadByte ();
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+				PLAYER (nPlayer).flags |= PLAYER_FLAGS_CLOAKED;
+				PLAYER (nPlayer).cloakTime = gameData.timeData.xGame  - (CLOAK_TIME_MAX / 2);
+				gameData.demoData.bPlayersCloaked |= (1 << nPlayer);
+				}
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+				PLAYER (nPlayer).flags &= ~PLAYER_FLAGS_CLOAKED;
+				PLAYER (nPlayer).cloakTime = 0;
+				gameData.demoData.bPlayersCloaked &= ~(1 << nPlayer);
+				}
+			}
+			break;
+
+		case ND_EVENT_D1_MULTI_DEATH: {
+			int8_t nPlayer = NDReadByte ();
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+				PLAYER (nPlayer).netKilledTotal--;
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+				PLAYER (nPlayer).netKilledTotal++;
+			}
+			break;
+
+		case ND_EVENT_D1_MULTI_KILL: {
+			int8_t nPlayer = NDReadByte ();
+			int8_t kill = NDReadByte ();
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+				PLAYER (nPlayer).netKillsTotal -= kill;
+				if (gameData.demoData.nGameMode & GM_TEAM)
+					gameData.multigame.score.nTeam [GetTeam (nPlayer)] -= kill;
+				}
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+				PLAYER (nPlayer).netKillsTotal += kill;
+				if (gameData.demoData.nGameMode & GM_TEAM)
+					gameData.multigame.score.nTeam [GetTeam (nPlayer)] += kill;
+				}
+			gameData.appData.SetGameMode (gameData.demoData.nGameMode);
+			MultiSortKillList ();
+			gameData.appData.SetGameMode (GM_NORMAL);
+			}
+			break;
+
+		case ND_EVENT_D1_MULTI_CONNECT: {
+			int8_t nPlayer, nNewPlayer;
+			int32_t killedTotal = 0, killsTotal = 0;
+			char pszNewCallsign [CALLSIGN_LEN+1], old_callsign [CALLSIGN_LEN+1];
+
+			nPlayer = NDReadByte ();
+			nNewPlayer = NDReadByte ();
+			if (!nNewPlayer) {
+				NDReadString (old_callsign);
+				killedTotal = NDReadInt ();
+				killsTotal = NDReadInt ();
+				}
+			NDReadString (pszNewCallsign);
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+				CONNECT (nPlayer, CONNECT_DISCONNECTED);
+				if (!nNewPlayer) {
+					memcpy (PLAYER (nPlayer).callsign, old_callsign, CALLSIGN_LEN+1);
+					PLAYER (nPlayer).netKilledTotal = killedTotal;
+					PLAYER (nPlayer).netKillsTotal = killsTotal;
+					}
+				else
+					N_PLAYERS--;
+				}
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+				CONNECT (nPlayer, CONNECT_PLAYING);
+				PLAYER (nPlayer).netKillsTotal = 0;
+				PLAYER (nPlayer).netKilledTotal = 0;
+				memcpy (PLAYER (nPlayer).callsign, pszNewCallsign, CALLSIGN_LEN+1);
+				if (nNewPlayer)
+					N_PLAYERS++;
+				}
+			}
+			break;
+
+		case ND_EVENT_D1_MULTI_RECONNECT: {
+			int8_t nPlayer = NDReadByte ();
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+				CONNECT (nPlayer, CONNECT_DISCONNECTED);
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+				CONNECT (nPlayer, CONNECT_PLAYING);
+			}
+			break;
+
+		case ND_EVENT_D1_MULTI_DISCONNECT: {
+			int8_t nPlayer = NDReadByte ();
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+				CONNECT (nPlayer, CONNECT_PLAYING);
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+				CONNECT (nPlayer, CONNECT_DISCONNECTED);
+			}
+			break;
+
+		case ND_EVENT_D1_MULTI_SCORE: {
+			int8_t nPlayer = NDReadByte ();
+			int32_t score = NDReadInt ();
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+				PLAYER (nPlayer).score -= score;
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+				PLAYER (nPlayer).score += score;
+			gameData.appData.SetGameMode (gameData.demoData.nGameMode);
+			MultiSortKillList ();
+			gameData.appData.SetGameMode (GM_NORMAL);
+			}
+			break;
+
+		case ND_EVENT_D1_PLAYER_SCORE: {
+			int32_t score = NDReadInt ();
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+				LOCALPLAYER.score -= score;
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+				LOCALPLAYER.score += score;
+			}
+			break;
+
+		case ND_EVENT_D1_PRIMARY_AMMO: {
+			int16_t nOldAmmo = NDReadShort ();
+			int16_t nNewAmmo = NDReadShort ();
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+				LOCALPLAYER.primaryAmmo [gameData.weaponData.nPrimary] = nOldAmmo;
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+				LOCALPLAYER.primaryAmmo [gameData.weaponData.nPrimary] = nNewAmmo;
+			}
+			break;
+
+		case ND_EVENT_D1_SECONDARY_AMMO: {
+			int16_t nOldAmmo = NDReadShort ();
+			int16_t nNewAmmo = NDReadShort ();
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+				LOCALPLAYER.secondaryAmmo [gameData.weaponData.nSecondary] = nOldAmmo;
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD))
+				LOCALPLAYER.secondaryAmmo [gameData.weaponData.nSecondary] = nNewAmmo;
+			}
+			break;
+
+		case ND_EVENT_D1_DOOR_OPENING: {
+			int16_t nSegment = NDReadShort ();
+			uint8_t nSide = NDReadByte ();
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+				int32_t anim_num;
+				int32_t nConnSide;
+				CSegment *pSeg, *pOppSeg;
+
+				pSeg = SEGMENT (nSegment);
+				pOppSeg = SEGMENT (pSeg->m_children [nSide]);
+				nConnSide = pSeg->ConnectedSide (pOppSeg);
+				anim_num = pSeg->Wall (nSide)->nClip;
+				if (gameData.wallData.pAnim [anim_num].flags & WCF_TMAP1)
+					pSeg->m_sides [nSide].m_nBaseTex = pOppSeg->m_sides [nConnSide].m_nBaseTex =
+						gameData.wallData.pAnim [anim_num].frames [0];
+				else
+					pSeg->m_sides [nSide].m_nOvlTex = 
+					pOppSeg->m_sides [nConnSide].m_nOvlTex = gameData.wallData.pAnim [anim_num].frames [0];
+				}
+			else
+				SEGMENT (nSegment)->OpenDoor (nSide);
+			}
+			break;
+
+		case ND_EVENT_D1_LASER_LEVEL: {
+			int8_t oldLevel, newLevel;
+
+			oldLevel = (int8_t) NDReadByte ();
+			newLevel = (int8_t) NDReadByte ();
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+				LOCALPLAYER.ComputeLaserLevels (oldLevel);
+				cockpit->UpdateLaserWeaponInfo ();
+				}
+			else if ((gameData.demoData.nVcrState == ND_STATE_PLAYBACK) || 
+						(gameData.demoData.nVcrState == ND_STATE_FASTFORWARD) || 
+						(gameData.demoData.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
+				LOCALPLAYER.ComputeLaserLevels (newLevel);
+				cockpit->UpdateLaserWeaponInfo ();
+				}
+			}
+			break;
+
+		case ND_EVENT_D1_NEW_LEVEL: {
+			int8_t newLevel, oldLevel, loadedLevel;
+
+			newLevel = NDReadByte ();
+			oldLevel = NDReadByte ();
+			if (gameData.demoData.nVcrState == ND_STATE_PAUSED)
+				break;
+			StopTime ();
+			if ((gameData.demoData.nVcrState == ND_STATE_REWINDING) || 
+				 (gameData.demoData.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
+				loadedLevel = oldLevel;
+			else {
+				loadedLevel = newLevel;
+				for (i = 0; i < MAX_PLAYERS; i++) {
+					PLAYER (i).cloakTime = 0;
+					PLAYER (i).flags &= ~PLAYER_FLAGS_CLOAKED;
+					}
+				}
+			if ((loadedLevel < missionManager.nLastSecretLevel) || 
+				 (loadedLevel > missionManager.nLastLevel)) {
+				NDErrorMsg (TXT_CANT_PLAYBACK, TXT_LEVEL_CANT_LOAD, TXT_DEMO_OLD_CORRUPT);
+				return -1;
+				}
+			if (LoadLevel ((int32_t) loadedLevel, true, false) <= 0)
+				return -1;
+			meshBuilder.ComputeFaceKeys ();
+			gameData.demoData.bCtrlcenDestroyed = 0;
+			paletteManager.ResetEffect ();                // get palette back to Normal
+			StartTime (0);
+			}
+			break;
+
+		case ND_EVENT_D1_EOF:
+			bDone = -1;
+			ndInFile.Seek (-1, SEEK_CUR);        // get back to the EOF marker
+			gameData.demoData.bEof = 1;
+			gameData.demoData.nFrameCount++;
+			break;
+
+		default:
+			bDone = -1;
+			ndInFile.Seek (-1, SEEK_CUR);        // get back to the EOF marker
+			gameData.demoData.bEof = 1;
+			gameData.demoData.nFrameCount++;
+			break;
+		}
+	}
+if (bNDBadRead)
+	NDErrorMsg (TXT_DEMO_ERR_READING, TXT_DEMO_OLD_CORRUPT, NULL);
+else
+	NDUpdateSmoke ();
+return bDone;
+}
+
+//	-----------------------------------------------------------------------------
+
 void NDRenderExtras (uint8_t, CObject *); 
 void MultiApplyGoalTextures ();
 
@@ -1954,6 +2782,9 @@ int32_t NDReadFrameInfo (void)
 	static int8_t saved_rearview_cockpit;
 	CObject extraobj;
 	CSegment *pSeg;
+
+	if (bDemoD1)
+		return NDReadFrameInfoD1 ();
 
 bDone = 0;
 nTag = 255;
@@ -2858,6 +3689,7 @@ else
 	NDUpdateSmoke ();
 return bDone;
 }
+
 
 //	-----------------------------------------------------------------------------
 
