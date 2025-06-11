@@ -248,7 +248,7 @@ if (gameData.escortData.nSpecialGoal != -1) {
 					bDetected = 1;
 					goto dega_ok;
 					}
-				else {
+				else if (*childI >= 0) {
 					childJ = SEGMENT (*childI)->m_children;
 					for (j = SEGMENT_SIDE_COUNT; j; j--, childJ++) {
 						if (*childJ == gameData.escortData.nGoalIndex) {
