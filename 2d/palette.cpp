@@ -351,7 +351,7 @@ BumpEffect (float (red) / 64.0f, float (green) / 64.0f, float (blue) / 64.0f);
 
 void CPaletteManager::BumpEffect (float red, float green, float blue)
 {
-	float	maxVal = 1.0f; //(paletteManager.FadeDelay () ? 60 : MAX_PALETTE_ADD) / 64.0f;
+	float	maxVal = 0.46875f; // 30/64 (paletteManager.FadeDelay () ? 60 : MAX_PALETTE_ADD) / 64.0f;
 	float fFade = Clamp (FadeScale (), 0.0f, 1.0f);
 
 red = Clamp (m_data.effect.Red () * fFade + red, 0.0f, maxVal);
