@@ -334,6 +334,8 @@ for (i = nStart; i < nEnd; i++) {
 				else
 					*pColor *= faceColor [nColor]; // multiply the material color in for not lightmap driven lighting models
 				}
+			if (gameStates.render.nFlashScale)
+				*pColor *= X2F(gameStates.render.nFlashScale);
 			pColor->Alpha () = fAlpha;
 			}
 		}
@@ -492,6 +494,8 @@ for (i = nStart; i < nEnd; i++) {
 				*pColor = *pVertexColor;
 				if (!gameStates.render.bPerPixelLighting && (nColor > 0))
 					AlphaBlend (*pColor, faceColor [nColor], fAlpha);
+				if (gameStates.render.nFlashScale)
+					*pColor *= X2F(gameStates.render.nFlashScale);
 				pColor->Alpha () = fAlpha;
 				}
 			}
@@ -635,6 +639,8 @@ for (i = nStart; i < nEnd; i++) {
 						}
 					if (nColor > 0)
 						*pColor *= faceColor [nColor];
+					if (gameStates.render.nFlashScale)
+						*pColor *= X2F(gameStates.render.nFlashScale);
 					pColor->Alpha () = fAlpha;
 					}
 				}

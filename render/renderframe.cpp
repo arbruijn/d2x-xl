@@ -132,7 +132,7 @@ void FlashMine (void)
 {
 if (gameOpts->app.bEpilepticFriendly || !gameStates.render.nFlashScale)
 	return;
-FadeMine (1.0f - X2F (gameStates.render.nFlashScale) * 0.8f);
+//FadeMine (1.0f - X2F (gameStates.render.nFlashScale) * 0.8f);
 }
 
 //------------------------------------------------------------------------------
