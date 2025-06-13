@@ -8,6 +8,7 @@
 #include "ogl_lib.h"
 #include "renderthreads.h"
 #include "tga.h"
+#include "rwops.h"
 
 #if USE_SDL_IMAGE
 #	ifdef __macosx__
@@ -588,52 +589,9 @@ return m_header.Write (m_cf, m_pBm) && WriteData ();
 
 #if USE_SDL_IMAGE
 
-static int rwops_seek(SDL_RWops* rw, int offset, int whence)
-{
-    CFile* cf = (CFile*)rw->hidden.unknown.data1;
-    return (int)cf->Seek (offset, whence);
-}
-
-static int rwops_read(SDL_RWops *rw, void *ptr, int size, int maxnum)
-{
-    CFile* cf = (CFile*)rw->hidden.unknown.data1;
-    return (int)cf->Read (ptr, size, maxnum);
-}
-
-static int rwops_write(SDL_RWops *rw, const void *ptr, int size, int num)
-{
-    CFile* cf = (CFile*)rw->hidden.unknown.data1;
-    return (int)cf->Write (ptr, size, num);
-}
-
-static int rwops_close(SDL_RWops *rw)
-{
-	CFile* cf = (CFile*)rw->hidden.unknown.data1;
-	if (cf->Close ())
-		return EOF;
-    SDL_FreeRW(rw);
-    return 0;
-}
-
-static SDL_RWops *create_rwops(CFile* cf)
-{
-	SDL_RWops *retval = NULL;
-
-	if (!(retval = SDL_AllocRW ()))
-		return NULL;
-
-	retval->seek  = rwops_seek;
-	retval->read  = rwops_read;
-	retval->write = rwops_write;
-	retval->close = rwops_close;
-	retval->hidden.unknown.data1 = (void *)cf;
-
-	return retval;
-}
-
 int32_t CTGA::ReadImage (const char* pszFile, const char* pszFolder, int32_t alpha, double brightness, int32_t bGrayScale)
 {
-	CFile	cf;
+	//CFile	cf;
 	char szFile [FILENAME_LEN], *p;
 
 #if 0
@@ -673,11 +631,13 @@ if (!(p = strrchr(szFile, '.')))
 	p = szFile + strlen(szFile);
 strcpy(p, ".png");
 //printf("szFile: %s\n", szFile);
-cf.Open (szFile, pszFolder, "rb", 0);
-SDL_RWops *rw = create_rwops(&cf);
-pImage = IMG_LoadTyped_RW (rw, 0, "PNG");
-SDL_FreeRW(rw);
-cf.Close();
+//cf.Open (szFile, pszFolder, "rb", 0);
+//SDL_RWops *rw = CFileToRWOps(&cf);
+SDL_RWops *rw = CFileOpenRWOps(szFile, pszFolder);
+pImage = rw ? IMG_LoadTyped_RW (rw, 0, "PNG") : NULL;
+if (rw)
+	SDL_RWclose(rw);
+//cf.Close();
 if (!pImage)
 	return 0;
 pFmt = pImage->format;
