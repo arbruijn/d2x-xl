@@ -126,7 +126,6 @@ do {
 
 	if (gameStates.app.bNostalgia)
 		m.AddMenu ("performance options", TXT_DETAIL_LEVELS, KEY_D, HTX_OPTIONS_DETAIL);
-	if (!ogl.IsSideBySideDevice ())
 		m.AddMenu ("screen res options", TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
 	m.AddText ("", "");
 	if (gameStates.app.bNostalgia) {
