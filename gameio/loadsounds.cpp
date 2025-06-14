@@ -63,6 +63,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "grdef.h"
 #include "gamepal.h"
+#include "rwops.h"
 
 //#define NO_DUMP_SOUNDS        1   //if set, dump bitmaps but not sounds
 
@@ -572,7 +573,7 @@ return -1;
 Mix_Chunk *LoadAddonSound (const char *pszSoundFile, uint8_t *bBuiltIn)
 {
 	Mix_Chunk*		pChunk;
-	char				szWAV [FILENAME_LEN];
+	//char				szWAV [FILENAME_LEN];
 	const char*		pszFolder, * pszFile;
 	int32_t				i;
 	CFile				cf;
@@ -606,8 +607,8 @@ else {
 		return NULL;
 	pszFile = const_cast<char*>(pszSoundFile);
 	}
-sprintf (szWAV, "%s%s", pszFolder, pszFile);
-if (!(pChunk = Mix_LoadWAV (szWAV)))
+//sprintf (szWAV, "%s%s", pszFolder, pszFile);
+if (!(pChunk = Mix_LoadWAV_RW (CFileOpenRWOps (pszFile, pszFolder), 1)))
 	return NULL;
 if (i >= 0)
 	addonSounds [i].pChunk = pChunk;
