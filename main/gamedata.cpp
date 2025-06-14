@@ -2367,7 +2367,8 @@ void DefaultMovieSettings (void)
 {
 // movie render option defaults
 //gameOptions [0].movies.bSubTitles = 1;
-gameOptions [0].movies.nQuality = gameOptions [0].render.nQuality > 2;
+if (!gameOptions [0].movies.nQuality)
+	gameOptions [0].movies.nQuality = gameOptions [0].render.nQuality > 2;
 gameOptions [0].movies.bResize = 1;
 }
 
