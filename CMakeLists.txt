@@ -3,6 +3,10 @@ project(D2X-XL)
 include(CheckIncludeFiles)
 set(OpenGL_GL_PREFERENCE LEGACY)
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+add_compile_options(-Wno-parentheses-equality)
+endif()
+
 #checks
 #need to do a proper check for this
 add_definitions(-DHAVE_STRUCT_TIMESPEC)
