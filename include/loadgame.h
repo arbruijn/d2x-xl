@@ -101,7 +101,7 @@ void BashToEnergy(int32_t, const char *);
 fix RobotDefaultShield (CObject *pObj);
 
 char *LevelName (int32_t nLevel);
-char *LevelSongName (int32_t nLevel);
+const char *LevelSongName (int32_t nLevel);
 char *MakeLevelFilename (int32_t nLevel, char *pszFilename, const char *pszFileExt);
 
 int32_t GetRandomPlayerPosition (int32_t nPlayer);
