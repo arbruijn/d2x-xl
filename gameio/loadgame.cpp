@@ -672,9 +672,9 @@ return pszFilename;
 
 //------------------------------------------------------------------------------
 
-char *LevelSongName (int32_t nLevel)
+const char *LevelSongName (int32_t nLevel)
 {
-	char *szNoSong = "";
+	const char *szNoSong = "";
 
 return (gameStates.app.bAutoRunMission || !missionManager.nSongs) ? szNoSong : missionManager.szSongNames [missionManager.songIndex [nLevel % missionManager.nSongs]];
 }

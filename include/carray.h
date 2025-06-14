@@ -36,7 +36,9 @@ class CArray : public CQuickSort < _T > {
 		public:
 			char			szName [256];
 			_U	*			buffer;
+#if DBG_ARRAYS
 			_U				null;
+#endif
 			uint32_t		length;
 			uint32_t		pos;
 			int32_t		nMode;
@@ -117,7 +119,9 @@ class CArray : public CQuickSort < _T > {
 			m_data.pos = 0;
 			m_data.nMode = 0;
 			m_data.bWrap = false;
+#if DBG_ARRAYS
 			memset (&m_data.null, 0, sizeof (m_data.null));
+#endif
 			}
 
 		// ----------------------------------------

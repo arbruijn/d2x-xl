@@ -36,10 +36,12 @@ class CTranspItem {
 		virtual int32_t Size (void) = 0;
 		virtual void Render (void) = 0;
 		virtual /*inline*/ tTranspItemType Type (void) = 0;
+#if 0
 		inline CTranspItem& operator= (CTranspItem& other) { 
 			memcpy (this, &other, Size ());
 			return *this;
 			}
+#endif
 	};
 
 class CTranspPoly : public CTranspItem {

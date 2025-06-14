@@ -708,7 +708,7 @@ fontManager.SetColorRGBi (bAvailable ? bActive ? equippedColors [gameOpts->rende
 char* CHUD::StrPrimaryWeaponList (char* pszList, char* pszAmmo)
 {
 // Q6SPVF HPGO - (Quad) Lasers <level>, Spreafire, Plasma, Vulcan, Fusion, Helix, Gauss, Omega
-	static char* szWeaponIds = "LVSPFSGHXO";
+	static const char* szWeaponIds = "LVSPFSGHXO";
 
 	int32_t	n = (gameStates.app.bD1Mission) ? 5 : 10;
 	int32_t	l = 0;
@@ -967,7 +967,7 @@ return pszList;
 void CHUD::DrawSecondaryWeaponList (void)
 {
 // CHSM MGFS - Concussion, Homer, Smart, Mega, Mercury, Guided, Flash, Shaker
-	static char* szWeaponIds = "CHBSMFGSYE";
+	static const char* szWeaponIds = "CHBSMFGSYE";
 
 	int32_t	n = (gameStates.app.bD1Mission) ? 5 : 10;
 	int32_t	bActive, bHave, bAvailable;
