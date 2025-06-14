@@ -207,7 +207,7 @@ CFloatVector color;
 int32_t nColors;
 bool bBlend = bTransp && nTransp;
 
-if (!OglBeginRender (bBlend, bMipMaps, nTransp))
+if (!OglBeginRender (bBlend, bSmoothe == -1 ? -1 : bMipMaps, nTransp))
 	return 1; // fail
 
 OglVertices (xDest, yDest, wDest, hDest, I2X (1), 0, pDest);
