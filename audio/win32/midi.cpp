@@ -7,6 +7,8 @@
 #include "songs.h"
 #include "config.h"
 #include "midi.h"
+#include "rwops.h"
+#include "strutil.h"
 
 CMidi midi;
 
@@ -122,6 +124,40 @@ if (gameStates.sound.bMidiFix && (songManager.Playing () <= 0)) {
 
 //------------------------------------------------------------------------------
 
+static Mix_MusicType GetMusicType(const char *file, SDL_RWops *rw)
+{
+	Mix_MusicType type;
+	const char *ext;
+
+	/* Use the extension as a first guess on the file type */
+	type = MUS_NONE;
+	ext = strrchr(file, '.');
+	/* No need to guard these with #ifdef *_MUSIC stuff,
+	 * since we simply call Mix_LoadMUSType_RW() later */
+	if ( ext ) {
+		++ext; /* skip the dot in the extension */
+		if ( stricmp(ext, "WAV") == 0 ) {
+			type = MUS_WAV;
+		} else if ( stricmp(ext, "MID") == 0 ||
+		            stricmp(ext, "MIDI") == 0 ||
+		            stricmp(ext, "KAR") == 0 ) {
+			type = MUS_MID;
+		} else if ( stricmp(ext, "OGG") == 0 ) {
+			type = MUS_OGG;
+		} else if ( stricmp(ext, "FLAC") == 0 ) {
+			type = MUS_FLAC;
+		} else 	if ( stricmp(ext, "MPG") == 0 ||
+		             stricmp(ext, "MPEG") == 0 ||
+		             stricmp(ext, "MP3") == 0 ||
+		             stricmp(ext, "MAD") == 0 ) {
+			type = MUS_MP3;
+		}
+	}
+	return type;
+}
+
+//------------------------------------------------------------------------------
+
 int32_t CMidi::PlaySong (const char* pszSong, char* melodicBank, char* drumBank, int32_t bLoop, int32_t bD1Song)
 {
 if (gameStates.sound.audio.bNoMusic)
@@ -174,7 +210,8 @@ if (gameOpts->sound.bUseSDLMixer) {
 		pfnSong = fnSong;
 		}
 	try {
-		m_music = Mix_LoadMUS (pfnSong);
+		SDL_RWops* rw = CFileOpenRWOps (pfnSong, NULL);
+		m_music = Mix_LoadMUSType_RW (rw, GetMusicType(pfnSong, rw), 1);
 		}
 	catch (...) {	// critical problem in midi playback -> turn it off
 		SetVolume (gameConfig.nMidiVolume = 0);
