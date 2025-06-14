@@ -887,6 +887,8 @@ if ((m_nKey == KEY_LEFT) || (m_nKey == KEY_BACKSPACE) || (m_nKey == KEY_PAD4)) {
 else {
 	int32_t ascii = KeyToASCII (m_nKey);
 	if ((ascii < 255) && (item.Value () < item.m_nTextLen)) {
+		if (ascii >= 'A' && ascii <= 'Z')
+			ascii += 'a' - 'A';
 		if (item.Value ()== -1)
 			item.Value () = 0;
 		int32_t bAllowed = CharAllowed ((char) ascii);
