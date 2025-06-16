@@ -1,3 +1,14 @@
+2025-06-16 v1.18.74-ar11
+- Add support for png files in custom missions
+- Restore countdown flash intensity
+- Restore fusion flash effect intensity
+- Support D1 demo files
+- Improve AMD OpenGL compatibilty on linux
+- Better support for side-by-side 3D (by Noric Forge)
+- Fix audio when using a non-ascii path
+- Fix oof models without rotation animation
+- Fix guidebot crash with energy center
+
 2024-09-25 v1.18-74-ar10
 - Fix full cockpit camera views
 - Fix position of briefing robot in 1920x1080 and higher
