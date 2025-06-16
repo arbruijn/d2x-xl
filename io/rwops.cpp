@@ -11,7 +11,7 @@ static int rwops_seek(SDL_RWops* rw, int offset, int whence)
 static int rwops_read(SDL_RWops *rw, void *ptr, int size, int maxnum)
 {
     CFile* cf = (CFile*)rw->hidden.unknown.data1;
-    return (int)cf->Read (ptr, size, maxnum);
+    return (int)cf->Read (ptr, size, maxnum, 0, 1);
 }
 
 static int rwops_write(SDL_RWops *rw, const void *ptr, int size, int num)
