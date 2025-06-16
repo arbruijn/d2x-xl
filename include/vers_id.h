@@ -3,7 +3,7 @@
 
 //#ifndef HAVE_CONFIG_H
 #	ifndef VERSION
-#		define VERSION		"1.18.74-ar11"
+#		define VERSION		"1.18.74-ar12"
 #	endif
 //#endif
 
