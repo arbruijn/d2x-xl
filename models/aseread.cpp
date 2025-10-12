@@ -86,12 +86,19 @@ return pszToken ? *pszToken : '\0';
 
 static char szEmpty [1] = "";
 
-static char *StrTok (const char *delims)
+static char *StrTokMixedCase (const char *delims)
 {
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
 	CModel::Error ("missing data");
 return pszToken ? pszToken : szEmpty;
+}
+
+static char *StrTok (const char *delims)
+{
+char *token = StrTokMixedCase (delims);
+strupr (token);
+return token;
 }
 
 //------------------------------------------------------------------------------
@@ -121,9 +128,11 @@ while (!cf.EoF ()) {
 	cf.GetS (szLine, sizeof (szLine));
 	nLine++;
 	strcpy (szLineBackup, szLine);
-	strupr (szLine);
-	if ((pszToken = strtok (szLine, " \t")))
+	//strupr (szLine);
+	if ((pszToken = strtok (szLine, " \t"))) {
+		strupr (pszToken);
 		return pszToken;
+		}
 	}
 return NULL;
 }
@@ -625,9 +634,9 @@ while ((pszToken = ReadLine (cf))) {
 	if (!strcmp (pszToken, "*BITMAP")) {
 		if (pBm->Buffer ())	//duplicate
 			return CModel::Error ("duplicate bitmap");
-		CFile::SplitPath (StrTok ("\""), NULL, fn, NULL);
+		CFile::SplitPath (StrTokMixedCase ("\""), NULL, fn, NULL);
 		CTGA tga (pBm);
-		if (!tga.ReadModelTexture (::strlwr (fn), m_bCustom))
+		if (!tga.ReadModelTexture (fn, m_bCustom)) // ::strlwr (fn)
 			return CModel::Error ("texture not found");
 		l = (int32_t) strlen (fn) + 1;
 		char szLabel [40];
