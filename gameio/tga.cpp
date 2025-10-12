@@ -44,7 +44,7 @@ if (pBm) {
 	pBm->Init (0, 0, 0, m_data.width, m_data.height, m_data.bits / 8, NULL, false);
 	}
 return (m_data.width <= 4096) && (m_data.height <= 32768) && 
-       (m_data.xStart < m_data.width) && (m_data.yStart < m_data.height) &&
+       (m_data.xStart <= m_data.width) && (m_data.yStart <= m_data.height) &&
 		 ((m_data.bits == 8) || (m_data.bits == 16) || (m_data.bits == 24) || (m_data.bits == 32));
 }
 
