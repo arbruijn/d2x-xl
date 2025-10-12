@@ -598,11 +598,11 @@ if (gameOpts->sound.bUseSDLMixer) {
 			RETVAL (-1)
 		}
 	else {
-		if (!gameOpts->sound.bHires [0]) {
-			if (pSound->bHires)
+		if (!gameOpts->sound.bHires [0] && pSound->bHires) {
+			//if (pSound->bHires)
 				m_info.pMixChunk = Mix_LoadWAV_RW (SDL_RWFromMem (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()), m_info.sample.Length ()), 1);
-			else
-				m_info.pMixChunk = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (pSound->data [pSound->bCustom].Buffer ()), pSound->nLength [pSound->bCustom]);
+			//else
+			//	m_info.pMixChunk = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (pSound->data [pSound->bCustom].Buffer ()), pSound->nLength [pSound->bCustom]);
 			}
 		else if (pSound->bHires) {
 			int32_t l = pSound->nLength [pSound->bCustom];
