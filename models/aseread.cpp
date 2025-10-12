@@ -701,7 +701,8 @@ while ((pszToken = ReadLine (cf))) {
 		avgRGB.Blue () = (uint8_t) FRound (FloatTok (" \t") * 255);
 		pBm->SetAvgColor (avgRGB);
 		}
-	else if (!strcmp (pszToken, "*MAP_DIFFUSE")) {
+	else if (!strcmp (pszToken, "*MAP_DIFFUSE") ||
+		!strcmp(pszToken, "*MAP_GENERIC")) {
 		if (!ReadTexture (cf, i))
 			return CModel::Error (NULL);
 		}
