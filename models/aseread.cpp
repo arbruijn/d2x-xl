@@ -636,8 +636,11 @@ while ((pszToken = ReadLine (cf))) {
 			return CModel::Error ("duplicate bitmap");
 		CFile::SplitPath (StrTokMixedCase ("\""), NULL, fn, NULL);
 		CTGA tga (pBm);
-		if (!tga.ReadModelTexture (fn, m_bCustom)) // ::strlwr (fn)
-			return CModel::Error ("texture not found");
+		if (!tga.ReadModelTexture (fn, m_bCustom)) { // ::strlwr (fn)
+			char msg[sizeof(fn) + 20];
+			snprintf(msg, sizeof(msg), "texture not found: %s", fn);
+			return CModel::Error (msg);
+		}
 		l = (int32_t) strlen (fn) + 1;
 		char szLabel [40];
 		sprintf (szLabel, "ASE::CSubModel::m_textures.m_names [%d]", nBitmap);
