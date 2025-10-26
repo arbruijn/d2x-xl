@@ -4,7 +4,11 @@
 //------------------------------------------------------------------------------
 
 #ifdef USE_OPENVR
+#ifdef _MSC_VER
+#	include <openvr.h>
+#else
 #	include <openvr/openvr.h>
+#endif
 #endif
 
 class CVRData {
@@ -38,8 +42,14 @@ class CVRData {
 		void AutoCalibrate (void);
 		inline void SetCenter (void) { GetHeadAngles (NULL); }
 #ifdef USE_OPENVR
-		inline int32_t HResolution (void) { return (Available () && m_pVRSystem) ? m_pVRSystem->GetRecommendedRenderTargetSize(&m_nResolution, nullptr), m_nResolution : 1920; }
-		inline int32_t VResolution (void) { return (Available () && m_pVRSystem) ? m_pVRSystem->GetRecommendedRenderTargetSize(nullptr, &m_nResolution), m_nResolution : 1200; }
+		inline int32_t HResolution (void) {
+			uint32_t w, h;
+			return (Available () && m_pVRSystem) ? m_pVRSystem->GetRecommendedRenderTargetSize(&w, &h), w : 1920;
+		}
+		inline int32_t VResolution (void) {
+			uint32_t w, h;
+			return (Available () && m_pVRSystem) ? m_pVRSystem->GetRecommendedRenderTargetSize(&w, &h), h : 1080;
+		}
 #else
 		inline int32_t HResolution (void) { return 1920; }
 		inline int32_t VResolution (void) { return 1200; }
