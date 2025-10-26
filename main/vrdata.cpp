@@ -8,78 +8,35 @@
 
 bool CVRData::Create (void)
 {
-#if OCULUS_RIFT
+#ifdef USE_OPENVR
 gameData.renderData.vr.m_bAvailable = 0;
 if (gameOpts->render.bUseVR) {
-	OVR::System::Init (OVR::Log::ConfigureDefaultLog (OVR::LogMask_All));
-	m_pManager = *OVR::DeviceManager::Create();
-	if (m_pManager) {
-		//m_pManager->SetMessageHandler(this);
-
-		// Release Sensor/HMD in case this is a retry.
-		m_pSensorP.Clear ();
-		m_pHMD.Clear ();
-		// RenderParams.MonitorName.Clear();
-		m_pHMD = *m_pManager->EnumerateDevices<OVR::HMDDevice> ().CreateDevice ();
-		if (m_pHMD) {
-			m_pSensorP = *m_pHMD->GetSensor ();
-
-			// This will initialize m_hmdInfo with information about configured IPD,
-			// screen size and other variables needed for correct projection.
-			// We pass HMD DisplayDeviceName into the renderer to select the
-			// correct monitor in full-screen mode.
-			if (m_pHMD->GetDeviceInfo (&m_hmdInfo))	{            
-				// RenderParams.MonitorName = m_hmdInfo.DisplayDeviceName;
-				// RenderParams.DisplayId = m_hmdInfo.DisplayId;
-				m_stereoConfig.SetHMDInfo (m_hmdInfo);
-				m_stereoConfig.SetDistortionFitPointVP (-1, 0);
-				m_renderScale = m_stereoConfig.GetDistortionScale (); 
-				m_eyes [0] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Left);
-				m_eyes [1] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Right);
-				m_fov = m_stereoConfig.GetYFOVDegrees ();
-				float viewCenter = m_hmdInfo.HScreenSize * 0.25f;
-				float eyeProjectionShift = viewCenter - m_hmdInfo.LensSeparationDistance * 0.5f;
-				m_projectionCenterOffset = 4.0f * eyeProjectionShift / m_hmdInfo.HScreenSize;
-				}
-			}
-		else {            
-			// If we didn't detect an HMD, try to create the sensor directly.
-			// This is useful for debugging sensor interaction; it is not needed in
-			// a shipping app.
-			m_pSensorP = *m_pManager->EnumerateDevices<OVR::SensorDevice> ().CreateDevice ();
-			}
-		}
-	m_nResolution = HResolution () > 1280;
-	// If there was a problem detecting the VR, display appropriate message.
-
-	const char* detectionMessage = NULL;
-
-	if (!m_pManager)
-		detectionMessage = "Cannot initialize VR system.";
-	if (!m_pHMD && !m_pSensorP)
-		detectionMessage = "VR not detected.";
-	else if (!m_pHMD)
-		detectionMessage = "Oculus Sensor detected; HMD Display not detected.\n";
-	else if (m_hmdInfo.DisplayDeviceName [0] == '\0')
-		detectionMessage = "Oculus Sensor detected; HMD display EDID not detected.\n";
-	else if (!m_pSensorP) {
-		m_bAvailable = 1;
-		detectionMessage = "Oculus HMD Display detected; Sensor not detected.\n";
-		}
-	else {
-		m_pSensorFusion = NEW OVR::SensorFusion;
-		m_pSensorFusion->AttachToSensor (m_pSensorP);
-		m_pSensorFusion->SetYawCorrectionEnabled (true);
-#if 0
-		m_magCalTO.Setup (60000); // 1 minute
-		m_magCalTO.Start (-1, true);
-		m_bCalibrating = false;
-#endif
-		m_bAvailable = 2;
-		}
-if (detectionMessage) 
-		PrintLog (0, detectionMessage);
+	vr::EVRInitError eError = vr::VRInitError_None;
+	m_pVRSystem = vr::VR_Init(&eError, vr::VRApplication_Scene);
+	if (eError != vr::VRInitError_None) {
+		m_pVRSystem = nullptr;
+		PrintLog(0, "Unable to init VR runtime: %s", vr::VR_GetVRInitErrorAsEnglishDescription(eError));
+		return false;
 	}
+
+	m_pVRCompositor = vr::VRCompositor();
+	if (!m_pVRCompositor) {
+		PrintLog(0, "Compositor initialization failed.");
+		vr::VR_Shutdown();
+		m_pVRSystem = nullptr;
+		return false;
+	}
+
+	m_pVRSystem->GetStringTrackedDeviceProperty(vr::k_unTrackedDeviceIndex_Hmd, vr::Prop_TrackingSystemName_String, m_strDriver, sizeof(m_strDriver));
+	m_pVRSystem->GetStringTrackedDeviceProperty(vr::k_unTrackedDeviceIndex_Hmd, vr::Prop_SerialNumber_String, m_strDisplay, sizeof(m_strDisplay));
+
+	uint32_t nWidth, nHeight;
+	m_pVRSystem->GetRecommendedRenderTargetSize(&nWidth, &nHeight);
+	m_nResolution = nWidth > 1280;
+
+	m_bAvailable = 2;  // Fully available
+	PrintLog(0, "VR initialized: %s %s", m_strDriver, m_strDisplay);
+}
 #endif
 return m_bAvailable != 0;
 }
@@ -88,21 +45,23 @@ return m_bAvailable != 0;
 
 int32_t CVRData::GetViewMatrix (CFixMatrix& mOrient)
 {
-#if OCULUS_RIFT
+#ifdef USE_OPENVR
 if (Available () < 2)
 	return 0;
-OVR::Quatf q = m_pSensorFusion->GetOrientation ();
-OVR::Matrix4f m (q);
-for (int32_t i = 0; i < 3; i++)
-	for (int32_t j = 0; j < 3; j++)
-		mOrient.m.vec [i * 3 + j] = F2X (m.M [i][j]);
+m_pVRCompositor->WaitGetPoses(m_trackedDevicePose, vr::k_unMaxTrackedDeviceCount, nullptr, 0);
+if (m_trackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid) {
+	vr::HmdMatrix34_t mat = m_trackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking;
+	for (int32_t i = 0; i < 3; i++)
+		for (int32_t j = 0; j < 3; j++)
+			mOrient.m.vec[i * 3 + j] = F2X(mat.m[i][j]);
+}
 #endif
 return 1;
 }
 
 // ----------------------------------------------------------------------------
 
-#if OCULUS_RIFT
+#ifdef USE_OPENVR
 static inline float AddDeadzone (float v)
 {
 float deadzone = float (gameOpts->input.vr.nDeadzone) * 0.5f;
@@ -122,20 +81,25 @@ return 0.0f;
 
 int32_t CVRData::GetHeadAngles (CAngleVector* angles)
 {
-#if OCULUS_RIFT
+#ifdef USE_OPENVR
 if (Available () < 2)
 	return 0;
-OVR::Quatf q = m_pSensorFusion->GetOrientation ();
-float yaw, pitch, roll;
-q.GetEulerAngles<OVR::Axis_Y, OVR::Axis_X, OVR::Axis_Z>(&yaw, &pitch, &roll);
-if (!angles) 
-	m_center.Set (pitch, roll, yaw);
-else {
-	pitch -= m_center.v.coord.x;
-	roll -= m_center.v.coord.y;
-	yaw -= m_center.v.coord.z;
-	angles->Set (-F2X (AddDeadzone (pitch) * 0.5f), F2X (AddDeadzone (roll) * 0.5f), -F2X (AddDeadzone (yaw) * 0.5f));
+m_pVRCompositor->WaitGetPoses(m_trackedDevicePose, vr::k_unMaxTrackedDeviceCount, nullptr, 0);
+if (m_trackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid) {
+	vr::HmdMatrix34_t mat = m_trackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking;
+	// Extract Euler angles from the matrix (simplified; you may need a proper conversion)
+	float yaw = atan2(mat.m[0][2], mat.m[2][2]);
+	float pitch = asin(-mat.m[1][2]);
+	float roll = atan2(mat.m[1][0], mat.m[1][1]);
+	if (!angles)
+		m_center.Set(pitch, roll, yaw);
+	else {
+		pitch -= m_center.v.coord.x;
+		roll -= m_center.v.coord.y;
+		yaw -= m_center.v.coord.z;
+		angles->Set(-F2X(AddDeadzone(pitch) * 0.5f), F2X(AddDeadzone(roll) * 0.5f), -F2X(AddDeadzone(yaw) * 0.5f));
 	}
+}
 #endif
 return 1;
 }
@@ -144,24 +108,7 @@ return 1;
 
 void CVRData::AutoCalibrate (void)
 {
-#if 0
-if (Available () > 1) {
-	if (m_bCalibrating) {
-		if (!m_magCal.IsAutoCalibrating ()) {
-			m_bCalibrating = false;
-			m_magCalTO.Start (-1, true);
-			}
-		else {
-			m_magCal.UpdateAutoCalibration (*m_pSensorFusion);
-			if (m_magCal.IsCalibrated ()) {
-				m_bCalibrating = false;
-				m_magCalTO.Start (-1);
-				}
-			}
-		}
-	else if (m_magCalTO.Expired (false))
-		m_magCal.BeginAutoCalibration (*m_pSensorFusion);
-	}
+#if 0  // OpenVR handles calibration internally; no manual calibration needed
 #endif
 }
 
@@ -169,11 +116,12 @@ if (Available () > 1) {
 
 void CVRData::Destroy (void)
 {
-#if OCULUS_RIFT
-if (m_pSensorFusion) {
-	delete m_pSensorFusion;
-	m_pSensorFusion = NULL;
-	}
+#ifdef USE_OPENVR
+if (m_pVRSystem) {
+	vr::VR_Shutdown();
+	m_pVRSystem = nullptr;
+	m_pVRCompositor = nullptr;
+}
 #endif
 }
 

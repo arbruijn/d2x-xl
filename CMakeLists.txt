@@ -135,6 +135,14 @@ elseif(SDLNET_FOUND)
 	set(EXTRA_LIBRARIES ${EXTRA_LIBRARIES} ${SDLNET_LIBRARY})
 endif()
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+find_package(OpenVR)
+if(OPENVR_FOUND)
+	add_definitions(-DUSE_OPENVR)
+	include_directories(${OpenVR_INCLUDE_DIR})
+	set(EXTRA_LIBRARIES ${EXTRA_LIBRARIES} ${OpenVR_LIBRARY})
+endif()
+
 #local includes
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/input/include)

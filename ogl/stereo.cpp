@@ -80,12 +80,34 @@ extern float quadVerts [3][4][2];
 
 #define CHROM_AB_CORRECTION	1
 
-#if OCULUS_RIFT
+#ifdef USE_OPENVR
 
-class CDefaultDistortionConfig : public OVR::Util::Render::DistortionConfig {
+struct DistortionConfig {
+	float XCenterOffset;
+	float YCenterOffset;
+	float Scale;
+	float K[4];
+	float ChromaticAberration[4];
+	DistortionConfig(float k0, float k1, float k2, float k3) {
+		K[0] = k0;
+		K[1] = k1;
+		K[2] = k2;
+		K[3] = k3;
+	}
+	DistortionConfig() {
+	}
+	void SetChromaticAberration(float v0, float v1, float v2, float v3) {
+		ChromaticAberration[0] = v0;
+		ChromaticAberration[1] = v1;
+		ChromaticAberration[2] = v2;
+		ChromaticAberration[3] = v3 ; 
+	}
+};
+
+class CDefaultDistortionConfig : public DistortionConfig {
 	public:
 		CDefaultDistortionConfig () 
-			: OVR::Util::Render::DistortionConfig (1.0f, 0.22f, 0.24f, 0.0f)
+			: DistortionConfig (1.0f, 0.22f, 0.24f, 0.0f)
 			{
 			XCenterOffset = 0.15197642f;
 			YCenterOffset = 0.0f;
@@ -94,12 +116,11 @@ class CDefaultDistortionConfig : public OVR::Util::Render::DistortionConfig {
 			}
 	};
 
-
 static CDefaultDistortionConfig defaultDistortion;
 
-static bool VRWarpFrame (const OVR::Util::Render::DistortionConfig* pDistortion, int32_t nEye)
+static bool VRWarpFrame (const DistortionConfig* pDistortion, int32_t nEye)
 {
-	OVR::Util::Render::DistortionConfig distortion;
+	DistortionConfig distortion;
 
 distortion = (gameData.renderData.vr.Available () && pDistortion) ? *pDistortion : defaultDistortion;
 
@@ -151,7 +172,7 @@ return true;
 
 //-----------------------------------------------------------------------------------
 
-#if OCULUS_RIFT
+#ifdef USE_OPENVR
 #	if DBG
 static bool bWarpFrame = true;
 #	endif
@@ -163,7 +184,7 @@ bool VRWarpScene (void)
 if (!gameData.renderData.vr.Available ())
 	return false;
 #endif
-#if OCULUS_RIFT
+#ifdef USE_OPENVR
 if (!ogl.VRActive ())
 	return false;
 if (!gameStates.render.textures.bHaveVRWarpShader)
