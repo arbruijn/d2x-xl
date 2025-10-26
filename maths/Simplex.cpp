@@ -1,6 +1,6 @@
 / *  Simplex.cpp
 Adapted to C +  +  from original code sdnoise1234.c
-Copyright © 2003 - 2008, Stefan Gustavson
+Copyright (c) 2003 - 2008, Stefan Gustavson
 Contact: stefan.gustavson@gmail.com
 _____________________________________________________________
 This library is free software; you can redistribute it and/or
@@ -391,7 +391,7 @@ double CSimplex::Noise4 (double x, double y, double z, double w, double *  dx/ *
   double w0 = w - W0;
 / *  For the 4D case, the simplex is a tesseract (see 'Dimension' on Wikipedia http://en.wikipedia.org/wiki/Dimension).
 To find out which of the 24 possible simplices is current, determine the magnitude ordering of x0, y0, z0 and w0.
-The method below is a reasonable way of finding the ordering of x,y,z,w and then finding the correct traversal order for the simplex we’re in.
+The method below is a reasonable way of finding the ordering of x,y,z,w and then finding the correct traversal order for the simplex we're in.
 First, six pair - wise comparisons are performed between each possible pair of the four coordinates,
 and then the results are used to add up binary bits for an integer index into a precomputed lookup table, simplex[].  * /
   int c1 = (x0>y0) ? 32 : 0;
