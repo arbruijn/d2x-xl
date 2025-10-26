@@ -460,16 +460,16 @@ do {
 
 //------------------------------------------------------------------------------
 
-int32_t OculusRiftConfigCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+int32_t VRConfigCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 	CMenuItem*	m;
 
 if (!(m = menu ["deadzone"]))
 	return nCurItem;
 int32_t v = m->Value ();
-if (gameOpts->input.oculusRift.nDeadzone != v) {
-	gameOpts->input.oculusRift.nDeadzone = v;
-	sprintf (m->Text (), TXT_RIFT_DEADZONE, szDZoneSizes [v]);
+if (gameOpts->input.vr.nDeadzone != v) {
+	gameOpts->input.vr.nDeadzone = v;
+	sprintf (m->Text (), TXT_VR_DEADZONE, szDZoneSizes [v]);
 	m->Rebuild ();
 	}
 return nCurItem;
@@ -477,7 +477,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-void OculusRiftConfigMenu (void)
+void VRConfigMenu (void)
 {
 	CMenu	m;
 	int32_t	i;
@@ -493,10 +493,10 @@ szDZoneSizes [4] = TXT_VERY_LARGE;
 
 do {
 	m.Destroy ();
-	m.Create (5, "OculusRiftConfigMenu");
+	m.Create (5, "VRConfigMenu");
 
-	AddDeadzoneControl (m, szDeadzone, TXT_RIFT_DEADZONE, HTX_RIFT_DEADZONE, szDZoneSizes, gameOpts->input.oculusRift.nDeadzone, KEY_U);
-	i = m.Menu (NULL, TXT_RIFT_CONFIG, OculusRiftConfigCallback, &choice);
+	AddDeadzoneControl (m, szDeadzone, TXT_VR_DEADZONE, HTX_VR_DEADZONE, szDZoneSizes, gameOpts->input.vr.nDeadzone, KEY_U);
+	i = m.Menu (NULL, TXT_VR_CONFIG, VRConfigCallback, &choice);
 	} while ((i >= 0) || (i == -2));
 }
 
@@ -760,8 +760,8 @@ do {
 	if (gameStates.input.nJoysticks)
 		m.AddMenu ("joystick options", TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
 #endif
-	if (!gameStates.app.bNostalgia && gameData.renderData.rift.Available ()) 
-		m.AddMenu ("oculus rift options", TXT_RIFTCFG_MENUCALL, KEY_I, HTX_RIFT_CONFIG);
+	if (!gameStates.app.bNostalgia && gameData.renderData.vr.Available ()) 
+		m.AddMenu ("vr options", TXT_VRCFG_MENUCALL, KEY_I, HTX_VR_CONFIG);
 	if (!gameStates.app.bNostalgia && gameStates.input.bHaveTrackIR) 
 		m.AddMenu ("trackir options", TXT_TRACKIRCFG_MENUCALL, KEY_I, HTX_TRACKIR_CONFIG);
 	m.AddText ("", "");
@@ -780,8 +780,8 @@ do {
 		MouseConfigMenu ();
 	else if (choice == m.IndexOf ("joystick options"))
 		JoystickConfigMenu ();
-	else if (choice == m.IndexOf ("oculus rift options"))
-		OculusRiftConfigMenu ();
+	else if (choice == m.IndexOf ("oculus vr options"))
+		VRConfigMenu ();
 	else if (choice == m.IndexOf ("trackir options"))
 		TrackIRConfigMenu ();
 	} while (i >= 0);

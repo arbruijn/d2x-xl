@@ -211,8 +211,8 @@ void CTransformation::SetupProjection (float aspectRatio)
 {
 
 m_info.oglProjection [0].Get (GL_PROJECTION_MATRIX);
-if (ogl.IsOculusRift () && gameData.renderData.rift.Available ()) {
-	//double riftXlatProj [16] = { 1.0, 0.0, 0.0, (ogl.StereoSeparation () < 0) ? -gameData.renderData.rift.m_projectionCenterOffset : gameData.renderData.rift.m_projectionCenterOffset,
+if (ogl.VRActive () && gameData.renderData.vr.Available ()) {
+	//double riftXlatProj [16] = { 1.0, 0.0, 0.0, (ogl.StereoSeparation () < 0) ? -gameData.renderData.vr.m_projectionCenterOffset : gameData.renderData.vr.m_projectionCenterOffset,
 	//									  0.0, 1.0, 0.0, 0.0, 
 	//									  0.0, 0.0, 1.0, 0.0, 
 	//									  0.0, 0.0, 0.0, 1.0 };
@@ -220,7 +220,7 @@ if (ogl.IsOculusRift () && gameData.renderData.rift.Available ()) {
 	double riftXlatProj [16] = { 1.0, 0.0, 0.0, 0.0,
 										  0.0, 1.0, 0.0, 0.0, 
 										  0.0, 0.0, 1.0, 0.0, 
-										  (ogl.StereoSeparation () < 0) ? gameData.renderData.rift.m_projectionCenterOffset : -gameData.renderData.rift.m_projectionCenterOffset, 0.0, 0.0, 1.0 };
+										  (ogl.StereoSeparation () < 0) ? gameData.renderData.vr.m_projectionCenterOffset : -gameData.renderData.vr.m_projectionCenterOffset, 0.0, 0.0, 1.0 };
 
 	glMatrixMode (GL_PROJECTION);
 	glLoadMatrixd ((GLdouble*) riftXlatProj);

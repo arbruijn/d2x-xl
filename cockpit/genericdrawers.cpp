@@ -76,7 +76,7 @@ return gameData.renderData.nStereoOffsetType;
 #else
 	int32_t	h;
 
-if (m_info.bAdjustCoords && ogl.IsOculusRift ()) {
+if (m_info.bAdjustCoords && ogl.VRActive ()) {
 	h = CCanvas::Current ()->Width () / 2;
 	if (x >= h)
 		x = h + 15;

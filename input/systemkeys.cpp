@@ -190,14 +190,14 @@ switch (key) {
 
 	case KEY_SHIFTED + KEY_MINUS:
 	case KEY_MINUS:
-		if (gameData.renderData.rift.m_ipd > RIFT_MIN_IPD)
-			gameData.renderData.rift.m_ipd--;
+		if (gameData.renderData.vr.m_ipd > VR_MIN_IPD)
+			gameData.renderData.vr.m_ipd--;
 		break;
 
 	case KEY_SHIFTED + KEY_EQUALS:
 	case KEY_EQUALS:
-		if (gameData.renderData.rift.m_ipd < RIFT_MAX_IPD)
-			gameData.renderData.rift.m_ipd++;
+		if (gameData.renderData.vr.m_ipd < VR_MAX_IPD)
+			gameData.renderData.vr.m_ipd++;
 		break;
 
 	case KEY_F2:
@@ -383,15 +383,15 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 
 		case KEY_SHIFTED + KEY_MINUS:
 		case KEY_MINUS:
-			if (gameData.renderData.rift.m_ipd > RIFT_MIN_IPD)
-				gameData.renderData.rift.m_ipd--;
+			if (gameData.renderData.vr.m_ipd > VR_MIN_IPD)
+				gameData.renderData.vr.m_ipd--;
 			bScreenChanged = 1;
 			break;
 
 		case KEY_SHIFTED + KEY_EQUALS:
 		case KEY_EQUALS:
-			if (gameData.renderData.rift.m_ipd < RIFT_MAX_IPD)
-				gameData.renderData.rift.m_ipd++;
+			if (gameData.renderData.vr.m_ipd < VR_MAX_IPD)
+				gameData.renderData.vr.m_ipd++;
 			bScreenChanged = 1;
 			break;
 
@@ -452,7 +452,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 #endif
 			gameData.trackIR.x =
 			gameData.trackIR.y = 0;
-			gameData.renderData.rift.SetCenter ();
+			gameData.renderData.vr.SetCenter ();
 			break;
 
 		case KEY_ALTED + KEY_F12:

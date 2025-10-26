@@ -950,7 +950,7 @@ gameStates.app.nSDLTicks [1] =
 gameData.timeData.xGameStart = SDL_GetTicks ();
 gameData.physicsData.fLastTick = float (gameData.timeData.xGameStart);
 ogl.m_features.bShaders.Available (gameOpts->render.bUseShaders);
-gameData.renderData.rift.SetCenter ();
+gameData.renderData.vr.SetCenter ();
 if (pfnTIRStart)
 	pfnTIRStart ();
 RETURN

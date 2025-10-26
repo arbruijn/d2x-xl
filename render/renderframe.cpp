@@ -259,7 +259,7 @@ void FlushFrame (fix xStereoSeparation)
 ENTER (0, 0);
 	int32_t i = ogl.StereoDevice ();
 
-if (!(i && xStereoSeparation)) {	//no stereo or shutter glasses or Oculus Rift
+if (!(i && xStereoSeparation)) {	//no stereo or shutter glasses or VR
 	//if (gameStates.render.bRenderIndirect <= 0)
 	//	Draw2DFrameElements ();
 	ogl.SwapBuffers (0, 0);
@@ -718,11 +718,11 @@ if (!ogl.StereoDevice () || !(gameData.appData.nFrameCount & 1)) {
 if (!ogl.StereoDevice ())
 	RenderMonoFrame ();
 else {
-	if (gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] == 0)
-		gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] = I2X (1);
+	if (gameOpts->render.stereo.xSeparation [ogl.VRActive ()] == 0)
+		gameOpts->render.stereo.xSeparation [ogl.VRActive ()] = I2X (1);
 	fix xStereoSeparation = (automap.Active () && !ogl.IsSideBySideDevice ()) 
 									? 2 * gameOpts->render.stereo.xSeparation [0] 
-									: gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()];
+									: gameOpts->render.stereo.xSeparation [ogl.VRActive ()];
 	SetupCanvasses (-1.0f);
 	RenderMonoFrame (-xStereoSeparation);
 	RenderMonoFrame (xStereoSeparation);

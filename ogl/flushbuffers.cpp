@@ -65,7 +65,7 @@
 
 //#define _WIN32_WINNT		0x0600
 
-bool RiftWarpScene (void);
+bool VRWarpScene (void);
 
 //------------------------------------------------------------------------------
 
@@ -306,9 +306,9 @@ if (gameStates.menus.nInMenu || bClear)
 
 //------------------------------------------------------------------------------
 // render post processed effects
-// if no or hardware (shutter glasses / Oculus Rift) based stereo rendering,
+// if no or hardware (shutter glasses / VR) based stereo rendering,
 // use render buffer 0 as source, otherwise (anaglyph stereo) use render buffer 2 as source
-// if hardware (shutter glasses / Oculus Rift) based stereo rendering,
+// if hardware (shutter glasses / VR) based stereo rendering,
 // use render buffer 1 as destination, otherwise use hardware draw buffer as destination
 
 void COGL::FlushEffectsSideBySide (void)
@@ -368,7 +368,7 @@ else {
 
 //-----------------------------------------------------------------------------------
 
-void COGL::FlushOculusRiftBuffers (void)
+void COGL::FlushVRBuffers (void)
 {
 gameData.renderData.screen.SetScale (1.0f);
 if (!postProcessManager.HaveEffects ()) 
@@ -379,7 +379,7 @@ else {
 	}	
 SetDrawBuffer (GL_BACK, 0);
 
-if (!RiftWarpScene ()) {
+if (!VRWarpScene ()) {
 	shaderManager.Deploy (-1);
 	EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
@@ -461,8 +461,8 @@ if (HaveDrawBuffer ()) {
 			FlushSideBySideBuffers ();
 			break;
 
-		case GLASSES_OCULUS_RIFT:
-			FlushOculusRiftBuffers ();
+		case GLASSES_VR:
+			FlushVRBuffers ();
 			break;
 
 		case GLASSES_SHUTTER_NVIDIA:

@@ -403,13 +403,13 @@ return nMode;
 
 int32_t SetSideBySideDisplayMode (void)
 {
-if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT)
-	SetCustomDisplayMode (gameData.renderData.rift.HResolution (), gameData.renderData.rift.VResolution (), 0);
+if (gameOpts->render.stereo.nGlasses == GLASSES_VR)
+	SetCustomDisplayMode (gameData.renderData.vr.HResolution (), gameData.renderData.vr.VResolution (), 0);
 else
 	return true;
 if (!SetDisplayMode (CUSTOM_DISPLAY_MODE, 0))
 	return false;
-if (ogl.IsOculusRift ())
+if (ogl.VRActive ())
 	cockpit->Activate (CM_FULL_SCREEN, true);
 
 #if /*DBG ==*/ 0

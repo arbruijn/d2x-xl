@@ -408,7 +408,7 @@ typedef struct tDebugRenderOptions {
 #define DEVICE_STEREO_PHYSICAL		4
 #define DEVICE_STEREO_SIDEBYSIDE		4
 #define GLASSES_SHUTTER_HDMI			4
-#define GLASSES_OCULUS_RIFT			5
+#define GLASSES_VR			5
 #define DEVICE_STEREO_DOUBLE_BUFFER	6
 #define GLASSES_SHUTTER_NVIDIA		6
 
@@ -425,7 +425,7 @@ typedef struct tStereoRenderOptions {
 	int32_t bFlipFrames;
 	int32_t bBrighten;
 	int32_t bChromAbCorr;
-	int32_t nRiftFOV;
+	int32_t nVRFOV;
 	fix xSeparation [2];
 } tStereoRenderOptions;
 
@@ -439,7 +439,7 @@ class CRenderOptions {
 		int32_t nLightmapQuality;
 		int32_t nLightmapPrecision;
 		int32_t bUseShaders;
-		int32_t bUseRift;
+		int32_t bUseVR;
 		int32_t nMathFormat;
 		int32_t nDefMathFormat;
 		int16_t nMaxFPS;
@@ -559,9 +559,9 @@ typedef struct tJoystickInputOptions {
 
 //------------------------------------------------------------------------------
 
-typedef struct tOculusRiftInputOptions {
+typedef struct tVRInputOptions {
 	int32_t nDeadzone;
-	} tOculusRiftInputOptions;
+	} tVRInputOptions;
 
 //------------------------------------------------------------------------------
 
@@ -593,7 +593,7 @@ class CInputOptions {
 		int32_t bUseHotKeys;
 		tMouseInputOptions mouse;
 		tJoystickInputOptions joystick;
-		tOculusRiftInputOptions oculusRift;
+		tVRInputOptions vr;
 		tTrackIRInputOptions trackIR;
 		tKeyboardInputOptions keyboard;
 
@@ -900,7 +900,7 @@ class CTextureStates {
 		int32_t bHaveMaskShader;
 		int32_t bHaveGrayScaleShader;
 		int32_t bHaveEnhanced3DShader;
-		int32_t bHaveRiftWarpShader;
+		int32_t bHaveVRWarpShader;
 		int32_t bHaveShadowMapShader;
 	};
 
@@ -963,7 +963,7 @@ class CFontStates {
 
 #define DEFAULT_RENDER_DEPTH	255
 #define DEFAULT_ZOOM				0x9000
-#define RIFT_DEFAULT_ZOOM		1.5
+#define VR_DEFAULT_ZOOM		1.5
 
 typedef struct tRenderDetail {
 	int32_t nLevel;
@@ -1039,7 +1039,7 @@ class CRenderStates {
 		int32_t nMaxTextureQuality;
 		int32_t bTransparency;
 		int32_t bSplitPolys;
-		int32_t bHaveOculusRift;
+		int32_t bHaveVR;
 		int32_t bHaveDynLights;
 		int32_t bHaveSparks;
 		int32_t bHaveFog [FOG_TYPE_COUNT + 1];
@@ -1898,11 +1898,11 @@ class CMeshEdge {
 
 #include "sphere.h"
 
-#include "riftdata.h"
+#include "vrdata.h"
 
 class CRenderData {
 	public:
-		CRiftData					rift;
+		CVRData						vr;
 		CColorData					color;
 		int32_t						transpColor;
 		CFaceListIndex				faceIndex;

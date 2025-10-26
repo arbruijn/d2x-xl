@@ -626,7 +626,7 @@ m_info.tAnimate = SDL_GetTicks ();
 void CBriefing::SetupAnimationCanvas (CCanvas* baseCanv)
 {
 int32_t x, y, w, h;
-if (ogl.IsOculusRift ()) {
+if (ogl.VRActive ()) {
 	y = gameData.renderData.window.Height (false) / 3;
 	w = gameData.renderData.window.Height (false) - y;
 	x = gameData.renderData.window.Width (false) - w;
@@ -655,7 +655,7 @@ float sh = gameData.renderData.screen.Height () / 960.0f;
 float s = sw < sh ? sw : sh;
 if (s < 1)
 	s = 1;
-return (ogl.IsOculusRift () /*&& gameStates.app.bGameRunning*/) ? 0.5f : s;
+return (ogl.VRActive () /*&& gameStates.app.bGameRunning*/) ? 0.5f : s;
 #endif
 }
 
@@ -666,7 +666,7 @@ void CBriefing::RenderElement (int32_t nElement)
 CFrameController fc;
 for (fc.Begin (); fc.Continue (); fc.End ()) {
 	CCanvas* baseCanv;
-	if (!ogl.IsOculusRift ()) 
+	if (!ogl.VRActive ()) 
 		baseCanv = &gameData.renderData.frame;
 	else {
 		int32_t w, h;

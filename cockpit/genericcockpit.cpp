@@ -150,7 +150,7 @@ if (!m_save.Buffer ())
 void CGenericCockpit::ScaleUp (void)
 {
 m_info.xScale *= float (HUD_ASPECT);
-if (ogl.IsOculusRift ()) {
+if (ogl.VRActive ()) {
 	m_info.xScale *= 0.5f;
 	m_info.yScale *= 0.5f;
 	}
@@ -163,7 +163,7 @@ fontManager.SetScale (cockpit->FontScale ());
 
 void CGenericCockpit::ScaleDown (void)
 {
-if (ogl.IsOculusRift ()) {
+if (ogl.VRActive ()) {
 	m_info.xScale *= 2.0f;
 	m_info.yScale *= 2.0f;
 	}
@@ -302,7 +302,7 @@ RETURN
 void CGenericCockpit::RenderWindows (void)
 {
 ENTER (0, 0);
-if (ogl.IsOculusRift ())
+if (ogl.VRActive ())
 	RETURN
 
 	int32_t		bDidMissileView = 0;
@@ -410,7 +410,7 @@ RETURN
 void CGenericCockpit::SetupSceneCenter (CCanvas* refCanv, int32_t& w, int32_t& h)
 {
 ENTER (0, 0);
-if (ogl.IsOculusRift ()) {
+if (ogl.VRActive ()) {
 	w = refCanv->Width (false) / 2;
 	h = refCanv->Height (false) * w / refCanv->Width (false);
 	gameData.renderData.window.Setup (refCanv, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.renderData.screen.Height (false) - h) / 2, w, h); 
@@ -516,7 +516,7 @@ DrawReticle (ogl.StereoDevice () < 0);
 //gameData.renderData.scene.Deactivate ();
 
 if (!GuidedMissileActive () && ((gameOpts->render.cockpit.bHUD > 1) || (gameStates.render.cockpit.nType < CM_FULL_SCREEN)) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
-	if (ogl.IsOculusRift () && !transformation.HaveHeadAngles ()) {
+	if (ogl.VRActive () && !transformation.HaveHeadAngles ()) {
 		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 		int32_t w, h;
 		SetupSceneCenter (&gameData.renderData.frame, w, h);
@@ -648,7 +648,7 @@ RETVAL (true)
 void CGenericCockpit::Activate (int32_t nType, bool bClearMessages)
 {
 ENTER (0, 0);
-if (ogl.IsOculusRift ())
+if (ogl.VRActive ())
 	cockpit = &hudCockpit;
 else if (nType == CM_FULL_COCKPIT)
 	cockpit = &fullCockpit;

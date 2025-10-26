@@ -477,13 +477,13 @@ ogl.ClearError (0);
 gameStates.render.glAspect = m_states.bUseTransform ? gameData.renderData.frame.AspectRatio () : 1.0;
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
-float aspectRatio = IsOculusRift () ? 0.8f : 1.0f; 
+float aspectRatio = VRActive () ? 0.8f : 1.0f; 
 float canvasAspectRatio = CCanvas::Current()->AspectRatio ();
 #if 1
 #	if 1 //DBG
-gameStates.render.glFOV = IsOculusRift () ? gameData.renderData.rift.m_fov + gameOpts->render.stereo.nRiftFOV * 5 : gameStates.render.nShadowMap ? 90.0 : 105.0; 
+gameStates.render.glFOV = VRActive () ? gameData.renderData.vr.m_fov + gameOpts->render.stereo.nVRFOV * 5 : gameStates.render.nShadowMap ? 90.0 : 105.0; 
 #	else
-gameStates.render.glFOV = IsOculusRift () ? gameData.renderData.rift.m_fov : gameStates.render.nShadowMap ? 90.0 : 105.0; 
+gameStates.render.glFOV = VRActive () ? gameData.renderData.vr.m_fov : gameStates.render.nShadowMap ? 90.0 : 105.0; 
 #	endif
 ZFAR = gameStates.render.nShadowMap ? 400.0f : 5000.0f;
 #else
@@ -491,13 +491,13 @@ gameStates.render.glFOV = 180.0;
 #endif
 if (!StereoSeparation ())
 	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom), canvasAspectRatio, ZNEAR, ZFAR);
-else if (IsOculusRift ()) {
+else if (VRActive ()) {
 #if 0
-	glLoadMatrixf ((GLfloat*) gameData.renderData.rift.m_eyes [StereoSeparation () > 0].Projection.M);
+	glLoadMatrixf ((GLfloat*) gameData.renderData.vr.m_eyes [StereoSeparation () > 0].Projection.M);
 #elif 0
 	SetupFrustum (2 * StereoSeparation ());
 #else
-	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom) / RIFT_DEFAULT_ZOOM, canvasAspectRatio, ZNEAR, ZFAR);
+	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom) / VR_DEFAULT_ZOOM, canvasAspectRatio, ZNEAR, ZFAR);
 #endif
 	}
 else if (gameOpts->render.stereo.nMethod == STEREO_PARALLEL)
@@ -604,7 +604,7 @@ else if (gameOpts->render.stereo.nGlasses == GLASSES_GREEN_MAGENTA) {	//blue/red
 	else
 		glColorMask (bRed, GL_FALSE, bBlue, bAlpha);
 	}
-else //GLASSES_SHUTTER_NVIDIA, GLASSES_OCULUS_RIFT or NONE
+else //GLASSES_SHUTTER_NVIDIA, GLASSES_VR or NONE
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 }
 

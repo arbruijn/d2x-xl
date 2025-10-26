@@ -6,11 +6,11 @@
 
 // ----------------------------------------------------------------------------
 
-bool CRiftData::Create (void)
+bool CVRData::Create (void)
 {
 #if OCULUS_RIFT
-gameData.renderData.rift.m_bAvailable = 0;
-if (gameOpts->render.bUseRift) {
+gameData.renderData.vr.m_bAvailable = 0;
+if (gameOpts->render.bUseVR) {
 	OVR::System::Init (OVR::Log::ConfigureDefaultLog (OVR::LogMask_All));
 	m_pManager = *OVR::DeviceManager::Create();
 	if (m_pManager) {
@@ -50,14 +50,14 @@ if (gameOpts->render.bUseRift) {
 			}
 		}
 	m_nResolution = HResolution () > 1280;
-	// If there was a problem detecting the Rift, display appropriate message.
+	// If there was a problem detecting the VR, display appropriate message.
 
 	const char* detectionMessage = NULL;
 
 	if (!m_pManager)
-		detectionMessage = "Cannot initialize Oculus Rift system.";
+		detectionMessage = "Cannot initialize VR system.";
 	if (!m_pHMD && !m_pSensorP)
-		detectionMessage = "Oculus Rift not detected.";
+		detectionMessage = "VR not detected.";
 	else if (!m_pHMD)
 		detectionMessage = "Oculus Sensor detected; HMD Display not detected.\n";
 	else if (m_hmdInfo.DisplayDeviceName [0] == '\0')
@@ -86,7 +86,7 @@ return m_bAvailable != 0;
 
 // ----------------------------------------------------------------------------
 
-int32_t CRiftData::GetViewMatrix (CFixMatrix& mOrient)
+int32_t CVRData::GetViewMatrix (CFixMatrix& mOrient)
 {
 #if OCULUS_RIFT
 if (Available () < 2)
@@ -105,7 +105,7 @@ return 1;
 #if OCULUS_RIFT
 static inline float AddDeadzone (float v)
 {
-float deadzone = float (gameOpts->input.oculusRift.nDeadzone) * 0.5f;
+float deadzone = float (gameOpts->input.vr.nDeadzone) * 0.5f;
 
 if ((deadzone <= 0.0f) || (deadzone >= 1.0f))
 	return v;
@@ -120,7 +120,7 @@ return 0.0f;
 }
 #endif
 
-int32_t CRiftData::GetHeadAngles (CAngleVector* angles)
+int32_t CVRData::GetHeadAngles (CAngleVector* angles)
 {
 #if OCULUS_RIFT
 if (Available () < 2)
@@ -142,7 +142,7 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
-void CRiftData::AutoCalibrate (void)
+void CVRData::AutoCalibrate (void)
 {
 #if 0
 if (Available () > 1) {
@@ -167,7 +167,7 @@ if (Available () > 1) {
 
 // ----------------------------------------------------------------------------
 
-void CRiftData::Destroy (void)
+void CVRData::Destroy (void)
 {
 #if OCULUS_RIFT
 if (m_pSensorFusion) {

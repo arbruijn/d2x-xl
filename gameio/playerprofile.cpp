@@ -461,7 +461,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].input.mouse.nDeadzone, i, 0);
 		RP (gameOptions [i].input.joystick.bLinearSens, i, 0);
 		RP (gameOptions [i].input.joystick.bSyncAxis, i, 0);
-		RP (gameOptions [i].input.oculusRift.nDeadzone, i, 0);
+		RP (gameOptions [i].input.vr.nDeadzone, i, 0);
 		RP (gameOptions [i].input.trackIR.nMode, i, 0);
 		RP (gameOptions [i].input.trackIR.nDeadzone, i, 0);
 		RP (gameOptions [i].input.keyboard.nType, i, 0);
@@ -522,7 +522,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.stereo.xSeparation [0], i, 0);
 		RP (gameOptions [i].render.stereo.xSeparation [1], i, 1);
 #if DBG
-		RP (gameOptions [i].render.stereo.nRiftFOV, i, 0);
+		RP (gameOptions [i].render.stereo.nVRFOV, i, 0);
 #endif
 		RP (gameOptions [i].render.stereo.bEnhance, i, 0);
 		RP (gameOptions [i].render.stereo.bColorGain, i, 0);
@@ -1064,7 +1064,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].input.mouse.nDeadzone", "2"},
 	 {"gameOptions[0].input.joystick.bLinearSens", "0"},
 	 {"gameOptions[0].input.joystick.bSyncAxis", "1"},
-	 {"gameOptions[0].input.oculusRift.nDeadzone", "2"},
+	 {"gameOptions[0].input.vr.nDeadzone", "2"},
 	 {"gameOptions[0].input.trackIR.nMode", "0"},
 	 {"gameOptions[0].input.trackIR.nDeadzone", "4"},
 	 {"gameOptions[0].input.keyboard.nType", "0"},
@@ -1080,7 +1080,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.stereo.xSeparation[0]", "65536"},
 	 {"gameOptions[0].render.stereo.xSeparation[1]", "65536"},
 #if DBG
-	 {"gameOptions[0].render.stereo.nRiftFOV", "4"},
+	 {"gameOptions[0].render.stereo.nVRFOV", "4"},
 #endif
 	 {"gameOptions[0].render.stereo.bEnhance", "0"},
 	 {"gameOptions[0].render.stereo.bColorGain", "0"},
@@ -1833,12 +1833,12 @@ gameStates.render.bAmbientColor = /*gameStates.render.bPerPixelLighting ||*/ (ga
 gameOpts->render.effects.bGlow = ::Clamp (gameOpts->render.effects.bGlow, 0, 2);
 gameOpts->sound.xCustomSoundVolume = (I2X (1) / 8) * gameConfig.nAudioVolume [0];
 #if DBG
-if ((gameOpts->render.stereo.nRiftFOV < RIFT_MIN_FOV) || (gameOpts->render.stereo.nRiftFOV > RIFT_MAX_FOV))
-	gameOpts->render.stereo.nRiftFOV = RIFT_DEFAULT_FOV;
+if ((gameOpts->render.stereo.nVRFOV < VR_MIN_FOV) || (gameOpts->render.stereo.nVRFOV > VR_MAX_FOV))
+	gameOpts->render.stereo.nVRFOV = VR_DEFAULT_FOV;
 #endif
 gameOptions [0].render.textures.nQuality = gameOptions [0].render.nQuality;
-if ((gameOpts->render.stereo.xSeparation [1] < MM2X (RIFT_MIN_IPD)) || (gameOpts->render.stereo.xSeparation [1] > MM2X (RIFT_MAX_IPD)))
-	gameOpts->render.stereo.xSeparation [1] = MM2X (RIFT_DEFAULT_IPD);
+if ((gameOpts->render.stereo.xSeparation [1] < MM2X (VR_MIN_IPD)) || (gameOpts->render.stereo.xSeparation [1] > MM2X (VR_MAX_IPD)))
+	gameOpts->render.stereo.xSeparation [1] = MM2X (VR_DEFAULT_IPD);
 extraGameInfo [0].bFlickerLights = gameOpts->app.bEpilepticFriendly;
 if ((extraGameInfo [0].bFastPitch < 1) || (extraGameInfo [0].bFastPitch > 2))
 	extraGameInfo [0].bFastPitch = 2;

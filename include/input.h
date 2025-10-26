@@ -76,8 +76,8 @@ class CControlsManager {
 		void DoMouse (int32_t *mouseAxis, int32_t nMouseButtons, int32_t *bSlideOn, int32_t *bBankOn, fix *pitchTimeP, fix *headingTimeP, int32_t *nCruiseSpeed, int32_t bGetSlideBank);
 		int32_t ReadTrackIR (void);
 		void DoTrackIR (void);
-		int32_t ReadOculusRift (void);
-		void DoOculusRift (void);
+		int32_t ReadVR (void);
+		void DoVR (void);
 		void DoSlideBank (int32_t bSlideOn, int32_t bBankOn, fix pitchTime, fix headingTime);
 		void CybermouseAdjust (void);
 		int32_t DeltaAxis (int32_t v);

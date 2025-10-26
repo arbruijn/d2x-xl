@@ -210,7 +210,7 @@ while (nNextSubTitle < m_nCaptions && nFrame >= m_captions [nNextSubTitle].first
 
 	CFrameController fc;
 	for (fc.Begin (); fc.Continue (); fc.End ()) {
-	if (ogl.IsOculusRift ()) {
+	if (ogl.VRActive ()) {
 		int32_t w, h;
 		cockpit->SetupSceneCenter (&gameData.renderData.frame, w, h);
 		}
@@ -231,7 +231,7 @@ while (nNextSubTitle < m_nCaptions && nFrame >= m_captions [nNextSubTitle].first
 			GrString (0x8000, y, m_captions [activeSubTitleList [t]].msg);
 			y += nLineSpacing + 1;
 		}
-	if (ogl.IsOculusRift ())
+	if (ogl.VRActive ())
 		gameData.renderData.window.Deactivate ();
 	else
 		gameData.renderData.frame.Deactivate ();
@@ -268,7 +268,7 @@ TRANSPARENCY_COLOR = 0;
 
 CFrameController fc;
 for (fc.Begin (); fc.Continue (); fc.End ()) {
-	if (ogl.IsOculusRift ()) {
+	if (ogl.VRActive ()) {
 		int32_t w, h;
 		cockpit->SetupSceneCenter (&gameData.renderData.frame, w, h);
 		}
@@ -307,7 +307,7 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 			OglDrawEmptyRect (xDest - 1, yDest, xDest + w, yDest + h + 1);
 			}
 		}
-	if (ogl.IsOculusRift ())
+	if (ogl.VRActive ())
 		gameData.renderData.window.Deactivate ();
 	else
 		gameData.renderData.frame.Deactivate ();

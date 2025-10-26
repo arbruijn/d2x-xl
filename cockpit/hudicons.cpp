@@ -141,7 +141,7 @@ if (!gameOpts->render.cockpit.bObjectTally)
 	return;
 if (cockpit->Hide ())
 	return;
-if (ogl.IsOculusRift ())
+if (ogl.VRActive ())
 	return;
 
 	static int32_t		objCounts [2] = {0, 0};
@@ -413,7 +413,7 @@ if (gameOpts->render.weaponIcons.bShowAmmo) {
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	}
 dx = (int32_t) (10 * m_xScale);
-if (ogl.IsOculusRift ()) {
+if (ogl.VRActive ()) {
 	//dy = (gameData.renderData.frame.Height () - gameData.renderData.scene.Height ());
 	//y = 3 * gameData.renderData.frame.Height () / 4 - dy - 4 * oy;
 	//dy = 0;
@@ -434,7 +434,7 @@ else if (extraGameInfo [0].nWeaponIcons == 2) {
 for (int32_t i = 0; i < 2; i++) {
 	int32_t n = (gameStates.app.bD1Mission) ? 5 : 10;
 	nMaxAutoSelect = 255;
-	if (ogl.IsOculusRift ()) {
+	if (ogl.VRActive ()) {
 		if (!i) {
 			int32_t nBombType, bHaveBombs = cockpit->BombCount (nBombType) > 0;
 			x = CCanvas::Current ()->Width () / 2 - /*CScreen::Scaled*/ ((2 + bHaveBombs) * (wIcon + ox) / 2);
@@ -473,10 +473,10 @@ for (int32_t i = 0; i < 2; i++) {
 		if (!GetWeaponState (bHave, bAvailable, bActive, i, j, l))
 			continue;
 
-		if (ogl.IsOculusRift () && !bActive) 
+		if (ogl.VRActive () && !bActive) 
 			continue;
 
-		if (!ogl.IsOculusRift ()) {
+		if (!ogl.VRActive ()) {
 			SetWeaponFillColor (bHave, bAvailable, alpha);
 			OglDrawFilledRect (cockpit->X (x - 1), y - hIcon - 1, cockpit->X (x + wIcon + 2), y + 2);
 			SetWeaponFrameColor (bHave, bAvailable, bActive, alpha);
@@ -500,7 +500,7 @@ for (int32_t i = 0; i < 2; i++) {
 			}
 		gameStates.render.grAlpha = 1.0f;
 
-		if (ogl.IsOculusRift ())
+		if (ogl.VRActive ())
 			x += wIcon + ox;
 		else if (nWeaponIcons > 2)
 			y += hIcon + oy;
@@ -589,7 +589,7 @@ return 0;
 
 void CHUDIcons::DrawInventory (void)
 {
-if (ogl.IsOculusRift ())
+if (ogl.VRActive ())
 	return;
 
 	CBitmap*	pBm;

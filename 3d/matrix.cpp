@@ -43,11 +43,11 @@ ScaleTransformation (transformation, 1);
 
 void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int32_t bOglScale, fix xStereoSeparation, bool bSetupRenderer)
 {
-transformation.m_info.zoom = (ogl.IsOculusRift () && !(gameStates.render.nWindow [0] || gameStates.render.bBriefing)) ? F2X (X2F (xZoom) / X2F (DEFAULT_ZOOM) * float (RIFT_DEFAULT_ZOOM)) : xZoom;
+transformation.m_info.zoom = (ogl.VRActive () && !(gameStates.render.nWindow [0] || gameStates.render.bBriefing)) ? F2X (X2F (xZoom) / X2F (DEFAULT_ZOOM) * float (VR_DEFAULT_ZOOM)) : xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
 transformation.m_info.viewer = vPos;
 transformation.m_info.pos = vPos;
-if (ogl.IsOculusRift ())
+if (ogl.VRActive ())
 	transformation.m_info.view [0] = mOrient;
 else if (ogl.StereoDevice () && (gameOpts->render.stereo.nMethod == STEREO_TOE_IN)) {
 	fix zScreen = F2X (ogl.ZScreen () * 10.0);

@@ -102,7 +102,7 @@ SetDataVersion (-1);
 
 void CGameData::SetStereoSeparation (int32_t nFrame)
 {
-ogl.SetStereoSeparation (ogl.IsSideBySideDevice () ? gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] * nFrame : 0);
+ogl.SetStereoSeparation (ogl.IsSideBySideDevice () ? gameOpts->render.stereo.xSeparation [ogl.VRActive ()] * nFrame : 0);
 }
 
 //------------------------------------------------------------------------------
@@ -114,7 +114,7 @@ return 1;
 #else
 if (gameStates.render.nWindow [0])
 	return 0;
-if (ogl.IsOculusRift ())
+if (ogl.VRActive ())
 	return (int32_t) DRound (X2D (ogl.StereoSeparation ()) * renderData.frame.Width () * double (WORLDSCALE) * 0.00125);
 if (ogl.IsSideBySideDevice ())
 	return (int32_t) DRound (X2D (ogl.StereoSeparation ()) * renderData.frame.Width () * 0.025);
@@ -136,7 +136,7 @@ if (!bForce && (gameStates.render.nWindow [0] != 0))
 	float w = (float) renderData.frame.Width ();
 	float s = X2F (ogl.StereoSeparation ());
 
-if (ogl.IsOculusRift ()) 
+if (ogl.VRActive ()) 
 	scale [1] = s * w * float (WORLDSCALE) * 0.00125f;
 else if (ogl.IsSideBySideDevice ())
 	scale [1] = s * w * 0.025f;
@@ -643,7 +643,7 @@ return true;
 
 void CRenderData::Destroy (void)
 {
-rift.Destroy ();
+vr.Destroy ();
 DESTROY (gameData.renderData.faceList);
 faceIndex.Destroy ();
 }
@@ -2411,7 +2411,7 @@ if (bSetup || !gameOpts->app.bExpertMode) {
 		gameOpts->render.stereo.bDeghost = 1;
 		gameOpts->render.stereo.bEnhance = (gameOpts->render.bUseShaders && ogl.m_features.bShaders);
 		gameOpts->render.stereo.bFlipFrames = 0;
-		gameOpts->render.stereo.nRiftFOV = RIFT_DEFAULT_FOV;
+		gameOpts->render.stereo.nVRFOV = VR_DEFAULT_FOV;
 		}
 	}
 

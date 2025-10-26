@@ -966,14 +966,14 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN) {
 
 //------------------------------------------------------------------------------
 
-int32_t CControlsManager::ReadOculusRift (void)
+int32_t CControlsManager::ReadVR (void)
 {
-return transformation.m_info.bUsePlayerHeadAngles = ogl.IsOculusRift () && gameData.renderData.rift.GetHeadAngles (&transformation.m_info.playerHeadAngles);
+return transformation.m_info.bUsePlayerHeadAngles = ogl.VRActive () && gameData.renderData.vr.GetHeadAngles (&transformation.m_info.playerHeadAngles);
 }
 
 //------------------------------------------------------------------------------
 
-void CControlsManager::DoOculusRift (void)
+void CControlsManager::DoVR (void)
 {
 }
 
@@ -1314,9 +1314,9 @@ for (i = 0; i < 3; i++) {
 	}
 if (gameOpts->input.bUseHotKeys)
 	DoD2XKeys (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int32_t*> (&gameStates.input.nCruiseSpeed), i);
-gameData.renderData.rift.AutoCalibrate ();
-if (ReadOculusRift ())
-	DoOculusRift ();
+gameData.renderData.vr.AutoCalibrate ();
+if (ReadVR ())
+	DoVR ();
 #ifdef _WIN32
 else if (ReadTrackIR ())
 	DoTrackIR ();

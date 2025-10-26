@@ -68,7 +68,7 @@
 int32_t enhance3DShaderProg [2][2][3] = {{{-1,-1,-1},{-1,-1,-1}},{{-1,-1,-1},{-1,-1,-1}}};
 int32_t duboisShaderProg = -1;
 
-int32_t riftWarpShaderProg [2] = {-1, -1};
+int32_t vrWarpShaderProg [2] = {-1, -1};
 
 int32_t nScreenDists [10] = {1, 2, 5, 10, 15, 20, 30, 50, 70, 100};
 float nDeghostThresholds [4][2] = {{1.0f, 1.0f}, {0.8f, 0.8f}, {0.7f, 0.7f}, {0.6f, 0.6f}};
@@ -97,11 +97,11 @@ class CDefaultDistortionConfig : public OVR::Util::Render::DistortionConfig {
 
 static CDefaultDistortionConfig defaultDistortion;
 
-static bool RiftWarpFrame (const OVR::Util::Render::DistortionConfig* pDistortion, int32_t nEye)
+static bool VRWarpFrame (const OVR::Util::Render::DistortionConfig* pDistortion, int32_t nEye)
 {
 	OVR::Util::Render::DistortionConfig distortion;
 
-distortion = (gameData.renderData.rift.Available () && pDistortion) ? *pDistortion : defaultDistortion;
+distortion = (gameData.renderData.vr.Available () && pDistortion) ? *pDistortion : defaultDistortion;
 
 float w = float (gameData.renderData.frame.Width ()) / float (gameData.renderData.screen.Width ()),
       h = float (gameData.renderData.frame.Height ()) / float (gameData.renderData.screen.Height ()),
@@ -110,7 +110,7 @@ float w = float (gameData.renderData.frame.Width ()) / float (gameData.renderDat
 
 float as = float (gameData.renderData.frame.Width ()) / float(gameData.renderData.frame.Height ());
 
-GLhandleARB warpProg = GLhandleARB (shaderManager.Deploy (riftWarpShaderProg [gameOpts->render.stereo.bChromAbCorr]));
+GLhandleARB warpProg = GLhandleARB (shaderManager.Deploy (vrWarpShaderProg [gameOpts->render.stereo.bChromAbCorr]));
 if (!warpProg)
 	return false;
 if (shaderManager.Rebuild (warpProg))
@@ -122,13 +122,13 @@ shaderManager.Set ("ScreenCenter", x + w * 0.5f, y + h * 0.5f);
 
 // MA: This is more correct but we would need higher-res texture vertically; we should adopt this
 // once we have asymmetric input texture scale.
-#if 0 //DBG -- obsolete, experimental code to decrease the size of the render output. gameOpts->render.stereo.nRiftFOV now actually influences the FOV.
+#if 0 //DBG -- obsolete, experimental code to decrease the size of the render output. gameOpts->render.stereo.nVRFOV now actually influences the FOV.
 float scaleFactor;
-if (gameOpts->render.stereo.nRiftFOV == RIFT_MAX_FOV) 
+if (gameOpts->render.stereo.nVRFOV == VR_MAX_FOV) 
 	scaleFactor = 1.0f / distortion.Scale;
 else {
 	float i, f = modf (distortion.Scale, &i);
-	scaleFactor = 1.0f / (i + f * (float (gameOpts->render.stereo.nRiftFOV) / float (RIFT_MAX_FOV)));
+	scaleFactor = 1.0f / (i + f * (float (gameOpts->render.stereo.nVRFOV) / float (VR_MAX_FOV)));
 	}
 #else
 float scaleFactor = 1.0f / distortion.Scale;
@@ -157,22 +157,22 @@ static bool bWarpFrame = true;
 #	endif
 #endif
 
-bool RiftWarpScene (void)
+bool VRWarpScene (void)
 {
 #if !DBG
-if (!gameData.renderData.rift.Available ())
+if (!gameData.renderData.vr.Available ())
 	return false;
 #endif
 #if OCULUS_RIFT
-if (!ogl.IsOculusRift ())
+if (!ogl.VRActive ())
 	return false;
-if (!gameStates.render.textures.bHaveRiftWarpShader)
+if (!gameStates.render.textures.bHaveVRWarpShader)
 	return false;
 
 for (int32_t i = 0; i < 2; i++) {
 	gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 	SetupCanvasses ();
-	gameData.renderData.frame.Activate ("RiftWarpScene (frame)");
+	gameData.renderData.frame.Activate ("VRWarpScene (frame)");
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
@@ -181,7 +181,7 @@ for (int32_t i = 0; i < 2; i++) {
 		OglDrawArrays (GL_QUADS, 0, 4);
 	else
 #endif
-	if (!RiftWarpFrame (gameData.renderData.rift.m_eyes [i].pDistortion, i)) {
+	if (!VRWarpFrame (gameData.renderData.vr.m_eyes [i].pDistortion, i)) {
 		gameData.renderData.frame.Deactivate ();
 		return false;
 		}
@@ -407,7 +407,7 @@ const char* enhance3DVS =
 	;
 
 
-static const char* riftWarpVS =
+static const char* vrWarpVS =
     "void main()\n"
     "{\n"
 	 "gl_Position = ftransform ();\n"
@@ -416,7 +416,7 @@ static const char* riftWarpVS =
 
 #if CHROM_AB_CORRECTION
 
-static const char* riftWarpFS [2] = {
+static const char* vrWarpFS [2] = {
 	"uniform vec2 LensCenter;\n"
 	"uniform vec2 ScreenCenter;\n"
 	"uniform vec2 Scale;\n"
@@ -475,10 +475,10 @@ if (gameOpts->render.bUseShaders && m_features.bShaders.Available ()) {
 		return;
 		}
 
-	PrintLog (0, "building Oculus Rift warp shader program\n");
-	gameStates.render.textures.bHaveRiftWarpShader = 
-		(0 <= shaderManager.Build (riftWarpShaderProg [0], riftWarpFS [0], riftWarpVS)) &&
-		(0 <= shaderManager.Build (riftWarpShaderProg [1], riftWarpFS [1], riftWarpVS));
+	PrintLog (0, "building VR warp shader program\n");
+	gameStates.render.textures.bHaveVRWarpShader = 
+		(0 <= shaderManager.Build (vrWarpShaderProg [0], vrWarpFS [0], vrWarpVS)) &&
+		(0 <= shaderManager.Build (vrWarpShaderProg [1], vrWarpFS [1], vrWarpVS));
 
 	PrintLog (0, "building enhanced 3D shader programs\n");
 	for (int32_t h = 0; h < 2; h++) {
@@ -502,8 +502,8 @@ void COGL::DeleteEnhanced3DShader (void)
 {
 if (duboisShaderProg >= 0) {
 	shaderManager.Delete (duboisShaderProg);
-	shaderManager.Delete (riftWarpShaderProg [0]);
-	shaderManager.Delete (riftWarpShaderProg [1]);
+	shaderManager.Delete (vrWarpShaderProg [0]);
+	shaderManager.Delete (vrWarpShaderProg [1]);
 	for (int32_t h = 0; h < 2; h++) {
 		for (int32_t i = 0; i < 2; i++) {
 			for (int32_t j = 0; j < 3; j++) {

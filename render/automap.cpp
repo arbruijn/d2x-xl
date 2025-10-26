@@ -1060,8 +1060,8 @@ do {
 	if (!ogl.StereoDevice ())
 		Render ();
 	else {
-		Render (-gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()]);
-		Render (gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()]);
+		Render (-gameOpts->render.stereo.xSeparation [ogl.VRActive ()]);
+		Render (gameOpts->render.stereo.xSeparation [ogl.VRActive ()]);
 		}
 	if (bFirstTime) {
 		bFirstTime = 0;

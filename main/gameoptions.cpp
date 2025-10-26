@@ -124,7 +124,7 @@ if (i) {
 	debug.bObjects = 1;
 	debug.bWalls = 1;
 	bUseShaders = 1;
-	bUseRift = 0;
+	bUseVR = 0;
 	bHiresModels [0] =
 	bHiresModels [1] = 0;
 	bUseLightmaps = 0;
@@ -244,7 +244,7 @@ else {
 	debug.bObjects = 1;
 	debug.bWalls = 1;
 	bUseShaders = 1;
-	bUseRift = 0;
+	bUseVR = 0;
 	bHiresModels [0] =
 	bHiresModels [1] = 1;
 	bUseLightmaps = 0;
@@ -366,9 +366,9 @@ else {
 	stereo.bColorGain = 1;
 	stereo.bDeghost = 1;
 	stereo.xSeparation [0] = 65536;
-	stereo.xSeparation [1] = MM2X (RIFT_DEFAULT_IPD);
+	stereo.xSeparation [1] = MM2X (VR_DEFAULT_IPD);
 	stereo.bChromAbCorr = 1;
-	stereo.nRiftFOV = 4;
+	stereo.nVRFOV = 4;
 	}
 }
 
@@ -544,7 +544,7 @@ else {
 	mouse.sensitivity [0] =
 	mouse.sensitivity [1] =
 	mouse.sensitivity [2] = 8;
-	oculusRift.nDeadzone = 2;
+	vr.nDeadzone = 2;
 	trackIR.nDeadzone = 0;
 	trackIR.bMove [0] =
 	trackIR.bMove [1] = 1;

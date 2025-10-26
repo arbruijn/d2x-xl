@@ -63,7 +63,7 @@ void DefaultRenderSettings (bool bSetup = false);
 #define MIN_LIGHTS_PER_PASS 5
 
 #define STEREO_SEPARATION_STEP	(I2X (1) / 8)
-#define RIFT_IPD_STEP				(I2X (1) / 64)
+#define VR_IPD_STEP				(I2X (1) / 64)
 #define LIGHT_CONTRIB_SCALE		5
 
 //------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ static int32_t xStereoSeparation = 0;
 static int32_t nStereoDevice = 0;
 static int32_t nStereoDeviceCount = 0;
 static int32_t nAnaglyphColor = 0;
-static int32_t nIPD = RIFT_DEFAULT_IPD - RIFT_MIN_IPD;
+static int32_t nIPD = VR_DEFAULT_IPD - VR_MIN_IPD;
 
 //------------------------------------------------------------------------------
 
@@ -343,17 +343,17 @@ if ((m = menu ["3D glasses"])) {
 		v = m->Value ();
 		if (nIPD != v) {
 			nIPD = v;
-			gameOpts->render.stereo.xSeparation [1] = MM2X (nIPD + RIFT_MIN_IPD); ///*I2X (1) + */(nIPD + 1) * RIFT_IPD_STEP;
-			sprintf (m->Text (), TXT_RIFT_IPD, nIPD + RIFT_MIN_IPD);
+			gameOpts->render.stereo.xSeparation [1] = MM2X (nIPD + VR_MIN_IPD); ///*I2X (1) + */(nIPD + 1) * VR_IPD_STEP;
+			sprintf (m->Text (), TXT_VR_IPD, nIPD + VR_MIN_IPD);
 			m->m_bRebuild = -1;
 			}
 		}
 #if 1 //DBG
 	if ((m = menu ["FOV"])) {
 		v = m->Value ();
-		if (gameOpts->render.stereo.nRiftFOV != v) {
-			gameOpts->render.stereo.nRiftFOV = EXPERTMODE ? v : RIFT_DEFAULT_FOV;
-			sprintf (m->Text (), TXT_RIFT_FOV, pszFOV [gameOpts->render.stereo.nRiftFOV]);
+		if (gameOpts->render.stereo.nVRFOV != v) {
+			gameOpts->render.stereo.nVRFOV = EXPERTMODE ? v : VR_DEFAULT_FOV;
+			sprintf (m->Text (), TXT_VR_FOV, pszFOV [gameOpts->render.stereo.nVRFOV]);
 			m->m_bRebuild = -1;
 			}
 		}
@@ -542,11 +542,11 @@ pszStereoDevice [2] = TXT_SHUTTER_HDMI;
 stereoDeviceMap [2] = GLASSES_SHUTTER_HDMI;
 nStereoDeviceCount = 3;
 #if !DBG
-if (gameData.renderData.rift.Available ()) 
+if (gameData.renderData.vr.Available ()) 
 #endif
 	{
-	pszStereoDevice [nStereoDeviceCount] = TXT_OCULUS_RIFT;
-	stereoDeviceMap [nStereoDeviceCount++] = GLASSES_OCULUS_RIFT;
+	pszStereoDevice [nStereoDeviceCount] = TXT_VR;
+	stereoDeviceMap [nStereoDeviceCount++] = GLASSES_VR;
 	}
 if (ogl.m_features.bStereoBuffers) {
 	pszStereoDevice [nStereoDeviceCount] = TXT_SHUTTER_NVIDIA;
@@ -669,7 +669,7 @@ if (xStereoSeparation < 0)
 	xStereoSeparation = 0;
 else if (xStereoSeparation >= (int32_t) sizeofa (pszStereoSeparation))
 	xStereoSeparation = sizeofa (pszStereoSeparation) - 1;
-nIPD = X2MM (gameOpts->render.stereo.xSeparation [1]) - RIFT_MIN_IPD; //RIFT_IPD_STEP - 1;
+nIPD = X2MM (gameOpts->render.stereo.xSeparation [1]) - VR_MIN_IPD; //VR_IPD_STEP - 1;
 
 do {
 	m.Destroy ();
@@ -760,20 +760,20 @@ do {
 		sprintf (szSlider + 1, TXT_STEREO_VIEW, pszStereoDevice [nStereoDevice]);
 		*szSlider = *(TXT_STEREO_VIEW - 1);
 		m.AddSlider ("3D glasses", szSlider + 1, nStereoDevice, 0, nStereoDeviceCount - 1, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
-		if (stereoDeviceMap [nStereoDevice] == GLASSES_OCULUS_RIFT) {
-			sprintf (szSlider + 1, TXT_RIFT_IPD, nIPD + RIFT_MIN_IPD);
-			*szSlider = *(TXT_RIFT_IPD - 1);
-			m.AddSlider ("IPD", szSlider + 1, nIPD, 0, RIFT_MAX_IPD - RIFT_MIN_IPD, KEY_P, HTX_STEREO_SEPARATION);
+		if (stereoDeviceMap [nStereoDevice] == GLASSES_VR) {
+			sprintf (szSlider + 1, TXT_VR_IPD, nIPD + VR_MIN_IPD);
+			*szSlider = *(TXT_VR_IPD - 1);
+			m.AddSlider ("IPD", szSlider + 1, nIPD, 0, VR_MAX_IPD - VR_MIN_IPD, KEY_P, HTX_STEREO_SEPARATION);
 			}
 
 		int32_t nDevice = ogl.StereoDevice ();
 
 		if (EXPERTMODE && stereoDeviceMap [nStereoDevice]) {
-			if (stereoDeviceMap [nStereoDevice] == GLASSES_OCULUS_RIFT) {
+			if (stereoDeviceMap [nStereoDevice] == GLASSES_VR) {
 #if 1 //DBG
-				sprintf (szSlider + 1, TXT_RIFT_FOV, pszFOV [gameOpts->render.stereo.nRiftFOV]);
-				*szSlider = *(TXT_RIFT_FOV - 1);
-				m.AddSlider ("FOV", szSlider + 1, gameOpts->render.stereo.nRiftFOV, 0, sizeofa (pszFOV) - 1, KEY_F, HTX_STEREO_FOV);
+				sprintf (szSlider + 1, TXT_VR_FOV, pszFOV [gameOpts->render.stereo.nVRFOV]);
+				*szSlider = *(TXT_VR_FOV - 1);
+				m.AddSlider ("FOV", szSlider + 1, gameOpts->render.stereo.nVRFOV, 0, sizeofa (pszFOV) - 1, KEY_F, HTX_STEREO_FOV);
 #endif
 				m.AddCheck ("chromAbCorr", TXT_CHROM_AB_CORR, gameOpts->render.stereo.bChromAbCorr, KEY_C, HTX_CHROM_AB_CORR);
 				}
@@ -880,8 +880,8 @@ if (gameOpts->render.stereo.nGlasses == 1)
 	gameOpts->render.stereo.nGlasses += nAnaglyphColor;
 gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
 #if 0
-if (ogl.IsOculusRift ())
-	gameData.renderData.rift.m_magCalTO.Start (-1, true);
+if (ogl.VRActive ())
+	gameData.renderData.vr.m_magCalTO.Start (-1, true);
 #endif
 if (gameOpts->app.bExpertMode && gameOpts->render.color.bConfigurable) {
 	gameData.SetAmbientLight (gameOpts->render.color.nAmbientLight);

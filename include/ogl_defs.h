@@ -53,12 +53,12 @@
 #define STEREO_MAX_FOV			160
 #define STEREO_FOV_STEP			5
 
-#define RIFT_MIN_IPD				54
-#define RIFT_DEFAULT_IPD		64
-#define RIFT_MAX_IPD				72
-#define RIFT_MIN_FOV				0
-#define RIFT_MAX_FOV				4
-#define RIFT_DEFAULT_FOV		RIFT_MAX_FOV
+#define VR_MIN_IPD				54
+#define VR_DEFAULT_IPD		64
+#define VR_MAX_IPD				72
+#define VR_MIN_FOV				0
+#define VR_MAX_FOV				4
+#define VR_DEFAULT_FOV		VR_MAX_FOV
 
 extern double glFOV, glAspect;
 

@@ -90,8 +90,8 @@ int32_t y = gameData.renderData.scene.Height () / 2;
 glLineWidth (float (gameData.renderData.frame.Width ()) / 640.0f);
 x = gameData.X (x);
 #if 1
-	w /= 2 << ogl.IsOculusRift ();
-	h /= 2 << ogl.IsOculusRift ();
+	w /= 2 << ogl.VRActive ();
+	h /= 2 << ogl.VRActive ();
 	OglDrawLine (x - w, y, x + w, y);
 	OglDrawLine (x, y - h, x, y + h);
 #else
@@ -381,7 +381,7 @@ if (gameStates.render.bChaseCam && (!IsMultiGame || (EGI_FLAG (bEnableCheats, 0,
 #endif
 	return;
 m_info.xScale *= float (HUD_ASPECT);
-if (ogl.IsOculusRift ()) {
+if (ogl.VRActive ()) {
 	m_info.xScale *= 0.5f;
 	m_info.yScale *= 0.5f;
 	}
@@ -395,7 +395,7 @@ ogl.SetBlendMode (OGL_BLEND_ALPHA);
 glColor3i (1,1,1);
 int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 
-if (ogl.IsOculusRift ()) {
+if (ogl.VRActive ()) {
 	float fov = float (gameStates.render.glFOV * X2D (transformation.m_info.zoom));
 	float yStep = float (gameData.renderData.scene.Height ()) / fov * 4;
 	float xStep = yStep * float (CCanvas::Current ()->AspectRatio ());
@@ -405,7 +405,7 @@ if (ogl.IsOculusRift ()) {
 		float fade = 1.0f - 2.0f * X2F (Max (abs (transformation.m_info.playerHeadAngles.v.coord.h), 
 														 abs (transformation.m_info.playerHeadAngles.v.coord.p)));
 		fade *= fade;
-		if (gameOpts->input.oculusRift.nDeadzone) { // display a reference image of the reticle
+		if (gameOpts->input.vr.nDeadzone) { // display a reference image of the reticle
 			gameStates.render.grAlpha = pow (fade, 4);
 			BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
 					  x + ScaleX (crossOffsets [ofs].x - 1), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
@@ -437,7 +437,7 @@ gameData.SetStereoOffsetType (nOffsetSave);
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
 m_info.xScale /= float (HUD_ASPECT);
-if (ogl.IsOculusRift ()) {
+if (ogl.VRActive ()) {
 	m_info.xScale *= 2.0f;
 	m_info.yScale *= 2.0f;
 	}

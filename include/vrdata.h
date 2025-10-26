@@ -1,5 +1,5 @@
-#ifndef RIFTDATA_H
-#define RIFTDATA_H
+#ifndef VRDATA_H
+#define VRDATA_H
 
 //------------------------------------------------------------------------------
 
@@ -8,7 +8,7 @@
 #	include "timeout.h"
 #endif
 
-class CRiftData {
+class CVRData {
 	public:
 #if OCULUS_RIFT
 		OVR::Ptr<OVR::DeviceManager>			m_pManager;
@@ -34,8 +34,8 @@ class CRiftData {
 		int32_t			m_bAvailable;
 		CFloatVector	m_center;
 
-		CRiftData () : m_renderScale (1.0f), m_fov (125.0f), m_projectionCenterOffset (0.0f), m_ipd (0), m_nResolution (0), m_bUse (0), m_bAvailable (false) {}
-		~CRiftData () { Destroy (); }
+		CVRData () : m_renderScale (1.0f), m_fov (125.0f), m_projectionCenterOffset (0.0f), m_ipd (0), m_nResolution (0), m_bUse (0), m_bAvailable (false) {}
+		~CVRData () { Destroy (); }
 		bool Create (void);
 		void Destroy (void);
 		inline int32_t Available (void) { return m_bAvailable; }

@@ -534,7 +534,7 @@ float CMenu::GetScale (void)
 #if 0 //DBG
 return ogl.IsSideBySideDevice () ? 0.5f : 1.0f;
 #else
-return (ogl.IsOculusRift () && !gameData.renderData.rift.Resolution ()) ? 0.5f : 1.0f;
+return (ogl.VRActive () && !gameData.renderData.vr.Resolution ()) ? 0.5f : 1.0f;
 #endif
 }
 

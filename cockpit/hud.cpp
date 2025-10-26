@@ -166,7 +166,7 @@ if (gameData.timeData.xGame & 0x4000) {
 if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.timeData.xGame & 0x4000)) {
 #endif
 	int32_t	x, y, nOffsetSave = -1;
-	int32_t nLayout = ogl.IsOculusRift () ? -1 : gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout + 1;
+	int32_t nLayout = ogl.VRActive () ? -1 : gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout + 1;
 	int32_t w, h, aw;
 
 	if (nLayout) {
@@ -226,7 +226,7 @@ if (IsMultiGame && !IsCoopGame)
 	int32_t	x, y, dx = GAME_FONT->Width () + GAME_FONT->Width () / 2;
 
 #if 0
-if (ogl.IsOculusRift ()) {
+if (ogl.VRActive ()) {
 	x = 3 * CCanvas::Current ()->Width () / 4 - 4 * dx;
 	y = CCanvas::Current ()->Height () + AdjustCockpitY (-2 * LineSpacing ());
 	}
@@ -618,7 +618,7 @@ void CHUD::DrawEnergyLevels (void)
 #if DBG
 if (ogl.IsSideBySideDevice ())
 #else
-if (ogl.IsOculusRift ())
+if (ogl.VRActive ())
 #endif
 	DrawEnergyLevelsCombined ();
 else
@@ -1128,7 +1128,7 @@ void CHUD::DrawWeapons (void)
 {
 if (cockpit->Hide ())
 	return;
-if (ogl.IsOculusRift () && EGI_FLAG (nWeaponIcons, 1, 1, 0))
+if (ogl.VRActive () && EGI_FLAG (nWeaponIcons, 1, 1, 0))
 	return;
 
 	char			szLabel [100], szAmmo [20];
@@ -1228,7 +1228,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	else {
 		SetFontColor (GREEN_RGBA);
 
-		if (ogl.IsOculusRift ()) {
+		if (ogl.VRActive ()) {
 			int32_t w, h, aw;
 			fontManager.Current ()->StringSize ("INVUL CLOAK ", w, h, aw);
 			nIdInvul = DrawHUDText (&nIdInvul, CCanvas::Current ()->Width () - w, -2 * LineSpacing (), "%s", "INVUL");
@@ -1267,7 +1267,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 	else {
 		SetFontColor (GREEN_RGBA);
 
-		if (ogl.IsOculusRift ())
+		if (ogl.VRActive ())
 			nIdCloak = DrawHUDText (&nIdCloak, CCanvas::Current ()->Width () - StringWidth ("CLOAK "), -2 * LineSpacing (), "%s", "CLOAK");
 		else {
 			int32_t y = IsMultiGame ? -7 * LineSpacing () : -4 * LineSpacing ();

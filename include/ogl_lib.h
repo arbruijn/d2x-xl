@@ -351,7 +351,7 @@ class COGL {
 		int32_t DrawBufferWidth (void);
 		int32_t DrawBufferHeight (void);
 		void MergeAnaglyphBuffers (void);
-		void FlushOculusRiftBuffers (void);
+		void FlushVRBuffers (void);
 		void FlushSideBySideBuffers (void);
 		void FlushNVidiaStereoBuffers (void);
 		void FlushAnaglyphBuffers (void);
@@ -565,10 +565,10 @@ class COGL {
 			return nDevice > 0; 
 			}
 
-		inline int32_t IsOculusRift (int32_t nDevice = 0x7fffffff) {
+		inline int32_t VRActive (int32_t nDevice = 0x7fffffff) {
 			if (nDevice == 0x7fffffff)
 				nDevice = StereoDevice ();
-			return nDevice == -GLASSES_OCULUS_RIFT;
+			return nDevice == -GLASSES_VR;
 			}
 
 		inline int32_t IsSideBySideDevice (int32_t nDevice = 0x7fffffff) {
