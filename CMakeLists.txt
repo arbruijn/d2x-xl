@@ -173,7 +173,7 @@ set(main_sources main/briefings.cpp main/cheats.cpp main/cmd.cpp
  main/dropobject.cpp main/effects.cpp main/endlevel.cpp main/findpath.cpp
  main/findsegment.cpp main/flightpath.cpp main/meshedge.cpp
  main/producers.cpp main/game.cpp main/gameargs.cpp main/gamecntl.cpp
- main/gamedata.cpp main/gamefolders.cpp main/gameoptions.cpp
+ main/gamedata.cpp main/riftdata.cpp main/gamefolders.cpp main/gameoptions.cpp
  main/gametime.cpp main/gamestates.cpp main/highscores.cpp main/descent.cpp
  main/kconfig.cpp main/mglobal.cpp main/movie.cpp main/newdemo.cpp
  main/scores.cpp main/segmath.cpp main/segment.cpp main/setup.cpp
