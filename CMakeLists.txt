@@ -35,8 +35,8 @@ elseif (${CMAKE_BUILD_TYPE} MATCHES "Debug")
 endif()
 
 if(NOT MSVC)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-strict-aliasing -Wno-format-security")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-strict-aliasing -Wno-format-security")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-strict-aliasing -Wno-format-security -Wno-format-overflow")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-strict-aliasing -Wno-format-security -Wno-format-overflow")
 endif()
 
 if (NOT (${CMAKE_BUILD_TYPE} MATCHES "Debug"))
