@@ -194,7 +194,7 @@ if (nBuffer != nPrevBuffer) {
 	if (nBuffer >= 0) {
 		m_states.nCamera = 0;
 		m_data.pDrawBuffer = m_data.GetDrawBuffer (nBuffer); 
-		CreateDrawBuffer ((nBuffer < 2) ? 1 : (nBuffer < 3) ? -1 : (nBuffer < 5) ? -2 : -3);
+		CreateDrawBuffer ((nBuffer < 2) ? 1 : (nBuffer < 3) ? -1 : (nBuffer < 5) ? -2 : (nBuffer < 7) ? -3 : 1);
 		}
 	else if ((pCamera = cameraManager [-nBuffer - 1])) {
 		m_states.nCamera = nBuffer;

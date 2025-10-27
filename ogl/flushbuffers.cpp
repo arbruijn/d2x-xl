@@ -368,6 +368,7 @@ else {
 
 //-----------------------------------------------------------------------------------
 
+#if 0 // oculus rift
 void COGL::FlushVRBuffers (void)
 {
 gameData.renderData.screen.SetScale (1.0f);
@@ -387,6 +388,32 @@ if (!VRWarpScene ()) {
 	OglDrawArrays (GL_QUADS, 0, 4);
 	}
 }
+#else
+void COGL::FlushVRBuffers (void)
+{
+for (int32_t i = 0; i < 2; i++) {
+	SelectBlurBuffer (i); 
+	BindTexture (DrawBuffer (0)->ColorBuffer ());
+	if (postProcessManager.HaveEffects ()) {
+		gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
+		SetupCanvasses ();
+		gameData.renderData.frame.Activate ("COGL::FlushEffects (frame)");
+		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
+		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+		postProcessManager.Setup ();
+		postProcessManager.Render ();
+		gameData.renderData.frame.Deactivate ();
+		}
+	else {
+		EnableClientStates (1, 0, 0, GL_TEXTURE0);
+		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+		OglDrawArrays (GL_QUADS, 0, 4);
+		}
+	gameData.renderData.vr.Submit (i, DrawBuffer ()->ColorBuffer ());
+	}
+}
+#endif
 
 //-----------------------------------------------------------------------------------
 

@@ -11,6 +11,36 @@
 #endif
 #endif
 
+struct DistortionConfig {
+	float XCenterOffset;
+	float YCenterOffset;
+	float Scale;
+	float K[4];
+	float ChromaticAberration[4];
+	DistortionConfig(float k0, float k1, float k2, float k3) {
+		K[0] = k0;
+		K[1] = k1;
+		K[2] = k2;
+		K[3] = k3;
+	}
+	DistortionConfig() {
+	}
+	void SetChromaticAberration(float v0, float v1, float v2, float v3) {
+		ChromaticAberration[0] = v0;
+		ChromaticAberration[1] = v1;
+		ChromaticAberration[2] = v2;
+		ChromaticAberration[3] = v3;
+	}
+};
+
+class CVREyeInfo {
+	public:
+		DistortionConfig *pDistortion;
+		CVREyeInfo() {
+			pDistortion = NULL;
+		}
+};
+
 class CVRData {
 	public:
 #ifdef USE_OPENVR
@@ -20,6 +50,7 @@ class CVRData {
 		vr::HmdMatrix34_t						m_mat4DevicePose[vr::k_unMaxTrackedDeviceCount];
 		char										m_strDriver[1024];
 		char										m_strDisplay[1024];
+		CVREyeInfo			m_eyes[2];
 #endif
 
 		float				m_renderScale;
@@ -40,6 +71,7 @@ class CVRData {
 		int32_t GetViewMatrix (CFixMatrix& m);
 		int32_t GetHeadAngles (CAngleVector* angles);
 		void AutoCalibrate (void);
+		void Submit (int32_t nEye, GLuint hTexture);
 		inline void SetCenter (void) { GetHeadAngles (NULL); }
 #ifdef USE_OPENVR
 		inline int32_t HResolution (void) {

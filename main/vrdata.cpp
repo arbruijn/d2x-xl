@@ -113,6 +113,18 @@ void CVRData::AutoCalibrate (void)
 }
 
 // ----------------------------------------------------------------------------
+void CVRData::Submit (int32_t nEye, GLuint hTexture)
+{
+#ifdef USE_OPENVR
+if (m_pVRSystem) {
+	vr::Texture_t vrTexture = {(void*)(uintptr_t)hTexture, vr::TextureType_OpenGL, vr::ColorSpace_Gamma};
+	vr::VRCompositor ()->Submit (nEye ? vr::Eye_Right : vr::Eye_Left, &vrTexture);
+}
+#endif
+}
+
+
+// ----------------------------------------------------------------------------
 
 void CVRData::Destroy (void)
 {

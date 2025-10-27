@@ -82,28 +82,6 @@ extern float quadVerts [3][4][2];
 
 #ifdef USE_OPENVR
 
-struct DistortionConfig {
-	float XCenterOffset;
-	float YCenterOffset;
-	float Scale;
-	float K[4];
-	float ChromaticAberration[4];
-	DistortionConfig(float k0, float k1, float k2, float k3) {
-		K[0] = k0;
-		K[1] = k1;
-		K[2] = k2;
-		K[3] = k3;
-	}
-	DistortionConfig() {
-	}
-	void SetChromaticAberration(float v0, float v1, float v2, float v3) {
-		ChromaticAberration[0] = v0;
-		ChromaticAberration[1] = v1;
-		ChromaticAberration[2] = v2;
-		ChromaticAberration[3] = v3 ; 
-	}
-};
-
 class CDefaultDistortionConfig : public DistortionConfig {
 	public:
 		CDefaultDistortionConfig () 
