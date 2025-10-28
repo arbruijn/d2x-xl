@@ -10,7 +10,7 @@ bool CVRData::Create (void)
 {
 #ifdef USE_OPENVR
 gameData.renderData.vr.m_bAvailable = 0;
-if (gameOpts->render.bUseVR) {
+if (gameOpts->render.bUseOpenVR) {
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pVRSystem = vr::VR_Init(&eError, vr::VRApplication_Scene);
 	if (eError != vr::VRInitError_None) {

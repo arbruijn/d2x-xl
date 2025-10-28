@@ -439,7 +439,7 @@ class CRenderOptions {
 		int32_t nLightmapQuality;
 		int32_t nLightmapPrecision;
 		int32_t bUseShaders;
-		int32_t bUseVR;
+		int32_t bUseOpenVR;
 		int32_t nMathFormat;
 		int32_t nDefMathFormat;
 		int16_t nMaxFPS;

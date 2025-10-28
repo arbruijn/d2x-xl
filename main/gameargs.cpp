@@ -409,8 +409,8 @@ if ((t = FindArg ("-use_shaders")))
 	gameOptions [0].render.bUseShaders = NumArg (t, 1);
 if ((t = FindArg ("-enable_freecam")))
 	gameStates.render.bEnableFreeCam = NumArg (t, 1);
-if ((t = FindArg ("-vr")))
-	gameOptions [0].render.bUseVR = NumArg (t, 1);
+if ((t = FindArg ("-openvr")))
+	gameOptions [0].render.bUseOpenVR = NumArg (t, 1);
 }
 
 // ----------------------------------------------------------------------------

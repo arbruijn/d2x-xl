@@ -124,7 +124,7 @@ if (i) {
 	debug.bObjects = 1;
 	debug.bWalls = 1;
 	bUseShaders = 1;
-	bUseVR = 0;
+	bUseOpenVR = 0;
 	bHiresModels [0] =
 	bHiresModels [1] = 0;
 	bUseLightmaps = 0;
@@ -244,7 +244,7 @@ else {
 	debug.bObjects = 1;
 	debug.bWalls = 1;
 	bUseShaders = 1;
-	bUseVR = 0;
+	bUseOpenVR = 0;
 	bHiresModels [0] =
 	bHiresModels [1] = 1;
 	bUseLightmaps = 0;
