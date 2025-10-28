@@ -72,6 +72,7 @@ class CVRData {
 		int32_t GetHeadAngles (CAngleVector* angles);
 		void AutoCalibrate (void);
 		void Submit (int32_t nEye, GLuint hTexture);
+		void StartFrame (void);
 		inline void SetCenter (void) { GetHeadAngles (NULL); }
 #ifdef USE_OPENVR
 		inline int32_t HResolution (void) {

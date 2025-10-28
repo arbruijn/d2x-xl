@@ -82,7 +82,7 @@ return 0.0f;
 int32_t CVRData::GetHeadAngles (CAngleVector* angles)
 {
 #ifdef USE_OPENVR
-if (Available () < 2)
+if (Available () < 2 || !m_pVRCompositor)
 	return 0;
 m_pVRCompositor->WaitGetPoses(m_trackedDevicePose, vr::k_unMaxTrackedDeviceCount, nullptr, 0);
 if (m_trackedDevicePose[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid) {
@@ -113,6 +113,7 @@ void CVRData::AutoCalibrate (void)
 }
 
 // ----------------------------------------------------------------------------
+
 void CVRData::Submit (int32_t nEye, GLuint hTexture)
 {
 #ifdef USE_OPENVR
@@ -123,6 +124,12 @@ if (m_pVRSystem) {
 #endif
 }
 
+// ----------------------------------------------------------------------------
+
+void CVRData::StartFrame (void)
+{
+	vr::VRCompositor ()->WaitGetPoses (m_trackedDevicePose, vr::k_unMaxTrackedDeviceCount, NULL, 0);
+}
 
 // ----------------------------------------------------------------------------
 

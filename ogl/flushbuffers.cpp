@@ -273,6 +273,7 @@ if (m_states.bInitialized) {
 	else
 		SwapBuffers (1, bClear);
 	}
+//if (VRActive ()) gameData.renderData.vr.StartFrame ();
 }
 
 //------------------------------------------------------------------------------
@@ -391,26 +392,36 @@ if (!VRWarpScene ()) {
 #else
 void COGL::FlushVRBuffers (void)
 {
-for (int32_t i = 0; i < 2; i++) {
-	SelectBlurBuffer (i); 
-	BindTexture (DrawBuffer (0)->ColorBuffer ());
-	if (postProcessManager.HaveEffects ()) {
-		gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
-		SetupCanvasses ();
-		gameData.renderData.frame.Activate ("COGL::FlushEffects (frame)");
-		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
-		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
-		postProcessManager.Setup ();
-		postProcessManager.Render ();
-		gameData.renderData.frame.Deactivate ();
-		}
-	else {
-		EnableClientStates (1, 0, 0, GL_TEXTURE0);
-		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
-		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
-		OglDrawArrays (GL_QUADS, 0, 4);
-		}
-	gameData.renderData.vr.Submit (i, DrawBuffer ()->ColorBuffer ());
+	int32_t isRight = m_data.nStereoFrame == STEREO_RIGHT_FRAME;
+
+SelectBlurBuffer (isRight); 
+BindTexture (DrawBuffer (0)->ColorBuffer ());
+if (postProcessManager.HaveEffects ()) {
+	//gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
+	SetupCanvasses ();
+	gameData.renderData.frame.Activate ("COGL::FlushEffects (frame)");
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+	postProcessManager.Setup ();
+	postProcessManager.Render ();
+	gameData.renderData.frame.Deactivate ();
+	}
+else {
+	glColor3f (1, 1, 1);
+	EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+	OglDrawArrays (GL_QUADS, 0, 4);
+	}
+gameData.renderData.vr.Submit (isRight, DrawBuffer ()->ColorBuffer ());
+
+if (isRight) { // left
+	// also draw to desktop window
+	SetDrawBuffer (GL_BACK, 0);
+	BindTexture (BlurBuffer (isRight)->ColorBuffer ()); // set source for subsequent rendering step
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+	OglDrawArrays (GL_QUADS, 0, 4);
 	}
 }
 #endif
@@ -489,7 +500,7 @@ if (HaveDrawBuffer ()) {
 			break;
 
 		case GLASSES_VR:
-			FlushVRBuffers ();
+			//FlushVRBuffers ();
 			break;
 
 		case GLASSES_SHUTTER_NVIDIA:

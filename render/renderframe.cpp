@@ -514,6 +514,7 @@ gameData.renderData.screen.Activate ("RenderMonoFrame", NULL, true);
 RenderShadowMaps (xStereoSeparation);
 #endif
 ogl.SetStereoSeparation (xStereoSeparation);
+ogl.SetStereoFrame (xStereoSeparation < 0 ? STEREO_LEFT_FRAME : STEREO_RIGHT_FRAME);
 SetupCanvasses ();
 if (xStereoSeparation <= 0) {
 	PROF_START
@@ -718,6 +719,7 @@ if (!ogl.StereoDevice () || !(gameData.appData.nFrameCount & 1)) {
 if (!ogl.StereoDevice ())
 	RenderMonoFrame ();
 else {
+	ogl.StartStereoFrame ();
 	if (gameOpts->render.stereo.xSeparation [ogl.VRActive ()] == 0)
 		gameOpts->render.stereo.xSeparation [ogl.VRActive ()] = I2X (1);
 	fix xStereoSeparation = (automap.Active () && !ogl.IsSideBySideDevice ()) 
@@ -725,7 +727,9 @@ else {
 									: gameOpts->render.stereo.xSeparation [ogl.VRActive ()];
 	SetupCanvasses (-1.0f);
 	RenderMonoFrame (-xStereoSeparation);
+	ogl.FinishStereoPart ();
 	RenderMonoFrame (xStereoSeparation);
+	ogl.FinishStereoPart ();
 	SetupCanvasses ();
 	}
 //StopTime ();

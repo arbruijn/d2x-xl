@@ -117,8 +117,9 @@ for (int32_t i = 0; i < nBuffers; i++) {
 		else
 #endif
 			{
-			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, m_info.nWidth, m_info.nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-			glGenerateMipmapEXT (GL_TEXTURE_2D);
+			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA8, m_info.nWidth, m_info.nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+			//glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, m_info.nWidth, m_info.nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+			//glGenerateMipmapEXT (GL_TEXTURE_2D);
 			}
 		}
 	m_info.bufferIds [i] = GL_COLOR_ATTACHMENT0_EXT + i;

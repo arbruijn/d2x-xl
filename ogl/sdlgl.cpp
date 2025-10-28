@@ -167,6 +167,8 @@ if (!SdlGlVideoModeOK (w, h) ||
 	Error ("Could not set %dx%dx%d opengl video mode\n", w, h, ogl.m_states.nColorBits);
 	return 0;
 	}
+PrintLog (0, "GL Version: %s\n", glGetString(GL_VERSION));
+PrintLog (0, "GL Vendor: %s\n", glGetString(GL_VENDOR));
 PrintLog (-1);
 #endif
 const SDL_VideoInfo* pVideoInfo = SDL_GetVideoInfo ();

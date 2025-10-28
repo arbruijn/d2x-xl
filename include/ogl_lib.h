@@ -109,6 +109,7 @@ class COglData {
 		int32_t			bLightmaps;
 		int32_t			nHeadlights;
 		fix				xStereoSeparation;
+		int32_t			nStereoFrame;
 		GLuint			nTexture [4];
 		GLenum			nSrcBlendMode;
 		GLenum			nDestBlendMode;
@@ -558,6 +559,8 @@ class COGL {
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
 		int32_t StereoDevice (void);
+		void StartStereoFrame (void);
+		void FinishStereoPart (void);
 
 		inline int32_t IsAnaglyphDevice (int32_t nDevice = 0x7fffffff) { 
 			if (nDevice == 0x7fffffff)
@@ -628,6 +631,7 @@ class COGL {
 
 		inline int32_t SetTransform (int32_t bUseTransform) { return m_states.bUseTransform = bUseTransform; }
 		inline int32_t UseTransform (void) { return m_states.bUseTransform; }
+		inline void SetStereoFrame (int32_t nFrame) { m_data.nStereoFrame = nFrame; }
 		inline void SetStereoSeparation (fix xStereoSeparation) { m_data.xStereoSeparation = xStereoSeparation; }
 		inline fix StereoSeparation (void) { return m_data.xStereoSeparation; }
 

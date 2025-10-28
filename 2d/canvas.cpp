@@ -257,7 +257,7 @@ void SetupCanvasses (float scale)
 if (scale != 0.0f)
 	gameData.renderData.screen.SetScale ((scale < 0.0f) ? ogl.VRActive () ? 1.25f : 1.0f : scale);
 
-if (!ogl.IsSideBySideDevice ())
+if (!ogl.IsSideBySideDevice () || gameOpts->render.stereo.nGlasses == GLASSES_VR)
 	gameData.renderData.frame.Setup (&gameData.renderData.screen);
 else {
 	if (ogl.StereoSeparation () < 0)

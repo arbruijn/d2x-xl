@@ -513,6 +513,7 @@ else {
 		Render ();
 		}
 	else {
+		ogl.StartStereoFrame ();
 		for (int32_t i = 0; i < 2; i++) {
 			gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 			SetupCanvasses (-1.0f);
@@ -520,6 +521,7 @@ else {
 			ogl.ChooseDrawBuffer ();
 			Render ();
 			gameData.renderData.frame.Deactivate ();
+			ogl.FinishStereoPart ();
 			}
 		}
 	if (!gameStates.app.bGameRunning || m_bRedraw)

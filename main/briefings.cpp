@@ -796,8 +796,12 @@ if (m_info.bFlashingCursor && !m_info.bRedraw)
 if ((delay > 0) && !m_info.bRedraw) {
 	delay = tText + (m_bAudioPlaying ? 110 : 1000 / 15);
 	do {
+		ogl.StartStereoFrame ();
 		Animate ();
-		} while ((t = SDL_GetTicks ()) < delay);
+		ogl.SetStereoSeparation (STEREO_LEFT_FRAME); ogl.FinishStereoPart ();
+		ogl.SetStereoSeparation (STEREO_RIGHT_FRAME); ogl.FinishStereoPart ();
+		SDL_Delay(5);
+	} while ((t = SDL_GetTicks ()) < delay);
 	tText = t;
 	}
 
@@ -934,8 +938,9 @@ do {		//	Wait for a key
 	Animate ();
 	m_info.t0 = t;
 	keypress = InKey ();
-	if (ogl.m_states.nDrawBuffer == GL_BACK)
+	if (ogl.m_states.nDrawBuffer == GL_BACK && !ogl.VRActive ())
 		break;
+	if (ogl.VRActive ()) { ogl.StartStereoFrame (); ogl.SetStereoFrame (STEREO_LEFT_FRAME); ogl.FinishStereoPart (); ogl.SetStereoFrame (STEREO_RIGHT_FRAME); ogl.FinishStereoPart (); }
 	ogl.Update (0);
 	} while (!keypress);
 return keypress;

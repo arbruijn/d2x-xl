@@ -103,6 +103,7 @@ SetDataVersion (-1);
 void CGameData::SetStereoSeparation (int32_t nFrame)
 {
 ogl.SetStereoSeparation (ogl.IsSideBySideDevice () ? gameOpts->render.stereo.xSeparation [ogl.VRActive ()] * nFrame : 0);
+ogl.SetStereoFrame (nFrame);
 }
 
 //------------------------------------------------------------------------------
@@ -643,7 +644,7 @@ return true;
 
 void CRenderData::Destroy (void)
 {
-vr.Destroy ();
+//vr.Destroy ();
 DESTROY (gameData.renderData.faceList);
 faceIndex.Destroy ();
 }
