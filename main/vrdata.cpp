@@ -128,7 +128,10 @@ if (m_pVRSystem) {
 
 void CVRData::StartFrame (void)
 {
+#ifdef USE_OPENVR
+if (m_pVRSystem)
 	vr::VRCompositor ()->WaitGetPoses (m_trackedDevicePose, vr::k_unMaxTrackedDeviceCount, NULL, 0);
+#endif
 }
 
 // ----------------------------------------------------------------------------
