@@ -655,7 +655,7 @@ float sh = gameData.renderData.screen.Height () / 960.0f;
 float s = sw < sh ? sw : sh;
 if (s < 1)
 	s = 1;
-return (ogl.VRActive () /*&& gameStates.app.bGameRunning*/) ? 0.5f : s;
+return s; //(ogl.VRActive () /*&& gameStates.app.bGameRunning*/) ? 0.5f : s;
 #endif
 }
 
@@ -666,7 +666,7 @@ void CBriefing::RenderElement (int32_t nElement)
 CFrameController fc;
 for (fc.Begin (); fc.Continue (); fc.End ()) {
 	CCanvas* baseCanv;
-	if (!ogl.VRActive ()) 
+	if (1 || !ogl.VRActive ())
 		baseCanv = &gameData.renderData.frame;
 	else {
 		int32_t w, h;
