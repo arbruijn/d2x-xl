@@ -447,8 +447,8 @@ glLoadIdentity ();
 glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 glMatrixMode (GL_MODELVIEW);
 glLoadIdentity ();//clear matrix
-glScalef (1.0f, -1.0f, 1.0f);
-glTranslatef (0.0f, -1.0f, 0.0f);
+//glScalef (1.0f, -1.0f, 1.0f);
+//glTranslatef (0.0f, -1.0f, 0.0f);
 SetDrawBuffer (GL_BACK, 1);
 SetFaceCulling (false);
 SetScissorTest (false);
