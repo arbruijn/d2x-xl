@@ -48,17 +48,24 @@
 
 d2x-xl requires the following libraries: SDL 1.2, SDL-mixer 1.2, SDL-net 1.2, GLEW and libcurl.
 
-Install packages for Debian/Ubuntu:
+### Install packages for Debian/Ubuntu:
 
 `apt install build-essential cmake libsdl1.2-dev libsdl-mixer1.2-dev libsdl-net1.2-dev libglew-dev
-libcurl3-dev`
+libcurl3-dev libopenvr-dev`
 
-Install packages for MSYS2 (Windows):
+### Install packages for MSYS2 (Windows):
 
 `pacman -S
  mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-gcc
- mingw64/mingw-w64-x86_64-SDL mingw64/mingw-w64-x86_64-SDL_image
- mingw64/mingw-w64-x86_64-SDL_mixer mingw64/mingw-w64-x86_64-SDL_net mingw64/mingw-w64-x86_64-glew`
+ mingw-w64-x86_64-SDL mingw-w64-x86_64-SDL_image
+ mingw-w64-x86_64-SDL_mixer mingw-w64-x86_64-SDL_net
+ mingw-w64-x86_64-glew mingw-w64-x86_64-openvr`
+
+### Install packages for Visual Studio
+
+`vcpkg install sdl1 sdl1-mixer sdl1-net glew curl openvr`
+
+### Build
 
 Configure build in subdirectory `build`:
 
