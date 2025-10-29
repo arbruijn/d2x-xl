@@ -418,6 +418,7 @@ gameData.renderData.vr.Submit (isRight, DrawBuffer ()->ColorBuffer ());
 if (isRight) { // left
 	// also draw to desktop window
 	SetDrawBuffer (GL_BACK, 0);
+	glViewport (0, 0, ogl.m_states.nCurWidth, ogl.m_states.nCurHeight);
 	BindTexture (BlurBuffer (isRight)->ColorBuffer ()); // set source for subsequent rendering step
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);

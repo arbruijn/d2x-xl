@@ -90,7 +90,7 @@ gameData.renderData.screen.CCanvas::SetPaletteOpaque (paletteManager.Default ())
 //gameData.renderData.screen.props.rowSize = screen->pitch;
 //gameData.renderData.screen.Buffer () = reinterpret_cast<uint8_t*> (screen->pixels);
 /***/PrintLog (1, "initializing OpenGL window\n");
-i = SdlGlInitWindow (w, h, 0);	//platform specific code
+i = ogl.VRActive () ? 1 : SdlGlInitWindow (w, h, 0);	//platform specific code
 PrintLog (-1);
 if (!i)
 	return 0;
@@ -387,7 +387,7 @@ else
 	gameStates.gfx.nStartScrMode = nMode;
 if (!gameStates.menus.bHiresAvailable && (nMode != 1))
 	nMode = 0;
-if (!GrVideoModeOK (displayModeInfo [nMode].dim))		//can't do nMode
+if (!ogl.VRActive () && !GrVideoModeOK (displayModeInfo [nMode].dim))		//can't do nMode
 	nMode = 0;
 gameStates.video.nDisplayMode = nMode;
 dpInfo = displayModeInfo + nMode;
