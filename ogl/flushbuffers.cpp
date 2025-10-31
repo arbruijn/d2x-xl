@@ -398,13 +398,15 @@ SelectBlurBuffer (isRight);
 BindTexture (DrawBuffer (0)->ColorBuffer ());
 if (postProcessManager.HaveEffects ()) {
 	//gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
-	SetupCanvasses ();
-	gameData.renderData.frame.Activate ("COGL::FlushEffects (frame)");
+	//SetupCanvasses ();
+	//gameData.renderData.frame.Activate ("COGL::FlushEffects (frame)");
+	glColor3f (1, 1, 1);
+	EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 	postProcessManager.Setup ();
 	postProcessManager.Render ();
-	gameData.renderData.frame.Deactivate ();
+	//gameData.renderData.frame.Deactivate ();
 	}
 else {
 	glColor3f (1, 1, 1);
