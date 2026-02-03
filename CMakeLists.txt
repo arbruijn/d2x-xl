@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.5)
 project(D2X-XL)
 include(CheckIncludeFiles)
 set(OpenGL_GL_PREFERENCE LEGACY)
@@ -203,6 +203,57 @@ set(ogl_sources ogl/clientstates.cpp ogl/drawbuffer.cpp ogl/fbuffer.cpp
 set(physics_sources physics/collide.cpp physics/hitbox_collision.cpp physics/physics.cpp physics/slowmotion.cpp physics/sphere_collision.cpp physics/visibility.cpp)
 set(render_sources render/automap.cpp render/cameras.cpp render/fastrender.cpp render/gpgpu_lighting.cpp render/lighttrails.cpp render/morph.cpp render/objeffects.cpp render/objrender.cpp render/oofrender.cpp render/polymodelrender.cpp render/radar.cpp render/renderframe.cpp render/renderlib.cpp render/render_lighting.cpp render/rendermine.cpp render/rendersetup.cpp render/rendershadows.cpp render/rendershields.cpp render/renderthreads.cpp render/sphere.cpp render/thrusterflames.cpp render/transprender.cpp render/visculling.cpp)
 set(weapon_sources weapons/controlweapon.cpp weapons/createweapon.cpp weapons/dropweapon.cpp weapons/fireweapon.cpp weapons/fusion.cpp weapons/omega.cpp weapons/pickupweapon.cpp weapons/seismic.cpp weapons/weaponhandlers.cpp weapons/weaponorder.cpp)
-set(d2x-xl_sources ${2d_sources} ${3d_sources} ${ai_sources} ${audio_sources} ${cockpit_sources} ${console_sources} ${effects_sources} ${gameio_sources} ${gamemodes_sources} ${input_sources} ${io_sources} ${libmve_sources} ${lighting_sources} ${main_sources} ${maths_sources} ${menus_sources} ${misc_sources} ${model_sources} ${network_sources} ${objects_sources} ${ogl_sources} ${physics_sources} ${render_sources} ${weapon_sources})
+
+# Windows resource file for icon and version info
+if(WIN32)
+    set(resource_sources d2x-xl.rc)
+endif()
+
+set(d2x-xl_sources ${2d_sources} ${3d_sources} ${ai_sources} ${audio_sources} ${cockpit_sources} ${console_sources} ${effects_sources} ${gameio_sources} ${gamemodes_sources} ${input_sources} ${io_sources} ${libmve_sources} ${lighting_sources} ${main_sources} ${maths_sources} ${menus_sources} ${misc_sources} ${model_sources} ${network_sources} ${objects_sources} ${ogl_sources} ${physics_sources} ${render_sources} ${weapon_sources} ${resource_sources})
 add_executable(d2x-xl ${d2x-xl_sources})
 target_link_libraries(d2x-xl ${EXTRA_LIBRARIES})
+
+# Copy required DLLs on Windows/MinGW to make executable portable
+if(WIN32 AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # Define the list of required DLLs for MinGW builds
+    set(MINGW_DLLS
+        libgcc_s_seh-1.dll
+        libwinpthread-1.dll
+        libstdc++-6.dll
+        glew32.dll
+        SDL.dll
+        libSDL_image-1-2-0.dll
+        libSDL_mixer-1-2-0.dll
+        SDL_net.dll
+        zlib1.dll
+        libpng16-16.dll
+        libtiff-6.dll
+        libwebp-7.dll
+        libjpeg-8.dll
+        libFLAC.dll
+        libmad-0.dll
+        libdeflate.dll
+        libjbig-0.dll
+        libLerc.dll
+        liblzma-5.dll
+        libzstd.dll
+        libsharpyuv-0.dll
+        libogg-0.dll
+    )
+    
+    # Try to find MinGW DLL directory
+    get_filename_component(MINGW_BIN_DIR ${CMAKE_C_COMPILER} DIRECTORY)
+    
+    # Copy each DLL if it exists
+    foreach(DLL_NAME ${MINGW_DLLS})
+        set(DLL_PATH "${MINGW_BIN_DIR}/${DLL_NAME}")
+        if(EXISTS "${DLL_PATH}")
+            add_custom_command(TARGET d2x-xl POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${DLL_PATH}"
+                $<TARGET_FILE_DIR:d2x-xl>
+                COMMENT "Copying ${DLL_NAME} to output directory"
+            )
+        endif()
+    endforeach()
+endif()

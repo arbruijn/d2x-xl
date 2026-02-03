@@ -900,11 +900,9 @@ while ((c = KeyInKey ())) {
 
 		case KEY_F2:
 			if (!gameStates.app.bNostalgia && !OBSERVING) {
-				if (Texturing () & 1) {
-					nColor = (nColor + 1) % 3;
-					gameOpts->render.automap.bBright = (nColor & 1) != 0;
-					gameOpts->render.automap.bGrayOut = (nColor & 2) != 0;
-					}
+				nColor = (nColor + 1) % 3;
+				gameOpts->render.automap.bBright = (nColor & 1) != 0;
+				gameOpts->render.automap.bGrayOut = (nColor & 2) != 0;
 				}
 			break;
 

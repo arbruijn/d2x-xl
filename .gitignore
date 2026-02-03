@@ -1,0 +1,31 @@
+# Build directory
+build/
+
+# Compiled Object files
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+d2x-xl
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

@@ -1259,8 +1259,8 @@ for (;;) {
 	// GAME LOOP!
 #if DBG
 	if (automap.Active ())
+		automap.SetActive (0);
 #endif
-	automap.SetActive (0);
 	gameStates.app.bConfigMenu = 0;
 	gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
 
