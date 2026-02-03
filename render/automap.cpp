@@ -376,12 +376,12 @@ if (gameOpts->app.bExpertMode) {
 	if (CCanvas::Current ()->Width () >= 1024) {
 		*szInfo [2] = '\0';
 		strcpy (szInfo [1], "ALT+A: Sparks   ALT+B: Bright   ALT+C: Coronas   ALT+G: Grayout ALT+L: Lightnings");
-		strcpy (szInfo [0], "ALT+P: Powerups   ALT+R: Robots   ALT+S: Smoke   ALT+T: Textures/Wireframe   CTRL+T: Teleport");
+		strcpy (szInfo [0], "ALT+P: Powerups   ALT+R: Robots   ALT+S: Smoke   ALT+T: Textures/Wireframe   C: Center   CTRL+T: Teleport");
 		}
 	else {
 		strcpy (szInfo [2], "ALT+A: Sparks   ALT+B: Bright   ALT+C: Coronas   ALT+G: Grayout");
 		strcpy (szInfo [1], "ALT+L: Lightnings   ALT+P: Powerups   ALT+R: Robots");
-		strcpy (szInfo [0], "ALT+S: Smoke   ALT+T: Textures/wireframe   CTRL+T: Teleport");
+		strcpy (szInfo [0], "ALT+S: Smoke   ALT+T: Textures/wireframe   C: Center   CTRL+T: Teleport");
 		}
 	}
 else
@@ -390,12 +390,12 @@ else
 	if (CCanvas::Current ()->Width () >= 1024) {
 		*szInfo [2] =
 		*szInfo [1] = '\0';
-		strcpy (szInfo [0], "F1: Textures/Wireframe   F2: Color   F3: Effects   F4: Objects   F9: Teleport");
+		strcpy (szInfo [0], "F1: Textures/Wireframe   F2: Color   F3: Effects   F4: Objects   C: Center   F9: Teleport");
 		}
 	else {
 		*szInfo [2] = '\0';
 		strcpy (szInfo [1], "F1: Textures/Wireframe   F2: Color");
-		strcpy (szInfo [0], "F3: Effects   F4: Objects   F9: Teleport");
+		strcpy (szInfo [0], "F3: Effects   F4: Objects   C: Center   F9: Teleport");
 		}
 	}
 fontManager.SetCurrent (SMALL_FONT);
