@@ -984,6 +984,10 @@ while ((c = KeyInKey ())) {
 		case KEY_ALTED+KEY_PADENTER:
 			GrToggleFullScreenGame ();
 			break;
+
+		case KEY_C:
+			InitView ();
+			break;
 		}
 	}
 return bDone;
