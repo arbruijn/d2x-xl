@@ -204,5 +204,8 @@ set(physics_sources physics/collide.cpp physics/hitbox_collision.cpp physics/phy
 set(render_sources render/automap.cpp render/cameras.cpp render/fastrender.cpp render/gpgpu_lighting.cpp render/lighttrails.cpp render/morph.cpp render/objeffects.cpp render/objrender.cpp render/oofrender.cpp render/polymodelrender.cpp render/radar.cpp render/renderframe.cpp render/renderlib.cpp render/render_lighting.cpp render/rendermine.cpp render/rendersetup.cpp render/rendershadows.cpp render/rendershields.cpp render/renderthreads.cpp render/sphere.cpp render/thrusterflames.cpp render/transprender.cpp render/visculling.cpp)
 set(weapon_sources weapons/controlweapon.cpp weapons/createweapon.cpp weapons/dropweapon.cpp weapons/fireweapon.cpp weapons/fusion.cpp weapons/omega.cpp weapons/pickupweapon.cpp weapons/seismic.cpp weapons/weaponhandlers.cpp weapons/weaponorder.cpp)
 set(d2x-xl_sources ${2d_sources} ${3d_sources} ${ai_sources} ${audio_sources} ${cockpit_sources} ${console_sources} ${effects_sources} ${gameio_sources} ${gamemodes_sources} ${input_sources} ${io_sources} ${libmve_sources} ${lighting_sources} ${main_sources} ${maths_sources} ${menus_sources} ${misc_sources} ${model_sources} ${network_sources} ${objects_sources} ${ogl_sources} ${physics_sources} ${render_sources} ${weapon_sources})
+if(WIN32)
+list(APPEND d2x-xl_sources resources/d2x-xl.rc)
+endif()
 add_executable(d2x-xl ${d2x-xl_sources})
 target_link_libraries(d2x-xl ${EXTRA_LIBRARIES})
