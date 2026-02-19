@@ -133,6 +133,10 @@ void COGL::SetupExtensions (void)
 {
 pszOglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
 glewInit ();
+#if SDL_VERSION_ATLEAST(1,2,50) // sdl12compat uses framebuffers itself
+__glewBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)SDL_GL_GetProcAddress("glBindFramebuffer");
+__glewBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC)SDL_GL_GetProcAddress("glBindFramebufferEXT");
+#endif
 SetupMultiTexturing ();
 SetupShaders ();
 SetupOcclusionQuery ();
