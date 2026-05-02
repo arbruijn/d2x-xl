@@ -52,8 +52,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,18,74,12
- PRODUCTVERSION 1,18,74,12
+ FILEVERSION 1,18,74,13
+ PRODUCTVERSION 1,18,74,13
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -69,12 +69,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "D2X-XL - Descent 1 and 2 / OpenGL"
-            VALUE "FileVersion", "1.18.74.12"
+            VALUE "FileVersion", "1.18.74.13"
             VALUE "InternalName", "D2X-XL"
             VALUE "LegalCopyright", "Copyright (C) 2026"
             VALUE "OriginalFilename", "d2x-xl.exe"
             VALUE "ProductName", "D2X-XL"
-            VALUE "ProductVersion", "1.18.74.12"
+            VALUE "ProductVersion", "1.18.74.13"
         END
     END
     BLOCK "VarFileInfo"
