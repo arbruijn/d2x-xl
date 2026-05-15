@@ -348,7 +348,7 @@ if ((j = LoadASEModel (gameData.modelData.aseModels [bCustom != 0] + gameData.mo
 	return j;
 	}
 #if 1
-if (bCustom && (j = LoadOOFModel (gameData.modelData.oofModels [bCustom != 0] + gameData.modelData.nHiresModels, nModel, bCustom))) {
+if (/*bCustom &&*/ (j = LoadOOFModel (gameData.modelData.oofModels [bCustom != 0] + gameData.modelData.nHiresModels, nModel, bCustom))) {
 	if (bLog)
 		PrintLog (-1);
 	return j;

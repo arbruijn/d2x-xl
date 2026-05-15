@@ -1317,6 +1317,7 @@ for (i = 0; i < m_textures.m_nBitmaps; i++) {
 	pszName = NULL;
 	CTGA tga (m_textures.m_bitmaps + i);
 	if (!tga.ReadModelTexture (m_textures.m_names [i].Buffer (), m_bCustom)) {
+		PrintLog(0, "Texture %s not found\n", m_textures.m_names [i].Buffer ());
 #if DBG
 		bOk = 0;
 #else
